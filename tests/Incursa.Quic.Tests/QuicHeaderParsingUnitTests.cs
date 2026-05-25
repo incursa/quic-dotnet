@@ -109,6 +109,28 @@ public sealed class QuicHeaderParsingUnitTests
     }
 
     [Fact]
+    public void TryParseShortHeader_AllowsClearedFixedBitWhenExplicitlyEnabled()
+    {
+        byte[] expectedRemainder = [0xAA, 0xBB, 0xCC];
+        byte[] packet = QuicHeaderTestData.BuildShortHeader(0x24, expectedRemainder);
+        packet[0] = (byte)(packet[0] & ~QuicPacketHeaderBits.FixedBitMask);
+
+        Assert.False(QuicPacketParser.TryParseShortHeader(packet, out _));
+
+        Assert.True(QuicPacketParser.TryParseShortHeader(
+            packet,
+            allowClearedFixedBit: true,
+            out QuicShortHeaderPacket header));
+        Assert.Equal(QuicHeaderForm.Short, header.HeaderForm);
+        Assert.Equal((byte)0x24, header.HeaderControlBits);
+        Assert.False(header.FixedBit);
+        Assert.True(header.SpinBit);
+        Assert.True(header.KeyPhase);
+        Assert.Equal((byte)0x00, header.PacketNumberLengthBits);
+        Assert.True(expectedRemainder.AsSpan().SequenceEqual(header.Remainder));
+    }
+
+    [Fact]
     public void TryParseShortHeader_RejectsEmptyInput()
     {
         Assert.False(QuicPacketParser.TryParseShortHeader([], out _));

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9287-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9287 Grease-Quic-Bit Implementation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9287",
+    "ARC-QUIC-RFC9287-0001",
+    "VER-QUIC-RFC9287-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9287-S3-0001",
+    "REQ-QUIC-RFC9287-S3-0002",
+    "REQ-QUIC-RFC9287-S3-0003",
+    "REQ-QUIC-RFC9287-S3-0004"
+  ],
+  "summary": "Implement the RFC 9287 grease_quic_bit transport parameter and negotiated QUIC-bit policy for QUIC version 1, including codec support, runtime packet-policy plumbing, and focused proof coverage.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9287.json`, `ARC-QUIC-RFC9287-0001.json`, `WI-QUIC-RFC9287-0001.json`, and `VER-QUIC-RFC9287-0001.json`.\n- Add `GreaseQuicBit` to `QuicTransportParameters` and parse/format transport parameter `0x2ab2` as an empty value.\n- Advertise grease support by default in the client and server local transport-parameter creation paths.\n- Clone and compare the new transport-parameter field in `QuicTransportTlsBridgeState`.\n- Add greasing-aware packet-parser and packet-opening policy plumbing so bit-0 packets are accepted when the local endpoint advertised grease_quic_bit and outbound packets clear the QUIC Bit after the peer parameter is committed.\n- Keep the existing strict parser defaults intact for RFC 9000 tests by exposing greasing-aware overloads instead of changing the default behavior globally.\n- Add focused RFC 9287 requirement-home tests, codec/parser negative cases, fuzz coverage, and header-parsing / transport-parameter benchmark coverage for the greasing-aware path.",
+  "verification_plan": "Run the RFC 9287 requirement-home tests, run the transport-parameter codec tests, run the packet-parser and packet-protection focused tests, run the greasing-aware transport-parameter and header-parsing benchmark dry runs, validate SpecTrace JSON, refresh the QUIC requirement coverage triage, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9287-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9287-0001"
+  ],
+  "out_of_scope": [
+    "The optional client pre-transport-parameter 0-RTT greasing path from RFC 9287.",
+    "HTTP/3, CONNECT-UDP, MASQUE, and other higher-layer uses of the QUIC Bit.",
+    "Versioning v2 behavior from RFC 9368 and RFC 9369."
+  ],
+  "completion_notes": "Completed for the RFC 9287 transport floor: the grease_quic_bit transport parameter, negotiated QUIC-bit policy, edge and fuzz proof, and benchmark coverage are all in place, with the requirement homes, runtime seams, and verification record aligned to the closed slice. The optional client pre-transport-parameter 0-RTT greasing path remains separate future work."
+}

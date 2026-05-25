@@ -199,6 +199,22 @@ internal sealed class QuicInitialPacketProtection
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryProtect(
+            plaintextPacket,
+            destination,
+            allowClearedFixedBit: false,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Protects an Initial packet using the role-appropriate Initial material.
+    /// </summary>
+    public bool TryProtect(
+        ReadOnlySpan<byte> plaintextPacket,
+        Span<byte> destination,
+        bool allowClearedFixedBit,
+        out int bytesWritten)
+    {
         bytesWritten = default;
 
         if (!TryParseInitialPacketLayout(plaintextPacket, out byte headerControlBits, out ulong lengthFieldValue, out int packetNumberOffset))
@@ -206,7 +222,7 @@ internal sealed class QuicInitialPacketProtection
             return false;
         }
 
-        if (!TryValidatePlaintextInitialHeader(headerControlBits))
+        if (!TryValidatePlaintextInitialHeader(headerControlBits, allowClearedFixedBit))
         {
             return false;
         }
@@ -281,7 +297,24 @@ internal sealed class QuicInitialPacketProtection
         return TryOpen(
             protectedPacket,
             destination,
+            allowClearedFixedBit: false,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Opens an Initial packet using the role-appropriate Initial material.
+    /// </summary>
+    public bool TryOpen(
+        ReadOnlySpan<byte> protectedPacket,
+        Span<byte> destination,
+        bool allowClearedFixedBit,
+        out int bytesWritten)
+    {
+        return TryOpen(
+            protectedPacket,
+            destination,
             InboundMaterial,
+            allowClearedFixedBit,
             out bytesWritten);
     }
 
@@ -297,6 +330,24 @@ internal sealed class QuicInitialPacketProtection
             protectedPacket,
             destination,
             OutboundMaterial,
+            false,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Opens an outbound Initial packet using the owning endpoint's send keys.
+    /// </summary>
+    internal bool TryOpenOutbound(
+        ReadOnlySpan<byte> protectedPacket,
+        Span<byte> destination,
+        bool allowClearedFixedBit,
+        out int bytesWritten)
+    {
+        return TryOpen(
+            protectedPacket,
+            destination,
+            OutboundMaterial,
+            allowClearedFixedBit,
             out bytesWritten);
     }
 
@@ -304,6 +355,7 @@ internal sealed class QuicInitialPacketProtection
         ReadOnlySpan<byte> protectedPacket,
         Span<byte> destination,
         QuicInitialPacketProtectionMaterial packetProtectionMaterial,
+        bool allowClearedFixedBit,
         out int bytesWritten)
     {
         bytesWritten = default;
@@ -335,7 +387,7 @@ internal sealed class QuicInitialPacketProtection
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
+            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
             || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Initial)
         {
             return false;
@@ -442,9 +494,10 @@ internal sealed class QuicInitialPacketProtection
         return true;
     }
 
-    private static bool TryValidatePlaintextInitialHeader(byte headerControlBits)
+    private static bool TryValidatePlaintextInitialHeader(byte headerControlBits, bool allowClearedFixedBit)
     {
-        if ((headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
+        if (!allowClearedFixedBit
+            && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             return false;
         }

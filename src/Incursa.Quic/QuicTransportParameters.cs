@@ -41,6 +41,11 @@ internal sealed class QuicTransportParameters
     internal ulong? MaxDatagramFrameSize { get; set; }
 
     /// <summary>
+    /// Gets or sets whether grease_quic_bit was advertised.
+    /// </summary>
+    internal bool GreaseQuicBit { get; set; }
+
+    /// <summary>
     /// Gets or sets the initial_max_data transport parameter value.
     /// </summary>
     internal ulong? InitialMaxData { get; set; }

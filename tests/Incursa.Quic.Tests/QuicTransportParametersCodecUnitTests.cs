@@ -169,6 +169,38 @@ public sealed class QuicTransportParametersCodecUnitTests
             out _));
     }
 
+    [Fact]
+    public void TryFormatTransportParameters_EmitsGreaseQuicBitAsEmptyParameter()
+    {
+        QuicTransportParameters parameters = new()
+        {
+            GreaseQuicBit = true,
+        };
+
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterTuple(0x2AB2, []);
+
+        Span<byte> destination = stackalloc byte[32];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            destination,
+            out int bytesWritten));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    [Fact]
+    public void TryParseTransportParameters_RejectsNonEmptyGreaseQuicBitParameter()
+    {
+        byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterTuple(0x2AB2, [0x01]);
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            encoded,
+            QuicTransportParameterRole.Client,
+            out _));
+    }
+
     public static IEnumerable<object[]> TruncatedEncodingCases()
     {
         yield return new object[]

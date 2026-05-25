@@ -11,6 +11,9 @@ internal sealed partial class QuicConnectionRuntime
             "1",
             StringComparison.Ordinal);
 
+    private bool PeerSupportsGreasedQuicBit =>
+        tlsState.PeerTransportParameters?.GreaseQuicBit == true;
+
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
         long nowTicks,
@@ -1126,6 +1129,7 @@ internal sealed partial class QuicConnectionRuntime
                     packetReceivedEvent.Datagram.Span,
                     tlsState.OneRttOpenPacketProtectionMaterial.Value,
                     expectedApplicationPacketNumber,
+                    PeerSupportsGreasedQuicBit,
                     out openedPacket,
                     out int payloadOffset,
                     out int payloadLength,
@@ -1151,6 +1155,7 @@ internal sealed partial class QuicConnectionRuntime
                         packetReceivedEvent.Datagram.Span,
                         tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.Value,
                         expectedApplicationPacketNumber,
+                        PeerSupportsGreasedQuicBit,
                         out openedPacket,
                         out payloadOffset,
                         out payloadLength,
@@ -1185,6 +1190,7 @@ internal sealed partial class QuicConnectionRuntime
                             packetReceivedEvent.Datagram.Span,
                             successorOpenMaterial,
                             expectedApplicationPacketNumber,
+                            PeerSupportsGreasedQuicBit,
                             out openedPacket,
                             out payloadOffset,
                             out payloadLength,

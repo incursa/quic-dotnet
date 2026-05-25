@@ -654,8 +654,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if ((packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            && (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0)
+        if ((packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0)
         {
             if (TryLookupRouteByPrefix(
                 packet[1..],

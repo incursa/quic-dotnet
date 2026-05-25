@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9287-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9287 Grease-Quic-Bit Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9287",
+    "ARC-QUIC-RFC9287-0001",
+    "WI-QUIC-RFC9287-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, codec/parser unit tests, packet-policy runtime tests, edge and fuzz coverage for the transport-parameter and packet-policy paths, transport-parameter and header-parsing benchmark dry runs, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9287-S3-0001",
+    "REQ-QUIC-RFC9287-S3-0002",
+    "REQ-QUIC-RFC9287-S3-0003",
+    "REQ-QUIC-RFC9287-S3-0004"
+  ],
+  "scope": "This verification covers the RFC 9287 section 3 transport-parameter and negotiated QUIC-bit policy slice only. It proves empty transport-parameter emission, non-empty rejection, negotiated bit-0 acceptance after local advertisement, outbound bit-0 clearing after peer-parameter commitment, parser strict-default preservation, edge and fuzzed representative transport-parameter and packet-policy shapes, and the hot-path benchmark evidence. It does not verify the optional early 0-RTT greasing path or broader RFC 9368/RFC 9369 versioning work.",
+  "preconditions": [
+    "The repository remains in the JSON-only SpecTrace workflow.",
+    "The packet-policy changes remain isolated from the unrelated RFC 9000 fixed-bit rejection tests.",
+    "The new RFC 9287 requirement-home tests exist under tests/Incursa.Quic.Tests/RequirementHomes/RFC9287."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~RFC9287`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicTransportParametersCodecUnitTests|FullyQualifiedName~QuicHeaderParsingUnitTests`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicTransportParametersBenchmarks*\" --inProcess`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicHeaderParsingBenchmarks*\" --inProcess`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9287 requirement-home tests pass, the transport-parameter codec proves empty grease_quic_bit handling and non-empty rejection, packet-parser and packet-protection tests prove negotiated fixed-bit-0 acceptance and outbound clearing, the edge and fuzz coverage exercise representative boundary shapes, the transport-parameter and header-parsing benchmark dry runs complete, core SpecTrace validation accepts the JSON artifacts, the generated QUIC requirement coverage reports the new RFC 9287 slice traceable, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs",
+    "tests/Incursa.Quic.Tests/QuicGreaseQuicBitFuzzSupport.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersCodecUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderParsingUnitTests.cs",
+    "benchmarks/QuicHeaderParsingBenchmarks.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs"
+  ],
+  "status_summary": "Passed. The RFC 9287 requirement slice now has dedicated spec, architecture, work item, verification, requirement-home fuzz coverage, benchmark evidence, and trace-clean support surfaces aligned to the closed slice."
+}

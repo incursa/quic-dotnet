@@ -1,0 +1,154 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9287",
+  "artifact_type": "specification",
+  "title": "QUIC Greasing the QUIC Bit (RFC 9287)",
+  "domain": "quic",
+  "capability": "transport",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "purpose": "Capture the RFC 9287 requirements for the grease_quic_bit transport parameter and negotiated QUIC-bit behavior in QUIC version 1.",
+  "scope": "This specification covers the RFC 9287 version 1 grease_quic_bit transport parameter, empty-value validation, and the negotiated QUIC-bit behavior that follows transport-parameter processing. It does not cover the optional token-gated early 0-RTT greasing path or the broader RFC 9368/RFC 9369 versioning family.",
+  "context": "RFC 9287 defines a version 1 transport parameter that signals support for clearing the QUIC Bit in packets. The broader versioning-family work remains tracked separately in the gap ledger.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9287-0001",
+    "WI-QUIC-RFC9287-0001",
+    "VER-QUIC-RFC9287-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9287-S3-0001",
+      "title": "Advertise grease_quic_bit as an empty transport parameter",
+      "statement": "An endpoint that implements RFC 9287 version 1 greasing MUST send grease_quic_bit (0x2ab2) as an empty transport parameter.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9287-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9287-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9287-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9287 §3",
+          "https://www.rfc-editor.org/rfc/rfc9287.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs::TryFormatTransportParameters_EmitsGreaseQuicBitAsEmptyParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs::TryFormatTransportParameters_OmitsGreaseQuicBitWhenDisabled",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs::TryFormatTransportParameters_EmitsGreaseQuicBitForTheSmallestBoundaryClientShape",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs::Fuzz_TryFormatTransportParameters_EmitsGreaseQuicBitAcrossRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9287-S3-0002",
+      "title": "Reject non-empty grease_quic_bit values",
+      "statement": "An endpoint that receives grease_quic_bit with a non-empty value MUST terminate the connection with TRANSPORT_PARAMETER_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9287-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9287-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9287-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9287 §3",
+          "https://www.rfc-editor.org/rfc/rfc9287.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs::TryParseTransportParameters_AcceptsEmptyGreaseQuicBitParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs::TryParseTransportParameters_RejectsNonEmptyGreaseQuicBitParameter",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs::TryParseTransportParameters_RejectsNonEmptyGreaseQuicBitAtTheParameterBlockBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsNonEmptyGreaseQuicBitAcrossRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9287-S3-0003",
+      "title": "Accept cleared QUIC-bit packets after transport-parameter processing",
+      "statement": "An endpoint that receives grease_quic_bit from a peer MUST accept packets whose QUIC Bit is 0 after it has received and processed that peer's transport parameters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9287-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9287-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9287-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9287 §3.1",
+          "https://www.rfc-editor.org/rfc/rfc9287.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9287-S3-0004",
+      "title": "Allow cleared QUIC-bit transmission after transport-parameter processing",
+      "statement": "After an endpoint has received and processed a peer's transport parameters carrying grease_quic_bit, the endpoint MAY send packets with the QUIC Bit cleared to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9287-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9287-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9287-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9287 §3.1",
+          "https://www.rfc-editor.org/rfc/rfc9287.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs::NegotiatedGreaseQuicBitClearsFixedBitOnOutboundPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs::NegotiatedGreaseQuicBitClearsFixedBitOnOutboundPacketsAtTheShortestPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs::StrictOutboundBuildPreservesFixedBitWithoutGreaseNegotiation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs::Fuzz_NegotiatedGreaseQuicBit_ClearsFixedBitAcrossRepresentativePayloads"
+        ]
+      }
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This slice is intentionally narrow. It owns the grease_quic_bit transport parameter, empty-value validation, and negotiated QUIC-bit packet policy for RFC 9287 section 3. The optional client pre-transport-parameter 0-RTT greasing path remains separate future work."
+    }
+  ]
+}

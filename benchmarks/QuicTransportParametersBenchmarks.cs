@@ -14,7 +14,8 @@ public class QuicTransportParametersBenchmarks
         ServerLarge = 1,
         ClientVariant = 2,
         ClientMinimal = 3,
-        ServerBoundary = 4,
+        ClientGreased = 4,
+        ServerBoundary = 5,
     }
 
     [Params(
@@ -22,6 +23,7 @@ public class QuicTransportParametersBenchmarks
         TransportParameterBenchmarkScenario.ServerLarge,
         TransportParameterBenchmarkScenario.ClientVariant,
         TransportParameterBenchmarkScenario.ClientMinimal,
+        TransportParameterBenchmarkScenario.ClientGreased,
         TransportParameterBenchmarkScenario.ServerBoundary)]
     public TransportParameterBenchmarkScenario Scenario { get; set; }
 
@@ -55,6 +57,10 @@ public class QuicTransportParametersBenchmarks
                 QuicTransportParameterRole.Server),
             TransportParameterBenchmarkScenario.ClientMinimal => (
                 CreateMinimalClientTransportParameters(),
+                QuicTransportParameterRole.Client,
+                QuicTransportParameterRole.Server),
+            TransportParameterBenchmarkScenario.ClientGreased => (
+                CreateGreasedClientTransportParameters(),
                 QuicTransportParameterRole.Client,
                 QuicTransportParameterRole.Server),
             TransportParameterBenchmarkScenario.ServerBoundary => (
@@ -163,6 +169,13 @@ public class QuicTransportParametersBenchmarks
             ActiveConnectionIdLimit = 2,
             InitialSourceConnectionId = [0x01],
         };
+    }
+
+    private static QuicTransportParameters CreateGreasedClientTransportParameters()
+    {
+        QuicTransportParameters parameters = CreateBaselineTransportParameters();
+        parameters.GreaseQuicBit = true;
+        return parameters;
     }
 
     private static QuicTransportParameters CreateBoundaryTransportParameters()

@@ -27,6 +27,17 @@ internal static class QuicPacketParser
     /// </summary>
     internal static bool TryParseLongHeader(ReadOnlySpan<byte> packet, out QuicLongHeaderPacket header)
     {
+        return TryParseLongHeader(packet, allowClearedFixedBit: false, out header);
+    }
+
+    /// <summary>
+    /// Parses a long-header-form packet into a span-backed view.
+    /// </summary>
+    internal static bool TryParseLongHeader(
+        ReadOnlySpan<byte> packet,
+        bool allowClearedFixedBit,
+        out QuicLongHeaderPacket header)
+    {
         if (!QuicPacketParsing.TryParseLongHeaderFields(
             packet,
             out byte headerControlBits,
@@ -40,6 +51,7 @@ internal static class QuicPacketParser
         }
 
         if (!QuicVersionNegotiation.IsVersionNegotiationVersion(version)
+            && !allowClearedFixedBit
             && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             header = default;
@@ -71,7 +83,18 @@ internal static class QuicPacketParser
     /// </summary>
     internal static bool TryParseShortHeader(ReadOnlySpan<byte> packet, out QuicShortHeaderPacket header)
     {
-        if (!IsRecognizableShortHeaderPacket(packet)
+        return TryParseShortHeader(packet, allowClearedFixedBit: false, out header);
+    }
+
+    /// <summary>
+    /// Parses a short-header-form packet into an opaque remainder view.
+    /// </summary>
+    internal static bool TryParseShortHeader(
+        ReadOnlySpan<byte> packet,
+        bool allowClearedFixedBit,
+        out QuicShortHeaderPacket header)
+    {
+        if (!IsRecognizableShortHeaderPacket(packet, allowClearedFixedBit)
             || (packet[0] & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {
             header = default;
@@ -120,6 +143,17 @@ internal static class QuicPacketParser
     /// </summary>
     internal static bool TryGetPacketNumberSpace(ReadOnlySpan<byte> packet, out QuicPacketNumberSpace packetNumberSpace)
     {
+        return TryGetPacketNumberSpace(packet, allowClearedFixedBit: false, out packetNumberSpace);
+    }
+
+    /// <summary>
+    /// Maps a packet header to its packet number space when the packet uses a supported QUIC packet type.
+    /// </summary>
+    internal static bool TryGetPacketNumberSpace(
+        ReadOnlySpan<byte> packet,
+        bool allowClearedFixedBit,
+        out QuicPacketNumberSpace packetNumberSpace)
+    {
         packetNumberSpace = default;
 
         if (!TryClassifyHeaderForm(packet, out QuicHeaderForm headerForm))
@@ -129,7 +163,7 @@ internal static class QuicPacketParser
 
         if (headerForm == QuicHeaderForm.Short)
         {
-            if (!IsRecognizableShortHeaderPacket(packet))
+            if (!IsRecognizableShortHeaderPacket(packet, allowClearedFixedBit))
             {
                 return false;
             }
@@ -138,7 +172,7 @@ internal static class QuicPacketParser
             return true;
         }
 
-        if (!TryParseLongHeader(packet, out QuicLongHeaderPacket header)
+        if (!TryParseLongHeader(packet, allowClearedFixedBit, out QuicLongHeaderPacket header)
             || header.IsVersionNegotiation
             || !QuicVersionNegotiation.IsVersion1(header.Version))
         {
@@ -153,6 +187,17 @@ internal static class QuicPacketParser
     /// </summary>
     internal static bool TryGetPacketLength(ReadOnlySpan<byte> datagram, out int packetLength)
     {
+        return TryGetPacketLength(datagram, allowClearedFixedBit: false, out packetLength);
+    }
+
+    /// <summary>
+    /// Computes the length of the leading QUIC packet inside a UDP datagram so coalesced packets can be split.
+    /// </summary>
+    internal static bool TryGetPacketLength(
+        ReadOnlySpan<byte> datagram,
+        bool allowClearedFixedBit,
+        out int packetLength)
+    {
         packetLength = default;
 
         if (!TryClassifyHeaderForm(datagram, out QuicHeaderForm headerForm))
@@ -162,7 +207,7 @@ internal static class QuicPacketParser
 
         if (headerForm == QuicHeaderForm.Short)
         {
-            if (!IsRecognizableShortHeaderPacket(datagram))
+            if (!IsRecognizableShortHeaderPacket(datagram, allowClearedFixedBit))
             {
                 return false;
             }
@@ -189,6 +234,7 @@ internal static class QuicPacketParser
             + sourceConnectionId.Length;
 
         if (!QuicVersionNegotiation.IsVersionNegotiationVersion(version)
+            && !allowClearedFixedBit
             && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             return false;
@@ -217,7 +263,7 @@ internal static class QuicPacketParser
 
         if (!QuicVersionNegotiation.IsVersion1(version))
         {
-            if (!TryParseLongHeader(datagram, out _))
+            if (!TryParseLongHeader(datagram, allowClearedFixedBit, out _))
             {
                 return false;
             }
@@ -255,7 +301,7 @@ internal static class QuicPacketParser
                 return packetLength <= datagram.Length;
 
             default:
-                if (!TryParseLongHeader(datagram, out _))
+                if (!TryParseLongHeader(datagram, allowClearedFixedBit, out _))
                 {
                     return false;
                 }
@@ -265,11 +311,11 @@ internal static class QuicPacketParser
         }
     }
 
-    private static bool IsRecognizableShortHeaderPacket(ReadOnlySpan<byte> packet)
+    private static bool IsRecognizableShortHeaderPacket(ReadOnlySpan<byte> packet, bool allowClearedFixedBit)
     {
         return !packet.IsEmpty
             && (packet[0] & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            && (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0;
+            && (allowClearedFixedBit || (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0);
     }
 
     private static bool TryMapLongHeaderToPacketNumberSpace(byte longPacketTypeBits, out QuicPacketNumberSpace packetNumberSpace)

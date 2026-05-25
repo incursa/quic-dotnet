@@ -328,6 +328,7 @@ internal sealed partial class QuicConnectionRuntime
                 datagram,
                 material,
                 GetExpectedReceivedPacketNumber(QuicPacketNumberSpace.ApplicationData),
+                PeerSupportsGreasedQuicBit,
                 out openedPacket,
                 out int payloadOffset,
                 out int payloadLength,

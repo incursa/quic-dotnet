@@ -1546,6 +1546,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             OriginalDestinationConnectionId = originalDestinationConnectionId.IsEmpty ? null : originalDestinationConnectionId.ToArray(),
             InitialSourceConnectionId = sourceConnectionId.ToArray(),
             RetrySourceConnectionId = retrySourceConnectionId.IsEmpty ? null : retrySourceConnectionId.ToArray(),
+            GreaseQuicBit = true,
             MaxDatagramFrameSize = options.MaxDatagramFrameSize > 0
                 ? (ulong)options.MaxDatagramFrameSize
                 : null,

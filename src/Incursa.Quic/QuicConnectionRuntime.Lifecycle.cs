@@ -149,6 +149,7 @@ internal sealed partial class QuicConnectionRuntime
             tlsState.OneRttProtectPacketProtectionMaterial.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             activePath?.SpinBitState.StoredValue ?? QuicConnectionPathSpinBitState.CreateInitial().StoredValue,
+            PeerSupportsGreasedQuicBit,
             out _,
             out byte[] protectedPacket))
         {

@@ -21,7 +21,7 @@ This ledger tracks open questions, ambiguities, and follow-up decisions for QUIC
 
 ## Future RFC Planning Gaps
 
-- `quic-bit-greasing-compatible-versioning-v2` is a planning gap for `rfc9287.txt` sections `3.1`-`3.2`, `rfc9368.txt` sections `2`-`2.5`, `4`-`7.3`, and `rfc9369.txt` sections `3`-`7`. Pressure class: `versioning` and `transport-core`. Current action is architecture planning only unless support is explicitly committed later. Allocation-sensitive seams: packet/version parsing and handshake version-selection flow, especially `QuicPacketParser` and `QuicConnectionRuntime`.
+- `quic-bit-greasing-compatible-versioning-v2` is a planning gap for `rfc9368.txt` sections `2`-`2.5`, `4`-`7.3`, and `rfc9369.txt` sections `3`-`7`. Pressure class: `versioning` and `transport-core`. Current action is architecture planning only unless support is explicitly committed later. Allocation-sensitive seams: packet/version parsing and handshake version-selection flow, especially `QuicPacketParser` and `QuicConnectionRuntime`.
 
 - `http3-adapter-boundary` is a planning gap for `rfc9114.txt` sections `3`, `6.2.1`-`6.2.2`, `7.2.4`-`7.2.4.1`, `7`, and `9`. Pressure class: `HTTP/3 adapter`, `stream adapter`, and `diagnostics/manageability`. Current action is architecture planning only unless support is explicitly committed later. Allocation-sensitive seams: effect emission and stream delivery across the transport boundary, especially `QuicConnectionRuntimeEventModels` and `QuicListenerHost`.
 

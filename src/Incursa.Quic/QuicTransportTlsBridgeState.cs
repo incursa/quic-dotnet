@@ -1600,6 +1600,7 @@ internal sealed class QuicTransportTlsBridgeState
             StatelessResetToken = CloneBytes(parameters.StatelessResetToken),
             MaxUdpPayloadSize = parameters.MaxUdpPayloadSize,
             MaxDatagramFrameSize = parameters.MaxDatagramFrameSize,
+            GreaseQuicBit = parameters.GreaseQuicBit,
             InitialMaxData = parameters.InitialMaxData,
             InitialMaxStreamDataBidiLocal = parameters.InitialMaxStreamDataBidiLocal,
             InitialMaxStreamDataBidiRemote = parameters.InitialMaxStreamDataBidiRemote,
@@ -1655,6 +1656,7 @@ internal sealed class QuicTransportTlsBridgeState
             && AreEquivalent(left.StatelessResetToken, right.StatelessResetToken)
             && left.MaxUdpPayloadSize == right.MaxUdpPayloadSize
             && left.MaxDatagramFrameSize == right.MaxDatagramFrameSize
+            && left.GreaseQuicBit == right.GreaseQuicBit
             && left.InitialMaxData == right.InitialMaxData
             && left.InitialMaxStreamDataBidiLocal == right.InitialMaxStreamDataBidiLocal
             && left.InitialMaxStreamDataBidiRemote == right.InitialMaxStreamDataBidiRemote

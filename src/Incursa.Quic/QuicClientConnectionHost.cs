@@ -401,6 +401,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
             InitialSourceConnectionId = routeConnectionId.ToArray(),
+            GreaseQuicBit = true,
             MaxDatagramFrameSize = options.MaxDatagramFrameSize > 0
                 ? (ulong)options.MaxDatagramFrameSize
                 : null,

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9287-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9287 Grease-Quic-Bit Transport and Packet Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the implementation boundary for RFC 9287 section 3: transport-parameter plumbing, negotiated QUIC-bit send/receive policy, and packet-opening guards.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9287",
+    "WI-QUIC-RFC9287-0001",
+    "VER-QUIC-RFC9287-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9287-S3-0001",
+    "REQ-QUIC-RFC9287-S3-0002",
+    "REQ-QUIC-RFC9287-S3-0003",
+    "REQ-QUIC-RFC9287-S3-0004"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "tests/Incursa.Quic.Tests/QuicGreaseQuicBitFuzzSupport.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287",
+    "benchmarks/QuicHeaderParsingBenchmarks.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs"
+  ],
+  "design_summary": "The RFC 9287 slice adds a boolean grease_quic_bit transport-parameter field to `QuicTransportParameters` and teaches the transport-parameter codec to parse and format codepoint 0x2ab2 as an empty parameter. The client and server bootstrap paths advertise the parameter by default so the connection runtime can negotiate grease support without a separate public API toggle. `QuicTransportTlsBridgeState` clones and compares the field so local and peer transport-parameter snapshots remain stable across commits. The runtime keeps strict parser defaults for existing RFC 9000 tests, but it uses greasing-aware packet-parser overloads in ingress routing and packet-number-space discovery so bit-0 packets can be routed and then accepted or rejected at the connection boundary. `QuicInitialPacketProtection`, `QuicHandshakePacketProtection`, and `QuicHandshakeFlowCoordinator` own the packet-opening and packet-building policy: received bit-0 packets are accepted only when the local endpoint advertised grease_quic_bit, and outbound packets clear the QUIC Bit only after the peer's transport parameters carrying grease_quic_bit have been committed. Focused fuzz support and benchmark coverage live beside the requirement homes so the proof matches the hot paths. The optional client pre-transport-parameter 0-RTT greasing path remains out of scope for this slice.",
+  "risks": [
+    "A broad parser-default change would regress existing RFC 9000 fixed-bit rejection tests, so greasing stays opt-in at the runtime call sites.",
+    "Send-side packet assembly spans several helpers; if the fixed-bit policy is threaded inconsistently, protected and unprotected packet forms will diverge.",
+    "The optional early 0-RTT greasing path is intentionally out of scope and must not be inferred from the negotiated post-transport-parameter policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This architecture slice stays inside transport-core. It does not introduce HTTP/3, QUIC versioning v2, or the token-gated early 0-RTT greasing path from RFC 9287's optional client guidance."
+    },
+    {
+      "heading": "Policy Split",
+      "content": "Receive-side acceptance is keyed to the local endpoint's advertised grease_quic_bit transport parameter. Outbound fixed-bit clearing is keyed to the peer's committed grease_quic_bit transport parameter."
+    }
+  ]
+}

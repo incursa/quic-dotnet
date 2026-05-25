@@ -100,6 +100,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
+        return TryOpenHandshakePacket(
+            protectedPacket,
+            material,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
+
+    /// <summary>
+    /// Opens a protected Handshake packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    public bool TryOpenHandshakePacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
         openedPacket = [];
         payloadOffset = default;
         payloadLength = default;
@@ -112,7 +132,11 @@ internal sealed class QuicHandshakeFlowCoordinator
         byte[] openedPacketBuffer = QuicBufferPool.RentBytes(protectedPacket.Length);
         try
         {
-            if (!protection.TryOpen(protectedPacket, openedPacketBuffer, out int openedBytesWritten))
+            if (!protection.TryOpen(
+                    protectedPacket,
+                    openedPacketBuffer,
+                    allowClearedFixedBit,
+                    out int openedBytesWritten))
             {
                 return false;
             }
@@ -428,6 +452,25 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacket(
+            applicationPayload,
+            material,
+            keyPhase,
+            spinBit,
+            greaseQuicBit: false,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
         packetNumber = default;
 
@@ -449,6 +492,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             applicationPayload,
             keyPhase,
             spinBit,
+            greaseQuicBit,
             currentPacketNumber,
             out byte[] plaintextPacket,
             out int packetNumberOffset,
@@ -496,6 +540,25 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out QuicBufferLease protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacketLease(
+            applicationPayload,
+            material,
+            keyPhase,
+            spinBit,
+            greaseQuicBit: false,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketLease(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out QuicBufferLease protectedPacket)
+    {
         protectedPacket = default;
         packetNumber = default;
 
@@ -517,6 +580,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 applicationPayload,
                 keyPhase,
                 spinBit,
+                greaseQuicBit,
                 currentPacketNumber,
                 out QuicBufferLease plaintextPacket,
                 out int packetNumberOffset,
@@ -574,6 +638,27 @@ internal sealed class QuicHandshakeFlowCoordinator
         out ulong packetNumber,
         out byte[] protectedPacket)
     {
+        return TryBuildProtectedApplicationDataPacketForRetransmission(
+            applicationPayload,
+            minimumPacketNumberExclusive,
+            material,
+            keyPhase,
+            spinBit,
+            greaseQuicBit: false,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketForRetransmission(
+        ReadOnlySpan<byte> applicationPayload,
+        ulong minimumPacketNumberExclusive,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out byte[] protectedPacket)
+    {
         protectedPacket = [];
         packetNumber = default;
 
@@ -593,6 +678,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             material,
             keyPhase,
             spinBit,
+            greaseQuicBit,
             out packetNumber,
             out protectedPacket);
     }
@@ -675,6 +761,28 @@ internal sealed class QuicHandshakeFlowCoordinator
         return TryOpenProtectedApplicationDataPacket(
             protectedPacket,
             material,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out _);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            allowClearedFixedBit,
             out openedPacket,
             out payloadOffset,
             out payloadLength,
@@ -696,6 +804,30 @@ internal sealed class QuicHandshakeFlowCoordinator
             protectedPacket,
             material,
             expectedPacketNumber,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out _);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet using the expected packet number to reconstruct truncated packet numbers before AEAD opening.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            expectedPacketNumber,
+            allowClearedFixedBit,
             out openedPacket,
             out payloadOffset,
             out payloadLength,
@@ -717,6 +849,30 @@ internal sealed class QuicHandshakeFlowCoordinator
             protectedPacket,
             material,
             expectedPacketNumber: null,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out keyPhase);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet, returns the unprotected packet bytes plus payload layout, and reports the observed Key Phase bit.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            expectedPacketNumber: null,
+            allowClearedFixedBit,
             out openedPacket,
             out payloadOffset,
             out payloadLength,
@@ -739,6 +895,31 @@ internal sealed class QuicHandshakeFlowCoordinator
             protectedPacket,
             material,
             (ulong?)expectedPacketNumber,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out keyPhase);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet, returns the unprotected packet bytes plus payload layout, and reports the observed Key Phase bit.
+    /// </summary>
+    public bool TryOpenProtectedApplicationDataPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
+        return TryOpenProtectedApplicationDataPacket(
+            protectedPacket,
+            material,
+            (ulong?)expectedPacketNumber,
+            allowClearedFixedBit,
             out openedPacket,
             out payloadOffset,
             out payloadLength,
@@ -749,6 +930,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
         ulong? expectedPacketNumber,
+        bool allowClearedFixedBit,
         out byte[] openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -777,6 +959,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     sourceConnectionIdLength,
                     packetNumberLength,
                     expectedPacketNumber,
+                    allowClearedFixedBit,
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
@@ -800,6 +983,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 destinationConnectionIdLength,
                 packetNumberLength,
                 expectedPacketNumber,
+                allowClearedFixedBit,
                 out openedPacket,
                 out payloadOffset,
                 out payloadLength,
@@ -816,6 +1000,30 @@ internal sealed class QuicHandshakeFlowCoordinator
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
         ulong expectedPacketNumber,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength,
+        out bool keyPhase)
+    {
+        return TryOpenProtectedApplicationDataPacketLease(
+            protectedPacket,
+            material,
+            expectedPacketNumber,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength,
+            out keyPhase);
+    }
+
+    /// <summary>
+    /// Opens a protected 1-RTT short-header packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    internal bool TryOpenProtectedApplicationDataPacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        ulong expectedPacketNumber,
+        bool allowClearedFixedBit,
         out QuicBufferLease openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -844,6 +1052,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                     sourceConnectionIdLength,
                     packetNumberLength,
                     expectedPacketNumber,
+                    allowClearedFixedBit,
                     out openedPacket,
                     out payloadOffset,
                     out payloadLength,
@@ -867,6 +1076,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 destinationConnectionIdLength,
                 packetNumberLength,
                 expectedPacketNumber,
+                allowClearedFixedBit,
                 out openedPacket,
                 out payloadOffset,
                 out payloadLength,
@@ -933,6 +1143,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             protectedPacket,
             protection,
             requireZeroTokenLength: false,
+            allowClearedFixedBit: false,
             out openedPacket,
             out payloadOffset,
             out payloadLength);
@@ -949,6 +1160,28 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
+        return TryOpenInitialPacket(
+            protectedPacket,
+            protection,
+            requireZeroTokenLength,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
+
+    /// <summary>
+    /// Opens a protected Initial packet and returns the unprotected packet bytes plus payload layout.
+    /// </summary>
+    public bool TryOpenInitialPacket(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicInitialPacketProtection protection,
+        bool requireZeroTokenLength,
+        bool allowClearedFixedBit,
+        out byte[] openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
         openedPacket = [];
         payloadOffset = default;
         payloadLength = default;
@@ -956,7 +1189,11 @@ internal sealed class QuicHandshakeFlowCoordinator
         byte[] openedPacketBuffer = QuicBufferPool.RentBytes(protectedPacket.Length);
         try
         {
-            if (!protection.TryOpen(protectedPacket, openedPacketBuffer, out int openedBytesWritten))
+            if (!protection.TryOpen(
+                protectedPacket,
+                openedPacketBuffer,
+                allowClearedFixedBit,
+                out int openedBytesWritten))
             {
                 return false;
             }
@@ -1925,6 +2162,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
         bool spinBit,
+        bool greaseQuicBit,
         ulong packetNumber,
         out byte[] plaintextPacket,
         out int packetNumberOffset,
@@ -1941,15 +2179,15 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
-        packetNumberOffset = 1 + destinationConnectionId.Length;
-        bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
+            packetNumberOffset = 1 + destinationConnectionId.Length;
+            bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
 
-        byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
-        packet[0] = (byte)(
-            QuicPacketHeaderBits.FixedBitMask
-            | (spinBitEnabled ? QuicPacketHeaderBits.SpinBitMask : 0)
-            | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
-            | (packetNumberLength - 1));
+            byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
+            packet[0] = (byte)(
+                (greaseQuicBit ? 0 : QuicPacketHeaderBits.FixedBitMask)
+                | (spinBitEnabled ? QuicPacketHeaderBits.SpinBitMask : 0)
+                | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
+                | (packetNumberLength - 1));
         destinationConnectionId.CopyTo(packet.AsSpan(1));
 
         BinaryPrimitives.WriteUInt32BigEndian(
@@ -1971,6 +2209,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         ReadOnlySpan<byte> applicationPayload,
         bool keyPhase,
         bool spinBit,
+        bool greaseQuicBit,
         ulong packetNumber,
         out QuicBufferLease plaintextPacket,
         out int packetNumberOffset,
@@ -1995,7 +2234,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         {
             Span<byte> packet = plaintextPacket.Span;
             packet[0] = (byte)(
-                QuicPacketHeaderBits.FixedBitMask
+                (greaseQuicBit ? 0 : QuicPacketHeaderBits.FixedBitMask)
                 | (spinBitEnabled ? QuicPacketHeaderBits.SpinBitMask : 0)
                 | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
                 | (packetNumberLength - 1));
@@ -2230,6 +2469,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         int connectionIdLength,
         int packetNumberLength,
         ulong? expectedPacketNumber,
+        bool allowClearedFixedBit,
         out byte[] openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -2273,7 +2513,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask));
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) != 0
-            || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
+            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
             || ((unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1) != packetNumberLength
             || (unmaskedFirstByte & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {
@@ -2332,6 +2572,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         int connectionIdLength,
         int packetNumberLength,
         ulong? expectedPacketNumber,
+        bool allowClearedFixedBit,
         out QuicBufferLease openedPacket,
         out int payloadOffset,
         out int payloadLength,
@@ -2375,7 +2616,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.ShortTypeSpecificBitsMask));
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) != 0
-            || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
+            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
             || ((unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1) != packetNumberLength
             || (unmaskedFirstByte & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {

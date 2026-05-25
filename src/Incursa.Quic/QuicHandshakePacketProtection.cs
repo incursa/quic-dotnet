@@ -68,6 +68,22 @@ internal sealed class QuicHandshakePacketProtection
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryProtect(
+            plaintextPacket,
+            destination,
+            allowClearedFixedBit: false,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Protects a Handshake packet using the stored Handshake material.
+    /// </summary>
+    public bool TryProtect(
+        ReadOnlySpan<byte> plaintextPacket,
+        Span<byte> destination,
+        bool allowClearedFixedBit,
+        out int bytesWritten)
+    {
         bytesWritten = default;
 
         if (!TryParseHandshakePacketLayout(
@@ -79,7 +95,7 @@ internal sealed class QuicHandshakePacketProtection
             return false;
         }
 
-        if (!TryValidatePlaintextHandshakeHeader(headerControlBits))
+        if (!TryValidatePlaintextHandshakeHeader(headerControlBits, allowClearedFixedBit))
         {
             return false;
         }
@@ -153,6 +169,22 @@ internal sealed class QuicHandshakePacketProtection
         Span<byte> destination,
         out int bytesWritten)
     {
+        return TryOpen(
+            protectedPacket,
+            destination,
+            allowClearedFixedBit: false,
+            out bytesWritten);
+    }
+
+    /// <summary>
+    /// Opens a Handshake packet using the stored Handshake material.
+    /// </summary>
+    public bool TryOpen(
+        ReadOnlySpan<byte> protectedPacket,
+        Span<byte> destination,
+        bool allowClearedFixedBit,
+        out int bytesWritten)
+    {
         bytesWritten = default;
 
         if (!TryParseHandshakePacketLayout(
@@ -186,7 +218,7 @@ internal sealed class QuicHandshakePacketProtection
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
+            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
             || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Handshake)
         {
             return false;
@@ -272,9 +304,10 @@ internal sealed class QuicHandshakePacketProtection
         return true;
     }
 
-    private static bool TryValidatePlaintextHandshakeHeader(byte headerControlBits)
+    private static bool TryValidatePlaintextHandshakeHeader(byte headerControlBits, bool allowClearedFixedBit)
     {
-        if ((headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
+        if (!allowClearedFixedBit
+            && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
             return false;
         }

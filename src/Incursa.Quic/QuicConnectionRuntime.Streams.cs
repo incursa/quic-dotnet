@@ -1476,6 +1476,7 @@ internal sealed partial class QuicConnectionRuntime
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             currentPath.SpinBitState.StoredValue,
+            PeerSupportsGreasedQuicBit,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -1630,6 +1631,7 @@ internal sealed partial class QuicConnectionRuntime
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             pathSpinBit,
+            PeerSupportsGreasedQuicBit,
             out ulong packetNumber,
             out protectedPacket))
         {
@@ -3186,6 +3188,7 @@ internal sealed partial class QuicConnectionRuntime
                         retransmission.PacketBytes.Span,
                         tlsState.OneRttProtectPacketProtectionMaterial.Value,
                         expectedPacketNumber: 0,
+                        PeerSupportsGreasedQuicBit,
                         out openedPacket,
                         out int payloadOffset,
                         out int payloadLength,

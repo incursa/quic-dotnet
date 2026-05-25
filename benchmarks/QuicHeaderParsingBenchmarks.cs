@@ -12,6 +12,7 @@ public class QuicHeaderParsingBenchmarks
     private byte[] longHeader = [];
     private byte[] longHeaderLargePayload = [];
     private byte[] shortHeader = [];
+    private byte[] shortHeaderGreased = [];
     private byte[] truncatedLongHeader = [];
     private byte[] versionNegotiationHeader = [];
     private byte[] versionNegotiationDestination = [];
@@ -29,6 +30,19 @@ public class QuicHeaderParsingBenchmarks
         shortHeader = new byte[]
         {
             0x40,
+            0x11,
+            0x22,
+            0x33,
+            0x44,
+            0x55,
+            0x66,
+            0x77,
+            0x88,
+        };
+
+        shortHeaderGreased = new byte[]
+        {
+            0x00,
             0x11,
             0x22,
             0x33,
@@ -188,6 +202,17 @@ public class QuicHeaderParsingBenchmarks
     public int ParseShortHeader()
     {
         return QuicPacketParser.TryParseShortHeader(shortHeader, out QuicShortHeaderPacket header)
+            ? header.Remainder.Length
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures short-header parsing when the greased fixed-bit-0 path is explicitly allowed.
+    /// </summary>
+    [Benchmark]
+    public int ParseShortHeaderGreaseAware()
+    {
+        return QuicPacketParser.TryParseShortHeader(shortHeaderGreased, true, out QuicShortHeaderPacket header)
             ? header.Remainder.Length
             : -1;
     }
