@@ -54,7 +54,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         bool enableServerResumptionTickets = false,
         bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
-        bool emitKeyLogSecrets = false)
+        bool emitKeyLogSecrets = false,
+        uint transportVersion = QuicVersionNegotiation.Version1)
     {
         Role = role;
         this.bridgeState = bridgeState ?? new QuicTransportTlsBridgeState(role);
@@ -68,7 +69,8 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             enableServerResumptionTickets,
             enableServerEarlyData,
             serverResumptionTicketStore,
-            emitKeyLogSecrets);
+            emitKeyLogSecrets,
+            transportVersion);
         this.clientCertificatePolicySnapshot = clientCertificatePolicySnapshot;
         this.clientAuthenticationOptions = clientAuthenticationOptions;
         this.emitKeyLogSecrets = emitKeyLogSecrets;

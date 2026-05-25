@@ -76,7 +76,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         connection = new QuicConnection(runtime, settings.Options, this);
         handle = endpoint.AllocateConnectionHandle();
 
-        if (!runtime.TryConfigureInitialPacketProtection(initialDestinationConnectionId)
+        if (!runtime.TryConfigureInitialPacketProtection(runtime.VersionProfile.SelectedVersion, initialDestinationConnectionId)
             || !runtime.TrySetBootstrapOutboundPath(pathIdentity)
             || !runtime.TrySetHandshakeSourceConnectionId(routeConnectionId))
         {
@@ -117,7 +117,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             handle,
             new QuicConnectionHandshakeBootstrapRequestedEvent(
                 runtime.Clock.Ticks,
-                CreateLocalTransportParameters(settings.Options, routeConnectionId),
+                CreateLocalTransportParameters(settings.Options, settings.SupportedVersions, routeConnectionId),
                 settings.InitialAddressValidationToken)))
         {
             throw new InvalidOperationException("The client runtime could not bootstrap the handshake.");
@@ -257,6 +257,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
         if (ingressResult.HandlingKind != QuicConnectionEndpointHandlingKind.Retry
             || !QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                runtime.VersionProfile.SelectedVersion,
                 initialDestinationConnectionId,
                 datagram.Span,
                 out QuicRetryBootstrapMetadata retryMetadata))
@@ -282,8 +283,13 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         if (retrySourceConnectionIdFromRetry is null
             || retryTokenFromRetry is null
             || !QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket sentPacket)
-            || sentPacket.Version != 1
-            || sentPacket.LongPacketTypeBits != QuicLongPacketTypeBits.Initial
+            || sentPacket.Version != runtime.VersionProfile.SelectedVersion
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(sentPacket.Version)
+            || !QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                sentPacket.Version,
+                sentPacket.LongPacketTypeBits,
+                out QuicLongPacketType packetType)
+            || packetType != QuicLongPacketType.Initial
             || !sentPacket.DestinationConnectionId.SequenceEqual(retrySourceConnectionIdFromRetry)
             || !TryParseInitialRetryToken(sentPacket.VersionSpecificData, out byte[] replayToken))
         {
@@ -386,9 +392,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private static QuicTransportParameters CreateLocalTransportParameters(
         QuicClientConnectionOptions options,
+        uint[]? supportedVersions,
         ReadOnlySpan<byte> routeConnectionId)
     {
         QuicReceiveWindowSizes receiveWindowSizes = options.InitialReceiveWindowSizes;
+        uint[] availableVersions = supportedVersions is { Length: > 0 }
+            ? (uint[])supportedVersions.Clone()
+            : [QuicVersionNegotiation.Version1];
+        uint chosenVersion = availableVersions[0];
 
         return new QuicTransportParameters
         {
@@ -401,6 +412,11 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams),
             ActiveConnectionIdLimit = MinimumActiveConnectionIdLimit,
             InitialSourceConnectionId = routeConnectionId.ToArray(),
+            VersionInformation = new QuicVersionInformation
+            {
+                ChosenVersion = chosenVersion,
+                AvailableVersions = availableVersions,
+            },
             GreaseQuicBit = true,
             MaxDatagramFrameSize = options.MaxDatagramFrameSize > 0
                 ? (ulong)options.MaxDatagramFrameSize

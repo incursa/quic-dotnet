@@ -280,7 +280,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         if (!TryBuildLongHeaderControlPlaintextPacket(
-            QuicLongPacketTypeBits.Handshake,
+            QuicLongPacketType.Handshake,
             framePayload,
             destinationConnectionId,
             token: ReadOnlySpan<byte>.Empty,
@@ -1430,7 +1430,7 @@ internal sealed class QuicHandshakeFlowCoordinator
         }
 
         if (!TryBuildLongHeaderControlPlaintextPacket(
-            QuicLongPacketTypeBits.Initial,
+            QuicLongPacketType.Initial,
             framePayload,
             destinationConnectionId,
             token,
@@ -1717,7 +1717,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 packetNumber = currentPacketNumber;
                 byte headerControlBits = (byte)(
                     QuicPacketHeaderBits.FixedBitMask
-                    | (QuicLongPacketTypeBits.Handshake << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+                    | (QuicVersionNegotiation.GetLongHeaderPacketTypeBits(initialPacketVersion, QuicLongPacketType.Handshake) << QuicPacketHeaderBits.LongPacketTypeBitsShift)
                     | (packetNumberLength - 1));
 
                 plaintextPacket = BuildLongHeaderPacket(
@@ -1744,7 +1744,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     }
 
     private bool TryBuildLongHeaderControlPlaintextPacket(
-        byte longPacketTypeBits,
+        QuicLongPacketType packetType,
         ReadOnlySpan<byte> framePayload,
         ReadOnlySpan<byte> destinationConnectionId,
         ReadOnlySpan<byte> token,
@@ -1765,6 +1765,7 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         int packetNumberLength = HandshakePacketNumberLength;
         int paddedPayloadLength = Math.Max(framePayload.Length, HandshakeMinimumProtectedPayloadLength);
+        byte longPacketTypeBits = QuicVersionNegotiation.GetLongHeaderPacketTypeBits(initialPacketVersion, packetType);
         int lengthFieldBytesWritten;
         Span<byte> lengthFieldProbe = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
         Span<byte> tokenLengthProbe = stackalloc byte[QuicVariableLengthInteger.MaxEncodedLength];
@@ -1955,7 +1956,7 @@ internal sealed class QuicHandshakeFlowCoordinator
                 packetNumber = currentPacketNumber;
                 byte headerControlBits = (byte)(
                     QuicPacketHeaderBits.FixedBitMask
-                    | (QuicLongPacketTypeBits.Initial << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+                    | (QuicVersionNegotiation.GetLongHeaderPacketTypeBits(initialPacketVersion, QuicLongPacketType.Initial) << QuicPacketHeaderBits.LongPacketTypeBitsShift)
                     | (packetNumberLength - 1));
 
                 plaintextPacket = BuildLongHeaderPacket(
@@ -2038,8 +2039,12 @@ internal sealed class QuicHandshakeFlowCoordinator
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || version != QuicVersionNegotiation.Version1
-            || ((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Handshake
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(version)
+            || !QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                version,
+                (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+                out QuicLongPacketType longPacketType)
+            || longPacketType != QuicLongPacketType.Handshake
             || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong lengthFieldValue, out int lengthBytes))
         {
             return false;
@@ -2123,8 +2128,12 @@ internal sealed class QuicHandshakeFlowCoordinator
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || version != QuicVersionNegotiation.Version1
-            || ((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Initial
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(version)
+            || !QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                version,
+                (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+                out QuicLongPacketType longPacketType)
+            || longPacketType != QuicLongPacketType.Initial
             || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
             || (requireZeroTokenLength && tokenLength != 0))
         {
@@ -2324,12 +2333,12 @@ internal sealed class QuicHandshakeFlowCoordinator
 
             byte headerControlBits = (byte)(
                 QuicPacketHeaderBits.FixedBitMask
-                | (QuicLongPacketTypeBits.ZeroRtt << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+                | (QuicVersionNegotiation.GetLongHeaderPacketTypeBits(initialPacketVersion, QuicLongPacketType.ZeroRtt) << QuicPacketHeaderBits.LongPacketTypeBitsShift)
                 | (packetNumberLength - 1));
 
             plaintextPacket = BuildLongHeaderPacket(
                 headerControlBits,
-                QuicVersionNegotiation.Version1,
+                initialPacketVersion,
                 effectiveDestinationConnectionId,
                 sourceConnectionId,
                 token: ReadOnlySpan<byte>.Empty,
@@ -2702,8 +2711,12 @@ internal sealed class QuicHandshakeFlowCoordinator
                 out _,
                 out _,
                 out ReadOnlySpan<byte> versionSpecificData)
-            || version != QuicVersionNegotiation.Version1
-            || ((protectedHeaderControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.ZeroRtt
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(version)
+            || !QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                version,
+                (byte)((protectedHeaderControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+                out QuicLongPacketType longPacketType)
+            || longPacketType != QuicLongPacketType.ZeroRtt
             || !QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong lengthFieldValue, out int lengthFieldBytes))
         {
             return false;
@@ -2737,7 +2750,10 @@ internal sealed class QuicHandshakeFlowCoordinator
         int packetNumberLength = (unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1;
         if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
             || (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0
-            || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.ZeroRtt
+            || !QuicVersionNegotiation.IsLongHeaderPacketType(
+                version,
+                (byte)((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+                QuicLongPacketType.ZeroRtt)
             || (unmaskedFirstByte & QuicPacketHeaderBits.LongReservedBitsMask) != 0
             || packetNumberLength < 1
             || packetNumberLength > ApplicationPacketNumberLength)

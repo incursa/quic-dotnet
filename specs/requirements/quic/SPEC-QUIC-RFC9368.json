@@ -1,0 +1,93 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9368",
+  "artifact_type": "specification",
+  "title": "QUIC Compatible Version Negotiation Floor (RFC 9368)",
+  "domain": "quic",
+  "capability": "transport",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "purpose": "Capture the RFC 9368 version_information transport-parameter floor and authenticated handshake validation that the repository already implements.",
+  "scope": "This specification covers the RFC 9368 version_information transport-parameter floor: endpoints format and parse authenticated Version Information, client-sent lists include the chosen version, malformed values are rejected, and the authenticated chosen-version checks keep the connection version consistent. It does not cover the full compatible-version runtime-selection flow that would avoid an extra round trip; that follow-up remains a separate future slice.",
+  "context": "RFC 9368 defines authenticated Version Information for QUIC version 1 and uses it to prevent downgrade attacks. The repository already carries the transport-parameter, bridge-state, and resumption snapshot plumbing for the floor, but the full compatible-version restart/selection behavior is still tracked separately in the gap ledger.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9368-0001",
+    "WI-QUIC-RFC9368-0001",
+    "VER-QUIC-RFC9368-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9368-S3-0001",
+      "title": "Emit authenticated Version Information",
+      "statement": "An endpoint that supports compatible version negotiation MUST encode Version Information in the `version_information` transport parameter with a non-zero Chosen Version and a list of Available Versions that includes the Chosen Version when the endpoint acts as a client.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §3",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9368-S3-0002",
+      "title": "Reject malformed Version Information",
+      "statement": "An endpoint that receives Version Information MUST treat zero Chosen Version values, zero Available Version values, misaligned payload lengths, and a client-sent list that omits the Chosen Version as parsing failures.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §3",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
+        ]
+      }
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This slice is intentionally narrow. It owns the authenticated Version Information floor and the transport-parameter snapshot paths that keep the encoded data stable. The full compatible-version restart/selection behavior from RFC 9368 Section 4 remains separate future work."
+    }
+  ]
+}

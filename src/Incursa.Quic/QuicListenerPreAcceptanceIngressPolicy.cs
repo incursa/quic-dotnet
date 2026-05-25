@@ -50,19 +50,27 @@ internal static class QuicListenerPreAcceptanceIngressPolicy
             return QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation;
         }
 
-        if (longHeader.Version != QuicVersionNegotiation.Version1)
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(longHeader.Version))
         {
             return QuicListenerPreAcceptanceDatagramAction.Drop;
         }
 
-        if (longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Initial)
+        if (!QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            longHeader.Version,
+            longHeader.LongPacketTypeBits,
+            out QuicLongPacketType packetType))
+        {
+            return QuicListenerPreAcceptanceDatagramAction.Drop;
+        }
+
+        if (packetType == QuicLongPacketType.Initial)
         {
             return datagram.Length < QuicVersionNegotiation.Version1MinimumDatagramPayloadSize
                 ? QuicListenerPreAcceptanceDatagramAction.SendProtocolViolationClose
                 : QuicListenerPreAcceptanceDatagramAction.AdmitInitial;
         }
 
-        if (longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt)
+        if (packetType == QuicLongPacketType.ZeroRtt)
         {
             if (retryBootstrapEnabled)
             {

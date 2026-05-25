@@ -19,6 +19,16 @@ internal static class QuicVersionNegotiation
     internal const uint Version1 = 0x00000001;
 
     /// <summary>
+    /// The QUIC version number assigned to RFC 9369 version 2.
+    /// </summary>
+    internal const uint Version2 = 0x6B3343CF;
+
+    private const byte Version2InitialLongPacketTypeBits = 0x01;
+    private const byte Version2ZeroRttLongPacketTypeBits = 0x02;
+    private const byte Version2HandshakeLongPacketTypeBits = 0x03;
+    private const byte Version2RetryLongPacketTypeBits = 0x00;
+
+    /// <summary>
     /// The minimum UDP payload size required for QUIC version 1 Initial datagrams.
     /// RFC 9000 requires a 1200-byte Initial payload to avoid fragmentation assumptions.
     /// </summary>
@@ -71,12 +81,20 @@ internal static class QuicVersionNegotiation
     }
 
     /// <summary>
+    /// Gets whether the supplied version is one of the supported handshake/packet-crypto versions.
+    /// </summary>
+    internal static bool IsSupportedTransportVersion(uint version)
+    {
+        return version == Version1 || version == Version2;
+    }
+
+    /// <summary>
     /// Gets the maximum connection-id length allowed by the current version policy.
     /// Version 1 keeps the RFC 9000 limit; later versions remain version-neutral here.
     /// </summary>
     internal static int GetLongHeaderConnectionIdLengthLimit(uint version)
     {
-        return IsVersion1(version) ? Version1MaximumConnectionIdLength : byte.MaxValue;
+        return IsSupportedTransportVersion(version) ? Version1MaximumConnectionIdLength : byte.MaxValue;
     }
 
     /// <summary>
@@ -84,7 +102,7 @@ internal static class QuicVersionNegotiation
     /// </summary>
     internal static int GetMinimumInitialDatagramPayloadSize(uint version)
     {
-        return IsVersion1(version) ? Version1MinimumDatagramPayloadSize : 0;
+        return IsSupportedTransportVersion(version) ? Version1MinimumDatagramPayloadSize : 0;
     }
 
     /// <summary>
@@ -281,8 +299,8 @@ internal static class QuicVersionNegotiation
         ReadOnlySpan<uint> clientSupportedVersions,
         bool hasSuccessfullyProcessedAnotherPacket)
     {
-        return SupportsOnlySelectedVersion(clientSupportedVersions, selectedVersion)
-            && !ShouldDiscardVersionNegotiation(packet, selectedVersion, hasSuccessfullyProcessedAnotherPacket);
+        _ = clientSupportedVersions;
+        return !ShouldDiscardVersionNegotiation(packet, selectedVersion, hasSuccessfullyProcessedAnotherPacket);
     }
 
     /// <summary>
@@ -309,20 +327,109 @@ internal static class QuicVersionNegotiation
         return (template & ReservedVersionTemplateMask) | ReservedVersionPattern;
     }
 
-    private static bool SupportsOnlySelectedVersion(ReadOnlySpan<uint> clientSupportedVersions, uint selectedVersion)
-    {
-        return clientSupportedVersions.Length == 1 && clientSupportedVersions[0] == selectedVersion;
-    }
-
     private static bool TryGetKnownMinimumDatagramPayloadSize(uint version, out int minimumDatagramPayloadSize)
     {
-        if (IsVersion1(version))
+        if (IsSupportedTransportVersion(version))
         {
             minimumDatagramPayloadSize = Version1MinimumDatagramPayloadSize;
             return true;
         }
 
         minimumDatagramPayloadSize = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the logical long-header packet type bits for a specific version.
+    /// </summary>
+    internal static byte GetLongHeaderPacketTypeBits(uint version, QuicLongPacketType packetType)
+    {
+        if (version == Version1)
+        {
+            return packetType switch
+            {
+                QuicLongPacketType.Initial => QuicLongPacketTypeBits.Initial,
+                QuicLongPacketType.ZeroRtt => QuicLongPacketTypeBits.ZeroRtt,
+                QuicLongPacketType.Handshake => QuicLongPacketTypeBits.Handshake,
+                QuicLongPacketType.Retry => QuicLongPacketTypeBits.Retry,
+                _ => throw new ArgumentOutOfRangeException(nameof(packetType)),
+            };
+        }
+
+        if (version == Version2)
+        {
+            return packetType switch
+            {
+                QuicLongPacketType.Initial => Version2InitialLongPacketTypeBits,
+                QuicLongPacketType.ZeroRtt => Version2ZeroRttLongPacketTypeBits,
+                QuicLongPacketType.Handshake => Version2HandshakeLongPacketTypeBits,
+                QuicLongPacketType.Retry => Version2RetryLongPacketTypeBits,
+                _ => throw new ArgumentOutOfRangeException(nameof(packetType)),
+            };
+        }
+
+        throw new NotSupportedException($"Version 0x{version:X8} does not define supported long-header packet types.");
+    }
+
+    /// <summary>
+    /// Gets whether the encoded long-header packet type bits match the requested logical packet type for the version.
+    /// </summary>
+    internal static bool IsLongHeaderPacketType(uint version, byte packetTypeBits, QuicLongPacketType packetType)
+    {
+        return IsSupportedTransportVersion(version)
+            && packetTypeBits == GetLongHeaderPacketTypeBits(version, packetType);
+    }
+
+    /// <summary>
+    /// Maps version-specific long-header packet type bits back to their logical packet type.
+    /// </summary>
+    internal static bool TryGetLongHeaderPacketType(uint version, byte packetTypeBits, out QuicLongPacketType packetType)
+    {
+        if (version == Version1)
+        {
+            switch (packetTypeBits)
+            {
+                case QuicLongPacketTypeBits.Initial:
+                    packetType = QuicLongPacketType.Initial;
+                    return true;
+                case QuicLongPacketTypeBits.ZeroRtt:
+                    packetType = QuicLongPacketType.ZeroRtt;
+                    return true;
+                case QuicLongPacketTypeBits.Handshake:
+                    packetType = QuicLongPacketType.Handshake;
+                    return true;
+                case QuicLongPacketTypeBits.Retry:
+                    packetType = QuicLongPacketType.Retry;
+                    return true;
+                default:
+                    packetType = default;
+                    return false;
+            }
+        }
+
+        if (version == Version2)
+        {
+            switch (packetTypeBits)
+            {
+                case Version2InitialLongPacketTypeBits:
+                    packetType = QuicLongPacketType.Initial;
+                    return true;
+                case Version2ZeroRttLongPacketTypeBits:
+                    packetType = QuicLongPacketType.ZeroRtt;
+                    return true;
+                case Version2HandshakeLongPacketTypeBits:
+                    packetType = QuicLongPacketType.Handshake;
+                    return true;
+                case Version2RetryLongPacketTypeBits:
+                    packetType = QuicLongPacketType.Retry;
+                    return true;
+                default:
+                    packetType = default;
+                    return false;
+            }
+        }
+
+        packetType = default;
         return false;
     }
 }

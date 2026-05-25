@@ -150,7 +150,9 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!TryConfigureRetryInitialPacketProtection(retryReceivedEvent.RetrySourceConnectionId.Span))
+        if (!TryConfigureRetryInitialPacketProtection(
+            versionProfile.SelectedVersion,
+            retryReceivedEvent.RetrySourceConnectionId.Span))
         {
             return false;
         }
@@ -2168,8 +2170,11 @@ internal sealed partial class QuicConnectionRuntime
     private static bool IsVersion1ZeroRttPacket(ReadOnlySpan<byte> packet)
     {
         return QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket longHeader)
-            && longHeader.Version == QuicVersionNegotiation.Version1
-            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.ZeroRtt;
+            && QuicVersionNegotiation.IsSupportedTransportVersion(longHeader.Version)
+            && QuicVersionNegotiation.IsLongHeaderPacketType(
+                longHeader.Version,
+                longHeader.LongPacketTypeBits,
+                QuicLongPacketType.ZeroRtt);
     }
 
     private void RecordIncomingPacket(
@@ -4247,6 +4252,30 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> retrySourceConnectionIdSpan = this.retrySourceConnectionId is null
             ? ReadOnlySpan<byte>.Empty
             : this.retrySourceConnectionId;
+
+        if (peerTransportParameters.VersionInformation is QuicVersionInformation peerVersionInformation)
+        {
+            if (tlsState.Role == QuicTlsRole.Server)
+            {
+                if (peerVersionInformation.ChosenVersion != versionProfile.SelectedVersion)
+                {
+                    return DiscardConnection(
+                        nowTicks,
+                        QuicConnectionCloseOrigin.VersionNegotiation,
+                        default,
+                        ref effects);
+                }
+            }
+            else if (tlsState.LocalTransportParameters?.VersionInformation is QuicVersionInformation localVersionInformation
+                && Array.IndexOf(localVersionInformation.AvailableVersions, peerVersionInformation.ChosenVersion) < 0)
+            {
+                return DiscardConnection(
+                    nowTicks,
+                    QuicConnectionCloseOrigin.VersionNegotiation,
+                    default,
+                    ref effects);
+            }
+        }
 
         bool stateChanged = false;
         if (peerTransportParameters.InitialSourceConnectionId is { Length: 0 })

@@ -18,7 +18,7 @@ internal static class QuicRetryPacketRequirementTestData
         retryIntegrityTag.CopyTo(versionSpecificData, retryToken.Length);
 
         return QuicHeaderTestData.BuildLongHeader(
-            BuildRetryHeaderControlBits(unusedBits),
+            BuildRetryHeaderControlBits(version, unusedBits),
             version,
             destinationConnectionId ?? [0x10],
             sourceConnectionId ?? [0x20],
@@ -26,7 +26,13 @@ internal static class QuicRetryPacketRequirementTestData
     }
 
     public static byte BuildRetryHeaderControlBits(byte unusedBits = 0x00)
+        => BuildRetryHeaderControlBits(QuicVersionNegotiation.Version1, unusedBits);
+
+    public static byte BuildRetryHeaderControlBits(uint version, byte unusedBits = 0x00)
     {
-        return (byte)(0x70 | (unusedBits & 0x0F));
+        return (byte)(
+            QuicPacketHeaderBits.FixedBitMask
+            | (QuicVersionNegotiation.GetLongHeaderPacketTypeBits(version, QuicLongPacketType.Retry) << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+            | (unusedBits & QuicPacketHeaderBits.TypeSpecificBitsMask));
     }
 }

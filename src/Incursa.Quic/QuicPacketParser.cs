@@ -174,12 +174,12 @@ internal static class QuicPacketParser
 
         if (!TryParseLongHeader(packet, allowClearedFixedBit, out QuicLongHeaderPacket header)
             || header.IsVersionNegotiation
-            || !QuicVersionNegotiation.IsVersion1(header.Version))
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(header.Version))
         {
             return false;
         }
 
-        return TryMapLongHeaderToPacketNumberSpace(header.LongPacketTypeBits, out packetNumberSpace);
+        return TryMapLongHeaderToPacketNumberSpace(header.Version, header.LongPacketTypeBits, out packetNumberSpace);
     }
 
     /// <summary>
@@ -261,7 +261,7 @@ internal static class QuicPacketParser
             return true;
         }
 
-        if (!QuicVersionNegotiation.IsVersion1(version))
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
         {
             if (!TryParseLongHeader(datagram, allowClearedFixedBit, out _))
             {
@@ -272,10 +272,23 @@ internal static class QuicPacketParser
             return true;
         }
 
-        byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
-        switch (longPacketTypeBits)
+        if (!QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            version,
+            (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+            out QuicLongPacketType longPacketType))
         {
-            case QuicLongPacketTypeBits.Initial:
+            if (!TryParseLongHeader(datagram, allowClearedFixedBit, out _))
+            {
+                return false;
+            }
+
+            packetLength = datagram.Length;
+            return true;
+        }
+
+        switch (longPacketType)
+        {
+            case QuicLongPacketType.Initial:
                 if (!TryGetInitialVersionSpecificLength(
                         headerControlBits,
                         versionSpecificData,
@@ -287,8 +300,8 @@ internal static class QuicPacketParser
                 packetLength = longHeaderPrefixLength + initialVersionSpecificLength;
                 return packetLength <= datagram.Length;
 
-            case QuicLongPacketTypeBits.ZeroRtt:
-            case QuicLongPacketTypeBits.Handshake:
+            case QuicLongPacketType.ZeroRtt:
+            case QuicLongPacketType.Handshake:
                 if (!TryGetLengthDelimitedVersionSpecificLength(
                         headerControlBits,
                         versionSpecificData,
@@ -318,17 +331,26 @@ internal static class QuicPacketParser
             && (allowClearedFixedBit || (packet[0] & QuicPacketHeaderBits.FixedBitMask) != 0);
     }
 
-    private static bool TryMapLongHeaderToPacketNumberSpace(byte longPacketTypeBits, out QuicPacketNumberSpace packetNumberSpace)
+    private static bool TryMapLongHeaderToPacketNumberSpace(
+        uint version,
+        byte longPacketTypeBits,
+        out QuicPacketNumberSpace packetNumberSpace)
     {
-        switch (longPacketTypeBits)
+        if (!QuicVersionNegotiation.TryGetLongHeaderPacketType(version, longPacketTypeBits, out QuicLongPacketType longPacketType))
         {
-            case QuicLongPacketTypeBits.Initial:
+            packetNumberSpace = default;
+            return false;
+        }
+
+        switch (longPacketType)
+        {
+            case QuicLongPacketType.Initial:
                 packetNumberSpace = QuicPacketNumberSpace.Initial;
                 return true;
-            case QuicLongPacketTypeBits.ZeroRtt:
+            case QuicLongPacketType.ZeroRtt:
                 packetNumberSpace = QuicPacketNumberSpace.ApplicationData;
                 return true;
-            case QuicLongPacketTypeBits.Handshake:
+            case QuicLongPacketType.Handshake:
                 packetNumberSpace = QuicPacketNumberSpace.Handshake;
                 return true;
             default:

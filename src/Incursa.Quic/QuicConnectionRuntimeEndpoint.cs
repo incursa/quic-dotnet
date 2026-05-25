@@ -514,8 +514,12 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (QuicVersionNegotiation.IsVersion1(longHeader.Version)
-            && longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Retry)
+        if (QuicVersionNegotiation.IsSupportedTransportVersion(longHeader.Version)
+            && QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                longHeader.Version,
+                longHeader.LongPacketTypeBits,
+                out QuicLongPacketType packetType)
+            && packetType == QuicLongPacketType.Retry)
         {
             return new QuicConnectionIngressResult(
                 QuicConnectionIngressDisposition.EndpointHandling,
@@ -523,7 +527,11 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (longHeader.LongPacketTypeBits == QuicLongPacketTypeBits.Initial
+        if (QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                longHeader.Version,
+                longHeader.LongPacketTypeBits,
+                out QuicLongPacketType longPacketType)
+            && longPacketType == QuicLongPacketType.Initial
             && datagram.Length < QuicVersionNegotiation.GetMinimumInitialDatagramPayloadSize(longHeader.Version))
         {
             return new QuicConnectionIngressResult(

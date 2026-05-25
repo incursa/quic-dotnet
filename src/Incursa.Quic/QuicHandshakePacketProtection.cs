@@ -88,6 +88,7 @@ internal sealed class QuicHandshakePacketProtection
 
         if (!TryParseHandshakePacketLayout(
             plaintextPacket,
+            out uint packetVersion,
             out byte headerControlBits,
             out ulong lengthFieldValue,
             out int packetNumberOffset))
@@ -95,7 +96,7 @@ internal sealed class QuicHandshakePacketProtection
             return false;
         }
 
-        if (!TryValidatePlaintextHandshakeHeader(headerControlBits, allowClearedFixedBit))
+        if (!TryValidatePlaintextHandshakeHeader(packetVersion, headerControlBits, allowClearedFixedBit))
         {
             return false;
         }
@@ -189,9 +190,15 @@ internal sealed class QuicHandshakePacketProtection
 
         if (!TryParseHandshakePacketLayout(
             protectedPacket,
+            out uint packetVersion,
             out _,
             out ulong lengthFieldValue,
             out int packetNumberOffset))
+        {
+            return false;
+        }
+
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
         {
             return false;
         }
@@ -217,9 +224,7 @@ internal sealed class QuicHandshakePacketProtection
         }
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
-        if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
-            || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Handshake)
+        if (!TryValidatePlaintextHandshakeHeader(packetVersion, unmaskedFirstByte, allowClearedFixedBit))
         {
             return false;
         }
@@ -274,10 +279,12 @@ internal sealed class QuicHandshakePacketProtection
 
     private static bool TryParseHandshakePacketLayout(
         ReadOnlySpan<byte> packet,
+        out uint packetVersion,
         out byte headerControlBits,
         out ulong lengthFieldValue,
         out int packetNumberOffset)
     {
+        packetVersion = default;
         headerControlBits = default;
         lengthFieldValue = default;
         packetNumberOffset = default;
@@ -285,11 +292,11 @@ internal sealed class QuicHandshakePacketProtection
         if (!QuicPacketParsing.TryParseLongHeaderFields(
             packet,
             out headerControlBits,
-            out uint version,
+            out packetVersion,
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || version != 1)
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
         {
             return false;
         }
@@ -304,8 +311,13 @@ internal sealed class QuicHandshakePacketProtection
         return true;
     }
 
-    private static bool TryValidatePlaintextHandshakeHeader(byte headerControlBits, bool allowClearedFixedBit)
+    private static bool TryValidatePlaintextHandshakeHeader(uint packetVersion, byte headerControlBits, bool allowClearedFixedBit)
     {
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
+        {
+            return false;
+        }
+
         if (!allowClearedFixedBit
             && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
@@ -313,7 +325,7 @@ internal sealed class QuicHandshakePacketProtection
         }
 
         byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
-        return longPacketTypeBits == QuicLongPacketTypeBits.Handshake;
+        return QuicVersionNegotiation.IsLongHeaderPacketType(packetVersion, longPacketTypeBits, QuicLongPacketType.Handshake);
     }
 
     private static void BuildNonce(ReadOnlySpan<byte> iv, ReadOnlySpan<byte> packetNumber, Span<byte> nonce)

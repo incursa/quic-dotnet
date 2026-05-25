@@ -291,6 +291,7 @@ internal static class QuicZeroRttTransportParameterPolicy
             PreferredAddress = ClonePreferredAddress(handshakeTransportParameters?.PreferredAddress),
             InitialSourceConnectionId = CloneBytes(handshakeTransportParameters?.InitialSourceConnectionId),
             RetrySourceConnectionId = CloneBytes(handshakeTransportParameters?.RetrySourceConnectionId),
+            VersionInformation = CloneVersionInformation(handshakeTransportParameters?.VersionInformation),
         };
     }
 
@@ -426,6 +427,20 @@ internal static class QuicZeroRttTransportParameterPolicy
             IPv6Port = preferredAddress.IPv6Port,
             ConnectionId = CloneBytes(preferredAddress.ConnectionId) ?? [],
             StatelessResetToken = CloneBytes(preferredAddress.StatelessResetToken) ?? [],
+        };
+    }
+
+    private static QuicVersionInformation? CloneVersionInformation(QuicVersionInformation? versionInformation)
+    {
+        if (versionInformation is null)
+        {
+            return null;
+        }
+
+        return new QuicVersionInformation
+        {
+            ChosenVersion = versionInformation.ChosenVersion,
+            AvailableVersions = versionInformation.AvailableVersions.ToArray(),
         };
     }
 

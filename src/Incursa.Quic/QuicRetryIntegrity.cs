@@ -24,13 +24,26 @@ internal static class QuicRetryIntegrity
         0x1D, 0x76, 0x6B, 0x54, 0xE3, 0x68, 0xC8, 0x4E,
     ];
 
+    private static readonly byte[] RetryIntegrityV2KeyBytes =
+    [
+        0x8F, 0xB4, 0xB0, 0x1B, 0x56, 0xAC, 0x48, 0xE2,
+        0x60, 0xFB, 0xCB, 0xCE, 0xAD, 0x7C, 0xCC, 0x92,
+    ];
+
     private static readonly byte[] RetryIntegrityNonceBytes =
     [
         0x46, 0x15, 0x99, 0xD3, 0x5D, 0x63, 0x2B, 0xF2,
         0x23, 0x98, 0x25, 0xBB,
     ];
 
+    private static readonly byte[] RetryIntegrityV2NonceBytes =
+    [
+        0xD8, 0x69, 0x69, 0xBC, 0x2D, 0x7C, 0x6D, 0x99,
+        0x90, 0xEF, 0xB0, 0x4A,
+    ];
+
     private static readonly AesGcm RetryIntegrityAead = new(RetryIntegrityKeyBytes, RetryIntegrityTagLength);
+    private static readonly AesGcm RetryIntegrityV2Aead = new(RetryIntegrityV2KeyBytes, RetryIntegrityTagLength);
     private static readonly object RetryIntegrityAeadGate = new();
 
     /// <summary>
@@ -44,9 +57,37 @@ internal static class QuicRetryIntegrity
     internal static ReadOnlySpan<byte> RetryIntegrityNonce => RetryIntegrityNonceBytes;
 
     /// <summary>
+    /// Gets the fixed Retry integrity key from RFC 9369 Section 3.3.3.
+    /// </summary>
+    internal static ReadOnlySpan<byte> RetryIntegrityV2Key => RetryIntegrityV2KeyBytes;
+
+    /// <summary>
+    /// Gets the fixed Retry integrity nonce from RFC 9369 Section 3.3.3.
+    /// </summary>
+    internal static ReadOnlySpan<byte> RetryIntegrityV2Nonce => RetryIntegrityV2NonceBytes;
+
+    /// <summary>
     /// Builds a full Retry packet with a valid integrity tag from the supplied connection IDs and token.
     /// </summary>
     internal static bool TryBuildRetryPacket(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> retryPacketDestinationConnectionId,
+        ReadOnlySpan<byte> retrySourceConnectionId,
+        ReadOnlySpan<byte> retryToken,
+        out byte[] retryPacket)
+        => TryBuildRetryPacket(
+            QuicVersionNegotiation.Version1,
+            originalDestinationConnectionId,
+            retryPacketDestinationConnectionId,
+            retrySourceConnectionId,
+            retryToken,
+            out retryPacket);
+
+    /// <summary>
+    /// Builds a full Retry packet with a valid integrity tag from the supplied connection IDs and token.
+    /// </summary>
+    internal static bool TryBuildRetryPacket(
+        uint version,
         ReadOnlySpan<byte> originalDestinationConnectionId,
         ReadOnlySpan<byte> retryPacketDestinationConnectionId,
         ReadOnlySpan<byte> retrySourceConnectionId,
@@ -86,9 +127,9 @@ internal static class QuicRetryIntegrity
         packet[0] = (byte)(
             QuicPacketHeaderBits.HeaderFormBitMask
             | QuicPacketHeaderBits.FixedBitMask
-            | (QuicLongPacketTypeBits.Retry << QuicPacketHeaderBits.LongPacketTypeBitsShift));
+            | (QuicVersionNegotiation.GetLongHeaderPacketTypeBits(version, QuicLongPacketType.Retry) << QuicPacketHeaderBits.LongPacketTypeBitsShift));
 
-        BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(LongHeaderFormLength, sizeof(uint)), QuicVersionNegotiation.Version1);
+        BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(LongHeaderFormLength, sizeof(uint)), version);
 
         packet[DestinationConnectionIdLengthOffset] = (byte)retryPacketDestinationConnectionId.Length;
         retryPacketDestinationConnectionId.CopyTo(packet.AsSpan(DestinationConnectionIdOffset));
@@ -133,6 +174,7 @@ internal static class QuicRetryIntegrity
         if (!TryBuildRetryAssociatedData(
             originalDestinationConnectionId,
             retryPacketWithoutIntegrityTag,
+            out uint retryPacketVersion,
             out byte[]? associatedDataBuffer,
             out int associatedDataLength))
         {
@@ -143,8 +185,8 @@ internal static class QuicRetryIntegrity
         {
             lock (RetryIntegrityAeadGate)
             {
-                RetryIntegrityAead.Encrypt(
-                    RetryIntegrityNonceBytes,
+                GetRetryIntegrityAead(retryPacketVersion).Encrypt(
+                    GetRetryIntegrityNonce(retryPacketVersion),
                     ReadOnlySpan<byte>.Empty,
                     Span<byte>.Empty,
                     destination[..RetryIntegrityTagLength],
@@ -182,6 +224,7 @@ internal static class QuicRetryIntegrity
         if (!TryBuildRetryAssociatedData(
             originalDestinationConnectionId,
             retryPacketWithoutIntegrityTag,
+            out uint retryPacketVersion,
             out byte[]? associatedDataBuffer,
             out int associatedDataLength))
         {
@@ -192,8 +235,8 @@ internal static class QuicRetryIntegrity
         {
             lock (RetryIntegrityAeadGate)
             {
-                RetryIntegrityAead.Decrypt(
-                    RetryIntegrityNonceBytes,
+                GetRetryIntegrityAead(retryPacketVersion).Decrypt(
+                    GetRetryIntegrityNonce(retryPacketVersion),
                     ReadOnlySpan<byte>.Empty,
                     retryIntegrityTag,
                     Span<byte>.Empty,
@@ -215,9 +258,11 @@ internal static class QuicRetryIntegrity
     private static bool TryBuildRetryAssociatedData(
         ReadOnlySpan<byte> originalDestinationConnectionId,
         ReadOnlySpan<byte> retryPacket,
+        out uint retryPacketVersion,
         out byte[]? associatedDataBuffer,
         out int associatedDataLength)
     {
+        retryPacketVersion = default;
         associatedDataBuffer = default;
         associatedDataLength = default;
 
@@ -227,11 +272,13 @@ internal static class QuicRetryIntegrity
         }
 
         if (!QuicPacketParser.TryParseLongHeader(retryPacket, out QuicLongHeaderPacket header)
-            || header.Version != 1
-            || header.LongPacketTypeBits != QuicLongPacketTypeBits.Retry)
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(header.Version)
+            || !QuicVersionNegotiation.IsLongHeaderPacketType(header.Version, header.LongPacketTypeBits, QuicLongPacketType.Retry))
         {
             return false;
         }
+
+        retryPacketVersion = header.Version;
 
         if (retryPacket.Length > int.MaxValue - originalDestinationConnectionId.Length - 1)
         {
@@ -266,13 +313,42 @@ internal static class QuicRetryIntegrity
         ReadOnlySpan<byte> originalDestinationConnectionId,
         ReadOnlySpan<byte> retryPacket,
         out QuicRetryBootstrapMetadata metadata)
+        => TryParseRetryBootstrapMetadata(
+            originalDestinationConnectionId,
+            retryPacket,
+            expectedVersion: null,
+            out metadata);
+
+    /// <summary>
+    /// Parses the Retry metadata needed for the library-owned one-replay bootstrap handoff and optionally validates the version in use.
+    /// </summary>
+    internal static bool TryParseRetryBootstrapMetadata(
+        uint expectedVersion,
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> retryPacket,
+        out QuicRetryBootstrapMetadata metadata)
+        => TryParseRetryBootstrapMetadata(
+            originalDestinationConnectionId,
+            retryPacket,
+            expectedVersion,
+            out metadata);
+
+    private static bool TryParseRetryBootstrapMetadata(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> retryPacket,
+        uint? expectedVersion,
+        out QuicRetryBootstrapMetadata metadata)
     {
         metadata = default;
 
         if (!TryValidateRetryPacketIntegrity(originalDestinationConnectionId, retryPacket)
             || !QuicPacketParser.TryParseLongHeader(retryPacket, out QuicLongHeaderPacket retryHeader)
-            || retryHeader.Version != 1
-            || retryHeader.LongPacketTypeBits != QuicLongPacketTypeBits.Retry
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(retryHeader.Version)
+            || !QuicVersionNegotiation.IsLongHeaderPacketType(
+                retryHeader.Version,
+                retryHeader.LongPacketTypeBits,
+                QuicLongPacketType.Retry)
+            || (expectedVersion.HasValue && retryHeader.Version != expectedVersion.Value)
             || retryHeader.VersionSpecificData.Length <= RetryIntegrityTagLength
             || retryHeader.SourceConnectionId.IsEmpty
             || retryHeader.SourceConnectionId.SequenceEqual(originalDestinationConnectionId))
@@ -290,6 +366,26 @@ internal static class QuicRetryIntegrity
             retryHeader.SourceConnectionId.ToArray(),
             retryToken.ToArray());
         return true;
+    }
+
+    private static AesGcm GetRetryIntegrityAead(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => RetryIntegrityAead,
+            QuicVersionNegotiation.Version2 => RetryIntegrityV2Aead,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define Retry integrity protection."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetRetryIntegrityNonce(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => RetryIntegrityNonceBytes,
+            QuicVersionNegotiation.Version2 => RetryIntegrityV2NonceBytes,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define Retry integrity protection."),
+        };
     }
 }
 

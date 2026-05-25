@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9368-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9368 Version Information Floor Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the authenticated Version Information floor satisfies the RFC 9368 requirements without claiming the full compatible-version runtime-selection flow.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "WI-QUIC-RFC9368-0001",
+    "VER-QUIC-RFC9368-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9368-S3-0001",
+    "REQ-QUIC-RFC9368-S3-0002"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicVersionInformation.cs",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs"
+  ],
+  "design_summary": "The RFC 9368 floor adds a first-class `QuicVersionInformation` payload to `QuicTransportParameters` and teaches the transport-parameter codec to format and parse `version_information` with non-zero chosen and available versions. The client and listener bootstrap paths seed the authenticated snapshot so the local transport-parameter state can advertise the version list, while `QuicTransportTlsBridgeState`, the resumption ticket store, and the zero-RTT transport-parameter policy clone the same structure so the authenticated metadata survives commit and replay boundaries. The runtime already enforces the floor-level chosen-version consistency checks when peer transport parameters are committed. The broader compatible-version restart/selection flow described by RFC 9368 Section 4 remains separate from this floor slice and will need its own state transition design if it is expanded later.",
+  "risks": [
+    "If the floor is mistaken for full compatible-version selection, the repo will appear to support RFC 9368 more broadly than it actually does.",
+    "The snapshot and resumption helpers must keep cloning the nested version arrays or the authenticated version metadata will drift between commit boundaries.",
+    "The compatible-version restart/selection path remains outside this slice and must not be inferred from the authenticated transport-parameter floor alone."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This architecture stays inside the authenticated transport-parameter floor. It does not add the full compatible-version restart/selection behavior from RFC 9368 Section 4."
+    }
+  ]
+}

@@ -173,6 +173,7 @@ internal sealed class QuicServerResumptionTicketStore
             MaxIdleTimeout = parameters.MaxIdleTimeout,
             MaxUdpPayloadSize = parameters.MaxUdpPayloadSize,
             MaxDatagramFrameSize = parameters.MaxDatagramFrameSize,
+            VersionInformation = CloneVersionInformation(parameters.VersionInformation),
             InitialMaxData = parameters.InitialMaxData,
             InitialMaxStreamDataBidiLocal = parameters.InitialMaxStreamDataBidiLocal,
             InitialMaxStreamDataBidiRemote = parameters.InitialMaxStreamDataBidiRemote,
@@ -181,6 +182,20 @@ internal sealed class QuicServerResumptionTicketStore
             InitialMaxStreamsUni = parameters.InitialMaxStreamsUni,
             DisableActiveMigration = parameters.DisableActiveMigration,
             ActiveConnectionIdLimit = parameters.ActiveConnectionIdLimit,
+        };
+    }
+
+    private static QuicVersionInformation? CloneVersionInformation(QuicVersionInformation? versionInformation)
+    {
+        if (versionInformation is null)
+        {
+            return null;
+        }
+
+        return new QuicVersionInformation
+        {
+            ChosenVersion = versionInformation.ChosenVersion,
+            AvailableVersions = versionInformation.AvailableVersions.ToArray(),
         };
     }
 }

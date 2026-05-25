@@ -111,4 +111,82 @@ public sealed class QuicRetryIntegrityUnitTests
             out int bytesWritten));
         Assert.Equal(0, bytesWritten);
     }
+
+    [Fact]
+    public void TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity()
+    {
+        Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
+            QuicVersionNegotiation.Version2,
+            ClientInitialDestinationConnectionId,
+            [0x20, 0x21, 0x22, 0x23],
+            RetrySourceConnectionId,
+            RetryToken,
+            out byte[] retryPacket));
+
+        Assert.True(QuicRetryIntegrity.TryValidateRetryPacketIntegrity(ClientInitialDestinationConnectionId, retryPacket));
+
+        Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicVersionNegotiation.Version2,
+            ClientInitialDestinationConnectionId,
+            retryPacket,
+            out QuicRetryBootstrapMetadata retryMetadata));
+        Assert.Equal(RetrySourceConnectionId, retryMetadata.RetrySourceConnectionId);
+        Assert.Equal(RetryToken, retryMetadata.RetryToken);
+    }
+
+    [Fact]
+    public void TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches()
+    {
+        Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
+            QuicVersionNegotiation.Version2,
+            ClientInitialDestinationConnectionId,
+            [0x20, 0x21, 0x22, 0x23],
+            RetrySourceConnectionId,
+            RetryToken,
+            out byte[] retryPacket));
+
+        Assert.False(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+            QuicVersionNegotiation.Version1,
+            ClientInitialDestinationConnectionId,
+            retryPacket,
+            out _));
+    }
+
+    [Fact]
+    public void TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material()
+    {
+        byte[] retryPacketV1WithoutIntegrityTag = QuicRetryPacketRequirementTestData.BuildRetryPacket(
+            destinationConnectionId: [],
+            sourceConnectionId: RetrySourceConnectionId,
+            retryToken: RetryToken,
+            retryIntegrityTag: [],
+            version: QuicVersionNegotiation.Version1,
+            unusedBits: 0x0F);
+        byte[] retryPacketV2WithoutIntegrityTag = QuicRetryPacketRequirementTestData.BuildRetryPacket(
+            destinationConnectionId: [],
+            sourceConnectionId: RetrySourceConnectionId,
+            retryToken: RetryToken,
+            retryIntegrityTag: [],
+            version: QuicVersionNegotiation.Version2,
+            unusedBits: 0x0F);
+
+        Span<byte> version1Tag = stackalloc byte[QuicRetryIntegrity.RetryIntegrityTagLength];
+        Span<byte> version2Tag = stackalloc byte[QuicRetryIntegrity.RetryIntegrityTagLength];
+
+        Assert.True(QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
+            ClientInitialDestinationConnectionId,
+            retryPacketV1WithoutIntegrityTag,
+            version1Tag,
+            out int version1BytesWritten));
+
+        Assert.True(QuicRetryIntegrity.TryGenerateRetryIntegrityTag(
+            ClientInitialDestinationConnectionId,
+            retryPacketV2WithoutIntegrityTag,
+            version2Tag,
+            out int version2BytesWritten));
+
+        Assert.Equal(QuicRetryIntegrity.RetryIntegrityTagLength, version1BytesWritten);
+        Assert.Equal(QuicRetryIntegrity.RetryIntegrityTagLength, version2BytesWritten);
+        Assert.False(version1Tag.SequenceEqual(version2Tag));
+    }
 }

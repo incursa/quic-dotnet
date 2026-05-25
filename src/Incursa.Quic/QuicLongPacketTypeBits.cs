@@ -1,6 +1,17 @@
 namespace Incursa.Quic;
 
 /// <summary>
+/// Logical QUIC long-header packet types.
+/// </summary>
+internal enum QuicLongPacketType
+{
+    Initial = 0,
+    ZeroRtt = 1,
+    Handshake = 2,
+    Retry = 3,
+}
+
+/// <summary>
 /// Long-header packet type values from the RFC 9000 packet-type field.
 /// </summary>
 internal static class QuicLongPacketTypeBits

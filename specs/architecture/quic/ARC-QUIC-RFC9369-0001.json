@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9369-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9369 Version 2 Static Floor Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the RFC 9369 static version-2 floor is satisfied by the version-aware packet, Initial, and Retry helper surfaces.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9369",
+    "WI-QUIC-RFC9369-0001",
+    "VER-QUIC-RFC9369-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9369-S3-0001",
+    "REQ-QUIC-RFC9369-S3-0002",
+    "REQ-QUIC-RFC9369-S3-0003"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicLongPacketTypeBits.cs",
+    "src/Incursa.Quic/QuicPacketParsing.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicRetryIntegrity.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs"
+  ],
+  "design_summary": "The QUIC v2 floor is implemented as a version-aware helper layer. `QuicVersionNegotiation` recognizes version 2, maps its long-header packet-type bits, and keeps the version-specific packet-type decisions visible to the parser. `QuicPacketParsing` and `QuicPacketParser` reuse that mapping so version 2 Initial, 0-RTT, Handshake, and Retry packets are classified correctly while the version-1 parser defaults remain intact. `QuicInitialPacketProtection` and `QuicTlsKeySchedule` switch the Initial salt and HKDF labels on the version number so v1 and v2 Initial protection are derived from distinct inputs, and `QuicRetryIntegrity` switches the Retry integrity secret material and packet parsing on the version carried by the Retry packet. The endpoint, runtime, listener, and handshake-flow helpers thread the selected version through their version-aware parse and protection calls so the static v2 wire floor stays explicit in tests. The compatible-version runtime-selection follow-up remains outside this architecture slice.",
+  "risks": [
+    "If a version-agnostic parser default leaks back in, the v2 packet-type mapping can regress silently because the version-specific helpers will still compile.",
+    "The v2 Initial and Retry crypto inputs must stay version-bound; reusing the v1 labels or secret material would create an apparently working but incorrect implementation.",
+    "The compatible-version runtime-selection flow remains outside this slice and must not be inferred from the static v2 helpers alone."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This architecture stays inside the static QUIC v2 floor. It does not add the RFC 9368 compatible-version restart/selection flow or any HTTP/3-specific negotiation behavior."
+    }
+  ]
+}

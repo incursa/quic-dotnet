@@ -202,7 +202,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             enableServerResumptionTickets,
             enableServerEarlyData,
             serverResumptionTicketStore,
-            emitKeyLogSecrets: tlsKeyLogSecretObserver is not null);
+            emitKeyLogSecrets: tlsKeyLogSecretObserver is not null,
+            transportVersion: versionProfile.SelectedVersion);
         inbox = Channel.CreateUnbounded<QuicConnectionEvent>(new UnboundedChannelOptions
         {
             SingleReader = true,
@@ -431,13 +432,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
     {
+        return TryConfigureInitialPacketProtection(versionProfile.SelectedVersion, clientInitialDestinationConnectionId);
+    }
+
+    internal bool TryConfigureInitialPacketProtection(uint version, ReadOnlySpan<byte> clientInitialDestinationConnectionId)
+    {
         if (initialPacketProtection is not null)
         {
-            return true;
+            return initialPacketProtection.Version == version;
         }
 
         if (!QuicInitialPacketProtection.TryCreate(
             tlsState.Role,
+            version,
             clientInitialDestinationConnectionId,
             out QuicInitialPacketProtection protection))
         {
@@ -455,8 +462,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool TryConfigureRetryInitialPacketProtection(ReadOnlySpan<byte> retrySelectedDestinationConnectionId)
     {
+        return TryConfigureRetryInitialPacketProtection(versionProfile.SelectedVersion, retrySelectedDestinationConnectionId);
+    }
+
+    internal bool TryConfigureRetryInitialPacketProtection(uint version, ReadOnlySpan<byte> retrySelectedDestinationConnectionId)
+    {
+        if (initialPacketProtection is not null)
+        {
+            return initialPacketProtection.Version == version;
+        }
+
         if (!QuicInitialPacketProtection.TryCreate(
             tlsState.Role,
+            version,
             retrySelectedDestinationConnectionId,
             out QuicInitialPacketProtection protection))
         {

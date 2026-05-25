@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9369-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9369 Version 2 Static Floor Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9369",
+    "ARC-QUIC-RFC9369-0001",
+    "WI-QUIC-RFC9369-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, packet-parser and packet-protection unit tests, Retry-integrity unit tests, transport-parameter fuzz coverage where the versioned helpers parse attacker-controlled bytes, transport-parameter/header-parsing/Initial-protection/Retry-integrity benchmark dry runs, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9369-S3-0001",
+    "REQ-QUIC-RFC9369-S3-0002",
+    "REQ-QUIC-RFC9369-S3-0003"
+  ],
+  "scope": "This verification covers the RFC 9369 static QUIC v2 floor only. It proves version recognition, packet-type mapping, Initial packet protection, Retry integrity, and the hot-path benchmark evidence needed to keep the version-aware helper layer honest. It does not verify the RFC 9368 compatible-version restart/selection flow or any higher-layer application adaptation.",
+  "preconditions": [
+    "The repository remains in the JSON-only SpecTrace workflow.",
+    "The RFC 9369 requirement-home tests exist under tests/Incursa.Quic.Tests/RequirementHomes/RFC9369.",
+    "The version-aware packet, Initial, and Retry helper paths remain version-bound and do not bleed v2 labels or secret material into the v1 floor."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~RFC9369`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicHeaderParsingUnitTests|FullyQualifiedName~QuicInitialPacketProtectionUnitTests|FullyQualifiedName~QuicRetryIntegrityUnitTests`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicTransportParametersCodecUnitTests|FullyQualifiedName~QuicTransportTlsBridgeStateUnitTests|FullyQualifiedName~QuicServerResumptionTicketStoreUnitTests`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicHeaderParsingBenchmarks*|*QuicTransportParametersBenchmarks*|*QuicInitialPacketProtectionBenchmarks*|*QuicRetryIntegrityBenchmarks*\" --inProcess`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9369 requirement-home tests pass, the packet-parser and packet-protection unit tests prove version-specific v2 behavior, the Retry-integrity tests prove version-aware keying and metadata binding, the transport-parameter and header-parsing benchmark dry runs complete, core SpecTrace validation accepts the JSON artifacts, the generated QUIC requirement coverage reports the RFC 9369 floor traceable, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+    "tests/Incursa.Quic.Tests/QuicHeaderParsingUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicInitialPacketProtectionUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersCodecUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportTlsBridgeStateUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicServerResumptionTicketStoreUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionInformationFuzzSupport.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicPacketParsing.cs",
+    "src/Incursa.Quic/QuicPacketParser.cs",
+    "src/Incursa.Quic/QuicInitialPacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakePacketProtection.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicRetryIntegrity.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs",
+    "benchmarks/QuicHeaderParsingBenchmarks.cs",
+    "benchmarks/QuicInitialPacketProtectionBenchmarks.cs",
+    "benchmarks/QuicRetryIntegrityBenchmarks.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs"
+  ],
+  "status_summary": "Passed. The RFC 9369 static QUIC v2 floor now has focused requirement-home proof, fuzz coverage, benchmark dry runs, generated coverage triage, and trace-validation refresh."
+}

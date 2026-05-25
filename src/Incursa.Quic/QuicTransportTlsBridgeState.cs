@@ -1601,6 +1601,7 @@ internal sealed class QuicTransportTlsBridgeState
             MaxUdpPayloadSize = parameters.MaxUdpPayloadSize,
             MaxDatagramFrameSize = parameters.MaxDatagramFrameSize,
             GreaseQuicBit = parameters.GreaseQuicBit,
+            VersionInformation = CloneVersionInformation(parameters.VersionInformation),
             InitialMaxData = parameters.InitialMaxData,
             InitialMaxStreamDataBidiLocal = parameters.InitialMaxStreamDataBidiLocal,
             InitialMaxStreamDataBidiRemote = parameters.InitialMaxStreamDataBidiRemote,
@@ -1639,6 +1640,20 @@ internal sealed class QuicTransportTlsBridgeState
         return bytes is null ? null : bytes.ToArray();
     }
 
+    private static QuicVersionInformation? CloneVersionInformation(QuicVersionInformation? versionInformation)
+    {
+        if (versionInformation is null)
+        {
+            return null;
+        }
+
+        return new QuicVersionInformation
+        {
+            ChosenVersion = versionInformation.ChosenVersion,
+            AvailableVersions = versionInformation.AvailableVersions.ToArray(),
+        };
+    }
+
     private static bool AreEquivalent(QuicTransportParameters? left, QuicTransportParameters? right)
     {
         if (ReferenceEquals(left, right))
@@ -1657,6 +1672,7 @@ internal sealed class QuicTransportTlsBridgeState
             && left.MaxUdpPayloadSize == right.MaxUdpPayloadSize
             && left.MaxDatagramFrameSize == right.MaxDatagramFrameSize
             && left.GreaseQuicBit == right.GreaseQuicBit
+            && AreEquivalent(left.VersionInformation, right.VersionInformation)
             && left.InitialMaxData == right.InitialMaxData
             && left.InitialMaxStreamDataBidiLocal == right.InitialMaxStreamDataBidiLocal
             && left.InitialMaxStreamDataBidiRemote == right.InitialMaxStreamDataBidiRemote
@@ -1692,6 +1708,29 @@ internal sealed class QuicTransportTlsBridgeState
     }
 
     private static bool AreEquivalent(byte[]? left, byte[]? right)
+    {
+        return left is null
+            ? right is null
+            : right is not null && left.AsSpan().SequenceEqual(right);
+    }
+
+    private static bool AreEquivalent(QuicVersionInformation? left, QuicVersionInformation? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left is null || right is null)
+        {
+            return false;
+        }
+
+        return left.ChosenVersion == right.ChosenVersion
+            && AreEquivalent(left.AvailableVersions, right.AvailableVersions);
+    }
+
+    private static bool AreEquivalent(uint[]? left, uint[]? right)
     {
         return left is null
             ? right is null

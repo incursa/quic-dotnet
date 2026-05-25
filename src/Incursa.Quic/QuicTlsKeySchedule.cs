@@ -85,6 +85,7 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] ClientApplicationTrafficLabel = Encoding.ASCII.GetBytes("c ap traffic");
     private static readonly byte[] ServerApplicationTrafficLabel = Encoding.ASCII.GetBytes("s ap traffic");
     private static readonly byte[] QuicKeyUpdateLabel = Encoding.ASCII.GetBytes("quic ku");
+    private static readonly byte[] QuicV2KeyUpdateLabel = Encoding.ASCII.GetBytes("quicv2 ku");
     private static readonly byte[] FinishedLabel = Encoding.ASCII.GetBytes("finished");
     private static readonly byte[] ResumptionMasterLabel = Encoding.ASCII.GetBytes("res master");
     private static readonly byte[] ResumptionLabel = Encoding.ASCII.GetBytes("resumption");
@@ -95,6 +96,9 @@ internal sealed class QuicTlsKeySchedule
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
     private static readonly byte[] QuicIvLabel = Encoding.ASCII.GetBytes("quic iv");
     private static readonly byte[] QuicHpLabel = Encoding.ASCII.GetBytes("quic hp");
+    private static readonly byte[] QuicV2KeyLabel = Encoding.ASCII.GetBytes("quicv2 key");
+    private static readonly byte[] QuicV2IvLabel = Encoding.ASCII.GetBytes("quicv2 iv");
+    private static readonly byte[] QuicV2HpLabel = Encoding.ASCII.GetBytes("quicv2 hp");
     private static readonly byte[] HelloRetryRequestRandom = Convert.FromHexString("CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
     private static readonly byte[] ZeroHashInput = new byte[HashLength];
     private static readonly byte[] EmptyTranscriptHash = SHA256.HashData(Array.Empty<byte>());
@@ -114,6 +118,7 @@ internal sealed class QuicTlsKeySchedule
     private readonly QuicServerResumptionTicketStore? serverResumptionTicketStore;
     private readonly byte[]? deterministicClientHelloRandom;
     private readonly bool emitKeyLogSecrets;
+    private readonly uint transportVersion;
     private byte[][] applicationProtocols;
     private byte[]? localHandshakeTranscriptPrefix;
 
@@ -180,6 +185,7 @@ internal sealed class QuicTlsKeySchedule
     /// <param name="enableServerEarlyData">Whether the server role may advertise and accept QUIC early data.</param>
     /// <param name="serverResumptionTicketStore">The server-owned ticket store used to validate managed resumption PSK offers.</param>
     /// <param name="emitKeyLogSecrets">Whether traffic-secret updates should be published for opt-in SSLKEYLOGFILE export.</param>
+    /// <param name="transportVersion">The negotiated QUIC transport version that owns the key schedule labels.</param>
     internal QuicTlsKeySchedule(
         QuicTlsRole role,
         ReadOnlyMemory<byte> localPrivateKey = default,
@@ -188,13 +194,15 @@ internal sealed class QuicTlsKeySchedule
         bool enableServerResumptionTickets = false,
         bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
-        bool emitKeyLogSecrets = false)
+        bool emitKeyLogSecrets = false,
+        uint transportVersion = QuicVersionNegotiation.Version1)
     {
         this.role = role;
         serverResumptionTicketsEnabled = role == QuicTlsRole.Server && enableServerResumptionTickets;
         serverEarlyDataEnabled = role == QuicTlsRole.Server && enableServerResumptionTickets && enableServerEarlyData;
         this.serverResumptionTicketStore = role == QuicTlsRole.Server ? serverResumptionTicketStore : null;
         this.emitKeyLogSecrets = emitKeyLogSecrets;
+        this.transportVersion = transportVersion;
 
         if (clientCipherSuiteProfile.HasValue)
         {
@@ -1595,9 +1603,9 @@ internal sealed class QuicTlsKeySchedule
     }
 
     internal bool TryCreateOneRttSuccessorPacketProtectionUpdate(
-        ReadOnlySpan<byte> currentOpenHeaderProtectionKey,
-        ReadOnlySpan<byte> currentProtectHeaderProtectionKey,
-        out QuicOneRttTrafficSecretUpdate update)
+            ReadOnlySpan<byte> currentOpenHeaderProtectionKey,
+            ReadOnlySpan<byte> currentProtectHeaderProtectionKey,
+            out QuicOneRttTrafficSecretUpdate update)
     {
         update = null!;
 
@@ -1618,12 +1626,12 @@ internal sealed class QuicTlsKeySchedule
         {
             nextClientApplicationTrafficSecret = HkdfExpandLabel(
                 currentClientApplicationTrafficSecret,
-                QuicKeyUpdateLabel,
+                GetKeyUpdateLabel(transportVersion),
                 [],
                 HashLength);
             nextServerApplicationTrafficSecret = HkdfExpandLabel(
                 currentServerApplicationTrafficSecret,
-                QuicKeyUpdateLabel,
+                GetKeyUpdateLabel(transportVersion),
                 [],
                 HashLength);
 
@@ -1826,9 +1834,9 @@ internal sealed class QuicTlsKeySchedule
             return false;
         }
 
-        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], aeadKeyLength);
-        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], aeadIvLength);
-        byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, QuicHpLabel, [], headerProtectionKeyLength);
+        byte[] aeadKey = HkdfExpandLabel(trafficSecret, GetPacketProtectionKeyLabel(transportVersion), [], aeadKeyLength);
+        byte[] aeadIv = HkdfExpandLabel(trafficSecret, GetPacketProtectionIvLabel(transportVersion), [], aeadIvLength);
+        byte[] headerProtectionKey = HkdfExpandLabel(trafficSecret, GetPacketProtectionHeaderProtectionLabel(transportVersion), [], headerProtectionKeyLength);
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             encryptionLevel,
@@ -1857,8 +1865,8 @@ internal sealed class QuicTlsKeySchedule
             return false;
         }
 
-        byte[] aeadKey = HkdfExpandLabel(trafficSecret, QuicKeyLabel, [], aeadKeyLength);
-        byte[] aeadIv = HkdfExpandLabel(trafficSecret, QuicIvLabel, [], aeadIvLength);
+        byte[] aeadKey = HkdfExpandLabel(trafficSecret, GetPacketProtectionKeyLabel(transportVersion), [], aeadKeyLength);
+        byte[] aeadIv = HkdfExpandLabel(trafficSecret, GetPacketProtectionIvLabel(transportVersion), [], aeadIvLength);
 
         return QuicTlsPacketProtectionMaterial.TryCreate(
             encryptionLevel,
@@ -1882,6 +1890,46 @@ internal sealed class QuicTlsKeySchedule
         }
 
         return usageLimits;
+    }
+
+    private static ReadOnlySpan<byte> GetPacketProtectionKeyLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicKeyLabel,
+            QuicVersionNegotiation.Version2 => QuicV2KeyLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define a packet-protection key label."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetPacketProtectionIvLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicIvLabel,
+            QuicVersionNegotiation.Version2 => QuicV2IvLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define a packet-protection IV label."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetPacketProtectionHeaderProtectionLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicHpLabel,
+            QuicVersionNegotiation.Version2 => QuicV2HpLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define a packet-protection header-protection label."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetKeyUpdateLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicKeyUpdateLabel,
+            QuicVersionNegotiation.Version2 => QuicV2KeyUpdateLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define a key-update label."),
+        };
     }
 
     private bool TryCreateInitialClientHello(

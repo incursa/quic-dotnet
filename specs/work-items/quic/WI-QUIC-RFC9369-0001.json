@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9369-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9369 Version 2 Static Floor Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9369",
+    "ARC-QUIC-RFC9369-0001",
+    "VER-QUIC-RFC9369-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9369-S3-0001",
+    "REQ-QUIC-RFC9369-S3-0002",
+    "REQ-QUIC-RFC9369-S3-0003"
+  ],
+  "summary": "Close the RFC 9369 QUIC v2 static floor by proving version recognition, v2 Initial protection, and v2 Retry integrity with focused tests, fuzz coverage, and benchmark evidence.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9369.json`, `ARC-QUIC-RFC9369-0001.json`, `WI-QUIC-RFC9369-0001.json`, and `VER-QUIC-RFC9369-0001.json`.\n- Add requirement-home tests for v2 packet-type mapping, v2 Initial packet protection, and v2 Retry integrity.\n- Extend the transport-parameter, header-parsing, Initial-packet-protection, and Retry-integrity benchmark suites with explicit v2 scenarios.\n- Extend fuzz coverage so the packet parser and transport-parameter codec continue to exercise version-aware shapes while the v2 floor is under proof.\n- Keep the RFC 9368 compatible-version restart/selection flow out of scope for this slice and leave it in the gap ledger for a separate runtime-behavior pass.",
+  "verification_plan": "Run the RFC 9369 requirement-home tests, run the packet-parser, Initial packet-protection, Retry-integrity, and transport-parameter unit tests, run the transport-parameter/header-parsing/Initial-protection/Retry-integrity benchmark dry runs, validate SpecTrace JSON, refresh the QUIC requirement coverage triage, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9369-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9369-0001"
+  ],
+  "out_of_scope": [
+    "The RFC 9368 compatible-version restart/selection flow.",
+    "HTTP/3, CONNECT-UDP, MASQUE, and other higher-layer uses of the versioning family.",
+    "Application-layer adaptation beyond the transport helper floor."
+  ],
+  "completion_notes": "Complete. The QUIC v2 static floor now has requirement-home, fuzz, benchmark, and trace-validation evidence, while the compatible-version runtime follow-up remains separate."
+}

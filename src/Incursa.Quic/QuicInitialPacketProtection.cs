@@ -5,7 +5,8 @@ using System.Text;
 namespace Incursa.Quic;
 
 /// <summary>
-/// Provides Initial-only QUIC packet protection using the RFC 9001 fixed Initial salt and AES-128-GCM.
+/// Provides Initial packet protection for the supported QUIC transport versions using the version-specific
+/// Initial salt and AES-128-GCM.
 /// </summary>
 internal sealed class QuicInitialPacketProtection
 {
@@ -77,11 +78,21 @@ internal sealed class QuicInitialPacketProtection
     /// <summary>
     /// The Initial salt from RFC 9001 Section 5.2.
     /// </summary>
-    private static readonly byte[] InitialSalt =
+    private static readonly byte[] InitialSaltV1 =
     [
         0x38, 0x76, 0x2C, 0xF7, 0xF5, 0x59, 0x34, 0xB3,
         0x4D, 0x17, 0x9A, 0xE6, 0xA4, 0xC8, 0x0C, 0xAD,
         0xCC, 0xBB, 0x7F, 0x0A,
+    ];
+
+    /// <summary>
+    /// The Initial salt from RFC 9369 Section 7.
+    /// </summary>
+    private static readonly byte[] InitialSaltV2 =
+    [
+        0x0D, 0xED, 0xE3, 0xDE, 0xF7, 0x00, 0xA6, 0xDB,
+        0x81, 0x93, 0x81, 0xBE, 0x6E, 0x26, 0x9D, 0xCB,
+        0xF9, 0xBD, 0x2E, 0xD9,
     ];
 
     private static readonly byte[] HkdfLabelPrefix = Encoding.ASCII.GetBytes("tls13 ");
@@ -90,17 +101,23 @@ internal sealed class QuicInitialPacketProtection
     private static readonly byte[] QuicKeyLabel = Encoding.ASCII.GetBytes("quic key");
     private static readonly byte[] QuicIvLabel = Encoding.ASCII.GetBytes("quic iv");
     private static readonly byte[] QuicHpLabel = Encoding.ASCII.GetBytes("quic hp");
+    private static readonly byte[] QuicV2KeyLabel = Encoding.ASCII.GetBytes("quicv2 key");
+    private static readonly byte[] QuicV2IvLabel = Encoding.ASCII.GetBytes("quicv2 iv");
+    private static readonly byte[] QuicV2HpLabel = Encoding.ASCII.GetBytes("quicv2 hp");
 
     private readonly QuicTlsRole role;
+    private readonly uint version;
     private readonly QuicInitialPacketProtectionMaterial clientMaterial;
     private readonly QuicInitialPacketProtectionMaterial serverMaterial;
 
     private QuicInitialPacketProtection(
         QuicTlsRole role,
+        uint version,
         QuicInitialPacketProtectionMaterial clientMaterial,
         QuicInitialPacketProtectionMaterial serverMaterial)
     {
         this.role = role;
+        this.version = version;
         this.clientMaterial = clientMaterial;
         this.serverMaterial = serverMaterial;
     }
@@ -109,6 +126,11 @@ internal sealed class QuicInitialPacketProtection
     /// Gets the endpoint role that owns the helper.
     /// </summary>
     public QuicTlsRole Role => role;
+
+    /// <summary>
+    /// Gets the transport version this protector was derived for.
+    /// </summary>
+    internal uint Version => version;
 
     /// <summary>
     /// Gets the Initial material used for packets sent by the owning endpoint.
@@ -131,6 +153,16 @@ internal sealed class QuicInitialPacketProtection
         QuicTlsRole role,
         ReadOnlySpan<byte> clientInitialDestinationConnectionId,
         out QuicInitialPacketProtection protection)
+        => TryCreate(role, QuicVersionNegotiation.Version1, clientInitialDestinationConnectionId, out protection);
+
+    /// <summary>
+    /// Creates a role-bound Initial packet protector from the first client Initial Destination Connection ID.
+    /// </summary>
+    public static bool TryCreate(
+        QuicTlsRole role,
+        uint version,
+        ReadOnlySpan<byte> clientInitialDestinationConnectionId,
+        out QuicInitialPacketProtection protection)
     {
         protection = default!;
 
@@ -139,7 +171,13 @@ internal sealed class QuicInitialPacketProtection
             return false;
         }
 
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
+        {
+            return false;
+        }
+
         if (!TryDeriveInitialKeyMaterial(
+            version,
             clientInitialDestinationConnectionId,
             out QuicInitialPacketProtectionMaterial clientMaterial,
             out QuicInitialPacketProtectionMaterial serverMaterial))
@@ -147,7 +185,7 @@ internal sealed class QuicInitialPacketProtection
             return false;
         }
 
-        protection = new QuicInitialPacketProtection(role, clientMaterial, serverMaterial);
+        protection = new QuicInitialPacketProtection(role, version, clientMaterial, serverMaterial);
         return true;
     }
 
@@ -155,6 +193,20 @@ internal sealed class QuicInitialPacketProtection
     /// Derives the client and server Initial packet material from the first client Initial DCID.
     /// </summary>
     internal static bool TryDeriveInitialKeyMaterial(
+        ReadOnlySpan<byte> clientInitialDestinationConnectionId,
+        out QuicInitialPacketProtectionMaterial clientMaterial,
+        out QuicInitialPacketProtectionMaterial serverMaterial)
+        => TryDeriveInitialKeyMaterial(
+            QuicVersionNegotiation.Version1,
+            clientInitialDestinationConnectionId,
+            out clientMaterial,
+            out serverMaterial);
+
+    /// <summary>
+    /// Derives the client and server Initial packet material from the first client Initial DCID.
+    /// </summary>
+    internal static bool TryDeriveInitialKeyMaterial(
+        uint version,
         ReadOnlySpan<byte> clientInitialDestinationConnectionId,
         out QuicInitialPacketProtectionMaterial clientMaterial,
         out QuicInitialPacketProtectionMaterial serverMaterial)
@@ -167,14 +219,14 @@ internal sealed class QuicInitialPacketProtection
             return false;
         }
 
-        byte[] initialSecret = HkdfExtract(InitialSalt, clientInitialDestinationConnectionId);
+        byte[] initialSecret = HkdfExtract(GetInitialSalt(version), clientInitialDestinationConnectionId);
         byte[] clientInitialSecret = HkdfExpandLabel(initialSecret, ClientInLabel, 32);
         byte[] serverInitialSecret = HkdfExpandLabel(initialSecret, ServerInLabel, 32);
 
         try
         {
-            clientMaterial = DeriveInitialPacketProtectionMaterial(clientInitialSecret);
-            serverMaterial = DeriveInitialPacketProtectionMaterial(serverInitialSecret);
+            clientMaterial = DeriveInitialPacketProtectionMaterial(version, clientInitialSecret);
+            serverMaterial = DeriveInitialPacketProtectionMaterial(version, serverInitialSecret);
             return true;
         }
         catch (CryptographicException)
@@ -217,12 +269,18 @@ internal sealed class QuicInitialPacketProtection
     {
         bytesWritten = default;
 
-        if (!TryParseInitialPacketLayout(plaintextPacket, out byte headerControlBits, out ulong lengthFieldValue, out int packetNumberOffset))
+        if (!TryParseInitialPacketLayout(
+            plaintextPacket,
+            out uint packetVersion,
+            out byte headerControlBits,
+            out ulong lengthFieldValue,
+            out int packetNumberOffset)
+            || packetVersion != version)
         {
             return false;
         }
 
-        if (!TryValidatePlaintextInitialHeader(headerControlBits, allowClearedFixedBit))
+        if (!TryValidatePlaintextInitialHeader(packetVersion, headerControlBits, allowClearedFixedBit))
         {
             return false;
         }
@@ -313,6 +371,7 @@ internal sealed class QuicInitialPacketProtection
         return TryOpen(
             protectedPacket,
             destination,
+            version,
             InboundMaterial,
             allowClearedFixedBit,
             out bytesWritten);
@@ -329,6 +388,7 @@ internal sealed class QuicInitialPacketProtection
         return TryOpen(
             protectedPacket,
             destination,
+            version,
             OutboundMaterial,
             false,
             out bytesWritten);
@@ -346,6 +406,7 @@ internal sealed class QuicInitialPacketProtection
         return TryOpen(
             protectedPacket,
             destination,
+            version,
             OutboundMaterial,
             allowClearedFixedBit,
             out bytesWritten);
@@ -354,13 +415,20 @@ internal sealed class QuicInitialPacketProtection
     private static bool TryOpen(
         ReadOnlySpan<byte> protectedPacket,
         Span<byte> destination,
+        uint expectedVersion,
         QuicInitialPacketProtectionMaterial packetProtectionMaterial,
         bool allowClearedFixedBit,
         out int bytesWritten)
     {
         bytesWritten = default;
 
-        if (!TryParseInitialPacketLayout(protectedPacket, out _, out ulong lengthFieldValue, out int packetNumberOffset))
+        if (!TryParseInitialPacketLayout(
+            protectedPacket,
+            out uint packetVersion,
+            out _,
+            out ulong lengthFieldValue,
+            out int packetNumberOffset)
+            || packetVersion != expectedVersion)
         {
             return false;
         }
@@ -386,9 +454,10 @@ internal sealed class QuicInitialPacketProtection
         }
 
         byte unmaskedFirstByte = (byte)(protectedPacket[0] ^ (mask[0] & QuicPacketHeaderBits.TypeSpecificBitsMask));
-        if ((unmaskedFirstByte & QuicPacketHeaderBits.HeaderFormBitMask) == 0
-            || (!allowClearedFixedBit && (unmaskedFirstByte & QuicPacketHeaderBits.FixedBitMask) == 0)
-            || ((unmaskedFirstByte & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift) != QuicLongPacketTypeBits.Initial)
+        if (!TryValidatePlaintextInitialHeader(
+            packetVersion,
+            unmaskedFirstByte,
+            allowClearedFixedBit))
         {
             return false;
         }
@@ -438,11 +507,11 @@ internal sealed class QuicInitialPacketProtection
         return true;
     }
 
-    private static QuicInitialPacketProtectionMaterial DeriveInitialPacketProtectionMaterial(ReadOnlySpan<byte> secret)
+    private static QuicInitialPacketProtectionMaterial DeriveInitialPacketProtectionMaterial(uint version, ReadOnlySpan<byte> secret)
     {
-        byte[] aeadKey = HkdfExpandLabel(secret, QuicKeyLabel, AeadKeyLength);
-        byte[] aeadIv = HkdfExpandLabel(secret, QuicIvLabel, AeadNonceLength);
-        byte[] headerProtectionKey = HkdfExpandLabel(secret, QuicHpLabel, HeaderProtectionKeyLength);
+        byte[] aeadKey = HkdfExpandLabel(secret, GetInitialKeyLabel(version), AeadKeyLength);
+        byte[] aeadIv = HkdfExpandLabel(secret, GetInitialIvLabel(version), AeadNonceLength);
+        byte[] headerProtectionKey = HkdfExpandLabel(secret, GetInitialHeaderProtectionLabel(version), HeaderProtectionKeyLength);
 
         return new QuicInitialPacketProtectionMaterial(
             QuicAeadAlgorithm.Aes128Gcm,
@@ -453,10 +522,12 @@ internal sealed class QuicInitialPacketProtection
 
     private static bool TryParseInitialPacketLayout(
         ReadOnlySpan<byte> packet,
+        out uint packetVersion,
         out byte headerControlBits,
         out ulong lengthFieldValue,
         out int packetNumberOffset)
     {
+        packetVersion = default;
         headerControlBits = default;
         lengthFieldValue = default;
         packetNumberOffset = default;
@@ -464,11 +535,11 @@ internal sealed class QuicInitialPacketProtection
         if (!QuicPacketParsing.TryParseLongHeaderFields(
             packet,
             out headerControlBits,
-            out uint version,
+            out packetVersion,
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || (version != QuicVersionNegotiation.Version1 && !QuicVersionNegotiation.IsReservedVersion(version)))
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
         {
             return false;
         }
@@ -494,8 +565,13 @@ internal sealed class QuicInitialPacketProtection
         return true;
     }
 
-    private static bool TryValidatePlaintextInitialHeader(byte headerControlBits, bool allowClearedFixedBit)
+    private static bool TryValidatePlaintextInitialHeader(uint packetVersion, byte headerControlBits, bool allowClearedFixedBit)
     {
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
+        {
+            return false;
+        }
+
         if (!allowClearedFixedBit
             && (headerControlBits & QuicPacketHeaderBits.FixedBitMask) == 0)
         {
@@ -503,7 +579,7 @@ internal sealed class QuicInitialPacketProtection
         }
 
         byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
-        return longPacketTypeBits == QuicLongPacketTypeBits.Initial;
+        return QuicVersionNegotiation.IsLongHeaderPacketType(packetVersion, longPacketTypeBits, QuicLongPacketType.Initial);
     }
 
     private static void BuildNonce(ReadOnlySpan<byte> iv, ReadOnlySpan<byte> packetNumber, Span<byte> nonce)
@@ -538,6 +614,46 @@ internal sealed class QuicInitialPacketProtection
         }
 
         return true;
+    }
+
+    private static ReadOnlySpan<byte> GetInitialSalt(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => InitialSaltV1,
+            QuicVersionNegotiation.Version2 => InitialSaltV2,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial salt."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetInitialKeyLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicKeyLabel,
+            QuicVersionNegotiation.Version2 => QuicV2KeyLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial key label."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetInitialIvLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicIvLabel,
+            QuicVersionNegotiation.Version2 => QuicV2IvLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial IV label."),
+        };
+    }
+
+    private static ReadOnlySpan<byte> GetInitialHeaderProtectionLabel(uint version)
+    {
+        return version switch
+        {
+            QuicVersionNegotiation.Version1 => QuicHpLabel,
+            QuicVersionNegotiation.Version2 => QuicV2HpLabel,
+            _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial header-protection label."),
+        };
     }
 
 

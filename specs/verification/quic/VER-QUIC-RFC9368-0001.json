@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9368-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9368 Version Information Floor Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0001",
+    "WI-QUIC-RFC9368-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, codec and snapshot-preservation unit tests, transport-parameter fuzz coverage for Version Information shapes, transport-parameter benchmark dry runs, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9368-S3-0001",
+    "REQ-QUIC-RFC9368-S3-0002"
+  ],
+  "scope": "This verification covers the RFC 9368 authenticated Version Information floor only. It proves formatting, parsing, malformed-value rejection, and the snapshot/clone evidence needed to keep the authenticated transport-parameter metadata stable. It does not verify the full compatible-version restart/selection flow from RFC 9368 Section 4 or any RFC 9369-specific packet-format changes.",
+  "preconditions": [
+    "The repository remains in the JSON-only SpecTrace workflow.",
+    "The RFC 9368 requirement-home tests exist under tests/Incursa.Quic.Tests/RequirementHomes/RFC9368.",
+    "The transport-parameter codec, transport bridge state, and resumption store preserve Version Information by cloning the nested version arrays."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~RFC9368`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~QuicTransportParametersCodecUnitTests|FullyQualifiedName~QuicTransportTlsBridgeStateUnitTests|FullyQualifiedName~QuicServerResumptionTicketStoreUnitTests`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicTransportParametersBenchmarks*\" --inProcess`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9368 requirement-home tests pass, the codec and snapshot-preservation unit tests prove authenticated Version Information is preserved across commit and replay boundaries, the transport-parameter benchmark dry run completes, core SpecTrace validation accepts the JSON artifacts, the generated QUIC requirement coverage reports the RFC 9368 floor traceable, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportParametersCodecUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicTransportTlsBridgeStateUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicServerResumptionTicketStoreUnitTests.cs",
+    "tests/Incursa.Quic.Tests/QuicVersionInformationFuzzSupport.cs",
+    "src/Incursa.Quic/QuicVersionInformation.cs",
+    "src/Incursa.Quic/QuicTransportParameters.cs",
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicServerResumptionTicketStore.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "benchmarks/QuicTransportParametersBenchmarks.cs"
+  ],
+  "status_summary": "Passed. The RFC 9368 authenticated Version Information floor now has focused requirement-home proof, snapshot-preservation evidence, fuzz coverage, benchmark dry runs, generated coverage triage, and trace-validation refresh."
+}

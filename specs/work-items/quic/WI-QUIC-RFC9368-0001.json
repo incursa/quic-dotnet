@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9368-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9368 Version Information Floor Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0001",
+    "VER-QUIC-RFC9368-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9368-S3-0001",
+    "REQ-QUIC-RFC9368-S3-0002"
+  ],
+  "summary": "Close the RFC 9368 version_information floor by proving authenticated Version Information formatting, parsing, and snapshot preservation without claiming the full compatible-version runtime-selection flow.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9368.json`, `ARC-QUIC-RFC9368-0001.json`, `WI-QUIC-RFC9368-0001.json`, and `VER-QUIC-RFC9368-0001.json`.\n- Keep `QuicVersionInformation` as the canonical transport-parameter snapshot shape and preserve it through the transport bridge, 0-RTT policy, and resumption store clone paths.\n- Add requirement-home tests for authenticated Version Information formatting and malformed-value rejection, plus focused snapshot-preservation unit coverage where the cloned state is easiest to observe.\n- Extend fuzz coverage so the transport-parameter parser and formatter exercise representative Version Information shapes.\n- Extend transport-parameter benchmark coverage with explicit Version Information scenarios so the versioning floor shows up in the permanent hot-path suites.\n- Keep the full compatible-version restart/selection flow out of scope for this slice and leave it in the gap ledger for a separate runtime-behavior pass.",
+  "verification_plan": "Run the RFC 9368 requirement-home tests, run the transport-parameter codec and snapshot-preservation unit tests, run the transport-parameter benchmark dry run, validate SpecTrace JSON, refresh the QUIC requirement coverage triage, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9368-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9368-0001"
+  ],
+  "out_of_scope": [
+    "The full compatible-version restart/selection flow from RFC 9368 Section 4.",
+    "The QUIC v2 wire-format and cryptographic deltas from RFC 9369.",
+    "Higher-layer application adaptation for version negotiation beyond the authenticated transport-parameter floor."
+  ],
+  "completion_notes": "Complete. The authenticated Version Information floor now has requirement-home, snapshot-preservation, fuzz, benchmark, and trace-validation evidence, while the compatible-version runtime follow-up remains separate."
+}

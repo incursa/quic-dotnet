@@ -1,0 +1,127 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9369",
+  "artifact_type": "specification",
+  "title": "QUIC Version 2 Static Floor (RFC 9369)",
+  "domain": "quic",
+  "capability": "transport",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "purpose": "Capture the RFC 9369 QUIC v2 wire-format and cryptographic floor that is already implemented in the transport helpers.",
+  "scope": "This specification covers the RFC 9369 v2 version constant, long-header packet-type mapping, Initial salt and HKDF labels, and Retry integrity key/nonce. It does not cover the compatible-version runtime-selection follow-up from RFC 9368 or any higher-layer application adaptation for version negotiation.",
+  "context": "RFC 9369 defines QUIC version 2 as a v1-compatible wire-format with new packet-type bits, new Initial keying material, and new Retry integrity values. The repository already has the version-aware helper surface for those static changes, while the full compatible-version runtime-selection flow remains in the RFC 9368 follow-up gap.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9369-0001",
+    "WI-QUIC-RFC9369-0001",
+    "VER-QUIC-RFC9369-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9369-S3-0001",
+      "title": "Recognize QUIC version 2 long headers",
+      "statement": "An endpoint that supports QUIC version 2 MUST accept 0x6B3343CF as a supported transport version and use the version-specific bit assignments defined by RFC 9369 when encoding and decoding long-header packet types.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9369-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9369-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9369-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9369 §3.1",
+          "RFC 9369 §3.2",
+          "https://www.rfc-editor.org/rfc/rfc9369.html#section-3.1",
+          "https://www.rfc-editor.org/rfc/rfc9369.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9369-S3-0002",
+      "title": "Use the RFC 9369 Initial salt and labels",
+      "statement": "A QUIC v2 endpoint MUST derive and validate Initial packet protection using the RFC 9369 Initial salt and the `quicv2 key`, `quicv2 iv`, and `quicv2 hp` labels, keeping v1 and v2 Initial protection material distinct.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9369-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9369-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9369-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9369 §3.3.1",
+          "RFC 9369 §3.3.2",
+          "https://www.rfc-editor.org/rfc/rfc9369.html#section-3.3.1",
+          "https://www.rfc-editor.org/rfc/rfc9369.html#section-3.3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9369-S3-0003",
+      "title": "Use the RFC 9369 Retry integrity key and nonce",
+      "statement": "A QUIC v2 endpoint MUST generate and validate Retry integrity tags using the RFC 9369 v2 Retry secret material, keeping Retry metadata bound to the version carried by the Retry packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9369-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9369-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9369-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9369 §3.3.3",
+          "https://www.rfc-editor.org/rfc/rfc9369.html#section-3.3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets"
+        ]
+      }
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This slice is intentionally narrow. It owns the QUIC v2 static floor: version recognition, packet-type mapping, Initial protection, and Retry integrity. It does not claim the compatible-version runtime-selection follow-up from RFC 9368 or any higher-layer adaptation beyond the transport helpers."
+    }
+  ]
+}

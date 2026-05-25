@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T20:36:05.7972616-06:00",
+  "generated_at": "2026-05-24T23:46:51.7296193-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -8,7 +8,9 @@
       "specs/requirements/quic/SPEC-QUIC-RFC9001.json",
       "specs/requirements/quic/SPEC-QUIC-RFC9002.json",
       "specs/requirements/quic/SPEC-QUIC-RFC9221.json",
-      "specs/requirements/quic/SPEC-QUIC-RFC9287.json"
+      "specs/requirements/quic/SPEC-QUIC-RFC9287.json",
+      "specs/requirements/quic/SPEC-QUIC-RFC9368.json",
+      "specs/requirements/quic/SPEC-QUIC-RFC9369.json"
     ],
     "requirement_gaps": "specs/requirements/quic/REQUIREMENT-GAPS.md",
     "tests_root": "tests/Incursa.Quic.Tests",
@@ -20,13 +22,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-05-24T20:36:05.7941440-06:00",
-    "total_requirements": 1816,
+    "generated_at": "2026-05-24T23:46:51.7268803-06:00",
+    "total_requirements": 1821,
     "by_state": {
-      "trace_clean": 1816
+      "trace_clean": 1821
     },
     "by_work_queue_tag": {
-      "clean": 1816
+      "clean": 1821
     },
     "by_rfc": [
       {
@@ -69,6 +71,20 @@
         "total": 4,
         "by_state": {
           "trace_clean": 4
+        }
+      },
+      {
+        "rfc": "RFC9368",
+        "total": 2,
+        "by_state": {
+          "trace_clean": 2
+        }
+      },
+      {
+        "rfc": "RFC9369",
+        "total": 3,
+        "by_state": {
+          "trace_clean": 3
         }
       }
     ]
@@ -315646,6 +315662,1291 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9287-S3-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+      "artifact_id": "SPEC-QUIC-RFC9368",
+      "rfc": "RFC9368",
+      "section_prefix": "S3",
+      "title": "Emit authenticated Version Information",
+      "statement": "An endpoint that supports compatible version negotiation MUST encode Version Information in the `version_information` transport parameter with a non-zero Chosen Version and a list of Available Versions that includes the Chosen Version when the endpoint acts as a client.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 10,
+        "focused": 10,
+        "broad": 0,
+        "by_kind": {
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets",
+          "method": "Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets",
+          "method": "Fuzz_TryFormatTransportParameters_RoundTripsVersionInformationAcrossRepresentativeVersionSets",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "method": "TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "method": "TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "method": "TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "line": 52,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "method": "TryFormatTransportParameters_EmitsVersionInformationForServerWithAnEmptyAvailableVersionList",
+          "line": 52,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "method": "TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "line": 76,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "method": "TryFormatTransportParameters_RejectsClientVersionInformationWhenChosenVersionIsMissingFromAvailableVersions",
+          "line": 76,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "method": "TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "line": 28,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs::TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0001",
+          "member": "REQ_QUIC_RFC9368_S3_0001.TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "method": "TryFormatTransportParameters_RoundsTripVersionInformationAcrossClientAndServerRoles",
+          "line": 28,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+      "artifact_id": "SPEC-QUIC-RFC9368",
+      "rfc": "RFC9368",
+      "section_prefix": "S3",
+      "title": "Reject malformed Version Information",
+      "statement": "An endpoint that receives Version Information MUST treat zero Chosen Version values, zero Available Version values, misaligned payload lengths, and a client-sent list that omits the Chosen Version as parsing failures.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 6,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 12,
+        "focused": 12,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 6,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes",
+          "method": "Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes",
+          "method": "Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "method": "TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "method": "TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
+          "line": 11,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "method": "TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "line": 66,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "method": "TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
+          "line": 66,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "line": 36,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9368-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9368_S3_0002",
+          "member": "REQ_QUIC_RFC9368_S3_0002.TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "method": "TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "line": 36,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9368-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+      "artifact_id": "SPEC-QUIC-RFC9369",
+      "rfc": "RFC9369",
+      "section_prefix": "S3",
+      "title": "Recognize QUIC version 2 long headers",
+      "statement": "An endpoint that supports QUIC version 2 MUST accept 0x6B3343CF as a supported transport version and use the version-specific bit assignments defined by RFC 9369 when encoding and decoding long-header packet types.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 10,
+        "focused": 10,
+        "broad": 0,
+        "by_kind": {
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes",
+          "method": "Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes",
+          "method": "Fuzz_TryParseLongHeader_AcceptsRepresentativeVersion2PacketShapes",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "method": "TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "method": "TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "method": "TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "line": 81,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "method": "TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets",
+          "line": 81,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "method": "TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "method": "TryGetPacketNumberSpace_RejectsVersion2RetryPackets",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "method": "TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs::TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0001.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0001",
+          "member": "REQ_QUIC_RFC9369_S3_0001.TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "method": "TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+      "artifact_id": "SPEC-QUIC-RFC9369",
+      "rfc": "RFC9369",
+      "section_prefix": "S3",
+      "title": "Use the RFC 9369 Initial salt and labels",
+      "statement": "A QUIC v2 endpoint MUST derive and validate Initial packet protection using the RFC 9369 Initial salt and the `quicv2 key`, `quicv2 iv`, and `quicv2 hp` labels, keeping v1 and v2 Initial protection material distinct.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads",
+          "method": "Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads",
+          "line": 117,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads",
+          "method": "Fuzz_Version2InitialPacketProtection_RoundTripsRepresentativePayloads",
+          "line": 117,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "method": "TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "method": "TryCreate_Version1InitialPacketProtector_DoesNotOpenVersion2InitialPackets",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "method": "TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "method": "TryCreate_Version2InitialPacketProtector_ProtectsAndOpensVersion2InitialPackets",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "method": "TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "line": 95,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs::TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0002.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0002",
+          "member": "REQ_QUIC_RFC9369_S3_0002.TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "method": "TryDeriveInitialKeyMaterial_UsesDistinctMaterialForVersion1AndVersion2",
+          "line": 95,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+      "artifact_id": "SPEC-QUIC-RFC9369",
+      "rfc": "RFC9369",
+      "section_prefix": "S3",
+      "title": "Use the RFC 9369 Retry integrity key and nonce",
+      "statement": "A QUIC v2 endpoint MUST generate and validate Retry integrity tags using the RFC 9369 v2 Retry secret material, keeping Retry metadata bound to the version carried by the Retry packet.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets",
+          "method": "Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets",
+          "method": "Fuzz_Version2RetryIntegrity_RoundTripsRepresentativePackets",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "method": "TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "method": "TryBuildRetryPacket_Version2_ProducesValidRetryIntegrity",
+          "line": 9,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "method": "TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "line": 55,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "method": "TryGenerateRetryIntegrityTag_Version2_DiffersFromVersion1Material",
+          "line": 55,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "method": "TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9369-S3-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs::TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9369/REQ-QUIC-RFC9369-S3-0003.cs",
+          "class": "REQ_QUIC_RFC9369_S3_0003",
+          "member": "REQ_QUIC_RFC9369_S3_0003.TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "method": "TryParseRetryBootstrapMetadata_VersionAwareOverload_RejectsVersionMismatches",
+          "line": 35,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9369-S3-0003"
           ],
           "requirement_tagged": true,
           "class_level_only": true

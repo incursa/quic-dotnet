@@ -33,7 +33,7 @@ internal static class QuicTransportParametersCodec
     // 0x06 initial_max_stream_data_bidi_remote, 0x07 initial_max_stream_data_uni,
     // 0x08 initial_max_streams_bidi, 0x09 initial_max_streams_uni, 0x0B max_ack_delay,
     // 0x0C disable_active_migration, 0x0D preferred_address, 0x0E active_connection_id_limit,
-    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id,
+    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id, 0x11 version_information,
     // 0x20 max_datagram_frame_size, 0x2AB2 grease_quic_bit.
     private const ulong OriginalDestinationConnectionIdId = 0x00;
     private const ulong MaxIdleTimeoutId = 0x01;
@@ -51,6 +51,7 @@ internal static class QuicTransportParametersCodec
     private const ulong ActiveConnectionIdLimitId = 0x0E;
     private const ulong InitialSourceConnectionIdId = 0x0F;
     private const ulong RetrySourceConnectionIdId = 0x10;
+    private const ulong VersionInformationId = 0x11;
     private const ulong MaxDatagramFrameSizeId = 0x20;
     private const ulong GreaseQuicBitId = 0x2AB2;
 
@@ -271,6 +272,12 @@ internal static class QuicTransportParametersCodec
 
         if (parameters.MaxDatagramFrameSize is ulong maxDatagramFrameSize
             && !TryWriteVarintParameter(MaxDatagramFrameSizeId, maxDatagramFrameSize, destination, ref index))
+        {
+            return false;
+        }
+
+        if (parameters.VersionInformation is QuicVersionInformation versionInformation
+            && !TryWriteVersionInformationParameter(versionInformation, senderRole, destination, ref index))
         {
             return false;
         }
@@ -577,6 +584,15 @@ internal static class QuicTransportParametersCodec
                 parameters.RetrySourceConnectionId = value.ToArray();
                 return true;
 
+            case VersionInformationId:
+                if (!TryParseVersionInformation(value, receiverRole, out QuicVersionInformation? versionInformation))
+                {
+                    return false;
+                }
+
+                parameters.VersionInformation = versionInformation;
+                return true;
+
             default:
                 return true;
         }
@@ -755,6 +771,94 @@ internal static class QuicTransportParametersCodec
         valueIndex += StatelessResetTokenLength;
 
         return TryWriteTuple(PreferredAddressId, valueBuffer[..valueIndex], destination, ref index);
+    }
+
+    private static bool TryWriteVersionInformationParameter(
+        QuicVersionInformation versionInformation,
+        QuicTransportParameterRole senderRole,
+        Span<byte> destination,
+        ref int index)
+    {
+        if (versionInformation.ChosenVersion == 0)
+        {
+            return false;
+        }
+
+        uint[] availableVersions = versionInformation.AvailableVersions;
+        if (availableVersions is null)
+        {
+            return false;
+        }
+
+        int valueLength = checked(sizeof(uint) + (availableVersions.Length * sizeof(uint)));
+        Span<byte> valueBuffer = stackalloc byte[valueLength];
+        BinaryPrimitives.WriteUInt32BigEndian(valueBuffer, versionInformation.ChosenVersion);
+        int valueIndex = sizeof(uint);
+        for (int i = 0; i < availableVersions.Length; i++)
+        {
+            if (availableVersions[i] == 0)
+            {
+                return false;
+            }
+
+            BinaryPrimitives.WriteUInt32BigEndian(valueBuffer.Slice(valueIndex, sizeof(uint)), availableVersions[i]);
+            valueIndex += sizeof(uint);
+        }
+
+        if (senderRole == QuicTransportParameterRole.Client
+            && Array.IndexOf(availableVersions, versionInformation.ChosenVersion) < 0)
+        {
+            return false;
+        }
+
+        return TryWriteTuple(VersionInformationId, valueBuffer, destination, ref index);
+    }
+
+    private static bool TryParseVersionInformation(
+        ReadOnlySpan<byte> value,
+        QuicTransportParameterRole receiverRole,
+        out QuicVersionInformation? versionInformation)
+    {
+        versionInformation = null;
+
+        if (value.Length < sizeof(uint) || (value.Length % sizeof(uint)) != 0)
+        {
+            return false;
+        }
+
+        int versionCount = value.Length / sizeof(uint);
+        uint chosenVersion = BinaryPrimitives.ReadUInt32BigEndian(value);
+        if (chosenVersion == 0)
+        {
+            return false;
+        }
+
+        uint[] availableVersions = new uint[versionCount - 1];
+        int offset = sizeof(uint);
+        for (int i = 0; i < availableVersions.Length; i++)
+        {
+            uint availableVersion = BinaryPrimitives.ReadUInt32BigEndian(value.Slice(offset, sizeof(uint)));
+            if (availableVersion == 0)
+            {
+                return false;
+            }
+
+            availableVersions[i] = availableVersion;
+            offset += sizeof(uint);
+        }
+
+        if (receiverRole == QuicTransportParameterRole.Server
+            && (availableVersions.Length == 0 || Array.IndexOf(availableVersions, chosenVersion) < 0))
+        {
+            return false;
+        }
+
+        versionInformation = new QuicVersionInformation
+        {
+            ChosenVersion = chosenVersion,
+            AvailableVersions = availableVersions,
+        };
+        return true;
     }
 
     private static bool TryWriteTuple(

@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+
 namespace Incursa.Quic.Tests;
 
 public sealed class QuicTransportParametersCodecUnitTests
@@ -191,6 +193,63 @@ public sealed class QuicTransportParametersCodecUnitTests
     }
 
     [Fact]
+    public void TryFormatTransportParameters_EmitsVersionInformationForClientAndServerSnapshots()
+    {
+        QuicTransportParameters clientParameters = CreateVersionInformationTransportParameters(
+            QuicVersionNegotiation.Version2,
+            [QuicVersionNegotiation.Version2, QuicVersionNegotiation.Version1, QuicVersionNegotiation.CreateReservedVersion(0x10203040)]);
+
+        QuicTransportParameters serverParameters = CreateVersionInformationTransportParameters(
+            QuicVersionNegotiation.Version1,
+            [QuicVersionNegotiation.Version1, QuicVersionNegotiation.Version2]);
+
+        AssertVersionInformationFormatsAsExpected(clientParameters, QuicTransportParameterRole.Client);
+        AssertVersionInformationFormatsAsExpected(serverParameters, QuicTransportParameterRole.Server);
+    }
+
+    [Fact]
+    public void TryParseTransportParameters_AcceptsAValidVersionInformationPayload()
+    {
+        QuicTransportParameters parameters = CreateVersionInformationTransportParameters(
+            QuicVersionNegotiation.Version2,
+            [QuicVersionNegotiation.Version2, QuicVersionNegotiation.Version1]);
+
+        Span<byte> destination = stackalloc byte[128];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            QuicTransportParameterRole.Client,
+            destination,
+            out int bytesWritten));
+
+        Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+            destination[..bytesWritten],
+            QuicTransportParameterRole.Server,
+            out QuicTransportParameters parsed));
+
+        Assert.NotNull(parsed.VersionInformation);
+        AssertVersionInformationEqual(parameters.VersionInformation!, parsed.VersionInformation!);
+    }
+
+    [Fact]
+    public void TryParseTransportParameters_RejectsMalformedVersionInformationPayloads()
+    {
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x11, [0x00, 0x00, 0x00, 0x00]),
+            QuicTransportParameterRole.Server,
+            out _));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x11, [0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00]),
+            QuicTransportParameterRole.Server,
+            out _));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(0x11, [0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00]),
+            QuicTransportParameterRole.Server,
+            out _));
+    }
+
+    [Fact]
     public void TryParseTransportParameters_RejectsNonEmptyGreaseQuicBitParameter()
     {
         byte[] encoded = QuicTransportParameterTestData.BuildTransportParameterTuple(0x2AB2, [0x01]);
@@ -258,5 +317,63 @@ public sealed class QuicTransportParametersCodecUnitTests
         Assert.Equal(expected.IPv6Port, actual.IPv6Port);
         Assert.True(expected.ConnectionId.AsSpan().SequenceEqual(actual.ConnectionId));
         Assert.True(expected.StatelessResetToken.AsSpan().SequenceEqual(actual.StatelessResetToken));
+    }
+
+    private static QuicTransportParameters CreateVersionInformationTransportParameters(
+        uint chosenVersion,
+        uint[] availableVersions)
+    {
+        return new QuicTransportParameters
+        {
+            VersionInformation = new QuicVersionInformation
+            {
+                ChosenVersion = chosenVersion,
+                AvailableVersions = availableVersions,
+            },
+        };
+    }
+
+    private static void AssertVersionInformationFormatsAsExpected(
+        QuicTransportParameters parameters,
+        QuicTransportParameterRole senderRole)
+    {
+        byte[] expected = QuicTransportParameterTestData.BuildTransportParameterTuple(
+            0x11,
+            BuildVersionInformationValue(
+                parameters.VersionInformation!.ChosenVersion,
+                parameters.VersionInformation.AvailableVersions));
+
+        Span<byte> destination = stackalloc byte[128];
+        Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+            parameters,
+            senderRole,
+            destination,
+            out int bytesWritten));
+
+        Assert.Equal(expected.Length, bytesWritten);
+        Assert.True(expected.AsSpan().SequenceEqual(destination[..bytesWritten]));
+    }
+
+    private static byte[] BuildVersionInformationValue(uint chosenVersion, ReadOnlySpan<uint> availableVersions)
+    {
+        byte[] value = new byte[sizeof(uint) + (availableVersions.Length * sizeof(uint))];
+        BinaryPrimitives.WriteUInt32BigEndian(value, chosenVersion);
+
+        int offset = sizeof(uint);
+        for (int index = 0; index < availableVersions.Length; index++)
+        {
+            BinaryPrimitives.WriteUInt32BigEndian(
+                value.AsSpan(offset, sizeof(uint)),
+                availableVersions[index]);
+            offset += sizeof(uint);
+        }
+
+        return value;
+    }
+
+    private static void AssertVersionInformationEqual(QuicVersionInformation expected, QuicVersionInformation actual)
+    {
+        Assert.Equal(expected.ChosenVersion, actual.ChosenVersion);
+        Assert.True(expected.AvailableVersions.AsSpan().SequenceEqual(actual.AvailableVersions));
     }
 }

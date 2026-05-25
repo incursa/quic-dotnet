@@ -79,25 +79,32 @@ internal static class QuicPacketParsing
         int sourceConnectionIdLength,
         ReadOnlySpan<byte> versionSpecificData)
     {
-        if (!QuicVersionNegotiation.IsVersion1(version))
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
         {
             return true;
         }
 
-        byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
-        return longPacketTypeBits switch
+        if (!QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            version,
+            (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+            out QuicLongPacketType longPacketType))
         {
-            QuicLongPacketTypeBits.Initial => TryValidateInitialPacketFields(
+            return false;
+        }
+
+        return longPacketType switch
+        {
+            QuicLongPacketType.Initial => TryValidateInitialPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
-            QuicLongPacketTypeBits.ZeroRtt => TryValidateZeroRttPacketFields(
+            QuicLongPacketType.ZeroRtt => TryValidateZeroRttPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
-            QuicLongPacketTypeBits.Handshake => TryValidateZeroRttPacketFields(
+            QuicLongPacketType.Handshake => TryValidateZeroRttPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,

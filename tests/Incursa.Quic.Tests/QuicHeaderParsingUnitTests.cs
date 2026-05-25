@@ -93,6 +93,85 @@ public sealed class QuicHeaderParsingUnitTests
     }
 
     [Fact]
+    public void TryGetLongHeaderPacketType_MapsVersion2PacketTypeBits()
+    {
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            QuicVersionNegotiation.Version2,
+            0x01,
+            out QuicLongPacketType initialPacketType));
+        Assert.Equal(QuicLongPacketType.Initial, initialPacketType);
+
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            QuicVersionNegotiation.Version2,
+            0x02,
+            out QuicLongPacketType zeroRttPacketType));
+        Assert.Equal(QuicLongPacketType.ZeroRtt, zeroRttPacketType);
+
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            QuicVersionNegotiation.Version2,
+            0x03,
+            out QuicLongPacketType handshakePacketType));
+        Assert.Equal(QuicLongPacketType.Handshake, handshakePacketType);
+
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            QuicVersionNegotiation.Version2,
+            0x00,
+            out QuicLongPacketType retryPacketType));
+        Assert.Equal(QuicLongPacketType.Retry, retryPacketType);
+    }
+
+    [Fact]
+    public void TryParseLongHeader_AcceptsVersion2InitialAndHandshakePackets()
+    {
+        byte[] initialPacket = BuildVersion2InitialPacket();
+        byte[] handshakePacket = BuildVersion2HandshakePacket();
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(initialPacket, out QuicLongHeaderPacket initialHeader));
+        Assert.Equal(QuicVersionNegotiation.Version2, initialHeader.Version);
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            initialHeader.Version,
+            initialHeader.LongPacketTypeBits,
+            out QuicLongPacketType initialPacketType));
+        Assert.Equal(QuicLongPacketType.Initial, initialPacketType);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(handshakePacket, out QuicLongHeaderPacket handshakeHeader));
+        Assert.Equal(QuicVersionNegotiation.Version2, handshakeHeader.Version);
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            handshakeHeader.Version,
+            handshakeHeader.LongPacketTypeBits,
+            out QuicLongPacketType handshakePacketType));
+        Assert.Equal(QuicLongPacketType.Handshake, handshakePacketType);
+    }
+
+    [Fact]
+    public void TryGetPacketNumberSpace_RejectsVersion2RetryPackets()
+    {
+        byte[] retryPacket = BuildVersion2RetryPacket();
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(retryPacket, out QuicLongHeaderPacket header));
+        Assert.Equal(QuicVersionNegotiation.Version2, header.Version);
+        Assert.True(QuicVersionNegotiation.TryGetLongHeaderPacketType(
+            header.Version,
+            header.LongPacketTypeBits,
+            out QuicLongPacketType packetType));
+        Assert.Equal(QuicLongPacketType.Retry, packetType);
+        Assert.False(QuicPacketParser.TryGetPacketNumberSpace(retryPacket, out _));
+    }
+
+    [Fact]
+    public void TryGetPacketNumberSpace_MapsVersion2InitialAndHandshakePackets()
+    {
+        byte[] initialPacket = BuildVersion2InitialPacket();
+        byte[] handshakePacket = BuildVersion2HandshakePacket();
+
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(initialPacket, out QuicPacketNumberSpace initialSpace));
+        Assert.Equal(QuicPacketNumberSpace.Initial, initialSpace);
+
+        Assert.True(QuicPacketParser.TryGetPacketNumberSpace(handshakePacket, out QuicPacketNumberSpace handshakeSpace));
+        Assert.Equal(QuicPacketNumberSpace.Handshake, handshakeSpace);
+    }
+
+    [Fact]
     public void TryParseShortHeader_ParsesAValidShortHeaderPacket()
     {
         byte[] expectedRemainder = [0xAA, 0xBB, 0xCC];
@@ -251,5 +330,42 @@ public sealed class QuicHeaderParsingUnitTests
             destinationConnectionId: destinationConnectionId,
             sourceConnectionId: sourceConnectionId,
             versionSpecificData: versionSpecificData);
+    }
+
+    private static byte[] BuildVersion2InitialPacket()
+    {
+        return QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: (byte)(QuicPacketHeaderBits.FixedBitMask
+                | (0x01 << QuicPacketHeaderBits.LongPacketTypeBitsShift)),
+            version: QuicVersionNegotiation.Version2,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            versionSpecificData: QuicHeaderTestData.BuildInitialVersionSpecificData(
+                [0x01],
+                [0x02],
+                [0xAA]));
+    }
+
+    private static byte[] BuildVersion2HandshakePacket()
+    {
+        return QuicHeaderTestData.BuildLongHeader(
+            headerControlBits: (byte)(QuicPacketHeaderBits.FixedBitMask
+                | (0x03 << QuicPacketHeaderBits.LongPacketTypeBitsShift)
+                | 0x02),
+            version: QuicVersionNegotiation.Version2,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            versionSpecificData: QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+                [0x01, 0x02],
+                [0xAA, 0xBB]));
+    }
+
+    private static byte[] BuildVersion2RetryPacket()
+    {
+        return QuicRetryPacketRequirementTestData.BuildRetryPacket(
+            version: QuicVersionNegotiation.Version2,
+            destinationConnectionId: [0x10, 0x11],
+            sourceConnectionId: [0x20],
+            retryToken: [0x74, 0x6F, 0x6B, 0x65, 0x6E]);
     }
 }

@@ -46,6 +46,11 @@ internal sealed class QuicTransportParameters
     internal bool GreaseQuicBit { get; set; }
 
     /// <summary>
+    /// Gets or sets version_information when negotiated version support is enabled.
+    /// </summary>
+    internal QuicVersionInformation? VersionInformation { get; set; }
+
+    /// <summary>
     /// Gets or sets the initial_max_data transport parameter value.
     /// </summary>
     internal ulong? InitialMaxData { get; set; }
