@@ -28,7 +28,7 @@ internal sealed class QuicHandshakeFlowCoordinator
     private byte[] initialDestinationConnectionId;
     private byte[] destinationConnectionId;
     private byte[] sourceConnectionId;
-    private readonly uint initialPacketVersion;
+    private uint initialPacketVersion;
     private readonly bool enableRandomizedSpinBitSelection;
     private ulong nextPacketNumber;
     private ulong nextApplicationPacketNumber;
@@ -44,6 +44,17 @@ internal sealed class QuicHandshakeFlowCoordinator
         this.sourceConnectionId = sourceConnectionId.ToArray();
         this.initialPacketVersion = initialPacketVersion;
         this.enableRandomizedSpinBitSelection = enableRandomizedSpinBitSelection;
+    }
+
+    internal bool TrySetPacketVersion(uint version)
+    {
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
+        {
+            return false;
+        }
+
+        initialPacketVersion = version;
+        return true;
     }
 
     internal bool TrySetDestinationConnectionId(ReadOnlySpan<byte> connectionId)

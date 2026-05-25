@@ -45,8 +45,8 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("19", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,connectionmigration", GetPlanValue(output, "Supported/executed"));
-        Assert.Equal("v2,rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
+        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
         Assert.StartsWith(Path.GetFullPath(fixture.ArtifactsRoot), runRoot, StringComparison.OrdinalIgnoreCase);
@@ -66,6 +66,7 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Contains("dedicated live runner proof and inventory promotion for NAT port rebinding", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("runner analyzer shim validates server paths from the server trace", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Requires client-host socket rebinding lifecycle support before inventory promotion", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("v2 -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("hosted Linux proof success", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Plan-only mode completed without Docker build, runner checkout validation, or runner launch.", output, StringComparison.OrdinalIgnoreCase);

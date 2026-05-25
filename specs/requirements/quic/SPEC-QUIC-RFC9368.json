@@ -2,18 +2,21 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "SPEC-QUIC-RFC9368",
   "artifact_type": "specification",
-  "title": "QUIC Compatible Version Negotiation Floor (RFC 9368)",
+  "title": "QUIC Compatible Version Negotiation (RFC 9368)",
   "domain": "quic",
   "capability": "transport",
   "status": "draft",
   "owner": "quic-maintainers",
-  "purpose": "Capture the RFC 9368 version_information transport-parameter floor and authenticated handshake validation that the repository already implements.",
-  "scope": "This specification covers the RFC 9368 version_information transport-parameter floor: endpoints format and parse authenticated Version Information, client-sent lists include the chosen version, malformed values are rejected, and the authenticated chosen-version checks keep the connection version consistent. It does not cover the full compatible-version runtime-selection flow that would avoid an extra round trip; that follow-up remains a separate future slice.",
-  "context": "RFC 9368 defines authenticated Version Information for QUIC version 1 and uses it to prevent downgrade attacks. The repository already carries the transport-parameter, bridge-state, and resumption snapshot plumbing for the floor, but the full compatible-version restart/selection behavior is still tracked separately in the gap ledger.",
+  "purpose": "Capture the RFC 9368 version_information transport-parameter floor and the compatible-version runtime behavior that the repository now implements.",
+  "scope": "This specification covers the RFC 9368 version_information transport-parameter floor and compatible-version runtime behavior: endpoints format and parse authenticated Version Information, the server selects a mutually supported compatible version from the client's offered set, the client adopts and validates the negotiated version, and the authenticated chosen-version checks keep the connection version consistent. It does not cover Retry or 0-RTT compatibility follow-ons beyond the RFC 9368 compatibility and security rules already written here.",
+  "context": "RFC 9368 defines authenticated Version Information for QUIC and uses it to prevent downgrade attacks while allowing compatible version negotiation. The repository now carries the transport-parameter, bridge-state, listener-bootstrap, and runtime version-switch plumbing for both the floor and the compatible-version runtime-selection slice.",
   "related_artifacts": [
     "ARC-QUIC-RFC9368-0001",
     "WI-QUIC-RFC9368-0001",
-    "VER-QUIC-RFC9368-0001"
+    "VER-QUIC-RFC9368-0001",
+    "ARC-QUIC-RFC9368-0002",
+    "WI-QUIC-RFC9368-0002",
+    "VER-QUIC-RFC9368-0002"
   ],
   "requirements": [
     {
@@ -82,12 +85,80 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
         ]
       }
+    },
+    {
+      "id": "REQ-QUIC-RFC9368-S4-0001",
+      "title": "Select a compatible negotiated version",
+      "statement": "When an endpoint can parse the client's first flight using the client's Chosen Version and the client's Version Information lists at least one mutually supported compatible version, the server MUST select one such version as the Negotiated Version, continue the handshake using that version, and preserve the client's Original Version long enough to authenticate the Version Information carried on that original first flight.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0002"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §2.3",
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-2.3",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9368-S4-0002",
+      "title": "Adopt and validate the negotiated version",
+      "statement": "A client that learns the Negotiated Version from the server's handshake packets MUST validate that the server's Chosen Version matches the Negotiated Version and close the connection with a version negotiation error if they do not match. When the negotiated version is compatible with the client's Original Version, the client continues the connection using that negotiated version for subsequent packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0002"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §2.3",
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-2.3",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders"
+        ]
+      }
     }
   ],
   "supplemental_sections": [
     {
       "heading": "Implementation Boundary",
-      "content": "This slice is intentionally narrow. It owns the authenticated Version Information floor and the transport-parameter snapshot paths that keep the encoded data stable. The full compatible-version restart/selection behavior from RFC 9368 Section 4 remains separate future work."
+      "content": "This slice owns the authenticated Version Information floor and the compatible-version runtime-selection flow. It keeps the original-version authentication path alive long enough to validate the client's Version Information, then switches the server and client runtime state to the negotiated version when compatible negotiation succeeds. Retry and 0-RTT compatibility follow-ons remain separate future work."
     }
   ]
 }

@@ -118,7 +118,7 @@ internal sealed class QuicTlsKeySchedule
     private readonly QuicServerResumptionTicketStore? serverResumptionTicketStore;
     private readonly byte[]? deterministicClientHelloRandom;
     private readonly bool emitKeyLogSecrets;
-    private readonly uint transportVersion;
+    private uint transportVersion;
     private byte[][] applicationProtocols;
     private byte[]? localHandshakeTranscriptPrefix;
 
@@ -241,6 +241,17 @@ internal sealed class QuicTlsKeySchedule
         }
 
         this.applicationProtocols = NormalizeApplicationProtocols(applicationProtocols);
+    }
+
+    internal bool TryUpdateTransportVersion(uint version)
+    {
+        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
+        {
+            return false;
+        }
+
+        transportVersion = version;
+        return true;
     }
 
     private static QuicTlsCipherSuiteProfile? ResolveSelectedCipherSuiteProfile(QuicTlsCipherSuite selectedCipherSuite)

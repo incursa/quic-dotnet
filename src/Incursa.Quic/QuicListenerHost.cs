@@ -980,6 +980,27 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return false;
             }
 
+            if (!QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out ReadOnlySpan<byte> initialCryptoFrameData)
+                || !QuicTlsClientHelloExtensions.TryReadClientHelloTransportParameters(
+                    initialCryptoFrameData,
+                    out QuicTransportParameters? clientHelloTransportParameters))
+            {
+                return false;
+            }
+
+            uint selectedVersion = initialVersion;
+            if (clientHelloTransportParameters?.VersionInformation is QuicVersionInformation clientVersionInformation
+                && QuicVersionNegotiation.TrySelectCompatibleVersion(
+                    initialVersion,
+                    clientVersionInformation.AvailableVersions,
+                    ListenerSupportedVersions,
+                    out uint negotiatedVersion))
+            {
+                selectedVersion = negotiatedVersion;
+            }
+
             if (retryBootstrapEnabled)
             {
                 if (isRetryBootstrapReplayCandidate)
@@ -1071,7 +1092,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
 
             byte[] serverSourceConnectionId = GenerateServerSourceConnectionId();
-            runtime = CreateRuntime(selectedOptions, initialVersion);
+            runtime = CreateRuntime(selectedOptions, selectedVersion);
             if (newTokenValidated)
             {
                 _ = runtime.TryMarkPeerAddressValidatedByAddressValidationToken(runtime.Clock.Ticks);
@@ -1091,6 +1112,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
 
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
+            {
+                return false;
+            }
+
+            if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId)
+                || !runtime.TryConfigureInitialPacketProtection(selectedVersion, initialDestinationConnectionId)
+                || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
+                || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
+                || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols))
             {
                 return false;
             }
@@ -1120,11 +1150,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             ApplyReturnedOptions(selectedOptions, returnedOptions);
             connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
-            if (!runtime.TryConfigureInitialPacketProtection(initialVersion, initialDestinationConnectionId)
-                || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
-                || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
-                || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols)
-                || !runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
+            if (!runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
                 || !runtime.TryConfigureServerEarlyData(validatedOptions.EnableEarlyData)
                 || !runtime.TryConfigureServerAuthenticationMaterial(
                     validatedOptions.ServerLeafCertificateDer,

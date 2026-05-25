@@ -149,6 +149,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     internal ReadOnlyMemory<byte> ResumptionMasterSecret => keySchedule?.ResumptionMasterSecret ?? ReadOnlyMemory<byte>.Empty;
 
+    internal bool TryUpdateTransportVersion(uint version)
+    {
+        return keySchedule?.TryUpdateTransportVersion(version) == true;
+    }
+
     internal QuicClientCertificatePolicySnapshot? ClientCertificatePolicySnapshot => clientCertificatePolicySnapshot;
 
     internal bool TryGetExpectedPeerFinishedVerifyData(out byte[] verifyData)

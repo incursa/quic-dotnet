@@ -72,10 +72,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
-    private readonly QuicConnectionVersionProfile versionProfile;
+    private QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly bool allowClientPeerInitialReplacementBeforeTranscript;
     private QuicInitialPacketProtection? initialPacketProtection;
+    private QuicInitialPacketProtection? peerInitialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
     private byte[]? initialBootstrapClientHelloBytes;
     private byte[]? ownedResumptionTicketBytes;
@@ -419,6 +420,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal QuicInitialPacketProtection? InitialPacketProtection => initialPacketProtection;
 
+    internal QuicInitialPacketProtection? PeerInitialPacketProtection => peerInitialPacketProtection;
+
     internal int BufferedEstablishmentHandshakePacketCount => bufferedEstablishmentHandshakePackets.Count;
 
     internal Dictionary<ulong, byte[]> StatelessResetTokensByConnectionId => issuedConnectionIdState.StatelessResetTokensByConnectionId;
@@ -428,6 +431,38 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     internal void MarkHandshakeDonePacketSentForTests()
     {
         handshakeDonePacketSent = true;
+    }
+
+    internal bool TryConfigurePeerInitialPacketProtection(
+        uint version,
+        ReadOnlySpan<byte> clientInitialDestinationConnectionId)
+    {
+        if (tlsState.Role != QuicTlsRole.Server)
+        {
+            return false;
+        }
+
+        if (peerInitialPacketProtection is not null)
+        {
+            return peerInitialPacketProtection.Version == version;
+        }
+
+        if (!QuicInitialPacketProtection.TryCreate(
+            tlsState.Role,
+            version,
+            clientInitialDestinationConnectionId,
+            out QuicInitialPacketProtection protection))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TrySetInitialDestinationConnectionId(clientInitialDestinationConnectionId))
+        {
+            return false;
+        }
+
+        peerInitialPacketProtection = protection;
+        return true;
     }
 
     internal bool TryConfigureInitialPacketProtection(ReadOnlySpan<byte> clientInitialDestinationConnectionId)
@@ -457,6 +492,85 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         initialPacketProtection = protection;
+        return true;
+    }
+
+    internal bool TryAdoptNegotiatedVersion(uint negotiatedVersion)
+    {
+        if (tlsState.Role != QuicTlsRole.Client
+            || phase != QuicConnectionPhase.Establishing
+            || tlsState.IsTerminal
+            || negotiatedVersion == versionProfile.SelectedVersion)
+        {
+            return negotiatedVersion == versionProfile.SelectedVersion;
+        }
+
+        if (!QuicVersionNegotiation.AreCompatibleVersions(versionProfile.SelectedVersion, negotiatedVersion)
+            || initialPacketProtection is null
+            || handshakeFlowCoordinator.InitialDestinationConnectionId.IsEmpty
+            || !QuicVersionNegotiation.TryMoveVersionToFront(
+                versionProfile.SupportedVersions.Span,
+                negotiatedVersion,
+                out uint[] reorderedSupportedVersions))
+        {
+            return false;
+        }
+
+        if (!handshakeFlowCoordinator.TrySetPacketVersion(negotiatedVersion)
+            || !tlsBridgeDriver.TryUpdateTransportVersion(negotiatedVersion)
+            || !QuicInitialPacketProtection.TryCreate(
+                tlsState.Role,
+                negotiatedVersion,
+                handshakeFlowCoordinator.InitialDestinationConnectionId.Span,
+                out QuicInitialPacketProtection negotiatedProtection))
+        {
+            return false;
+        }
+
+        versionProfile = new QuicConnectionVersionProfile(reorderedSupportedVersions);
+        initialPacketProtection = negotiatedProtection;
+        return true;
+    }
+
+    internal bool TryGetIncomingInitialPacketProtection(
+        uint packetVersion,
+        out QuicInitialPacketProtection protection)
+    {
+        protection = default!;
+
+        if (tlsState.Role == QuicTlsRole.Server)
+        {
+            if (peerInitialPacketProtection is { } peerProtection
+                && peerProtection.Version == packetVersion)
+            {
+                protection = peerProtection;
+                return true;
+            }
+
+            if (initialPacketProtection is { } currentProtection
+                && currentProtection.Version == packetVersion)
+            {
+                protection = currentProtection;
+                return true;
+            }
+
+            return false;
+        }
+
+        if (initialPacketProtection is { } currentClientProtection
+            && currentClientProtection.Version == packetVersion)
+        {
+            protection = currentClientProtection;
+            return true;
+        }
+
+        if (!TryAdoptNegotiatedVersion(packetVersion)
+            || initialPacketProtection is not { } adoptedProtection)
+        {
+            return false;
+        }
+
+        protection = adoptedProtection;
         return true;
     }
 

@@ -119,6 +119,7 @@ Each canonical artifact is authored in `.json`.
 - [`ARC-QUIC-RFC9000-0087.json`](ARC-QUIC-RFC9000-0087.json): canonical RFC 9000 S17P2P4 handshake packet format proof tail design source
 - [`ARC-QUIC-RFC9001-0001.json`](ARC-QUIC-RFC9001-0001.json): canonical RFC 9001 design source
 - [`ARC-QUIC-RFC9368-0001.json`](ARC-QUIC-RFC9368-0001.json): canonical RFC 9368 compatible-version floor design source
+- [`ARC-QUIC-RFC9368-0002.json`](ARC-QUIC-RFC9368-0002.json): canonical RFC 9368 compatible-version runtime-selection design source
 - [`ARC-QUIC-RFC9369-0001.json`](ARC-QUIC-RFC9369-0001.json): canonical RFC 9369 QUIC v2 static floor design source
 - [`ARC-QUIC-RFC9001-0002.json`](ARC-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition design source
 - [`ARC-QUIC-RFC9001-0003.json`](ARC-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle boundary design source

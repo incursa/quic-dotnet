@@ -89,6 +89,110 @@ internal static class QuicVersionNegotiation
     }
 
     /// <summary>
+    /// Gets whether two supported transport versions can be upgraded or downgraded without a round trip.
+    /// </summary>
+    internal static bool AreCompatibleVersions(uint left, uint right)
+    {
+        if (left == right)
+        {
+            return IsSupportedTransportVersion(left);
+        }
+
+        return (left == Version1 && right == Version2)
+            || (left == Version2 && right == Version1);
+    }
+
+    /// <summary>
+    /// Selects a compatible version from the client's offered list using the server's supported ordering.
+    /// The selector prefers a compatible alternative over the client's original version when one exists.
+    /// </summary>
+    internal static bool TrySelectCompatibleVersion(
+        uint clientOriginalVersion,
+        ReadOnlySpan<uint> clientAvailableVersions,
+        ReadOnlySpan<uint> serverSupportedVersions,
+        out uint selectedVersion)
+    {
+        selectedVersion = default;
+
+        if (clientAvailableVersions.IsEmpty || serverSupportedVersions.IsEmpty)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < serverSupportedVersions.Length; index++)
+        {
+            uint candidateVersion = serverSupportedVersions[index];
+            if (candidateVersion == clientOriginalVersion
+                || !IsSupportedTransportVersion(candidateVersion)
+                || !AreCompatibleVersions(clientOriginalVersion, candidateVersion)
+                || !ContainsVersion(clientAvailableVersions, candidateVersion))
+            {
+                continue;
+            }
+
+            selectedVersion = candidateVersion;
+            return true;
+        }
+
+        if (!IsSupportedTransportVersion(clientOriginalVersion)
+            || !ContainsVersion(clientAvailableVersions, clientOriginalVersion)
+            || !ContainsVersion(serverSupportedVersions, clientOriginalVersion))
+        {
+            return false;
+        }
+
+        selectedVersion = clientOriginalVersion;
+        return true;
+    }
+
+    /// <summary>
+    /// Reorders the supported version list so the selected version appears first.
+    /// </summary>
+    internal static bool TryMoveVersionToFront(
+        ReadOnlySpan<uint> supportedVersions,
+        uint selectedVersion,
+        out uint[] reorderedVersions)
+    {
+        reorderedVersions = [];
+
+        if (supportedVersions.IsEmpty)
+        {
+            return false;
+        }
+
+        int selectedIndex = -1;
+        for (int index = 0; index < supportedVersions.Length; index++)
+        {
+            if (supportedVersions[index] == selectedVersion)
+            {
+                selectedIndex = index;
+                break;
+            }
+        }
+
+        if (selectedIndex < 0)
+        {
+            return false;
+        }
+
+        reorderedVersions = new uint[supportedVersions.Length];
+        reorderedVersions[0] = selectedVersion;
+        int reorderedIndex = 1;
+        for (int index = 0; index < supportedVersions.Length; index++)
+        {
+            uint candidate = supportedVersions[index];
+            if (candidate == selectedVersion)
+            {
+                continue;
+            }
+
+            reorderedVersions[reorderedIndex++] = candidate;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Gets the maximum connection-id length allowed by the current version policy.
     /// Version 1 keeps the RFC 9000 limit; later versions remain version-neutral here.
     /// </summary>
@@ -430,6 +534,19 @@ internal static class QuicVersionNegotiation
         }
 
         packetType = default;
+        return false;
+    }
+
+    private static bool ContainsVersion(ReadOnlySpan<uint> versions, uint candidateVersion)
+    {
+        for (int index = 0; index < versions.Length; index++)
+        {
+            if (versions[index] == candidateVersion)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 }

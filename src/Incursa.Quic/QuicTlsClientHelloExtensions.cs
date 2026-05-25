@@ -412,6 +412,84 @@ internal static class QuicTlsClientHelloExtensions
         return true;
     }
 
+    internal static bool TryReadClientHelloTransportParameters(
+        ReadOnlySpan<byte> clientHelloBytes,
+        out QuicTransportParameters? transportParameters)
+    {
+        transportParameters = null;
+
+        if (clientHelloBytes.Length <= HandshakeHeaderLength
+            || clientHelloBytes[0] != (byte)QuicTlsHandshakeMessageType.ClientHello)
+        {
+            return false;
+        }
+
+        int declaredBodyLength = checked((int)ReadUInt24(clientHelloBytes.Slice(1, UInt24Length)));
+        if (declaredBodyLength != clientHelloBytes.Length - HandshakeHeaderLength)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> clientHelloBody = clientHelloBytes.Slice(HandshakeHeaderLength);
+        int index = 0;
+        if (!TryReadUInt16(clientHelloBody, ref index, out ushort legacyVersion)
+            || legacyVersion != TlsLegacyVersion
+            || !TrySkipBytes(clientHelloBody, ref index, TlsRandomLength)
+            || !TryReadUInt8(clientHelloBody, ref index, out int sessionIdLength)
+            || sessionIdLength > MaximumSessionIdLength
+            || !TrySkipBytes(clientHelloBody, ref index, sessionIdLength)
+            || !TryReadUInt16(clientHelloBody, ref index, out ushort cipherSuitesLength)
+            || cipherSuitesLength < TlsCipherSuitesListLength
+            || (cipherSuitesLength & 1) != 0
+            || !TrySkipBytes(clientHelloBody, ref index, cipherSuitesLength)
+            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethodsLength)
+            || compressionMethodsLength != 1
+            || !TryReadUInt8(clientHelloBody, ref index, out int compressionMethod)
+            || compressionMethod != NullCompressionMethod
+            || !TryReadUInt16(clientHelloBody, ref index, out ushort extensionsLength)
+            || !TrySkipBytes(clientHelloBody, ref index, extensionsLength)
+            || index != clientHelloBody.Length)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<byte> extensions = clientHelloBody.Slice(clientHelloBody.Length - extensionsLength, extensionsLength);
+        int extensionsIndex = 0;
+        bool foundTransportParameters = false;
+        while (extensionsIndex < extensions.Length)
+        {
+            if (!TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionType)
+                || !TryReadUInt16(extensions, ref extensionsIndex, out ushort extensionLength)
+                || !TrySkipBytes(extensions, ref extensionsIndex, extensionLength))
+            {
+                return false;
+            }
+
+            if (extensionType != QuicTransportParametersCodec.QuicTransportParametersExtensionType)
+            {
+                continue;
+            }
+
+            if (foundTransportParameters)
+            {
+                return false;
+            }
+
+            foundTransportParameters = true;
+            if (!QuicTransportParametersCodec.TryParseTransportParameters(
+                extensions.Slice(extensionsIndex - extensionLength, extensionLength),
+                QuicTransportParameterRole.Server,
+                out QuicTransportParameters parsedTransportParameters))
+            {
+                return false;
+            }
+
+            transportParameters = parsedTransportParameters;
+        }
+
+        return true;
+    }
+
     private static bool TryReadApplicationLayerProtocolOfferList(
         ReadOnlySpan<byte> extensionValue,
         out byte[][] applicationProtocols)
@@ -533,6 +611,56 @@ internal static class QuicTlsClientHelloExtensions
     private static uint ReadUInt24(ReadOnlySpan<byte> source)
     {
         return (uint)((source[0] << 16) | (source[1] << 8) | source[2]);
+    }
+
+    internal static bool TryExtractOffsetZeroInitialCryptoFrameData(
+        ReadOnlySpan<byte> payload,
+        out ReadOnlySpan<byte> cryptoData)
+    {
+        cryptoData = default;
+
+        int payloadOffset = 0;
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                if (paddingBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                if (ackBytesConsumed <= 0)
+                {
+                    return false;
+                }
+
+                payloadOffset += ackBytesConsumed;
+                continue;
+            }
+
+            if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out QuicCryptoFrame cryptoFrame, out int cryptoBytesConsumed)
+                || cryptoBytesConsumed <= 0)
+            {
+                return false;
+            }
+
+            if (cryptoFrame.Offset == 0 && !cryptoFrame.CryptoData.IsEmpty)
+            {
+                cryptoData = cryptoFrame.CryptoData;
+                return true;
+            }
+
+            payloadOffset += cryptoBytesConsumed;
+        }
+
+        return false;
     }
 }
 

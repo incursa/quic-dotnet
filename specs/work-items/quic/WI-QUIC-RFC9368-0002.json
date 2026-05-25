@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9368-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9368 Compatible-Version Runtime Selection Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0002",
+    "VER-QUIC-RFC9368-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9368-S4-0001",
+    "REQ-QUIC-RFC9368-S4-0002"
+  ],
+  "summary": "Close the RFC 9368 runtime-selection gap by proving server compatible-version selection, client negotiated-version adoption, and the original-versus-negotiated Initial protection split with focused requirement-home and live loopback tests.",
+  "planned_changes": "- Add section 4 runtime-selection clauses to `SPEC-QUIC-RFC9368.json`.\n- Preserve the original-version Initial protection on the server while creating negotiated-version Initial protection for the selected version.\n- Add client negotiated-version adoption helpers and tests.\n- Add focused requirement-home tests for positive, negative, edge, fuzz, and live loopback behavior.\n- Remove the runtime-selection gap ledger entry and refresh generated coverage.\n- Run the targeted RFC 9368 tests and the v2 interop sanity checks, then validate SpecTrace JSON and diff hygiene.",
+  "verification_plan": "Run the focused RFC 9368 requirement-home tests, run the targeted v2 interop sanity checks, run the core SpecTrace JSON validator, refresh the QUIC requirement coverage triage, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9368-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9368-0002"
+  ],
+  "out_of_scope": [
+    "Retry-compatible version negotiation interactions.",
+    "0-RTT compatibility follow-ons.",
+    "Higher-layer application adaptation for version negotiation beyond the negotiated transport version."
+  ]
+}

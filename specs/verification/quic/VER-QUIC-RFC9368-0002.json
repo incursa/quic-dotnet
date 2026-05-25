@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9368-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9368 Compatible-Version Runtime Selection Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0002",
+    "WI-QUIC-RFC9368-0002"
+  ],
+  "verification_method": "Focused RFC 9368 requirement-home tests, a live loopback client/server negotiation proof, targeted v2 interop sanity checks, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9368-S4-0001",
+    "REQ-QUIC-RFC9368-S4-0002"
+  ],
+  "scope": "This verification covers the RFC 9368 runtime-selection slice only. It proves compatible-version selection, negotiated-version adoption, original-versus-negotiated Initial protection retention, and the loopback connection path needed to keep the client and server version state aligned. It does not verify Retry or 0-RTT follow-ons.",
+  "preconditions": [
+    "The repository remains in the JSON-only SpecTrace workflow.",
+    "The RFC 9368 requirement-home tests exist under tests/Incursa.Quic.Tests/RequirementHomes/RFC9368.",
+    "The runtime-selection helpers preserve the original-version Initial protection on the server while rekeying the client to the negotiated version."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~RFC9368`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~REQ_QUIC_INT_0018|FullyQualifiedName~ChildProcessV2EmitsLifecycleMarkersInOrderAndKeepsStderrEmptyOnTheGreenPath`.",
+    "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9368 requirement-home tests pass, the loopback negotiation proof shows the server selecting the negotiated version and retaining the original-version protection for version-authentication checks, the targeted v2 interop sanity checks stay green, core SpecTrace validation accepts the JSON artifacts, the generated QUIC requirement coverage reports the RFC 9368 runtime-selection slice as traceable, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
+    "tests/Incursa.Quic.Tests/InteropHarnessProcessObservabilityTests.cs",
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTlsClientHelloExtensions.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs"
+  ],
+  "status_summary": "Passed. Focused RFC 9368 requirement-home tests, targeted v2 interop sanity checks, core SpecTrace JSON validation, generated coverage refresh, and diff hygiene all passed."
+}

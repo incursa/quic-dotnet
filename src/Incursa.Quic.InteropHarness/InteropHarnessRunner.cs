@@ -127,6 +127,7 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "retry" => RunRetryClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "v2" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "chacha20" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -157,6 +158,7 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" => RunPostHandshakeStreamServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "retry" => RunRetryServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "v2" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "chacha20" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -1032,6 +1034,7 @@ internal static class InteropHarnessRunner
                 $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} connecting to {remoteEndPoint}, targetCount={transferPlans.Count}.");
 
             QuicClientConnectionOptions clientOptions = planner.CreateSupportedClientOptions(remoteEndPoint, firstPlan.RequestUri.Host);
+            uint[]? supportedVersions = GetSupportedVersionsForTransferCase(settings);
 
             using InteropHarnessQlogCaptureScope? qlogScope = planner.CreateQlogCaptureScope();
             if (qlogScope is not null)
@@ -1039,7 +1042,11 @@ internal static class InteropHarnessRunner
                 WriteQlogCaptureEnabled(stdout, settings, qlogScope);
             }
             WriteDeterministicClientKeySelection(settings, stdout);
-            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(settings, qlogScope, clientOptions).ConfigureAwait(false);
+            await using QuicConnection connection = await ConnectWithQlogCaptureAsync(
+                settings,
+                qlogScope,
+                clientOptions,
+                supportedVersions: supportedVersions).ConfigureAwait(false);
             WriteLineAndFlush(
                 stdout,
                 $"interop harness: role=client, testcase={settings.TestCase}, requestCount={settings.Requests.Count} completed managed client bootstrap.");
@@ -1199,6 +1206,13 @@ internal static class InteropHarnessRunner
             WriteFailureDetails(stderr, "client", settings.TestCase, ex);
             return 1;
         }
+    }
+
+    private static uint[]? GetSupportedVersionsForTransferCase(InteropHarnessEnvironment settings)
+    {
+        return settings.TestCase == "v2"
+            ? [QuicVersionNegotiation.Version2]
+            : null;
     }
 
     private static async Task<int> RunMulticonnectServerAsync(
@@ -2480,6 +2494,7 @@ internal static class InteropHarnessRunner
             "post-handshake-stream" or
             "retry" or
             "multiconnect" or
+            "v2" or
             "chacha20" or
             "rebind-port" or
             "rebind-addr" or

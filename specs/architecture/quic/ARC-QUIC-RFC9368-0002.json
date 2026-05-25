@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9368-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9368 Compatible-Version Runtime Selection Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how the RFC 9368 runtime-selection slice uses the version selector, listener bootstrap, and client adoption helpers to satisfy the section 4 requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "WI-QUIC-RFC9368-0002",
+    "VER-QUIC-RFC9368-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9368-S4-0001",
+    "REQ-QUIC-RFC9368-S4-0002"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicVersionNegotiation.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
+    "src/Incursa.Quic/QuicTlsClientHelloExtensions.cs",
+    "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
+    "src/Incursa.Quic/QuicTlsKeySchedule.cs"
+  ],
+  "design_summary": "The listener-host runtime-selection path parses the client's first Initial flight, extracts the authenticated ClientHello transport parameters from the offset-zero CRYPTO frame, and passes the client's Original Version plus the client's Available Versions into a compatibility selector. That selector walks the server-supported version order, chooses a mutually supported compatible version when one exists, and creates the connection runtime around the negotiated version. The runtime keeps the original-version Initial packet protection in server role so the authenticated Version Information can still be validated against the packet that carried it, while also creating negotiated-version Initial protection for the version the connection will continue to use. On the client side, the runtime adopts the negotiated version when the handshake packet version field reveals it, reorders the supported-version profile, updates the transport bridge version, and rebuilds Initial protection so later packets use the negotiated version instead of the original one. The implementation remains constrained to the RFC 9368 section 4 runtime transition and does not attempt to generalize Retry or 0-RTT compatibility beyond the section's compatibility and validation rules.",
+  "risks": [
+    "If the server stops preserving the original-version Initial protection until transport parameters are authenticated, the RFC 9368 version-downgrade check can no longer validate the peer's original Chosen Version.",
+    "If the client and server disagree on supported-version ordering, the negotiated version can drift from the version seen in the handshake packet field.",
+    "If negotiated-version adoption is delayed past the handshake boundary, later packet protection and transport-parameter validation can observe inconsistent version state."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This architecture stays inside RFC 9368 Section 4 compatible-version negotiation and runtime adoption. It uses the original-version packet-protection path only to authenticate the peer's Version Information, then rolls the connection state forward to the negotiated version. Retry and 0-RTT interactions remain outside this slice."
+    }
+  ]
+}

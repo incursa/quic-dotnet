@@ -648,7 +648,7 @@
       "notes": [
         "This profile is an evidence-collection surface, not a broad interop-readiness gate. The generated `interop-major-peer-matrix-inventory` report keeps the current cell set explicit, and the completed run `25904716076` now has the dedicated `interop-major-peer-matrix-evidence-25904716076` report that preserves its mixed peer-specific pass and failure classes.",
         "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope, and the generated inventory/evidence reports stay limited to the current handshake, retry, transfer, keyupdate, and resumption cell set.",
-        "`v2`, `rebind-port`, and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `chacha20` and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
+        "`rebind-port` and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `v2`, `chacha20`, and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
     },
     {
@@ -732,7 +732,7 @@
     {
       "id": "REQ-QUIC-INT-0022",
       "title": "Provide a hosted connectionmigration proof lane",
-      "statement": "The interop harness MUST provide manual advisory hosted Linux `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles. The `connectionmigration-server-proof` profile exercises the server role against `neqo` by replacing a distinct local server slot, preserving `neqo-peer` as the reported peer alias, normalizing the actual runner peer slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image for `connectionmigration`; the blocked companion profile keeps `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` visible for comparison. Both profiles upload distinct artifact bundles for each cell and stay outside ordinary push, pull-request, build, test, package, and support-readiness gates. The proof profile preserves live corroboration for the already classified connectionmigration inventory cell and is not intended to be read as broad support for `rebind-port`, `rebind-addr`, `v2`, or HTTP/3.",
+      "statement": "The interop harness MUST provide manual advisory hosted Linux `connectionmigration-server-proof` and `connectionmigration-server-proof-blocked` profiles. The `connectionmigration-server-proof` profile exercises the server role against `neqo` by replacing a distinct local server slot, preserving `neqo-peer` as the reported peer alias, normalizing the actual runner peer slot to `neqo`, and using the `ghcr.io/mozilla/neqo-qns:latest` peer image for `connectionmigration`; the blocked companion profile keeps `ngtcp2`, `lsquic`, `quiche`, `quic-go`, `msquic`, and `aioquic` visible for comparison. Both profiles upload distinct artifact bundles for each cell and stay outside ordinary push, pull-request, build, test, package, and support-readiness gates. The proof profile preserves live corroboration for the already classified connectionmigration inventory cell and is not intended to be read as broad support for `rebind-port`, `rebind-addr`, or HTTP/3.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0015",
@@ -868,7 +868,7 @@
       "notes": [
         "Hosted run `26174181713` on 2026-05-20 closed the source-address blocker for the bounded `connectionmigration` proof lane at commit `9ee3266e`.",
         "The preferred migration address stays configured with `preferred_lft 0` so the lane remains reachable for migration without hijacking the original-path first flight.",
-        "This does not claim `rebind-port`, `rebind-addr`, QUIC v2, HTTP/3, or broad support-readiness."
+        "This does not claim `rebind-port`, `rebind-addr`, HTTP/3, or broad support-readiness."
       ]
     },
     {

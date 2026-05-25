@@ -561,8 +561,8 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'v2'
             RunnerTestCase = 'v2'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires QUIC v2 version-selection support.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed QUIC v2 runner cell routed through the existing transfer-backed harness path with v2-first supported-version selection.'
         }
 
         [pscustomobject]@{
