@@ -16,12 +16,27 @@ public sealed class Http3Request
         string authority,
         string path,
         IReadOnlyList<QPackFieldLine> headers)
+        : this(method, scheme, authority, path, headers, ReadOnlyMemory<byte>.Empty)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Http3Request" /> class.
+    /// </summary>
+    public Http3Request(
+        string method,
+        string scheme,
+        string authority,
+        string path,
+        IReadOnlyList<QPackFieldLine> headers,
+        ReadOnlyMemory<byte> body)
     {
         Method = method ?? throw new ArgumentNullException(nameof(method));
         Scheme = scheme ?? throw new ArgumentNullException(nameof(scheme));
         Authority = authority ?? throw new ArgumentNullException(nameof(authority));
         Path = path ?? throw new ArgumentNullException(nameof(path));
         Headers = headers ?? throw new ArgumentNullException(nameof(headers));
+        Body = body.ToArray();
     }
 
     /// <summary>
@@ -48,4 +63,9 @@ public sealed class Http3Request
     /// Gets all decoded request field lines in wire order.
     /// </summary>
     public IReadOnlyList<QPackFieldLine> Headers { get; }
+
+    /// <summary>
+    /// Gets the concatenated request DATA payload.
+    /// </summary>
+    public ReadOnlyMemory<byte> Body { get; }
 }

@@ -33,6 +33,8 @@
     <ProjectReference Include="..\..\src\Incursa.Quic.Http3\Incursa.Quic.Http3.csproj" />
     <ProjectReference Include="..\..\src\Incursa.Quic.Qlog\Incursa.Quic.Qlog.csproj" />
     <ProjectReference Include="..\..\src\Incursa.Quic.InteropHarness\Incursa.Quic.InteropHarness.csproj" />
+    <ProjectReference Include="..\..\samples\Incursa.Http3.Samples.ObjectStore\Incursa.Http3.Samples.ObjectStore.csproj" />
+    <ProjectReference Include="..\..\samples\Incursa.Http3.Samples.TechEmpower\Incursa.Http3.Samples.TechEmpower.csproj" />
   </ItemGroup>
 
   <ItemGroup>

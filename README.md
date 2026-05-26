@@ -43,6 +43,7 @@ dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 - [`src/Incursa.Quic.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog adapter package.
 - [`src/Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md): local interop-runner companion process.
 - [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): requirement-linked unit and integration tests.
+- [`samples`](samples/README.md): runnable HTTP/3 sample apps, including the browser-facing ObjectStore demo and TechEmpower-shaped plaintext/JSON endpoints.
 - [`benchmarks`](benchmarks/README.md): permanent performance suites.
 - [`fuzz`](fuzz/README.md): fuzz harnesses for wire-facing code.
 - [`docs`](docs/README.md): build, packaging, testing, and contributor guides.
@@ -63,6 +64,8 @@ dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 - [Requirements workflow](docs/requirements-workflow.md)
 - [SpecTrace prep](docs/spec-trace-prep.md)
 - [Testing docs](docs/testing/README.md)
+- [HTTP/3 sample app](docs/samples/http3-sample-app.md)
+- [HTTP/3 benchmarking notes](docs/samples/http3-benchmarking.md)
 
 ## Contributing
 

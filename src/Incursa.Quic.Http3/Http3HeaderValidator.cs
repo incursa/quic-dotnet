@@ -1,3 +1,4 @@
+using System.Globalization;
 using Incursa.Qpack;
 
 namespace Incursa.Quic.Http3;
@@ -320,7 +321,10 @@ public static class Http3HeaderValidator
 
         if (expected != receivedDataLength)
         {
-            throw MessageError("HTTP/3 Content-Length does not match received DATA length.");
+            throw MessageError(
+                string.Create(
+                    CultureInfo.InvariantCulture,
+                    $"HTTP/3 Content-Length does not match received DATA length. Expected {expected}, received {receivedDataLength}."));
         }
     }
 

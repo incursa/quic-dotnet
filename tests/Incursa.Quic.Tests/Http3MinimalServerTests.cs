@@ -75,8 +75,8 @@ public sealed class Http3MinimalServerTests
             diagnostics.Events,
             diagnostic => diagnostic.Kind == Http3DiagnosticKind.RequestStarted
                 && diagnostic.Path == "/dynamic-qpack");
-        Assert.Contains(
-            diagnostics.Events,
+        await WaitForDiagnosticAsync(
+            diagnostics,
             diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted
                 && diagnostic.StatusCode == 200);
     }
@@ -151,6 +151,115 @@ public sealed class Http3MinimalServerTests
 
         Assert.Equal(200, response.StatusCode);
         Assert.Equal("response before fin", System.Text.Encoding.UTF8.GetString(response.Body));
+    }
+
+    [Fact]
+    public async Task PostDataRequest_DeliversBodyToHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureBodyHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/upload", "hello body"u8.ToArray());
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.True(
+            response.StatusCode == 200,
+            string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+        Assert.Equal("hello body", System.Text.Encoding.UTF8.GetString(handler.Body));
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithContentLengthAndCoalescedData_DeliversBodyToHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = "playwright upload body"u8.ToArray();
+        CaptureBodyHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(
+            requestStream,
+            "/upload",
+            body,
+            includeContentLength: true,
+            coalesceHeadersAndData: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.True(
+            response.StatusCode == 200,
+            string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+        Assert.Equal("playwright upload body", System.Text.Encoding.UTF8.GetString(handler.Body));
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                && diagnostic.FrameType == Http3FrameType.Data
+                && diagnostic.PayloadLength == body.Length);
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithIncompleteContentLength_Returns400()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(
+            requestStream,
+            "/upload",
+            "short"u8.ToArray(),
+            declaredContentLength: 22,
+            includeContentLength: true,
+            coalesceHeadersAndData: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(400, response.StatusCode);
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.Error
+                && diagnostic.ErrorCode == nameof(Http3ErrorCode.MessageError));
+    }
+
+    [Fact]
+    public async Task StreamingResponse_WritesAsyncDataFramesToResponseBody()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new StreamingBodyHandler());
+
+        Http3Response response = await context.GetAsync("/stream");
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("line 1\nline 2\n", System.Text.Encoding.UTF8.GetString(response.Body));
+        Assert.True(response.StreamCompleted);
     }
 
     [Fact]
@@ -231,6 +340,46 @@ public sealed class Http3MinimalServerTests
     private static async Task WriteGetRequestAsync(QuicStream requestStream, string path)
     {
         await WriteGetRequestHeadersAsync(requestStream, path);
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WritePostRequestAsync(
+        QuicStream requestStream,
+        string path,
+        byte[] body,
+        bool includeContentLength = false,
+        bool coalesceHeadersAndData = false,
+        int? declaredContentLength = null)
+    {
+        List<QPackFieldLine> fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+        ];
+        if (includeContentLength)
+        {
+            fields.Add(new QPackFieldLine("content-length", (declaredContentLength ?? body.Length).ToString(System.Globalization.CultureInfo.InvariantCulture)));
+            fields.Add(new QPackFieldLine("content-type", "text/plain"));
+        }
+
+        byte[] encoded = QPackEncoder.EncodeFieldSection(fields);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encoded);
+        byte[] dataFrame = Http3FrameWriter.WriteData(body);
+        if (coalesceHeadersAndData)
+        {
+            byte[] requestBytes = new byte[headersFrame.Length + dataFrame.Length];
+            headersFrame.CopyTo(requestBytes, 0);
+            dataFrame.CopyTo(requestBytes, headersFrame.Length);
+            await requestStream.WriteAsync(requestBytes, 0, requestBytes.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        else
+        {
+            await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        }
+
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
     }
 
@@ -415,6 +564,35 @@ public sealed class Http3MinimalServerTests
             {
                 events.Add(diagnosticEvent);
             }
+        }
+    }
+
+    private sealed class CaptureBodyHandler : IHttp3RequestHandler
+    {
+        public byte[] Body { get; private set; } = [];
+
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            Body = request.Body.ToArray();
+            return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
+        }
+    }
+
+    private sealed class StreamingBodyHandler : IHttp3RequestHandler
+    {
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            return ValueTask.FromResult(Http3ServerResponse.CreateStreaming(
+                200,
+                CreateBody(cancellationToken)));
+        }
+
+        private static async IAsyncEnumerable<ReadOnlyMemory<byte>> CreateBody(
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            yield return "line 1\n"u8.ToArray();
+            await Task.Delay(10, cancellationToken);
+            yield return "line 2\n"u8.ToArray();
         }
     }
 }

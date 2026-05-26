@@ -437,7 +437,7 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (ShouldDelayApplicationSend(streamData.Span))
+        if (!finishWrites && ShouldDelayApplicationSend(streamData.Span))
         {
             QueuePendingApplicationSend(streamId, streamPriority, streamPayload, nowTicks, ref effects);
             completion.TrySetResult(null);

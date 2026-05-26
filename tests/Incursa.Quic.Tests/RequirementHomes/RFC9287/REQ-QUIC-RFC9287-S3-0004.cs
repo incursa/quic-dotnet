@@ -84,6 +84,24 @@ public sealed class REQ_QUIC_RFC9287_S3_0004
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RuntimeOutboundSendPreservesFixedBitWhenOnlyLocalEndpointAdvertisedGreaseQuicBit()
+    {
+        using QuicConnectionRuntime senderRuntime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+        senderRuntime.TlsState.LocalTransportParameters!.GreaseQuicBit = true;
+        senderRuntime.TlsState.PeerTransportParameters!.GreaseQuicBit = false;
+
+        QuicConnectionSendDatagramEffect sendEffect =
+            await QuicPeerConnectionIdSelectionTestSupport.OpenOutboundStreamAndCaptureSingleSendAsync(senderRuntime);
+
+        Assert.Equal(
+            QuicPacketHeaderBits.FixedBitMask,
+            sendEffect.Datagram.Span[0] & QuicPacketHeaderBits.FixedBitMask);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void NegotiatedGreaseQuicBitClearsFixedBitOnOutboundPacketsAtTheShortestPayload()
