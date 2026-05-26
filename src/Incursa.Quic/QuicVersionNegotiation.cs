@@ -403,8 +403,8 @@ internal static class QuicVersionNegotiation
         ReadOnlySpan<uint> clientSupportedVersions,
         bool hasSuccessfullyProcessedAnotherPacket)
     {
-        _ = clientSupportedVersions;
-        return !ShouldDiscardVersionNegotiation(packet, selectedVersion, hasSuccessfullyProcessedAnotherPacket);
+        return clientSupportedVersions.Length <= 1
+            && !ShouldDiscardVersionNegotiation(packet, selectedVersion, hasSuccessfullyProcessedAnotherPacket);
     }
 
     /// <summary>
@@ -472,7 +472,14 @@ internal static class QuicVersionNegotiation
             };
         }
 
-        throw new NotSupportedException($"Version 0x{version:X8} does not define supported long-header packet types.");
+        return packetType switch
+        {
+            QuicLongPacketType.Initial => QuicLongPacketTypeBits.Initial,
+            QuicLongPacketType.ZeroRtt => QuicLongPacketTypeBits.ZeroRtt,
+            QuicLongPacketType.Handshake => QuicLongPacketTypeBits.Handshake,
+            QuicLongPacketType.Retry => QuicLongPacketTypeBits.Retry,
+            _ => throw new ArgumentOutOfRangeException(nameof(packetType)),
+        };
     }
 
     /// <summary>

@@ -88,7 +88,7 @@ public sealed class REQ_QUIC_INT_0030
             string gitMarker = Path.Combine(current.FullName, ".git");
             string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-INT.json");
             string gapMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "REQUIREMENT-GAPS.md");
-            if (Directory.Exists(gitMarker) && File.Exists(specMarker) && File.Exists(gapMarker))
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(gapMarker))
             {
                 return current.FullName;
             }

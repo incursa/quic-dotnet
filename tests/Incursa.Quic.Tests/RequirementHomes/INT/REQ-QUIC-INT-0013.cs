@@ -286,7 +286,7 @@ public sealed class REQ_QUIC_INT_0013
 
         Assert.NotEqual(0, result.ExitCode);
         Assert.Contains(
-            "Requested testcase 'unsupported' is not part of the documented non-HTTP/3 inventory.",
+            "Requested testcase 'unsupported' is not part of the documented QUIC interop inventory.",
             exceptionMessage,
             StringComparison.OrdinalIgnoreCase);
         Assert.False(output.Contains("Building Incursa.Quic.InteropHarness image...", StringComparison.OrdinalIgnoreCase));

@@ -167,8 +167,9 @@ public sealed class REQ_QUIC_RFC9000_0284
                 out QuicVersionNegotiationPacket packet));
         Assert.Equal(0, packet.DestinationConnectionIdLength);
         Assert.Equal(0, packet.SourceConnectionIdLength);
-        Assert.Equal(1, packet.SupportedVersionCount);
+        Assert.Equal(2, packet.SupportedVersionCount);
         Assert.True(packet.ContainsSupportedVersion(QuicVersionNegotiation.Version1));
+        Assert.True(packet.ContainsSupportedVersion(QuicVersionNegotiation.Version2));
     }
 
     private static byte[] BuildInteropRunnerWaitForItProbe()

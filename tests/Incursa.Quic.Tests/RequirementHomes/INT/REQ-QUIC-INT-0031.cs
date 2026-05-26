@@ -152,7 +152,7 @@ public sealed class REQ_QUIC_INT_0031
             string gitMarker = Path.Combine(current.FullName, ".git");
             string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-INT.json");
             string harnessMarker = Path.Combine(current.FullName, "scripts", "interop", "http3-external", "docker-compose.yml");
-            if (Directory.Exists(gitMarker) && File.Exists(specMarker) && File.Exists(harnessMarker))
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(harnessMarker))
             {
                 return current.FullName;
             }

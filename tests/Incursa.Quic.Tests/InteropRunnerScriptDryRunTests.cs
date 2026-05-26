@@ -66,9 +66,9 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-logs"), GetPlanValue(output, "Runner logs"));
         Assert.Equal(Path.Combine(runRoot, "artifact-tree.txt"), GetPlanValue(output, "Artifact tree"));
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
-        Assert.Equal("19", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("20", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
             "rebind-port,rebind-addr",
             GetPlanValue(output, "Prerequisite-blocked"));

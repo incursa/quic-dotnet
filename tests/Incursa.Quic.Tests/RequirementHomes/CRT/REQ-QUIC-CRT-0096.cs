@@ -26,6 +26,7 @@ public sealed class REQ_QUIC_CRT_0096
                 "pendingStreamActionRequests",
                 "pendingStreamOpenRequests",
                 "pendingStreamOpenTypes",
+                "queuedInboundStreamIds",
                 "streamObservers",
             ],
             concurrentFieldNames);
