@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9204-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QPACK RFC 9204 Foundation Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9204",
+    "ARC-QUIC-RFC9204-0001",
+    "WI-QUIC-RFC9204-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, QPACK milestone and instruction-stream tests, HTTP/3 QPACK error-matrix tests, SpecTrace JSON validation, and diff hygiene for the standalone RFC 9204 QPACK floor.",
+  "verifies": [
+    "REQ-QUIC-RFC9204-S2-0001",
+    "REQ-QUIC-RFC9204-S5-0001",
+    "REQ-QUIC-RFC9204-S6-0001"
+  ],
+  "scope": "This verification covers the standalone QPACK floor: prefixed integers, string literals, the static table, field-section encoding and decoding, dynamic-table accounting, blocked-stream synchronization, and incremental encoder/decoder instruction parsing. It does not verify HTTP/3 request/response semantics or runtime stream-state capture/restore behavior in the HTTP/3 layer.",
+  "preconditions": [
+    "The repo remains in the JSON-only SpecTrace workflow.",
+    "The QPACK module stays standalone and does not depend on Incursa.Quic."
+  ],
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~QPackMilestoneTests|FullyQualifiedName~QPackInstructionStreamTests|FullyQualifiedName~Http3QPackErrorHandlingMatrixTests|FullyQualifiedName~REQ_QUIC_RFC9204\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused QPACK tests pass, the requirement-home tests confirm trace linkage for the standalone RFC 9204 floor, core SpecTrace JSON validation accepts the new artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+    "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs",
+    "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+    "src/Incursa.Qpack/QPackInteger.cs",
+    "src/Incursa.Qpack/QPackStringLiteral.cs",
+    "src/Incursa.Qpack/QPackStaticTable.cs",
+    "src/Incursa.Qpack/QPackEncoder.cs",
+    "src/Incursa.Qpack/QPackDecoder.cs",
+    "src/Incursa.Qpack/QPackDynamicTable.cs"
+  ],
+  "status_summary": "The standalone QPACK implementation is trace-owned by canonical RFC 9204 artifacts and is covered by focused milestone, instruction-stream, and error-matrix tests. Runtime HTTP/3 stream-state capture and restore work remains a separate layer concern."
+}

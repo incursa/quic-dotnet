@@ -19,6 +19,8 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-RFC9000.json`](SPEC-QUIC-RFC9000.json): canonical RFC 9000 transport source
 - [`SPEC-QUIC-RFC9001.json`](SPEC-QUIC-RFC9001.json): canonical RFC 9001 TLS source
 - [`SPEC-QUIC-RFC9002.json`](SPEC-QUIC-RFC9002.json): canonical RFC 9002 recovery source
+- [`SPEC-QUIC-RFC9114.json`](SPEC-QUIC-RFC9114.json): canonical RFC 9114 HTTP/3 source
+- [`SPEC-QUIC-RFC9204.json`](SPEC-QUIC-RFC9204.json): canonical RFC 9204 QPACK source
 - [`SPEC-QUIC-RFC9221.json`](SPEC-QUIC-RFC9221.json): canonical RFC 9221 QUIC DATAGRAM source
 - [`SPEC-QUIC-RFC9287.json`](SPEC-QUIC-RFC9287.json): canonical RFC 9287 QUIC Bit greasing source
 - [`SPEC-QUIC-RFC9368.json`](SPEC-QUIC-RFC9368.json): canonical RFC 9368 compatible-version negotiation floor source

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9204-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QPACK RFC 9204 Foundation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9204",
+    "ARC-QUIC-RFC9204-0001",
+    "VER-QUIC-RFC9204-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9204-S2-0001",
+    "REQ-QUIC-RFC9204-S5-0001",
+    "REQ-QUIC-RFC9204-S6-0001"
+  ],
+  "summary": "Promote the standalone QPACK implementation into canonical RFC 9204 specification, architecture, verification, and requirement-home trace artifacts without changing the existing module behavior.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9204.json` for the standalone QPACK module.\n- Add canonical architecture, work-item, and verification artifacts for the QPACK foundation.\n- Add requirement-home coverage for QPACK integers, literals, static table usage, field-section encoding and decoding, dynamic-table accounting, and instruction-stream parsing.\n- Keep the module independent from `Incursa.Quic` while documenting the HTTP/3 integration boundary.",
+  "verification_plan": "Run the focused QPACK milestone and instruction-stream tests, run the HTTP/3 QPACK error-handling matrix tests, validate the new SpecTrace JSON artifacts, and confirm that the requirement-home tests reference the new RFC 9204 specification and supporting artifacts.",
+  "verification_links": [
+    "VER-QUIC-RFC9204-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9204-0001"
+  ],
+  "out_of_scope": [
+    "HTTP/3 request/response sequencing, settings, and header validation.",
+    "Runtime stream-state capture/restore behavior that goes beyond the standalone QPACK codec and table model.",
+    "Any ASP.NET hosting concerns."
+  ],
+  "completion_notes": "The standalone QPACK module is already implemented; this work item closes the canonical SpecTrace ownership so the RFC 9204 floor can be audited and extended from a stable trace baseline."
+}

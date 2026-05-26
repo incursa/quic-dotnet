@@ -39,7 +39,8 @@ public sealed class REQ_QUIC_RFC9114_S4_0001
         Assert.Contains("REQ-QUIC-RFC9114-S4-0001", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9114-S4-0001", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9114-S4-0001", verification, StringComparison.Ordinal);
-        Assert.Contains("REQ-QUIC-RFC9114-S4-0001", gapLedger, StringComparison.Ordinal);
+        Assert.Contains("SPEC-QUIC-RFC9114", gapLedger, StringComparison.Ordinal);
+        Assert.Contains("trace-owned", gapLedger, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("LowLevelHttp3ProtocolTestClient", tests, StringComparison.Ordinal);
         Assert.Contains("LowLevelMalformedSequencesProduceExpectedOutcomes", tests, StringComparison.Ordinal);
 

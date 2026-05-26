@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9114-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 RFC 9114 Positive Floor Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the implementation boundary for HTTP/3 frame handling, stream classification, SETTINGS exchange, header validation, and the minimal client/server request-response floor over the managed QUIC transport.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "WI-QUIC-RFC9114-0002",
+    "VER-QUIC-RFC9114-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9114-S4-0002",
+    "REQ-QUIC-RFC9114-S6-0001",
+    "REQ-QUIC-RFC9114-S7-0001",
+    "REQ-QUIC-RFC9114-S8-0001",
+    "REQ-QUIC-RFC9114-S9-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3FrameReader.cs",
+    "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
+    "src/Incursa.Quic.Http3/Http3StreamDispatcher.cs",
+    "src/Incursa.Quic.Http3/Http3ControlStreamState.cs",
+    "src/Incursa.Quic.Http3/Http3Settings.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsExchange.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsWriter.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidator.cs",
+    "src/Incursa.Quic.Http3/Http3RequestMessageValidator.cs",
+    "src/Incursa.Quic.Http3/Http3ResponseSequenceValidator.cs",
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/Http3InMemoryRouteHandler.cs",
+    "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs",
+    "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs",
+    "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs",
+    "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114"
+  ],
+  "design_summary": "The HTTP/3 package owns deterministic frame parsing and writing, stream classification, control-stream sequencing, SETTINGS exchange, header validation, and the minimal request/response floor. These behaviors are implemented against Incursa.Quic and QPACK. Malformed-sequence handling remains separately traced so the positive floor and negative protocol tests stay auditable without conflating them. ASP.NET hosting remains out of scope.",
+  "data_and_state_considerations": "The frame reader retains partial bytes until enough input arrives, the stream dispatcher tracks stream kind and one-time control-stream registration, SETTINGS exchange writes once and captures the peer settings once, and the request/response validators preserve header ordering, content-length accounting, and message sequencing state. These states are deterministic and must fail with stable HTTP/3 error mapping when input is malformed.",
+  "edge_cases_and_constraints": [
+    "Frame parsing must tolerate partial buffers and reject truncated or overrun frames deterministically.",
+    "Unknown and reserved frame types must remain representable as unknown frames when the stream permits them.",
+    "Only one control stream may exist per endpoint, and SETTINGS must be the first frame on that stream.",
+    "Request and response header validation must reject pseudo-header order violations, uppercase field names, and connection-specific fields.",
+    "The minimal client/server floor must use QPACK for headers while keeping the HTTP/3 package independent from ASP.NET hosting."
+  ],
+  "risks": [
+    "The HTTP/3 package can be mistaken for application hosting or for the external peer harness; those concerns remain separate.",
+    "The positive floor must not be conflated with interop matrix completeness or with the standalone QPACK codec ownership.",
+    "Future features such as broader application hosting remain separate from the protocol floor traced here."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Positive Floor Boundary",
+      "content": "This artifact covers the HTTP/3 runtime floor already exercised by loopback tests. It does not introduce ASP.NET integration requirements or external peer-specific behavior beyond the protocol checks already owned by the tests."
+    }
+  ]
+}

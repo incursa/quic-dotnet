@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9114-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 RFC 9114 Positive Floor Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0002",
+    "VER-QUIC-RFC9114-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9114-S4-0002",
+    "REQ-QUIC-RFC9114-S6-0001",
+    "REQ-QUIC-RFC9114-S7-0001",
+    "REQ-QUIC-RFC9114-S8-0001",
+    "REQ-QUIC-RFC9114-S9-0001"
+  ],
+  "summary": "Promote the existing HTTP/3 positive floor into canonical RFC 9114 specification, architecture, verification, and requirement-home trace artifacts without changing runtime behavior.",
+  "planned_changes": "- Add a canonical RFC 9114 positive-floor slice to the HTTP/3 specification.\n- Add architecture, work-item, verification, and requirement-home artifacts for the HTTP/3 frame, stream, SETTINGS, header-validation, and minimal client/server surfaces.\n- Keep the runtime implementation unchanged while proving the already-implemented positive floor is trace-owned and auditable.\n- Preserve the existing malformed-sequence requirement as a separate negative-protocol slice.",
+  "verification_plan": "Run the focused HTTP/3 frame, stream dispatcher, SETTINGS, header-validation, minimal client, minimal server, and requirement-home tests; validate the SpecTrace JSON artifacts; and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9114-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9114-0002"
+  ],
+  "out_of_scope": [
+    "ASP.NET hosting concerns.",
+    "External peer-matrix promotion or interop-runner harness work.",
+    "Standalone QPACK codec behavior already owned by SPEC-QUIC-RFC9204."
+  ],
+  "completion_notes": "The HTTP/3 positive floor is already implemented; this work item closes the canonical SpecTrace ownership so the RFC 9114 floor can be audited and extended from a stable trace baseline."
+}

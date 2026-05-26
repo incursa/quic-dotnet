@@ -11,12 +11,20 @@
     "ARC-QUIC-RFC9114-0001",
     "WI-QUIC-RFC9114-0001",
     "VER-QUIC-RFC9114-0001",
+    "ARC-QUIC-RFC9114-0002",
+    "WI-QUIC-RFC9114-0002",
+    "VER-QUIC-RFC9114-0002",
+    "SPEC-QUIC-RFC9204",
     "SPEC-QUIC-INT"
   ],
   "purpose": "Define protocol-owned HTTP/3 requirements above the existing QUIC transport.",
-  "scope": "This first RFC 9114 slice covers malformed frame placement, control-stream sequencing, request/message validation, unknown/reserved frame handling, h3i reproduction examples, and deterministic low-level custom-client tests. Broader production HTTP/3 adapter behavior, server push, trailers, CONNECT, HTTP Datagrams, MASQUE, and ASP.NET hosting remain outside this slice.",
+  "scope": "This specification covers HTTP/3 frame parsing and writing, stream classification and control-stream handling, SETTINGS exchange, header validation and message sequencing, a minimal client/server request-response floor, and deterministic malformed-sequence handling. It intentionally keeps HTTP/3 independent from ASP.NET hosting concerns and from unrelated application-layer features that are not part of the protocol floor traced here.",
   "context": "The INT harness family owns external process and interop adapter surfaces only. Protocol behavior discovered by h3spec, h3i, external peers, or custom malformed clients is owned here or by future RFC 9114/RFC 9204 requirements before support claims change.",
   "supplemental_sections": [
+    {
+      "heading": "HTTP/3 Positive Floor",
+      "content": "The positive HTTP/3 floor is implemented by the managed HTTP/3 package over the managed QUIC transport and is proven by the frame, stream, settings, header-validation, client, and server tests. The HTTP/3 package owns the request/response floor and control-stream behavior; ASP.NET hosting remains outside the protocol trace."
+    },
     {
       "heading": "Low-Level Malformed Sequence Tests",
       "content": "The low-level HTTP/3 malformed sequence tests use a custom test client over the HTTP/3 frame reader, stream dispatcher, request validator, and header validation surfaces to exercise invalid sequences that normal clients do not generate. h3i examples are documented where practical, but automated pass/fail checks remain repo-local and deterministic."
@@ -80,6 +88,264 @@
         "Unknown and reserved frame types are expected to be ignored by this layer when permitted on the stream.",
         "This requirement verifies layer-local HTTP/3 error classification and does not by itself prove transport-level CONNECTION_CLOSE packet emission.",
         "h3i live examples remain documentation for future wire-level reproduction because h3i command/library packaging can drift."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S4-0002",
+      "title": "Parse and write HTTP/3 frames deterministically",
+      "statement": "The HTTP/3 layer MUST parse and write DATA, HEADERS, SETTINGS, GOAWAY, CANCEL_PUSH, MAX_PUSH_ID, and PUSH_PROMISE frames with exact payload-length handling across partial buffers, preserving unknown and reserved frame types according to RFC 9114 when they are permitted on the stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0002"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§4, 7.2.1-7.2.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3FrameReader.cs",
+          "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
+          "src/Incursa.Quic.Http3/Http3Frame.cs",
+          "src/Incursa.Quic.Http3/Http3HeadersFrame.cs",
+          "src/Incursa.Quic.Http3/Http3SettingsFrame.cs",
+          "src/Incursa.Quic.Http3/Http3DataFrame.cs",
+          "src/Incursa.Quic.Http3/Http3UnknownFrame.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripDataFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripHeadersFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_ParsesHeadersAndPayloadSplitAcrossSingleByteReads",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_ParsesMultipleFramesAcrossSmallReads",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsTruncatedHeaderAtEndOfStream",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsTruncatedPayloadAtEndOfStream",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsSingleIntegerFrameWithExtraPayloadBytes",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_PreservesReservedFrameTypesAsUnknownFrames"
+        ]
+      },
+      "notes": [
+        "Frame parsing must tolerate partial buffers and must fail deterministically on truncated or overrun frames.",
+        "Unknown and reserved frame types remain representable as non-fatal unknown frames when the stream permits them.",
+        "The frame writer side must be deterministic for the same input and preserve exact payload bytes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S6-0001",
+      "title": "Map HTTP/3 stream types and enforce control-stream rules",
+      "statement": "The HTTP/3 layer MUST classify client-initiated bidirectional streams as requests, reject server-initiated bidirectional streams unless an extension is enabled, parse unidirectional stream types, enforce exactly one control stream per endpoint, require SETTINGS first on the control stream, and reject frames that are invalid for a stream kind.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0002"
+        ],
+        "related": [
+          "SPEC-QUIC-RFC9204"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§3, 6.1-6.2.2, 7.2.1-7.2.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3StreamDispatcher.cs",
+          "src/Incursa.Quic.Http3/Http3ControlStreamState.cs",
+          "src/Incursa.Quic.Http3/Http3StreamKind.cs",
+          "src/Incursa.Quic.Http3/Http3StreamType.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterBidirectionalStream_MapsClientInitiatedStreamsToRequests",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterBidirectionalStream_RejectsServerInitiatedStreamsWhenExtensionsAreNotEnabled",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterUnidirectionalStream_MapsKnownReservedAndUnknownStreamTypes",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RequiresSettingsAsFirstFrame",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_RejectsControlFrames",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::QPackStreams_RegisterButRejectHttp3Frames",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::PushStream_IsRejectedWhileServerPushIsDisabled"
+        ]
+      },
+      "notes": [
+        "This requirement owns the stream taxonomy used by the HTTP/3 package, including control, QPACK encoder, QPACK decoder, request, push, reserved, and unknown stream types.",
+        "It also covers the one-control-stream rule and the frame-type whitelist for each stream kind."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S7-0001",
+      "title": "Handle SETTINGS exchange deterministically",
+      "statement": "The HTTP/3 layer MUST send initial SETTINGS when transport is ready, parse peer SETTINGS, honor SETTINGS_MAX_FIELD_SECTION_SIZE, SETTINGS_QPACK_MAX_TABLE_CAPACITY, and SETTINGS_QPACK_BLOCKED_STREAMS, ignore allowed unknown settings, and reject duplicate or forbidden reserved HTTP/2 settings.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0002"
+        ],
+        "related": [
+          "SPEC-QUIC-RFC9204"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§7.2.4-7.2.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Settings.cs",
+          "src/Incursa.Quic.Http3/Http3SettingsExchange.cs",
+          "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
+          "src/Incursa.Quic.Http3/Http3SettingsWriter.cs",
+          "src/Incursa.Quic.Http3/Http3SettingsFrame.cs",
+          "src/Incursa.Quic.Http3/Http3SettingIdentifier.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsWriter_And_Parser_RoundTripKnownSettings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsWriter_WritesInitialControlStreamBytes",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsExchange_EmitsInitialSettingsExactlyOnceWhenTransportIsReady",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsExchange_CapturesPeerSettingsOnce",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_IgnoresUnknownSettings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_RejectsDuplicateSettings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_RejectsReservedHttp2Settings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsWriter_RejectsReservedHttp2Settings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsNotFirstOnControlStream_IsRejected",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsOnRequestStream_IsRejected"
+        ]
+      },
+      "notes": [
+        "The settings exchange is modeled as a one-time initial write plus one peer capture on the control stream.",
+        "Known HTTP/3 and QPACK settings are typed while unknown allowed settings are ignored, and reserved HTTP/2 settings are rejected."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S8-0001",
+      "title": "Validate HTTP/3 request, response, and trailer headers",
+      "statement": "The HTTP/3 layer MUST validate pseudo-header presence and order, reject unknown pseudo-headers, reject uppercase and connection-specific field names, enforce content-length against received DATA, and enforce request, response, and trailer message sequencing including informational responses and final responses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0002"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§4, 7.1, 9",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3HeaderValidator.cs",
+          "src/Incursa.Quic.Http3/Http3RequestMessageValidator.cs",
+          "src/Incursa.Quic.Http3/Http3ResponseSequenceValidator.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateRequestHeaders_CommonGet_Passes",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateRequestHeaders_HostWithoutAuthority_PassesForHttpScheme",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateRequestHeaders_ConnectWithAuthority_Passes",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateResponseHeaders_CommonFinalResponse_Passes",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateRequestHeaders_MalformedConditions_ThrowMessageError",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateResponseHeaders_MalformedConditions_ThrowMessageError",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateRequestHeaders_ContentLengthMustMatchDataLength",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateResponseHeaders_ContentLengthMustMatchDataLength",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ValidateTrailers_RegularFieldsPassButPseudoHeadersFail",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::RequestSequence_DataBeforeHeaders_IsFrameUnexpected",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::RequestSequence_ContentLengthValidatedAtCompletion",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::RequestSequence_TrailersPassWhenSupported",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ResponseSequence_InformationalThenFinal_Passes",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ResponseSequence_DataBeforeFinalResponse_IsFrameUnexpected",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ResponseSequence_SecondFinalResponseWithoutTrailerSupport_IsFrameUnexpected",
+          "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs::ResponseSequence_TrailersPassWhenSupported"
+        ]
+      },
+      "notes": [
+        "This requirement covers the request, response, and trailer validation surface for the HTTP/3 package.",
+        "It includes common request and response headers, content-length accounting, and the message-state validators that gate DATA and HEADERS sequencing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S9-0001",
+      "title": "Support the minimal HTTP/3 client/server request-response floor",
+      "statement": "The HTTP/3 client and server MUST establish the h3 ALPN connection, open the required control and QPACK streams, encode request headers with QPACK, decode response headers, consume DATA frames, and complete clean request-response exchanges for static routes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0002"
+        ],
+        "related": [
+          "SPEC-QUIC-RFC9204"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§3, 6.1-6.2.2, 7.2.4-7.2.4.1, 9",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Client.cs",
+          "src/Incursa.Quic.Http3/Http3Server.cs",
+          "src/Incursa.Quic.Http3/Http3InMemoryRouteHandler.cs",
+          "src/Incursa.Quic.Http3/Http3Request.cs",
+          "src/Incursa.Quic.Http3/Http3Response.cs",
+          "src/Incursa.Quic.Http3/Http3ServerResponse.cs",
+          "src/Incursa.Quic.Http3/IHttp3RequestHandler.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_OverLoopbackQuic_ReturnsResponseHeadersAndBody",
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::ConnectAsync_RejectsClientOptionsWithoutH3Alpn",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::GetAsync_StaticRoute_ReturnsSuccess",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::InMemoryRouteHandler_MissingGet_Returns404",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::MalformedRequestHeaders_Returns400",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::GetWithoutRequestStreamFin_DispatchesAfterHeaders",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PeerControlStream_BundledSettingsFrame_IsObserved",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::AbruptStreamReset_DoesNotStopLaterRequest"
+        ]
+      },
+      "notes": [
+        "This requirement covers the end-to-end HTTP/3 floor that the repo already exercises in loopback tests.",
+        "It proves the protocol layer can carry request/response traffic, static routes, error responses, and clean completion without relying on ASP.NET hosting."
       ]
     }
   ]

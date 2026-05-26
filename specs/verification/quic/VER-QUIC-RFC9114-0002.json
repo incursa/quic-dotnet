@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9114-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 RFC 9114 Positive Floor Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0002",
+    "WI-QUIC-RFC9114-0002"
+  ],
+  "verification_method": "Focused requirement-home tests, HTTP/3 frame and stream tests, SETTINGS and header-validation tests, minimal client/server loopback tests, SpecTrace JSON validation, and diff hygiene for the HTTP/3 positive floor.",
+  "verifies": [
+    "REQ-QUIC-RFC9114-S4-0002",
+    "REQ-QUIC-RFC9114-S6-0001",
+    "REQ-QUIC-RFC9114-S7-0001",
+    "REQ-QUIC-RFC9114-S8-0001",
+    "REQ-QUIC-RFC9114-S9-0001"
+  ],
+  "scope": "This verification covers the HTTP/3 positive floor: frame parsing and writing, stream classification, control-stream sequencing, SETTINGS exchange, header validation, and the minimal client/server request-response path. It does not verify interop matrix promotion or external peer behavior.",
+  "preconditions": [
+    "The repo remains in the JSON-only SpecTrace workflow.",
+    "The HTTP/3 package stays independent from ASP.NET hosting concerns."
+  ],
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Http3FrameLayerTests|FullyQualifiedName~Http3StreamDispatcherTests|FullyQualifiedName~Http3SettingsHandlingTests|FullyQualifiedName~Http3HeaderValidationTests|FullyQualifiedName~Http3MinimalClientTests|FullyQualifiedName~Http3MinimalServerTests|FullyQualifiedName~REQ_QUIC_RFC9114_0002|FullyQualifiedName~REQ_QUIC_RFC9114_S4_0001\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused HTTP/3 tests pass, the requirement-home tests confirm trace linkage for the HTTP/3 positive floor, core SpecTrace JSON validation accepts the new artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs",
+    "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs",
+    "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs",
+    "tests/Incursa.Quic.Tests/Http3HeaderValidationTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+    "src/Incursa.Quic.Http3/Http3FrameReader.cs",
+    "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
+    "src/Incursa.Quic.Http3/Http3StreamDispatcher.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsExchange.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidator.cs",
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs"
+  ],
+  "status_summary": "The managed HTTP/3 positive floor is trace-owned by canonical RFC 9114 artifacts and is covered by focused frame, stream, SETTINGS, header-validation, and loopback client/server tests. External peer promotion remains a separate interop concern."
+}

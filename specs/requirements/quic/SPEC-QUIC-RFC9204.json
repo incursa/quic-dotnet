@@ -1,0 +1,172 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9204",
+  "artifact_type": "specification",
+  "title": "QPACK (RFC 9204)",
+  "domain": "quic",
+  "capability": "http3",
+  "status": "draft",
+  "owner": "quic-maintainers",
+  "purpose": "Define the standalone QPACK requirements used by HTTP/3 header compression.",
+  "scope": "This specification covers QPACK prefixed integers, string literals, the RFC 9204 static table, field-section encoding and decoding with static and literal field lines, dynamic table capacity and entry accounting, insertion and eviction, duplicate entries, absolute/relative/post-base index handling, required insert count and blocked stream handling, and encoder/decoder instruction-stream parsing. It intentionally keeps the QPACK module standalone and does not own HTTP/3 stream dispatch or request/response semantics.",
+  "context": "Incursa.Qpack is the standalone header-compression package used by the HTTP/3 layer. The QPACK module must remain independently testable without depending on Incursa.Quic, while HTTP/3 consumes it as a library dependency. Remaining runtime state-capture or restore work for the HTTP/3 integration layer is separate from the core QPACK codec and table implementation traced here.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9204-0001",
+    "WI-QUIC-RFC9204-0001",
+    "VER-QUIC-RFC9204-0001"
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Standalone Module Boundary",
+      "content": "The QPACK package owns the integer codec, string-literal codec, static table, field-section encoding and decoding, dynamic table accounting, blocked-stream bookkeeping, and encoder/decoder instruction parsing. HTTP/3 request and response handling remain the responsibility of the HTTP/3 package that consumes QPACK."
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9204-S2-0001",
+      "title": "Encode and decode QPACK primitives deterministically",
+      "statement": "The QPACK module MUST deterministically encode and decode prefixed integers, string literals, and the RFC 9204 static table, rejecting malformed primitive encodings with the appropriate QPACK error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9204-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9204-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9204-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9204 §§2-3",
+          "RFC 9204 §5",
+          "RFC 9204 §7",
+          "https://www.rfc-editor.org/rfc/rfc9204.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Qpack/QPackInteger.cs",
+          "src/Incursa.Qpack/QPackStringLiteral.cs",
+          "src/Incursa.Qpack/QPackStaticTable.cs",
+          "src/Incursa.Qpack/README.md",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+          "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::PrefixedInteger_RoundTripsBoundaryAndMultibyteValues",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::StaticTable_ContainsRfc9204Entries",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesHuffmanLiteralWithStaticNameReference",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_RejectsMalformedHuffmanPaddingWithDecompressionFailed",
+          "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs::QPackFieldSection_InvalidStaticIndex_ThrowsDecompressionFailed"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9204-S5-0001",
+      "title": "Encode and decode QPACK field sections with static and literal names",
+      "statement": "The QPACK module MUST encode and decode field sections using static table indexed fields, literal field lines with literal names, and literal field lines with static table name references, while preserving field order and duplicate field lines and producing deterministic output for the same input.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9204-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9204-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9204-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9204 §§2-5",
+          "https://www.rfc-editor.org/rfc/rfc9204.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Qpack/QPackEncoder.cs",
+          "src/Incursa.Qpack/QPackDecoder.cs",
+          "src/Incursa.Qpack/QPackFieldLine.cs",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesRfc9204AppendixB1LiteralWithStaticNameReference",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_ProducesRfc9204AppendixB1StaticNameReferenceForPathLiteral",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_UsesStaticIndexedFieldForExactStaticMatch",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesLiteralFieldLineWithLiteralName",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesHuffmanLiteralFieldLineWithLiteralName",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_PreservesFieldOrderAndDuplicates",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_IsDeterministicForCommonHttp3Request",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_RoundTripsCommonHttp3Response"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9204-S6-0001",
+      "title": "Maintain QPACK dynamic table state and instruction synchronization",
+      "statement": "The QPACK module MUST track dynamic table capacity, entry size, insertion, eviction, duplicate entries, absolute index, relative index, post-base index, base, insert count handling, required insert count handling, blocked stream tracking, and the configured maximum blocked streams limit while synchronizing encoder-stream and decoder-stream state so blocked field sections can unblock when missing entries arrive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9204-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9204-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9204-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9204 §§4-5",
+          "RFC 9204 §§6-7",
+          "https://www.rfc-editor.org/rfc/rfc9204.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Qpack/QPackDynamicTable.cs",
+          "src/Incursa.Qpack/QPackEncoder.cs",
+          "src/Incursa.Qpack/QPackDecoder.cs",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DynamicTable_StartsWithZeroCapacityAndUsesRfcEntrySize",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DynamicTable_AllowsDuplicateEntries",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DynamicTable_EvictsOldestEntriesWhenCapacityRequiresIt",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_BlocksWhenFieldSectionArrivesBeforeEncoderInstructions",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeEncoderStream_UnblocksFieldSectionAfterMissingEntriesArrive",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesDynamicRelativeReferences",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_RejectsInvalidDynamicReferenceWithDecompressionFailed",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeEncoderStream_RejectsInvalidDynamicInstructionReferenceWithEncoderStreamError",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_RejectsMoreBlockedStreamsThanConfigured",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_EmitsRfcAppendixB2CapacityAndInsertInstructions",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_DoesNotInsertEntryLargerThanCurrentCapacity",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_DoesNotEvictEntriesThatAreNotEvictable",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_EvictsEntriesAfterDecoderAcknowledgesInsertCount",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_UsesDynamicReferencesWhenBlockedStreamLimitPermits",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::Encoder_AvoidsDynamicReferencesWhenBlockedStreamLimitIsZero",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::EncoderStreamParser_ParsesSetDynamicTableCapacityAcrossPartialBuffers",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::EncoderStreamParser_ParsesInsertWithStaticNameReference",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::EncoderStreamParser_ParsesInsertWithDynamicNameReference",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::EncoderStreamParser_ParsesInsertWithLiteralNameAcrossPartialBuffers",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::EncoderStreamParser_ParsesDuplicate",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::DecoderStreamParser_ParsesSectionAcknowledgmentAcrossPartialBuffers",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::DecoderStreamParser_ParsesStreamCancellation",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::DecoderStreamParser_ParsesInsertCountIncrement",
+          "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs::InstructionStreams_SynchronizeEncoderAndDecoderDynamicState"
+        ]
+      }
+    }
+  ]
+}

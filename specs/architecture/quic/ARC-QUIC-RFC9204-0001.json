@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9204-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QPACK RFC 9204 Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the implementation boundary for the standalone QPACK module, including integer and string literal codecs, static table access, field-section encoding and decoding, dynamic table accounting, blocked-stream synchronization, and encoder/decoder instruction parsing.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9204",
+    "WI-QUIC-RFC9204-0001",
+    "VER-QUIC-RFC9204-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9204-S2-0001",
+    "REQ-QUIC-RFC9204-S5-0001",
+    "REQ-QUIC-RFC9204-S6-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Qpack/QPackInteger.cs",
+    "src/Incursa.Qpack/QPackStringLiteral.cs",
+    "src/Incursa.Qpack/QPackStaticTable.cs",
+    "src/Incursa.Qpack/QPackEncoder.cs",
+    "src/Incursa.Qpack/QPackDecoder.cs",
+    "src/Incursa.Qpack/QPackDynamicTable.cs",
+    "src/Incursa.Qpack/QPackDynamicTableEntry.cs",
+    "src/Incursa.Qpack/QPackFieldLine.cs",
+    "src/Incursa.Qpack/README.md",
+    "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
+    "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs",
+    "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204"
+  ],
+  "design_summary": "The QPACK package is a standalone library that owns prefixed integer encoding and decoding, raw and Huffman-capable string literals, the RFC 9204 static table, deterministic field-section encoding and decoding, dynamic table capacity and eviction accounting, insert count and blocked-stream synchronization, and incremental encoder/decoder instruction parsing. Encoding remains deterministic and prefers static-table or literal representations rather than relying on transport coupling. HTTP/3 owns the request/response semantics that consume QPACK, but the QPACK module itself stays testable without depending on Incursa.Quic.",
+  "data_and_state_considerations": "QPACK field sections preserve input order and duplicates. Dynamic table state tracks capacity, entry size, insert count, drop count, and blocked stream count separately so blocked field sections can unblock when the missing encoder-stream instructions arrive. Partial instruction buffers are retained until enough bytes are available, and malformed instruction streams fail deterministically with the appropriate QPACK error code.",
+  "edge_cases_and_constraints": [
+    "Static table lookups must reject invalid indexes deterministically.",
+    "Field-section decoding must reject invalid dynamic references with `DecompressionFailed`.",
+    "Encoder-stream parsing must reject invalid dynamic-table and duplicate instruction indexes with `EncoderStreamError`.",
+    "Decoder-stream parsing must reject malformed acknowledgments and count increments with `DecoderStreamError`.",
+    "Dynamic table entries larger than the current capacity must not be inserted.",
+    "Duplicate dynamic entries are legal and must be preserved as distinct insertions."
+  ],
+  "risks": [
+    "The standalone QPACK module can be mistaken for HTTP/3 request sequencing or stream mapping; those concerns remain owned by the HTTP/3 package.",
+    "The HTTP/3 layer consumes QPACK but must not become the owner of QPACK wire-format state or instruction parsing.",
+    "Future runtime stream-state capture/restore work for HTTP/3 remains separate from the standalone codec and table behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This artifact covers the standalone codec and table boundary for QPACK. HTTP/3 request-stream and control-stream behavior remain separate protocol concerns, even though HTTP/3 consumes the QPACK module as its header-compression dependency."
+    }
+  ]
+}
