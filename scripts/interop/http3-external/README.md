@@ -13,7 +13,7 @@ This harness is an advisory HTTP/3 peer matrix outside the upstream QUIC interop
 - `incursa-client__quiche-server`
 - `incursa-client__ngtcp2-server`
 
-The Incursa-to-Incursa lane executes all ten configured scenarios. The aioquic client lane executes the static GET-style scenarios against the Incursa server. Other targets are represented in the result matrix and reported as `skip` until their exact command/server wiring is pinned.
+The Incursa-to-Incursa lane executes all ten configured scenarios. The aioquic client lane executes the static GET-style scenarios against the Incursa server, and the Incursa client lane executes the same static GET-style scenarios against the aioquic server wrapper. Other targets are represented in the result matrix and reported as `skip` until their exact command/server wiring is pinned.
 
 The default curl image is `curlimages/curl:latest`. If that image does not include HTTP/3 support, curl rows are reported as `skip`; set `HTTP3_CURL_IMAGE` to a curl build that supports `--http3-only` to execute them.
 

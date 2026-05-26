@@ -249,6 +249,12 @@ skip_reason() {
         *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
       esac
       ;;
+    incursa-client__aioquic-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
     *) printf "target is listed for matrix coverage but requires an external peer command image/server wiring" ;;
   esac
 }
@@ -265,6 +271,9 @@ if [[ "$PLAN_ONLY" -eq 0 ]]; then
   fi
   up_args=(up --detach)
   up_args+=(incursa-server)
+  if [[ " ${TARGETS[*]} " == *" incursa-client__aioquic-server "* ]]; then
+    up_args+=(aioquic-server)
+  fi
   docker compose --file "$COMPOSE_FILE" "${up_args[@]}"
   sleep 3
 fi
@@ -272,6 +281,11 @@ fi
 cleanup() {
   if [[ "$PLAN_ONLY" -eq 0 && "$KEEP_SERVER" -eq 0 ]]; then
     docker compose --file "$COMPOSE_FILE" logs --no-color incursa-server >"$RUN_ROOT/server.stdout.log" 2>"$RUN_ROOT/server.stderr.log" || true
+    if [[ " ${TARGETS[*]} " == *" incursa-client__aioquic-server "* ]]; then
+      docker compose --file "$COMPOSE_FILE" logs --no-color aioquic-server >"$RUN_ROOT/aioquic-server.stdout.log" 2>"$RUN_ROOT/aioquic-server.stderr.log" || true
+      docker compose --file "$COMPOSE_FILE" --profile peers stop aioquic-server >/dev/null || true
+      docker compose --file "$COMPOSE_FILE" --profile peers rm --force aioquic-server >/dev/null || true
+    fi
     docker compose --file "$COMPOSE_FILE" down --remove-orphans >/dev/null || true
   fi
 }
@@ -379,6 +393,16 @@ for target in "${TARGETS[@]}"; do
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps aioquic \
         /usr/local/bin/aioquic-http3-client \
         "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
+      exit_code=$?
+    elif [[ "$target" == "incursa-client__aioquic-server" ]]; then
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps incursa-client https://aioquic-server:4433${path} $download_path --expect-status $status"
+      printf "%s\n" "$command_line" > "$command_path"
+      extra_args=()
+      if [[ "$scenario" == "many-headers" ]]; then
+        extra_args+=(--expect-header-count-at-least 66)
+      fi
+      docker compose --file "$COMPOSE_FILE" run --rm --no-deps incursa-client \
+        "https://aioquic-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     fi
     set -e

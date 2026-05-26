@@ -191,6 +191,10 @@ function Test-ExecutableTarget {
         return ""
     }
 
+    if ($Target -eq "incursa-client__aioquic-server" -and $Scenario -in $curlScenarios) {
+        return ""
+    }
+
     if ($Scenario -notin $incursaScenarios) {
         return "scenario requires a specialized peer behavior that is not wired in this first harness slice"
     }
@@ -613,6 +617,18 @@ function Invoke-TargetScenario {
             $args += @("--expect-header-count-at-least", "66")
         }
     }
+    elseif ($Target -eq "incursa-client__aioquic-server") {
+        $args = @(
+            "run", "--rm", "--no-deps", "incursa-client",
+            "https://aioquic-server:4433$path",
+            $downloadPath,
+            "--expect-status", "$expectedStatus"
+        )
+
+        if ($Scenario -eq "many-headers") {
+            $args += @("--expect-header-count-at-least", "66")
+        }
+    }
     else {
         Write-Result -Target $Target -Scenario $Scenario -Status "skip" -Detail "target command is not wired"
         return
@@ -688,6 +704,10 @@ if (-not $PlanOnly) {
 
     $upArgs = @("up", "--detach")
     $upArgs += "incursa-server"
+    if ($Targets -contains "incursa-client__aioquic-server") {
+        $upArgs += "aioquic-server"
+    }
+
     $upExitCode = Invoke-DockerCompose -Arguments $upArgs
     if ($upExitCode -ne 0) {
         throw "docker compose up failed with exit code $upExitCode."
@@ -707,6 +727,12 @@ try {
 finally {
     if (-not $PlanOnly -and -not $KeepServerRunning) {
         & docker compose --file $script:ComposeFilePath logs --no-color incursa-server > (Join-Path $script:RunRoot "server.stdout.log") 2> (Join-Path $script:RunRoot "server.stderr.log")
+        if ($Targets -contains "incursa-client__aioquic-server") {
+            & docker compose --file $script:ComposeFilePath logs --no-color aioquic-server > (Join-Path $script:RunRoot "aioquic-server.stdout.log") 2> (Join-Path $script:RunRoot "aioquic-server.stderr.log")
+            Invoke-DockerCompose -Arguments @("--profile", "peers", "stop", "aioquic-server") | Out-Null
+            Invoke-DockerCompose -Arguments @("--profile", "peers", "rm", "--force", "aioquic-server") | Out-Null
+        }
+
         Invoke-DockerCompose -Arguments @("down", "--remove-orphans") | Out-Null
     }
 }

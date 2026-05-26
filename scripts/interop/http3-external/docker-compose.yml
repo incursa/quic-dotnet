@@ -64,6 +64,24 @@ services:
       - clients
       - peers
 
+  aioquic-server:
+    image: incursa-http3-external-interop-aioquic:latest
+    command:
+      - /usr/local/bin/aioquic-http3-server
+      - /www
+      - /certs/cert.pem
+      - /certs/priv.key
+      - "4433"
+    volumes:
+      - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
+      - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
+      - ${HTTP3_INTEROP_LOGS:-./work/logs}/aioquic-server:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
+    profiles:
+      - peers
+
   quiche:
     image: ${HTTP3_QUICHE_IMAGE:-cloudflare/quiche:latest}
     volumes:

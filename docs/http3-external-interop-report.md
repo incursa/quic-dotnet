@@ -4,11 +4,12 @@ This is the checked-in report template for the external HTTP/3 interop harness. 
 
 Last refreshed from local Docker evidence on 2026-05-26.
 
-- Default matrix run: `.artifacts/http3-final-default-after-huffman/20260526T040847Z`
+- Default matrix run: `.artifacts/http3-default-with-aioquic-server/20260526T042753Z`
 - Focused Incursa advanced run: `.artifacts/http3-all-advanced-default/20260526T033718Z`
 - Focused aioquic static GET-style run: `.artifacts/http3-aioquic-after-huffman2/20260526T040811Z`
+- Focused Incursa client to aioquic server run: `.artifacts/http3-incursa-client-aioquic-server2/20260526T042526Z`
 - Incursa proof: `incursa-client__incursa-server` passes all ten configured scenarios.
-- External-provider proof: `aioquic-client__incursa-server` passes the executable static GET-style scenarios after adding QPACK Huffman string-literal decoding.
+- External-provider proof: `aioquic-client__incursa-server` and `incursa-client__aioquic-server` pass their executable static GET-style scenarios.
 
 ## Current Checked-In Matrix
 
@@ -19,17 +20,18 @@ Last refreshed from local Docker evidence on 2026-05-26.
 | aioquic-client__incursa-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
 | quiche-client__incursa-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
 | ngtcp2-client__incursa-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
-| incursa-client__aioquic-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
+| incursa-client__aioquic-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
 | incursa-client__quiche-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
 | incursa-client__ngtcp2-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
 
 ## Current Findings
 
 - `incursa-client__incursa-server` passes `get-small`, `get-empty`, `get-large`, `multiple-concurrent-get`, `not-found`, `many-headers`, `split-data`, `request-cancellation`, `goaway`, and `connection-close-in-flight` in Docker with qlog capture and preserved stdout/stderr.
-- Latest default matrix result: `16 pass`, `0 fail`, `64 skip`.
+- Latest default matrix result: `22 pass`, `0 fail`, `58 skip`.
 - `aioquic-client__incursa-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
+- `incursa-client__aioquic-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `curl__incursa-server` rows are `skip` with the default `curlimages/curl:latest` image because that image does not support `--http3-only`. Set `HTTP3_CURL_IMAGE` to a curl build with HTTP/3 support to make these rows executable.
-- `quiche`, `ngtcp2`, and Incursa-client-to-external-server rows remain `skip` until their command/server wiring is pinned.
+- `quiche`, `ngtcp2`, and Incursa-client-to-quiche/ngtcp2 server rows remain `skip` until their command/server wiring is pinned.
 
 ## Commands
 
