@@ -282,7 +282,8 @@ skip_reason() {
       ;;
     aioquic-client__incursa-server)
       case "$scenario" in
-        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        get-small|get-empty|not-found|many-headers) printf "" ;;
+        get-large|split-data) printf "aioquic 1.3.0 large-body peer incompatibility; these rows are documented skips until the peer library is upgraded or replaced" ;;
         *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
       esac
       ;;
@@ -473,20 +474,40 @@ for target in "${TARGETS[@]}"; do
       docker cp "${quiche_container_name}:/logs/sslkeylog" "$quiche_log_root" >/dev/null 2>&1 || true
       docker rm -f "$quiche_container_name" >/dev/null 2>&1 || true
     elif [[ "$target" == "ngtcp2-client__incursa-server" ]]; then
-      ngtcp2_command="mkdir -p /logs/qlog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433${path}"
-      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps ngtcp2 /bin/sh -lc \"$ngtcp2_command\""
+      ngtcp2_container_name="incursa-http3-external-interop-ngtcp2-$(cat /proc/sys/kernel/random/uuid | tr -d '-')"
+      ngtcp2_image="${HTTP3_NGTCP2_IMAGE:-ghcr.io/ngtcp2/ngtcp2-interop:latest}"
+      ngtcp2_log_root="$LOGS_ROOT/ngtcp2"
+      mkdir -p "$ngtcp2_log_root"
+      ngtcp2_command="mkdir -p /logs/qlog /logs/sslkeylog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433${path}"
+      command_line="docker run --rm --name $ngtcp2_container_name --network $SERVER_NETWORK_NAME -v \"$WWW_ROOT:/www:ro\" -v \"$DOWNLOADS_ROOT:/downloads\" -v \"$CERT_ROOT:/certs:ro\" -v \"$ngtcp2_log_root:/logs\" -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh $ngtcp2_image -lc \"$ngtcp2_command\""
       printf "%s\n" "$command_line" > "$command_path"
-      docker compose --file "$COMPOSE_FILE" run --rm --no-deps ngtcp2 \
-        /bin/sh -lc "$ngtcp2_command" >"$stdout_path" 2>"$stderr_path"
+      docker run \
+        --rm \
+        --name "$ngtcp2_container_name" \
+        --network "$SERVER_NETWORK_NAME" \
+        -v "$WWW_ROOT:/www:ro" \
+        -v "$DOWNLOADS_ROOT:/downloads" \
+        -v "$CERT_ROOT:/certs:ro" \
+        -v "$ngtcp2_log_root:/logs" \
+        -e QLOGDIR=/logs/qlog \
+        -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log \
+        --entrypoint /bin/sh \
+        "$ngtcp2_image" \
+        -lc "$ngtcp2_command" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     elif [[ "$target" == "incursa-client__aioquic-server" ]]; then
       command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps incursa-client https://aioquic-server:4433${path} $download_path --expect-status $status"
       printf "%s\n" "$command_line" > "$command_path"
-      extra_args=()
+      compose_run_args=(run --rm --no-deps)
       if [[ "$scenario" == "many-headers" ]]; then
-        extra_args+=(--expect-header-count-at-least 66)
+        extra_args=(--expect-header-count-at-least 66)
+      else
+        extra_args=()
       fi
-      docker compose --file "$COMPOSE_FILE" run --rm --no-deps incursa-client \
+      if [[ -n "${AIOQUIC_HTTP3_DEBUG:-}" ]]; then
+        compose_run_args+=(-e "AIOQUIC_HTTP3_DEBUG=${AIOQUIC_HTTP3_DEBUG}")
+      fi
+      docker compose --file "$COMPOSE_FILE" "${compose_run_args[@]}" incursa-client \
         "https://aioquic-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     fi

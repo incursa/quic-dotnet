@@ -180,6 +180,8 @@ function Test-ExecutableTarget {
         "connection-close-in-flight"
     )
     $curlScenarios = @("get-small", "get-empty", "get-large", "not-found", "many-headers", "split-data")
+    $aioquicStableScenarios = @("get-small", "get-empty", "not-found", "many-headers")
+    $aioquicLargeBodySkipScenarios = @("get-large", "split-data")
 
     if ($Target -eq "incursa-client__incursa-server" -and $Scenario -in $incursaScenarios) {
         return ""
@@ -187,6 +189,14 @@ function Test-ExecutableTarget {
 
     if ($Target -eq "curl__incursa-server" -and $Scenario -in $curlScenarios) {
         return ""
+    }
+
+    if ($Target -eq "aioquic-client__incursa-server" -and $Scenario -in $aioquicStableScenarios) {
+        return ""
+    }
+
+    if ($Target -eq "aioquic-client__incursa-server" -and $Scenario -in $aioquicLargeBodySkipScenarios) {
+        return "aioquic 1.3.0 large-body peer incompatibility; these rows are documented skips until the peer library is upgraded or replaced"
     }
 
     if ($Target -eq "aioquic-client__incursa-server" -and $Scenario -in $curlScenarios) {
@@ -663,17 +673,36 @@ function Invoke-TargetScenario {
         )
     }
     elseif ($Target -eq "ngtcp2-client__incursa-server") {
-        $ngtcp2Command = "mkdir -p /logs/qlog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433$path"
+        $ngtcp2ContainerName = "incursa-http3-external-interop-ngtcp2-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+        $ngtcp2Image = if ([string]::IsNullOrWhiteSpace($env:HTTP3_NGTCP2_IMAGE)) { "ghcr.io/ngtcp2/ngtcp2-interop:latest" } else { $env:HTTP3_NGTCP2_IMAGE }
+        $ngtcp2LogRoot = Join-Path $script:LogsRoot "ngtcp2"
+        New-Item -ItemType Directory -Force -Path $ngtcp2LogRoot | Out-Null
+        $ngtcp2Command = "mkdir -p /logs/qlog /logs/sslkeylog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433$path"
         $args = @(
-            "run", "--rm", "--no-deps", "ngtcp2",
-            "/bin/sh",
+            "run", "--rm",
+            "--name", $ngtcp2ContainerName,
+            "--network", $script:Http3ExternalDockerNetworkName,
+            "-v", "${wwwRoot}:/www:ro",
+            "-v", "${downloadsRoot}:/downloads",
+            "-v", "${certRoot}:/certs:ro",
+            "-v", "${ngtcp2LogRoot}:/logs",
+            "-e", "QLOGDIR=/logs/qlog",
+            "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
+            "--entrypoint", "/bin/sh",
+            $ngtcp2Image,
             "-lc",
             $ngtcp2Command
         )
     }
     elseif ($Target -eq "incursa-client__aioquic-server") {
-        $args = @(
-            "run", "--rm", "--no-deps", "incursa-client",
+        $args = @("run", "--rm", "--no-deps")
+
+        if (-not [string]::IsNullOrWhiteSpace($env:AIOQUIC_HTTP3_DEBUG)) {
+            $args += @("-e", "AIOQUIC_HTTP3_DEBUG=$env:AIOQUIC_HTTP3_DEBUG")
+        }
+
+        $args += @(
+            "incursa-client",
             "https://aioquic-server:4433$path",
             $downloadPath,
             "--expect-status", "$expectedStatus"
@@ -682,6 +711,7 @@ function Invoke-TargetScenario {
         if ($Scenario -eq "many-headers") {
             $args += @("--expect-header-count-at-least", "66")
         }
+
     }
     else {
         Write-Result -Target $Target -Scenario $Scenario -Status "skip" -Detail "target command is not wired"
@@ -690,6 +720,9 @@ function Invoke-TargetScenario {
 
     if ($Target -eq "quiche-client__incursa-server") {
         $commandLine = "docker run --name $quicheContainerName --network $script:Http3ExternalDockerNetworkName -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh cloudflare/quiche:latest -lc `"$quicheCommand`""
+    }
+    elseif ($Target -eq "ngtcp2-client__incursa-server") {
+        $commandLine = "docker run --rm --name $ngtcp2ContainerName --network $script:Http3ExternalDockerNetworkName -v `"$(${wwwRoot}):/www:ro`" -v `"$(${downloadsRoot}):/downloads`" -v `"$(${certRoot}):/certs:ro`" -v `"$(${ngtcp2LogRoot}):/logs`" -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh $ngtcp2Image -lc `"$ngtcp2Command`""
     }
     else {
         $commandLine = "docker compose --file `"$script:ComposeFilePath`" $($args -join ' ')"
@@ -705,6 +738,9 @@ function Invoke-TargetScenario {
 
     Set-Content -LiteralPath $commandPath -Value $commandLine
     if ($Target -eq "quiche-client__incursa-server") {
+        & docker @args > $stdoutPath 2> $stderrPath
+    }
+    elseif ($Target -eq "ngtcp2-client__incursa-server") {
         & docker @args > $stdoutPath 2> $stderrPath
     }
     else {
