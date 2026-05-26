@@ -18,7 +18,7 @@ class Http3ClientProtocol(QuicConnectionProtocol):
         self._responses = {}
         self._settings_received = asyncio.get_running_loop().create_future()
 
-    async def get(self, url):
+    async def get(self, url, timeout):
         await asyncio.wait_for(self._settings_received, timeout=10)
         parsed = urlparse(url)
         authority = parsed.netloc
@@ -45,7 +45,7 @@ class Http3ClientProtocol(QuicConnectionProtocol):
             end_stream=True,
         )
         self.transmit()
-        await response["done"]
+        await asyncio.wait_for(response["done"], timeout=timeout)
         return response["headers"], bytes(response["body"])
 
     def quic_event_received(self, event):
@@ -85,7 +85,7 @@ async def main_async(args):
         configuration=configuration,
         create_protocol=Http3ClientProtocol,
     ) as protocol:
-        headers, body = await protocol.get(args.url)
+        headers, body = await protocol.get(args.url, args.timeout)
 
     status = None
     for name, value in headers:
@@ -116,6 +116,7 @@ def parse_args():
     parser.add_argument("output")
     parser.add_argument("--expect-status", type=int, default=200)
     parser.add_argument("--expect-header-count-at-least", type=int)
+    parser.add_argument("--timeout", type=float, default=20.0)
     return parser.parse_args()
 
 

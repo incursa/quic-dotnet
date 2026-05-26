@@ -37,7 +37,8 @@ services:
       - clients
 
   curl:
-    image: ${HTTP3_CURL_IMAGE:-curlimages/curl:latest}
+    image: ${HTTP3_CURL_IMAGE:-ghcr.io/macbre/curl-http3}
+    entrypoint: ["curl"]
     volumes:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
@@ -97,7 +98,8 @@ services:
       - peers
 
   ngtcp2:
-    image: ${HTTP3_NGTCP2_IMAGE:-ghcr.io/ngtcp2/nghttp3:latest}
+    image: ${HTTP3_NGTCP2_IMAGE:-ghcr.io/ngtcp2/ngtcp2-interop:latest}
+    entrypoint: []
     volumes:
       - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads

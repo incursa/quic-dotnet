@@ -12,7 +12,7 @@ internal sealed partial class QuicConnectionRuntime
             StringComparison.Ordinal);
 
     private bool PeerSupportsGreasedQuicBit =>
-        tlsState.PeerTransportParameters?.GreaseQuicBit == true;
+        tlsState.LocalTransportParameters?.GreaseQuicBit == true;
 
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
@@ -1786,7 +1786,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-            if (!streamPreviouslyKnown)
+            if (!streamPreviouslyKnown || IsPeerInitiatedInboundStreamId(streamFrame.StreamId.Value))
             {
                 TryQueueInboundStreamId(streamFrame.StreamId.Value);
             }
@@ -2082,7 +2082,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-                if (!streamPreviouslyKnown)
+                if (!streamPreviouslyKnown || IsPeerInitiatedInboundStreamId(streamFrame.StreamId.Value))
                 {
                     TryQueueInboundStreamId(streamFrame.StreamId.Value);
                 }

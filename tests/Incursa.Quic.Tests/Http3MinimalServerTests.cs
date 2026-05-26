@@ -98,6 +98,34 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task PeerControlStream_BundledSettingsFrame_IsObserved()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/hello", "hello"),
+            diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        await OpenClientUnidirectionalStreamsAsync(connection);
+        await WaitForDiagnosticAsync(
+            diagnostics,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.SettingsReceived
+                && diagnostic.StreamId == 2
+                && diagnostic.Role == "server");
+
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.StreamOpened
+                && diagnostic.StreamId == 2
+                && diagnostic.StreamKind == Http3StreamKind.Control);
+    }
+
+    [Fact]
     public async Task AbruptStreamReset_DoesNotStopLaterRequest()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -203,6 +231,24 @@ public sealed class Http3MinimalServerTests
         await stream.WriteAsync(encoded, 0, encoded.Length).WaitAsync(TimeSpan.FromSeconds(10));
     }
 
+    private static async Task WaitForDiagnosticAsync(
+        RecordingHttp3DiagnosticsSink diagnostics,
+        Predicate<Http3DiagnosticEvent> predicate)
+    {
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+        while (!timeout.IsCancellationRequested)
+        {
+            if (diagnostics.Events.Any(diagnostic => predicate(diagnostic)))
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(25), timeout.Token);
+        }
+
+        Assert.Fail("The expected HTTP/3 diagnostic event was not observed.");
+    }
+
     private sealed class TestServerContext : IAsyncDisposable
     {
         private readonly Http3Server server;
@@ -222,7 +268,9 @@ public sealed class Http3MinimalServerTests
 
         internal Task ServerTask => serverTask;
 
-        internal static async ValueTask<TestServerContext> StartAsync(IHttp3RequestHandler handler)
+        internal static async ValueTask<TestServerContext> StartAsync(
+            IHttp3RequestHandler handler,
+            IHttp3DiagnosticsSink? diagnosticsSink = null)
         {
             X509Certificate2 certificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -235,7 +283,13 @@ public sealed class Http3MinimalServerTests
                 ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
             };
 
-            Http3Server server = await Http3Server.ListenAsync(listenerOptions, handler).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            Http3Server server = await Http3Server.ListenAsync(
+                listenerOptions,
+                handler,
+                new Http3ServerOptions
+                {
+                    DiagnosticsSink = diagnosticsSink,
+                }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
             return new TestServerContext(server, listenEndPoint, certificate);
         }
 
@@ -270,4 +324,29 @@ public sealed class Http3MinimalServerTests
         }
     }
 
+    private sealed class RecordingHttp3DiagnosticsSink : IHttp3DiagnosticsSink
+    {
+        private readonly List<Http3DiagnosticEvent> events = [];
+
+        public bool IsEnabled => true;
+
+        internal Http3DiagnosticEvent[] Events
+        {
+            get
+            {
+                lock (events)
+                {
+                    return [.. events];
+                }
+            }
+        }
+
+        public void Emit(Http3DiagnosticEvent diagnosticEvent)
+        {
+            lock (events)
+            {
+                events.Add(diagnosticEvent);
+            }
+        }
+    }
 }

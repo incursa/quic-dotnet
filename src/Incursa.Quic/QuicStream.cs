@@ -176,6 +176,13 @@ public sealed class QuicStream : Stream
         await WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
+    internal async ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(buffer);
+        ValidateRange(buffer.Length, offset, count);
+        await WriteFinalCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+    }
+
     public override long Seek(long offset, SeekOrigin origin)
     {
         throw new NotSupportedException();
@@ -514,6 +521,57 @@ public sealed class QuicStream : Stream
             }
 
             await runtime.WriteStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
+    }
+
+    private async ValueTask WriteFinalCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+        if (!canWrite)
+        {
+            throw new InvalidOperationException("This stream does not have a writable side.");
+        }
+
+        if (runtime is null)
+        {
+            throw new NotSupportedException("Writing requires the supported connection runtime path.");
+        }
+
+        if (writeTerminalException is Exception writeException)
+        {
+            throw writeException;
+        }
+
+        Exception? runtimeException = runtime.GetStreamOperationException();
+        if (runtimeException is not null)
+        {
+            throw runtimeException;
+        }
+
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+            runtimeException = runtime.GetStreamOperationException();
+            if (runtimeException is not null)
+            {
+                throw runtimeException;
+            }
+
+            if (writeTerminalException is Exception completedWriteException)
+            {
+                throw completedWriteException;
+            }
+
+            await runtime.WriteFinalStreamAsync(streamId, buffer, cancellationToken).ConfigureAwait(false);
+            writesClosed.TrySetResult(null);
+            runtime.TryQueueStreamCapacityRelease(streamId);
         }
         finally
         {

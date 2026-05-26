@@ -249,6 +249,18 @@ skip_reason() {
         *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
       esac
       ;;
+    quiche-client__incursa-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
+    ngtcp2-client__incursa-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
     incursa-client__aioquic-server)
       case "$scenario" in
         get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
@@ -369,17 +381,17 @@ for target in "${TARGETS[@]}"; do
         "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     elif [[ "$target" == "curl__incursa-server" && "$status" == "200" ]]; then
-      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --insecure --silent --show-error --fail --output $download_path https://incursa-server:4433${path}"
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --max-time 15 --insecure --silent --show-error --fail --output $download_path https://incursa-server:4433${path}"
       printf "%s\n" "$command_line" > "$command_path"
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps curl \
-        --http3-only --insecure --silent --show-error --fail \
+        --http3-only --max-time 15 --insecure --silent --show-error --fail \
         --output "$download_path" "https://incursa-server:4433${path}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     elif [[ "$target" == "curl__incursa-server" ]]; then
-      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --insecure --silent --show-error --output $download_path --write-out %{http_code} https://incursa-server:4433${path}"
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --max-time 15 --insecure --silent --show-error --output $download_path --write-out %{http_code} https://incursa-server:4433${path}"
       printf "%s\n" "$command_line" > "$command_path"
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps curl \
-        --http3-only --insecure --silent --show-error \
+        --http3-only --max-time 15 --insecure --silent --show-error \
         --output "$download_path" --write-out "%{http_code}" \
         "https://incursa-server:4433${path}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
@@ -394,6 +406,21 @@ for target in "${TARGETS[@]}"; do
         /usr/local/bin/aioquic-http3-client \
         "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
+    elif [[ "$target" == "quiche-client__incursa-server" ]]; then
+      quiche_dump_directory="/downloads/${safe_name}"
+      quiche_command="mkdir -p $quiche_dump_directory /logs/qlog && quiche-client --http-version HTTP/3 --no-verify --dump-responses $quiche_dump_directory --dump-json --max-json-payload 0 https://incursa-server:4433${path}"
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps quiche /bin/sh -lc \"$quiche_command\""
+      printf "%s\n" "$command_line" > "$command_path"
+      docker compose --file "$COMPOSE_FILE" run --rm --no-deps quiche \
+        /bin/sh -lc "$quiche_command" >"$stdout_path" 2>"$stderr_path"
+      exit_code=$?
+    elif [[ "$target" == "ngtcp2-client__incursa-server" ]]; then
+      ngtcp2_command="mkdir -p /logs/qlog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433${path}"
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps ngtcp2 /bin/sh -lc \"$ngtcp2_command\""
+      printf "%s\n" "$command_line" > "$command_path"
+      docker compose --file "$COMPOSE_FILE" run --rm --no-deps ngtcp2 \
+        /bin/sh -lc "$ngtcp2_command" >"$stdout_path" 2>"$stderr_path"
+      exit_code=$?
     elif [[ "$target" == "incursa-client__aioquic-server" ]]; then
       command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps incursa-client https://aioquic-server:4433${path} $download_path --expect-status $status"
       printf "%s\n" "$command_line" > "$command_path"
@@ -407,10 +434,13 @@ for target in "${TARGETS[@]}"; do
     fi
     set -e
 
-    if [[ "$exit_code" -eq 0 ]]; then
+    if grep -Eqi -- "ERR_HANDSHAKE_TIMEOUT|handshake timed out|handshake timeout" "$stderr_path"; then
+      write_summary "$artifact_dir" "$target" "$scenario" "fail" "handshake timeout" "$exit_code" "$command_line"
+      write_result "$target" "$scenario" "fail" "handshake timeout" "$artifact_dir"
+    elif [[ "$exit_code" -eq 0 ]]; then
       write_summary "$artifact_dir" "$target" "$scenario" "pass" "exit code 0" "$exit_code" "$command_line"
       write_result "$target" "$scenario" "pass" "exit code 0" "$artifact_dir"
-    elif [[ "$target" == "curl__incursa-server" ]] && grep -Eqi -- "--http3-only|HTTP3|HTTP/3|unsupported protocol" "$stderr_path"; then
+    elif [[ "$target" == "curl__incursa-server" ]] && grep -Eqi -- "option .*--http3|--http3-only.*unknown|unsupported protocol|the installed libcurl version doesn't support this" "$stderr_path"; then
       detail="curl image does not support HTTP/3; set HTTP3_CURL_IMAGE to a curl build with --http3-only support"
       write_summary "$artifact_dir" "$target" "$scenario" "skip" "$detail" "$exit_code" "$command_line"
       write_result "$target" "$scenario" "skip" "$detail" "$artifact_dir"

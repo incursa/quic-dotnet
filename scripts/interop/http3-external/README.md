@@ -13,9 +13,9 @@ This harness is an advisory HTTP/3 peer matrix outside the upstream QUIC interop
 - `incursa-client__quiche-server`
 - `incursa-client__ngtcp2-server`
 
-The Incursa-to-Incursa lane executes all ten configured scenarios. The aioquic client lane executes the static GET-style scenarios against the Incursa server, and the Incursa client lane executes the same static GET-style scenarios against the aioquic server wrapper. Other targets are represented in the result matrix and reported as `skip` until their exact command/server wiring is pinned.
+The Incursa-to-Incursa lane executes all ten configured scenarios. The curl, aioquic, quiche, and ngtcp2 client lanes execute the static GET-style scenarios against the Incursa server. The Incursa client lane executes the same static GET-style scenarios against the aioquic server wrapper. Quiche/ngtcp2 server lanes are represented in the result matrix and reported as `skip` until their exact server wiring is pinned.
 
-The default curl image is `curlimages/curl:latest`. If that image does not include HTTP/3 support, curl rows are reported as `skip`; set `HTTP3_CURL_IMAGE` to a curl build that supports `--http3-only` to execute them.
+The default curl image is `ghcr.io/macbre/curl-http3`. If a substituted image does not include HTTP/3 support, curl rows are reported as `skip`; set `HTTP3_CURL_IMAGE` to a curl build that supports `--http3-only` to execute them.
 
 ## Scenarios
 
@@ -38,7 +38,9 @@ Current coverage notes:
 
 - `multiple-concurrent-get` uses multiple concurrent Incursa client containers/connections, not multiple request streams on one HTTP/3 connection.
 - `connection-close-in-flight` is currently a bounded close-after-split-response fixture. It is useful for artifact retention and close-path smoke coverage, but it is not a proof of arbitrary abrupt mid-body peer failure handling.
-- `curl__incursa-server` requires an HTTP/3-capable curl image. The default `curlimages/curl:latest` image is commonly skipped because it lacks `--http3-only`.
+- `curl__incursa-server` requires an HTTP/3-capable curl image. Keep using `--http3-only` so the row fails rather than silently falling back to HTTP/1.1 or HTTP/2.
+- `aioquic-client__incursa-server` uses a bounded response timeout so large-transfer stalls fail cleanly instead of hanging the run.
+- `quiche-client__incursa-server` and `ngtcp2-client__incursa-server` are wired as executable rows; failures in these rows are real peer-specific evidence, not skipped coverage.
 
 ## Windows
 

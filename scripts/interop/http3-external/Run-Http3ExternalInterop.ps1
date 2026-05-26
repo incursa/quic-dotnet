@@ -191,6 +191,14 @@ function Test-ExecutableTarget {
         return ""
     }
 
+    if ($Target -eq "quiche-client__incursa-server" -and $Scenario -in $curlScenarios) {
+        return ""
+    }
+
+    if ($Target -eq "ngtcp2-client__incursa-server" -and $Scenario -in $curlScenarios) {
+        return ""
+    }
+
     if ($Target -eq "incursa-client__aioquic-server" -and $Scenario -in $curlScenarios) {
         return ""
     }
@@ -589,7 +597,7 @@ function Invoke-TargetScenario {
         if ($expectedStatus -eq 200) {
             $args = @(
                 "run", "--rm", "--no-deps", "curl",
-                "--http3-only", "--insecure", "--silent", "--show-error", "--fail",
+                "--http3-only", "--max-time", "15", "--insecure", "--silent", "--show-error", "--fail",
                 "--output", $downloadPath,
                 "https://incursa-server:4433$path"
             )
@@ -597,7 +605,7 @@ function Invoke-TargetScenario {
         else {
             $args = @(
                 "run", "--rm", "--no-deps", "curl",
-                "--http3-only", "--insecure", "--silent", "--show-error",
+                "--http3-only", "--max-time", "15", "--insecure", "--silent", "--show-error",
                 "--output", $downloadPath,
                 "--write-out", "%{http_code}",
                 "https://incursa-server:4433$path"
@@ -616,6 +624,25 @@ function Invoke-TargetScenario {
         if ($Scenario -eq "many-headers") {
             $args += @("--expect-header-count-at-least", "66")
         }
+    }
+    elseif ($Target -eq "quiche-client__incursa-server") {
+        $quicheDumpDirectory = "/downloads/$safeName"
+        $quicheCommand = "mkdir -p $quicheDumpDirectory /logs/qlog && quiche-client --http-version HTTP/3 --no-verify --dump-responses $quicheDumpDirectory --dump-json --max-json-payload 0 https://incursa-server:4433$path"
+        $args = @(
+            "run", "--rm", "--no-deps", "quiche",
+            "/bin/sh",
+            "-lc",
+            $quicheCommand
+        )
+    }
+    elseif ($Target -eq "ngtcp2-client__incursa-server") {
+        $ngtcp2Command = "mkdir -p /logs/qlog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433$path"
+        $args = @(
+            "run", "--rm", "--no-deps", "ngtcp2",
+            "/bin/sh",
+            "-lc",
+            $ngtcp2Command
+        )
     }
     elseif ($Target -eq "incursa-client__aioquic-server") {
         $args = @(
@@ -647,13 +674,24 @@ function Invoke-TargetScenario {
     Set-Content -LiteralPath $commandPath -Value $commandLine
     & docker compose --file $script:ComposeFilePath @args > $stdoutPath 2> $stderrPath
     $exitCode = $LASTEXITCODE
-    if ($exitCode -eq 0) {
+    $stderrText = if (Test-Path -LiteralPath $stderrPath) {
+        Get-Content -LiteralPath $stderrPath -Raw
+    }
+    else {
+        ""
+    }
+
+    if ($stderrText -match "ERR_HANDSHAKE_TIMEOUT|handshake timed out|handshake timeout") {
+        Write-Http3Summary -ArtifactDirectory $artifactDirectory -Target $Target -Scenario $Scenario -Status "fail" -Detail "handshake timeout" -ExitCode $exitCode -CommandLine $commandLine
+        Write-Result -Target $Target -Scenario $Scenario -Status "fail" -Detail "handshake timeout" -Artifact $artifactDirectory
+    }
+    elseif ($exitCode -eq 0) {
         Write-Http3Summary -ArtifactDirectory $artifactDirectory -Target $Target -Scenario $Scenario -Status "pass" -Detail "exit code 0" -ExitCode $exitCode -CommandLine $commandLine
         Write-Result -Target $Target -Scenario $Scenario -Status "pass" -Detail "exit code 0" -Artifact $artifactDirectory
     }
     elseif ($Target -eq "curl__incursa-server" -and
         (Test-Path -LiteralPath $stderrPath) -and
-        ((Get-Content -LiteralPath $stderrPath -Raw) -match "--http3-only|HTTP3|HTTP/3|unsupported protocol")) {
+        ($stderrText -match "option .*--http3|--http3-only.*unknown|unsupported protocol|the installed libcurl version doesn't support this")) {
         $detail = "curl image does not support HTTP/3; set HTTP3_CURL_IMAGE to a curl build with --http3-only support"
         Write-Http3Summary -ArtifactDirectory $artifactDirectory -Target $Target -Scenario $Scenario -Status "skip" -Detail $detail -ExitCode $exitCode -CommandLine $commandLine
         Write-Result -Target $Target -Scenario $Scenario -Status "skip" -Detail $detail -Artifact $artifactDirectory

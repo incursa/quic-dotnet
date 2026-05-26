@@ -39,7 +39,7 @@ internal sealed partial class QuicConnectionRuntime
                     nowTicks,
                     streamActionEvent.RequestId,
                     streamActionEvent.StreamId.Value,
-                    ReadOnlyMemory<byte>.Empty,
+                    streamActionEvent.StreamData,
                     finishWrites: true,
                     ref effects),
             QuicConnectionStreamActionKind.Reset
@@ -378,6 +378,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool queuedWritesPendingForStream = finishWrites
+            && streamData.IsEmpty
             && applicationSendQueue.HasPendingWritesForStream(streamId);
         if (queuedWritesPendingForStream)
         {
@@ -430,6 +431,7 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 probePacket: false,
                 ref effects);
+            _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
             completion.TrySetResult(null);
             return true;
@@ -4116,7 +4118,25 @@ internal sealed partial class QuicConnectionRuntime
 
     private void TryQueueInboundStreamId(ulong streamId)
     {
+        if (!queuedInboundStreamIds.TryAdd(streamId, 0))
+        {
+            return;
+        }
+
+        if (ApplicationReceiveDebugEnabled)
+        {
+            Console.Error.WriteLine($"app-rx queue-inbound-stream role={tlsState.Role} stream={streamId}.");
+        }
+
         _ = inboundStreamIds.Writer.TryWrite(streamId);
+    }
+
+    private bool IsPeerInitiatedInboundStreamId(ulong streamId)
+    {
+        QuicStreamId parsedStreamId = new(streamId);
+        return tlsState.Role == QuicTlsRole.Server
+            ? parsedStreamId.IsClientInitiated
+            : parsedStreamId.IsServerInitiated;
     }
 
     private bool TryQueueInboundDatagram(ReadOnlyMemory<byte> datagram)

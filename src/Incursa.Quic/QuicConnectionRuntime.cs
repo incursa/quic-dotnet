@@ -57,6 +57,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingDatagramSendRequests = new();
+    private readonly ConcurrentDictionary<ulong, byte> queuedInboundStreamIds = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
@@ -816,6 +817,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         try
         {
             ulong streamId = await inboundStreamIds.Reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+            if (ApplicationReceiveDebugEnabled)
+            {
+                await Console.Error.WriteLineAsync($"app-rx accept-inbound-stream role={tlsState.Role} stream={streamId}.").ConfigureAwait(false);
+            }
+
             if (terminalState is QuicConnectionTerminalState completedTerminalState)
             {
                 throw CreateTerminalException(completedTerminalState);
@@ -915,6 +921,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
+        => await WriteStreamAsync(streamId, buffer, finishWrites: false, cancellationToken).ConfigureAwait(false);
+
+    internal async ValueTask WriteFinalStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        CancellationToken cancellationToken = default)
+        => await WriteStreamAsync(streamId, buffer, finishWrites: true, cancellationToken).ConfigureAwait(false);
+
+    private async ValueTask WriteStreamAsync(
+        ulong streamId,
+        ReadOnlyMemory<byte> buffer,
+        bool finishWrites,
+        CancellationToken cancellationToken)
     {
         ThrowIfDisposed();
 
@@ -925,7 +944,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (buffer.IsEmpty)
+        if (buffer.IsEmpty && !finishWrites)
         {
             return;
         }
@@ -953,7 +972,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         if (!TryPostLocalApiEvent(new QuicConnectionStreamActionEvent(
             clock.Ticks,
             requestId,
-            QuicConnectionStreamActionKind.Write,
+            finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
             StreamId: streamId,
             StreamData: buffer)))
         {
