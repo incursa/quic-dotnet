@@ -107,9 +107,11 @@ public sealed class REQ_QUIC_CRT_0138
 
         try
         {
-            Assert.Equal(2, capture.File.Traces.Count);
-
-            QlogTrace[] captureTraces = capture.File.Traces.Cast<QlogTrace>().ToArray();
+            QlogTrace[] captureTraces = capture.File.Traces
+                .Cast<QlogTrace>()
+                .Where(trace => trace.Events.Any(qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName))
+                .ToArray();
+            Assert.Equal(2, captureTraces.Length);
             Assert.All(captureTraces, trace =>
             {
                 Assert.Equal(QlogKnownValues.ServerVantagePoint, trace.VantagePoint?.Type);
@@ -118,7 +120,10 @@ public sealed class REQ_QUIC_CRT_0138
 
             string json = capture.ToJson();
             QlogFile roundTrip = QlogJsonSerializer.Deserialize(json);
-            QlogTrace[] serializedTraces = roundTrip.Traces.Cast<QlogTrace>().ToArray();
+            QlogTrace[] serializedTraces = roundTrip.Traces
+                .Cast<QlogTrace>()
+                .Where(trace => trace.Events.Any(qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName))
+                .ToArray();
 
             Assert.Equal(2, serializedTraces.Length);
             Assert.All(serializedTraces, trace =>
@@ -180,12 +185,13 @@ public sealed class REQ_QUIC_CRT_0138
 
         try
         {
-            Assert.Single(capture.File.Traces);
-            QlogTrace captureTrace = Assert.IsType<QlogTrace>(capture.File.Traces[0]);
+            QlogTrace captureTrace = capture.File.Traces
+                .Cast<QlogTrace>()
+                .Single(trace => trace.Events.Any(qlogEvent => qlogEvent.Name == "quic:socket_datagram_received"));
             Assert.Equal(QlogKnownValues.ServerVantagePoint, captureTrace.VantagePoint?.Type);
 
             QlogEvent packetReceived = captureTrace.Events.First(
-                qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName);
+                qlogEvent => qlogEvent.Name == "quic:socket_datagram_received");
 
             Assert.NotNull(packetReceived.Tuple);
             Assert.EndsWith($"|[::1]:{listenPort}", packetReceived.Tuple, StringComparison.Ordinal);

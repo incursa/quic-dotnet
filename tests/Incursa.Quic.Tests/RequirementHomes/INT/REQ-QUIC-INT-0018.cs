@@ -42,10 +42,10 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Runner server implementations"));
         Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
         Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
-        Assert.Equal("19", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("20", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal("rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));

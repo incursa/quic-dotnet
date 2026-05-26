@@ -431,7 +431,6 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 probePacket: false,
                 ref effects);
-            _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
             AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
             completion.TrySetResult(null);
             return true;

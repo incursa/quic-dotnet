@@ -171,7 +171,7 @@ public sealed class REQ_QUIC_RFC9114_0002
             string gitMarker = Path.Combine(current.FullName, ".git");
             string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-RFC9114.json");
             string testMarker = Path.Combine(current.FullName, "tests", "Incursa.Quic.Tests", "Http3FrameLayerTests.cs");
-            if (Directory.Exists(gitMarker) && File.Exists(specMarker) && File.Exists(testMarker))
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(testMarker))
             {
                 return current.FullName;
             }

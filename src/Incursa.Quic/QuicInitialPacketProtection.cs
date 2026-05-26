@@ -171,7 +171,7 @@ internal sealed class QuicInitialPacketProtection
             return false;
         }
 
-        if (!QuicVersionNegotiation.IsSupportedTransportVersion(version))
+        if (!CanDeriveInitialPacketProtection(version))
         {
             return false;
         }
@@ -275,7 +275,7 @@ internal sealed class QuicInitialPacketProtection
             out byte headerControlBits,
             out ulong lengthFieldValue,
             out int packetNumberOffset)
-            || packetVersion != version)
+            || !CanUsePacketVersion(packetVersion, version))
         {
             return false;
         }
@@ -539,7 +539,7 @@ internal sealed class QuicInitialPacketProtection
             out _,
             out _,
             out ReadOnlySpan<byte> versionSpecificData)
-            || !QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
+            || !CanDeriveInitialPacketProtection(packetVersion))
         {
             return false;
         }
@@ -567,7 +567,7 @@ internal sealed class QuicInitialPacketProtection
 
     private static bool TryValidatePlaintextInitialHeader(uint packetVersion, byte headerControlBits, bool allowClearedFixedBit)
     {
-        if (!QuicVersionNegotiation.IsSupportedTransportVersion(packetVersion))
+        if (!CanDeriveInitialPacketProtection(packetVersion))
         {
             return false;
         }
@@ -579,8 +579,17 @@ internal sealed class QuicInitialPacketProtection
         }
 
         byte longPacketTypeBits = (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift);
-        return QuicVersionNegotiation.IsLongHeaderPacketType(packetVersion, longPacketTypeBits, QuicLongPacketType.Initial);
+        return longPacketTypeBits == QuicVersionNegotiation.GetLongHeaderPacketTypeBits(packetVersion, QuicLongPacketType.Initial);
     }
+
+    private static bool CanDeriveInitialPacketProtection(uint version)
+        => QuicVersionNegotiation.IsSupportedTransportVersion(version)
+            || QuicVersionNegotiation.IsReservedVersion(version);
+
+    private static bool CanUsePacketVersion(uint packetVersion, uint protectionVersion)
+        => packetVersion == protectionVersion
+            || protectionVersion == QuicVersionNegotiation.Version1
+            && QuicVersionNegotiation.IsReservedVersion(packetVersion);
 
     private static void BuildNonce(ReadOnlySpan<byte> iv, ReadOnlySpan<byte> packetNumber, Span<byte> nonce)
     {
@@ -622,6 +631,7 @@ internal sealed class QuicInitialPacketProtection
         {
             QuicVersionNegotiation.Version1 => InitialSaltV1,
             QuicVersionNegotiation.Version2 => InitialSaltV2,
+            _ when QuicVersionNegotiation.IsReservedVersion(version) => InitialSaltV1,
             _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial salt."),
         };
     }
@@ -632,6 +642,7 @@ internal sealed class QuicInitialPacketProtection
         {
             QuicVersionNegotiation.Version1 => QuicKeyLabel,
             QuicVersionNegotiation.Version2 => QuicV2KeyLabel,
+            _ when QuicVersionNegotiation.IsReservedVersion(version) => QuicKeyLabel,
             _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial key label."),
         };
     }
@@ -642,6 +653,7 @@ internal sealed class QuicInitialPacketProtection
         {
             QuicVersionNegotiation.Version1 => QuicIvLabel,
             QuicVersionNegotiation.Version2 => QuicV2IvLabel,
+            _ when QuicVersionNegotiation.IsReservedVersion(version) => QuicIvLabel,
             _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial IV label."),
         };
     }
@@ -652,6 +664,7 @@ internal sealed class QuicInitialPacketProtection
         {
             QuicVersionNegotiation.Version1 => QuicHpLabel,
             QuicVersionNegotiation.Version2 => QuicV2HpLabel,
+            _ when QuicVersionNegotiation.IsReservedVersion(version) => QuicHpLabel,
             _ => throw new NotSupportedException($"Version 0x{version:X8} does not define an Initial header-protection label."),
         };
     }

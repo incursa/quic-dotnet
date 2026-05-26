@@ -114,7 +114,7 @@ public sealed class REQ_QUIC_INT_0032
             string gitMarker = Path.Combine(current.FullName, ".git");
             string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-INT.json");
             string harnessMarker = Path.Combine(current.FullName, "scripts", "interop", "http3-h3spec", "Run-H3Spec.ps1");
-            if (Directory.Exists(gitMarker) && File.Exists(specMarker) && File.Exists(harnessMarker))
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(harnessMarker))
             {
                 return current.FullName;
             }

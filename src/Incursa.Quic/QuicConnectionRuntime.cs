@@ -582,11 +582,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal bool TryConfigureRetryInitialPacketProtection(uint version, ReadOnlySpan<byte> retrySelectedDestinationConnectionId)
     {
-        if (initialPacketProtection is not null)
-        {
-            return initialPacketProtection.Version == version;
-        }
-
         if (!QuicInitialPacketProtection.TryCreate(
             tlsState.Role,
             version,
