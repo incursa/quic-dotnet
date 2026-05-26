@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
@@ -799,6 +800,61 @@ public sealed class REQ_QUIC_INT_0008
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ListenerHostAcceptsAFragmentedClientHelloAcrossMultipleInitialPackets()
+    {
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
+        using Socket clientSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        clientSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        clientSocket.Connect(listenEndPoint);
+
+        byte[] clientInitialDestinationConnectionId =
+        [
+            0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+        ];
+
+        byte[] clientSourceConnectionId =
+        [
+            0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+        ];
+
+        byte[][] clientInitialPackets = CreateFragmentedClientInitialPackets(
+            clientInitialDestinationConnectionId,
+            clientSourceConnectionId);
+
+        await using QuicListenerHost listenerHost = new(
+            listenEndPoint,
+            [SslApplicationProtocol.Http3],
+            (_, _, _) => ValueTask.FromResult(QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+            listenBacklog: 1);
+
+        _ = listenerHost.RunAsync();
+        await Task.Yield();
+
+        foreach (byte[] clientInitialPacket in clientInitialPackets)
+        {
+            int bytesSent = clientSocket.Send(clientInitialPacket);
+            Assert.Equal(clientInitialPacket.Length, bytesSent);
+        }
+
+        byte[] responseBuffer = new byte[4096];
+        using CancellationTokenSource receiveTimeout = new(TimeSpan.FromSeconds(10));
+        int bytesReceived = await clientSocket.ReceiveAsync(responseBuffer.AsMemory(), SocketFlags.None, receiveTimeout.Token);
+        Assert.True(bytesReceived > 0);
+
+        Assert.True(QuicPacketParser.TryParseLongHeader(
+            responseBuffer.AsSpan(0, bytesReceived),
+            out QuicLongHeaderPacket responseHeader));
+        Assert.Equal(1u, responseHeader.Version);
+        Assert.Equal(QuicLongPacketTypeBits.Initial, responseHeader.LongPacketTypeBits);
+        Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
+        Assert.NotEqual(clientSourceConnectionId, responseHeader.SourceConnectionId.ToArray());
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteMissesRemainUnroutableAndDoNotReachTheRuntimeConsumer()
@@ -859,6 +915,87 @@ public sealed class REQ_QUIC_INT_0008
             serverSocket.Dispose();
             clientSocket.Dispose();
         }
+    }
+
+    private static byte[][] CreateFragmentedClientInitialPackets(
+        ReadOnlySpan<byte> originalDestinationConnectionId,
+        ReadOnlySpan<byte> initialSourceConnectionId)
+    {
+        const int FirstPacketClientHelloBytes = 64;
+
+        QuicTransportParameters clientTransportParameters = InteropEndpointHostTestSupport.CreateBootstrapLocalTransportParameters();
+        clientTransportParameters.InitialSourceConnectionId = initialSourceConnectionId.ToArray();
+
+        QuicTlsKeySchedule clientKeySchedule = new(
+            QuicTlsRole.Client,
+            applicationProtocols: [SslApplicationProtocol.Http3]);
+        Assert.True(clientKeySchedule.TryCreateClientHello(clientTransportParameters, out byte[] clientHello));
+
+        List<byte[]> packets = [];
+        int offset = 0;
+        uint packetNumber = 0;
+        while (offset < clientHello.Length)
+        {
+            int cryptoBytes = Math.Min(FirstPacketClientHelloBytes, clientHello.Length - offset);
+            packets.Add(BuildProtectedClientInitialPacket(
+                initialProtectionConnectionId: originalDestinationConnectionId,
+                packetDestinationConnectionId: originalDestinationConnectionId,
+                sourceConnectionId: initialSourceConnectionId,
+                cryptoPayload: clientHello.AsSpan(offset, cryptoBytes),
+                cryptoPayloadOffset: (ulong)offset,
+                packetNumber: packetNumber,
+                minimumProtectedPacketLength: 1280));
+            offset += cryptoBytes;
+            packetNumber++;
+        }
+
+        return packets.ToArray();
+    }
+
+    private static byte[] BuildProtectedClientInitialPacket(
+        ReadOnlySpan<byte> initialProtectionConnectionId,
+        ReadOnlySpan<byte> packetDestinationConnectionId,
+        ReadOnlySpan<byte> sourceConnectionId,
+        ReadOnlySpan<byte> cryptoPayload,
+        ulong cryptoPayloadOffset,
+        uint packetNumber,
+        int minimumProtectedPacketLength = 0)
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            initialProtectionConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+
+        byte[] cryptoFramePayload = QuicFrameTestData.BuildCryptoFrame(
+            new QuicCryptoFrame(cryptoPayloadOffset, cryptoPayload.ToArray()));
+        byte[] packetNumberBytes = new byte[4];
+        BinaryPrimitives.WriteUInt32BigEndian(packetNumberBytes, packetNumber);
+
+        byte[] plaintextPayload = cryptoFramePayload;
+        byte[] plaintextPacket;
+        while (true)
+        {
+            plaintextPacket = QuicInitialPacketProtectionTestData.BuildInitialPlaintextPacket(
+                packetDestinationConnectionId,
+                sourceConnectionId,
+                token: [],
+                packetNumber: packetNumberBytes,
+                plaintextPayload: plaintextPayload);
+
+            int protectedLength = plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength;
+            if (minimumProtectedPacketLength <= 0 || protectedLength >= minimumProtectedPacketLength)
+            {
+                break;
+            }
+
+            byte[] paddedPayload = new byte[plaintextPayload.Length + minimumProtectedPacketLength - protectedLength];
+            plaintextPayload.CopyTo(paddedPayload, 0);
+            plaintextPayload = paddedPayload;
+        }
+
+        byte[] protectedPacket = new byte[plaintextPacket.Length + QuicInitialPacketProtection.AuthenticationTagLength];
+        Assert.True(clientProtection.TryProtect(plaintextPacket, protectedPacket, out int protectedBytesWritten));
+        return protectedPacket[..protectedBytesWritten].ToArray();
     }
 
     private static string DescribeFirstPendingServerConnection(QuicListenerHost listenerHost)

@@ -26,6 +26,62 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/dynamic-qpack", "dynamic hello"),
+            diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
+        Assert.True(encoder.TrySetDynamicTableCapacity(220, out byte[] capacityInstruction));
+        Assert.True(encoder.TryInsert(new QPackFieldLine(":authority", "localhost"), out byte[] authorityInstruction));
+        Assert.True(encoder.TryInsert(new QPackFieldLine(":path", "/dynamic-qpack"), out byte[] pathInstruction));
+
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(qpackMaxTableCapacity: 220, qpackBlockedStreams: 1),
+            [capacityInstruction, authorityInstruction, pathInstruction]);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QPackFieldSectionEncodeResult requestFieldSection = encoder.EncodeFieldSection(
+            checked((ulong)requestStream.Id),
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "localhost"),
+                new QPackFieldLine(":path", "/dynamic-qpack"),
+            ]);
+
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(requestFieldSection.EncodedFieldSection);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("dynamic hello", System.Text.Encoding.UTF8.GetString(response.Body));
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.QPackInstructionReceived
+                && diagnostic.StreamKind == Http3StreamKind.QPackEncoder);
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.RequestStarted
+                && diagnostic.Path == "/dynamic-qpack");
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted
+                && diagnostic.StatusCode == 200);
+    }
+
+    [Fact]
     public async Task InMemoryRouteHandler_MissingGet_Returns404()
     {
         Http3InMemoryRouteHandler handler = new();
@@ -149,12 +205,24 @@ public sealed class Http3MinimalServerTests
 
     private static async Task OpenClientUnidirectionalStreamsAsync(QuicConnection connection)
     {
+        await OpenClientUnidirectionalStreamsAsync(connection, new Http3Settings(), []);
+    }
+
+    private static async Task OpenClientUnidirectionalStreamsAsync(
+        QuicConnection connection,
+        Http3Settings settings,
+        IEnumerable<byte[]> encoderInstructions)
+    {
         QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-        byte[] settings = Http3SettingsWriter.WriteInitialControlStream(new Http3Settings());
-        await controlStream.WriteAsync(settings, 0, settings.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] settingsBytes = Http3SettingsWriter.WriteInitialControlStream(settings);
+        await controlStream.WriteAsync(settingsBytes, 0, settingsBytes.Length).WaitAsync(TimeSpan.FromSeconds(10));
 
         QuicStream encoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await WriteStreamTypeAsync(encoderStream, Http3StreamType.QPackEncoder);
+        foreach (byte[] instruction in encoderInstructions)
+        {
+            await encoderStream.WriteAsync(instruction, 0, instruction.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        }
 
         QuicStream decoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await WriteStreamTypeAsync(decoderStream, Http3StreamType.QPackDecoder);

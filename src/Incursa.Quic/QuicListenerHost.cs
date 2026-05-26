@@ -1076,14 +1076,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return Fail("open-initial-packet", "initial-packet-open-failed");
             }
 
-            if (!TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength)))
+            if (!TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength), out string initialCryptoValidationReason))
             {
                 if (isRetryBootstrapReplayCandidate)
                 {
                     Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailurePayload);
                 }
 
-                return Fail("validate-initial-crypto-payload", "crypto-payload-invalid");
+                return Fail("validate-initial-crypto-payload", initialCryptoValidationReason);
             }
 
             if (!TryReadOpenedInitialPacketNumber(openedPacket, payloadOffset, out ulong openedInitialPacketNumber))
@@ -1091,18 +1091,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return Fail("read-opened-initial-packet-number", "packet-number-read-failed");
             }
 
-            if (!QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
+            uint selectedVersion = initialVersion;
+            // A fragmented Initial ClientHello can reach admission before the full ClientHello bytes
+            // needed for transport-parameter parsing are available. In that case we keep the packet
+            // admitted and let the replayed Initial datagram progress the runtime transcript.
+            if (QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
                 openedPacket.AsSpan(payloadOffset, payloadLength),
                 out ReadOnlySpan<byte> initialCryptoFrameData)
-                || !QuicTlsClientHelloExtensions.TryReadClientHelloTransportParameters(
+                && QuicTlsClientHelloExtensions.TryReadClientHelloTransportParameters(
                     initialCryptoFrameData,
-                    out QuicTransportParameters? clientHelloTransportParameters))
-            {
-                return Fail("read-client-hello-transport-parameters", "client-hello-transport-parameters-unavailable");
-            }
-
-            uint selectedVersion = initialVersion;
-            if (clientHelloTransportParameters?.VersionInformation is QuicVersionInformation clientVersionInformation
+                    out QuicTransportParameters? clientHelloTransportParameters)
+                && clientHelloTransportParameters?.VersionInformation is QuicVersionInformation clientVersionInformation
                 && QuicVersionNegotiation.TrySelectCompatibleVersion(
                     initialVersion,
                     clientVersionInformation.AvailableVersions,
@@ -1346,8 +1345,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             : $"exception:{exception.GetType().Name}:{exception.Message}";
     }
 
-    private static bool TryValidateInitialCryptoPayload(ReadOnlySpan<byte> payload)
+    private static bool TryValidateInitialCryptoPayload(ReadOnlySpan<byte> payload, out string failureReason)
     {
+        failureReason = "crypto-payload-invalid";
         bool sawCryptoFrame = false;
         int payloadOffset = 0;
 
@@ -1358,6 +1358,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 if (paddingBytesConsumed <= 0)
                 {
+                    failureReason = "invalid-initial-padding-frame";
                     return false;
                 }
 
@@ -1369,6 +1370,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 if (pingBytesConsumed <= 0)
                 {
+                    failureReason = "invalid-initial-ping-frame";
                     return false;
                 }
 
@@ -1380,6 +1382,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 if (ackBytesConsumed <= 0)
                 {
+                    failureReason = "invalid-initial-ack-frame";
                     return false;
                 }
 
@@ -1390,11 +1393,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             if (!QuicFrameCodec.TryParseCryptoFrame(remaining, out _, out int bytesConsumed)
                 || bytesConsumed <= 0)
             {
+                failureReason = "invalid-initial-crypto-frame";
                 return false;
             }
 
             sawCryptoFrame = true;
             payloadOffset += bytesConsumed;
+        }
+
+        if (!sawCryptoFrame)
+        {
+            failureReason = "missing-initial-crypto-frame";
         }
 
         return sawCryptoFrame;

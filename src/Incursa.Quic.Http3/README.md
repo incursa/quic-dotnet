@@ -13,3 +13,4 @@ dotnet add package Incursa.Quic.Http3
 - This package owns HTTP/3 connection, control-stream, request-stream, SETTINGS, and GOAWAY behavior.
 - It depends on `Incursa.Quic` for transport streams and on `Incursa.Qpack` for header compression.
 - It must stay independent from ASP.NET hosting concerns.
+- Readiness note: [HTTP3-READINESS.md](./HTTP3-READINESS.md)
