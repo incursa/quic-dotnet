@@ -127,7 +127,7 @@ internal sealed partial class QuicConnectionRuntime
                     packetReceivedEvent.Datagram.Span,
                     tlsState.OneRttOpenPacketProtectionMaterial.Value,
                     GetExpectedReceivedPacketNumber(QuicPacketNumberSpace.ApplicationData),
-                    PeerSupportsGreasedQuicBit,
+                    CanReceiveGreasedQuicBitPackets,
                     out openedPacket,
                     out int payloadOffset,
                     out int payloadLength,
@@ -197,7 +197,7 @@ internal sealed partial class QuicConnectionRuntime
             ReadOnlyMemory<byte> remainingDatagram = packetReceivedEvent.Datagram[packetOffset..];
             if (!QuicPacketParser.TryGetPacketLength(
                     remainingDatagram.Span,
-                    PeerSupportsGreasedQuicBit,
+                    CanReceiveGreasedQuicBitPackets,
                     out int packetLength)
                 || packetLength <= 0)
             {

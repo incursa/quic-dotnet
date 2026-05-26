@@ -17,6 +17,8 @@ interop handshake plus supported-subset profile evidence.
 - [Network simulator correctness plan](network-simulator-correctness-plan.md)
 - [SpecTrace prep](spec-trace-prep.md)
 - [Testing docs](testing/README.md)
+- [HTTP/3 sample app](samples/http3-sample-app.md)
+- [HTTP/3 benchmarking notes](samples/http3-benchmarking.md)
 - [Public API design note](design/quic-public-api.md)
 
 ## Related References

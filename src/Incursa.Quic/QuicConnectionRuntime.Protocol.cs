@@ -11,8 +11,11 @@ internal sealed partial class QuicConnectionRuntime
             "1",
             StringComparison.Ordinal);
 
-    private bool PeerSupportsGreasedQuicBit =>
+    private bool CanReceiveGreasedQuicBitPackets =>
         tlsState.LocalTransportParameters?.GreaseQuicBit == true;
+
+    private bool PeerSupportsGreasedQuicBit =>
+        tlsState.PeerTransportParameters?.GreaseQuicBit == true;
 
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
@@ -1089,7 +1092,7 @@ internal sealed partial class QuicConnectionRuntime
                     packetReceivedEvent.Datagram.Span,
                     tlsState.OneRttOpenPacketProtectionMaterial.Value,
                     expectedApplicationPacketNumber,
-                    PeerSupportsGreasedQuicBit,
+                    CanReceiveGreasedQuicBitPackets,
                     out openedPacket,
                     out int payloadOffset,
                     out int payloadLength,
@@ -1115,7 +1118,7 @@ internal sealed partial class QuicConnectionRuntime
                         packetReceivedEvent.Datagram.Span,
                         tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.Value,
                         expectedApplicationPacketNumber,
-                        PeerSupportsGreasedQuicBit,
+                        CanReceiveGreasedQuicBitPackets,
                         out openedPacket,
                         out payloadOffset,
                         out payloadLength,
@@ -1150,7 +1153,7 @@ internal sealed partial class QuicConnectionRuntime
                             packetReceivedEvent.Datagram.Span,
                             successorOpenMaterial,
                             expectedApplicationPacketNumber,
-                            PeerSupportsGreasedQuicBit,
+                            CanReceiveGreasedQuicBitPackets,
                             out openedPacket,
                             out payloadOffset,
                             out payloadLength,

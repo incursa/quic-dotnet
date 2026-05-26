@@ -19,7 +19,8 @@ public sealed class Http3ServerResponse
         IEnumerable<QPackFieldLine>? headers = null,
         int? dataFramePayloadSize = null,
         bool sendGoAwayAfterResponse = false,
-        bool closeConnectionAfterResponse = false)
+        bool closeConnectionAfterResponse = false,
+        IAsyncEnumerable<ReadOnlyMemory<byte>>? streamingBody = null)
     {
         if (statusCode < MinimumStatusCode || statusCode > MaximumStatusCode)
         {
@@ -37,6 +38,25 @@ public sealed class Http3ServerResponse
         DataFramePayloadSize = dataFramePayloadSize;
         SendGoAwayAfterResponse = sendGoAwayAfterResponse;
         CloseConnectionAfterResponse = closeConnectionAfterResponse;
+        StreamingBody = streamingBody;
+    }
+
+    /// <summary>
+    /// Creates a response whose DATA frames are produced asynchronously while the stream is being written.
+    /// </summary>
+    public static Http3ServerResponse CreateStreaming(
+        int statusCode,
+        IAsyncEnumerable<ReadOnlyMemory<byte>> body,
+        IEnumerable<QPackFieldLine>? headers = null,
+        int? dataFramePayloadSize = null)
+    {
+        ArgumentNullException.ThrowIfNull(body);
+        return new Http3ServerResponse(
+            statusCode,
+            ReadOnlyMemory<byte>.Empty,
+            headers,
+            dataFramePayloadSize,
+            streamingBody: body);
     }
 
     /// <summary>
@@ -53,6 +73,11 @@ public sealed class Http3ServerResponse
     /// Gets response body bytes.
     /// </summary>
     public ReadOnlyMemory<byte> Body { get; }
+
+    /// <summary>
+    /// Gets an optional asynchronous body source for streaming responses.
+    /// </summary>
+    public IAsyncEnumerable<ReadOnlyMemory<byte>>? StreamingBody { get; }
 
     /// <summary>
     /// Gets an optional per-response DATA frame payload size used by the minimal server.

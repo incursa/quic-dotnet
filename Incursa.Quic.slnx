@@ -13,6 +13,8 @@
     <Project Path="fuzz/Incursa.Quic.Fuzz.csproj" />
   </Folder>
   <Folder Name="/samples/">
+    <Project Path="samples/Incursa.Http3.Samples.ObjectStore/Incursa.Http3.Samples.ObjectStore.csproj" />
+    <Project Path="samples/Incursa.Http3.Samples.TechEmpower/Incursa.Http3.Samples.TechEmpower.csproj" />
     <Project Path="samples/Incursa.Quic.Http3.Client/Incursa.Quic.Http3.Client.csproj" />
     <Project Path="samples/Incursa.Quic.Http3.FileServer/Incursa.Quic.Http3.FileServer.csproj" />
   </Folder>
