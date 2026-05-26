@@ -35,6 +35,8 @@ $ErrorActionPreference = "Stop"
 $script:Http3ExternalServerPort = 4433
 $script:Http3ExternalClientHost = "incursa-server"
 $script:Http3ExternalClientPort = 4433
+$script:Http3ExternalServerConnectTo = ""
+$script:Http3ExternalDockerNetworkName = ""
 
 function Resolve-RepoRoot {
     $current = (Resolve-Path (Join-Path $PSScriptRoot "../../..")).Path
@@ -296,6 +298,25 @@ function Invoke-DockerComposeCapture {
 
     & docker compose --file $script:ComposeFilePath @Arguments > $StdoutPath 2> $StderrPath
     return $LASTEXITCODE
+}
+
+function Get-ServerConnectToAddress {
+    $serverContainerId = (& docker compose --file $script:ComposeFilePath ps -q incursa-server).Trim()
+    if ([string]::IsNullOrWhiteSpace($serverContainerId)) {
+        throw "Could not resolve the running incursa-server container id."
+    }
+
+    $script:Http3ExternalDockerNetworkName = (& docker inspect --format '{{range $networkName, $network := .NetworkSettings.Networks}}{{$networkName}}{{end}}' $serverContainerId).Trim()
+    if ([string]::IsNullOrWhiteSpace($script:Http3ExternalDockerNetworkName)) {
+        throw "Could not resolve the incursa-server Docker network name."
+    }
+
+    $serverIp = (& docker inspect --format "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" $serverContainerId).Trim()
+    if ([string]::IsNullOrWhiteSpace($serverIp)) {
+        throw "Could not resolve the incursa-server container IP address."
+    }
+
+    return ("{0}:{1}" -f $serverIp, $script:Http3ExternalServerPort)
 }
 
 function Invoke-EndpointPreflight {
@@ -626,11 +647,17 @@ function Invoke-TargetScenario {
         }
     }
     elseif ($Target -eq "quiche-client__incursa-server") {
+        $quicheContainerName = "incursa-http3-external-interop-quiche-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
         $quicheDumpDirectory = "/downloads/$safeName"
-        $quicheCommand = "mkdir -p $quicheDumpDirectory /logs/qlog && quiche-client --http-version HTTP/3 --no-verify --dump-responses $quicheDumpDirectory --dump-json --max-json-payload 0 https://incursa-server:4433$path"
+        $quicheCommand = "mkdir -p $quicheDumpDirectory /logs/qlog /logs/sslkeylog && quiche-client --http-version HTTP/3 --no-verify --connect-to $script:Http3ExternalServerConnectTo --dump-responses $quicheDumpDirectory --dump-json --max-json-payload 0 https://incursa-server:4433$path"
         $args = @(
-            "run", "--rm", "--no-deps", "quiche",
-            "/bin/sh",
+            "run",
+            "--name", $quicheContainerName,
+            "--network", $script:Http3ExternalDockerNetworkName,
+            "-e", "QLOGDIR=/logs/qlog",
+            "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
+            "--entrypoint", "/bin/sh",
+            "cloudflare/quiche:latest",
             "-lc",
             $quicheCommand
         )
@@ -661,8 +688,14 @@ function Invoke-TargetScenario {
         return
     }
 
-    if ($PlanOnly) {
+    if ($Target -eq "quiche-client__incursa-server") {
+        $commandLine = "docker run --name $quicheContainerName --network $script:Http3ExternalDockerNetworkName -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh cloudflare/quiche:latest -lc `"$quicheCommand`""
+    }
+    else {
         $commandLine = "docker compose --file `"$script:ComposeFilePath`" $($args -join ' ')"
+    }
+
+    if ($PlanOnly) {
         Set-Content -LiteralPath $commandPath -Value $commandLine
         New-Item -ItemType File -Force -Path $stdoutPath, $stderrPath | Out-Null
         Write-Http3Summary -ArtifactDirectory $artifactDirectory -Target $Target -Scenario $Scenario -Status "skip" -Detail "plan-only" -ExitCode 0 -CommandLine $commandLine
@@ -670,15 +703,42 @@ function Invoke-TargetScenario {
         return
     }
 
-    $commandLine = "docker compose --file `"$script:ComposeFilePath`" $($args -join ' ')"
     Set-Content -LiteralPath $commandPath -Value $commandLine
-    & docker compose --file $script:ComposeFilePath @args > $stdoutPath 2> $stderrPath
+    if ($Target -eq "quiche-client__incursa-server") {
+        & docker @args > $stdoutPath 2> $stderrPath
+    }
+    else {
+        & docker compose --file $script:ComposeFilePath @args > $stdoutPath 2> $stderrPath
+    }
     $exitCode = $LASTEXITCODE
     $stderrText = if (Test-Path -LiteralPath $stderrPath) {
         Get-Content -LiteralPath $stderrPath -Raw
     }
     else {
         ""
+    }
+
+    if ($Target -eq "quiche-client__incursa-server") {
+        $quicheContainerId = $quicheContainerName
+        $quicheDownloadRoot = Join-Path $artifactDirectory "quiche-downloads"
+        $quicheLogRoot = Join-Path $script:LogsRoot "quiche"
+        New-Item -ItemType Directory -Force -Path $quicheDownloadRoot, $quicheLogRoot | Out-Null
+        try {
+            & docker cp "${quicheContainerId}:/downloads/$safeName" $quicheDownloadRoot | Out-Null
+            $dumpedFile = Get-ChildItem -LiteralPath $quicheDownloadRoot -File -Recurse | Select-Object -First 1
+            if ($null -ne $dumpedFile) {
+                Copy-Item -LiteralPath $dumpedFile.FullName -Destination $downloadPath -Force
+            }
+
+            & docker cp "${quicheContainerId}:/logs/qlog" (Join-Path $quicheLogRoot "qlog") | Out-Null
+            & docker cp "${quicheContainerId}:/logs/sslkeylog" (Join-Path $quicheLogRoot "sslkeylog") | Out-Null
+        }
+        catch {
+            # Keep the scenario result from the client exit code; artifact copy is best-effort.
+        }
+        finally {
+            & docker rm -f $quicheContainerId | Out-Null
+        }
     }
 
     if ($stderrText -match "ERR_HANDSHAKE_TIMEOUT|handshake timed out|handshake timeout") {
@@ -746,14 +806,15 @@ if (-not $PlanOnly) {
         $upArgs += "aioquic-server"
     }
 
-    $upExitCode = Invoke-DockerCompose -Arguments $upArgs
-    if ($upExitCode -ne 0) {
-        throw "docker compose up failed with exit code $upExitCode."
-    }
+        $upExitCode = Invoke-DockerCompose -Arguments $upArgs
+        if ($upExitCode -ne 0) {
+            throw "docker compose up failed with exit code $upExitCode."
+        }
 
-    Start-Sleep -Seconds 3
-    Invoke-EndpointPreflight
-}
+        Start-Sleep -Seconds 3
+        $script:Http3ExternalServerConnectTo = Get-ServerConnectToAddress
+        Invoke-EndpointPreflight
+    }
 
 try {
     foreach ($target in $Targets) {

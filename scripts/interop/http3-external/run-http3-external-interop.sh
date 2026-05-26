@@ -10,6 +10,7 @@ SKIP_BUILD=0
 KEEP_SERVER=0
 PCAP_SOURCE="${PCAP_SOURCE:-}"
 PYTHON_BIN="${PYTHON_BIN:-}"
+SERVER_CONNECT_TO=""
 
 TARGETS=(
   "incursa-client__incursa-server"
@@ -227,6 +228,42 @@ expected_status() {
   fi
 }
 
+server_connect_to_address() {
+  local container_id
+  container_id="$(docker compose --file "$COMPOSE_FILE" ps -q incursa-server)"
+  if [[ -z "$container_id" ]]; then
+    echo "Could not resolve the running incursa-server container id." >&2
+    return 1
+  fi
+
+  local server_ip
+  server_ip="$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container_id")"
+  if [[ -z "$server_ip" ]]; then
+    echo "Could not resolve the incursa-server container IP address." >&2
+    return 1
+  fi
+
+  printf '%s:%s' "$server_ip" "4433"
+}
+
+server_network_name() {
+  local container_id
+  container_id="$(docker compose --file "$COMPOSE_FILE" ps -q incursa-server)"
+  if [[ -z "$container_id" ]]; then
+    echo "Could not resolve the running incursa-server container id." >&2
+    return 1
+  fi
+
+  local network_name
+  network_name="$(docker inspect --format '{{range $networkName, $network := .NetworkSettings.Networks}}{{$networkName}}{{end}}' "$container_id")"
+  if [[ -z "$network_name" ]]; then
+    echo "Could not resolve the incursa-server Docker network name." >&2
+    return 1
+  fi
+
+  printf '%s' "$network_name"
+}
+
 skip_reason() {
   local target="$1"
   local scenario="$2"
@@ -288,6 +325,8 @@ if [[ "$PLAN_ONLY" -eq 0 ]]; then
   fi
   docker compose --file "$COMPOSE_FILE" "${up_args[@]}"
   sleep 3
+  SERVER_CONNECT_TO="$(server_connect_to_address)"
+  SERVER_NETWORK_NAME="$(server_network_name)"
 fi
 
 cleanup() {
@@ -407,13 +446,32 @@ for target in "${TARGETS[@]}"; do
         "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     elif [[ "$target" == "quiche-client__incursa-server" ]]; then
+      quiche_container_name="incursa-http3-external-interop-quiche-$(cat /proc/sys/kernel/random/uuid | tr -d '-')"
       quiche_dump_directory="/downloads/${safe_name}"
-      quiche_command="mkdir -p $quiche_dump_directory /logs/qlog && quiche-client --http-version HTTP/3 --no-verify --dump-responses $quiche_dump_directory --dump-json --max-json-payload 0 https://incursa-server:4433${path}"
-      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps quiche /bin/sh -lc \"$quiche_command\""
+      quiche_command="mkdir -p $quiche_dump_directory /logs/qlog /logs/sslkeylog && quiche-client --http-version HTTP/3 --no-verify --connect-to $SERVER_CONNECT_TO --dump-responses $quiche_dump_directory --dump-json --max-json-payload 0 https://incursa-server:4433${path}"
+      command_line="docker run --name $quiche_container_name --network $SERVER_NETWORK_NAME -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh cloudflare/quiche:latest -lc \"$quiche_command\""
       printf "%s\n" "$command_line" > "$command_path"
-      docker compose --file "$COMPOSE_FILE" run --rm --no-deps quiche \
-        /bin/sh -lc "$quiche_command" >"$stdout_path" 2>"$stderr_path"
+      docker run \
+        --name "$quiche_container_name" \
+        --network "$SERVER_NETWORK_NAME" \
+        -e QLOGDIR=/logs/qlog \
+        -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log \
+        --entrypoint /bin/sh \
+        cloudflare/quiche:latest \
+        -lc "$quiche_command" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
+      quiche_download_root="$artifact_dir/quiche-downloads"
+      quiche_log_root="$LOGS_ROOT/quiche"
+      mkdir -p "$quiche_download_root" "$quiche_log_root"
+      if docker cp "${quiche_container_name}:/downloads/${safe_name}" "$quiche_download_root" >/dev/null 2>&1; then
+        copied_file="$(find "$quiche_download_root" -type f | head -n 1 || true)"
+        if [[ -n "$copied_file" ]]; then
+          cp "$copied_file" "$download_path"
+        fi
+      fi
+      docker cp "${quiche_container_name}:/logs/qlog" "$quiche_log_root" >/dev/null 2>&1 || true
+      docker cp "${quiche_container_name}:/logs/sslkeylog" "$quiche_log_root" >/dev/null 2>&1 || true
+      docker rm -f "$quiche_container_name" >/dev/null 2>&1 || true
     elif [[ "$target" == "ngtcp2-client__incursa-server" ]]; then
       ngtcp2_command="mkdir -p /logs/qlog && wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog incursa-server 4433 https://incursa-server:4433${path}"
       command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps ngtcp2 /bin/sh -lc \"$ngtcp2_command\""
