@@ -28,6 +28,7 @@ Last refreshed from local Docker evidence on 2026-05-26.
 
 - `incursa-client__incursa-server` passes `get-small`, `get-empty`, `get-large`, `multiple-concurrent-get`, `not-found`, `many-headers`, `split-data`, `request-cancellation`, `goaway`, and `connection-close-in-flight` in Docker with qlog capture and preserved stdout/stderr.
 - Latest default matrix result: `22 pass`, `0 fail`, `58 skip`.
+- The checked-in RFC 9114 and RFC 9204 floors are now traced in the repo; the remaining skip rows are interop/harness gaps, not a claim that the protocol floor is missing.
 - `aioquic-client__incursa-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `incursa-client__aioquic-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `curl__incursa-server` rows are `skip` with the default `curlimages/curl:latest` image because that image does not support `--http3-only`. Set `HTTP3_CURL_IMAGE` to a curl build with HTTP/3 support to make these rows executable.
