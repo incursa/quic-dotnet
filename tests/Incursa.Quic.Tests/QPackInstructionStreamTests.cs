@@ -98,12 +98,12 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
-    public void EncoderStreamParser_RejectsHuffmanLiteralWithEncoderStreamError()
+    public void EncoderStreamParser_RejectsMalformedHuffmanLiteralWithEncoderStreamError()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
         decoder.DecodeEncoderStream(Convert.FromHexString("3FBD01"));
 
-        QPackException exception = Assert.Throws<QPackException>(() => decoder.DecodeEncoderStream(Convert.FromHexString("6000")));
+        QPackException exception = Assert.Throws<QPackException>(() => decoder.DecodeEncoderStream(Convert.FromHexString("6100")));
 
         Assert.Equal(QPackErrorCode.EncoderStreamError, exception.ErrorCode);
     }

@@ -21,6 +21,21 @@ public sealed class REQ_QUIC_CRT_0134
         byte[] retryReceivedBytes = [0x0B, 0x0C];
         byte[] versionNegotiationReceivedBytes = [0x0D];
 
+        QuicDiagnosticEvent socketDatagramReceived = QuicDiagnostics.SocketDatagramReceived(pathIdentity, 1200);
+        QuicDiagnosticEvent listenerIngressClassified = QuicDiagnostics.ListenerIngressClassified(
+            pathIdentity,
+            new QuicConnectionIngressResult(
+                QuicConnectionIngressDisposition.Unroutable,
+                QuicConnectionEndpointHandlingKind.None,
+                null));
+        QuicDiagnosticEvent listenerPreAcceptanceClassified = QuicDiagnostics.ListenerPreAcceptanceClassified(
+            pathIdentity,
+            QuicListenerPreAcceptanceDatagramAction.AdmitInitial);
+        QuicDiagnosticEvent listenerInitialAdmissionResult = QuicDiagnostics.ListenerInitialAdmissionResult(
+            pathIdentity,
+            "open-initial-packet",
+            succeeded: false,
+            "initial-packet-open-failed");
         QuicDiagnosticEvent initialPacketReceived = QuicDiagnostics.InitialPacketReceived(pathIdentity, initialPacketReceivedBytes);
         QuicDiagnosticEvent initialPacketSent = QuicDiagnostics.InitialPacketSent(pathIdentity, initialPacketSentBytes);
         QuicDiagnosticEvent handshakePacketReceived = QuicDiagnostics.HandshakePacketReceived(pathIdentity, handshakePacketReceivedBytes);
@@ -32,6 +47,28 @@ public sealed class REQ_QUIC_CRT_0134
         QuicDiagnosticEvent addressChangeClassified = QuicDiagnostics.AddressChangeClassified(
             pathIdentity,
             QuicConnectionPathClassification.MigrationCandidate);
+
+        Assert.Equal(QuicDiagnosticKind.SocketDatagramReceived, socketDatagramReceived.Kind);
+        Assert.Equal(QuicDiagnosticSeverity.Trace, socketDatagramReceived.Severity);
+        Assert.Equal(pathIdentity, socketDatagramReceived.PathIdentity);
+        Assert.Equal(1200, socketDatagramReceived.DatagramLength);
+        Assert.Contains("1200 bytes", socketDatagramReceived.Message, StringComparison.Ordinal);
+        Assert.Contains("203.0.113.10:443", socketDatagramReceived.Message, StringComparison.Ordinal);
+
+        Assert.Equal(QuicDiagnosticKind.ListenerIngressClassified, listenerIngressClassified.Kind);
+        Assert.Equal(QuicConnectionIngressDisposition.Unroutable, listenerIngressClassified.IngressDisposition);
+        Assert.Equal(QuicConnectionEndpointHandlingKind.None, listenerIngressClassified.EndpointHandlingKind);
+        Assert.Equal(pathIdentity, listenerIngressClassified.PathIdentity);
+
+        Assert.Equal(QuicDiagnosticKind.ListenerPreAcceptanceClassified, listenerPreAcceptanceClassified.Kind);
+        Assert.Equal(QuicListenerPreAcceptanceDatagramAction.AdmitInitial, listenerPreAcceptanceClassified.PreAcceptanceAction);
+        Assert.Equal(pathIdentity, listenerPreAcceptanceClassified.PathIdentity);
+
+        Assert.Equal(QuicDiagnosticKind.ListenerInitialAdmissionResult, listenerInitialAdmissionResult.Kind);
+        Assert.Equal("open-initial-packet", listenerInitialAdmissionResult.AdmissionStage);
+        Assert.False(listenerInitialAdmissionResult.Succeeded);
+        Assert.Equal("initial-packet-open-failed", listenerInitialAdmissionResult.Reason);
+        Assert.Equal(pathIdentity, listenerInitialAdmissionResult.PathIdentity);
 
         Assert.Equal(QuicDiagnosticKind.InitialPacketReceived, initialPacketReceived.Kind);
         Assert.Equal(QuicDiagnosticSeverity.Trace, initialPacketReceived.Severity);
@@ -78,6 +115,10 @@ public sealed class REQ_QUIC_CRT_0134
         Assert.Equal(pathIdentity, addressChangeClassified.PathIdentity);
 
         RecordingDiagnosticsSink sink = new();
+        sink.Emit(socketDatagramReceived);
+        sink.Emit(listenerIngressClassified);
+        sink.Emit(listenerPreAcceptanceClassified);
+        sink.Emit(listenerInitialAdmissionResult);
         sink.Emit(initialPacketReceived);
         sink.Emit(initialPacketSent);
         sink.Emit(handshakePacketReceived);
@@ -89,7 +130,7 @@ public sealed class REQ_QUIC_CRT_0134
         sink.Emit(addressChangeClassified);
 
         Assert.True(sink.IsEnabled);
-        Assert.Equal(9, sink.Events.Count);
+        Assert.Equal(13, sink.Events.Count);
         Assert.All(sink.Events, diagnosticEvent => Assert.NotEqual(QuicDiagnosticKind.Unknown, diagnosticEvent.Kind));
 
         Assert.False(QuicNullDiagnosticsSink.Instance.IsEnabled);

@@ -195,9 +195,18 @@ internal sealed partial class QuicConnectionRuntime
         while (packetOffset < packetReceivedEvent.Datagram.Length)
         {
             ReadOnlyMemory<byte> remainingDatagram = packetReceivedEvent.Datagram[packetOffset..];
-            if (!QuicPacketParser.TryGetPacketLength(remainingDatagram.Span, out int packetLength)
+            if (!QuicPacketParser.TryGetPacketLength(
+                    remainingDatagram.Span,
+                    PeerSupportsGreasedQuicBit,
+                    out int packetLength)
                 || packetLength <= 0)
             {
+                if (ApplicationReceiveDebugEnabled)
+                {
+                    Console.Error.WriteLine(
+                        $"app-rx packet-length-failed role={tlsState.Role} datagram={packetReceivedEvent.Datagram.Length} offset={packetOffset} remaining={remainingDatagram.Length} first=0x{remainingDatagram.Span[0]:X2}.");
+                }
+
                 return processedAnyPacket && stateChanged;
             }
 

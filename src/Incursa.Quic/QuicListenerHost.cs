@@ -38,6 +38,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly List<SslApplicationProtocol> applicationProtocols;
     private readonly Func<QuicConnection, SslClientHelloInfo, CancellationToken, ValueTask<QuicServerConnectionOptions>> connectionOptionsCallback;
     private readonly Func<IQuicDiagnosticsSink>? diagnosticsSinkFactory;
+    private readonly IQuicDiagnosticsSink listenerDiagnosticsSink;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
@@ -101,6 +102,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         this.connectionOptionsCallback = connectionOptionsCallback;
         this.retryBootstrapEnabled = retryBootstrapEnabled;
         this.diagnosticsSinkFactory = diagnosticsSinkFactory;
+        listenerDiagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSinkFactory?.Invoke());
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.maximumVersionNegotiationResponsesPerRemoteAddress = maximumVersionNegotiationResponsesPerRemoteAddress;
@@ -404,8 +406,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     break;
                 }
 
+                EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
                 byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                EmitListenerIngressClassified(pathIdentity, ingressResult);
                 if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection
                     || ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling
                     || ingressResult.Disposition == QuicConnectionIngressDisposition.Dropped)
@@ -424,6 +428,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         ListenerSupportedVersions,
                         retryBootstrapEnabled,
                         maximumBufferedZeroRttDatagramsPerConnection: MaximumBufferedZeroRttDatagramsPerConnection);
+                EmitListenerPreAcceptanceClassified(pathIdentity, action);
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation)
                 {
@@ -444,11 +449,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.AdmitInitial
-                    && QuicListenerPreAcceptanceIngressPolicy.TrySliceFirstPacketForAdmission(
+                    && TryPrepareInitialAdmissionFields(
                         datagram,
-                        out ReadOnlyMemory<byte> initialPacket)
-                    && TryReadInitialAdmissionFields(
-                        initialPacket.Span,
+                        pathIdentity,
+                        out ReadOnlyMemory<byte> initialPacket,
                         out uint initialVersion,
                         out byte[] initialDestinationConnectionId,
                         out byte[] clientSourceConnectionId,
@@ -469,8 +473,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             FlushBufferedZeroRttDatagrams(initialDestinationConnectionId);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        EmitListenerInitialAdmissionResult(
+                            pathIdentity,
+                            "admit-initial-connection",
+                            succeeded: false,
+                            FormatAdmissionExceptionReason(ex));
                         // Admission failures remain local to the listener shell.
                     }
                 }
@@ -488,6 +497,54 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
     }
 
+    private void EmitSocketDatagramReceived(QuicConnectionPathIdentity pathIdentity, int datagramLength)
+    {
+        if (!listenerDiagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        listenerDiagnosticsSink.Emit(QuicDiagnostics.SocketDatagramReceived(pathIdentity, datagramLength));
+    }
+
+    private void EmitListenerIngressClassified(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicConnectionIngressResult ingressResult)
+    {
+        if (!listenerDiagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        listenerDiagnosticsSink.Emit(QuicDiagnostics.ListenerIngressClassified(pathIdentity, ingressResult));
+    }
+
+    private void EmitListenerPreAcceptanceClassified(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicListenerPreAcceptanceDatagramAction action)
+    {
+        if (!listenerDiagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        listenerDiagnosticsSink.Emit(QuicDiagnostics.ListenerPreAcceptanceClassified(pathIdentity, action));
+    }
+
+    private void EmitListenerInitialAdmissionResult(
+        QuicConnectionPathIdentity pathIdentity,
+        string stage,
+        bool succeeded,
+        string reason)
+    {
+        if (!listenerDiagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        listenerDiagnosticsSink.Emit(QuicDiagnostics.ListenerInitialAdmissionResult(pathIdentity, stage, succeeded, reason));
+    }
+
     private bool TryBufferZeroRttPreInitialDatagram(byte[] datagram, QuicConnectionPathIdentity pathIdentity)
     {
         if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket zeroRttHeader))
@@ -499,6 +556,54 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             zeroRttHeader.DestinationConnectionId,
             datagram,
             pathIdentity);
+    }
+
+    private bool TryPrepareInitialAdmissionFields(
+        byte[] datagram,
+        QuicConnectionPathIdentity pathIdentity,
+        out ReadOnlyMemory<byte> initialPacket,
+        out uint initialVersion,
+        out byte[] initialDestinationConnectionId,
+        out byte[] clientSourceConnectionId,
+        out byte[] initialToken)
+    {
+        initialPacket = default;
+        initialVersion = default;
+        initialDestinationConnectionId = [];
+        clientSourceConnectionId = [];
+        initialToken = [];
+
+        if (!QuicListenerPreAcceptanceIngressPolicy.TrySliceFirstPacketForAdmission(datagram, out initialPacket))
+        {
+            EmitListenerInitialAdmissionResult(
+                pathIdentity,
+                "slice-first-packet",
+                succeeded: false,
+                "packet-length-parse-failed");
+            return false;
+        }
+
+        if (!TryReadInitialAdmissionFields(
+            initialPacket.Span,
+            out initialVersion,
+            out initialDestinationConnectionId,
+            out clientSourceConnectionId,
+            out initialToken))
+        {
+            EmitListenerInitialAdmissionResult(
+                pathIdentity,
+                "read-initial-admission-fields",
+                succeeded: false,
+                "initial-header-or-token-parse-failed");
+            return false;
+        }
+
+        EmitListenerInitialAdmissionResult(
+            pathIdentity,
+            "read-initial-admission-fields",
+            succeeded: true,
+            "initial-fields-ready");
+        return true;
     }
 
     private static bool TryReadInitialAdmissionFields(
@@ -940,13 +1045,19 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         try
         {
+            bool Fail(string stage, string reason)
+            {
+                EmitListenerInitialAdmissionResult(pathIdentity, stage, succeeded: false, reason);
+                return false;
+            }
+
             if (!QuicInitialPacketProtection.TryCreate(
                 QuicTlsRole.Server,
                 initialVersion,
                 initialDestinationConnectionId,
                 out QuicInitialPacketProtection initialProtection))
             {
-                return false;
+                return Fail("create-initial-packet-protection", "unsupported-version-or-protection-create-failed");
             }
 
             QuicHandshakeFlowCoordinator initialPacketCoordinator = new();
@@ -962,7 +1073,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureOpen);
                 }
 
-                return false;
+                return Fail("open-initial-packet", "initial-packet-open-failed");
             }
 
             if (!TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength)))
@@ -972,12 +1083,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailurePayload);
                 }
 
-                return false;
+                return Fail("validate-initial-crypto-payload", "crypto-payload-invalid");
             }
 
             if (!TryReadOpenedInitialPacketNumber(openedPacket, payloadOffset, out ulong openedInitialPacketNumber))
             {
-                return false;
+                return Fail("read-opened-initial-packet-number", "packet-number-read-failed");
             }
 
             if (!QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
@@ -987,7 +1098,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     initialCryptoFrameData,
                     out QuicTransportParameters? clientHelloTransportParameters))
             {
-                return false;
+                return Fail("read-client-hello-transport-parameters", "client-hello-transport-parameters-unavailable");
             }
 
             uint selectedVersion = initialVersion;
@@ -1026,7 +1137,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             }
                         }
 
-                        return false;
+                        return Fail("validate-retry-bootstrap-replay", "retry-bootstrap-replay-validation-failed");
                     }
 
                     if (retryBootstrapObservedInitialPacketNumberSet != 0
@@ -1036,7 +1147,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             ref retryBootstrapReplayValidationFailureCode,
                             RetryBootstrapReplayValidationFailurePacketNumberReset);
                         TrySendProtocolViolationCloseResponse(pathIdentity);
-                        return false;
+                        return Fail("validate-retry-bootstrap-packet-number", "initial-packet-number-not-increased");
                     }
 
                     Interlocked.Exchange(ref retryBootstrapReplayValidated, 1);
@@ -1057,12 +1168,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             initialDestinationConnectionId,
                             clientSourceConnectionId))
                         {
-                            return false;
+                            return Fail("issue-retry-bootstrap-for-invalid-token", "retry-bootstrap-send-failed");
                         }
 
                         ObserveRetryBootstrapInitialPacketNumber(openedInitialPacketNumber);
 
-                        return false;
+                        return Fail("issue-retry-bootstrap-for-invalid-token", "retry-bootstrap-sent");
                     }
                 }
                 else
@@ -1073,12 +1184,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         initialDestinationConnectionId,
                         clientSourceConnectionId))
                     {
-                        return false;
+                        return Fail("issue-retry-bootstrap", "retry-bootstrap-send-failed");
                     }
 
                     ObserveRetryBootstrapInitialPacketNumber(openedInitialPacketNumber);
 
-                    return false;
+                    return Fail("issue-retry-bootstrap", "retry-bootstrap-sent");
                 }
             }
             else if (initialToken.Length > 0)
@@ -1106,14 +1217,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 || !endpoint.TryRegisterConnectionId(handle, serverSourceConnectionId, statelessResetConnectionId: 0UL)
                 || !endpoint.TryUpdateEndpointBinding(handle, pathIdentity))
             {
-                return false;
+                return Fail("register-runtime-endpoint", "endpoint-registration-failed");
             }
 
             runtime.SetLocalApiEventDispatcher(connectionEvent => endpoint.Host.TryPostEvent(handle, connectionEvent));
 
             if (!connections.TryAdd(handle, new PendingConnectionState(handle, runtime, connection)))
             {
-                return false;
+                return Fail("register-pending-connection", "pending-connection-registration-failed");
             }
 
             if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId)
@@ -1122,7 +1233,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols))
             {
-                return false;
+                return Fail("configure-server-runtime-bootstrap", "runtime-bootstrap-configuration-failed");
             }
 
             using CancellationTokenSource acceptCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, shutdown.Token);
@@ -1139,7 +1250,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     initialDestinationConnectionId,
                     clientSourceConnectionId,
                     serverSourceConnectionId);
-                return false;
+                return Fail("select-server-options", "connection-options-callback-returned-null");
             }
 
             QuicServerConnectionSettings validatedOptions = QuicServerConnectionOptionsValidator.Capture(
@@ -1160,7 +1271,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     selectedOptions.ServerAuthenticationOptions.CertificateRevocationCheckMode,
                     selectedOptions.ServerAuthenticationOptions.RemoteCertificateValidationCallback))
             {
-                return false;
+                return Fail("configure-server-authentication", "server-authentication-configuration-failed");
             }
 
             if (!endpoint.Host.TryPostEvent(
@@ -1177,7 +1288,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             : retryBootstrapOriginalDestinationConnectionId,
                         retryBootstrapSourceConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapSourceConnectionId))))
             {
-                return false;
+                return Fail("post-handshake-bootstrap", "handshake-bootstrap-post-failed");
             }
 
             admitted = true;
@@ -1185,10 +1296,16 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             {
                 Interlocked.Exchange(ref retryBootstrapReplayAdmitted, 1);
             }
+            EmitListenerInitialAdmissionResult(pathIdentity, "admit-initial-connection", succeeded: true, "connection-admitted");
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            EmitListenerInitialAdmissionResult(
+                pathIdentity,
+                "admit-initial-connection",
+                succeeded: false,
+                FormatAdmissionExceptionReason(ex));
             return false;
         }
         finally
@@ -1218,6 +1335,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
             }
         }
+    }
+
+    private static string FormatAdmissionExceptionReason(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+
+        return string.IsNullOrWhiteSpace(exception.Message)
+            ? $"exception:{exception.GetType().Name}"
+            : $"exception:{exception.GetType().Name}:{exception.Message}";
     }
 
     private static bool TryValidateInitialCryptoPayload(ReadOnlySpan<byte> payload)

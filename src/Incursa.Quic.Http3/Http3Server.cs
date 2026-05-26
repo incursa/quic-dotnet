@@ -11,6 +11,7 @@ namespace Incursa.Quic.Http3;
 public sealed class Http3Server : IAsyncDisposable
 {
     private const int ResponseWriteChunkSize = 1024;
+    private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
     private const int IndexedFieldPrefixBits = 6;
@@ -27,6 +28,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly IHttp3RequestHandler handler;
     private readonly Http3Settings localSettings;
     private readonly int readBufferSize;
+    private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private readonly List<Task> connectionTasks = [];
     private int disposed;
 
@@ -39,6 +41,7 @@ public sealed class Http3Server : IAsyncDisposable
         readBufferSize = options.ReadBufferSize > 0
             ? options.ReadBufferSize
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
+        diagnosticsSink = options.DiagnosticsSink;
     }
 
     /// <summary>
@@ -147,8 +150,12 @@ public sealed class Http3Server : IAsyncDisposable
         {
             try
             {
-                await OpenRequiredUnidirectionalStreamsAsync(connection, cancellationToken).ConfigureAwait(false);
-                await AcceptStreamsAsync(connection, cancellationToken).ConfigureAwait(false);
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionStarted)
+                {
+                    Role = "server",
+                });
+                QuicStream controlStream = await OpenRequiredUnidirectionalStreamsAsync(connection, cancellationToken).ConfigureAwait(false);
+                await AcceptStreamsAsync(connection, controlStream, cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
             {
@@ -158,29 +165,89 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 SuppressExpectedException(exception);
             }
+            catch (Exception exception)
+            {
+                EmitError(exception);
+                throw;
+            }
+            finally
+            {
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionClosed)
+                {
+                    Role = "server",
+                });
+            }
         }
     }
 
-    private async ValueTask OpenRequiredUnidirectionalStreamsAsync(QuicConnection connection, CancellationToken cancellationToken)
+    private async ValueTask<QuicStream> OpenRequiredUnidirectionalStreamsAsync(QuicConnection connection, CancellationToken cancellationToken)
     {
         QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         byte[] initialControlStream = Http3SettingsWriter.WriteInitialControlStream(localSettings);
         await controlStream.WriteAsync(initialControlStream, 0, initialControlStream.Length, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "server",
+            StreamId = controlStream.Id,
+            StreamKind = Http3StreamKind.Control,
+        });
+        EmitFrame(Http3DiagnosticKind.FrameSent, controlStream.Id, Http3FrameType.Settings, initialControlStream.Length);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.SettingsSent)
+        {
+            Role = "server",
+            StreamId = controlStream.Id,
+        });
 
         QuicStream qpackEncoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackEncoderStream, Http3StreamType.QPackEncoder, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "server",
+            StreamId = qpackEncoderStream.Id,
+            StreamKind = Http3StreamKind.QPackEncoder,
+        });
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
+        {
+            Role = "server",
+            StreamId = qpackEncoderStream.Id,
+            StreamKind = Http3StreamKind.QPackEncoder,
+            QPackInstruction = "stream_type",
+        });
 
         QuicStream qpackDecoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackDecoderStream, Http3StreamType.QPackDecoder, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "server",
+            StreamId = qpackDecoderStream.Id,
+            StreamKind = Http3StreamKind.QPackDecoder,
+        });
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
+        {
+            Role = "server",
+            StreamId = qpackDecoderStream.Id,
+            StreamKind = Http3StreamKind.QPackDecoder,
+            QPackInstruction = "stream_type",
+        });
+
+        return controlStream;
     }
 
-    private async Task AcceptStreamsAsync(QuicConnection connection, CancellationToken cancellationToken)
+    private async Task AcceptStreamsAsync(QuicConnection connection, QuicStream controlStream, CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             QuicStream stream = await connection.AcceptInboundStreamAsync(cancellationToken).ConfigureAwait(false);
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+            {
+                Role = "server",
+                StreamId = stream.Id,
+                StreamKind = stream.Type == QuicStreamType.Bidirectional
+                    ? Http3StreamKind.Request
+                    : Http3StreamKind.Unknown,
+            });
             _ = stream.Type == QuicStreamType.Bidirectional
-                ? HandleRequestStreamAsync(stream, cancellationToken)
+                ? HandleRequestStreamAsync(connection, stream, controlStream, cancellationToken)
                 : ObservePeerUnidirectionalStreamAsync(stream, cancellationToken);
         }
     }
@@ -208,18 +275,64 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 SuppressExpectedException(exception);
             }
+            finally
+            {
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamClosed)
+                {
+                    Role = "server",
+                    StreamId = stream.Id,
+                    StreamKind = Http3StreamKind.Unknown,
+                });
+            }
         }
     }
 
-    private async Task HandleRequestStreamAsync(QuicStream stream, CancellationToken cancellationToken)
+    private async Task HandleRequestStreamAsync(
+        QuicConnection connection,
+        QuicStream stream,
+        QuicStream controlStream,
+        CancellationToken cancellationToken)
     {
         await using (stream.ConfigureAwait(false))
         {
             try
             {
                 Http3Request request = await ReadRequestAsync(stream, cancellationToken).ConfigureAwait(false);
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestStarted)
+                {
+                    Role = "server",
+                    StreamId = stream.Id,
+                    Method = request.Method,
+                    Path = request.Path,
+                });
                 Http3ServerResponse response = await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
                 await WriteResponseAsync(stream, response, cancellationToken).ConfigureAwait(false);
+                if (response.SendGoAwayAfterResponse)
+                {
+                    await WriteGoAwayAsync(controlStream, checked((ulong)stream.Id), cancellationToken).ConfigureAwait(false);
+                }
+
+                if (response.CloseConnectionAfterResponse)
+                {
+                    await connection.CloseAsync(0, cancellationToken).ConfigureAwait(false);
+                }
+
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseCompleted)
+                {
+                    Role = "server",
+                    StreamId = stream.Id,
+                    StatusCode = response.StatusCode,
+                    PayloadLength = response.Body.Length,
+                });
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestCompleted)
+                {
+                    Role = "server",
+                    StreamId = stream.Id,
+                    Method = request.Method,
+                    Path = request.Path,
+                    StatusCode = response.StatusCode,
+                    PayloadLength = response.Body.Length,
+                });
             }
             catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
             {
@@ -229,17 +342,29 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 SuppressExpectedException(exception);
             }
-            catch (QPackException)
+            catch (QPackException exception)
             {
+                EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
             }
-            catch (Http3Exception)
+            catch (Http3Exception exception)
             {
+                EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
             }
-            catch (ArgumentException)
+            catch (ArgumentException exception)
             {
+                EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamClosed)
+                {
+                    Role = "server",
+                    StreamId = stream.Id,
+                    StreamKind = Http3StreamKind.Request,
+                });
             }
         }
     }
@@ -257,7 +382,7 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 foreach (Http3Frame frame in frameReader.Complete())
                 {
-                    CaptureRequestFrame(frame, validator);
+                    CaptureRequestFrame(frame, validator, stream.Id);
                 }
 
                 break;
@@ -265,7 +390,12 @@ public sealed class Http3Server : IAsyncDisposable
 
             foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
             {
-                CaptureRequestFrame(frame, validator);
+                CaptureRequestFrame(frame, validator, stream.Id);
+            }
+
+            if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
+            {
+                return request;
             }
         }
 
@@ -279,8 +409,29 @@ public sealed class Http3Server : IAsyncDisposable
         return CreateRequest(headers);
     }
 
-    private static void CaptureRequestFrame(Http3Frame frame, Http3RequestMessageValidator validator)
+    private static bool TryCreateNoBodyGetRequest(
+        IReadOnlyList<QPackFieldLine>? headers,
+        out Http3Request request)
     {
+        request = null!;
+        if (headers is null)
+        {
+            return false;
+        }
+
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, receivedDataLength: 0);
+        if (result.Method != "GET")
+        {
+            return false;
+        }
+
+        request = new Http3Request(result.Method, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, headers);
+        return true;
+    }
+
+    private void CaptureRequestFrame(Http3Frame frame, Http3RequestMessageValidator validator, long streamId)
+    {
+        EmitFrame(Http3DiagnosticKind.FrameReceived, streamId, frame);
         switch (frame)
         {
             case Http3HeadersFrame headersFrame:
@@ -302,7 +453,7 @@ public sealed class Http3Server : IAsyncDisposable
         return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, headers);
     }
 
-    private static async ValueTask TryWriteResponseAsync(
+    private async ValueTask TryWriteResponseAsync(
         QuicStream stream,
         Http3ServerResponse response,
         CancellationToken cancellationToken)
@@ -321,21 +472,45 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
-    private static async ValueTask WriteResponseAsync(
+    private async ValueTask WriteResponseAsync(
         QuicStream stream,
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
         byte[] headersFrame = Http3FrameWriter.WriteHeaders(EncodeResponseFieldSection(BuildResponseHeaders(response)));
         await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false);
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.Length);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseStarted)
+        {
+            Role = "server",
+            StreamId = stream.Id,
+            StatusCode = response.StatusCode,
+        });
 
         if (!response.Body.IsEmpty)
         {
-            byte[] dataFrame = Http3FrameWriter.WriteData(response.Body.Span);
-            await WriteFrameBytesAsync(stream, dataFrame, cancellationToken).ConfigureAwait(false);
+            await WriteResponseDataFramesAsync(stream, response.Body, response.DataFramePayloadSize, cancellationToken).ConfigureAwait(false);
         }
 
         await stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async ValueTask WriteResponseDataFramesAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> body,
+        int? dataFramePayloadSize,
+        CancellationToken cancellationToken)
+    {
+        int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
+        int offset = 0;
+        while (offset < body.Length)
+        {
+            int count = Math.Min(framePayloadSize, body.Length - offset);
+            byte[] dataFrame = Http3FrameWriter.WriteData(body.Span.Slice(offset, count));
+            await WriteFrameBytesAsync(stream, dataFrame, cancellationToken).ConfigureAwait(false);
+            EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Data, count);
+            offset += count;
+        }
     }
 
     private static async ValueTask WriteFrameBytesAsync(
@@ -350,6 +525,16 @@ public sealed class Http3Server : IAsyncDisposable
             await stream.WriteAsync(frameBytes, offset, count, cancellationToken).ConfigureAwait(false);
             offset += count;
         }
+    }
+
+    private async ValueTask WriteGoAwayAsync(
+        QuicStream controlStream,
+        ulong streamId,
+        CancellationToken cancellationToken)
+    {
+        byte[] goAwayFrame = Http3FrameWriter.WriteGoAway(streamId);
+        await WriteFrameBytesAsync(controlStream, goAwayFrame, cancellationToken).ConfigureAwait(false);
+        EmitFrame(Http3DiagnosticKind.FrameSent, controlStream.Id, Http3FrameType.GoAway, goAwayFrame.Length);
     }
 
     private static IReadOnlyList<QPackFieldLine> BuildResponseHeaders(Http3ServerResponse response)
@@ -499,5 +684,51 @@ public sealed class Http3Server : IAsyncDisposable
     private static void SuppressExpectedException(Exception exception)
     {
         ArgumentNullException.ThrowIfNull(exception);
+    }
+
+    private void EmitFrame(Http3DiagnosticKind kind, long streamId, Http3FrameType frameType, int payloadLength)
+    {
+        Emit(new Http3DiagnosticEvent(kind)
+        {
+            Role = "server",
+            StreamId = streamId,
+            FrameType = frameType,
+            RawFrameType = checked((ulong)frameType),
+            PayloadLength = payloadLength,
+        });
+    }
+
+    private void EmitFrame(Http3DiagnosticKind kind, long streamId, Http3Frame frame)
+    {
+        Emit(new Http3DiagnosticEvent(kind)
+        {
+            Role = "server",
+            StreamId = streamId,
+            FrameType = Enum.IsDefined(typeof(Http3FrameType), (long)frame.Type) ? (Http3FrameType)frame.Type : null,
+            RawFrameType = frame.Type,
+            PayloadLength = frame.Payload.Length,
+        });
+    }
+
+    private void EmitError(Exception exception)
+    {
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.Error)
+        {
+            Role = "server",
+            ErrorCode = exception is Http3Exception http3Exception
+                ? http3Exception.ErrorCode.ToString()
+                : exception.GetType().Name,
+            Message = exception.Message,
+        });
+    }
+
+    private void Emit(Http3DiagnosticEvent diagnosticEvent)
+    {
+        if (diagnosticsSink?.IsEnabled != true)
+        {
+            return;
+        }
+
+        diagnosticsSink.Emit(diagnosticEvent);
     }
 }

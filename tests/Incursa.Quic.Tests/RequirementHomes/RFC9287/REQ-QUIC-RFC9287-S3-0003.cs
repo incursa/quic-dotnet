@@ -47,6 +47,40 @@ public sealed class REQ_QUIC_RFC9287_S3_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RuntimeDispatchAcceptsClearedFixedBitShortHeaderPacketsAfterNegotiation()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+        runtime.TlsState.LocalTransportParameters!.GreaseQuicBit = true;
+        runtime.TlsState.PeerTransportParameters!.GreaseQuicBit = true;
+
+        byte[] streamPayload = QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 3, [0xA1, 0xA2]);
+        Assert.True(runtime.HandshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+            streamPayload,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+            runtime.TlsState.CurrentOneRttKeyPhaseBit,
+            spinBit: false,
+            greaseQuicBit: true,
+            out _,
+            out byte[] protectedPacket));
+        Assert.Equal(0, protectedPacket[0] & QuicPacketHeaderBits.FixedBitMask);
+        Assert.NotNull(runtime.ActivePath);
+
+        QuicConnectionTransitionResult result = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: runtime.Clock.Ticks + 1,
+                runtime.ActivePath.Value.Identity,
+                protectedPacket),
+            nowTicks: runtime.Clock.Ticks + 1);
+
+        Assert.True(result.StateChanged);
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(3, out QuicConnectionStreamSnapshot snapshot));
+        Assert.True(snapshot.HasContiguousReadableBytes);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation()

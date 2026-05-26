@@ -36,6 +36,10 @@ internal enum QuicDiagnosticKind
     HandshakePacketSent = 17,
     VersionNegotiationSent = 18,
     PeerHandshakeTranscriptCompleted = 19,
+    SocketDatagramReceived = 20,
+    ListenerIngressClassified = 21,
+    ListenerPreAcceptanceClassified = 22,
+    ListenerInitialAdmissionResult = 23,
 }
 
 /// <summary>
@@ -86,6 +90,41 @@ internal readonly record struct QuicDiagnosticEvent(
     /// </summary>
     public ReadOnlyMemory<byte> PacketBytes { get; init; }
 
+    /// <summary>
+    /// Gets the received UDP datagram length associated with the diagnostic, if any.
+    /// </summary>
+    public int? DatagramLength { get; init; }
+
+    /// <summary>
+    /// Gets the listener endpoint ingress disposition associated with the diagnostic, if any.
+    /// </summary>
+    public QuicConnectionIngressDisposition? IngressDisposition { get; init; }
+
+    /// <summary>
+    /// Gets the listener endpoint handling kind associated with the diagnostic, if any.
+    /// </summary>
+    public QuicConnectionEndpointHandlingKind? EndpointHandlingKind { get; init; }
+
+    /// <summary>
+    /// Gets the listener pre-acceptance action associated with the diagnostic, if any.
+    /// </summary>
+    public QuicListenerPreAcceptanceDatagramAction? PreAcceptanceAction { get; init; }
+
+    /// <summary>
+    /// Gets the Initial admission stage associated with the diagnostic, if any.
+    /// </summary>
+    public string? AdmissionStage { get; init; }
+
+    /// <summary>
+    /// Gets the Initial admission reason associated with the diagnostic, if any.
+    /// </summary>
+    public string? Reason { get; init; }
+
+    /// <summary>
+    /// Gets whether the diagnostic operation succeeded, if any.
+    /// </summary>
+    public bool? Succeeded { get; init; }
+
     private static QuicDiagnosticKind InferKind(string category, string name)
     {
         return (category, name) switch
@@ -104,6 +143,10 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.runtime.handshake", "handshake-packet-received") => QuicDiagnosticKind.HandshakePacketReceived,
             ("connection.runtime.handshake", "handshake-packet-sent") => QuicDiagnosticKind.HandshakePacketSent,
             ("connection.runtime.handshake", "peer-handshake-transcript-completed") => QuicDiagnosticKind.PeerHandshakeTranscriptCompleted,
+            ("connection.socket", "datagram-received") => QuicDiagnosticKind.SocketDatagramReceived,
+            ("connection.listener", "ingress-classified") => QuicDiagnosticKind.ListenerIngressClassified,
+            ("connection.listener", "pre-acceptance-classified") => QuicDiagnosticKind.ListenerPreAcceptanceClassified,
+            ("connection.listener", "initial-admission-result") => QuicDiagnosticKind.ListenerInitialAdmissionResult,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
             ("connection.runtime.path", "path-validation-timer-exhausted") => QuicDiagnosticKind.PathValidationTimerExpiredNoValidatedPathsRemain,
             ("connection.runtime.lifecycle", "accepted-stateless-reset") => QuicDiagnosticKind.AcceptedStatelessReset,
@@ -159,6 +202,79 @@ internal static class QuicDiagnostics
         {
             PathIdentity = pathIdentity,
             PacketBytes = packetBytes.ToArray(),
+        };
+    }
+
+    internal static QuicDiagnosticEvent SocketDatagramReceived(
+        QuicConnectionPathIdentity pathIdentity,
+        int datagramLength)
+    {
+        if (datagramLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(datagramLength));
+        }
+
+        return new QuicDiagnosticEvent(
+            "connection.socket",
+            "datagram-received",
+            $"UDP datagram of {datagramLength} bytes was received from {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            DatagramLength = datagramLength,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ListenerIngressClassified(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicConnectionIngressResult ingressResult)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.listener",
+            "ingress-classified",
+            $"Listener endpoint classified datagram from {DescribePath(pathIdentity)} as {ingressResult.Disposition}/{ingressResult.HandlingKind}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            IngressDisposition = ingressResult.Disposition,
+            EndpointHandlingKind = ingressResult.HandlingKind,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ListenerPreAcceptanceClassified(
+        QuicConnectionPathIdentity pathIdentity,
+        QuicListenerPreAcceptanceDatagramAction action)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.listener",
+            "pre-acceptance-classified",
+            $"Listener pre-acceptance classified datagram from {DescribePath(pathIdentity)} as {action}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            PreAcceptanceAction = action,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ListenerInitialAdmissionResult(
+        QuicConnectionPathIdentity pathIdentity,
+        string stage,
+        bool succeeded,
+        string reason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(stage);
+        ArgumentNullException.ThrowIfNull(reason);
+
+        return new QuicDiagnosticEvent(
+            "connection.listener",
+            "initial-admission-result",
+            $"Listener Initial admission stage '{stage}' {(succeeded ? "succeeded" : "failed")} for {DescribePath(pathIdentity)}: {reason}.",
+            succeeded ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Warning)
+        {
+            PathIdentity = pathIdentity,
+            AdmissionStage = stage,
+            Reason = reason,
+            Succeeded = succeeded,
         };
     }
 

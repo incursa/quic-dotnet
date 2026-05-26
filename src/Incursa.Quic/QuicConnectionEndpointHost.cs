@@ -9,11 +9,18 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 {
+    private static readonly bool EndpointIngressDebugEnabled =
+        string.Equals(
+            Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
+            "1",
+            StringComparison.Ordinal);
+
     private readonly QuicConnectionRuntimeEndpoint endpoint;
     private readonly Action<QuicConnectionIngressResult>? ingressObserver;
     private readonly Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver;
     private readonly Action<QuicConnectionTransitionResult>? transitionObserver;
     private readonly Action<QuicConnectionEffect>? effectObserver;
+    private readonly IQuicDiagnosticsSink diagnosticsSink;
     private readonly int receiveBufferBytes;
     private readonly object socketGate = new();
     private readonly CancellationTokenSource shutdown = new();
@@ -33,7 +40,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         Action<QuicConnectionTransitionResult>? transitionObserver = null,
         Action<QuicConnectionEffect>? effectObserver = null,
         int receiveBufferBytes = 4096,
-        Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver = null)
+        Action<ReadOnlyMemory<byte>, QuicConnectionIngressResult>? ingressDatagramObserver = null,
+        IQuicDiagnosticsSink? diagnosticsSink = null)
     {
         ArgumentNullException.ThrowIfNull(endpoint);
         ArgumentNullException.ThrowIfNull(socket);
@@ -51,6 +59,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.ingressDatagramObserver = ingressDatagramObserver;
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
+        this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
         this.receiveBufferBytes = receiveBufferBytes;
         flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
@@ -208,8 +217,15 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                         receiveResult.PacketInformation.Address);
                     QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
 
+                    EmitSocketDatagramReceived(currentPathIdentity, receiveResult.ReceivedBytes);
                     byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
                     QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, currentPathIdentity);
+                    if (EndpointIngressDebugEnabled)
+                    {
+                        await Console.Error.WriteLineAsync(
+                            $"endpoint-rx len={receiveResult.ReceivedBytes} disposition={ingressResult.Disposition} handling={ingressResult.HandlingKind} routed={ingressResult.Handle.HasValue}.");
+                    }
+
                     if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
                         and not QuicConnectionIngressDisposition.EndpointHandling
                         and not QuicConnectionIngressDisposition.Dropped)
@@ -251,6 +267,16 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         {
             QuicBufferPool.ReturnBytes(buffer);
         }
+    }
+
+    private void EmitSocketDatagramReceived(QuicConnectionPathIdentity pathIdentity, int datagramLength)
+    {
+        if (!diagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        diagnosticsSink.Emit(QuicDiagnostics.SocketDatagramReceived(pathIdentity, datagramLength));
     }
 
     private void SendStatelessResetResponse(

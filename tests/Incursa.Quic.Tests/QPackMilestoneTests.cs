@@ -89,6 +89,36 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    public void DecodeFieldSection_DecodesHuffmanLiteralFieldLineWithLiteralName()
+    {
+        byte[] encoded = Convert.FromHexString("00002F0125A849E95BA97D7F8925A849E95BB8E8B4BF");
+
+        QPackFieldLine field = Assert.Single(QPackDecoder.DecodeFieldSection(encoded));
+
+        Assert.Equal(new QPackFieldLine("custom-key", "custom-value"), field);
+    }
+
+    [Fact]
+    public void DecodeFieldSection_DecodesHuffmanLiteralWithStaticNameReference()
+    {
+        byte[] encoded = Convert.FromHexString("0000518CF1E3C2E5F23A6BA0AB90F4FF");
+
+        QPackFieldLine field = Assert.Single(QPackDecoder.DecodeFieldSection(encoded));
+
+        Assert.Equal(new QPackFieldLine(":path", "www.example.com"), field);
+    }
+
+    [Fact]
+    public void DecodeFieldSection_RejectsMalformedHuffmanPaddingWithDecompressionFailed()
+    {
+        byte[] encoded = Convert.FromHexString("0000518100");
+
+        QPackException exception = Assert.Throws<QPackException>(() => QPackDecoder.DecodeFieldSection(encoded));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
+    [Fact]
     public void DecodeFieldSection_PreservesFieldOrderAndDuplicates()
     {
         QPackFieldLine[] fields =

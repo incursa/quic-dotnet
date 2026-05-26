@@ -23,16 +23,20 @@
     "src/Incursa.Quic.InteropHarness/InteropHttp3FileHandler.cs",
     "src/Incursa.Quic.Http3/Http3Client.cs",
     "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/IHttp3DiagnosticsSink.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogHttp3DiagnosticsSink.cs",
     "src/Incursa.Qpack",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     ".github/workflows/interop-runner-http3.yml"
   ],
-  "design_summary": "The endpoint image remains the existing interop harness image and entrypoint. `TESTCASE=http3` is routed through a dedicated dispatch path that configures ALPN `h3`, opens the required HTTP/3 control and QPACK unidirectional streams through the HTTP/3 module, maps server request paths to files under `/www`, writes client downloads under `/downloads`, and preserves the runner exit-code contract. Existing non-HTTP/3 cells continue to use their current dispatch paths and ALPN. The HTTP/3 client/server wrappers attach to already-created managed QUIC connections/listeners so qlog, SSL key logging, deterministic local handshake keys, certificate loading, and endpoint-host behavior remain owned by the harness and transport seams already used by other interop cells.",
+  "design_summary": "The endpoint image remains the existing interop harness image and entrypoint. `TESTCASE=http3` is routed through a dedicated dispatch path that configures ALPN `h3`, opens the required HTTP/3 control and QPACK unidirectional streams through the HTTP/3 module, maps server request paths to files under `/www`, writes client downloads under `/downloads`, and preserves the runner exit-code contract. Existing non-HTTP/3 cells continue to use their current dispatch paths and ALPN. The HTTP/3 client/server wrappers attach to already-created managed QUIC connections/listeners so qlog, SSL key logging, deterministic local handshake keys, certificate loading, and endpoint-host behavior remain owned by the harness and transport seams already used by other interop cells. HTTP/3 emits qlog-free diagnostic events that the qlog package adapts to contained qlog events when `QLOGDIR` is configured.",
   "edge_cases_and_constraints": [
     "The server endpoint binds UDP port 443 and uses `/certs/cert.pem` plus `/certs/priv.key` from the runner mount.",
     "The client must treat every whitespace-separated `REQUESTS` URL as a download target and write each body to the matching path under `/downloads`.",
     "The HTTP/3 runner cell must use ALPN `h3`; existing `hq-interop` dispatch paths must remain unchanged.",
     "The adapter can use the current static/literal QPACK behavior and does not require dynamic QPACK usage for this slice.",
+    "HTTP/3 diagnostics must stay optional and must not create a dependency from the HTTP/3 module to the qlog package.",
+    "TLS secret export must use the existing `SSLKEYLOGFILE` path when supported and must not synthesize secrets when unsupported.",
     "Unsupported test cases must continue to return exit code 127.",
     "The CI job is advisory local-runner evidence, not a broad peer matrix or upstream registry participation claim."
   ],

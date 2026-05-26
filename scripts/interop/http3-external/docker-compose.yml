@@ -16,6 +16,10 @@ services:
       - ${HTTP3_INTEROP_WWW:-./work/www}:/www:ro
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/incursa-server:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
+      INCURSA_QUIC_DEBUG_APP_RX: ${INCURSA_QUIC_DEBUG_APP_RX:-}
 
   incursa-client:
     build:
@@ -25,6 +29,10 @@ services:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/incursa-client:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
+      INCURSA_QUIC_DEBUG_APP_RX: ${INCURSA_QUIC_DEBUG_APP_RX:-}
     profiles:
       - clients
 
@@ -34,6 +42,9 @@ services:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/curl:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
     profiles:
       - clients
 
@@ -46,6 +57,9 @@ services:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/aioquic:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
     profiles:
       - clients
       - peers
@@ -57,6 +71,9 @@ services:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/quiche:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
     profiles:
       - clients
       - peers
@@ -68,6 +85,9 @@ services:
       - ${HTTP3_INTEROP_DOWNLOADS:-./work/downloads}:/downloads
       - ${HTTP3_INTEROP_CERTS:-./work/certs}:/certs:ro
       - ${HTTP3_INTEROP_LOGS:-./work/logs}/ngtcp2:/logs
+    environment:
+      QLOGDIR: /logs/qlog
+      SSLKEYLOGFILE: /logs/sslkeylog/keys.log
     profiles:
       - clients
       - peers

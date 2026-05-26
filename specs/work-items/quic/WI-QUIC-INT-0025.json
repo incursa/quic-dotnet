@@ -21,7 +21,7 @@
   "addresses": [
     "REQ-QUIC-INT-0031"
   ],
-  "planned_changes": "- Add a minimal Incursa HTTP/3 CLI client sample for compose-driven downloads.\n- Make the sample HTTP/3 file server bind to a container-reachable address.\n- Add Dockerfiles for Incursa client/server and an aioquic utility image.\n- Add Docker Compose targets for Incursa, curl, aioquic, quiche/h3i, and ngtcp2/nghttp3 cells.\n- Add PowerShell and Bash runner scripts that create fixtures, generate certificates, run wired cells, and record skip rows for unwired cells.\n- Add a Python JSONL-to-Markdown result parser.\n- Add checked-in documentation and a report template.",
+  "planned_changes": "- Add a minimal Incursa HTTP/3 CLI client sample for compose-driven downloads.\n- Make the sample HTTP/3 file server bind to a container-reachable address.\n- Add Dockerfiles for Incursa client/server and an aioquic utility image.\n- Add Docker Compose targets for Incursa, curl, aioquic, quiche/h3i, and ngtcp2/nghttp3 cells.\n- Set `QLOGDIR` and `SSLKEYLOGFILE` for peer containers.\n- Add PowerShell and Bash runner scripts that create fixtures, generate certificates, run wired cells, retain command/stdout/stderr/decoded summaries/qlogs/keylogs/pcaps, and record skip rows for unwired cells.\n- Add a Python JSONL-to-Markdown result parser.\n- Add checked-in documentation, qvis/Wireshark debugging instructions, a triage checklist, and a report template.",
   "out_of_scope": [
     "claiming live pass status for every peer cell",
     "does not promote broad HTTP/3 peer support",

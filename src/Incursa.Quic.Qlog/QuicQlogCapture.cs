@@ -1,5 +1,6 @@
 using Incursa.Quic;
 using Incursa.Qlog;
+using Incursa.Qlog.Quic;
 using Incursa.Qlog.Serialization.Json;
 
 namespace Incursa.Quic.Qlog;
@@ -123,6 +124,35 @@ public sealed class QuicQlogCapture
         QlogJsonSerializer.Serialize(stream, snapshot, indented);
     }
 
+    internal void RecordApplicationEvent(
+        bool isServer,
+        string name,
+        IReadOnlyDictionary<string, QlogValue> data)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(data);
+
+        lock (gate)
+        {
+            QlogTrace trace = GetOrCreateApplicationTrace(isServer);
+            double eventTime = trace.Events.Count == 0
+                ? 0
+                : trace.Events.Max(static qlogEvent => qlogEvent.Time) + 1;
+            QlogEvent qlogEvent = new()
+            {
+                Time = eventTime,
+                Name = name,
+            };
+
+            foreach (KeyValuePair<string, QlogValue> entry in data)
+            {
+                qlogEvent.Data[entry.Key] = entry.Value;
+            }
+
+            trace.Events.Add(qlogEvent);
+        }
+    }
+
     private QuicQlogDiagnosticsSink CreateClientSink()
     {
         return CreateSink(isServer: false);
@@ -141,6 +171,32 @@ public sealed class QuicQlogCapture
             File.Traces.Add(sink.Trace);
             return sink;
         }
+    }
+
+    private QlogTrace GetOrCreateApplicationTrace(bool isServer)
+    {
+        string vantagePoint = isServer
+            ? QlogKnownValues.ServerVantagePoint
+            : QlogKnownValues.ClientVantagePoint;
+        foreach (QlogTraceComponent traceComponent in File.Traces)
+        {
+            if (traceComponent is QlogTrace trace &&
+                string.Equals(trace.VantagePoint?.Type, vantagePoint, StringComparison.Ordinal))
+            {
+                return trace;
+            }
+        }
+
+        QlogTrace created = new()
+        {
+            VantagePoint = new QlogVantagePoint
+            {
+                Type = vantagePoint,
+            },
+        };
+        QlogQuicEvents.RegisterDraftSchema(created);
+        File.Traces.Add(created);
+        return created;
     }
 
     private QlogFile CreateSnapshot()

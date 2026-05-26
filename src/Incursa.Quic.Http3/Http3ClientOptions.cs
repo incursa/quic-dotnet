@@ -26,4 +26,9 @@ public sealed class Http3ClientOptions
     /// Gets or sets whether a response with a validated Content-Length can complete before stream FIN is observed.
     /// </summary>
     public bool CompleteResponseOnContentLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional diagnostics sink for HTTP/3 and QPACK stream events.
+    /// </summary>
+    public IHttp3DiagnosticsSink? DiagnosticsSink { get; set; }
 }

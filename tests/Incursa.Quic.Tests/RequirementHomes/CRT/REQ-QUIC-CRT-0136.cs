@@ -24,6 +24,21 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.True(clientSink.IsEnabled);
         Assert.Equal(QlogKnownValues.ClientVantagePoint, clientSink.Trace.VantagePoint?.Type);
 
+        clientSink.Emit(QuicDiagnostics.SocketDatagramReceived(pathIdentity, 1200));
+        clientSink.Emit(QuicDiagnostics.ListenerIngressClassified(
+            pathIdentity,
+            new QuicConnectionIngressResult(
+                QuicConnectionIngressDisposition.Unroutable,
+                QuicConnectionEndpointHandlingKind.None,
+                null)));
+        clientSink.Emit(QuicDiagnostics.ListenerPreAcceptanceClassified(
+            pathIdentity,
+            QuicListenerPreAcceptanceDatagramAction.AdmitInitial));
+        clientSink.Emit(QuicDiagnostics.ListenerInitialAdmissionResult(
+            pathIdentity,
+            "open-initial-packet",
+            succeeded: false,
+            "initial-packet-open-failed"));
         clientSink.Emit(QuicDiagnostics.InitialPacketReceived(pathIdentity));
         clientSink.Emit(QuicDiagnostics.InitialPacketOpenFailed(pathIdentity));
         clientSink.Emit(QuicDiagnostics.InitialPacketProcessingResult(true));
@@ -49,6 +64,10 @@ public sealed class REQ_QUIC_CRT_0136
 
         Assert.Equal(
             [
+                "quic:socket_datagram_received",
+                "quic:listener_ingress_classified",
+                "quic:listener_pre_acceptance_classified",
+                "quic:listener_initial_admission_result",
                 QlogQuicKnownValues.PacketReceivedEventName,
                 QlogQuicKnownValues.PacketDroppedEventName,
                 QlogQuicKnownValues.ConnectionStateUpdatedEventName,
@@ -64,39 +83,59 @@ public sealed class REQ_QUIC_CRT_0136
             ],
             eventNames);
 
-        QlogEvent initialPacketReceived = clientSink.Trace.Events[0];
+        QlogEvent socketDatagramReceived = clientSink.Trace.Events[0];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", socketDatagramReceived.Tuple);
+        Assert.Equal(1200L, ReadNumber(socketDatagramReceived.Data["datagram_length"]));
+        Assert.Contains("1200 bytes", ReadString(socketDatagramReceived.Data["message"]), StringComparison.Ordinal);
+
+        QlogEvent listenerIngressClassified = clientSink.Trace.Events[1];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", listenerIngressClassified.Tuple);
+        Assert.Equal(nameof(QuicConnectionIngressDisposition.Unroutable), ReadString(listenerIngressClassified.Data["disposition"]));
+        Assert.Equal(nameof(QuicConnectionEndpointHandlingKind.None), ReadString(listenerIngressClassified.Data["handling_kind"]));
+
+        QlogEvent listenerPreAcceptanceClassified = clientSink.Trace.Events[2];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", listenerPreAcceptanceClassified.Tuple);
+        Assert.Equal(nameof(QuicListenerPreAcceptanceDatagramAction.AdmitInitial), ReadString(listenerPreAcceptanceClassified.Data["action"]));
+
+        QlogEvent listenerInitialAdmissionResult = clientSink.Trace.Events[3];
+        Assert.Equal("203.0.113.10:443|198.51.100.3:61234", listenerInitialAdmissionResult.Tuple);
+        Assert.Equal("open-initial-packet", ReadString(listenerInitialAdmissionResult.Data["stage"]));
+        Assert.Equal("initial-packet-open-failed", ReadString(listenerInitialAdmissionResult.Data["reason"]));
+        Assert.False(ReadBoolean(listenerInitialAdmissionResult.Data["succeeded"]));
+
+        QlogEvent initialPacketReceived = clientSink.Trace.Events[4];
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", initialPacketReceived.Tuple);
         Assert.Equal(QlogQuicKnownValues.PacketTypeInitial, ReadObjectString(initialPacketReceived.Data["header"], "packet_type"));
 
-        QlogEvent initialPacketDropped = clientSink.Trace.Events[1];
+        QlogEvent initialPacketDropped = clientSink.Trace.Events[5];
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", initialPacketDropped.Tuple);
         Assert.Equal(QlogQuicKnownValues.PacketTypeInitial, ReadObjectString(initialPacketDropped.Data["header"], "packet_type"));
 
-        QlogEvent initialPacketAdvanced = clientSink.Trace.Events[2];
+        QlogEvent initialPacketAdvanced = clientSink.Trace.Events[6];
         Assert.Equal(QlogQuicKnownValues.ConnectionStateAttempted, ReadString(initialPacketAdvanced.Data["old"]));
         Assert.Equal(QlogQuicKnownValues.ConnectionStateHandshakeStarted, ReadString(initialPacketAdvanced.Data["new"]));
         Assert.True(ReadBoolean(initialPacketAdvanced.Data["processed"]));
 
-        QlogEvent initialPacketNotAdvanced = clientSink.Trace.Events[3];
+        QlogEvent initialPacketNotAdvanced = clientSink.Trace.Events[7];
         Assert.Equal(QlogQuicKnownValues.ConnectionStateAttempted, ReadString(initialPacketNotAdvanced.Data["old"]));
         Assert.Equal(QlogQuicKnownValues.ConnectionStateAttempted, ReadString(initialPacketNotAdvanced.Data["new"]));
         Assert.False(ReadBoolean(initialPacketNotAdvanced.Data["processed"]));
 
-        QlogEvent initialKeyUpdated = clientSink.Trace.Events[4];
+        QlogEvent initialKeyUpdated = clientSink.Trace.Events[8];
         Assert.Equal(QlogQuicKnownValues.KeyTypeClientInitialSecret, ReadString(initialKeyUpdated.Data["key_type"]));
         Assert.Equal(QlogQuicKnownValues.KeyLifecycleTriggerTls, ReadString(initialKeyUpdated.Data["trigger"]));
         Assert.Equal(2L, ReadNumber(initialKeyUpdated.Data["transcript_update_count"]));
 
-        QlogEvent handshakeKeyUpdated = clientSink.Trace.Events[5];
+        QlogEvent handshakeKeyUpdated = clientSink.Trace.Events[9];
         Assert.Equal(QlogQuicKnownValues.KeyTypeClientHandshakeSecret, ReadString(handshakeKeyUpdated.Data["key_type"]));
         Assert.Equal(QlogQuicKnownValues.KeyLifecycleTriggerTls, ReadString(handshakeKeyUpdated.Data["trigger"]));
         Assert.Equal(5L, ReadNumber(handshakeKeyUpdated.Data["transcript_update_count"]));
 
-        QlogEvent peerHandshakeCompleted = clientSink.Trace.Events[6];
+        QlogEvent peerHandshakeCompleted = clientSink.Trace.Events[10];
         Assert.Equal(QlogQuicKnownValues.ConnectionStateHandshakeStarted, ReadString(peerHandshakeCompleted.Data["old"]));
         Assert.Equal(QlogQuicKnownValues.ConnectionStateHandshakeComplete, ReadString(peerHandshakeCompleted.Data["new"]));
 
-        QlogEvent migrationStarted = clientSink.Trace.Events[7];
+        QlogEvent migrationStarted = clientSink.Trace.Events[11];
         Assert.Equal(QlogQuicKnownValues.MigrationStateStarted, ReadString(migrationStarted.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", migrationStarted.Tuple);
         Assert.Equal("203.0.113.10", ReadObjectString(migrationStarted.Data["tuple_remote"], "ip_v4"));
@@ -104,18 +143,18 @@ public sealed class REQ_QUIC_CRT_0136
         Assert.Equal("198.51.100.3", ReadObjectString(migrationStarted.Data["tuple_local"], "ip_v4"));
         Assert.Equal(61234L, ReadObjectNumber(migrationStarted.Data["tuple_local"], "port_v4"));
 
-        QlogEvent pathValidationFailed = clientSink.Trace.Events[8];
+        QlogEvent pathValidationFailed = clientSink.Trace.Events[12];
         Assert.Equal(QlogQuicKnownValues.MigrationStateAbandoned, ReadString(pathValidationFailed.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", pathValidationFailed.Tuple);
 
-        QlogEvent pathValidationExpired = clientSink.Trace.Events[9];
+        QlogEvent pathValidationExpired = clientSink.Trace.Events[13];
         Assert.Equal(QlogQuicKnownValues.MigrationStateProbingAbandoned, ReadString(pathValidationExpired.Data["new"]));
 
-        QlogEvent budgetExhausted = clientSink.Trace.Events[10];
+        QlogEvent budgetExhausted = clientSink.Trace.Events[14];
         Assert.Equal(QlogQuicKnownValues.MigrationStateAbandoned, ReadString(budgetExhausted.Data["new"]));
         Assert.Equal("203.0.113.10:443|198.51.100.3:61234", budgetExhausted.Tuple);
 
-        QlogEvent statelessReset = clientSink.Trace.Events[11];
+        QlogEvent statelessReset = clientSink.Trace.Events[15];
         Assert.Equal(QlogQuicKnownValues.RemoteInitiator, ReadString(statelessReset.Data["initiator"]));
         Assert.Equal(QlogQuicKnownValues.CloseTriggerStatelessReset, ReadString(statelessReset.Data["trigger"]));
         Assert.Equal(42L, ReadNumber(statelessReset.Data["connection_id"]));

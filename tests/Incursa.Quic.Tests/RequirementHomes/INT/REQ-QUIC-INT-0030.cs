@@ -16,7 +16,10 @@ public sealed class REQ_QUIC_INT_0030
         string runner = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs");
         string planner = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs");
         string handler = ReadRepositoryFile("src/Incursa.Quic.InteropHarness/InteropHttp3FileHandler.cs");
+        string http3Diagnostics = ReadRepositoryFile("src/Incursa.Quic.Http3/IHttp3DiagnosticsSink.cs");
+        string http3QlogSink = ReadRepositoryFile("src/Incursa.Quic.Qlog/QuicQlogHttp3DiagnosticsSink.cs");
         string helper = ReadRepositoryFile("scripts/interop/Invoke-QuicInteropRunner.ps1");
+        string docs = ReadRepositoryFile("docs/interop-http3-runner.md");
 
         Assert.Contains("REQ-QUIC-INT-0030", spec, StringComparison.Ordinal);
         Assert.Contains("ARC-QUIC-INT-0024", spec, StringComparison.Ordinal);
@@ -33,6 +36,12 @@ public sealed class REQ_QUIC_INT_0030
         Assert.Contains("InteropHarnessEnvironment.WwwDirectory", planner, StringComparison.Ordinal);
         Assert.Contains("InteropHarnessEnvironment.DownloadsDirectory", planner, StringComparison.Ordinal);
         Assert.Contains("TryGetTransferPathsFromRequestTarget", handler, StringComparison.Ordinal);
+        Assert.Contains("DiagnosticsSink = CreateHttp3QlogDiagnosticsSink", runner, StringComparison.Ordinal);
+        Assert.Contains("Receives optional HTTP/3 diagnostics", http3Diagnostics, StringComparison.Ordinal);
+        Assert.Contains("http3:", http3QlogSink, StringComparison.Ordinal);
+        Assert.Contains("QLOGDIR", docs, StringComparison.Ordinal);
+        Assert.Contains("SSLKEYLOGFILE", docs, StringComparison.Ordinal);
+        Assert.Contains("Wireshark and qvis", docs, StringComparison.Ordinal);
         Assert.Contains("TestCase = 'http3'", helper, StringComparison.Ordinal);
         Assert.Contains("RunnerTestCase = 'http3'", helper, StringComparison.Ordinal);
         Assert.Contains("Classification = 'supported-executed'", helper, StringComparison.Ordinal);

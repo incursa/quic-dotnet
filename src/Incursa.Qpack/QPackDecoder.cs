@@ -607,11 +607,6 @@ public sealed class QPackDecoder
             return false;
         }
 
-        if (huffmanEncoded)
-        {
-            throw new QPackException(errorCode, "Huffman-encoded QPACK string literals are not implemented in this milestone.");
-        }
-
         if (length > int.MaxValue)
         {
             throw new QPackException(errorCode, "The QPACK string literal length is invalid.");
@@ -622,7 +617,10 @@ public sealed class QPackDecoder
             return false;
         }
 
-        value = Encoding.Latin1.GetString(source.Slice(localIndex, (int)length));
+        ReadOnlySpan<byte> encodedString = source.Slice(localIndex, (int)length);
+        value = huffmanEncoded
+            ? QPackHuffman.Decode(encodedString, errorCode)
+            : Encoding.Latin1.GetString(encodedString);
         index = checked(localIndex + (int)length);
         return true;
     }

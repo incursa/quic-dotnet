@@ -97,7 +97,8 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             socket,
             pathIdentity,
             transitionObserver: ObserveTransition,
-            ingressDatagramObserver: ObserveIngressDatagram);
+            ingressDatagramObserver: ObserveIngressDatagram,
+            diagnosticsSink: diagnosticsSink);
     }
 
     public ValueTask<QuicConnection> ConnectAsync(CancellationToken cancellationToken = default)

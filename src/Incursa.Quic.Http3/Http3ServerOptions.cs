@@ -16,4 +16,9 @@ public sealed class Http3ServerOptions
     /// Gets or sets the request-stream read buffer size.
     /// </summary>
     public int ReadBufferSize { get; set; } = DefaultReadBufferSize;
+
+    /// <summary>
+    /// Gets or sets an optional diagnostics sink for HTTP/3 and QPACK stream events.
+    /// </summary>
+    public IHttp3DiagnosticsSink? DiagnosticsSink { get; set; }
 }

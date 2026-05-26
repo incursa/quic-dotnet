@@ -15,6 +15,10 @@ internal static class QuicQlogDiagnosticsMapper
     {
         qlogEvent = diagnosticEvent.Kind switch
         {
+            QuicDiagnosticKind.SocketDatagramReceived => CreateSocketDatagramReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.ListenerIngressClassified => CreateListenerIngressClassified(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.ListenerPreAcceptanceClassified => CreateListenerPreAcceptanceClassified(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.ListenerInitialAdmissionResult => CreateListenerInitialAdmissionResult(eventTime, diagnosticEvent),
             QuicDiagnosticKind.InitialPacketReceived => CreateInitialPacketReceived(eventTime, diagnosticEvent),
             QuicDiagnosticKind.InitialPacketOpenFailed => CreatePacketDropped(eventTime, diagnosticEvent, QlogQuicKnownValues.PacketTypeInitial),
             QuicDiagnosticKind.InitialPacketAdvanced => CreateConnectionStateUpdated(eventTime, processed: true),
@@ -54,6 +58,101 @@ internal static class QuicQlogDiagnosticsMapper
         };
 
         return qlogEvent is not null;
+    }
+
+    private static QlogEvent CreateSocketDatagramReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = new()
+        {
+            Time = eventTime,
+            Name = "quic:socket_datagram_received",
+        };
+
+        if (diagnosticEvent.DatagramLength.HasValue)
+        {
+            qlogEvent.Data["datagram_length"] = QlogValue.FromNumber(diagnosticEvent.DatagramLength.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.Message))
+        {
+            qlogEvent.Data["message"] = QlogValue.FromString(diagnosticEvent.Message);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateListenerIngressClassified(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:listener_ingress_classified", diagnosticEvent);
+
+        if (diagnosticEvent.IngressDisposition.HasValue)
+        {
+            qlogEvent.Data["disposition"] = QlogValue.FromString(diagnosticEvent.IngressDisposition.Value.ToString());
+        }
+
+        if (diagnosticEvent.EndpointHandlingKind.HasValue)
+        {
+            qlogEvent.Data["handling_kind"] = QlogValue.FromString(diagnosticEvent.EndpointHandlingKind.Value.ToString());
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateListenerPreAcceptanceClassified(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:listener_pre_acceptance_classified", diagnosticEvent);
+
+        if (diagnosticEvent.PreAcceptanceAction.HasValue)
+        {
+            qlogEvent.Data["action"] = QlogValue.FromString(diagnosticEvent.PreAcceptanceAction.Value.ToString());
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateListenerInitialAdmissionResult(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:listener_initial_admission_result", diagnosticEvent);
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.AdmissionStage))
+        {
+            qlogEvent.Data["stage"] = QlogValue.FromString(diagnosticEvent.AdmissionStage);
+        }
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.Reason))
+        {
+            qlogEvent.Data["reason"] = QlogValue.FromString(diagnosticEvent.Reason);
+        }
+
+        if (diagnosticEvent.Succeeded.HasValue)
+        {
+            qlogEvent.Data["succeeded"] = QlogValue.FromBoolean(diagnosticEvent.Succeeded.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateDiagnosticEvent(
+        double eventTime,
+        string name,
+        QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = new()
+        {
+            Time = eventTime,
+            Name = name,
+        };
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.Message))
+        {
+            qlogEvent.Data["message"] = QlogValue.FromString(diagnosticEvent.Message);
+        }
+
+        return qlogEvent;
     }
 
     private static QlogEvent CreateInitialPacketReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)

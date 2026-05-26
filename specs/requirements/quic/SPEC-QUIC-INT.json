@@ -1078,7 +1078,7 @@
     {
       "id": "REQ-QUIC-INT-0030",
       "title": "Support the QUIC interop-runner HTTP/3 endpoint cell",
-      "statement": "The interop harness MUST support `TESTCASE=http3` as a bounded QUIC interop-runner endpoint cell by using the existing managed QUIC transport with ALPN `h3`, starting the server endpoint on UDP port 443, loading `/certs/cert.pem` and `/certs/priv.key`, serving HTTP/3 GET responses from `/www`, reading client request URLs from `REQUESTS`, writing downloaded response bodies to `/downloads`, returning exit code `0` only after all requested downloads complete, returning exit code `1` for supported-cell failures, returning exit code `127` for unsupported test cases, and keeping non-HTTP/3 test cases delegated to the existing harness dispatch paths.",
+      "statement": "The interop harness MUST support `TESTCASE=http3` as a bounded QUIC interop-runner endpoint cell by using the existing managed QUIC transport with ALPN `h3`, starting the server endpoint on UDP port 443, loading `/certs/cert.pem` and `/certs/priv.key`, serving HTTP/3 GET responses from `/www`, reading client request URLs from `REQUESTS`, writing downloaded response bodies to `/downloads`, returning exit code `0` only after all requested downloads complete, returning exit code `1` for supported-cell failures, returning exit code `127` for unsupported test cases, emitting HTTP/3 diagnostic qlog events when `QLOGDIR` is set, preserving TLS secret export through `SSLKEYLOGFILE` when supported, and keeping non-HTTP/3 test cases delegated to the existing harness dispatch paths.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0024"
@@ -1103,6 +1103,9 @@
           "src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj",
           "src/Incursa.Quic.Http3/Http3Client.cs",
           "src/Incursa.Quic.Http3/Http3Server.cs",
+          "src/Incursa.Quic.Http3/Http3DiagnosticEvent.cs",
+          "src/Incursa.Quic.Http3/IHttp3DiagnosticsSink.cs",
+          "src/Incursa.Quic.Qlog/QuicQlogHttp3DiagnosticsSink.cs",
           "scripts/interop/Invoke-QuicInteropRunner.ps1",
           "scripts/interop/README.md",
           "src/Incursa.Quic.InteropHarness/README.md",
@@ -1111,7 +1114,8 @@
           "tests/Incursa.Quic.Tests/InteropHarnessPackagingTests.cs",
           "tests/Incursa.Quic.Tests/InteropHarnessRunnerTests.cs",
           "tests/Incursa.Quic.Tests/InteropHarnessPreflightPlannerTests.cs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs"
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs",
+          "tests/Incursa.Quic.Tests/Http3QlogDiagnosticsTests.cs"
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/InteropHarnessPackagingTests.cs::InteropHelperRegistersHttp3AsASupportedExecutedRunnerCell",
@@ -1122,19 +1126,22 @@
           "tests/Incursa.Quic.Tests/InteropHarnessPreflightPlannerTests.cs::CreateSupportedHttp3ClientOptionsUsesHttp3AlpnAndUnidirectionalStreamCredit",
           "tests/Incursa.Quic.Tests/InteropHarnessPreflightPlannerTests.cs::CreateSupportedHttp3ServerOptionsUsesHttp3Alpn",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs::Http3RunnerCellIsTraceLinkedAcrossCanonicalArtifacts",
-          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs::Http3RunnerCellDoesNotPromoteBroaderHttp3Support"
+          "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs::Http3RunnerCellDoesNotPromoteBroaderHttp3Support",
+          "tests/Incursa.Quic.Tests/Http3QlogDiagnosticsTests.cs::SinkWritesHttp3EventsIntoContainedQlog",
+          "tests/Incursa.Quic.Tests/Http3QlogDiagnosticsTests.cs::SinkDefaultsRoleFromConfiguredVantagePoint"
         ]
       },
       "notes": [
         "This requirement owns only the interop-runner adapter cell and endpoint packaging contract.",
         "The HTTP/3 and QPACK protocol behavior remains owned by the HTTP/3 and QPACK modules rather than by the interop harness.",
+        "HTTP/3 qlog emission is implemented through an optional diagnostics sink so the HTTP/3 layer remains independent from qlog serialization.",
         "The first CI surface is advisory/local-runner evidence for the `http3` cell and does not claim upstream-registry participation or broad peer support."
       ]
     },
     {
       "id": "REQ-QUIC-INT-0031",
       "title": "Provide an advisory external HTTP/3 peer harness",
-      "statement": "The repository MUST provide an advisory external HTTP/3 interop harness that defines Docker Compose targets for Incursa.Quic client/server, curl, aioquic, quiche or h3i, and ngtcp2/nghttp3 where available; defines scenarios for small, empty, large, concurrent, 404, many-header, split-DATA, cancellation, GOAWAY, and in-flight close behavior; provides Windows and POSIX execution scripts; emits machine-readable per-target/per-scenario results; generates a Markdown pass/fail/skip report by peer implementation; and keeps skipped or failed rows explicit rather than using the harness as broad HTTP/3 or QPACK support promotion.",
+      "statement": "The repository MUST provide an advisory external HTTP/3 interop harness that defines Docker Compose targets for Incursa.Quic client/server, curl, aioquic, quiche or h3i, and ngtcp2/nghttp3 where available; defines scenarios for small, empty, large, concurrent, 404, many-header, split-DATA, cancellation, GOAWAY, and in-flight close behavior; provides Windows and POSIX execution scripts; emits machine-readable per-target/per-scenario results; generates a Markdown pass/fail/skip report by peer implementation; retains stdout, stderr, command lines, decoded per-scenario summaries, qlog directories, TLS key logs, and caller-supplied packet captures; and keeps skipped or failed rows explicit rather than using the harness as broad HTTP/3 or QPACK support promotion.",
       "trace": {
         "satisfied_by": [
           "ARC-QUIC-INT-0025"
@@ -1167,6 +1174,7 @@
       "notes": [
         "Target identifiers are `incursa-client__incursa-server`, `curl__incursa-server`, `aioquic-client__incursa-server`, `quiche-client__incursa-server`, `ngtcp2-client__incursa-server`, `incursa-client__aioquic-server`, `incursa-client__quiche-server`, and `incursa-client__ngtcp2-server`.",
         "Scenario identifiers are `get-small`, `get-empty`, `get-large`, `multiple-concurrent-get`, `not-found`, `many-headers`, `split-data`, `request-cancellation`, `goaway`, and `connection-close-in-flight`.",
+        "The artifact layout keeps scenario stdout/stderr and decoded summaries separate from service-wide qlogs, TLS key logs, and copied packet captures.",
         "The first harness slice executes the Incursa and curl client paths against the Incursa server for static GET/404 scenarios and records other target/scenario cells as skipped until their exact peer command or endpoint behavior is wired.",
         "This is an external characterization harness, not the upstream QUIC interop runner and not a support-readiness gate."
       ]

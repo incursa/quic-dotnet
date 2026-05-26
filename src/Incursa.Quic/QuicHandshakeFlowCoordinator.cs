@@ -28,6 +28,11 @@ internal sealed class QuicHandshakeFlowCoordinator
     private byte[] initialDestinationConnectionId;
     private byte[] destinationConnectionId;
     private byte[] sourceConnectionId;
+    private static readonly bool ApplicationOpenDebugEnabled =
+        string.Equals(
+            Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
+            "1",
+            StringComparison.Ordinal);
     private uint initialPacketVersion;
     private readonly bool enableRandomizedSpinBitSelection;
     private ulong nextPacketNumber;
@@ -2537,6 +2542,12 @@ internal sealed class QuicHandshakeFlowCoordinator
             || ((unmaskedFirstByte & QuicPacketHeaderBits.PacketNumberLengthBitsMask) + 1) != packetNumberLength
             || (unmaskedFirstByte & QuicPacketHeaderBits.ShortReservedBitsMask) != 0)
         {
+            DebugApplicationOpenFailure(
+                "short-header-unmask-rejected",
+                protectedPacket.Length,
+                connectionIdLength,
+                packetNumberLength,
+                expectedPacketNumber);
             return false;
         }
 
@@ -2682,6 +2693,12 @@ internal sealed class QuicHandshakeFlowCoordinator
                 openedPacketBuffer.Slice(packetNumberOffset + packetNumberLength, ciphertextPayloadLength),
                 openedPacketBuffer[..(packetNumberOffset + packetNumberLength)]))
             {
+                DebugApplicationOpenFailure(
+                    "decrypt-failed",
+                    protectedPacket.Length,
+                    connectionIdLength,
+                    packetNumberLength,
+                    expectedPacketNumber);
                 return false;
             }
 
@@ -2701,6 +2718,22 @@ internal sealed class QuicHandshakeFlowCoordinator
                 openedPacket = default;
             }
         }
+    }
+
+    private static void DebugApplicationOpenFailure(
+        string reason,
+        int datagramLength,
+        int connectionIdLength,
+        int packetNumberLength,
+        ulong? expectedPacketNumber)
+    {
+        if (!ApplicationOpenDebugEnabled)
+        {
+            return;
+        }
+
+        Console.Error.WriteLine(
+            $"app-open-failed reason={reason} len={datagramLength} cidLength={connectionIdLength} pnLength={packetNumberLength} expectedPn={expectedPacketNumber?.ToString() ?? "none"}.");
     }
 
     private bool TryOpenZeroRttApplicationDataPacket(

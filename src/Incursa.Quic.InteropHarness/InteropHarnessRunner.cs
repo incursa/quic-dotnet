@@ -1,5 +1,6 @@
 using Incursa.Quic;
 using Incursa.Quic.Http3;
+using Incursa.Quic.Qlog;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -1264,6 +1265,7 @@ internal static class InteropHarnessRunner
                 {
                     UserAgent = "incursa-quic-interop-http3",
                     CompleteResponseOnContentLength = true,
+                    DiagnosticsSink = CreateHttp3QlogDiagnosticsSink(qlogScope, isServer: false),
                 }).ConfigureAwait(false);
             WriteLineAndFlush(
                 stdout,
@@ -1372,7 +1374,13 @@ internal static class InteropHarnessRunner
 
                 await using QuicListener listener = await ListenWithQlogCaptureAsync(settings, qlogScope, listenerOptions).ConfigureAwait(false);
                 InteropHttp3FileHandler handler = new(settings, stdout, expectedRequestCount, completionSignal);
-                await using Http3Server server = Http3Server.Attach(listener, handler);
+                await using Http3Server server = Http3Server.Attach(
+                    listener,
+                    handler,
+                    new Http3ServerOptions
+                    {
+                        DiagnosticsSink = CreateHttp3QlogDiagnosticsSink(qlogScope, isServer: true),
+                    });
                 WriteLineAndFlush(
                     stdout,
                     $"interop harness: role=server, testcase=http3, requestCount={settings.Requests.Count} listening on {listenerOptions.ListenEndPoint}.");
@@ -2762,6 +2770,15 @@ internal static class InteropHarnessRunner
                 qlogScope.Capture.CreateServerDiagnosticsSinkFactory().Invoke(),
                 diagnosticsSinkFactory()),
             InteropHarnessSslKeyLogWriter.CreateObserver(settings.SslKeyLogFile));
+    }
+
+    private static IHttp3DiagnosticsSink? CreateHttp3QlogDiagnosticsSink(
+        InteropHarnessQlogCaptureScope? qlogScope,
+        bool isServer)
+    {
+        return qlogScope is null
+            ? null
+            : new QuicQlogHttp3DiagnosticsSink(qlogScope.Capture, isServer);
     }
 
     private static async Task<bool> WaitForVersionNegotiationSentAsync(

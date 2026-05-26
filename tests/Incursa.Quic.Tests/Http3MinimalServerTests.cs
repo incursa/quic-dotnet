@@ -76,6 +76,28 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task GetWithoutRequestStreamFin_DispatchesAfterHeaders()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/no-fin", "response before fin"));
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteGetRequestHeadersAsync(requestStream, "/no-fin");
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("response before fin", System.Text.Encoding.UTF8.GetString(response.Body));
+    }
+
+    [Fact]
     public async Task AbruptStreamReset_DoesNotStopLaterRequest()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -112,6 +134,12 @@ public sealed class Http3MinimalServerTests
 
     private static async Task WriteGetRequestAsync(QuicStream requestStream, string path)
     {
+        await WriteGetRequestHeadersAsync(requestStream, path);
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WriteGetRequestHeadersAsync(QuicStream requestStream, string path)
+    {
         byte[] encoded = QPackEncoder.EncodeFieldSection(
         [
             new QPackFieldLine(":method", "GET"),
@@ -121,7 +149,6 @@ public sealed class Http3MinimalServerTests
         ]);
         byte[] frame = Http3FrameWriter.WriteHeaders(encoded);
         await requestStream.WriteAsync(frame, 0, frame.Length).WaitAsync(TimeSpan.FromSeconds(10));
-        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
     }
 
     private static async Task<Http3Response> ReadResponseAsync(QuicStream stream)
@@ -222,11 +249,15 @@ public sealed class Http3MinimalServerTests
             return options;
         }
 
-        internal async ValueTask<Http3Response> GetAsync(string path)
+        internal async ValueTask<Http3Response> GetAsync(string path, bool completeOnContentLength = false)
         {
             return await Http3Client.GetAsync(
                 CreateClientOptions(),
-                new Uri($"https://localhost:{Endpoint.Port}{path}")).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                new Uri($"https://localhost:{Endpoint.Port}{path}"),
+                new Http3ClientOptions
+                {
+                    CompleteResponseOnContentLength = completeOnContentLength,
+                }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         }
 
         public async ValueTask DisposeAsync()

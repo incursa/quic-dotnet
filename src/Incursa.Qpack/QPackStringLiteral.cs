@@ -33,20 +33,16 @@ internal static class QPackStringLiteral
         int huffmanBit = 1 << (prefixBitCount - 1);
         bool huffmanEncoded = (source[0] & huffmanBit) != 0;
         ulong length = QPackInteger.Decode(source, prefixBitCount - 1, out int lengthBytes);
-        if (huffmanEncoded)
-        {
-            throw new QPackException(
-                QPackErrorCode.DecompressionFailed,
-                "Huffman-encoded QPACK string literals are not implemented in this milestone.");
-        }
-
         if (length > (ulong)(source.Length - lengthBytes) || length > int.MaxValue)
         {
             throw new QPackException(QPackErrorCode.DecompressionFailed, "The QPACK string literal length is invalid.");
         }
 
         bytesConsumed = checked(lengthBytes + (int)length);
-        return HeaderTextEncoding.GetString(source.Slice(lengthBytes, (int)length));
+        ReadOnlySpan<byte> encodedString = source.Slice(lengthBytes, (int)length);
+        return huffmanEncoded
+            ? QPackHuffman.Decode(encodedString, QPackErrorCode.DecompressionFailed)
+            : HeaderTextEncoding.GetString(encodedString);
     }
 
     private static void ValidatePrefixBitCount(int prefixBitCount)

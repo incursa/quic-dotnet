@@ -60,7 +60,12 @@ DNS.1=localhost
 IP.1=127.0.0.1
 "@ | Set-Content -LiteralPath $configPath
 
-    & $openssl.Source req -x509 -newkey rsa:2048 -nodes -days 7 -keyout $keyPath -out $certPath -config $configPath *> (Join-Path $CertRoot "openssl.log")
+    & $openssl.Source ecparam -name prime256v1 -genkey -noout -out $keyPath *> (Join-Path $CertRoot "openssl.log")
+    if ($LASTEXITCODE -ne 0) {
+        throw "OpenSSL private key generation failed with exit code $LASTEXITCODE."
+    }
+
+    & $openssl.Source req -x509 -new -key $keyPath -days 7 -out $certPath -config $configPath *>> (Join-Path $CertRoot "openssl.log")
     if ($LASTEXITCODE -ne 0) {
         throw "OpenSSL certificate generation failed with exit code $LASTEXITCODE."
     }

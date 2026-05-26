@@ -16,6 +16,7 @@ public sealed class Http3Client : IAsyncDisposable
     private readonly string? userAgent;
     private readonly int readBufferSize;
     private readonly bool completeResponseOnContentLength;
+    private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private QuicStream? controlStream;
     private QuicStream? qpackEncoderStream;
     private QuicStream? qpackDecoderStream;
@@ -31,6 +32,11 @@ public sealed class Http3Client : IAsyncDisposable
             ? options.ReadBufferSize
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
         completeResponseOnContentLength = options.CompleteResponseOnContentLength;
+        diagnosticsSink = options.DiagnosticsSink;
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionStarted)
+        {
+            Role = "client",
+        });
     }
 
     /// <summary>
@@ -108,16 +114,55 @@ public sealed class Http3Client : IAsyncDisposable
             throw new ArgumentException("The HTTP/3 request URI must be absolute.", nameof(requestUri));
         }
 
-        await using QuicStream requestStream = await connection
-            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestStarted)
+            {
+                Role = "client",
+                Method = MethodGet,
+                Path = BuildPath(requestUri),
+            });
 
-        byte[] requestHeaders = QPackEncoder.EncodeFieldSection(BuildGetRequestHeaders(requestUri));
-        byte[] headersFrame = Http3FrameWriter.WriteHeaders(requestHeaders);
-        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length, cancellationToken).ConfigureAwait(false);
-        await requestStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+            await using QuicStream requestStream = await connection
+                .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
+                .ConfigureAwait(false);
 
-        return await ReadResponseAsync(requestStream, cancellationToken).ConfigureAwait(false);
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+            {
+                Role = "client",
+                StreamId = requestStream.Id,
+                StreamKind = Http3StreamKind.Request,
+            });
+
+            byte[] requestHeaders = QPackEncoder.EncodeFieldSection(BuildGetRequestHeaders(requestUri));
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(requestHeaders);
+            await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length, cancellationToken).ConfigureAwait(false);
+            EmitFrame(Http3DiagnosticKind.FrameSent, requestStream.Id, Http3FrameType.Headers, requestHeaders.Length);
+            await requestStream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+
+            Http3Response response = await ReadResponseAsync(requestStream, cancellationToken).ConfigureAwait(false);
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestCompleted)
+            {
+                Role = "client",
+                StreamId = requestStream.Id,
+                Method = MethodGet,
+                Path = BuildPath(requestUri),
+                StatusCode = response.StatusCode,
+                PayloadLength = response.Body.Length,
+            });
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamClosed)
+            {
+                Role = "client",
+                StreamId = requestStream.Id,
+                StreamKind = Http3StreamKind.Request,
+            });
+            return response;
+        }
+        catch (Exception ex)
+        {
+            EmitError(ex);
+            throw;
+        }
     }
 
     /// <summary>
@@ -145,6 +190,10 @@ public sealed class Http3Client : IAsyncDisposable
             await controlStream.DisposeAsync().ConfigureAwait(false);
         }
 
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionClosed)
+        {
+            Role = "client",
+        });
         await connection.DisposeAsync().ConfigureAwait(false);
     }
 
@@ -184,12 +233,50 @@ public sealed class Http3Client : IAsyncDisposable
         controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         byte[] initialControlStream = Http3SettingsWriter.WriteInitialControlStream(localSettings);
         await controlStream.WriteAsync(initialControlStream, 0, initialControlStream.Length, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "client",
+            StreamId = controlStream.Id,
+            StreamKind = Http3StreamKind.Control,
+        });
+        EmitFrame(Http3DiagnosticKind.FrameSent, controlStream.Id, Http3FrameType.Settings, initialControlStream.Length);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.SettingsSent)
+        {
+            Role = "client",
+            StreamId = controlStream.Id,
+        });
 
         qpackEncoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackEncoderStream, Http3StreamType.QPackEncoder, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "client",
+            StreamId = qpackEncoderStream.Id,
+            StreamKind = Http3StreamKind.QPackEncoder,
+        });
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
+        {
+            Role = "client",
+            StreamId = qpackEncoderStream.Id,
+            StreamKind = Http3StreamKind.QPackEncoder,
+            QPackInstruction = "stream_type",
+        });
 
         qpackDecoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
         await WriteStreamTypeAsync(qpackDecoderStream, Http3StreamType.QPackDecoder, cancellationToken).ConfigureAwait(false);
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+        {
+            Role = "client",
+            StreamId = qpackDecoderStream.Id,
+            StreamKind = Http3StreamKind.QPackDecoder,
+        });
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionSent)
+        {
+            Role = "client",
+            StreamId = qpackDecoderStream.Id,
+            StreamKind = Http3StreamKind.QPackDecoder,
+            QPackInstruction = "stream_type",
+        });
     }
 
     private IReadOnlyList<QPackFieldLine> BuildGetRequestHeaders(Uri requestUri)
@@ -226,7 +313,7 @@ public sealed class Http3Client : IAsyncDisposable
                 streamCompleted = true;
                 foreach (Http3Frame frame in frameReader.Complete())
                 {
-                    ProcessResponseFrame(frame, validator, body);
+                    ProcessResponseFrame(frame, validator, body, requestStream.Id);
                 }
 
                 break;
@@ -234,7 +321,7 @@ public sealed class Http3Client : IAsyncDisposable
 
             foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
             {
-                ProcessResponseFrame(frame, validator, body);
+                ProcessResponseFrame(frame, validator, body, requestStream.Id);
             }
 
             if (completeResponseOnContentLength &&
@@ -260,7 +347,15 @@ public sealed class Http3Client : IAsyncDisposable
         }
 
         int statusCode = validator.FinalStatusCode!.Value;
-        return new Http3Response(statusCode, headers, body.WrittenSpan.ToArray(), streamCompleted);
+        byte[] bodyBytes = body.WrittenSpan.ToArray();
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseCompleted)
+        {
+            Role = "client",
+            StreamId = requestStream.Id,
+            StatusCode = statusCode,
+            PayloadLength = bodyBytes.Length,
+        });
+        return new Http3Response(statusCode, headers, bodyBytes, streamCompleted);
     }
 
     private static bool TryCompleteOnContentLength(
@@ -301,11 +396,21 @@ public sealed class Http3Client : IAsyncDisposable
         return false;
     }
 
-    private static void ProcessResponseFrame(Http3Frame frame, Http3ResponseSequenceValidator validator, IBufferWriter<byte> body)
+    private void ProcessResponseFrame(
+        Http3Frame frame,
+        Http3ResponseSequenceValidator validator,
+        IBufferWriter<byte> body,
+        long streamId)
     {
+        EmitFrame(Http3DiagnosticKind.FrameReceived, streamId, frame);
         switch (frame)
         {
             case Http3HeadersFrame headersFrame:
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseStarted)
+                {
+                    Role = "client",
+                    StreamId = streamId,
+                });
                 validator.ReceiveHeaders(QPackDecoder.DecodeFieldSection(headersFrame.EncodedFieldSection));
                 break;
             case Http3DataFrame dataFrame:
@@ -317,6 +422,52 @@ public sealed class Http3Client : IAsyncDisposable
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The HTTP/3 response stream contained an invalid frame type.");
         }
+    }
+
+    private void EmitFrame(Http3DiagnosticKind kind, long streamId, Http3FrameType frameType, int payloadLength)
+    {
+        Emit(new Http3DiagnosticEvent(kind)
+        {
+            Role = "client",
+            StreamId = streamId,
+            FrameType = frameType,
+            RawFrameType = checked((ulong)frameType),
+            PayloadLength = payloadLength,
+        });
+    }
+
+    private void EmitFrame(Http3DiagnosticKind kind, long streamId, Http3Frame frame)
+    {
+        Emit(new Http3DiagnosticEvent(kind)
+        {
+            Role = "client",
+            StreamId = streamId,
+            FrameType = Enum.IsDefined(typeof(Http3FrameType), (long)frame.Type) ? (Http3FrameType)frame.Type : null,
+            RawFrameType = frame.Type,
+            PayloadLength = frame.Payload.Length,
+        });
+    }
+
+    private void EmitError(Exception exception)
+    {
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.Error)
+        {
+            Role = "client",
+            ErrorCode = exception is Http3Exception http3Exception
+                ? http3Exception.ErrorCode.ToString()
+                : exception.GetType().Name,
+            Message = exception.Message,
+        });
+    }
+
+    private void Emit(Http3DiagnosticEvent diagnosticEvent)
+    {
+        if (diagnosticsSink?.IsEnabled != true)
+        {
+            return;
+        }
+
+        diagnosticsSink.Emit(diagnosticEvent);
     }
 
     private static string BuildAuthority(Uri requestUri)

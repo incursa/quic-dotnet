@@ -40,3 +40,54 @@ pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 `
 The helper stages the Docker build context, builds `incursa-quic-interop-harness:local`,
 patches the local runner slot through `--replace`, preserves the runner JSON and
 Markdown reports, and stores logs under the selected artifact root.
+
+## Debug Artifacts
+
+The endpoint honors the standard interop environment variables used for protocol
+debugging:
+
+- `QLOGDIR`: when set, client and server HTTP/3 paths attach a qlog diagnostics
+  sink and write qlog snapshots under the supplied directory.
+- `SSLKEYLOGFILE`: when the active TLS provider supports secret export, TLS
+  traffic secrets are written to this file for Wireshark decryption. If the
+  provider cannot export secrets, the path remains absent rather than containing
+  synthetic key material.
+
+Expected artifact layout for an HTTP/3 runner attempt:
+
+```text
+<artifact-root>/
+  runner-report.json
+  runner-report.md
+  runner-logs/
+    <peer>_<role>/http3/
+      client|server stdout/stderr
+      qlog/
+      sslkeylog/
+      sim/
+        trace_node_left.pcap
+        trace_node_right.pcap
+```
+
+## Wireshark and qvis
+
+- Open runner `sim/*.pcap` files in Wireshark.
+- Point Wireshark TLS secrets to the retained `sslkeylog/keys.log` file when it
+  exists.
+- Use qvis to inspect retained `.qlog` files and correlate HTTP/3 events with
+  QUIC packet loss, stream resets, and connection-close timing.
+- Start with Incursa qlogs for local state-machine behavior and peer qlogs for
+  stream/frame disagreement.
+
+## HTTP/3 Failure Triage
+
+- Confirm the interop runner classified the cell as `http3` and not a delegated
+  non-HTTP/3 testcase.
+- Inspect stdout/stderr for endpoint exit code `1` failures before packet traces.
+- Check qlog event order: connection started, SETTINGS sent/received, QPACK
+  stream instructions, request HEADERS, response HEADERS, DATA, stream close,
+  connection close.
+- If the failure involves malformed frames or QPACK, map the close/error to the
+  RFC 9114 or RFC 9204 requirement before changing transport behavior.
+- If the pcap does not decrypt, verify `SSLKEYLOGFILE` exists and belongs to the
+  same run.

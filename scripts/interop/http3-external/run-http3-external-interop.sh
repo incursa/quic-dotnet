@@ -8,6 +8,8 @@ ARTIFACTS_ROOT="${ARTIFACTS_ROOT:-.artifacts/http3-external}"
 PLAN_ONLY=0
 SKIP_BUILD=0
 KEEP_SERVER=0
+PCAP_SOURCE="${PCAP_SOURCE:-}"
+PYTHON_BIN="${PYTHON_BIN:-}"
 
 TARGETS=(
   "incursa-client__incursa-server"
@@ -55,6 +57,10 @@ while [[ $# -gt 0 ]]; do
       KEEP_SERVER=1
       shift
       ;;
+    --pcap-source)
+      PCAP_SOURCE="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown argument: $1" >&2
       exit 2
@@ -62,23 +68,36 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -z "$PYTHON_BIN" ]]; then
+  if command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN="$(command -v python3)"
+  elif command -v python >/dev/null 2>&1; then
+    PYTHON_BIN="$(command -v python)"
+  else
+    echo "Python 3 is required for fixture generation and result parsing." >&2
+    exit 2
+  fi
+fi
+
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 RUN_ROOT="$REPO_ROOT/$ARTIFACTS_ROOT/$RUN_ID"
 WWW_ROOT="$RUN_ROOT/www"
 DOWNLOADS_ROOT="$RUN_ROOT/downloads"
 CERT_ROOT="$RUN_ROOT/certs"
 LOGS_ROOT="$RUN_ROOT/logs"
+SCENARIO_ROOT="$RUN_ROOT/scenarios"
+PCAP_ROOT="$RUN_ROOT/pcaps"
 RESULTS_PATH="$RUN_ROOT/results.jsonl"
 REPORT_PATH="$RUN_ROOT/report.md"
 
-mkdir -p "$WWW_ROOT" "$DOWNLOADS_ROOT" "$CERT_ROOT" "$LOGS_ROOT"
+mkdir -p "$WWW_ROOT" "$DOWNLOADS_ROOT" "$CERT_ROOT" "$LOGS_ROOT" "$SCENARIO_ROOT" "$PCAP_ROOT"
 printf "small http3 fixture" > "$WWW_ROOT/small.txt"
 : > "$WWW_ROOT/empty.txt"
-python - "$WWW_ROOT/large.bin" <<'PY'
+"$PYTHON_BIN" - "$WWW_ROOT/large.bin" <<'PY'
 import pathlib
 import sys
 path = pathlib.Path(sys.argv[1])
-path.write_bytes(bytes((i % 251 for i in range(2 * 1024 * 1024))))
+path.write_bytes(bytes((i % 251 for i in range(64 * 1024))))
 PY
 
 write_result() {
@@ -87,7 +106,7 @@ write_result() {
   local status="$3"
   local detail="$4"
   local artifact="${5:-}"
-  python - "$RESULTS_PATH" "$target" "$scenario" "$status" "$detail" "$artifact" <<'PY'
+  "$PYTHON_BIN" - "$RESULTS_PATH" "$target" "$scenario" "$status" "$detail" "$artifact" <<'PY'
 import json
 import pathlib
 import sys
@@ -104,6 +123,52 @@ row = {
 with path.open("a", encoding="utf-8") as handle:
     handle.write(json.dumps(row, separators=(",", ":")) + "\n")
 PY
+}
+
+write_summary() {
+  local artifact_dir="$1"
+  local target="$2"
+  local scenario="$3"
+  local status="$4"
+  local detail="$5"
+  local exit_code="$6"
+  local command_line="$7"
+  "$PYTHON_BIN" - "$artifact_dir/http3-summary.json" "$target" "$scenario" "$status" "$detail" "$exit_code" "$command_line" "$LOGS_ROOT" "$PCAP_ROOT" <<'PY'
+import json
+import pathlib
+import sys
+from datetime import datetime, timezone
+path = pathlib.Path(sys.argv[1])
+row = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "target": sys.argv[2],
+    "scenario": sys.argv[3],
+    "status": sys.argv[4],
+    "detail": sys.argv[5],
+    "exitCode": int(sys.argv[6]),
+    "command": sys.argv[7],
+    "artifacts": {
+        "stdout": "stdout.log",
+        "stderr": "stderr.log",
+        "command": "command.txt",
+        "qlog": f"{sys.argv[8]}/*/qlog",
+        "sslKeyLog": f"{sys.argv[8]}/*/sslkeylog/keys.log",
+        "pcaps": sys.argv[9],
+    },
+}
+path.write_text(json.dumps(row, indent=2), encoding="utf-8")
+PY
+}
+
+copy_pcaps() {
+  if [[ -z "$PCAP_SOURCE" ]]; then
+    return
+  fi
+  if [[ ! -d "$PCAP_SOURCE" ]]; then
+    echo "Packet capture source '$PCAP_SOURCE' does not exist." >&2
+    return
+  fi
+  find "$PCAP_SOURCE" -type f \( -name '*.pcap' -o -name '*.pcapng' -o -name '*.pcap.gz' -o -name '*.pcapng.gz' \) -exec cp -f {} "$PCAP_ROOT/" \;
 }
 
 generate_cert() {
@@ -131,8 +196,9 @@ DNS.4=quiche-server
 DNS.5=ngtcp2-server
 IP.1=127.0.0.1
 EOF
-  openssl req -x509 -newkey rsa:2048 -nodes -days 7 \
-    -keyout "$CERT_ROOT/priv.key" \
+  openssl ecparam -name prime256v1 -genkey -noout \
+    -out "$CERT_ROOT/priv.key"
+  openssl req -x509 -new -key "$CERT_ROOT/priv.key" -days 7 \
     -out "$CERT_ROOT/cert.pem" \
     -config "$CERT_ROOT/openssl.cnf"
 }
@@ -142,7 +208,13 @@ scenario_path() {
     get-small) printf "/small.txt" ;;
     get-empty) printf "/empty.txt" ;;
     get-large) printf "/large.bin" ;;
+    multiple-concurrent-get) printf "/small.txt" ;;
     not-found) printf "/missing.txt" ;;
+    many-headers) printf "/many-headers.txt" ;;
+    split-data) printf "/split-data.bin" ;;
+    request-cancellation) printf "/cancel.bin" ;;
+    goaway) printf "/goaway.txt" ;;
+    connection-close-in-flight) printf "/close-in-flight.bin" ;;
     *) printf "" ;;
   esac
 }
@@ -158,16 +230,25 @@ expected_status() {
 skip_reason() {
   local target="$1"
   local scenario="$2"
-  case "$scenario" in
-    get-small|get-empty|get-large|not-found) ;;
-    *)
-      printf "scenario requires a specialized peer behavior that is not wired in this first harness slice"
-      return
-      ;;
-  esac
-
   case "$target" in
-    incursa-client__incursa-server|curl__incursa-server) printf "" ;;
+    incursa-client__incursa-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|multiple-concurrent-get|not-found|many-headers|split-data|request-cancellation|goaway|connection-close-in-flight) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
+    curl__incursa-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
+    aioquic-client__incursa-server)
+      case "$scenario" in
+        get-small|get-empty|get-large|not-found|many-headers|split-data) printf "" ;;
+        *) printf "scenario requires a specialized peer behavior that is not wired in this first harness slice" ;;
+      esac
+      ;;
     *) printf "target is listed for matrix coverage but requires an external peer command image/server wiring" ;;
   esac
 }
@@ -179,10 +260,10 @@ export HTTP3_INTEROP_LOGS="$LOGS_ROOT"
 
 if [[ "$PLAN_ONLY" -eq 0 ]]; then
   generate_cert
-  up_args=(up --detach)
   if [[ "$SKIP_BUILD" -eq 0 ]]; then
-    up_args+=(--build)
+    docker compose --file "$COMPOSE_FILE" build incursa-server incursa-client aioquic
   fi
+  up_args=(up --detach)
   up_args+=(incursa-server)
   docker compose --file "$COMPOSE_FILE" "${up_args[@]}"
   sleep 3
@@ -190,6 +271,7 @@ fi
 
 cleanup() {
   if [[ "$PLAN_ONLY" -eq 0 && "$KEEP_SERVER" -eq 0 ]]; then
+    docker compose --file "$COMPOSE_FILE" logs --no-color incursa-server >"$RUN_ROOT/server.stdout.log" 2>"$RUN_ROOT/server.stderr.log" || true
     docker compose --file "$COMPOSE_FILE" down --remove-orphans >/dev/null || true
   fi
 }
@@ -206,41 +288,116 @@ for target in "${TARGETS[@]}"; do
     path="$(scenario_path "$scenario")"
     status="$(expected_status "$scenario")"
     safe_name="${target}-${scenario}"
-    artifact="$RUN_ROOT/${safe_name}.log"
+    artifact_dir="$SCENARIO_ROOT/$safe_name"
+    mkdir -p "$artifact_dir"
+    stdout_path="$artifact_dir/stdout.log"
+    stderr_path="$artifact_dir/stderr.log"
+    command_path="$artifact_dir/command.txt"
     download_path="/downloads/${safe_name}.out"
 
     if [[ "$PLAN_ONLY" -eq 1 ]]; then
-      write_result "$target" "$scenario" "skip" "plan-only" "$artifact"
+      printf "plan-only\n" > "$command_path"
+      : > "$stdout_path"
+      : > "$stderr_path"
+      write_summary "$artifact_dir" "$target" "$scenario" "skip" "plan-only" 0 "plan-only"
+      write_result "$target" "$scenario" "skip" "plan-only" "$artifact_dir"
       continue
     fi
 
     set +e
-    if [[ "$target" == "incursa-client__incursa-server" ]]; then
+    if [[ "$target" == "incursa-client__incursa-server" && "$scenario" == "multiple-concurrent-get" ]]; then
+      client_count=4
+      command_lines=()
+      pids=()
+      for index in $(seq 0 $((client_count - 1))); do
+        client_stdout="$artifact_dir/stdout.$index.log"
+        client_stderr="$artifact_dir/stderr.$index.log"
+        concurrent_download_path="/downloads/${safe_name}-${index}.out"
+        command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps incursa-client https://incursa-server:4433/small.txt $concurrent_download_path --expect-status 200"
+        command_lines+=("$command_line")
+        docker compose --file "$COMPOSE_FILE" run --rm --no-deps incursa-client \
+          "https://incursa-server:4433/small.txt" "$concurrent_download_path" --expect-status 200 >"$client_stdout" 2>"$client_stderr" &
+        pids+=("$!")
+      done
+      printf "%s\n" "${command_lines[@]}" > "$command_path"
+      exit_codes=()
+      exit_code=0
+      for pid in "${pids[@]}"; do
+        wait "$pid"
+        code=$?
+        exit_codes+=("$code")
+        if [[ "$code" -ne 0 && "$exit_code" -eq 0 ]]; then
+          exit_code="$code"
+        fi
+      done
+      for index in $(seq 0 $((client_count - 1))); do
+        {
+          printf "=== client %s stdout ===\n" "$index"
+          cat "$artifact_dir/stdout.$index.log" 2>/dev/null || true
+        } >>"$stdout_path"
+        {
+          printf "=== client %s stderr ===\n" "$index"
+          cat "$artifact_dir/stderr.$index.log" 2>/dev/null || true
+        } >>"$stderr_path"
+      done
+      command_line="$(printf "%s; " "${command_lines[@]}")"
+    elif [[ "$target" == "incursa-client__incursa-server" ]]; then
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps incursa-client https://incursa-server:4433${path} $download_path --expect-status $status"
+      printf "%s\n" "$command_line" > "$command_path"
+      extra_args=()
+      if [[ "$scenario" == "many-headers" ]]; then
+        extra_args+=(--expect-header-count-at-least 66)
+      fi
+      if [[ "$scenario" == "request-cancellation" ]]; then
+        extra_args+=(--cancel-after-ms 150)
+      fi
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps incursa-client \
-        "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" >"$artifact" 2>&1
+        "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     elif [[ "$target" == "curl__incursa-server" && "$status" == "200" ]]; then
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --insecure --silent --show-error --fail --output $download_path https://incursa-server:4433${path}"
+      printf "%s\n" "$command_line" > "$command_path"
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps curl \
         --http3-only --insecure --silent --show-error --fail \
-        --output "$download_path" "https://incursa-server:4433${path}" >"$artifact" 2>&1
+        --output "$download_path" "https://incursa-server:4433${path}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
-    else
+    elif [[ "$target" == "curl__incursa-server" ]]; then
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps curl --http3-only --insecure --silent --show-error --output $download_path --write-out %{http_code} https://incursa-server:4433${path}"
+      printf "%s\n" "$command_line" > "$command_path"
       docker compose --file "$COMPOSE_FILE" run --rm --no-deps curl \
         --http3-only --insecure --silent --show-error \
         --output "$download_path" --write-out "%{http_code}" \
-        "https://incursa-server:4433${path}" >"$artifact" 2>&1
+        "https://incursa-server:4433${path}" >"$stdout_path" 2>"$stderr_path"
+      exit_code=$?
+    elif [[ "$target" == "aioquic-client__incursa-server" ]]; then
+      command_line="docker compose --file \"$COMPOSE_FILE\" run --rm --no-deps aioquic /usr/local/bin/aioquic-http3-client https://incursa-server:4433${path} $download_path --expect-status $status"
+      printf "%s\n" "$command_line" > "$command_path"
+      extra_args=()
+      if [[ "$scenario" == "many-headers" ]]; then
+        extra_args+=(--expect-header-count-at-least 66)
+      fi
+      docker compose --file "$COMPOSE_FILE" run --rm --no-deps aioquic \
+        /usr/local/bin/aioquic-http3-client \
+        "https://incursa-server:4433${path}" "$download_path" --expect-status "$status" "${extra_args[@]}" >"$stdout_path" 2>"$stderr_path"
       exit_code=$?
     fi
     set -e
 
     if [[ "$exit_code" -eq 0 ]]; then
-      write_result "$target" "$scenario" "pass" "exit code 0" "$artifact"
+      write_summary "$artifact_dir" "$target" "$scenario" "pass" "exit code 0" "$exit_code" "$command_line"
+      write_result "$target" "$scenario" "pass" "exit code 0" "$artifact_dir"
+    elif [[ "$target" == "curl__incursa-server" ]] && grep -Eqi -- "--http3-only|HTTP3|HTTP/3|unsupported protocol" "$stderr_path"; then
+      detail="curl image does not support HTTP/3; set HTTP3_CURL_IMAGE to a curl build with --http3-only support"
+      write_summary "$artifact_dir" "$target" "$scenario" "skip" "$detail" "$exit_code" "$command_line"
+      write_result "$target" "$scenario" "skip" "$detail" "$artifact_dir"
     else
-      write_result "$target" "$scenario" "fail" "exit code $exit_code" "$artifact"
+      write_summary "$artifact_dir" "$target" "$scenario" "fail" "exit code $exit_code" "$exit_code" "$command_line"
+      write_result "$target" "$scenario" "fail" "exit code $exit_code" "$artifact_dir"
     fi
   done
 done
 
-python "$SCRIPT_DIR/parse-http3-results.py" "$RESULTS_PATH" --output "$REPORT_PATH"
+copy_pcaps
+"$PYTHON_BIN" "$SCRIPT_DIR/parse-http3-results.py" "$RESULTS_PATH" --output "$REPORT_PATH"
 echo "Results: $RESULTS_PATH"
 echo "Report:  $REPORT_PATH"

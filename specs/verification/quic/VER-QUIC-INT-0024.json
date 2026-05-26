@@ -6,7 +6,7 @@
   "title": "QUIC Interop Runner HTTP/3 Endpoint Adapter Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Build, focused unit tests, HTTP/3 loopback tests, requirement-home trace tests, local runner dry-run planning, and SpecTrace validation.",
+  "verification_method": "Build, focused unit tests, HTTP/3 loopback tests, HTTP/3 qlog diagnostics tests, requirement-home trace tests, local runner dry-run planning, and SpecTrace validation.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0024",
@@ -20,10 +20,11 @@
     "The interop harness Dockerfile and entrypoint remain the runner-facing endpoint image.",
     "The local quic-interop-runner checkout is available when running the dry-run or live runner command."
   ],
-  "scope": "Verify that the repository exposes a bounded `TESTCASE=http3` interop-runner endpoint path for both client and server roles without weakening unsupported-testcase behavior or non-HTTP/3 dispatch paths.",
+  "scope": "Verify that the repository exposes a bounded `TESTCASE=http3` interop-runner endpoint path for both client and server roles, emits optional HTTP/3 qlog diagnostics for interop debugging, and does not weaken unsupported-testcase behavior or non-HTTP/3 dispatch paths.",
   "procedure": [
     "Review `SPEC-QUIC-INT.json` and confirm `REQ-QUIC-INT-0030` links to this verification artifact.",
     "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~Http3QlogDiagnosticsTests\"`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~InteropHarnessPackagingTests|FullyQualifiedName~InteropHarnessRunnerTests|FullyQualifiedName~InteropHarnessPreflightPlannerTests|FullyQualifiedName~Http3MinimalClientTests|FullyQualifiedName~Http3MinimalServerTests\"`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0030\"`.",
     "Run `pwsh -NoProfile -File scripts/interop/Invoke-QuicInteropRunner.ps1 -DryRun -RunnerRoot C:\\src\\quic-interop\\quic-interop-runner -LocalRole both -ImplementationSlot quic-go -PeerImplementationSlots quic-go -TestCases http3 -RunnerTimeoutSeconds 240 -ArtifactsRoot .artifacts\\interop-runner\\http3-local`.",
@@ -31,11 +32,16 @@
   ],
   "expected_result": "The build is clean, focused tests pass, the dry-run maps `http3` to a supported/executed local runner cell using the interop harness image, and SpecTrace validation accepts the new requirement, architecture, work-item, and verification artifacts.",
   "evidence": [
+    "2026-05-25: `dotnet build Incursa.Quic.slnx -c Release --no-restore` passed with 0 warnings and 0 errors after adding HTTP/3 qlog diagnostics.",
+    "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~Http3QlogDiagnosticsTests|FullyQualifiedName~REQ_QUIC_INT_0030|FullyQualifiedName~REQ_QUIC_INT_0031\"` passed 6/6.",
+    "2026-05-25: `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core` validated 604 artifacts.",
     "src/Incursa.Quic.InteropHarness/InteropHarnessRunner.cs",
     "src/Incursa.Quic.InteropHarness/InteropHttp3FileHandler.cs",
     "src/Incursa.Quic.InteropHarness/InteropHarnessPreflightPlanner.cs",
     "src/Incursa.Quic.Http3/Http3Client.cs",
     "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/IHttp3DiagnosticsSink.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogHttp3DiagnosticsSink.cs",
     "scripts/interop/Invoke-QuicInteropRunner.ps1",
     "scripts/interop/README.md",
     "src/Incursa.Quic.InteropHarness/README.md",
@@ -46,6 +52,7 @@
     "tests/Incursa.Quic.Tests/InteropHarnessPreflightPlannerTests.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/Http3QlogDiagnosticsTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0030.cs"
   ],
   "status_summary": "Passed for the bounded adapter, packaging, documentation, and local dry-run planning surfaces. Live local quic-go/quic-go `http3` runner attempts currently build and launch the endpoint image, negotiate HTTP/3, and read the first server-side request, but still stall before client download completion; those failed attempts are preserved under `.artifacts/interop-runner/http3-local-live`. A later runtime slice must close that live runner stall before the cell is promoted as green interop evidence."

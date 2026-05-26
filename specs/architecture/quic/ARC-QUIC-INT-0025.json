@@ -26,10 +26,12 @@
     "samples/Incursa.Quic.Http3.Client",
     "samples/Incursa.Quic.Http3.FileServer"
   ],
-  "design_summary": "The harness uses Docker Compose as the target inventory and small runner scripts as the execution surface. The scripts create deterministic fixture files, generate short-lived TLS materials, start the Incursa HTTP/3 server, execute wired client/server cells, and emit one JSONL row per target/scenario. The parser converts JSONL into a Markdown matrix. Peer cells that require unpinned external command syntax or specialized scenario endpoints are reported as `skip` until wired, keeping evidence honest while still showing the full desired matrix. A skipped row is not support evidence.",
+  "design_summary": "The harness uses Docker Compose as the target inventory and small runner scripts as the execution surface. The scripts create deterministic fixture files, generate short-lived TLS materials, start the Incursa HTTP/3 server, execute wired client/server cells, and emit one JSONL row per target/scenario. The parser converts JSONL into a Markdown matrix. Each executed scenario keeps a command line, stdout, stderr, decoded HTTP/3 summary, service qlog directories, TLS key-log directories, and optionally copied packet captures. Peer cells that require unpinned external command syntax or specialized scenario endpoints are reported as `skip` until wired, keeping evidence honest while still showing the full desired matrix. A skipped row is not support evidence.",
   "edge_cases_and_constraints": [
     "The harness must work from Windows PowerShell and POSIX shells.",
     "The harness must keep generated artifacts under `.artifacts/http3-external` by default.",
+    "The harness must set `QLOGDIR` and `SSLKEYLOGFILE` for peer containers and tolerate peers that ignore either variable.",
+    "The harness must retain caller-supplied packet captures without requiring privileged capture containers by default.",
     "The checked-in Compose file must list optional peer images without requiring all of them to run for a plan or partial matrix.",
     "The report parser must preserve pass, fail, and skip states distinctly.",
     "The harness must not mutate upstream quic-interop-runner behavior."

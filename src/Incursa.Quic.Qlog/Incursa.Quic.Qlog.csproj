@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\Incursa.Quic.Http3\Incursa.Quic.Http3.csproj" />
     <PackageReference Include="Incursa.Qlog" />
     <PackageReference Include="Incursa.Qlog.Quic" />
   </ItemGroup>
