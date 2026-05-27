@@ -1,0 +1,695 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9461",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9461 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9461",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9461 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9461-0001",
+      "title": "DNS service SVCB name formation",
+      "statement": "SVCB record names (QNAMEs) for DNS services MUST be formed using Port Prefix Naming with the scheme \"dns\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 section 3 RFC9461-S3-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0002",
+      "title": "Authentication name format",
+      "statement": "The authentication name MUST be a DNS hostname or a literal IP address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 section 3 RFC9461-S3-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0003",
+      "title": "Default DNS port for unencrypted UDP/TCP",
+      "statement": "When connecting to the service using unencrypted DNS over UDP or TCP, clients MUST use port 53.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 3.1 RFC9461-S3P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0004",
+      "title": "Non-default port prefix naming",
+      "statement": "When the binding authority specifies a non-default port number, Port Prefix Naming MUST place the port number in an additional prefix on the name.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 3.1 RFC9461-S3P1-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0005",
+      "title": "Treat records as incompatible when ALPN is absent",
+      "statement": "If the \"alpn\" SvcParamKey is absent, the client MUST treat the SVCB record as \"incompatible\" unless some other recognized SvcParam indicates a supported protocol.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0006",
+      "title": "Require dohpath when HTTP versions are present",
+      "statement": "If the protocol set contains any HTTP versions (e.g., \"h2\", \"h3\"), the \"dohpath\" key MUST be present.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0007",
+      "title": "HTTPS record keys apply to the resulting HTTP connection",
+      "statement": "All SvcParamKeys specified for use with the HTTPS record MUST be permissible and apply to the resulting HTTP connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0008",
+      "title": "Separate protocols with different default ports when no port is specified",
+      "statement": "If the protocol set contains protocols with different default ports and no \"port\" key is specified, a client MUST contact the protocols separately on their respective default ports.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0009",
+      "title": "Use default ports when omitted",
+      "statement": "If omitted, the client SHALL use the default port number for each transport protocol (853 for DoT and DoQ, 443 for DoH).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0010",
+      "title": "Ignore records containing unsupported port keys",
+      "statement": "A client that does not respect the \"port\" key MUST ignore any SVCB record that contains this key.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S4-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0011",
+      "title": "Define dohpath as a single-valued UTF-8 relative URI template",
+      "statement": "The single-valued `dohpath` SvcParamKey MUST have a value that is a relative URI Template encoded in UTF-8.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed the value constraint to one testable clause and kept the source trace."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0012",
+      "title": "Require dohpath when ALPN indicates HTTP",
+      "statement": "If the `alpn` SvcParam indicates HTTP support, `dohpath` MUST be present.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed the wording while preserving the presence requirement and trace."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0013",
+      "title": "Require a dns variable in the URI Template",
+      "statement": "The URI Template MUST contain a `dns` variable.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0014",
+      "title": "Require valid :path expansion",
+      "statement": "The URI Template MUST expand to a valid and functional `:path` value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0015",
+      "title": "Send DoH requests to the HTTPS origin from the SVCB record",
+      "statement": "When using this SVCB record, the client MUST send DoH requests to the HTTPS origin identified by the `https` scheme, the authentication name, and the port from the `port` SvcParam if present.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed the request-origin wording and normalized the trace refs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0016",
+      "title": "Direct HTTP requests to the dohpath expansion resource",
+      "statement": "HTTP requests MUST be directed to the resource produced by expanding the `dohpath` URI Template.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed the target description to the expansion-produced resource."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0017",
+      "title": "Avoid querying HTTPS RRs when using dohpath",
+      "statement": "Clients SHOULD NOT query HTTPS RRs when using `dohpath`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Kept the negative query rule as a standalone advisory requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0018",
+      "title": "Use the SVCB SvcParams and address records for HTTPS connections",
+      "statement": "The SvcParams and address records associated with this SVCB record SHOULD be used for the HTTPS connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed the connection-use wording to the implementation-relevant core."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0019",
+      "title": "Publish an equivalent HTTPS RR",
+      "statement": "Service operators SHOULD publish an equivalent HTTPS RR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461-S5-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ]
+      },
+      "notes": [
+        "Removed the rationale clause and kept the publication recommendation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0020",
+      "title": "Avoid AliasMode records when resolution speed is high",
+      "statement": "Where resolution speed is a high priority, AliasMode records SHOULD be avoided.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461 section 6, source unit RFC9461-S6-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0021",
+      "title": "Follow the TargetName convention when resolution speed is high",
+      "statement": "Where resolution speed is a high priority, the SVCB TargetName SHOULD follow the convention described in Section 10.2 of [SVCB].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461 section 6, source unit RFC9461-S6-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0022",
+      "title": "Authenticate to the server's authentication name",
+      "statement": "During secure transport establishment, clients MUST authenticate the server to its authentication name.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 8.1 RFC9461-S8P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1"
+        ]
+      },
+      "notes": [
+        "Trimmed to the testable invariant while preserving the referenced source unit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0023",
+      "title": "Do not identify or authenticate during DNS queries",
+      "statement": "A client of this SVCB mapping MUST NOT identify or authenticate itself when performing DNS queries, except to servers that it specifically knows are not vulnerable to such attacks.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0024",
+      "title": "Avoid further queries after an invalid response",
+      "statement": "If an endpoint sends an invalid response to a DNS query, the client SHOULD NOT send more queries to that endpoint.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0025",
+      "title": "Optionally log invalid DNS query responses",
+      "statement": "If an endpoint sends an invalid response to a DNS query, the client MAY log this error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0026",
+      "title": "Prefer SVCB-reliant behavior after successful resolution",
+      "statement": "If use of this specification is optional, clients SHOULD switch to SVCB-reliant behavior when SVCB resolution succeeds.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461 section 8.2, source_unit_id RFC9461-S8P2-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.2"
+        ]
+      },
+      "notes": [
+        "Trimmed wording while preserving the same advisory invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0027",
+      "title": "Allow dependent specifications to adjust fallback behavior",
+      "statement": "Specifications making use of this mapping MAY adjust this fallback behavior to suit their requirements.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9461 section 8.2, source_unit_id RFC9461-S8P2-B2-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.2"
+        ]
+      },
+      "notes": [
+        "Kept as a narrow dependency-scoped allowance; trace cleaned to the reviewed source unit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0028",
+      "title": "Register the dohpath IANA entry",
+      "statement": "IANA MUST register number 7 as `dohpath` for the DNS-over-HTTPS path template.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 9 RFC9461-S9-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-9"
+        ]
+      },
+      "notes": [
+        "Change controller: IETF.",
+        "Reference: RFC 9461."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0029",
+      "title": "Register the _dns node name",
+      "statement": "IANA MUST register `_dns` as the node name for SVCB.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 9 RFC9461-S9-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-9"
+        ]
+      },
+      "notes": [
+        "Reference: RFC 9461."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0030",
+      "title": "Assign the RR type SVCB",
+      "statement": "The RR type MUST be `SVCB` (64).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0031",
+      "title": "Discourage cleartext fallback",
+      "statement": "Cleartext fallback SHOULD NOT be used.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0032",
+      "title": "Make port mandatory",
+      "statement": "The `port` key MUST be automatically mandatory.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0033",
+      "title": "Map the scheme to dns",
+      "statement": "The mapped scheme MUST be `dns`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0034",
+      "title": "Override HTTPS RR for DoH",
+      "statement": "The mapping MUST override the HTTPS RR for DoH.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0035",
+      "title": "Require alpn or equivalent",
+      "statement": "The mapping MUST require `alpn` or an equivalent key.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0036",
+      "title": "Set the name prefix by port",
+      "statement": "The name prefix MUST be `_dns` for port 53 and `_$PORT._dns` otherwise.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0037",
+      "title": "Support HTTPS SvcParamKeys",
+      "statement": "The mapping MUST support all HTTPS RR SvcParamKeys.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0038",
+      "title": "Use a per-transport default port",
+      "statement": "The default port MUST be per-transport.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ]
+      }
+    }
+  ]
+}

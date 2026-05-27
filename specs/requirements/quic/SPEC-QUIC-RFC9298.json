@@ -1,0 +1,2039 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9298",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9298 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9298",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9298 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9298-0001",
+      "title": "Interpret stream as connection without multiplexing",
+      "statement": "When the HTTP version in use does not support multiplexing streams, a reference to \"stream\" in this document MUST represent the entire connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S1P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-1.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0002",
+      "title": "Limit URI Template level",
+      "statement": "The URI Template MUST be a level 3 template or lower.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0003",
+      "title": "Require absolute URI Template form",
+      "statement": "The URI Template MUST be in absolute form.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0004",
+      "title": "Require non-empty URI Template components",
+      "statement": "The URI Template MUST include non-empty scheme, authority, and path components.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0005",
+      "title": "Start path with slash",
+      "statement": "The path component of the URI Template MUST start with a slash (\"/\").",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0006",
+      "title": "Keep template variables in path or query",
+      "statement": "All template variables MUST be within the path or query components of the URI.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0007",
+      "title": "Allow other template variables",
+      "statement": "The URI Template MAY contain other variables.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0008",
+      "title": "Require target_host and target_port",
+      "statement": "The URI Template MUST contain the variables \"target_host\" and \"target_port\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0009",
+      "title": "Disallow non-ASCII characters",
+      "statement": "The URI Template MUST NOT contain any non-ASCII Unicode characters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0010",
+      "title": "Restrict URI Template to printable ASCII",
+      "statement": "The URI Template MUST only contain characters in the ASCII range 0x21-0x7E inclusive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0011",
+      "title": "Disallow dot-prefix label expansion",
+      "statement": "The URI Template MUST NOT use Label Expansion with Dot-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0012",
+      "title": "Disallow fragment expansion",
+      "statement": "The URI Template MUST NOT use Fragment Expansion (\"#\" operator).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0013",
+      "title": "Disallow reserved expansion",
+      "statement": "The URI Template MUST NOT use Reserved Expansion (\"+\" operator).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0014",
+      "title": "Disallow semicolon-prefix path-style parameter expansion",
+      "statement": "The URI Template MUST NOT use Path-Style Parameter Expansion with Semicolon-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0015",
+      "title": "Disallow slash-prefix path segment expansion",
+      "statement": "The URI Template MUST NOT use Path Segment Expansion with Slash-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0016",
+      "title": "Allow general-purpose URI Template implementations",
+      "statement": "Clients MAY use a general-purpose URI Template implementation that lacks this specific validation.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0017",
+      "title": "Recommend validating URI Template requirements",
+      "statement": "Clients SHOULD validate the URI Template requirements above.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0018",
+      "title": "Reject invalid URI Template configuration",
+      "statement": "If a client detects that any of the requirements above are not met by a URI Template, the client MUST reject its configuration and abort the request without sending it to the UDP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B12-P12-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0019",
+      "title": "Allow constrained clients to use the default template",
+      "statement": "Clients constrained by such limitations MAY attempt to access UDP proxying capabilities using the default template `https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/udp/{target_host}/{target_port}/`.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B13-P13-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0020",
+      "title": "Recommend offering service at the default template location",
+      "statement": "UDP proxy deployments SHOULD offer service at this location if they need to interoperate with such clients.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 2 RFC9298-S2-B13-P13-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0021",
+      "title": "Use HTTP Datagrams in the Section 5 format",
+      "statement": "UDP tunnels MUST use HTTP Datagrams in the format defined in Section 5.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0022",
+      "title": "Use the Capsule Protocol for UDP tunnels",
+      "statement": "UDP tunnels MUST use the Capsule Protocol.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0023",
+      "title": "Initiate a UDP tunnel with the connect-udp token",
+      "statement": "A client MUST issue a request containing the `connect-udp` upgrade token to initiate a UDP tunnel associated with a single HTTP stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0024",
+      "title": "Disallow IPv6 scoped addressing zone identifiers",
+      "statement": "The `target_host` variable MUST NOT use IPv6 scoped addressing zone identifiers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0025",
+      "title": "Adhere to the Figure 2 format for target_host and target_port",
+      "statement": "The `target_host` and `target_port` variables MUST adhere to the format in Figure 2, using notation from ABNF.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0026",
+      "title": "Require a non-empty target_host",
+      "statement": "The `target_host` variable MUST NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0027",
+      "title": "Require a non-empty target_port",
+      "statement": "The `target_port` variable MUST NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0028",
+      "title": "Percent-encode IPv6 literal colons in target_host",
+      "statement": "If `target_host` contains an IPv6 literal, the colons (`:`) MUST be percent-encoded.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0029",
+      "title": "Constrain target_port to the valid port range",
+      "statement": "`target_port` MUST represent an integer between 1 and 65535 inclusive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3 RFC9298-S3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0030",
+      "title": "Target host syntax",
+      "statement": "The `target_host` value MUST be an IPv6address, an IPv4address, or a reg-name.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0031",
+      "title": "Target port syntax",
+      "statement": "The `target_port` value MUST be a port.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0032",
+      "title": "Expand URI template for request path and query",
+      "statement": "When sending its UDP proxying request, the client SHALL perform URI Template expansion to determine the path and query of its request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0033",
+      "title": "Convert HTTP Datagrams and UDP packets after a successful request",
+      "statement": "If the request is successful, the UDP proxy MUST convert received HTTP Datagrams into UDP packets and UDP packets into HTTP Datagrams until the tunnel is closed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0034",
+      "title": "Requests carry no message content",
+      "statement": "UDP proxying requests MUST NOT carry any message content.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0035",
+      "title": "Successful responses carry no message content",
+      "statement": "Successful UDP proxying responses MUST NOT carry any message content.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0036",
+      "title": "Reconstruct URI and open UDP tunnel",
+      "statement": "The UDP proxy MUST extract target_host and target_port from the URI reconstructed from the request headers, decode their percent-encoding, and open a UDP socket to the requested target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0037",
+      "title": "Respond before target packet",
+      "statement": "The UDP proxy MUST respond to the request without waiting for a packet from the target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0038",
+      "title": "Resolve DNS names before replying",
+      "statement": "If target_host is a DNS name, the UDP proxy MUST perform DNS resolution before replying to the HTTP request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B4-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0039",
+      "title": "Reject request on errors",
+      "statement": "If errors occur during this process, the UDP proxy MUST reject the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B4-P4-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0040",
+      "title": "Send Proxy-Status details on errors",
+      "statement": "If errors occur during this process, the UDP proxy SHOULD send details using an appropriate Proxy-Status header field [PROXY-STATUS].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B4-P4-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0041",
+      "title": "Validate source address on non-connected sockets",
+      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the IP source address on received packets to ensure they match the client's request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0042",
+      "title": "Validate source port on non-connected sockets",
+      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the UDP source port on received packets to ensure they match the client's request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0043",
+      "title": "Discard unmatched packets",
+      "statement": "Packets that do not match MUST be discarded by the UDP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0044",
+      "title": "Keep socket open while request stream is open",
+      "statement": "The UDP proxy MUST keep the socket open while the request stream is open.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S3P1-B6-P6-S1",
+          "RFC9298-S3P1-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0045",
+      "title": "Close request stream when socket is unusable",
+      "statement": "If a UDP proxy is notified by its operating system that its socket is no longer usable, it MUST close the request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.1 RFC9298-S3P1-B6-P6-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0046",
+      "title": "Allow closing sockets after inactivity",
+      "statement": "UDP proxies MAY choose to close sockets due to a period of inactivity.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.1 RFC9298-S3P1-B6-P6-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0047",
+      "title": "Close request stream when closing socket",
+      "statement": "When closing the socket, UDP proxies MUST close the request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.1 RFC9298-S3P1-B6-P6-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0048",
+      "title": "Avoid short inactivity timeouts",
+      "statement": "UDP proxies that close sockets after a period of inactivity SHOULD NOT use a period lower than two minutes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.1 RFC9298-S3P1-B6-P6-S6",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0049",
+      "title": "Abort request on non-success response",
+      "statement": "Any response other than a successful response indicates that the request has failed; thus, the client MUST abort the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.1 RFC9298-S3P1-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0050",
+      "title": "Avoid IP fragmentation for HTTP Datagrams",
+      "statement": "UDP proxies MUST NOT introduce fragmentation at the IP layer when forwarding HTTP Datagrams onto a UDP socket.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0051",
+      "title": "Silently drop oversized datagrams",
+      "statement": "UDP proxies MUST silently drop overly large datagrams when forwarding HTTP Datagrams onto a UDP socket.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0052",
+      "title": "Set IPv4 DF bit when possible",
+      "statement": "In IPv4, the Don't Fragment (DF) bit MUST be set, if possible, to prevent fragmentation on the path.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0053",
+      "title": "Use GET method",
+      "statement": "The method SHALL be \"GET\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.2 RFC9298-S3P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0054",
+      "title": "Include a single Host header field",
+      "statement": "The request MUST include a single Host header field containing the origin of the UDP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.2 RFC9298-S3P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0055",
+      "title": "Include Connection header field value Upgrade",
+      "statement": "The request MUST include a Connection header field with value \"Upgrade\", compared case-insensitively.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.2 RFC9298-S3P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0056",
+      "title": "Include Upgrade header field value connect-udp",
+      "statement": "The request MUST include an Upgrade header field with value \"connect-udp\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.2 RFC9298-S3P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0057",
+      "title": "Respond with an error to malformed requests",
+      "statement": "The recipient of such a malformed request MUST respond with an error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.2 RFC9298-S3P2-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0058",
+      "title": "Use 400 Bad Request for malformed requests",
+      "statement": "The recipient of such a malformed request SHOULD use the 400 (Bad Request) status code.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.2 RFC9298-S3P2-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0059",
+      "title": "Respond with 101 Switching Protocols",
+      "statement": "The HTTP status code on the response MUST be 101 (Switching Protocols).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.3 RFC9298-S3P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0060",
+      "title": "Include Connection header field value Upgrade in response",
+      "statement": "The response MUST include a Connection header field with value \"Upgrade\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.3 RFC9298-S3P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0061",
+      "title": "Include single Upgrade header field value connect-udp in response",
+      "statement": "The response MUST include a single Upgrade header field with value \"connect-udp\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.3 RFC9298-S3P3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0062",
+      "title": "Meet Capsule Protocol response requirements",
+      "statement": "The response SHALL meet the requirements of HTTP responses that start the Capsule Protocol.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 3.3 RFC9298-S3P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3",
+          "HTTP-DGRAM section 3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0063",
+      "title": "Abort failed proxying attempts",
+      "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and abort the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.3 RFC9298-S3P3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0064",
+      "title": "Send HTTP Setting",
+      "statement": "Servers MUST send an HTTP Setting as specified in [EXT-CONNECT2] and [EXT-CONNECT3].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Keeps the requirement scoped to the server-side setting and preserves the referenced extension specs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0065",
+      "title": "Set :method to CONNECT",
+      "statement": "The :method pseudo-header field MUST be \"CONNECT\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Directly testable header requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0066",
+      "title": "Set :protocol to connect-udp",
+      "statement": "The :protocol pseudo-header field MUST be \"connect-udp\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Directly testable header requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0067",
+      "title": "Set :authority to the UDP proxy authority",
+      "statement": "The :authority pseudo-header field MUST contain the authority of the UDP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Keeps the authority source explicit and testable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0068",
+      "title": "Require non-empty :path and :scheme",
+      "statement": "The :path and :scheme pseudo-header fields MUST NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Combines the paired non-empty constraint into one independently testable invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0069",
+      "title": "Populate :path and :scheme from the URI Template",
+      "statement": "Their values MUST contain the scheme and path from the URI Template after URI Template expansion completes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298 3.4 RFC9298-S3P4-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ]
+      },
+      "notes": [
+        "Trimmed for direct implementability while preserving the dependency on completed expansion."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0070",
+      "title": "Response status code in 2xx range",
+      "statement": "The HTTP status code on the response MUST be in the 2xx (Successful) range.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.5 RFC9298-S3P5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0071",
+      "title": "Meet Capsule Protocol response requirements",
+      "statement": "The response MUST meet the requirements of HTTP responses that start the Capsule Protocol; see Section 3.2 of [HTTP-DGRAM].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.5 RFC9298-S3P5-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5",
+          "[HTTP-DGRAM] 3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0072",
+      "title": "Abort failed proxying attempts",
+      "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and abort the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 3.5 RFC9298-S3P5-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0073",
+      "title": "Start HTTP Datagrams with Context ID",
+      "statement": "All HTTP Datagrams associated with UDP Proxying request streams MUST start with a Context ID field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0074",
+      "title": "Use 62-bit Context IDs",
+      "statement": "Context IDs MUST be 62-bit integers in the range 0 to 2^62-1.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0075",
+      "title": "Encode Context IDs as varints",
+      "statement": "Context IDs MUST be encoded as variable-length integers; see Section 16 of [QUIC].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4",
+          "[QUIC] 16"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0076",
+      "title": "Dynamically allocate non-zero Context IDs",
+      "statement": "Non-zero Context ID values MUST be dynamically allocated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0077",
+      "title": "Reserve Context ID 0 for UDP payloads",
+      "statement": "The Context ID value of 0 MUST be reserved for UDP payloads.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0078",
+      "title": "Allocate even-numbered Context IDs on the client",
+      "statement": "Non-zero even-numbered Context IDs MUST be client-allocated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0079",
+      "title": "Allocate odd-numbered Context IDs on the proxy",
+      "statement": "Odd-numbered Context IDs MUST be proxy-allocated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0080",
+      "title": "Scope Context IDs per HTTP request",
+      "statement": "The Context ID namespace MUST be tied to a given HTTP request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0081",
+      "title": "Allow any allocation order for Context IDs",
+      "statement": "Context IDs MAY be allocated in any order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S6",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0082",
+      "title": "Do not re-allocate Context IDs in a namespace",
+      "statement": "Context IDs MUST NOT be re-allocated within a given HTTP namespace.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S6",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0083",
+      "title": "Allow allocated Context IDs to be used by any client or UDP proxy",
+      "statement": "Once a Context ID has been allocated, any client or UDP proxy MAY use it regardless of which endpoint initially allocated it.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B2-P2-S8",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0084",
+      "title": "Permit future Context ID registration mechanisms",
+      "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9298-S4-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0085",
+      "title": "Context ID follows Quarter Stream ID in QUIC DATAGRAM frames",
+      "statement": "When HTTP Datagrams are encoded using QUIC DATAGRAM frames, the Context ID field MUST directly follow the Quarter Stream ID field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0086",
+      "title": "UDP Proxying HTTP Datagram Payload layout",
+      "statement": "The UDP Proxying HTTP Datagram Payload MUST contain a Context ID field followed by a UDP Proxying Payload field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0087",
+      "title": "Context ID is a variable-length integer",
+      "statement": "The Context ID field MUST be encoded as a variable-length integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0088",
+      "title": "Unknown Context ID handling",
+      "statement": "If an HTTP/3 Datagram carrying an unknown Context ID is received, the receiver SHALL either drop it silently or buffer it temporarily for about a round trip while awaiting registration of the corresponding Context ID.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0089",
+      "title": "UDP Proxying Payload may be empty",
+      "statement": "The UDP Proxying Payload field MAY be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B4-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0090",
+      "title": "UDP packets use Context ID zero",
+      "statement": "UDP packets MUST be encoded using HTTP Datagrams with Context ID zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0091",
+      "title": "Context ID zero carries unmodified UDP payload",
+      "statement": "When Context ID is zero, the UDP Proxying Payload field MUST contain the unmodified payload of a UDP packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0092",
+      "title": "Prohibit oversized HTTP Datagrams",
+      "statement": "Endpoints MUST NOT send HTTP Datagrams with a UDP Proxying Payload longer than 65527 bytes when Context ID is zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0093",
+      "title": "Abort streams for oversized received datagrams",
+      "statement": "An endpoint that receives an HTTP Datagram with Context ID zero and a UDP Proxying Payload longer than 65527 bytes MUST abort the corresponding stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B6-P6-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0094",
+      "title": "Discard oversized datagrams when MTU is known",
+      "statement": "A UDP proxy that knows its outgoing UDP packet length is limited by the underlying link MTU MUST discard incoming HTTP Datagrams with Context ID zero and a UDP Proxying Payload longer than that limit.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B6-P6-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0095",
+      "title": "Discard DATAGRAM capsules for discarded datagrams",
+      "statement": "If the discarded HTTP Datagram was transported by a DATAGRAM capsule, the receiver SHOULD discard the capsule without buffering its contents.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B6-P6-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0096",
+      "title": "Handle early HTTP Datagrams by drop or temporary buffering",
+      "statement": "If a UDP proxy receives an HTTP Datagram before the corresponding request, it SHALL either drop it silently or buffer it temporarily for about one round trip while awaiting the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0097",
+      "title": "Apply buffering limits to buffered datagrams",
+      "statement": "Receivers that buffer datagrams SHOULD apply buffering limits to reduce the risk of resource exhaustion.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0098",
+      "title": "Allow optimistic datagram sending before response",
+      "statement": "A client MAY send UDP packets in HTTP Datagrams before receiving the response to its UDP proxying request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 5 RFC9298-S5-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0099",
+      "title": "Avoid increasing UDP burstiness",
+      "statement": "UDP proxies SHOULD avoid increasing burstiness of UDP traffic.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0100",
+      "title": "Do not queue packets to increase batching",
+      "statement": "UDP proxies SHOULD NOT queue packets to increase batching.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0101",
+      "title": "Do not disable congestion control without certainty",
+      "statement": "The underlying HTTP connection MUST NOT disable congestion control unless it has an out-of-band way of knowing with absolute certainty that the inner traffic is congestion-controlled.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0102",
+      "title": "Do not signal ECN support when congestion control is disabled",
+      "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST NOT signal Explicit Congestion Notification (ECN) support on that connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0103",
+      "title": "Mark IP headers Not-ECT when congestion control is disabled",
+      "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST mark all IP headers with the Not-ECT codepoint.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0104",
+      "title": "Allow ECN feedback reporting when permitted",
+      "statement": "It MAY continue to report ECN feedback via QUIC ACK_ECN frames or the TCP ECE bit, as the peer may not have disabled congestion control.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0105",
+      "title": "Prefer HTTP/3 for UDP proxying",
+      "statement": "UDP proxying SHOULD be performed over HTTP/3 to allow leveraging the QUIC DATAGRAM frame.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6 RFC9298-S6-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0106",
+      "title": "Transmit UDP payloads in QUIC DATAGRAM frames",
+      "statement": "When using HTTP/3 with the QUIC Datagram extension, UDP payloads MUST be transmitted in QUIC DATAGRAM frames.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "Single testable invariant; no cross-unit merge needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0107",
+      "title": "Limit QUIC DATAGRAM payload size",
+      "statement": "QUIC DATAGRAM frames MUST carry UDP payloads only up to a length determined by the QUIC connection configuration and the Path MTU (PMTU).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "Single bounded behavior; no split needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0108",
+      "title": "Do not capsule oversized UDP payloads",
+      "statement": "If a UDP proxy is using QUIC DATAGRAM frames and it receives a UDP payload from the target that will not fit inside a QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM capsule.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "Advisory behavior is already isolated to one invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0109",
+      "title": "Drop UDP payload in this scenario",
+      "statement": "The UDP proxy SHOULD drop the UDP payload.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.1 RFC9298-S6P1-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "Split from a compound sentence that also requires ICMP generation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0110",
+      "title": "Send ICMP Packet Too Big to target in this scenario",
+      "statement": "The UDP proxy SHOULD send an ICMP Packet Too Big message to the target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.1 RFC9298-S6P1-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ]
+      },
+      "notes": [
+        "Split from a compound sentence that also requires dropping the payload."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0111",
+      "title": "No inner IP header in UDP proxying tunnels",
+      "statement": "UDP proxying tunnels MUST NOT include an inner IP header.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.2 RFC9298-S6P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0112",
+      "title": "Clients cannot control ECN codepoints on proxied UDP packets",
+      "statement": "The UDP proxy MUST retain control of the ECN codepoints on UDP packets it sends to the target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.2 RFC9298-S6P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0113",
+      "title": "UDP proxies cannot communicate per-packet markings to clients",
+      "statement": "UDP proxies MUST NOT communicate per-packet markings from the target to the UDP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.2 RFC9298-S6P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0114",
+      "title": "Ignore ECN bits received from target",
+      "statement": "A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from the target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.2 RFC9298-S6P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0115",
+      "title": "Set ECN bits to Not-ECT on outbound UDP packets",
+      "statement": "A UDP proxy MUST set the ECN bits to Not-ECT on UDP packets it sends to the target.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 6.2 RFC9298-S6P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0116",
+      "title": "Disallow UDP proxying to vulnerable targets",
+      "statement": "UDP proxies MUST disallow UDP proxying requests to vulnerable targets, such as the proxy's own addresses and localhost, link-local, multicast, and broadcast addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 7 RFC9298-S7-B2-P2-S5",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9298-0117",
+      "title": "Use destination_ip_prohibited when rejecting disallowed requests",
+      "statement": "UDP proxies MAY use the destination_ip_prohibited Proxy Error Type from Section 2.3.5 of PROXY-STATUS when rejecting such requests.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9298 Section 7 RFC9298-S7-B2-P2-S6",
+          "Section 2.3.5 of PROXY-STATUS",
+          "https://www.rfc-editor.org/rfc/rfc9298.html#section-7"
+        ]
+      }
+    }
+  ]
+}

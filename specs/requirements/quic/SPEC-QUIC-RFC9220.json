@@ -1,0 +1,172 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9220",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9220 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9220",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9220 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9220-0001",
+      "title": "Use RFC8441 semantics for Extended CONNECT pseudo-headers and setting",
+      "statement": "The semantics of the pseudo-header fields and setting MUST be identical to those in HTTP/2 as defined in RFC8441.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Trimmed to the testable invariant while preserving the RFC8441 dependency."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0002",
+      "title": "Set SETTINGS_ENABLE_CONNECT_PROTOCOL to 0x08",
+      "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL value MUST be 0x08 (decimal 8).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Kept the exact wire value and removed explanatory padding."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0003",
+      "title": "Respond to unsupported Extended CONNECT protocols",
+      "statement": "If a server advertises support for Extended CONNECT but receives an Extended CONNECT request with an unknown or unsupported \":protocol\" value, the server SHOULD respond with a 501 (Not Implemented) status code.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Preserved the non-normative status code recommendation as written."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0004",
+      "title": "Provide optional problem-details information",
+      "statement": "A server MAY provide more information via a \"problem details\" response.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Kept the optional extension as a single permissive requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0005",
+      "title": "Represent orderly closures with FIN",
+      "statement": "Orderly TCP-level closures MUST be represented as a FIN bit on the stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Kept the closure encoding rule as a standalone invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0006",
+      "title": "Represent RST exceptions with request-cancelled errors",
+      "statement": "RST exceptions MUST be represented with a stream error of type H3_REQUEST_CANCELLED.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9220-S3-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ]
+      },
+      "notes": [
+        "Kept the required error mapping and removed extra citation detail."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0007",
+      "title": "Assign SETTINGS_ENABLE_CONNECT_PROTOCOL value 0x08",
+      "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL setting MUST have value 0x08.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 5 RFC9220-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-5"
+        ]
+      },
+      "notes": [
+        "Registry assignment is independently testable from the default value."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0008",
+      "title": "Set the default for SETTINGS_ENABLE_CONNECT_PROTOCOL to 0",
+      "statement": "The SETTINGS_ENABLE_CONNECT_PROTOCOL setting MUST have default value 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 5 RFC9220-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-5"
+        ]
+      },
+      "notes": [
+        "Default selection is independently testable from the registry value."
+      ]
+    }
+  ]
+}

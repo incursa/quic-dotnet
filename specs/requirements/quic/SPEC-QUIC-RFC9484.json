@@ -1,0 +1,3709 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9484",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9484 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9484",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9484 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9484-0001",
+      "title": "Do not convey IP header fields",
+      "statement": "These mechanisms MUST NOT convey fields of the IP header.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 1 RFC9484-S1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0002",
+      "title": "Do not tunnel other IP protocols",
+      "statement": "These mechanisms MUST NOT tunnel other IP protocols.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 1 RFC9484-S1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0003",
+      "title": "Use QUIC variable-length integer encoding",
+      "statement": "This specification MUST use the variable-length integer encoding from Section 16 of [QUIC].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 2 RFC9484-S2-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0004",
+      "title": "Allow non-minimal variable-length integer encodings",
+      "statement": "Variable-length integer values MAY be encoded in more than the minimum number of bytes necessary.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 2 RFC9484-S2-B3-P3-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0005",
+      "title": "Interpret stream as connection without multiplexing",
+      "statement": "When the HTTP version in use does not support multiplexing streams (such as HTTP/1.1), any reference to \"stream\" in this document MUST represent the entire connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 2 RFC9484-S2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0006",
+      "title": "Limit URI Template level to 3 or lower",
+      "statement": "The URI Template MUST be a level 3 template or lower.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 3 RFC9484-S3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0007",
+      "title": "Require absolute-form URI Template",
+      "statement": "The URI Template MUST be in absolute form.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 3 RFC9484-S3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0008",
+      "title": "Require non-empty URI Template components",
+      "statement": "The URI Template MUST include non-empty scheme, authority, and path components.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 3 RFC9484-S3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0009",
+      "title": "Require a leading slash in the path component",
+      "statement": "The path component of a URI Template MUST start with a slash \"/\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0010",
+      "title": "Restrict template variables to the path or query components",
+      "statement": "All template variables MUST be within the path or query components of the URI.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0011",
+      "title": "Allow other URI Template variables",
+      "statement": "The URI Template MAY contain other variables.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0012",
+      "title": "Allow target and ipproto variables",
+      "statement": "The URI Template MAY contain the variables \"target\" and \"ipproto\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0013",
+      "title": "Require non-empty target and ipproto values",
+      "statement": "If the \"target\" or \"ipproto\" variables are included, their values MUST NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B10-P10-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0014",
+      "title": "Restrict URI Template characters to printable ASCII",
+      "statement": "The URI Template MUST contain only ASCII characters in the range 0x21-0x7E inclusive, with percent-encoding allowed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0015",
+      "title": "Forbid dot-prefix label expansion",
+      "statement": "The URI Template MUST NOT use Label Expansion with Dot-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0016",
+      "title": "Forbid fragment expansion",
+      "statement": "The URI Template MUST NOT use Fragment Expansion (\"#\" operator).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0017",
+      "title": "Forbid reserved expansion",
+      "statement": "The URI Template MUST NOT use Reserved Expansion (\"+\" operator).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0018",
+      "title": "Forbid semicolon-prefix path-style parameter expansion",
+      "statement": "The URI Template MUST NOT use Path-Style Parameter Expansion with Semicolon-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0019",
+      "title": "Forbid slash-prefix path segment expansion",
+      "statement": "The URI Template MUST NOT use Path Segment Expansion with Slash-Prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0020",
+      "title": "Allow general-purpose URI Template implementations",
+      "statement": "Clients MAY use a general-purpose URI Template implementation that lacks this specific validation.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0021",
+      "title": "Recommend validating the requirements above",
+      "statement": "Clients SHOULD validate the requirements above.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0022",
+      "title": "Reject invalid URI Template configurations",
+      "statement": "If a client detects that any of the requirements above are not met by a URI Template, the client MUST reject its configuration and abort the request without sending it to the IP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0023",
+      "title": "Allow use of the default template for limited clients",
+      "statement": "Clients with such limitations MAY attempt to access IP proxying capabilities using the default template, defined as \"https://$PROXY_HOST:$PROXY_PORT/.well-known/masque/ip/{target}/{ipproto}/\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B14-P14-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0024",
+      "title": "Recommend service at the default template location",
+      "statement": "IP proxy deployments SHOULD offer service at this location if they need to interoperate with such clients.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 3 RFC9484-S3-B14-P14-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0025",
+      "title": "Initiate IP tunnel requests with connect-ip",
+      "statement": "A client MUST issue a request containing the `connect-ip` upgrade token to initiate an IP tunnel associated with a single HTTP stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4 RFC9484-S4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0026",
+      "title": "Expand URI templates for IP proxying requests",
+      "statement": "When sending its IP proxying request, the client SHALL perform URI Template expansion to determine the path and query of its request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4 RFC9484-S4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0027",
+      "title": "Protect IP proxying over HTTP with encryption",
+      "statement": "IP proxying over HTTP MUST be operated over TLS or QUIC encryption, or another equivalent encryption protocol, to provide confidentiality, integrity, and authentication.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4 RFC9484-S4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0028",
+      "title": "Forward requests to the configured HTTP server",
+      "statement": "If the recipient is configured to use another HTTP server, it MUST forward the request to that server.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0029",
+      "title": "Act as an IP proxy otherwise",
+      "statement": "Otherwise, the recipient MUST act as an IP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0030",
+      "title": "Allow rejection of IP proxying requests",
+      "statement": "An IP proxy MAY reject the IP proxying request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0031",
+      "title": "Extract tunnel variables from the reconstructed URI",
+      "statement": "An IP proxy MUST extract the optional `target` and `ipproto` variables from the reconstructed URI, decode their percent-encoding, and establish an IP tunnel.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0032",
+      "title": "Treat invalid tunnel variables as malformed",
+      "statement": "If the decoded `target` or `ipproto` variables fail validation, the IP proxy MUST treat the request as malformed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0033",
+      "title": "Validate decoded tunnel variables",
+      "statement": "IP proxies MUST validate the decoded `target` and `ipproto` variables against Section 4.6.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0034",
+      "title": "Resolve DNS names before replying",
+      "statement": "If the `target` variable is a DNS name, the IP proxy MUST resolve it to IPv4 and/or IPv6 addresses via A and/or AAAA records before replying to the HTTP request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0035",
+      "title": "Reject requests when processing errors occur",
+      "statement": "If errors occur during this process, the IP proxy MUST reject the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0036",
+      "title": "Report proxy errors with Proxy-Status details",
+      "statement": "If errors occur during this process, the IP proxy SHOULD send details using an appropriate Proxy-Status header field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0037",
+      "title": "Tie tunnel lifetime to request stream",
+      "statement": "The lifetime of the IP forwarding tunnel MUST be tied to the IP proxying request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0038",
+      "title": "Maintain tunnel assignments while the request stream is open",
+      "statement": "The IP proxy MUST maintain all IP address and route assignments associated with the IP forwarding tunnel while the request stream is open.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0039",
+      "title": "Allow tunnel teardown for inactivity",
+      "statement": "IP proxies MAY tear down the tunnel due to inactivity.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0040",
+      "title": "Close the request stream when tearing down the tunnel",
+      "statement": "If an IP proxy tears down the tunnel due to inactivity, it MUST close the request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0041",
+      "title": "Abort the request on a non-successful proxying response",
+      "statement": "If the client receives any response other than a successful IP proxying response, the client MUST abort the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.1 RFC9484-S4P1-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0042",
+      "title": "Use GET method",
+      "statement": "The method SHALL be \"GET\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0043",
+      "title": "Include the Host header field",
+      "statement": "The request SHALL include a single Host header field containing the host and optional port of the IP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0044",
+      "title": "Include a Connection header with Upgrade",
+      "statement": "The request SHALL include a Connection header field with value \"Upgrade\"; matching is case-insensitive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0045",
+      "title": "Include the Upgrade header field",
+      "statement": "The request SHALL include an Upgrade header field with value \"connect-ip\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0046",
+      "title": "Respond to malformed requests with an error",
+      "statement": "The recipient of such a malformed request MUST respond with an error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0047",
+      "title": "Use 400 for malformed requests",
+      "statement": "The recipient of such a malformed request SHOULD use the 400 (Bad Request) status code.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.2 RFC9484-S4P2-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0048",
+      "title": "HTTP response status code is 101",
+      "statement": "The HTTP status code on the response SHALL be 101 (Switching Protocols).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.3 RFC9484-S4P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0049",
+      "title": "Connection header value is Upgrade",
+      "statement": "The response SHALL include a Connection header field with value \"Upgrade\"; the value comparison is case-insensitive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.3 RFC9484-S4P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0050",
+      "title": "Upgrade header value is connect-ip",
+      "statement": "The response SHALL include a single Upgrade header field with value \"connect-ip\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.3 RFC9484-S4P3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0051",
+      "title": "Response meets Capsule Protocol start requirements",
+      "statement": "The response SHALL meet the requirements of HTTP responses that start the Capsule Protocol; see Section 3.2 of [HTTP-DGRAM].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.3 RFC9484-S4P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0052",
+      "title": "Failed proxying attempt closes connection",
+      "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and close the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.3 RFC9484-S4P3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0053",
+      "title": "HTTP/2 and HTTP/3 IP proxying uses Extended CONNECT",
+      "statement": "When using HTTP/2 or HTTP/3, IP proxying requests MUST use HTTP Extended CONNECT.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      },
+      "notes": [
+        "Normalized the descriptive RFC wording into a testable requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0054",
+      "title": "Servers send an HTTP Setting",
+      "statement": "Servers MUST send an HTTP Setting, as specified in [EXT-CONNECT2] and [EXT-CONNECT3].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0055",
+      "title": "Method pseudo-header is CONNECT",
+      "statement": "The :method pseudo-header field SHALL be \"CONNECT\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0056",
+      "title": "Protocol pseudo-header is connect-ip",
+      "statement": "The :protocol pseudo-header field SHALL be \"connect-ip\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0057",
+      "title": "Authority pseudo-header contains proxy authority",
+      "statement": "The :authority pseudo-header field SHALL contain the authority of the IP proxy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0058",
+      "title": "Path pseudo-header is not empty",
+      "statement": "The :path pseudo-header field SHALL NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0059",
+      "title": "Scheme pseudo-header is not empty",
+      "statement": "The :scheme pseudo-header field SHALL NOT be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.4 RFC9484-S4P4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0060",
+      "title": "URI Template values contain scheme and path",
+      "statement": "The values MUST contain the scheme and path from the URI Template after the URI Template expansion process has been completed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.4 RFC9484-S4P4-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0061",
+      "title": "Nonconforming IP proxying request is malformed",
+      "statement": "An IP proxying request that does not conform to these restrictions MUST be treated as malformed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.4 RFC9484-S4P4-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0062",
+      "title": "Response status code is 2xx",
+      "statement": "The HTTP status code on the response MUST be in the 2xx (Successful) range.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.5 RFC9484-S4P5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0063",
+      "title": "Response meets Capsule Protocol HTTP requirements",
+      "statement": "The response MUST meet the requirements of HTTP responses that start the Capsule Protocol.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.5 RFC9484-S4P5-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0064",
+      "title": "Failed proxying attempts are aborted",
+      "statement": "If any of these requirements are not met, the client MUST treat this proxying attempt as failed and abort the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.5 RFC9484-S4P5-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0065",
+      "title": "IP prefix targets support only one IP version",
+      "statement": "If `target` is an IP prefix, the request MUST use only a single IP version.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B3-P3-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0066",
+      "title": "IP proxy sends scoped route advertisement",
+      "statement": "The IP proxy SHOULD send a ROUTE_ADVERTISEMENT capsule that includes routes for all addresses that were resolved for the requested hostname, that are accessible to the IP proxy, and belong to an address family for which the IP proxy also sends an Assigned Address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B3-P3-S6",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0067",
+      "title": "Scope proxying to a specific IP protocol",
+      "statement": "If present, `ipproto` MUST specify a specific IP protocol for this request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0068",
+      "title": "Wildcard or absent ipproto means any protocol",
+      "statement": "If the value is `*` or the variable is omitted, the client MUST request any IP protocol.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0069",
+      "title": "Define ipproto as allowable next-header value",
+      "statement": "The `ipproto` variable MUST indicate an allowable next-header value carried in the outermost IP headers of HTTP Datagrams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0070",
+      "title": "Always allow ICMP traffic",
+      "statement": "ICMP traffic MUST always be allowed, regardless of the `ipproto` value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0071",
+      "title": "Conform target and ipproto to Figure 6 format",
+      "statement": "Using the terms IPv6address, IPv4address, and reg-name from [URI], the `target` and `ipproto` variables MUST conform to the Figure 6 format using [ABNF] notation.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0072",
+      "title": "Percent-encode colons in IPv6 targets",
+      "statement": "If `target` contains an IPv6 literal or prefix, its colons (\":\") MUST be percent-encoded.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0073",
+      "title": "Precede target prefix lengths with %2F",
+      "statement": "If present, the IP prefix length in `target` SHALL be preceded by a percent-encoded slash (\"/\"): \"%2F\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0074",
+      "title": "Constrain target prefix length to address bits",
+      "statement": "The IP prefix length MUST represent a decimal integer between 0 and the length of the IP address in bits, inclusive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0075",
+      "title": "Zero uncovered lower bits in scoped targets",
+      "statement": "If `target` contains an IP prefix and the prefix length is strictly less than the length of the IP address in bits, the lower bits of the IP address that are not covered by the prefix length MUST all be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0076",
+      "title": "Constrain ipproto to decimal 0-255 or wildcard",
+      "statement": "`ipproto` MUST represent a decimal integer between 0 and 255 inclusive or the wildcard value `*`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0077",
+      "title": "Define ipproto grammar alternatives",
+      "statement": "The `ipproto` grammar MUST be `1*3DIGIT / \"*\"`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0078",
+      "title": "Define target grammar alternatives",
+      "statement": "The `target` grammar MUST be `IPv6prefix / IPv4prefix / reg-name / \"*\"`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0079",
+      "title": "Optionally perform access control using client scope",
+      "statement": "IP proxies MAY perform access control using the scoping information provided by the client, and if the client is not authorized to access any of the destinations included in the scope, the proxy can immediately reject the request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.6 RFC9484-S4P6-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0080",
+      "title": "Allow any number of new capsules",
+      "statement": "Both endpoints MAY send any number of these new capsules.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7 RFC9484-S4P7-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0081",
+      "title": "Contain the full assigned prefix list",
+      "statement": "The ADDRESS_ASSIGN Capsule MUST contain the full list of IP prefixes currently assigned to the receiver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0082",
+      "title": "Define ADDRESS_ASSIGN capsule wire format",
+      "statement": "The ADDRESS_ASSIGN Capsule MUST have Type 0x01, Length, and Assigned Address fields in that order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0083",
+      "title": "Contain zero or more Assigned Addresses",
+      "statement": "The ADDRESS_ASSIGN Capsule MUST contain a sequence of zero or more Assigned Addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0084",
+      "title": "Define Assigned Address field layout and widths",
+      "statement": "The Assigned Address structure MUST contain Request ID, IP Version (8 bits), IP Address (32 to 128 bits), and IP Prefix Length (8 bits) fields in that order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0085",
+      "title": "Encode Request ID as variable-length integer",
+      "statement": "Request ID MUST be encoded as a variable-length integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0086",
+      "title": "Set Request ID from Address Request context",
+      "statement": "Request ID MUST contain the corresponding request field value when this address assignment is in response to an Address Request, and be zero otherwise.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B8-P8-S2",
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B8-P8-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0087",
+      "title": "IP Version field encoding",
+      "statement": "The IP Version field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0088",
+      "title": "IP Version field meaning",
+      "statement": "The IP Version field MUST identify the IP version of this address assignment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0089",
+      "title": "Restrict IP Version to 4 or 6",
+      "statement": "The IP Version field MUST be either 4 or 6.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B9-P9-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0090",
+      "title": "Set IP Address length by IP Version",
+      "statement": "The IP Address field MUST be 32 bits when the IP Version field has value 4 and 128 bits when it has value 6.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B10-P10-S2",
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B10-P10-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0091",
+      "title": "IP Prefix Length field encoding",
+      "statement": "The IP Prefix Length field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0092",
+      "title": "IP Prefix Length field meaning",
+      "statement": "The IP Prefix Length field MUST be the number of bits in the IP address used to define the prefix being assigned.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0093",
+      "title": "IP Prefix Length upper bound",
+      "statement": "The IP Prefix Length field MUST be less than or equal to the length of the IP Address field in bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0094",
+      "title": "Single-source-address permission at full-length prefix",
+      "statement": "If the prefix length is equal to the length of the IP address, the receiver of this capsule MAY send packets from a single source address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0095",
+      "title": "Prefix-scoped source-address permission",
+      "statement": "If the prefix length is less than the length of the IP address, the receiver of this capsule MAY send packets from any source address that falls within the prefix.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0096",
+      "title": "Zero unused IP Address bits",
+      "statement": "If the prefix length is strictly less than the length of the IP address in bits, the lower bits of the IP Address field that are not covered by the prefix length MUST all be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B11-P11-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0097",
+      "title": "Malformed capsule field handling",
+      "statement": "If any of the capsule fields are malformed upon reception, the receiver of the capsule MUST follow the error-handling procedure defined in Section 3.3 of [HTTP-DGRAM].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1",
+          "HTTP-DGRAM Section 3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0098",
+      "title": "Omitted address indicates removal",
+      "statement": "If an ADDRESS_ASSIGN capsule does not contain an address that was previously transmitted in another ADDRESS_ASSIGN capsule, the receiver of the capsule MUST treat that address as removed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0099",
+      "title": "Empty ADDRESS_ASSIGN capsule removes all addresses",
+      "statement": "If an ADDRESS_ASSIGN capsule is empty, the receiver of the capsule MUST treat all addresses as removed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 4.7.1 RFC9484-S4P7P1-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0100",
+      "title": "ADDRESS_REQUEST from an address-assignment expectation",
+      "statement": "An endpoint that is expecting an address assignment MUST send an ADDRESS_REQUEST capsule, unless it does not need any address assignment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B14-P14-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      },
+      "notes": [
+        "Sentence 4 was folded into the normalized requirement statement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0101",
+      "title": "Unprompted ADDRESS_ASSIGN capsules",
+      "statement": "Endpoints MAY send ADDRESS_ASSIGN capsules unprompted.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.1 RFC9484-S4P7P1-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0102",
+      "title": "ADDRESS_REQUEST capsule length field",
+      "statement": "The Length field MUST follow the Type field and be encoded as a variable-length integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0103",
+      "title": "ADDRESS_REQUEST capsule type",
+      "statement": "The ADDRESS_REQUEST Capsule Type field MUST be 0x02 and appear first.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0104",
+      "title": "ADDRESS_REQUEST requested address field",
+      "statement": "The Requested Address field MUST follow the Length field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0105",
+      "title": "ADDRESS_REQUEST capsule contains one or more Requested Addresses",
+      "statement": "The ADDRESS_REQUEST capsule MUST contain one or more Requested Address entries.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0106",
+      "title": "Requested Address IP Address field",
+      "statement": "The IP Address field MUST appear third and be encoded as 32 to 128 bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0107",
+      "title": "Requested Address IP Prefix Length field",
+      "statement": "The IP Prefix Length field MUST appear fourth and be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0108",
+      "title": "Requested Address IP Version field",
+      "statement": "The IP Version field MUST appear second and be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0109",
+      "title": "Requested Address request ID field",
+      "statement": "The Request ID field MUST appear first and be encoded as a variable-length integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0110",
+      "title": "Encode Request ID as a variable-length integer",
+      "statement": "The Request ID field MUST be encoded as a variable-length integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0111",
+      "title": "Request ID reuse prohibition",
+      "statement": "Request IDs MUST NOT be reused by an endpoint.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0112",
+      "title": "Request ID zero prohibition",
+      "statement": "Request IDs MUST NOT be zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0113",
+      "title": "Encode IP Version as an 8-bit integer",
+      "statement": "The IP Version field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0114",
+      "title": "Limit IP Version values to 4 or 6",
+      "statement": "The IP Version field MUST be either 4 or 6.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B9-P9-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0115",
+      "title": "Use 32-bit IP addresses for IPv4",
+      "statement": "If the IP Version field has value 4, the IP Address field SHALL have a length of 32 bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B10-P10-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0116",
+      "title": "Use 128-bit IP addresses for IPv6",
+      "statement": "If the IP Version field has value 6, the IP Address field SHALL have a length of 128 bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B10-P10-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0117",
+      "title": "Encode IP Prefix Length as an 8-bit integer",
+      "statement": "The IP Prefix Length field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0118",
+      "title": "Bound prefix length by address length",
+      "statement": "The IP Prefix Length field MUST be less than or equal to the length of the IP Address field in bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0119",
+      "title": "Zero unused address bits beyond the prefix",
+      "statement": "If the prefix length is strictly less than the length of the IP address in bits, the lower bits of the IP Address field that are not covered by the prefix length MUST all be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0120",
+      "title": "Handle malformed capsule fields",
+      "statement": "If any of the capsule fields are malformed upon reception, the receiver of the capsule MUST follow the error-handling procedure defined in Section 3.3 of [HTTP-DGRAM].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0121",
+      "title": "Assign addresses and send address assignment",
+      "statement": "Upon receiving the ADDRESS_REQUEST capsule, an endpoint SHOULD assign one or more IP addresses to its peer and then respond with an ADDRESS_ASSIGN capsule to inform the peer of the assignment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0122",
+      "title": "Match request IDs in assigned addresses",
+      "statement": "For each Requested Address, the receiver of the ADDRESS_REQUEST capsule SHALL respond with an Assigned Address with a matching Request ID.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0123",
+      "title": "Set assigned values in assigned address responses",
+      "statement": "If the requested address was assigned, the IP Address and IP Prefix Length fields in the Assigned Address response SHALL be set to the assigned values.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0124",
+      "title": "Encode unassigned addresses with zero values",
+      "statement": "If the requested address was not assigned, the IP address and IP Prefix Length in the Assigned Address response SHALL be set to all-zero and the maximum length (0.0.0.0/32 or ::/128), respectively, to indicate that no address was assigned.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0125",
+      "title": "Keep address rejections out of later assignments",
+      "statement": "These address rejections SHOULD NOT be included in subsequent ADDRESS_ASSIGN capsules.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0126",
+      "title": "Reject empty address request capsules",
+      "statement": "If an endpoint receives an ADDRESS_REQUEST capsule that contains zero Requested Addresses, it MUST abort the IP proxying request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0127",
+      "title": "Route advertisement capsule format",
+      "statement": "A ROUTE_ADVERTISEMENT Capsule MUST have Type 0x03, a Length field, and zero or more IP Address Range entries in that order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.3 RFC9484-S4P7P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0128",
+      "title": "IP address range layout",
+      "statement": "An IP Address Range MUST contain IP Version (8), Start IP Address (32..128), End IP Address (32..128), and IP Protocol (8) fields in that order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 4.7.3 RFC9484-S4P7P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0129",
+      "title": "IP Version field encoding",
+      "statement": "The IP Version field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0130",
+      "title": "IP Version value constraint",
+      "statement": "The IP Version field MUST be either 4 or 6.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0131",
+      "title": "IPv4 field length",
+      "statement": "When the IP Version field has value 4, the Start IP Address and End IP Address fields MUST have a length of 32 bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0132",
+      "title": "IPv6 field length",
+      "statement": "When the IP Version field has value 6, the Start IP Address and End IP Address fields MUST have a length of 128 bits.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0133",
+      "title": "Start address ordering",
+      "statement": "The Start IP Address MUST be less than or equal to the End IP Address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0134",
+      "title": "IP Protocol field encoding",
+      "statement": "The IP Protocol field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0135",
+      "title": "Zero IP Protocol value semantics",
+      "statement": "If the IP Protocol field value is 0, all protocols MUST be allowed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0136",
+      "title": "Nonzero IP Protocol values",
+      "statement": "If the IP Protocol field value is not 0, it MUST represent an allowable next header value carried in IP headers that are sent directly in HTTP Datagrams (the outermost IP headers).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0137",
+      "title": "Always allow ICMP traffic",
+      "statement": "ICMP traffic MUST always be allowed, regardless of the IP Protocol field value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0138",
+      "title": "Malformed capsule error handling",
+      "statement": "If any of the capsule fields are malformed upon reception, the receiver of the capsule MUST follow the error-handling procedure defined in Section 3.3 of [HTTP-DGRAM].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0139",
+      "title": "ROUTE_ADVERTISEMENT supersession",
+      "statement": "If multiple ROUTE_ADVERTISEMENT capsules are sent in one direction, each ROUTE_ADVERTISEMENT capsule MUST supersede prior ones.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0140",
+      "title": "Withdrawn range semantics",
+      "statement": "If a given address range was present in a prior capsule but the most recently received ROUTE_ADVERTISEMENT capsule does not contain it, the receiver MUST consider that range withdrawn.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B13-P13-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0141",
+      "title": "Order routes by IP Version",
+      "statement": "The IP Version of A MUST be less than or equal to the IP Version of B.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0142",
+      "title": "Order routes by IP Protocol when versions match",
+      "statement": "If the IP Version of A and B are equal, the IP Protocol of A MUST be less than or equal to the IP Protocol of B.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B16-P16-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0143",
+      "title": "Order route ranges by end and start addresses",
+      "statement": "If the IP Version and IP Protocol of A and B are both equal, the End IP Address of A MUST be strictly less than the Start IP Address of B.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0144",
+      "title": "Abort invalid ROUTE_ADVERTISEMENT capsules",
+      "statement": "If an endpoint receives a ROUTE_ADVERTISEMENT capsule that does not meet these requirements, it MUST abort the IP proxying request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B18-P18-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0145",
+      "title": "Do not send overlapping ROUTE_ADVERTISEMENT routes",
+      "statement": "Endpoints MUST NOT send a ROUTE_ADVERTISEMENT capsule with routes that overlap in such a way.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0146",
+      "title": "Abort on detected route violations",
+      "statement": "If an endpoint detects the violation, it MUST abort the IP proxying request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0147",
+      "title": "Optionally validate ROUTE_ADVERTISEMENT routes",
+      "statement": "An endpoint MAY validate whether a ROUTE_ADVERTISEMENT capsule meets these requirements.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0148",
+      "title": "Reject scoping requests for extension-header protocol numbers",
+      "statement": "IP proxies MAY reject requests to scope to protocol numbers that are used for extension headers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.8 RFC9484-S4P8-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0149",
+      "title": "Walk extension headers to the outermost non-extension protocol number",
+      "statement": "Upon receiving packets, implementations that support scoping or routing by Internet Protocol Number MUST walk the chain of extensions to find the outermost non-extension Internet Protocol Number to match against the scoping rule.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 4.8 RFC9484-S4P8-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0150",
+      "title": "Start HTTP Datagrams with a Context ID field",
+      "statement": "HTTP Datagrams associated with IP proxying request streams MUST start with a Context ID field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0151",
+      "title": "Limit Context ID size to 62 bits",
+      "statement": "Context IDs MUST be 62-bit integers (0 to 2^62-1).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0152",
+      "title": "Encode Context IDs as variable-length integers",
+      "statement": "Context IDs MUST be encoded as variable-length integers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0153",
+      "title": "Allocate non-zero Context IDs dynamically",
+      "statement": "Non-zero Context ID values MUST be dynamically allocated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0154",
+      "title": "Reserve Context ID 0 for IP payloads",
+      "statement": "The Context ID value of 0 MUST be reserved for IP payloads.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0155",
+      "title": "Allow any Context ID allocation order",
+      "statement": "Context IDs MAY be allocated in any order.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S6",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0156",
+      "title": "Disallow Context ID reallocation within a request",
+      "statement": "Context IDs MUST NOT be re-allocated within a given HTTP request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S6",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0157",
+      "title": "Allow either endpoint to use an allocated Context ID",
+      "statement": "Once a Context ID has been allocated, it MAY be used by either the client or the IP proxy, regardless of which endpoint initially allocated it.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B2-P2-S8",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0158",
+      "title": "Permit future extensions to register Context IDs",
+      "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 5 RFC9484-S5-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0159",
+      "title": "Place Context ID after Quarter Stream ID",
+      "statement": "When HTTP Datagrams are encoded using QUIC DATAGRAM frames, the Context ID field MUST directly follow the Quarter Stream ID field at the start of the QUIC DATAGRAM frame payload.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 6 RFC9484-S6-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0160",
+      "title": "Define the IP Proxying HTTP Datagram Payload layout",
+      "statement": "The IP Proxying HTTP Datagram Payload MUST consist of a Context ID field followed by a Payload field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 6 RFC9484-S6-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0161",
+      "title": "Encode Context ID as a variable-length integer",
+      "statement": "The Context ID field MUST be a variable-length integer that contains the value of the Context ID.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0162",
+      "title": "Handle unknown Context ID datagrams by dropping or buffering",
+      "statement": "If an HTTP/3 datagram carries an unknown Context ID, the receiver SHALL either drop that datagram silently or buffer it temporarily, on the order of a round trip, while awaiting registration of the corresponding Context ID.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0163",
+      "title": "Make Payload semantics depend on Context ID",
+      "statement": "The semantics of the Payload field MUST depend on the value of the Context ID field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0164",
+      "title": "Allow an empty Payload field",
+      "statement": "The Payload field MAY be empty.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0165",
+      "title": "Encode IP packets with Context ID zero",
+      "statement": "IP packets MUST be encoded using HTTP Datagrams with the Context ID set to zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0166",
+      "title": "Carry a full IP packet when Context ID is zero",
+      "statement": "When the Context ID is set to zero, the Payload field MUST contain a full IP packet from the IP Version field until the last byte of the IP payload.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 6 RFC9484-S6-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0167",
+      "title": "Allow optimistic proxied IP packet sending",
+      "statement": "When using HTTP/2 or HTTP/3, a client MAY optimistically start sending proxied IP packets before receiving the response to its IP proxying request.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 7.1 RFC9484-S7P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0168",
+      "title": "Process received IP packets from HTTP Datagrams",
+      "statement": "An endpoint that receives an HTTP Datagram containing an IP packet MUST parse the IP header, perform local policy checks, consult its routing table to select an outbound interface, and then send the packet on that interface or pass it to a local application.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Trimmed wording while preserving the single forwarding-path invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0169",
+      "title": "Allow additional filtering policies",
+      "statement": "IP proxying endpoints MAY implement additional filtering policies on the IP packets they forward.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0170",
+      "title": "Treat failed checks as forwarding errors",
+      "statement": "A received IP packet that fails any correctness or policy checks MUST be treated as a forwarding error, not a protocol violation, for IP proxying.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0171",
+      "title": "Check routes before sending IP packets over HTTP Datagrams",
+      "statement": "When an endpoint receives an IP packet, it MUST check whether it matches routes mapped for an IP tunnel and perform the same forwarding checks as above before transmitting it over HTTP Datagrams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest standalone routing invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0172",
+      "title": "Decrement Hop Count on encapsulation",
+      "statement": "When IP proxying endpoints forward IP packets between different links, they MUST decrement the IP Hop Count (or TTL) upon encapsulation.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0173",
+      "title": "Do not decrement Hop Count on decapsulation",
+      "statement": "When IP proxying endpoints forward IP packets between different links, they MUST not decrement the IP Hop Count (or TTL) upon decapsulation.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0174",
+      "title": "Decrement Hop Count before transmission",
+      "statement": "The Hop Count of an IP packet MUST be decremented right before the packet is transmitted in an HTTP Datagram.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Kept the timing constraint as its own invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0175",
+      "title": "Exclude self-generated packets from hop-count decrement",
+      "statement": "The IP Hop Count (or TTL) decrement upon encapsulation MUST not apply to IP packets generated by the IP proxying endpoint itself.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B4-P4-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Preserved the exception while trimming the wording to a single normative obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0176",
+      "title": "Do not forward link-local traffic beyond the received interface",
+      "statement": "IP proxying endpoints MUST not forward any link-local traffic beyond the IP proxying interface on which it was received.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Retained the negative forwarding constraint as a standalone invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0177",
+      "title": "Ensure IPv6 tunnel MTU of at least 1280 bytes",
+      "statement": "IP proxying endpoints that operate as routers and support IPv6 MUST ensure the IP tunnel link MTU is at least 1280 bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B6-P6-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest independently testable invariant; meaning preserved."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0178",
+      "title": "Use ICMPv6 echo requests to verify link MTU",
+      "statement": "Unless endpoints have an out-of-band guarantee that the previous techniques are sufficient, IP proxying endpoints MUST use ICMPv6 echo requests with 1232 bytes of data to determine the link MTU and tear down the tunnel if no response is received.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the actionable invariant while preserving the exception and fallback behavior."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0179",
+      "title": "Abort request stream when QUIC MTU is too low",
+      "statement": "If an endpoint is using QUIC DATAGRAM frames to convey IPv6 packets and it detects that the QUIC MTU is too low to allow sending 1280 bytes, it MUST abort the IP proxying request stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484-S7P2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0180",
+      "title": "Use ICMP to signal forwarding errors",
+      "statement": "IP proxying endpoints SHOULD signal forwarding errors to their peer by generating ICMP packets and sending them using HTTP Datagrams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ]
+      },
+      "notes": [
+        "Trimmed explanatory phrasing to the testable forwarding-error signaling invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0181",
+      "title": "Send Destination Unreachable for invalid source addresses",
+      "statement": "For invalid source addresses, an endpoint SHOULD send Destination Unreachable with ICMPv6 code 5.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ]
+      },
+      "notes": [
+        "Retained the concrete error-code mapping and removed example framing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0182",
+      "title": "Send Destination Unreachable for unroutable destination addresses",
+      "statement": "For unroutable destination addresses, an endpoint SHOULD send Destination Unreachable with ICMPv6 code 0 or 1.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ]
+      },
+      "notes": [
+        "Preserves the RFC's allowed choice between the two listed codes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0183",
+      "title": "Send Packet Too Big for MTU-exceeding packets",
+      "statement": "For packets that cannot fit within the outgoing-link MTU, an endpoint MUST send Packet Too Big.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ]
+      },
+      "notes": [
+        "Kept only the implementation-relevant MTU-triggered action."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0184",
+      "title": "Process proxied ICMP packets when ROUTE_ADVERTISEMENT is absent",
+      "statement": "If an endpoint does not send ROUTE_ADVERTISEMENT capsules, it SHOULD process proxied ICMP packets from its peer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ]
+      },
+      "notes": [
+        "Dropped the example and the explanatory receipt clause."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0185",
+      "title": "Decrement hop count or TTL when encapsulating forwarded packets",
+      "statement": "IP proxying endpoints MUST decrement the IP Hop Count (or TTL) when encapsulating forwarded packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 8.2 RFC9484-S8P2-B4-P4-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-8.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0186",
+      "title": "Define new capsule types for configuration exchange",
+      "statement": "Extensions SHOULD define new capsule types for configuration exchange when needed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 §9 RFC9484-S9-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-9"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest independently testable wording."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0187",
+      "title": "Avoid burstiness of IP traffic",
+      "statement": "IP proxying endpoints SHOULD avoid increasing burstiness of IP traffic.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10 RFC9484-S10-B1-P1-S1",
+          "RFC 9484 Section 10 RFC9484-S10-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ]
+      },
+      "notes": [
+        "Merged with the adjacent burstiness clause in RFC9484-S10-B1-P1-S2; this is the canonical home for the shared invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0188",
+      "title": "Avoid extra packet batching",
+      "statement": "IP proxying endpoints SHOULD NOT queue packets to increase batching beyond the minimal amount required to take advantage of hardware offloads.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10 RFC9484-S10-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ]
+      },
+      "notes": [
+        "The shared burstiness clause was merged into RFC9484-S10-B1-P1-S1; this unit retains only the distinct queueing and batching prohibition."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0189",
+      "title": "Disable congestion control for DATAGRAM-only packets",
+      "statement": "The outer HTTP connection MAY disable congestion control for packets that contain only QUIC DATAGRAM frames encapsulating IP packets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10 RFC9484-S10-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0190",
+      "title": "Prefer HTTP/3 for IP proxying",
+      "statement": "IP proxying SHOULD be performed over HTTP/3 to allow leveraging the QUIC DATAGRAM frame.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10 RFC9484-S10-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0191",
+      "title": "Transmit IP packets in QUIC DATAGRAM frames",
+      "statement": "When using HTTP/3 with the QUIC Datagram extension, IP packets MUST be transmitted in QUIC DATAGRAM frames.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0192",
+      "title": "Limit QUIC DATAGRAM frame payload size",
+      "statement": "QUIC DATAGRAM frames MUST carry only packets up to the length determined by the QUIC connection configuration and the Path MTU (PMTU).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0193",
+      "title": "Avoid DATAGRAM capsules for oversized IP packets",
+      "statement": "If an IP packet will not fit inside a QUIC DATAGRAM frame, the IP proxy SHOULD NOT send the IP packet in a DATAGRAM capsule.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0194",
+      "title": "Drop oversized IP packets",
+      "statement": "When an IP packet will not fit inside a QUIC DATAGRAM frame, the endpoint SHOULD drop the IP packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0195",
+      "title": "Send Packet Too Big feedback",
+      "statement": "When an IP packet will not fit inside a QUIC DATAGRAM frame, the endpoint SHOULD send an ICMP Packet Too Big message to the sender of the dropped packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0196",
+      "title": "Suppress ECN signaling when congestion control is disabled",
+      "statement": "If an IP proxying endpoint with an IP proxying request stream disables congestion control, it MUST NOT signal Explicit Congestion Notification (ECN) support on the outer connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.2 RFC9484-S10P2-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.2"
+        ]
+      },
+      "notes": [
+        "Trimmed redundant phrasing; no behavior change."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0197",
+      "title": "Mark Not-ECT outside congestion control",
+      "statement": "The QUIC sender MUST mark all IP headers for QUIC packets outside congestion control with the Not ECN-Capable Transport (Not-ECT) codepoint.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 10.2 RFC9484-S10P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.2"
+        ]
+      },
+      "notes": [
+        "Trimmed wording to the implementation-relevant obligation; no behavior change."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0198",
+      "title": "Optionally differentiate traffic by DSCP markings",
+      "statement": "If an IP proxying endpoint is configured as part of a Differentiated Services domain, it MAY implement traffic differentiation based on these markings.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 10.3 RFC9484-S10P3-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0199",
+      "title": "Avoid non-equivalent DSCP markings under outer congestion control",
+      "statement": "If tunneled packets are subject to congestion control by the outer connection, they MUST NOT carry DSCP markings that are not equivalent in forwarding behavior.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 10.3 RFC9484-S10P3-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0200",
+      "title": "Do not copy inner DSCP values to the outer header",
+      "statement": "If tunneled packets are subject to congestion control by the outer connection, the IP proxying endpoint MUST NOT copy the DSCP field from the inner IP header to the outer IP header.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 10.3 RFC9484-S10P3-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ]
+      },
+      "notes": [
+        "Trimmed redundant trailing wording while preserving the same invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0201",
+      "title": "Optionally translate DSCP values for QUIC datagrams",
+      "statement": "If tunneled packets use QUIC datagrams and are not subject to congestion control by the outer connection, the IP proxying endpoints MAY translate the DSCP field value from the tunneled traffic to the outer IP header.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 10.3 RFC9484-S10P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ]
+      },
+      "notes": [
+        "Single optional invariant; no wording or trace repair needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0202",
+      "title": "Do not coalesce inner packets with different DSCP markings",
+      "statement": "IP proxying endpoints MUST NOT coalesce multiple inner packets into the same outer packet unless they have the same DSCP marking or an equivalent traffic class.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 10.3 RFC9484-S10P3-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ]
+      },
+      "notes": [
+        "Single required invariant; wording already minimal."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0203",
+      "title": "Restrict IP proxying to authenticated users",
+      "statement": "HTTP servers that support IP proxying SHOULD restrict its use to authenticated users.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0204",
+      "title": "Avoid persistent per-client address assignment",
+      "statement": "Proxies SHOULD avoid persistent per-client address (prefix) assignment when possible.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B2-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0205",
+      "title": "Follow BCP38 to prevent source address spoofing",
+      "statement": "In such scenarios, endpoints MUST follow the recommendations from [BCP38] to prevent source address spoofing.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B3-P3-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0206",
+      "title": "Optionally forward ICMP packets to clients",
+      "statement": "If the proxy receives an ICMP packet destined for that external IP address, it MAY forward it to the clients.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0207",
+      "title": "Filter ICMP forwarding by invoking packet scope",
+      "statement": "Proxies that forward ICMP on shared external IP addresses MUST forward each ICMP packet only to the client whose scoping matches the invoking packet.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B4-P4-S5",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest forwarding rule while preserving the scope-match check."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0208",
+      "title": "Prohibit opportunistic sending of IP packets in HTTP/1.x",
+      "statement": "Opportunistic sending of IP packets MUST NOT be used in HTTP/1.x.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0209",
+      "title": "Delay capsules until a successful IP proxying response",
+      "statement": "An intermediary that re-encodes a request from HTTP/2 or 3 to HTTP/1.1 MUST NOT forward any received capsules until it has parsed a successful IP proxying response.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9484 section 11 RFC9484-S11-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ]
+      },
+      "notes": [
+        "Kept the forwarding gate and tightened the phrasing for canonical use."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0210",
+      "title": "Require Expert Review registration policy",
+      "statement": "The MASQUE URI Suffixes registry MUST use the Expert Review registration policy.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 12.2 RFC9484-S12P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0211",
+      "title": "Constrain registry path segments to token characters",
+      "statement": "Registry Path Segment values MUST be ASCII strings containing only token characters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 12.2 RFC9484-S12P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0212",
+      "title": "Require distinct registry path segments",
+      "statement": "Entries in this registry MUST have distinct Path Segment values.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 Section 12.2 RFC9484-S12P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9484-0213",
+      "title": "Guide expert approval for MASQUE URI suffix requests",
+      "statement": "Designated experts SHOULD approve requests when the requested Path Segment will not conflict with existing or expected future IETF work and the use case is relevant to proxying.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9484 12.2 RFC9484-S12P2-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ]
+      }
+    }
+  ]
+}

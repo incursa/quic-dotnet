@@ -1,0 +1,2084 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9463",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9463 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9463",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9463 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9463-0001",
+      "title": "Encrypted DNS options include an ADN",
+      "statement": "Encrypted DNS options MUST always include an ADN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 3.1.1 RFC9463-S3P1P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0002",
+      "title": "Router or forwarder single LAN-facing address",
+      "statement": "A router embedding a recursive server or a forwarder MUST include one IP address pointing to one of its LAN-facing interfaces.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 3.1.3 RFC9463-S3P1P3-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0003",
+      "title": "Preference-ordered multiple IP addresses",
+      "statement": "If multiple IP addresses are returned in an Encrypted DNS option, they MUST be returned ordered by preference.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 3.1.3 RFC9463-S3P1P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0004",
+      "title": "Encode service parameters with the RFC9460 wire format",
+      "statement": "These parameters MUST be encoded following the same rules for encoding SvcParams using the wire format specified in Section 2.2 of [RFC9460].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.1.5 RFC9463-S3P1P5-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0005",
+      "title": "Prefer ADN-only provisioning mode",
+      "statement": "ADN-only provisioning mode SHOULD be used.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.1.6 RFC9463-S3P1P6-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.6"
+        ]
+      },
+      "notes": [
+        "Trimmed to the core normative obligation; rationale removed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0006",
+      "title": "ADN presence and encoding",
+      "statement": "The ADN MUST be present and encoded as specified in Section 10 of RFC 8415.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S3P1P8-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0007",
+      "title": "Service parameter encoding rules",
+      "statement": "The service parameters MUST be encoded according to Section 2.2 of RFC 9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S3P1P8-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0008",
+      "title": "At least one valid IP address",
+      "statement": "The Encrypted DNS option MUST include at least one valid IP address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S3P1P8-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0009",
+      "title": "No hint parameters in service parameters",
+      "statement": "The service parameters MUST exclude \"ipv4hint\" and \"ipv6hint\" parameters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S3P1P8-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0010",
+      "title": "Discard invalid Encrypted DNS option",
+      "statement": "If any validation check fails, the receiver MUST discard the received Encrypted DNS option.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S3P1P8-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0011",
+      "title": "Service priority when implicit ordering is absent",
+      "statement": "When multiple encrypted DNS instances are used and implicit ordering is not relied on, the DNR information SHOULD include a service priority.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.1.9 RFC9463-S3P1P9-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.9"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0012",
+      "title": "Mandatory ADN parameter",
+      "statement": "The ADN parameter MUST be present in the DNR information.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.1.9 RFC9463-S3P1P9-B3-P3-S1",
+          "RFC 9463 section 3.1.9 RFC9463-S3P1P9-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.9"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0013",
+      "title": "Resolver IP address list",
+      "statement": "The DNR information SHOULD include IP addresses used to locate the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.1.9 RFC9463-S3P1P9-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.9"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0014",
+      "title": "Service parameter set",
+      "statement": "The DNR information SHOULD include a set of service parameters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.1.9 RFC9463-S3P1P9-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.9"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0015",
+      "title": "Follow RFC8106 conflict rules for RA and DHCP discovery",
+      "statement": "If encrypted DNS resolvers are discovered by a host using both RA and DHCP, the rules discussed in Section 5.3.1 of [RFC8106] MUST be followed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.2 RFC9463-S3P2-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0016",
+      "title": "Prefer encrypted DNS when both resolver types are learned",
+      "statement": "If a client learns both Do53 and encrypted DNS resolvers from the same network, and there is no explicit configuration to the contrary, the client SHOULD use the encrypted DNS resolvers for that network.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.2 RFC9463-S3P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0017",
+      "title": "Allow fallback to Do53 when encrypted DNS connection fails",
+      "statement": "If the client cannot establish an authenticated and encrypted connection with the encrypted DNS resolver, it MAY fall back to using the Do53 resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.2 RFC9463-S3P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0018",
+      "title": "Establish sessions according to discovered resolver priority",
+      "statement": "If the local DNS client supports one of the discovered encrypted DNS protocols identified by ALPN protocol identifiers or another service parameter that indicates another protocol disambiguation mechanism, the DNS client MUST establish an encrypted DNS session following the service priority of the discovered encrypted resolvers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.3 RFC9463-S3P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0019",
+      "title": "Validate resolver certificates and ADN using PKIX and RFC6125",
+      "statement": "The DNS client MUST verify the connection using PKIX validation of the DNS resolver certificate and compare the ADN conveyed in the Encrypted DNS options to the certificate using RFC6125 validation techniques.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.3 RFC9463-S3P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0020",
+      "title": "Use default trust anchors unless explicit trust anchors are configured",
+      "statement": "The DNS client MUST use the default system or application PKI trust anchors unless configured otherwise to use explicit trust anchors.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.3 RFC9463-S3P3-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0021",
+      "title": "Encode the OPTION_V6_DNR option format",
+      "statement": "The OPTION_V6_DNR option format MUST be encoded with OPTION_V6_DNR, Option-length, Service Priority, ADN Length, authentication-domain-name, Addr Length, ipv6-address(es), and Service Parameters (SvcParams) in that order.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 4.1 RFC9463-S4P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0022",
+      "title": "Set the OPTION_V6_DNR option code",
+      "statement": "The OPTION_V6_DNR option code MUST be 144.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 4.1 RFC9463-S4P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0023",
+      "title": "Set Option-length to the enclosed data size",
+      "statement": "The Option-length field MUST be the length of the enclosed data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 4.1 RFC9463-S4P1-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0024",
+      "title": "Set Option-length when only ADN is present",
+      "statement": "When only an ADN is included in the option, the option length MUST be the ADN Length plus 4.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0025",
+      "title": "Interpret Service Priority as a 16-bit unsigned integer",
+      "statement": "The Service Priority field MUST be interpreted as a 16-bit unsigned integer following the rules specified in Section 2.4.1 of [RFC9460].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 4.1 RFC9463-S4P1-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0026",
+      "title": "Define ADN Length field",
+      "statement": "The ADN Length field MUST be the length of the authentication-domain-name field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0027",
+      "title": "Define authentication-domain-name field",
+      "statement": "The authentication-domain-name field MUST be a Fully Qualified Domain Name (FQDN) of the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0028",
+      "title": "Format authentication-domain-name field",
+      "statement": "The authentication-domain-name field MUST be formatted as specified in Section 10 of [RFC8415].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B9-P9-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1",
+          "https://www.rfc-editor.org/rfc/rfc8415.html#section-10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0029",
+      "title": "Define Addr Length field",
+      "statement": "The Addr Length field MUST be the length of enclosed IPv6 addresses in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0030",
+      "title": "Constrain Addr Length multiple",
+      "statement": "When present, the Addr Length field MUST be a multiple of 16.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1, source unit RFC9463-S4P1-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0031",
+      "title": "IPv6 address semantics",
+      "statement": "The `ipv6-address(es)` field MUST indicate one or more IPv6 addresses to reach the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0032",
+      "title": "IPv6 address field layout",
+      "statement": "The `ipv6-address` field MUST use the variable-length layout shown in Figure 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0033",
+      "title": "SvcParams encoding",
+      "statement": "The Service Parameters (SvcParams) field MUST be a variable-length set of service parameters encoded following the rules in Section 2.2 of RFC9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0034",
+      "title": "Prefer alpn SvcParam",
+      "statement": "The SvcParams field SHOULD include the \"alpn\" SvcParam.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B17-P17-S3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest independently testable wording."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0035",
+      "title": "Exclude superseded SvcParams",
+      "statement": "The service parameters MUST omit \"ipv4hint\" and \"ipv6hint\" SvcParams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B17-P17-S5",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      },
+      "notes": [
+        "Trimmed the explanatory clause while preserving the exclusion rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0036",
+      "title": "Use default port numbers when port service parameter is omitted",
+      "statement": "If no port service parameter is included, the default port numbers SHOULD be 853 for DoT, 443 for DoH, and 853 for DoQ.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source units RFC9463-S4P1-B18-P18-S1 and RFC9463-S4P1-B18-P18-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      },
+      "notes": [
+        "Merged with RFC9463-S4P1-B18-P18-S2 because it supplies the concrete default values for the omission rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0037",
+      "title": "Compute field length",
+      "statement": "The field length MUST equal ('Option-length' - 6 - 'ADN Length' - 'Addr Length').",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B19-P19-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0038",
+      "title": "Omit fields in ADN-only mode",
+      "statement": "When ADN-only mode is used, the `Addr Length`, `ipv6-address(es)`, and `Service Parameters (SvcParams)` fields MUST be absent.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.1 source unit RFC9463-S4P1-B20-P20-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0039",
+      "title": "Request OPTION_V6_DNR",
+      "statement": "The DHCPv6 client MUST include OPTION_V6_DNR in an Option Request Option (ORO).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 source unit RFC9463-S4P2-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the single testable invariant while preserving traceability to the source unit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0040",
+      "title": "Accept multiple OPTION_V6_DNR instances",
+      "statement": "The DHCPv6 client MUST be prepared to receive multiple instances of the OPTION_V6_DNR option.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 source unit RFC9463-S4P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Split out as a separately testable acceptance obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0041",
+      "title": "Treat each resolver separately",
+      "statement": "Each OPTION_V6_DNR option MUST be treated as a separate encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 source unit RFC9463-S4P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Split out as a separately testable per-instance handling obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0042",
+      "title": "Process instances by service priority",
+      "statement": "The DHCPv6 client MUST process OPTION_V6_DNR instances in service-priority order, where a smaller value indicates higher preference.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 source unit RFC9463-S4P2-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the ordering rule without changing the testable meaning."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0043",
+      "title": "Silently discard invalid OPTION_V6_DNR values",
+      "statement": "The DHCPv6 client MUST silently discard any OPTION_V6_DNR that fails Section 3.1.8 validation.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 RFC9463-S4P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Trimmed while preserving the validation reference needed for implementation and testing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0044",
+      "title": "Silently discard multicast and loopback addresses",
+      "statement": "The DHCPv6 client MUST silently discard multicast and host loopback addresses in OPTION_V6_DNR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 4.2 RFC9463-S4P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-4.2"
+        ]
+      },
+      "notes": [
+        "Trimmed to the address-class rule while preserving the source unit trace."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0045",
+      "title": "Define OPTION_V4_DNR option format",
+      "statement": "An OPTION_V4_DNR option MUST have a Length field followed by DNR Instance Data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0046",
+      "title": "Define OPTION_V4_DNR code",
+      "statement": "The OPTION_V4_DNR option code MUST be 162.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Trimmed to the option code."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0047",
+      "title": "Length field semantics",
+      "statement": "The Length field MUST indicate the length of the enclosed data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0048",
+      "title": "Define DNR Instance Data format",
+      "statement": "A DNR Instance Data block MUST encode the fields DNR Instance Data Length, Service Priority, ADN Length, authentication-domain-name, Addr Length, IPv4 Address(es), and Service Parameters in the order shown.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0049",
+      "title": "Repeat DNR Instance Data for multiple resolvers",
+      "statement": "When several encrypted DNS resolvers are to be included, the DNR Instance Data field MUST be repeated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0050",
+      "title": "DNR Instance Data Length field semantics",
+      "statement": "The DNR Instance Data Length field MUST indicate the length of all following data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0051",
+      "title": "Set DNR Instance Data Length for ADN-only instances",
+      "statement": "When only an ADN is provided for a DNR instance, the DNR Instance Data Length field MUST be set to ADN Length + 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 5.1 RFC9463-S5P1-B12-P12-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Named the field explicitly."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0052",
+      "title": "Interpret Service Priority per RFC9460",
+      "statement": "The Service Priority field MUST be interpreted following the rules specified in Section 2.4.1 of [RFC9460].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Named the field explicitly."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0053",
+      "title": "Define ADN Length semantics",
+      "statement": "The ADN Length field MUST be the length of the authentication-domain-name field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0054",
+      "title": "Define authentication-domain-name contents",
+      "statement": "The authentication-domain-name field MUST contain the ADN of the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0055",
+      "title": "Format authentication-domain-name per RFC8415",
+      "statement": "The authentication-domain-name field MUST be formatted as specified in Section 10 of [RFC8415].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B15-P15-S2",
+          "https://www.rfc-editor.org/rfc/rfc8415.html#section-10",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0056",
+      "title": "Define Addr Length semantics",
+      "statement": "The Addr Length field MUST be the length of included IPv4 addresses in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B16-P16-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0057",
+      "title": "Require Addr Length to be a multiple of 4",
+      "statement": "When present, the Addr Length field MUST be a multiple of 4.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B16-P16-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0058",
+      "title": "Define IPv4 Address(es) contents",
+      "statement": "The IPv4 Address(es) field MUST indicate one or more IPv4 addresses to reach the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0059",
+      "title": "Allow private and public IPv4 addresses",
+      "statement": "The IPv4 Address(es) field MAY include both private and public IPv4 addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9463-S5P1-B17-P17-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0060",
+      "title": "Encode Service Parameters per RFC9460",
+      "statement": "The SvcParams field MUST be encoded following the rules in Section 2.2 of [RFC9460].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Wording trimmed to the field-level invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0061",
+      "title": "Include ALPN SvcParam",
+      "statement": "The SvcParams field SHOULD include at least the \"alpn\" SvcParam.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Wording trimmed to the standalone recommendation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0062",
+      "title": "Exclude ipv4hint SvcParam",
+      "statement": "The service parameters MUST NOT include \"ipv4hint\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S5",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "One of two split prohibitions."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0063",
+      "title": "Exclude ipv6hint SvcParam",
+      "statement": "The service parameters MUST NOT include \"ipv6hint\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S5",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "One of two split prohibitions."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0064",
+      "title": "Use Default Ports When No Port Service Parameter Is Present",
+      "statement": "Default port numbers SHOULD be used if no port service parameter is included.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B21-P21-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Wording trimmed to the conditional recommendation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0065",
+      "title": "Compute Field Length From Component Lengths",
+      "statement": "The length of this field MUST equal ('DNR Instance Data Length' - 4 - 'ADN Length' - 'Addr Length').",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Wording tightened to an equality requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0066",
+      "title": "Omit Addr Length in ADN-Only Mode",
+      "statement": "The \"Addr Length\" field MUST NOT be present in ADN-only mode.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "One of three split field-absence requirements."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0067",
+      "title": "Omit IPv4 Address Fields in ADN-Only Mode",
+      "statement": "The \"IPv4 Address(es)\" field MUST NOT be present in ADN-only mode.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "One of three split field-absence requirements."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0068",
+      "title": "Omit Service Parameters in ADN-Only Mode",
+      "statement": "The \"Service Parameters (SvcParams)\" field MUST NOT be present in ADN-only mode.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "One of three split field-absence requirements."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0069",
+      "title": "Use RFC3396 for Oversized OPTION_V4_DNR",
+      "statement": "The mechanism specified in [RFC3396] MUST be used if OPTION_V4_DNR exceeds 255 octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.1 RFC9463-S5P1-B24-P24-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ]
+      },
+      "notes": [
+        "Wording trimmed to the overflow condition."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0070",
+      "title": "Request OPTION_V4_DNR to Discover Encrypted DNS Resolver",
+      "statement": "The DHCPv4 client MUST request an encrypted DNS resolver by including OPTION_V4_DNR in the Parameter Request List.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Trimmed the phrasing to the smallest testable invariant without changing behavior."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0071",
+      "title": "Receive Multiple DNR Instance Data Entries",
+      "statement": "The DHCPv4 client MUST be prepared to receive multiple \"DNR Instance Data\" entries in OPTION_V4_DNR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Separated from the per-entry interpretation obligation for independent testing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0072",
+      "title": "Treat Each DNR Instance Data Entry Separately",
+      "statement": "Each \"DNR Instance Data\" entry MUST be treated as a separate encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Keeps the per-entry handling requirement distinct from reception support."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0073",
+      "title": "Process Instances by Service Priority",
+      "statement": "These instances MUST be processed by service priority, with smaller values indicating higher preference.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Trimmed the explanatory parenthetical while preserving the ordering rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0074",
+      "title": "Discard Invalid OPTION_V4_DNR Entries",
+      "statement": "The DHCPv4 client MUST silently discard any OPTION_V4_DNR that fails the validation steps in Section 3.1.8.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Trimmed the wording to the implementation-relevant validation condition."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0075",
+      "title": "Discard Host Loopback Addresses",
+      "statement": "The DHCPv4 client MUST silently discard host loopback addresses conveyed in OPTION_V4_DNR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Isolated as its own testable discard rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0076",
+      "title": "Discard Multicast Addresses",
+      "statement": "The DHCPv4 client MUST silently discard multicast addresses conveyed in OPTION_V4_DNR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 5.2 RFC9463-S5P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Isolated as its own testable discard rule."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0077",
+      "title": "Encrypted DNS option field order",
+      "statement": "The Encrypted DNS option MUST use the field order Type, Length, Service Priority, Lifetime, ADN Length, authentication-domain-name, Addr Length, ipv6-address(es), SvcParams Length, and Service Parameters.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0078",
+      "title": "Encrypted DNS option type value",
+      "statement": "The Type field MUST be the IANA-assigned 8-bit identifier for the Encrypted DNS option (144).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0079",
+      "title": "Encrypted DNS option length field encoding",
+      "statement": "The Length field MUST be an 8-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0080",
+      "title": "Encrypted DNS option length units",
+      "statement": "The option length, including the Type and Length fields, MUST be measured in units of 8 octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0081",
+      "title": "Encrypted DNS service priority field encoding",
+      "statement": "The Service Priority field MUST be a 16-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0082",
+      "title": "Field interpretation follows RFC 9460",
+      "statement": "The field MUST be interpreted following the rules specified in Section 2.4.1 of RFC 9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B8-P8-S3",
+          "RFC 9460 Section 2.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0083",
+      "title": "Lifetime field type",
+      "statement": "Lifetime MUST be a 32-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0084",
+      "title": "Lifetime validity semantics",
+      "statement": "Lifetime MUST represent the maximum time in seconds, relative to the time the packet is received, over which the discovered ADN is valid.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B9-P9-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0085",
+      "title": "Default Lifetime recommendation",
+      "statement": "The value of Lifetime SHOULD by default be at least 3 * MaxRtrAdvInterval, where MaxRtrAdvInterval is the maximum RA interval as defined in RFC 4861.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B10-P10-S1",
+          "RFC 4861 MaxRtrAdvInterval",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0086",
+      "title": "Infinity encoding",
+      "statement": "A value of all one bits (0xffffffff) MUST represent infinity.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0087",
+      "title": "Zero value retires ADN",
+      "statement": "A value of zero MUST indicate that this ADN is no longer used.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0088",
+      "title": "ADN Length encoding",
+      "statement": "The ADN Length field MUST be a 16-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0089",
+      "title": "ADN Length meaning",
+      "statement": "The ADN Length field MUST indicate the length of the authentication-domain-name field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0090",
+      "title": "authentication-domain-name contents",
+      "statement": "The authentication-domain-name field MUST contain the ADN of the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0091",
+      "title": "authentication-domain-name RFC 8415 formatting",
+      "statement": "The authentication-domain-name field MUST be formatted as specified in Section 10 of RFC 8415.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B14-P14-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1",
+          "RFC 8415 Section 10"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0092",
+      "title": "Addr Length encoding",
+      "statement": "The Addr Length field MUST be a 16-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0093",
+      "title": "Addr Length meaning",
+      "statement": "The Addr Length field MUST indicate the length of the enclosed IPv6 addresses in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0094",
+      "title": "Addr Length multiple of 16",
+      "statement": "When present, the Addr Length field MUST be a multiple of 16.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0095",
+      "title": "ipv6-address(es) contents",
+      "statement": "The ipv6-address(es) field MUST contain one or more IPv6 addresses of the encrypted DNS resolver.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.1 RFC9463-S6P1-B16-P16-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0096",
+      "title": "Shared Lifetime value across addresses",
+      "statement": "All addresses in the option MUST share the same Lifetime value.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0097",
+      "title": "SvcParams Length field type",
+      "statement": "The SvcParams Length field MUST be a 16-bit unsigned integer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B19-P19-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0098",
+      "title": "SvcParams Length field semantics",
+      "statement": "The SvcParams Length field MUST indicate the length of the Service Parameters (SvcParams) field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B19-P19-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0099",
+      "title": "SvcParams encoding follows RFC9460",
+      "statement": "The Service Parameters (SvcParams) field MUST be encoded following the rules in Section 2.2 of RFC9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0100",
+      "title": "SvcParams field variable length",
+      "statement": "The Service Parameters (SvcParams) field MUST be variable length.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0101",
+      "title": "Include alpn SvcParam",
+      "statement": "The field SHOULD include at least the \"alpn\" SvcParam.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section=6.1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0102",
+      "title": "Exclude ipv4hint and ipv6hint SvcParams",
+      "statement": "The service parameters MUST exclude \"ipv4hint\" or \"ipv6hint\" SvcParams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S5",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0103",
+      "title": "Default port numbers when port parameter absent",
+      "statement": "If no port service parameter is included, default port numbers SHOULD be used.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B21-P21-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0104",
+      "title": "Omit fields in ADN-only mode",
+      "statement": "When ADN-only mode is used, the Addr Length, ipv6-address(es), and Service Parameters (SvcParams) fields MUST be absent.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0105",
+      "title": "Pad option to 8-octet boundary",
+      "statement": "The option MUST be padded with zeros so that the full enclosed data is a multiple of 8 octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.1 RFC9463-S6P1-B23-P23-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0106",
+      "title": "Process received Encrypted DNS options",
+      "statement": "The host MUST process received Encrypted DNS options using the RFC 8106 Section 5.3.1 procedure, substituting the Section 6.1 formatting requirements and Section 3.1.8 validation checks for length and field validations.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.2 RFC9463-S6P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0107",
+      "title": "Receive multiple Encrypted DNS options",
+      "statement": "The host MUST be prepared to receive multiple Encrypted DNS options in RAs.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.2 RFC9463-S6P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0108",
+      "title": "Process instances by service priority",
+      "statement": "These instances MUST be processed in service-priority order, where a smaller service priority value indicates a higher preference.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 6.2 RFC9463-S6P2-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0109",
+      "title": "Discard host loopback encrypted DNS addresses",
+      "statement": "The host MUST silently discard host loopback addresses conveyed in the Encrypted DNS options.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.2 RFC9463-S6P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0110",
+      "title": "Discard multicast encrypted DNS addresses",
+      "statement": "The host MUST silently discard multicast addresses conveyed in the Encrypted DNS options.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 6.2 RFC9463-S6P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0111",
+      "title": "Allow OPTION_V6_DNR in the client ORO",
+      "statement": "The OPTION_V6_DNR option MUST be requestable in the client ORO.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.1 RFC9463-S9P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0112",
+      "title": "Assign DHCPv6 option code 144 to OPTION_V6_DNR",
+      "statement": "The DHCPv6 option code for OPTION_V6_DNR MUST be 144.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.1 RFC9463-S9P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0113",
+      "title": "Do not mark OPTION_V6_DNR as singleton",
+      "statement": "The OPTION_V6_DNR option MUST NOT be a singleton option.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.1 RFC9463-S9P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0114",
+      "title": "Assign DHCPv4 tag 162 to OPTION_V4_DNR",
+      "statement": "The DHCPv4 option tag for OPTION_V4_DNR MUST be 162.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.2 RFC9463-S9P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0115",
+      "title": "Set OPTION_V4_DNR data length to N",
+      "statement": "The OPTION_V4_DNR option data length MUST be N.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.2 RFC9463-S9P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0116",
+      "title": "Assign ND type 144 to the Encrypted DNS option",
+      "statement": "The Neighbor Discovery Encrypted DNS option type MUST be 144.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 9.3 RFC9463-S9P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-9.3"
+        ]
+      }
+    }
+  ]
+}

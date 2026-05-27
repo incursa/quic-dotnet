@@ -1,0 +1,1336 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9464",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9464 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9464",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9464 requirements.",
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9464-0001",
+      "title": "ENCDNS_IP* attribute format",
+      "statement": "The ENCDNS_IP* Configuration Payload Attribute MUST have the format shown in Figure 1, with the fields in the order shown.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0002",
+      "title": "Reserved bit ignored on receipt",
+      "statement": "The R bit MUST be ignored on receipt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0003",
+      "title": "Reserved bit set to zero",
+      "statement": "The R bit MUST be set to zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0004",
+      "title": "Length field size",
+      "statement": "The Length field MUST be 2 octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0005",
+      "title": "Length field value",
+      "statement": "The Length field MUST be the length of the enclosed data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0006",
+      "title": "Num Addresses zero in request-without-resolver and ACK",
+      "statement": "The Num Addresses field MUST be 0 if the Configuration payload has type CFG_REQUEST and no specific DNS resolver is requested, or if it has type CFG_ACK.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0007",
+      "title": "Zero Length omits trailing fields",
+      "statement": "If the Length field is set to 0, the subsequent fields shown in Figure 1 MUST NOT be present.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0008",
+      "title": "ENCDNS_IP4 length formula",
+      "statement": "For ENCDNS_IP4 attributes in CFG_REQUEST, CFG_REPLY, or CFG_SET Configuration payloads, the length of the attribute MUST be 4 + Length of the ADN + N * 4 + Length of SvcParams, where N is the number of included IPv4 addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0009",
+      "title": "ENCDNS_IP6 length formula",
+      "statement": "For ENCDNS_IP6 attributes in CFG_REQUEST, CFG_REPLY, or CFG_SET Configuration payloads, the length of the attribute MUST be 4 + Length of the ADN + N * 16 + Length of SvcParams, where N is the number of included IPv6 addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0010",
+      "title": "ADN length interpretation",
+      "statement": "The 16-bit unsigned integer MUST be interpreted following the rules specified in Section 2.4.1 of RFC9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0011",
+      "title": "AliasMode zero prohibited",
+      "statement": "This field MUST NOT be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B11-P11-S3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0012",
+      "title": "Reject zero value for CFG_REPLY and CFG_SET",
+      "statement": "If the Configuration payload has type CFG_REPLY or CFG_SET, this value MUST NOT be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B12-P12-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0013",
+      "title": "Define ADN Length as a one-octet field",
+      "statement": "The ADN Length field MUST be 1 octet and indicate the length of the Authentication Domain Name field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.1 RFC9464-S3P1-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0014",
+      "title": "ENCDNS_IP4 field carries IPv4 addresses",
+      "statement": "For ENCDNS_IP4, this field MUST contain one or more 4-octet IPv4 addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B14-P14-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0015",
+      "title": "ENCDNS_IP6 field carries IPv6 addresses",
+      "statement": "For ENCDNS_IP6, this field MUST contain one or more 16-octet IPv6 addresses.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B14-P14-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0016",
+      "title": "Authentication Domain Name format",
+      "statement": "The Authentication Domain Name MUST be a fully qualified domain name of the encrypted DNS resolver, in DNS presentation format, and use an IDNA A-label.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0017",
+      "title": "Reject terminators in the name",
+      "statement": "The name MUST NOT contain terminators such as NULL or CR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B15-P15-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0018",
+      "title": "Encode SvcParams using RFC9460 wire format",
+      "statement": "SvcParams MUST be encoded using the wire format specified in Section 2.2 of RFC9460.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0019",
+      "title": "Exclude ipv4hint and ipv6hint SvcParams",
+      "statement": "The service parameters MUST NOT include \"ipv4hint\" or \"ipv6hint\" SvcParams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B18-P18-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0020",
+      "title": "Apply service parameters to all IP addresses",
+      "statement": "Service parameters MUST apply to all IP addresses in the ENCDNS_IP* Configuration Payload Attribute.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.1 RFC9464-S3P1-B20-P20-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0021",
+      "title": "Encode ENCDNS_DIGEST_INFO fields in table order",
+      "statement": "The ENCDNS_DIGEST_INFO Configuration Payload Attribute MUST contain the R bit, Attribute Type, Length, Num Hash Algs, ADN Length, Authentication Domain Name, List of Hash Algorithm Identifiers, and Certificate Digest fields in the order shown.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0022",
+      "title": "Encode ENCDNS_DIGEST_INFO CFG_REQUEST fields in table order",
+      "statement": "The ENCDNS_DIGEST_INFO Configuration Payload Attribute in CFG_REQUEST MUST contain the R bit, Attribute Type, Length, Num Hash Algs, ADN Length, and List of Hash Algorithm Identifiers fields in the order shown.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0023",
+      "title": "Ignore the reserved bit on receipt",
+      "statement": "Receivers MUST ignore the R bit on receipt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2",
+          "https://www.rfc-editor.org/rfc/rfc7296.html#section-3.15.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0024",
+      "title": "Set the reserved bit to zero",
+      "statement": "Senders MUST set the R bit to zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2",
+          "https://www.rfc-editor.org/rfc/rfc7296.html#section-3.15.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0025",
+      "title": "Set Attribute Type to 29",
+      "statement": "The Attribute Type field MUST be set to 29.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B10-P10-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0026",
+      "title": "Define Length as a two-octet unsigned integer",
+      "statement": "The Length field MUST be a 2-octet unsigned integer indicating the length of the enclosed data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 3.2 RFC9464-S3P2-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0027",
+      "title": "Set length from hash-algorithm count",
+      "statement": "The Length field MUST be set to 2 + (2 * the number of included hash algorithm identifiers).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0028",
+      "title": "Num Hash Algs reflects identifier count",
+      "statement": "The Num Hash Algs field MUST indicate the number of identifiers included in the List of Hash Algorithm Identifiers field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0029",
+      "title": "Derive Num Hash Algs from Length",
+      "statement": "The Num Hash Algs field MUST be set to (Length - 2) / 2.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B12-P12-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0030",
+      "title": "Set ADN Length to zero",
+      "statement": "The ADN Length field MUST be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0031",
+      "title": "List supported hash algorithm identifiers",
+      "statement": "The List of Hash Algorithm Identifiers field MUST contain 16-bit hash algorithm identifiers supported by the encrypted DNS client.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0032",
+      "title": "Limit identifiers to IANA registry values",
+      "statement": "The values of the List of Hash Algorithm Identifiers field MUST be identifiers taken from IANA's IKEv2 Hash Algorithms registry.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B15-P15-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0033",
+      "title": "Omit padding between identifiers",
+      "statement": "There MUST be no padding between the hash algorithm identifiers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B16-P16-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0034",
+      "title": "Encode attribute layout as specified",
+      "statement": "The ENCDNS_DIGEST_INFO Configuration Payload Attribute MUST use the field layout shown in the table: R, Attribute Type, Length, Num Hash Algs, ADN Length, Authentication Domain Name, Hash Algorithm Identifier, and Certificate Digest.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B19-P19-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0035",
+      "title": "Ignore R bit on receipt",
+      "statement": "The R bit MUST be ignored on receipt.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0036",
+      "title": "Set R bit to zero",
+      "statement": "The R bit MUST be set to zero.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0037",
+      "title": "Set Attribute Type to 29",
+      "statement": "The Attribute Type value MUST be 29.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B23-P23-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      },
+      "notes": [
+        "Tightened from the RFC wording so the invariant is explicit and testable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0038",
+      "title": "Set Length to data size",
+      "statement": "The Length field MUST be the length of the data in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 3.2 RFC9464-S3P2-B24-P24-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      },
+      "notes": [
+        "Renumbered from a colliding hint to keep requirement IDs unique in this batch."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0039",
+      "title": "Set Num Hash Algs to 1",
+      "statement": "The Num Hash Algs field MUST be set to 1.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B25-P25-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0040",
+      "title": "ADN Length indicates Authentication Domain Name length",
+      "statement": "The ADN Length field MUST indicate the length of the Authentication Domain Name field in octets.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B26-P26-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0041",
+      "title": "ADN Length zero applies to conveyed Authentication Domain Name",
+      "statement": "If the ADN Length field is set to 0, the digest MUST apply to the Authentication Domain Name conveyed in the ENCDNS_IP* Configuration Payload Attribute.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B26-P26-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0042",
+      "title": "Authentication Domain Name is a fully qualified domain name",
+      "statement": "The Authentication Domain Name MUST be a fully qualified domain name of the encrypted DNS resolver following the syntax defined in RFC 5890.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0043",
+      "title": "Prohibit terminators in name",
+      "statement": "The name MUST NOT contain any terminators such as NULL or CR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      },
+      "notes": [
+        "Renumbered from a colliding hint to keep requirement IDs unique in this batch."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0044",
+      "title": "Name included only with multiple ADNs",
+      "statement": "The name MUST be included only when multiple ADNs are included in the ENCDNS_IP* Configuration Payload Attribute.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      },
+      "notes": [
+        "Renumbered from a colliding hint to keep requirement IDs unique in this batch."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0045",
+      "title": "Hash Algorithm Identifier selects digest algorithm",
+      "statement": "The Hash Algorithm Identifier field MUST specify the 16-bit hash algorithm identifier selected by the DNS resolver to generate the digest of its certificate.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B28-P28-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0046",
+      "title": "Certificate Digest includes SPKI hash",
+      "statement": "The Certificate Digest field MUST include the Subject Public Key Info (SPKI) hash of the encrypted DNS resolver certificate using the algorithm identified in the Hash Algorithm Identifier field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B29-P29-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0047",
+      "title": "Certificate Digest length formula",
+      "statement": "The Certificate Digest field length MUST equal Length - 4 - ADN Length.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B29-P29-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0048",
+      "title": "ENCDNS_DIGEST_INFO allowed in CFG_ACK",
+      "statement": "The ENCDNS_DIGEST_INFO attribute MAY be present in the Configuration payload of CFG_ACK.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B30-P30-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0049",
+      "title": "Zero-length ENCDNS_DIGEST_INFO data in CFG_ACK",
+      "statement": "When the ENCDNS_DIGEST_INFO attribute is present in the Configuration payload of CFG_ACK, it MUST be returned with zero-length data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 3.2 RFC9464-S3P2-B30-P30-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ]
+      },
+      "notes": [
+        "Renumbered from a colliding hint to keep requirement IDs unique in this batch."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0050",
+      "title": "Handle malformed attributes per RFC7296",
+      "statement": "Badly formatted attributes or unacceptable fields MUST be handled as specified in Section 2.21 of [RFC7296].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0051",
+      "title": "Advertise encrypted DNS support in CFG_REQUEST",
+      "statement": "The initiator MUST indicate support for encrypted DNS by including ENCDNS_IP* attributes in its CFG_REQUEST payloads.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0052",
+      "title": "Provide encrypted DNS configuration in CFG_REPLY",
+      "statement": "The responder MUST supply encrypted DNS configuration by including ENCDNS_IP* attributes in its CFG_REPLY payloads.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0053",
+      "title": "Include ENCDNS_IP4 or ENCDNS_IP6 in CFG_REQUEST",
+      "statement": "If the initiator supports encrypted DNS, it MUST include either or both of the ENCDNS_IP4 and ENCDNS_IP6 attributes in its CFG_REQUEST.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0054",
+      "title": "Set Length to 0 when not requesting specific resolvers",
+      "statement": "If the initiator does not want to request specific DNS resolvers, it MUST set the Length field to 0 for the attribute.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0055",
+      "title": "Allow empty attribute or distinct resolver list",
+      "statement": "For a given attribute type, the initiator MAY send either an empty attribute or a list of distinct suggested resolvers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0056",
+      "title": "Allow ENCDNS_DIGEST_INFO hash algorithm list",
+      "statement": "The initiator MAY also include the ENCDNS_DIGEST_INFO attribute with a list of hash algorithms supported by the encrypted DNS client.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B3-P3-S4",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0057",
+      "title": "Ignore duplicate identical attributes after the first",
+      "statement": "If the request includes multiple bitwise identical attributes, the responder SHOULD process only the first occurrence and ignore the rest.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0058",
+      "title": "Allow discarding requests with too many repeated attributes",
+      "statement": "The responder MAY discard the full request if the count of repeated attributes exceeds an implementation-specific threshold.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0059",
+      "title": "Return ENCDNS_IP* attributes when supported and allowed",
+      "statement": "For each ENCDNS_IP* attribute from the CFG_REQUEST, if the responder supports the corresponding address family and there are no policy restrictions, the responder MUST send back one or more ENCDNS_IP* attributes in the CFG_REPLY with an appropriate list of IP addresses, service parameters, and an ADN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0060",
+      "title": "Require at least one IP address",
+      "statement": "The list of IP addresses MUST include at least one IP address.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0061",
+      "title": "Prefer the alpn service parameter",
+      "statement": "The service parameters SHOULD include at least the \"alpn\" service parameter.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0062",
+      "title": "Allow the responder to ignore suggested values",
+      "statement": "The responder MAY ignore suggested values from the initiator, if any.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0063",
+      "title": "Return multiple ENCDNS_IP attributes when needed",
+      "statement": "Multiple instances of the same ENCDNS_IP* attribute MAY be returned if distinct ADNs or service parameters need to be assigned to the initiator.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0064",
+      "title": "Present returned instances by service priority",
+      "statement": "These instances MUST be presented to a local DNS client following their service priority, where a smaller service priority value indicates a higher preference.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B6-P6-S4",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0065",
+      "title": "Optionally return digest info",
+      "statement": "The responder MAY return the ENCDNS_DIGEST_INFO attribute to convey a digest of the encrypted DNS certificate and the identifier of the hash algorithm used to generate the digest.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0066",
+      "title": "Use encrypted DNS resolvers when offered",
+      "statement": "If the initiator receives both ENCDNS_IP* and INTERNAL_IP6_DNS (or INTERNAL_IP4_DNS) attributes, it SHOULD use the encrypted DNS resolvers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0067",
+      "title": "Encrypted DNS session uses conveyed address",
+      "statement": "The DNS client MUST establish an encrypted DNS session with the address or addresses conveyed in ENCDNS_IP*.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 4 RFC9464-S4-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0068",
+      "title": "Resolver certificate authentication uses RFC8310 Section 8 mechanisms",
+      "statement": "The DNS client MUST use the mechanisms discussed in Section 8 of RFC 8310 to authenticate the DNS resolver certificate using the ADN conveyed in ENCDNS_IP*.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 Section 4 RFC9464-S4-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4",
+          "https://www.rfc-editor.org/rfc/rfc8310.html#section-8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0069",
+      "title": "Create an SPKI hash when digest info is present",
+      "statement": "If the CFG_REPLY includes an ENCDNS_DIGEST_INFO attribute, the client MUST create an SPKI hash of the DNS resolver certificate received in the TLS handshake using the negotiated hash algorithm in the ENCDNS_DIGEST_INFO attribute.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0070",
+      "title": "Validate the resolver certificate when the digest matches",
+      "statement": "If the computed digest for an ADN matches the digest sent in the ENCDNS_DIGEST_INFO attribute, the client MUST consider the encrypted DNS resolver certificate successfully validated.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B11-P11-S2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      },
+      "notes": [
+        "Normalized the declarative success condition into a testable validation outcome."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0071",
+      "title": "Treat resolver certificate validation failure as non-recoverable",
+      "statement": "If resolver certificate validation fails, the client MUST treat the failure as a non-recoverable error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B11-P11-S4",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0072",
+      "title": "Split-tunnel internal DNS resolution",
+      "statement": "When the IPsec connection is a split-tunnel configuration and the initiator has negotiated INTERNAL_DNS_DOMAIN as specified in RFC 8598, the DNS client MUST resolve the internal names using the ENCDNS_IP* DNS resolvers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B12-P12-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4",
+          "RFC 8598"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0073",
+      "title": "INTERNAL_DNS_DOMAIN may accompany ENCDNS_IP* without DNS attribute precondition",
+      "statement": "If ENCDNS_IP* attributes are supplied, responders MAY include INTERNAL_DNS_DOMAIN even when INTERNAL_IP6_DNS or INTERNAL_IP4_DNS attributes are absent.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 4 RFC9464-S4-B13-P13-S3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0074",
+      "title": "Compute SPKI hash from DER-encoded SPKI",
+      "statement": "The SPKI hash of the encrypted DNS resolver certificate MUST be the output of a cryptographic hash algorithm over the DER-encoded ASN.1 representation of the SPKI.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 5 RFC9464-S5-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-5"
+        ]
+      },
+      "notes": [
+        "Trimmed for canonical assembly without changing the required input or output relationship."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0075",
+      "title": "Support SHA2-256",
+      "statement": "Implementations MUST support SHA2-256.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 5 RFC9464-S5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-5"
+        ]
+      },
+      "notes": [
+        "RFC6234"
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0076",
+      "title": "Disallow ENCDNS_IP* use after NULL authentication unless preconfigured",
+      "statement": "If the IKEv2 responder has used the NULL Authentication method to authenticate itself, the initiator MUST NOT use returned ENCDNS_IP* resolvers configuration unless the initiator is preconfigured, e.g., in the operating system or the application.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9464 section 6 RFC9464-S6-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-6"
+        ]
+      },
+      "notes": [
+        "RFC7619"
+      ]
+    }
+  ]
+}
