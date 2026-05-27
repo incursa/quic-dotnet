@@ -70,6 +70,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicPublicApiLoopbackBenchmarks`
 - `QuicPublicApiStreamTransferBenchmarks`
 - `QuicFrameCodecBenchmarks`
+- `Http3AllocationPathBenchmarks`
 - `QuicPathValidationBenchmarks`
 - `QuicEcnValidationBenchmarks`
 - `QuicCryptoBufferBenchmarks`
@@ -100,6 +101,7 @@ Target a specific suite with `--filter` when iterating locally:
 
 ```powershell
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Http3AllocationPathBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"

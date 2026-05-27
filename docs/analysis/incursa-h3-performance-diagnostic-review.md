@@ -107,6 +107,15 @@ The optional helper script added in this review can rerun the candidate search:
 pwsh -NoProfile -File scripts/analysis/Find-HotPathPatterns.ps1
 ```
 
+Most recent candidate-count snapshot from that script against the default scope:
+
+- `new byte[]`: 77
+- `new MemoryStream`: 0
+- `.ToArray()`: 220
+
+The script output is only a candidate list. It is useful for choosing where to
+inspect next, not proof that any site is a bottleneck.
+
 ## Top Suspected Bottleneck Categories
 
 ### Likely Serious
@@ -230,6 +239,75 @@ The current evidence cannot separate:
 - scheduler/channel overhead from protocol processing
 - QPACK/header cost from QUIC transport cost
 - target server CPU from `dotnet run` wrapper CPU
+
+## Lower-Level Benchmark Plan
+
+These are proposed measurement slices only. They should use the existing
+BenchmarkDotNet project shape under `benchmarks/`, keep correctness semantics
+unchanged, and include allocation columns wherever practical.
+
+1. QUIC varint parse/write
+   - Existing anchor: `benchmarks/QuicVariableLengthIntegerBenchmarks.cs`.
+   - Measure representative 1, 2, 4, and 8 byte values, sequential decode over
+     packet-like buffers, and write into caller-provided spans.
+   - Goal: confirm the varint primitive is not dominating frame and packet
+     parsing.
+
+2. QUIC frame parse/write
+   - Existing anchor: `benchmarks/QuicFrameCodecBenchmarks.cs`.
+   - Add or extend cases for the exact request/response mix: STREAM, ACK,
+     MAX_DATA, MAX_STREAM_DATA, CONNECTION_CLOSE, and small DATAGRAM only if it
+     stays separate from H3 request response claims.
+   - Goal: measure frame codec cost and allocation for tiny STREAM-heavy
+     packets.
+
+3. Packet builder and packet protection
+   - Existing anchors: `QuicInitialPacketProtectionBenchmarks`,
+     `QuicHandshakePacketProtectionBenchmarks`, and runtime packet-build helpers
+     in `QuicConnectionRuntime.Streams.cs`.
+   - Add a 1-RTT STREAM payload build/protect benchmark using established test
+     packet-protection material and small payload sizes matching `/plaintext`
+     and `/json`.
+   - Goal: isolate STREAM payload build, packet protection, recovery accounting,
+     and protected packet allocation.
+
+4. Stream write path
+   - Existing anchors: `QuicConnectionStreamStateBenchmarks` and
+     `QuicPublicApiStreamTransferBenchmarks`.
+   - Add a runtime-level benchmark for `WriteFinalStreamAsync` over an active
+     in-memory/loopback connection shape, plus a lower-level benchmark around
+     `HandleWriteStreamAction` if the internal seam can be exercised without
+     weakening correctness.
+   - Goal: count awaits, task completions, queue posts, send effects, and
+     allocations per tiny response write.
+
+5. HTTP/3 frame write
+   - New likely benchmark class: `Http3FrameWriterBenchmarks`.
+   - Measure `WriteHeaders`, `WriteData`, and the current combined
+     HEADERS+DATA response framing shape for the plaintext and JSON bodies.
+   - Goal: separate H3 frame array/copy cost from QUIC packet cost.
+
+6. QPACK/header encode
+   - New or extended benchmark class: `QPackFieldSectionBenchmarks`.
+   - Measure current response field-section encoding for the benchmark headers,
+     static table lookup, literal string encoding, and request HEADERS decode
+     using captured h2load request header bytes if available.
+   - Goal: test whether repeated static-table scans, `QPackFieldLine[]`
+     creation, and string-to-byte encoding are meaningful.
+
+7. Plaintext response generation
+   - New likely benchmark class: `Http3TechEmpowerResponseBenchmarks`.
+   - Measure `TechEmpowerHandler.HandleAsync` for `GET /plaintext`, including
+     `Http3ServerResponse` construction and response header construction, but
+     not QUIC transport.
+   - Goal: bound sample-handler overhead and date/content-length/header
+     allocation.
+
+8. JSON response generation
+   - Same benchmark class as plaintext, using `GET /json`.
+   - Keep the existing static JSON body semantics. Do not add serializer work
+     unless the benchmark scenario itself changes.
+   - Goal: confirm JSON remains close to plaintext below the transport layer.
 
 ## Recommended Next Measurement Phase
 

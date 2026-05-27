@@ -22,6 +22,12 @@ public sealed class Http3Server : IAsyncDisposable
     private const byte LiteralWithLiteralNamePrefix = 0x20;
     private const int StringLiteralPrefixBits = 8;
     private const int StatusStaticNameIndex = 24;
+    private const int QPackIntegerMaxPrefixBitCount = 8;
+    private const ulong QPackIntegerMaxValue = 0x3FFF_FFFF_FFFF_FFFFUL;
+    private const byte QPackIntegerContinuationThreshold = 0x80;
+    private const byte QPackIntegerContinuationValueMask = 0x7F;
+    private const byte QPackIntegerContinuationFlag = 0x80;
+    private const int QPackIntegerContinuationShift = 7;
     private static readonly Encoding HeaderTextEncoding = Encoding.Latin1;
 
     private readonly QuicListener listener;
@@ -758,26 +764,30 @@ public sealed class Http3Server : IAsyncDisposable
         Http3ServerResponse response,
         CancellationToken cancellationToken)
     {
-        byte[] headersFrame = Http3FrameWriter.WriteHeaders(EncodeResponseFieldSection(BuildResponseHeaders(response)));
+        byte[] encodedFieldSection = EncodeResponseFieldSection(BuildResponseHeaders(response));
+        int headersFrameLength = Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Headers, encodedFieldSection.Length);
         if (response.StreamingBody is not null)
         {
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
             await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false);
         }
         else if (response.Body.IsEmpty)
         {
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
             await WriteFinalFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false);
         }
         else
         {
             await WriteBufferedResponseFramesAsync(
                 stream,
-                headersFrame,
+                encodedFieldSection,
+                headersFrameLength,
                 response.Body,
                 response.DataFramePayloadSize,
                 cancellationToken).ConfigureAwait(false);
         }
 
-        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.Length);
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrameLength);
         Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseStarted)
         {
             Role = "server",
@@ -797,20 +807,29 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static async ValueTask WriteBufferedResponseFramesAsync(
         QuicStream stream,
-        byte[] headersFrame,
+        byte[] encodedFieldSection,
+        int headersFrameLength,
         ReadOnlyMemory<byte> body,
         int? dataFramePayloadSize,
         CancellationToken cancellationToken)
     {
-        ArrayBufferWriter<byte> writer = new(headersFrame.Length + body.Length + Http3VariableLengthInteger.MaxEncodedLength * 2);
-        writer.Write(headersFrame);
-
         int framePayloadSize = dataFramePayloadSize ?? ResponseDataFrameChunkSize;
+        int bufferedLength = headersFrameLength;
+        for (int sizingOffset = 0; sizingOffset < body.Length;)
+        {
+            int count = Math.Min(framePayloadSize, body.Length - sizingOffset);
+            bufferedLength = checked(bufferedLength + Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, count));
+            sizingOffset += count;
+        }
+
+        ArrayBufferWriter<byte> writer = new(bufferedLength);
+        Http3FrameWriter.WriteHeaders(writer, encodedFieldSection);
+
         int offset = 0;
         while (offset < body.Length)
         {
             int count = Math.Min(framePayloadSize, body.Length - offset);
-            writer.Write(Http3FrameWriter.WriteData(body.Span.Slice(offset, count)));
+            Http3FrameWriter.WriteData(writer, body.Span.Slice(offset, count));
             offset += count;
         }
 
@@ -978,8 +997,8 @@ public sealed class Http3Server : IAsyncDisposable
     private static byte[] EncodeResponseFieldSection(IReadOnlyList<QPackFieldLine> headers)
     {
         ArrayBufferWriter<byte> writer = new();
-        WriteBytes(writer, QPackInteger.Encode(0, FieldSectionRequiredInsertCountPrefixBits));
-        WriteBytes(writer, QPackInteger.Encode(0, FieldSectionBasePrefixBits));
+        WriteInteger(writer, 0, FieldSectionRequiredInsertCountPrefixBits);
+        WriteInteger(writer, 0, FieldSectionBasePrefixBits);
 
         foreach (QPackFieldLine header in headers)
         {
@@ -992,7 +1011,7 @@ public sealed class Http3Server : IAsyncDisposable
             int staticFieldIndex = FindStaticFieldLineIndex(header);
             if (staticFieldIndex >= 0)
             {
-                WriteBytes(writer, QPackInteger.Encode(checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix));
+                WriteInteger(writer, checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix);
                 continue;
             }
 
@@ -1003,7 +1022,7 @@ public sealed class Http3Server : IAsyncDisposable
                 continue;
             }
 
-            WriteBytes(writer, QPackInteger.Encode(checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix));
+            WriteInteger(writer, checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix);
             WriteRawString(writer, header.Name);
             WriteStringLiteral(writer, header.Value);
         }
@@ -1013,29 +1032,62 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static void WriteLiteralWithStaticNameReference(IBufferWriter<byte> writer, int staticNameIndex, string value)
     {
-        WriteBytes(writer, QPackInteger.Encode(checked((ulong)staticNameIndex), StaticNameReferencePrefixBits, LiteralWithStaticNameReferencePrefix));
+        WriteInteger(writer, checked((ulong)staticNameIndex), StaticNameReferencePrefixBits, LiteralWithStaticNameReferencePrefix);
         WriteStringLiteral(writer, value);
     }
 
     private static void WriteStringLiteral(IBufferWriter<byte> writer, string value)
     {
-        WriteBytes(writer, QPackInteger.Encode(checked((ulong)HeaderTextEncoding.GetByteCount(value)), StringLiteralPrefixBits - 1));
+        WriteInteger(writer, checked((ulong)HeaderTextEncoding.GetByteCount(value)), StringLiteralPrefixBits - 1);
         WriteRawString(writer, value);
     }
 
     private static void WriteRawString(IBufferWriter<byte> writer, string value)
     {
-        byte[] bytes = HeaderTextEncoding.GetBytes(value);
-        Span<byte> destination = writer.GetSpan(bytes.Length);
-        bytes.CopyTo(destination);
-        writer.Advance(bytes.Length);
+        int byteCount = HeaderTextEncoding.GetByteCount(value);
+        Span<byte> destination = writer.GetSpan(byteCount);
+        int bytesWritten = HeaderTextEncoding.GetBytes(value.AsSpan(), destination);
+        writer.Advance(bytesWritten);
     }
 
-    private static void WriteBytes(IBufferWriter<byte> writer, ReadOnlySpan<byte> source)
+    private static void WriteInteger(IBufferWriter<byte> writer, ulong value, int prefixBitCount, byte prefixBits = 0)
     {
-        Span<byte> destination = writer.GetSpan(source.Length);
-        source.CopyTo(destination);
-        writer.Advance(source.Length);
+        if (prefixBitCount is < 1 or > QPackIntegerMaxPrefixBitCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(prefixBitCount));
+        }
+
+        if (value > QPackIntegerMaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        byte mask = prefixBitCount == QPackIntegerMaxPrefixBitCount
+            ? byte.MaxValue
+            : (byte)((1 << prefixBitCount) - 1);
+        Span<byte> first = writer.GetSpan(1);
+        if (value < mask)
+        {
+            first[0] = (byte)(prefixBits | value);
+            writer.Advance(1);
+            return;
+        }
+
+        first[0] = (byte)(prefixBits | mask);
+        writer.Advance(1);
+
+        value -= mask;
+        while (value >= QPackIntegerContinuationThreshold)
+        {
+            Span<byte> continuation = writer.GetSpan(1);
+            continuation[0] = (byte)((value & QPackIntegerContinuationValueMask) | QPackIntegerContinuationFlag);
+            writer.Advance(1);
+            value >>= QPackIntegerContinuationShift;
+        }
+
+        Span<byte> terminal = writer.GetSpan(1);
+        terminal[0] = (byte)value;
+        writer.Advance(1);
     }
 
     private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)

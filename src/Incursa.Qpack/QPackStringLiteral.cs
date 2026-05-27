@@ -14,12 +14,12 @@ internal static class QPackStringLiteral
     {
         ArgumentNullException.ThrowIfNull(value);
         ValidatePrefixBitCount(prefixBitCount);
-        byte[] bytes = HeaderTextEncoding.GetBytes(value);
-        QPackInteger.Write(writer, checked((ulong)bytes.Length), prefixBitCount - 1, prefixBits);
+        int byteCount = HeaderTextEncoding.GetByteCount(value);
+        QPackInteger.Write(writer, checked((ulong)byteCount), prefixBitCount - 1, prefixBits);
 
-        Span<byte> destination = writer.GetSpan(bytes.Length);
-        bytes.CopyTo(destination);
-        writer.Advance(bytes.Length);
+        Span<byte> destination = writer.GetSpan(byteCount);
+        int bytesWritten = HeaderTextEncoding.GetBytes(value.AsSpan(), destination);
+        writer.Advance(bytesWritten);
     }
 
     public static string Read(ReadOnlySpan<byte> source, int prefixBitCount, out int bytesConsumed)

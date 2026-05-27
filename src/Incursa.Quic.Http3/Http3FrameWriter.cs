@@ -15,12 +15,22 @@ public static class Http3FrameWriter
         return WriteFrame((ulong)Http3FrameType.Data, data);
     }
 
+    internal static void WriteData(IBufferWriter<byte> writer, ReadOnlySpan<byte> data)
+    {
+        WriteFrame(writer, (ulong)Http3FrameType.Data, data);
+    }
+
     /// <summary>
     /// Writes a HEADERS frame.
     /// </summary>
     public static byte[] WriteHeaders(ReadOnlySpan<byte> encodedFieldSection)
     {
         return WriteFrame((ulong)Http3FrameType.Headers, encodedFieldSection);
+    }
+
+    internal static void WriteHeaders(IBufferWriter<byte> writer, ReadOnlySpan<byte> encodedFieldSection)
+    {
+        WriteFrame(writer, (ulong)Http3FrameType.Headers, encodedFieldSection);
     }
 
     /// <summary>
@@ -101,6 +111,19 @@ public static class Http3FrameWriter
         WriteVariableLengthInteger(writer, frameType);
         WriteVariableLengthInteger(writer, checked((ulong)payload.Length));
         writer.Write(payload);
+    }
+
+    internal static int GetFrameLength(ulong frameType, int payloadLength)
+    {
+        if (payloadLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(payloadLength));
+        }
+
+        return checked(
+            Http3VariableLengthInteger.GetEncodedLength(frameType)
+            + Http3VariableLengthInteger.GetEncodedLength((ulong)payloadLength)
+            + payloadLength);
     }
 
     private static byte[] WriteSingleIntegerFrame(ulong frameType, ulong value)
