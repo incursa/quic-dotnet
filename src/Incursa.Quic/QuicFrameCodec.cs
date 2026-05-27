@@ -198,7 +198,7 @@ internal static class QuicFrameCodec
     /// </summary>
     internal static bool TryParseAckFrame(ReadOnlySpan<byte> packetPayload, out QuicAckFrame frame, out int bytesConsumed)
     {
-        frame = new QuicAckFrame();
+        frame = null!;
         bytesConsumed = default;
 
         if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index))
@@ -225,7 +225,9 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        QuicAckRange[] additionalRanges = new QuicAckRange[(int)ackRangeCount];
+        QuicAckRange[] additionalRanges = ackRangeCount == 0
+            ? []
+            : new QuicAckRange[(int)ackRangeCount];
         ulong previousSmallestAcknowledged = largestAcknowledged - firstAckRange;
 
         for (int rangeIndex = 0; rangeIndex < additionalRanges.Length; rangeIndex++)

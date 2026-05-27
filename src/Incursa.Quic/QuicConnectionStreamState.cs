@@ -1261,7 +1261,7 @@ internal sealed class QuicConnectionStreamState
                 int gapLength = (int)(gapEnd - currentOffset);
                 if (gapLength > 0)
                 {
-                    updated.Add(new BufferedSegment(currentOffset, data[dataIndex..(dataIndex + gapLength)]));
+                    updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, gapLength));
                     state.BufferedReadableBytes += gapLength;
                     dataIndex += gapLength;
                     currentOffset += (ulong)gapLength;
@@ -1290,7 +1290,7 @@ internal sealed class QuicConnectionStreamState
         if (currentOffset < endOffset)
         {
             int tailLength = (int)(endOffset - currentOffset);
-            updated.Add(new BufferedSegment(currentOffset, data[dataIndex..(dataIndex + tailLength)]));
+            updated.Add(CreateBufferedSegment(currentOffset, data, dataIndex, tailLength));
             state.BufferedReadableBytes += tailLength;
         }
 
@@ -1301,6 +1301,15 @@ internal sealed class QuicConnectionStreamState
 
         state.BufferedSegments.Clear();
         state.BufferedSegments.AddRange(updated);
+    }
+
+    private static BufferedSegment CreateBufferedSegment(ulong offset, byte[] data, int dataIndex, int length)
+    {
+        byte[] segmentData = dataIndex == 0 && length == data.Length
+            ? data
+            : data.AsSpan(dataIndex, length).ToArray();
+
+        return new BufferedSegment(offset, segmentData);
     }
 
     private static bool HasContiguousReadableBytes(StreamState state)

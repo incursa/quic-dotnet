@@ -23,10 +23,24 @@ public sealed class Http3RequestMessageValidator
     public void ReceiveHeaders(IReadOnlyList<QPackFieldLine> fieldSection, bool trailersSupported = false)
     {
         ArgumentNullException.ThrowIfNull(fieldSection);
+        ReceiveHeadersCore(fieldSection, ownedFieldSection: null, trailersSupported);
+    }
+
+    internal void ReceiveOwnedHeaders(QPackFieldLine[] fieldSection, bool trailersSupported = false)
+    {
+        ArgumentNullException.ThrowIfNull(fieldSection);
+        ReceiveHeadersCore(fieldSection, fieldSection, trailersSupported);
+    }
+
+    private void ReceiveHeadersCore(
+        IReadOnlyList<QPackFieldLine> fieldSection,
+        QPackFieldLine[]? ownedFieldSection,
+        bool trailersSupported)
+    {
         if (!headersSeen)
         {
             Http3HeaderValidator.ValidateRequestHeaders(fieldSection, validateContentLength: false);
-            headers = fieldSection.ToArray();
+            headers = ownedFieldSection ?? fieldSection.ToArray();
             headersSeen = true;
             return;
         }

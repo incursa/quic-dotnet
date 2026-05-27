@@ -435,7 +435,7 @@ public sealed class Http3Server : IAsyncDisposable
 
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 ProcessPeerControlFrames(frameReader.Complete(), stream.Id, dispatcher, dispatcherGate, qpackState);
@@ -581,7 +581,7 @@ public sealed class Http3Server : IAsyncDisposable
     {
         Http3FrameReader frameReader = new();
         Http3RequestMessageValidator validator = new();
-        ArrayBufferWriter<byte> body = new();
+        ArrayBufferWriter<byte>? body = null;
         byte[] buffer = new byte[readBufferSize];
 
         while (true)
@@ -592,7 +592,7 @@ public sealed class Http3Server : IAsyncDisposable
                 foreach (Http3Frame frame in frameReader.Complete())
                 {
                     EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                    await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                    body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
                 }
 
                 break;
@@ -601,7 +601,7 @@ public sealed class Http3Server : IAsyncDisposable
             foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
             {
                 EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
             }
 
             if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
@@ -617,7 +617,7 @@ public sealed class Http3Server : IAsyncDisposable
             throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 request did not contain a HEADERS frame.");
         }
 
-        return CreateRequest(headers, body.WrittenMemory);
+        return CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty);
     }
 
     private static bool TryCreateNoBodyGetRequest(
@@ -658,10 +658,10 @@ public sealed class Http3Server : IAsyncDisposable
         return false;
     }
 
-    private async ValueTask ProcessRequestFrameAsync(
+    private async ValueTask<ArrayBufferWriter<byte>?> ProcessRequestFrameAsync(
         Http3Frame frame,
         Http3RequestMessageValidator validator,
-        IBufferWriter<byte> body,
+        ArrayBufferWriter<byte>? body,
         long streamId,
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
@@ -669,18 +669,19 @@ public sealed class Http3Server : IAsyncDisposable
         switch (frame)
         {
             case Http3HeadersFrame headersFrame:
-                validator.ReceiveHeaders(
-                    await qpackState.DecodeRequestHeadersAsync(
+                QPackFieldLine[] fieldSection = await qpackState.DecodeRequestHeadersAsync(
                         checked((ulong)streamId),
                         headersFrame.EncodedFieldSection,
-                        cancellationToken).ConfigureAwait(false));
-                break;
+                        cancellationToken).ConfigureAwait(false);
+                validator.ReceiveOwnedHeaders(fieldSection);
+                return body;
             case Http3DataFrame dataFrame:
                 validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
+                body ??= new ArrayBufferWriter<byte>();
                 body.Write(dataFrame.Data.Span);
-                break;
+                return body;
             case Http3UnknownFrame:
-                break;
+                return body;
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
         }

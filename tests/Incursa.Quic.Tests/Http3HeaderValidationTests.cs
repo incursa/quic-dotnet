@@ -32,6 +32,50 @@ public sealed class Http3HeaderValidationTests
         Assert.Contains(decoded, header => header.Name == "accept" && header.Value == "*/*");
     }
 
+    [Theory]
+    [InlineData("/plaintext")]
+    [InlineData("/json")]
+    public void DecodeValidateAndMaterializeRequest_TechEmpowerGet_PreservesRequestSemantics(string path)
+    {
+        QPackFieldLine[] expected = TechEmpowerRequestHeaders(path);
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(QPackEncoder.EncodeFieldSection(expected));
+        Http3RequestMessageValidator validator = new();
+
+        validator.ReceiveHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        Http3Request request = new(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+
+        Assert.Equal("GET", request.Method);
+        Assert.Equal("https", request.Scheme);
+        Assert.Equal("localhost:5444", request.Authority);
+        Assert.Equal(path, request.Path);
+        Assert.Equal(0, request.Body.Length);
+        Assert.Equal(expected, request.Headers);
+        Assert.Equal(expected.Select(static header => header.Name), request.Headers.Select(static header => header.Name));
+        Assert.Contains(request.Headers, header => header.Name == "user-agent" && header.Value == "h2load");
+        Assert.Contains(request.Headers, header => header.Name == "accept" && header.Value == "*/*");
+    }
+
+    [Fact]
+    public void RequestSequence_PublicReceiveHeadersCopiesMutableInput()
+    {
+        QPackFieldLine[] headers = CommonRequestHeaders();
+        Http3RequestMessageValidator validator = new();
+
+        validator.ReceiveHeaders(headers);
+        headers[3] = new QPackFieldLine(":path", "/mutated");
+
+        IReadOnlyList<QPackFieldLine> retained = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Assert.Contains(retained, header => header.Name == ":path" && header.Value == "/");
+        Assert.DoesNotContain(retained, header => header.Name == ":path" && header.Value == "/mutated");
+    }
+
     [Fact]
     public void DecodeAndValidateRequestHeaders_UnknownRegularHeader_RemainsAccepted()
     {

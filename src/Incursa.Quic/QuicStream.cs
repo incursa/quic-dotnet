@@ -190,6 +190,16 @@ public sealed class QuicStream : Stream
         return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesRead))
+        {
+            return bytesRead;
+        }
+
+        return await ReadCoreAsync(buffer, cancellationToken).ConfigureAwait(false);
+    }
+
     public override void Write(byte[] buffer, int offset, int count)
     {
         ArgumentNullException.ThrowIfNull(buffer);
@@ -427,79 +437,91 @@ public sealed class QuicStream : Stream
     {
         while (true)
         {
-            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
-
-            if (!canRead)
+            if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesWritten))
             {
-                throw new InvalidOperationException("This stream does not have a readable side.");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (readTerminalException is Exception readException)
-            {
-                throw readException;
-            }
-
-            Exception? runtimeException = runtime?.GetStreamOperationException();
-            if (runtimeException is not null)
-            {
-                throw runtimeException;
-            }
-
-            if (buffer.IsEmpty)
-            {
-                return 0;
-            }
-
-            if (bookkeeping.TryReadStreamData(
-                streamId,
-                buffer.Span,
-                out int bytesWritten,
-                out bool completed,
-                out QuicMaxDataFrame maxDataFrame,
-                out QuicMaxStreamDataFrame maxStreamDataFrame,
-                out QuicTransportErrorCode errorCode))
-            {
-                if (bytesWritten > 0)
-                {
-                    QuicMaxDataFrame? maxDataUpdate = maxDataFrame.MaximumData != 0 ? maxDataFrame : null;
-                    QuicMaxStreamDataFrame? maxStreamDataUpdate = maxStreamDataFrame.MaximumStreamData != 0
-                        ? maxStreamDataFrame
-                        : null;
-
-                    runtime?.TryQueueFlowControlCreditUpdate(maxDataUpdate, maxStreamDataUpdate);
-                }
-
-                if (completed)
-                {
-                    readsClosed.TrySetResult(null);
-                    runtime?.TryQueueStreamCapacityRelease(streamId);
-                }
-
                 return bytesWritten;
+            }
+
+            await readGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private bool TryCompleteReadSynchronously(Memory<byte> buffer, CancellationToken cancellationToken, out int bytesRead)
+    {
+        bytesRead = 0;
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+        if (!canRead)
+        {
+            throw new InvalidOperationException("This stream does not have a readable side.");
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (readTerminalException is Exception readException)
+        {
+            throw readException;
+        }
+
+        Exception? runtimeException = runtime?.GetStreamOperationException();
+        if (runtimeException is not null)
+        {
+            throw runtimeException;
+        }
+
+        if (buffer.IsEmpty)
+        {
+            return true;
+        }
+
+        if (bookkeeping.TryReadStreamData(
+            streamId,
+            buffer.Span,
+            out int bytesWritten,
+            out bool completed,
+            out QuicMaxDataFrame maxDataFrame,
+            out QuicMaxStreamDataFrame maxStreamDataFrame,
+            out QuicTransportErrorCode errorCode))
+        {
+            if (bytesWritten > 0)
+            {
+                QuicMaxDataFrame? maxDataUpdate = maxDataFrame.MaximumData != 0 ? maxDataFrame : null;
+                QuicMaxStreamDataFrame? maxStreamDataUpdate = maxStreamDataFrame.MaximumStreamData != 0
+                    ? maxStreamDataFrame
+                    : null;
+
+                runtime?.TryQueueFlowControlCreditUpdate(maxDataUpdate, maxStreamDataUpdate);
             }
 
             if (completed)
             {
                 readsClosed.TrySetResult(null);
                 runtime?.TryQueueStreamCapacityRelease(streamId);
-                return 0;
             }
 
-            if (TryCreateReadAbortException(out Exception? readAbortException))
-            {
-                runtime?.TryQueueStreamCapacityRelease(streamId);
-                throw readAbortException!;
-            }
-
-            if (errorCode != default)
-            {
-                throw new QuicException(QuicError.TransportError, null, (long)errorCode, "The stream could not be read.");
-            }
-
-            await readGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+            bytesRead = bytesWritten;
+            return true;
         }
+
+        if (completed)
+        {
+            readsClosed.TrySetResult(null);
+            runtime?.TryQueueStreamCapacityRelease(streamId);
+            return true;
+        }
+
+        if (TryCreateReadAbortException(out Exception? readAbortException))
+        {
+            runtime?.TryQueueStreamCapacityRelease(streamId);
+            throw readAbortException!;
+        }
+
+        if (errorCode != default)
+        {
+            throw new QuicException(QuicError.TransportError, null, (long)errorCode, "The stream could not be read.");
+        }
+
+        return false;
     }
 
     private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)

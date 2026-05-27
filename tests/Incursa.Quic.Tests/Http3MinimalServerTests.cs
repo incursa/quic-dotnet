@@ -153,6 +153,33 @@ public sealed class Http3MinimalServerTests
         Assert.Equal("response before fin", System.Text.Encoding.UTF8.GetString(response.Body));
     }
 
+    [Theory]
+    [InlineData("/plaintext")]
+    [InlineData("/json")]
+    public async Task HeadersOnlyGet_DeliversEmptyBodyToHandler(string path)
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureRequestHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteGetRequestAsync(requestStream, path);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("GET", handler.Method);
+        Assert.Equal(path, handler.Path);
+        Assert.Empty(handler.Body);
+        Assert.Contains(handler.Headers, header => header.Name == ":path" && header.Value == path);
+    }
+
     [Fact]
     public async Task PostDataRequest_DeliversBodyToHandler()
     {
@@ -176,6 +203,95 @@ public sealed class Http3MinimalServerTests
             response.StatusCode == 200,
             string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
         Assert.Equal("hello body", System.Text.Encoding.UTF8.GetString(handler.Body));
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithEmptyDataFrame_DeliversEmptyBodyToHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureBodyHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestAsync(requestStream, "/upload", [], includeContentLength: true);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Empty(handler.Body);
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithMultipleDataFrames_PreservesBodyOrdering()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureBodyHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WritePostRequestDataFramesAsync(requestStream, "/upload", ["hello "u8.ToArray(), "ordered body"u8.ToArray()]);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("hello ordered body", System.Text.Encoding.UTF8.GetString(handler.Body));
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithFragmentedFrames_PreservesBody()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureBodyHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteFragmentedPostRequestAsync(requestStream, "/upload", "fragmented body"u8.ToArray());
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("fragmented body", System.Text.Encoding.UTF8.GetString(handler.Body));
+    }
+
+    [Fact]
+    public async Task RequestDataBeforeHeaders_Returns400()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] dataFrame = Http3FrameWriter.WriteData("before headers"u8);
+        await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteGetRequestHeadersAsync(requestStream, "/upload");
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(400, response.StatusCode);
     }
 
     [Fact]
@@ -383,6 +499,56 @@ public sealed class Http3MinimalServerTests
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
     }
 
+    private static async Task WritePostRequestDataFramesAsync(
+        QuicStream requestStream,
+        string path,
+        IReadOnlyList<byte[]> bodyChunks)
+    {
+        int contentLength = bodyChunks.Sum(static chunk => chunk.Length);
+        List<QPackFieldLine> fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+            new QPackFieldLine("content-length", contentLength.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            new QPackFieldLine("content-type", "text/plain"),
+        ];
+
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(fields));
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        foreach (byte[] chunk in bodyChunks)
+        {
+            byte[] dataFrame = Http3FrameWriter.WriteData(chunk);
+            await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        }
+
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WriteFragmentedPostRequestAsync(QuicStream requestStream, string path, byte[] body)
+    {
+        List<QPackFieldLine> fields =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+            new QPackFieldLine("content-length", body.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            new QPackFieldLine("content-type", "text/plain"),
+        ];
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(fields));
+        byte[] dataFrame = Http3FrameWriter.WriteData(body);
+        byte[] requestBytes = new byte[headersFrame.Length + dataFrame.Length];
+        headersFrame.CopyTo(requestBytes, 0);
+        dataFrame.CopyTo(requestBytes, headersFrame.Length);
+
+        int split = Math.Max(1, requestBytes.Length / 3);
+        await requestStream.WriteAsync(requestBytes, 0, split).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(requestBytes, split, requestBytes.Length - split).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
     private static async Task WriteGetRequestHeadersAsync(QuicStream requestStream, string path)
     {
         byte[] encoded = QPackEncoder.EncodeFieldSection(
@@ -574,6 +740,26 @@ public sealed class Http3MinimalServerTests
         public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
         {
             Body = request.Body.ToArray();
+            return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
+        }
+    }
+
+    private sealed class CaptureRequestHandler : IHttp3RequestHandler
+    {
+        public string Method { get; private set; } = string.Empty;
+
+        public string Path { get; private set; } = string.Empty;
+
+        public byte[] Body { get; private set; } = [];
+
+        public IReadOnlyList<QPackFieldLine> Headers { get; private set; } = [];
+
+        public ValueTask<Http3ServerResponse> HandleAsync(Http3Request request, CancellationToken cancellationToken = default)
+        {
+            Method = request.Method;
+            Path = request.Path;
+            Body = request.Body.ToArray();
+            Headers = request.Headers;
             return ValueTask.FromResult(new Http3ServerResponse(200, "ok"u8.ToArray()));
         }
     }

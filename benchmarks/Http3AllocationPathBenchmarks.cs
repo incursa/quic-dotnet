@@ -110,7 +110,7 @@ public class Http3AllocationPathBenchmarks
     public int RequestHeaders_DecodePlaintextFieldSection()
     {
         QPackFieldLine[] headers = DecodeRequestHeaders(plaintextRequestFieldSection);
-        return CountHeaderCharacters(headers);
+        return CountHeaderCharactersList(headers);
     }
 
     /// <summary>
@@ -120,7 +120,143 @@ public class Http3AllocationPathBenchmarks
     public int RequestHeaders_DecodeJsonFieldSection()
     {
         QPackFieldLine[] headers = DecodeRequestHeaders(jsonRequestFieldSection);
+        return CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
+    /// Measures the decode-only request header stage for a tiny plaintext GET request.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_DecodeOnly_Plaintext()
+    {
+        QPackFieldLine[] headers = DecodeRequestHeaders(plaintextRequestFieldSection);
         return CountHeaderCharacters(headers);
+    }
+
+    /// <summary>
+    /// Measures the decode-only request header stage for a tiny JSON GET request.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_DecodeOnly_Json()
+    {
+        QPackFieldLine[] headers = DecodeRequestHeaders(jsonRequestFieldSection);
+        return CountHeaderCharacters(headers);
+    }
+
+    /// <summary>
+    /// Measures pseudo-header validation using pre-decoded plaintext request fields.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_ValidateOnly_Plaintext()
+    {
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(plaintextRequestHeaders, validateContentLength: false);
+        return CountHeaderCharacters(plaintextRequestHeaders) ^ (result.Method?.Length ?? 0) ^ (result.Path?.Length ?? 0);
+    }
+
+    /// <summary>
+    /// Measures request message validator receive/copy behavior using pre-decoded plaintext request fields.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_ValidatorReceiveOnly_Plaintext()
+    {
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveHeaders(plaintextRequestHeaders);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        return CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
+    /// Measures request message validator receive behavior when the decoded field array is server-owned.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_OwnedValidatorReceiveOnly_Plaintext()
+    {
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveOwnedHeaders(plaintextRequestHeaders);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        return CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
+    /// Measures request object materialization using already validated plaintext request fields.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_MaterializeOnly_Plaintext()
+    {
+        Http3Request request = new(
+            "GET",
+            "https",
+            "localhost:5444",
+            "/plaintext",
+            plaintextRequestHeaders);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length;
+    }
+
+    /// <summary>
+    /// Measures validation and request object materialization using pre-decoded plaintext request fields.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_ValidateMaterializeOnly_Plaintext()
+    {
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(plaintextRequestHeaders, validateContentLength: false);
+        Http3Request request = new(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            plaintextRequestHeaders);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length;
+    }
+
+    /// <summary>
+    /// Measures decode plus validation without validator receive/copy or request materialization.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_DecodeValidateOnly_Plaintext()
+    {
+        QPackFieldLine[] headers = DecodeRequestHeaders(plaintextRequestFieldSection);
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        return CountHeaderCharacters(headers) ^ (result.Method?.Length ?? 0) ^ (result.Path?.Length ?? 0);
+    }
+
+    /// <summary>
+    /// Measures decode, server-owned validator receive, validation, and request object materialization for plaintext.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_DecodeValidateMaterialize_Plaintext()
+    {
+        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveOwnedHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        Http3Request request = new(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length;
+    }
+
+    /// <summary>
+    /// Measures decode, server-owned validator receive, validation, and request object materialization for JSON.
+    /// </summary>
+    [Benchmark]
+    public int RequestHeaders_DecodeValidateMaterialize_Json()
+    {
+        QPackFieldLine[] decoded = DecodeRequestHeaders(jsonRequestFieldSection);
+        Http3RequestMessageValidator validator = new();
+        validator.ReceiveOwnedHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        Http3Request request = new(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length;
     }
 
     /// <summary>
@@ -142,7 +278,7 @@ public class Http3AllocationPathBenchmarks
     {
         QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
         Http3RequestMessageValidator validator = new();
-        validator.ReceiveHeaders(decoded);
+        validator.ReceiveOwnedHeaders(decoded);
         IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
         Http3Request request = new(
@@ -152,6 +288,77 @@ public class Http3AllocationPathBenchmarks
             result.Path ?? string.Empty,
             headers);
         return request.Headers.Count ^ request.Path.Length ^ request.Body.Length;
+    }
+
+    /// <summary>
+    /// Measures the HEADERS-only GET lifecycle shape without DATA frame body storage.
+    /// </summary>
+    [Benchmark]
+    public int RequestLifecycle_HeadersOnlyGetPlaintext()
+    {
+        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        Http3RequestMessageValidator validator = new();
+        ArrayBufferWriter<byte>? body = null;
+        validator.ReceiveOwnedHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        if (result.Method != "GET")
+        {
+            throw new InvalidOperationException("The benchmark request was expected to be a GET request.");
+        }
+
+        Http3Request request = new(
+            result.Method,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length ^ (body?.WrittenCount ?? 0);
+    }
+
+    /// <summary>
+    /// Measures the HEADERS-only JSON GET lifecycle shape without DATA frame body storage.
+    /// </summary>
+    [Benchmark]
+    public int RequestLifecycle_HeadersOnlyGetJson()
+    {
+        QPackFieldLine[] decoded = DecodeRequestHeaders(jsonRequestFieldSection);
+        Http3RequestMessageValidator validator = new();
+        ArrayBufferWriter<byte>? body = null;
+        validator.ReceiveOwnedHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        if (result.Method != "GET")
+        {
+            throw new InvalidOperationException("The benchmark request was expected to be a GET request.");
+        }
+
+        Http3Request request = new(
+            result.Method,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length ^ (body?.WrittenCount ?? 0);
+    }
+
+    /// <summary>
+    /// Measures request lifecycle behavior once an empty DATA frame forces body writer use.
+    /// </summary>
+    [Benchmark]
+    public int RequestLifecycle_GetWithEmptyData()
+    {
+        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        Http3RequestMessageValidator validator = new();
+        ArrayBufferWriter<byte>? body = null;
+        validator.ReceiveOwnedHeaders(decoded);
+        validator.ReceiveData(0);
+        body ??= new ArrayBufferWriter<byte>();
+        body.Write(ReadOnlySpan<byte>.Empty);
+        validator.Complete();
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3Request request = CreateRequest(headers, body.WrittenMemory);
+        return request.Headers.Count ^ request.Path.Length ^ request.Body.Length ^ body.WrittenCount;
     }
 
     /// <summary>
@@ -379,6 +586,29 @@ public class Http3AllocationPathBenchmarks
         }
 
         return total;
+    }
+
+    private static int CountHeaderCharactersList(IReadOnlyList<QPackFieldLine> headers)
+    {
+        int total = 0;
+        foreach (QPackFieldLine header in headers)
+        {
+            total += header.Name.Length + header.Value.Length;
+        }
+
+        return total;
+    }
+
+    private static Http3Request CreateRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
+    {
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
+        return new Http3Request(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers,
+            body);
     }
 
     private static int CountFramePayloadBytes(ReadOnlySpan<Http3Frame> frames)
