@@ -174,7 +174,10 @@ public sealed class QPackDecoder
     private QPackFieldLine[] DecodeAvailableFieldSection(ReadOnlySpan<byte> encodedFieldSection, FieldSectionPrefix prefix)
     {
         int index = prefix.BytesConsumed;
-        ArrayBufferWriter<QPackFieldLine> fields = new();
+        int remainingRepresentationBytes = encodedFieldSection.Length - index;
+        ArrayBufferWriter<QPackFieldLine> fields = remainingRepresentationBytes == 0
+            ? new()
+            : new(GetInitialFieldLineCapacity(remainingRepresentationBytes));
         ulong largestReferencedInsertCount = 0;
 
         while (index < encodedFieldSection.Length)
@@ -212,6 +215,13 @@ public sealed class QPackDecoder
         }
 
         return fields.WrittenSpan.ToArray();
+    }
+
+    private static int GetInitialFieldLineCapacity(int encodedRepresentationBytes)
+    {
+        const int MaximumInitialFieldLineCapacity = 32;
+
+        return Math.Min(encodedRepresentationBytes, MaximumInitialFieldLineCapacity);
     }
 
     private void DecodeIndexedField(

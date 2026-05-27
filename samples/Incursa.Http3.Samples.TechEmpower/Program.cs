@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -17,6 +18,9 @@ internal static class Program
     private const int DefaultMaxInboundBidirectionalStreams = 512;
     private const int DefaultMaxInboundUnidirectionalStreams = 16;
     private const int ReceiveWindowBytes = 16 * 1024 * 1024;
+    private const int MaximumTcpUdpPort = 65535;
+    private const string ProtocolLabPortEnvironmentVariable = "PROTOCOL_LAB_H3_PORT";
+    private const string PortEnvironmentVariable = "PORT";
 
     public static async Task<int> Main(string[] args)
     {
@@ -28,6 +32,7 @@ internal static class Program
 
         using CancellationTokenSource shutdown = new();
         int shutdownRequested = 0;
+        IDisposable? terminateRegistration = null;
         Console.CancelKeyPress += (_, eventArgs) =>
         {
             eventArgs.Cancel = true;
@@ -37,22 +42,57 @@ internal static class Program
             }
         };
 
-        await Console.Out.WriteLineAsync($"Serving Incursa HTTP/3 TechEmpower-shaped sample on https://localhost:{port}/").ConfigureAwait(false);
-        await server.ServeAsync(shutdown.Token).ConfigureAwait(false);
-        return 0;
+        if (!OperatingSystem.IsWindows())
+        {
+            terminateRegistration = PosixSignalRegistration.Create(PosixSignal.SIGTERM, context =>
+            {
+                context.Cancel = true;
+                if (Interlocked.Exchange(ref shutdownRequested, 1) == 0)
+                {
+                    shutdown.Cancel();
+                }
+            });
+        }
+
+        try
+        {
+            await Console.Out.WriteLineAsync($"Serving Incursa HTTP/3 TechEmpower-shaped sample on https://localhost:{port}/").ConfigureAwait(false);
+            await server.ServeAsync(shutdown.Token).ConfigureAwait(false);
+            return 0;
+        }
+        finally
+        {
+            terminateRegistration?.Dispose();
+        }
     }
 
     private static int ParsePort(string[] args)
     {
         for (int index = 0; index < args.Length; index++)
         {
-            if (args[index] == "--port" && index + 1 < args.Length && int.TryParse(args[index + 1], out int port))
+            if (args[index] == "--port" && index + 1 < args.Length && TryParsePort(args[index + 1], out int port))
             {
                 return port;
             }
         }
 
+        if (TryParsePort(Environment.GetEnvironmentVariable(ProtocolLabPortEnvironmentVariable), out int protocolLabPort))
+        {
+            return protocolLabPort;
+        }
+
+        if (TryParsePort(Environment.GetEnvironmentVariable(PortEnvironmentVariable), out int environmentPort))
+        {
+            return environmentPort;
+        }
+
         return DefaultPort;
+    }
+
+    private static bool TryParsePort(string? value, out int port)
+    {
+        return int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out port)
+            && port is > 0 and <= MaximumTcpUdpPort;
     }
 
     private static QuicListenerOptions CreateListenerOptions(int port, X509Certificate2 certificate)

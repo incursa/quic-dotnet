@@ -13,6 +13,97 @@ public sealed class Http3HeaderValidationTests
         Assert.Equal("/", result.Path);
     }
 
+    [Theory]
+    [InlineData("/plaintext")]
+    [InlineData("/json")]
+    public void DecodeAndValidateRequestHeaders_TechEmpowerGet_PreservesFields(string path)
+    {
+        QPackFieldLine[] expected = TechEmpowerRequestHeaders(path);
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(QPackEncoder.EncodeFieldSection(expected));
+
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false);
+
+        Assert.Equal(expected, decoded);
+        Assert.Equal("GET", result.Method);
+        Assert.Equal("https", result.Scheme);
+        Assert.Equal("localhost:5444", result.Authority);
+        Assert.Equal(path, result.Path);
+        Assert.Contains(decoded, header => header.Name == "user-agent" && header.Value == "h2load");
+        Assert.Contains(decoded, header => header.Name == "accept" && header.Value == "*/*");
+    }
+
+    [Fact]
+    public void DecodeAndValidateRequestHeaders_UnknownRegularHeader_RemainsAccepted()
+    {
+        QPackFieldLine[] expected =
+        [
+            .. TechEmpowerRequestHeaders("/plaintext"),
+            new QPackFieldLine("x-benchmark-fixture", "present"),
+        ];
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(QPackEncoder.EncodeFieldSection(expected));
+
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false);
+
+        Assert.Equal(expected, decoded);
+        Assert.Equal("/plaintext", result.Path);
+    }
+
+    [Fact]
+    public void DecodeAndValidateRequestHeaders_DuplicatePseudoHeader_ThrowsMessageError()
+    {
+        QPackFieldLine[] headers =
+        [
+            .. TechEmpowerRequestHeaders("/plaintext"),
+            new QPackFieldLine(":path", "/other"),
+        ];
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void DecodeAndValidateRequestHeaders_MissingRequiredPseudoHeader_ThrowsMessageError()
+    {
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(
+            QPackEncoder.EncodeFieldSection(Without(TechEmpowerRequestHeaders("/json"), ":scheme")));
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void DecodeAndValidateRequestHeaders_PseudoHeaderAfterRegularHeader_ThrowsMessageError()
+    {
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(
+            QPackEncoder.EncodeFieldSection(
+            [
+                new QPackFieldLine(":method", "GET"),
+                new QPackFieldLine("accept", "*/*"),
+                new QPackFieldLine(":scheme", "https"),
+                new QPackFieldLine(":authority", "localhost:5444"),
+                new QPackFieldLine(":path", "/plaintext"),
+            ]));
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void DecodeAndValidateRequestHeaders_MalformedQPackFieldSection_ThrowsDecompressionFailed()
+    {
+        byte[] invalidStaticIndex = [0x00, 0x00, .. QPackInteger.Encode(99, 6, 0xC0)];
+
+        QPackException exception = Assert.Throws<QPackException>(() => QPackDecoder.DecodeFieldSection(invalidStaticIndex));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
     [Fact]
     public void ValidateRequestHeaders_HostWithoutAuthority_PassesForHttpScheme()
     {
@@ -234,6 +325,19 @@ public sealed class Http3HeaderValidationTests
             new QPackFieldLine(":scheme", "https"),
             new QPackFieldLine(":authority", "example.com"),
             new QPackFieldLine(":path", "/"),
+        ];
+    }
+
+    private static QPackFieldLine[] TechEmpowerRequestHeaders(string path)
+    {
+        return
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost:5444"),
+            new QPackFieldLine(":path", path),
+            new QPackFieldLine("user-agent", "h2load"),
+            new QPackFieldLine("accept", "*/*"),
         ];
     }
 

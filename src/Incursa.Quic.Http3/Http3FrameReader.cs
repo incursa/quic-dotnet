@@ -17,20 +17,31 @@ public sealed class Http3FrameReader
     /// </summary>
     public Http3Frame[] Read(ReadOnlySpan<byte> source, bool endOfStream = false)
     {
-        pending = Append(pending, source);
+        bool hadPending = pending.Length != 0;
+        ReadOnlySpan<byte> readable;
+        if (hadPending)
+        {
+            pending = Append(pending, source);
+            readable = pending;
+        }
+        else
+        {
+            readable = source;
+        }
+
         int index = 0;
         List<Http3Frame> frames = [];
 
-        while (index < pending.Length)
+        while (index < readable.Length)
         {
             int frameStart = index;
-            if (!TryReadVariableLengthInteger(pending, ref index, out ulong frameType))
+            if (!TryReadVariableLengthInteger(readable, ref index, out ulong frameType))
             {
                 index = frameStart;
                 break;
             }
 
-            if (!TryReadVariableLengthInteger(pending, ref index, out ulong payloadLength))
+            if (!TryReadVariableLengthInteger(readable, ref index, out ulong payloadLength))
             {
                 index = frameStart;
                 break;
@@ -41,18 +52,30 @@ public sealed class Http3FrameReader
                 throw new Http3Exception(Http3ErrorCode.ExcessiveLoad, "The HTTP/3 frame payload is too large for this parser.");
             }
 
-            if (pending.Length - index < (int)payloadLength)
+            if (readable.Length - index < (int)payloadLength)
             {
                 index = frameStart;
                 break;
             }
 
-            byte[] payload = pending.AsSpan(index, (int)payloadLength).ToArray();
+            byte[] payload = readable.Slice(index, (int)payloadLength).ToArray();
             index += (int)payloadLength;
             frames.Add(ParseFrame(frameType, payload));
         }
 
-        pending = SlicePending(pending, index);
+        if (index == readable.Length)
+        {
+            pending = [];
+        }
+        else if (hadPending)
+        {
+            pending = SlicePending(pending, index);
+        }
+        else
+        {
+            pending = readable[index..].ToArray();
+        }
+
         if (endOfStream && pending.Length != 0)
         {
             throw new Http3Exception(Http3ErrorCode.FrameError, "The HTTP/3 stream ended with a truncated frame.");

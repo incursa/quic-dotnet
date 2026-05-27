@@ -201,6 +201,121 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    public void FrameReader_ParsesSingleHeadersFramePayloadExactly()
+    {
+        byte[] fieldSection = EncodePlaintextRequestFieldSection();
+        byte[] encoded = Http3FrameWriter.WriteHeaders(fieldSection);
+        Http3FrameReader reader = new();
+
+        Http3Frame[] frames = reader.Read(encoded);
+
+        Http3HeadersFrame frame = Assert.IsType<Http3HeadersFrame>(Assert.Single(frames));
+        Assert.Equal(fieldSection, frame.EncodedFieldSection.ToArray());
+        Assert.Equal(fieldSection, frame.Payload);
+        Assert.Equal(0, reader.PendingByteCount);
+        Assert.Equal(
+            BuildPlaintextRequestHeaders(),
+            QPackDecoder.DecodeFieldSection(frame.EncodedFieldSection));
+    }
+
+    [Fact]
+    public void FrameReader_FragmentedHeadersFramePreservesPayloadAndPendingBytes()
+    {
+        byte[] fieldSection = EncodePlaintextRequestFieldSection();
+        byte[] encoded = Http3FrameWriter.WriteHeaders(fieldSection);
+        int split = encoded.Length / 2;
+        Http3FrameReader reader = new();
+
+        Http3Frame[] firstFrames = reader.Read(encoded.AsSpan(0, split));
+        int pendingAfterFirstRead = reader.PendingByteCount;
+        Http3Frame[] secondFrames = reader.Read(encoded.AsSpan(split));
+
+        Assert.Empty(firstFrames);
+        Assert.Equal(split, pendingAfterFirstRead);
+        Http3HeadersFrame frame = Assert.IsType<Http3HeadersFrame>(Assert.Single(secondFrames));
+        Assert.Equal(fieldSection, frame.EncodedFieldSection.ToArray());
+        Assert.Equal(fieldSection, frame.Payload);
+        Assert.Equal(0, reader.PendingByteCount);
+    }
+
+    [Fact]
+    public void FrameReader_PreservesCompleteFrameBeforePartialFrameUntilCompletion()
+    {
+        byte[] dataPayload = [0xAA, 0xBB];
+        byte[] headersPayload = [0x00, 0x00, 0xC1];
+        byte[] dataFrame = Http3FrameWriter.WriteData(dataPayload);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(headersPayload);
+        int partialHeaderLength = headersFrame.Length - 1;
+        byte[] firstRead =
+        [
+            .. dataFrame,
+            .. headersFrame.AsSpan(0, partialHeaderLength),
+        ];
+        Http3FrameReader reader = new();
+
+        Http3Frame[] firstFrames = reader.Read(firstRead);
+        Http3Frame[] secondFrames = reader.Read(headersFrame.AsSpan(partialHeaderLength));
+
+        Http3DataFrame data = Assert.IsType<Http3DataFrame>(Assert.Single(firstFrames));
+        Assert.Equal(dataPayload, data.Data.ToArray());
+        Http3HeadersFrame headers = Assert.IsType<Http3HeadersFrame>(Assert.Single(secondFrames));
+        Assert.Equal(headersPayload, headers.EncodedFieldSection.ToArray());
+        Assert.Equal(0, reader.PendingByteCount);
+    }
+
+    [Fact]
+    public void FrameReader_PreservesUnknownReservedAndDataFrameOrdering()
+    {
+        byte[] unknownPayload = [0xAA, 0xBB];
+        byte[] reservedPayload = [0xCC];
+        byte[] dataPayload = [0xDD];
+        byte[] encoded =
+        [
+            .. Http3FrameWriter.WriteFrame(0x41, unknownPayload),
+            .. Http3FrameWriter.WriteFrame(0x21, reservedPayload),
+            .. Http3FrameWriter.WriteData(dataPayload),
+        ];
+
+        Http3Frame[] frames = new Http3FrameReader().Read(encoded);
+
+        Assert.Collection(
+            frames,
+            frame =>
+            {
+                Http3UnknownFrame unknown = Assert.IsType<Http3UnknownFrame>(frame);
+                Assert.Equal(0x41UL, unknown.Type);
+                Assert.False(unknown.IsReserved);
+                Assert.Equal(unknownPayload, unknown.Payload);
+            },
+            frame =>
+            {
+                Http3UnknownFrame reserved = Assert.IsType<Http3UnknownFrame>(frame);
+                Assert.Equal(0x21UL, reserved.Type);
+                Assert.True(reserved.IsReserved);
+                Assert.Equal(reservedPayload, reserved.Payload);
+            },
+            frame =>
+            {
+                Http3DataFrame data = Assert.IsType<Http3DataFrame>(frame);
+                Assert.Equal(dataPayload, data.Data.ToArray());
+            });
+    }
+
+    [Fact]
+    public void FrameReader_TruncatedPayloadStaysPendingUntilCompletionFails()
+    {
+        byte[] encoded = Convert.FromHexString("00030102");
+        Http3FrameReader reader = new();
+
+        Http3Frame[] frames = reader.Read(encoded);
+
+        Assert.Empty(frames);
+        Assert.Equal(encoded.Length, reader.PendingByteCount);
+        Http3Exception exception = Assert.Throws<Http3Exception>(reader.Complete);
+        Assert.Equal(Http3ErrorCode.FrameError, exception.ErrorCode);
+    }
+
+    [Fact]
     public void FrameReader_ParsesHeadersAndPayloadSplitAcrossSingleByteReads()
     {
         byte[] payload = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
@@ -333,5 +448,23 @@ public sealed class Http3FrameLayerTests
             new QPackFieldLine("content-type", contentType),
             new QPackFieldLine("content-length", contentLength.ToString()),
         ]);
+    }
+
+    private static QPackFieldLine[] BuildPlaintextRequestHeaders()
+    {
+        return
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost:5444"),
+            new QPackFieldLine(":path", "/plaintext"),
+            new QPackFieldLine("user-agent", "h2load"),
+            new QPackFieldLine("accept", "*/*"),
+        ];
+    }
+
+    private static byte[] EncodePlaintextRequestFieldSection()
+    {
+        return QPackEncoder.EncodeFieldSection(BuildPlaintextRequestHeaders());
     }
 }
