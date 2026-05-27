@@ -1245,7 +1245,8 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TryUpdatePathSpinBitFromReceivedPacket(
             packetReceivedEvent.PathIdentity,
             packetNumber,
-            receivedSpinBit);
+            receivedSpinBit,
+            ref effects);
 
         if (openedWithRetainedOldOpenMaterial
             && hasObservedCurrentOneRttKeyPhasePacketNumber

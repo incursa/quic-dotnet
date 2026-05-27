@@ -40,13 +40,19 @@ public abstract class QuicConnectionOptions
     }
 
     /// <summary>
-    /// Gets or sets the default close error code used by the connection on dispose.
+    /// Gets or sets the application error code used by the connection on dispose when no explicit close was sent.
     /// </summary>
+    /// <remarks>
+    /// The value is carried as QUIC application close metadata and is interpreted by the application protocol using the connection.
+    /// </remarks>
     public long DefaultCloseErrorCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the default stream error code used by the connection on dispose.
+    /// Gets or sets the application error code used by streams on dispose when no explicit stream abort was sent.
     /// </summary>
+    /// <remarks>
+    /// The value is carried as application stream error metadata. It is not a QUIC transport error code.
+    /// </remarks>
     public long DefaultStreamErrorCode { get; set; }
 
     /// <summary>
@@ -57,6 +63,10 @@ public abstract class QuicConnectionOptions
     /// <summary>
     /// Gets or sets the idle timeout.
     /// </summary>
+    /// <remarks>
+    /// Idle timeout and keep-alive control liveness of the current connection. They do not enable TLS session
+    /// resumption or 0-RTT application data.
+    /// </remarks>
     public TimeSpan IdleTimeout { get; set; }
 
     /// <summary>
@@ -71,6 +81,10 @@ public abstract class QuicConnectionOptions
     /// <summary>
     /// Gets or sets the callback invoked when the supported peer stream-capacity delta becomes available.
     /// </summary>
+    /// <remarks>
+    /// Applications that map many logical operations onto QUIC streams should use this callback as a backpressure
+    /// signal instead of assuming another outbound stream can always be opened immediately.
+    /// </remarks>
     public Action<QuicConnection, QuicStreamCapacityChangedArgs>? StreamCapacityCallback { get; set; }
 
     /// <summary>
@@ -113,6 +127,10 @@ public abstract class QuicConnectionOptions
     /// <summary>
     /// Gets or sets the keep-alive interval.
     /// </summary>
+    /// <remarks>
+    /// Keep-alive traffic is only a liveness aid for an established connection. It is separate from session
+    /// resumption and does not make replay-sensitive 0-RTT application data safe.
+    /// </remarks>
     public TimeSpan KeepAliveInterval { get; set; }
 
     /// <summary>

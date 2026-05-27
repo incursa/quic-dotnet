@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9308-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9308 Applicability Hardening Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the implementation boundary for RFC 9308 applicability guidance without adding speculative transport features.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9308",
+    "WI-QUIC-RFC9308-0001",
+    "VER-QUIC-RFC9308-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9308-S3P1-0001",
+    "REQ-QUIC-RFC9308-S3P2-0001",
+    "REQ-QUIC-RFC9308-S4P1-0001",
+    "REQ-QUIC-RFC9308-S4P4-0001",
+    "REQ-QUIC-RFC9308-S4P5-0001",
+    "REQ-QUIC-RFC9308-S6-0001",
+    "REQ-QUIC-RFC9308-S9-0001",
+    "REQ-QUIC-RFC9308-S11-0001",
+    "REQ-QUIC-RFC9308-S13-0001",
+    "REQ-QUIC-RFC9308-S15-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicStreamCapacityChangedArgs.cs",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogDiagnosticsMapper.cs",
+    "docs/design/rfc9308-application-guidance.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308"
+  ],
+  "design_summary": "The RFC 9308 slice is an applicability hardening layer over existing RFC 9000, RFC 9114, RFC 9221, RFC 9287, RFC 9368, and RFC 9369 behavior. Public XML comments and the developer guidance document state the current boundaries for 0-RTT, keep-alive, stream mapping, stream priority, migration, termination, version rollout, and DATAGRAM applicability. The transport runtime emits structured diagnostics when application sends are flow-control blocked or stream opens are stream-limit blocked, and the qlog adapter maps those events to troubleshooting-friendly qlog extension events. Existing path-validation behavior continues to prevent NAT rebinding or migration candidates from becoming active until validation succeeds.",
+  "data_and_state_considerations": "No new application protocol state is introduced. The diagnostic additions carry only stream identifiers, stream direction, and limit values that are already present in blocked-frame state. The qlog adapter remains outside the transport core and maps typed diagnostics without introducing qlog-specific transport dependencies.",
+  "edge_cases_and_constraints": [
+    "RFC 9308 is informational and does not justify adding automatic fallback, public 0-RTT, endpoint discovery, DSCP, or HTTP Datagram behavior in this slice.",
+    "Flow-control blocked writes preserve stream send state instead of consuming credit that was not available.",
+    "Stream-limit blocked opens do not create phantom streams.",
+    "Application close codes remain application metadata and do not become transport error codes.",
+    "NAT rebinding candidates remain candidates until path validation promotes them."
+  ],
+  "risks": [
+    "Application developers could mistake internal early-data prerequisites for a public replay-safe 0-RTT API.",
+    "The local stream priority hint could be mistaken for HTTP/3 priority signaling.",
+    "The RFC 9221 DATAGRAM transport floor could be mistaken for HTTP Datagrams, CONNECT-UDP, or MASQUE support.",
+    "Migration diagnostics could be overread as a public migration-control API."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Non-Feature Boundary",
+      "content": "This architecture intentionally prefers comments, documentation, focused tests, diagnostics, and qlog mapping over new protocol behavior. Unsupported RFC 9308 guidance remains deferred or not applicable until an owning feature RFC or product requirement exists."
+    }
+  ]
+}

@@ -54,6 +54,25 @@ internal static class QuicQlogDiagnosticsMapper
             QuicDiagnosticKind.AcceptedStatelessReset => CreateAcceptedStatelessReset(eventTime, diagnosticEvent),
             QuicDiagnosticKind.AddressChangeClassified => CreateAddressChangeClassified(eventTime, diagnosticEvent),
             QuicDiagnosticKind.CandidatePathBudgetExhausted => CreateCandidatePathBudgetExhausted(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.FlowControlBlocked => CreateFlowControlBlocked(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.StreamLimitBlocked => CreateStreamLimitBlocked(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.PacketHeaderObserved => CreatePacketHeaderObserved(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.CoalescedDatagramReceived => CreateCoalescedDatagramReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.ConnectionIdIssued => CreateConnectionIdEvent(eventTime, "quic:connection_id_issued", diagnosticEvent),
+            QuicDiagnosticKind.ConnectionIdRetired => CreateConnectionIdEvent(eventTime, "quic:connection_id_retired", diagnosticEvent),
+            QuicDiagnosticKind.ConnectionIdUsedOnPath => CreateConnectionIdEvent(eventTime, "quic:connection_id_used_on_path", diagnosticEvent),
+            QuicDiagnosticKind.PathValidationChallengeSent => CreatePathValidationDiagnostic(eventTime, "quic:path_validation_challenge_sent", diagnosticEvent),
+            QuicDiagnosticKind.PathValidationSucceeded => CreatePathValidationDiagnostic(eventTime, "quic:path_validation_succeeded", diagnosticEvent),
+            QuicDiagnosticKind.PathValidationFailed => CreatePathValidationDiagnostic(eventTime, "quic:path_validation_failed", diagnosticEvent),
+            QuicDiagnosticKind.PathValidationTimedOut => CreatePathValidationDiagnostic(eventTime, "quic:path_validation_timed_out", diagnosticEvent),
+            QuicDiagnosticKind.PathPromoted => CreatePathValidationDiagnostic(eventTime, "quic:path_promoted", diagnosticEvent),
+            QuicDiagnosticKind.SpinBitUpdated => CreateSpinBitUpdated(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.IcmpPacketTooBigReceived => CreateIcmpPacketTooBigReceived(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.PmtuUpdated => CreatePmtuUpdated(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.ConnectionCloseStateChanged => CreateConnectionCloseStateChanged(eventTime, diagnosticEvent),
+            QuicDiagnosticKind.UdpReceiveError => CreateUdpError(eventTime, "quic:udp_receive_error", diagnosticEvent),
+            QuicDiagnosticKind.UdpSendError => CreateUdpError(eventTime, "quic:udp_send_error", diagnosticEvent),
+            QuicDiagnosticKind.AntiAmplificationBlocked => CreateAntiAmplificationBlocked(eventTime, diagnosticEvent),
             _ => null,
         };
 
@@ -384,6 +403,229 @@ internal static class QuicQlogDiagnosticsMapper
     private static QlogEvent CreateCandidatePathBudgetExhausted(double eventTime, QuicDiagnosticEvent diagnosticEvent)
     {
         return CreatePathValidationStateUpdated(eventTime, diagnosticEvent, QlogQuicKnownValues.MigrationStateAbandoned);
+    }
+
+    private static QlogEvent CreateFlowControlBlocked(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:flow_control_blocked", diagnosticEvent);
+        ApplyStreamAndLimit(qlogEvent, diagnosticEvent);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateStreamLimitBlocked(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:stream_limit_blocked", diagnosticEvent);
+
+        if (diagnosticEvent.IsBidirectionalStream.HasValue)
+        {
+            qlogEvent.Data["stream_type"] = QlogValue.FromString(
+                diagnosticEvent.IsBidirectionalStream.Value ? "bidirectional" : "unidirectional");
+        }
+
+        ApplyStreamAndLimit(qlogEvent, diagnosticEvent);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreatePacketHeaderObserved(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:packet_header_observed", diagnosticEvent);
+
+        if (diagnosticEvent.HeaderForm.HasValue)
+        {
+            qlogEvent.Data["header_form"] = QlogValue.FromString(
+                diagnosticEvent.HeaderForm.Value == QuicHeaderForm.Long ? "long" : "short");
+        }
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.PacketType))
+        {
+            qlogEvent.Data["packet_type"] = QlogValue.FromString(diagnosticEvent.PacketType);
+        }
+
+        if (diagnosticEvent.PacketIndex.HasValue)
+        {
+            qlogEvent.Data["packet_index"] = QlogValue.FromNumber(diagnosticEvent.PacketIndex.Value);
+        }
+
+        if (diagnosticEvent.PacketOffset.HasValue)
+        {
+            qlogEvent.Data["packet_offset"] = QlogValue.FromNumber(diagnosticEvent.PacketOffset.Value);
+        }
+
+        if (diagnosticEvent.DatagramLength.HasValue)
+        {
+            qlogEvent.Data["datagram_length"] = QlogValue.FromNumber(diagnosticEvent.DatagramLength.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateCoalescedDatagramReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:coalesced_datagram_received", diagnosticEvent);
+
+        if (diagnosticEvent.PacketCount.HasValue)
+        {
+            qlogEvent.Data["packet_count"] = QlogValue.FromNumber(diagnosticEvent.PacketCount.Value);
+        }
+
+        if (diagnosticEvent.DatagramLength.HasValue)
+        {
+            qlogEvent.Data["datagram_length"] = QlogValue.FromNumber(diagnosticEvent.DatagramLength.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateConnectionIdEvent(double eventTime, string name, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, name, diagnosticEvent);
+
+        if (diagnosticEvent.ConnectionId.HasValue)
+        {
+            qlogEvent.Data["connection_id_sequence"] = QlogValue.FromNumber((long)diagnosticEvent.ConnectionId.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreatePathValidationDiagnostic(double eventTime, string name, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, name, diagnosticEvent);
+
+        if (diagnosticEvent.Succeeded.HasValue)
+        {
+            qlogEvent.Data["succeeded"] = QlogValue.FromBoolean(diagnosticEvent.Succeeded.Value);
+        }
+
+        if (diagnosticEvent.ChallengeSendCount.HasValue && diagnosticEvent.ChallengeSendCount.Value <= long.MaxValue)
+        {
+            qlogEvent.Data["challenge_send_count"] = QlogValue.FromNumber((long)diagnosticEvent.ChallengeSendCount.Value);
+        }
+
+        if (diagnosticEvent.IsSet.HasValue)
+        {
+            qlogEvent.Data["preserve_recovery_state"] = QlogValue.FromBoolean(diagnosticEvent.IsSet.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateSpinBitUpdated(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:spin_bit_updated", diagnosticEvent);
+
+        if (diagnosticEvent.IsSet.HasValue)
+        {
+            qlogEvent.Data["spin_bit"] = QlogValue.FromBoolean(diagnosticEvent.IsSet.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateIcmpPacketTooBigReceived(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:icmp_packet_too_big_received", diagnosticEvent);
+        ApplyMaximumDatagramSize(qlogEvent, diagnosticEvent);
+
+        if (diagnosticEvent.Accepted.HasValue)
+        {
+            qlogEvent.Data["accepted"] = QlogValue.FromBoolean(diagnosticEvent.Accepted.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreatePmtuUpdated(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:pmtu_updated", diagnosticEvent);
+        ApplyMaximumDatagramSize(qlogEvent, diagnosticEvent);
+
+        if (diagnosticEvent.IsProvisional.HasValue)
+        {
+            qlogEvent.Data["provisional"] = QlogValue.FromBoolean(diagnosticEvent.IsProvisional.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateConnectionCloseStateChanged(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:connection_close_state_changed", diagnosticEvent);
+
+        if (diagnosticEvent.CloseOrigin.HasValue)
+        {
+            qlogEvent.Data["origin"] = QlogValue.FromString(diagnosticEvent.CloseOrigin.Value.ToString());
+        }
+
+        if (diagnosticEvent.ConnectionPhase.HasValue)
+        {
+            qlogEvent.Data["phase"] = QlogValue.FromString(diagnosticEvent.ConnectionPhase.Value.ToString());
+        }
+
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateUdpError(double eventTime, string name, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, name, diagnosticEvent);
+
+        if (!string.IsNullOrWhiteSpace(diagnosticEvent.SocketErrorName))
+        {
+            qlogEvent.Data["socket_error"] = QlogValue.FromString(diagnosticEvent.SocketErrorName);
+        }
+
+        if (diagnosticEvent.SocketErrorCode.HasValue)
+        {
+            qlogEvent.Data["socket_error_code"] = QlogValue.FromNumber(diagnosticEvent.SocketErrorCode.Value);
+        }
+
+        return qlogEvent;
+    }
+
+    private static QlogEvent CreateAntiAmplificationBlocked(double eventTime, QuicDiagnosticEvent diagnosticEvent)
+    {
+        QlogEvent qlogEvent = CreateDiagnosticEvent(eventTime, "quic:anti_amplification_blocked", diagnosticEvent);
+
+        if (diagnosticEvent.AttemptedBytes.HasValue && diagnosticEvent.AttemptedBytes.Value <= long.MaxValue)
+        {
+            qlogEvent.Data["attempted_bytes"] = QlogValue.FromNumber((long)diagnosticEvent.AttemptedBytes.Value);
+        }
+
+        if (diagnosticEvent.RemainingSendBudget.HasValue && diagnosticEvent.RemainingSendBudget.Value <= long.MaxValue)
+        {
+            qlogEvent.Data["remaining_send_budget"] = QlogValue.FromNumber((long)diagnosticEvent.RemainingSendBudget.Value);
+        }
+
+        ApplyTuple(qlogEvent, diagnosticEvent.PathIdentity);
+        return qlogEvent;
+    }
+
+    private static void ApplyMaximumDatagramSize(QlogEvent qlogEvent, QuicDiagnosticEvent diagnosticEvent)
+    {
+        if (diagnosticEvent.MaximumDatagramSizeBytes.HasValue && diagnosticEvent.MaximumDatagramSizeBytes.Value <= long.MaxValue)
+        {
+            qlogEvent.Data["maximum_datagram_size_bytes"] = QlogValue.FromNumber((long)diagnosticEvent.MaximumDatagramSizeBytes.Value);
+        }
+    }
+
+    private static void ApplyStreamAndLimit(QlogEvent qlogEvent, QuicDiagnosticEvent diagnosticEvent)
+    {
+        if (diagnosticEvent.StreamId.HasValue)
+        {
+            qlogEvent.Data["stream_id"] = QlogValue.FromNumber((long)diagnosticEvent.StreamId.Value);
+        }
+
+        if (diagnosticEvent.Limit.HasValue && diagnosticEvent.Limit.Value <= long.MaxValue)
+        {
+            qlogEvent.Data["limit"] = QlogValue.FromNumber((long)diagnosticEvent.Limit.Value);
+        }
     }
 
     private static string MapKeyType(QuicTlsEncryptionLevel encryptionLevel, bool isServer)

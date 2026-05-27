@@ -20,6 +20,10 @@ interop handshake plus supported-subset profile evidence.
 - [HTTP/3 sample app](samples/http3-sample-app.md)
 - [HTTP/3 benchmarking notes](samples/http3-benchmarking.md)
 - [Public API design note](design/quic-public-api.md)
+- [Application protocol guidance](application-protocol-guidance.md)
+- [Operations and manageability](operations-and-manageability.md)
+- [QUIC troubleshooting](troubleshooting-quic.md)
+- [RFC 9308 / RFC 9312 coverage report](rfc9308-rfc9312-coverage.md)
 
 ## Related References
 
@@ -36,3 +40,7 @@ interop handshake plus supported-subset profile evidence.
 4. [Requirements workflow](requirements-workflow.md)
 5. [SpecTrace prep](spec-trace-prep.md)
 6. [Testing docs](testing/README.md)
+7. [Application protocol guidance](application-protocol-guidance.md)
+8. [Operations and manageability](operations-and-manageability.md)
+9. [QUIC troubleshooting](troubleshooting-quic.md)
+10. [RFC 9308 / RFC 9312 coverage report](rfc9308-rfc9312-coverage.md)

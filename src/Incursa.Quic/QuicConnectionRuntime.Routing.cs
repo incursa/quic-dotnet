@@ -191,6 +191,7 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         bool processedAnyPacket = false;
         int packetOffset = 0;
+        int packetIndex = 0;
 
         while (packetOffset < packetReceivedEvent.Datagram.Length)
         {
@@ -216,6 +217,15 @@ internal sealed partial class QuicConnectionRuntime
             };
 
             processedAnyPacket = true;
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.PacketHeaderObserved(
+                    packetReceivedEvent.PathIdentity,
+                    packetEvent.Datagram.Span,
+                    packetIndex,
+                    packetOffset,
+                    packetReceivedEvent.Datagram.Length));
+            }
 
             switch (phase)
             {
@@ -244,6 +254,15 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             packetOffset += packetLength;
+            packetIndex++;
+        }
+
+        if (diagnosticsEnabled && packetIndex > 1)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.CoalescedDatagramReceived(
+                packetReceivedEvent.PathIdentity,
+                packetIndex,
+                packetReceivedEvent.Datagram.Length));
         }
 
         return stateChanged;
@@ -281,6 +300,11 @@ internal sealed partial class QuicConnectionRuntime
             LastActivityTicks = nowTicks,
         };
         candidatePaths[pathValidationSucceededEvent.PathIdentity] = candidatePath;
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationSucceeded(pathValidationSucceededEvent.PathIdentity));
+        }
 
         AppendRecentlyValidatedPath(
             candidatePath.Identity,
@@ -358,6 +382,11 @@ internal sealed partial class QuicConnectionRuntime
             LastActivityTicks = nowTicks,
         };
         candidatePaths[pathValidationFailedEvent.PathIdentity] = candidatePath;
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationFailed(pathValidationFailedEvent.PathIdentity));
+        }
 
         bool stateChanged = true;
         bool preserveActivePathAfterPreferredAddressFailure = activePath is not null
@@ -451,6 +480,11 @@ internal sealed partial class QuicConnectionRuntime
                 };
 
                 candidatePaths[entry.Key] = candidatePath;
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationTimedOut(entry.Key));
+                }
+
                 stateChanged = true;
                 continue;
             }
@@ -523,6 +557,13 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             preserveTerminalEndTicks: false);
 
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionCloseStateChanged(
+                QuicConnectionCloseOrigin.Local,
+                QuicConnectionPhase.Closing));
+        }
+
         AppendTerminalEffects(ref effects, emitClosePacket: true);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
@@ -549,6 +590,13 @@ internal sealed partial class QuicConnectionRuntime
             localCloseRequestedEvent.Close,
             nowTicks,
             preserveTerminalEndTicks: false);
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionCloseStateChanged(
+                QuicConnectionCloseOrigin.Local,
+                QuicConnectionPhase.Closing));
+        }
 
         localCloseEffectsPending = true;
         return true;
@@ -577,6 +625,13 @@ internal sealed partial class QuicConnectionRuntime
             connectionCloseFrameReceivedEvent.Close,
             nowTicks,
             preserveTerminalEndTicks: phase == QuicConnectionPhase.Closing);
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionCloseStateChanged(
+                QuicConnectionCloseOrigin.Remote,
+                QuicConnectionPhase.Draining));
+        }
 
         AppendTerminalEffects(ref effects, emitClosePacket: false);
         if (shouldSendReplyClosePacket)
@@ -612,6 +667,13 @@ internal sealed partial class QuicConnectionRuntime
             default,
             nowTicks,
             preserveTerminalEndTicks: phase == QuicConnectionPhase.Closing);
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionCloseStateChanged(
+                QuicConnectionCloseOrigin.StatelessReset,
+                QuicConnectionPhase.Draining));
+        }
 
         AppendTerminalEffects(ref effects, emitClosePacket: false);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
@@ -666,6 +728,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendEffect(ref effects, new QuicConnectionRegisterStatelessResetTokenEffect(connectionIdIssuedEvent.ConnectionId, token));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionIdIssued(connectionIdIssuedEvent.ConnectionId));
+        }
+
         return true;
     }
 
@@ -703,6 +770,11 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionIdRetired(connectionId));
+        }
+
         return true;
     }
 
@@ -714,6 +786,13 @@ internal sealed partial class QuicConnectionRuntime
             || !issuedConnectionIdState.TryMarkIssuedConnectionIdUsed(connectionId))
         {
             return false;
+        }
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.ConnectionIdUsedOnPath(
+                packetReceivedEvent.PathIdentity,
+                connectionId));
         }
 
         _ = TryReplenishIssuedConnectionId(ref effects);

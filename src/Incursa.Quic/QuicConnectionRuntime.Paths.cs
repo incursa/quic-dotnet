@@ -645,6 +645,14 @@ internal sealed partial class QuicConnectionRuntime
             candidatePath.AmplificationState,
             out byte[] challengeDatagramPayload))
         {
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(
+                    pathIdentity,
+                    (ulong)challengeFrameBytesWritten,
+                    candidatePath.AmplificationState.RemainingSendBudget));
+            }
+
             return false;
         }
 
@@ -679,6 +687,13 @@ internal sealed partial class QuicConnectionRuntime
         };
 
         candidatePaths[pathIdentity] = candidatePath;
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.PathValidationChallengeSent(
+                pathIdentity,
+                candidatePath.Validation.ChallengeSendCount));
+        }
+
         return true;
     }
 
@@ -725,6 +740,14 @@ internal sealed partial class QuicConnectionRuntime
                     pathValidationDatagram.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(
+                        pathIdentity,
+                        (ulong)pathValidationDatagram.Length,
+                        currentPath.AmplificationState.RemainingSendBudget));
+                }
+
                 return false;
             }
 
@@ -740,6 +763,14 @@ internal sealed partial class QuicConnectionRuntime
                     pathValidationDatagram.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(
+                        pathIdentity,
+                        (ulong)pathValidationDatagram.Length,
+                        candidatePath.AmplificationState.RemainingSendBudget));
+                }
+
                 return false;
             }
 
@@ -909,7 +940,8 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryUpdatePathSpinBitFromReceivedPacket(
         QuicConnectionPathIdentity pathIdentity,
         ulong packetNumber,
-        bool receivedSpinBit)
+        bool receivedSpinBit,
+        ref List<QuicConnectionEffect>? effects)
     {
         if (activePath is QuicConnectionActivePathRecord activePathValue
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePathValue.Identity, pathIdentity))
@@ -927,6 +959,11 @@ internal sealed partial class QuicConnectionRuntime
             {
                 SpinBitState = updatedSpinBitState,
             };
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.SpinBitUpdated(pathIdentity, updatedSpinBitState.StoredValue));
+            }
+
             return true;
         }
 
@@ -945,6 +982,11 @@ internal sealed partial class QuicConnectionRuntime
             {
                 SpinBitState = updatedSpinBitState,
             };
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.SpinBitUpdated(pathIdentity, updatedSpinBitState.StoredValue));
+            }
+
             return true;
         }
 
@@ -963,6 +1005,11 @@ internal sealed partial class QuicConnectionRuntime
             {
                 SpinBitState = updatedSpinBitState,
             };
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.SpinBitUpdated(pathIdentity, updatedSpinBitState.StoredValue));
+            }
+
             return true;
         }
 
@@ -1037,10 +1084,27 @@ internal sealed partial class QuicConnectionRuntime
         _ = nowTicks;
         _ = effects;
 
-        return TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+        bool accepted = TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
             icmpMaximumDatagramSizeReductionEvent.PathIdentity,
             icmpMaximumDatagramSizeReductionEvent.QuotedPacket.Span,
             icmpMaximumDatagramSizeReductionEvent.MaximumDatagramSizeBytes);
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.IcmpPacketTooBigReceived(
+                icmpMaximumDatagramSizeReductionEvent.PathIdentity,
+                icmpMaximumDatagramSizeReductionEvent.MaximumDatagramSizeBytes,
+                accepted));
+            if (accepted)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.PmtuUpdated(
+                    icmpMaximumDatagramSizeReductionEvent.PathIdentity,
+                    icmpMaximumDatagramSizeReductionEvent.MaximumDatagramSizeBytes,
+                    isProvisional: true));
+            }
+        }
+
+        return accepted;
     }
 
     private bool TryValidateIcmpQuotedPacket(ReadOnlySpan<byte> quotedPacket)
@@ -1180,6 +1244,11 @@ internal sealed partial class QuicConnectionRuntime
         lastValidatedRemoteAddress = pathIdentity.RemoteAddress;
         SyncActivePathMaximumDatagramSize(updatedActivePath.MaximumDatagramSizeState);
         UpdatePeerAddressValidationFlag();
+
+        if (diagnosticsEnabled)
+        {
+            EmitDiagnostic(ref effects, QuicDiagnostics.PathPromoted(pathIdentity, preserveCurrentRecoveryState));
+        }
 
         if (activePathChanged)
         {

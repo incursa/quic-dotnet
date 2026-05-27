@@ -1,0 +1,193 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "SPEC-QUIC-RFC9312",
+  "artifact_type": "specification",
+  "title": "Manageability of the QUIC Transport Protocol (RFC 9312)",
+  "domain": "quic",
+  "capability": "manageability-diagnostics",
+  "status": "implemented",
+  "owner": "quic-maintainers",
+  "purpose": "Capture the implementation-relevant RFC 9312 manageability guidance as safe observability and diagnostics requirements without changing the QUIC wire image.",
+  "scope": "This specification covers production-safe transport diagnostics, qlog mapping, and operator documentation for packet header visibility, coalesced packets, connection ID/path association, migration and path validation, PMTU/ICMP, UDP errors, spin-bit state, anti-amplification blocking, connection close, draining, and stateless reset visibility.",
+  "context": "RFC 9312 is informational. Requirements in this artifact describe diagnostics and deployment-readiness behavior for this repository. They do not add new QUIC protocol features, expose decrypted application data, or supersede RFC 8999, RFC 9000, RFC 9001, RFC 9002, RFC 9221, RFC 9287, RFC 9368, or RFC 9369 behavior.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9312-0001",
+    "WI-QUIC-RFC9312-0001",
+    "VER-QUIC-RFC9312-0001"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9312-S2-0001",
+      "title": "Expose safe packet header visibility diagnostics",
+      "statement": "Transport diagnostics MUST expose safe packet header form and packet-type metadata without logging protected payload bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9312-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9312-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9312-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9312 §2",
+          "RFC 9312 §3.1",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-2",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::PacketHeaderAndCoalescedDiagnostics_MapToQlogWithoutPacketBytes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9312-S2-0002",
+      "title": "Expose coalesced packet processing diagnostics",
+      "statement": "Coalesced UDP datagram processing MUST expose safe packet-count diagnostics.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9312-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9312-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9312-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9312 §2.1",
+          "RFC 9312 §3.4",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-2.1",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::PacketHeaderAndCoalescedDiagnostics_MapToQlogWithoutPacketBytes"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9312-S3-0001",
+      "title": "Expose safe connection ID lifecycle diagnostics",
+      "statement": "Connection ID issuance, retirement, and first path use MUST be observable without logging raw connection ID bytes or stateless reset tokens.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9312-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9312-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9312-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9312 §3.6",
+          "RFC 9312 §4.3",
+          "RFC 9312 §4.7",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-3.6",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.3",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::ConnectionIdDiagnostics_MapToQlogWithoutSensitiveConnectionMetadata"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9312-S3-0002",
+      "title": "Expose migration and path validation diagnostics",
+      "statement": "NAT rebinding, migration, and path validation MUST emit safe diagnostics for challenge, success, failure, timeout, and path promotion state.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9312-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9312-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9312-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9312 §3.6",
+          "RFC 9312 §4.3",
+          "RFC 9312 §4.7",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-3.6",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.3",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::PathValidationDiagnostics_MapToQlog",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::NatRebindingPathValidation_EmitsChallengeSuccessAndPromotionDiagnostics"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9312-S4-0001",
+      "title": "Expose safe operational failure diagnostics",
+      "statement": "PMTU, ICMP Packet Too Big, UDP error, anti-amplification, close, draining, stateless reset, and spin-bit diagnostics MUST expose only production-safe metadata.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9312-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9312-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9312-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9312 §3.8",
+          "RFC 9312 §4.4",
+          "RFC 9312 §4.6",
+          "RFC 9312 §4.8",
+          "RFC 9312 §4.10",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-3.8",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.4",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.6",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.8",
+          "https://www.rfc-editor.org/rfc/rfc9312.html#section-4.10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::PmtuIcmpUdpCloseAndSpinDiagnostics_MapToQlog",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs::CloseAsync_EmitsConnectionCloseStateDiagnostic"
+        ]
+      }
+    }
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Informational Classification",
+      "content": "RFC 9312 is treated as operational manageability guidance. Item-level classification is maintained in `docs/design/rfc9308-rfc9312-spectrace-classification.md`; deployment-only, loss-bit, DSCP/QoS, QUIC-LB, ECMP, and broader managed-network policy guidance is not represented as implemented transport behavior in this slice."
+    }
+  ]
+}

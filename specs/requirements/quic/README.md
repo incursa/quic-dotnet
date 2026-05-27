@@ -23,6 +23,8 @@ Each canonical artifact is authored in `.json`.
 - [`SPEC-QUIC-RFC9204.json`](SPEC-QUIC-RFC9204.json): canonical RFC 9204 QPACK source
 - [`SPEC-QUIC-RFC9221.json`](SPEC-QUIC-RFC9221.json): canonical RFC 9221 QUIC DATAGRAM source
 - [`SPEC-QUIC-RFC9287.json`](SPEC-QUIC-RFC9287.json): canonical RFC 9287 QUIC Bit greasing source
+- [`SPEC-QUIC-RFC9308.json`](SPEC-QUIC-RFC9308.json): canonical RFC 9308 applicability-guidance source
+- [`SPEC-QUIC-RFC9312.json`](SPEC-QUIC-RFC9312.json): canonical RFC 9312 manageability-diagnostics source
 - [`SPEC-QUIC-RFC9368.json`](SPEC-QUIC-RFC9368.json): canonical RFC 9368 compatible-version negotiation floor source
 - [`SPEC-QUIC-RFC9369.json`](SPEC-QUIC-RFC9369.json): canonical RFC 9369 QUIC v2 static version floor source
 - [`SPEC-QUIC-CRT.json`](SPEC-QUIC-CRT.json): canonical connection-runtime source

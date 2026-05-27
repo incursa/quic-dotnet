@@ -825,6 +825,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (dataBlockedFrame.MaximumData != 0)
         {
+            EmitDiagnostic(ref effects, QuicDiagnostics.FlowControlBlocked(dataBlockedFrame));
             return TrySendFlowControlBlockedSignal(
                 dataBlockedFrame,
                 "The connection runtime could not protect the data-blocked packet.",
@@ -834,6 +835,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (streamDataBlockedFrame.MaximumStreamData != 0)
         {
+            EmitDiagnostic(ref effects, QuicDiagnostics.FlowControlBlocked(streamDataBlockedFrame));
             return TrySendFlowControlBlockedSignal(
                 streamDataBlockedFrame,
                 "The connection runtime could not protect the stream-data-blocked packet.",
@@ -853,6 +855,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        EmitDiagnostic(ref effects, QuicDiagnostics.StreamLimitBlocked(streamsBlockedFrame));
         return TrySendStreamsBlockedSignal(
             streamsBlockedFrame,
             "The connection runtime could not protect the streams-blocked packet.",

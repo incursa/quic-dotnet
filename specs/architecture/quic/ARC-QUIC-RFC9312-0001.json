@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9312-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9312 Manageability Diagnostics Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the safe observability boundary for RFC 9312 manageability guidance without changing the QUIC wire image.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9312",
+    "WI-QUIC-RFC9312-0001",
+    "VER-QUIC-RFC9312-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9312-S2-0001",
+    "REQ-QUIC-RFC9312-S2-0002",
+    "REQ-QUIC-RFC9312-S3-0001",
+    "REQ-QUIC-RFC9312-S3-0002",
+    "REQ-QUIC-RFC9312-S4-0001"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogDiagnosticsMapper.cs",
+    "docs/design/rfc9312-manageability-diagnostics.md",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312"
+  ],
+  "design_summary": "The RFC 9312 slice adds structured diagnostic kinds for packet header observation, coalesced datagrams, connection ID lifecycle, path validation and migration, spin-bit state, ICMP Packet Too Big, PMTU updates, connection close state, UDP errors, and anti-amplification blocking. Runtime emit sites stay in the transport core, while qlog serialization remains in the qlog adapter. The new events carry scalar metadata only and avoid decrypted application data, TLS secrets, token material, Retry integrity tags, raw connection ID bytes, stateless reset tokens, and protected packet payload bytes.",
+  "data_and_state_considerations": "Diagnostics are emitted only when a diagnostics sink is enabled. Packet header diagnostics classify form and type from already-received packet bytes but do not retain those bytes. Connection-ID diagnostics use the local sequence number, not the raw bytes or reset token. Path diagnostics use the existing path identity and state transitions. ICMP and PMTU diagnostics expose accepted status and size values only.",
+  "edge_cases_and_constraints": [
+    "RFC 9312 is informational and this slice does not alter packet formats, connection IDs, spin-bit behavior, Retry, Version Negotiation, migration, or PMTU algorithms.",
+    "Existing standard qlog packet events may still carry raw packet bytes where the qlog adapter already supported them; the new RFC 9312 manageability events intentionally do not.",
+    "UDP receive/send error diagnostic definitions are available for host integration, but this slice keeps host-boundary emission conservative.",
+    "Loss bit diagnostics are not added because the transport does not implement a loss bit.",
+    "DDoS/rate-limit diagnostics are limited to existing candidate-path budget and anti-amplification drop surfaces."
+  ],
+  "risks": [
+    "Operators could mistake path diagnostics for a public migration-control API.",
+    "High-volume packet-header diagnostics can be noisy if enabled broadly in production.",
+    "Spin-bit diagnostics are path-local observations and should not be overread as a complete passive RTT measurement subsystem."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Safe Defaults",
+      "content": "The transport does not emit diagnostics unless a caller supplies an enabled sink. The qlog adapter maps diagnostic events into qlog without adding transport-core dependencies on qlog serialization."
+    }
+  ]
+}

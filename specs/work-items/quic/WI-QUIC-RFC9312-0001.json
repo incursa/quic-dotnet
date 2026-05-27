@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9312-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9312 Manageability Diagnostics Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9312",
+    "ARC-QUIC-RFC9312-0001",
+    "VER-QUIC-RFC9312-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9312-S2-0001",
+    "REQ-QUIC-RFC9312-S2-0002",
+    "REQ-QUIC-RFC9312-S3-0001",
+    "REQ-QUIC-RFC9312-S3-0002",
+    "REQ-QUIC-RFC9312-S4-0001"
+  ],
+  "summary": "Add production-safe manageability diagnostics and qlog mappings for the RFC 9312 visibility surface without changing QUIC protocol behavior.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9312.json`, `ARC-QUIC-RFC9312-0001.json`, `WI-QUIC-RFC9312-0001.json`, and `VER-QUIC-RFC9312-0001.json`.\n- Add safe diagnostic event definitions for packet header observation, coalesced datagrams, connection ID lifecycle, path validation, migration promotion, spin bit state, ICMP Packet Too Big, PMTU updates, close/draining state, UDP errors, and anti-amplification blocking.\n- Emit diagnostics at existing packet-routing, path-validation, connection-ID, spin-bit, ICMP, anti-amplification, and close-state transition points.\n- Add qlog adapter mappings for the new diagnostic kinds.\n- Add requirement-home tests for diagnostic payload shape, qlog event mapping, NAT rebinding/path validation emission, and local close emission.\n- Add operator documentation for collecting and interpreting RFC 9312 manageability diagnostics.",
+  "verification_plan": "Run focused RFC9312 tests, build the solution, run core SpecTrace JSON validation, regenerate QUIC requirement coverage triage, and run diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9312-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9312-0001"
+  ],
+  "out_of_scope": [
+    "Changing the QUIC wire image.",
+    "Logging decrypted application data, TLS secrets, tokens, Retry integrity tags, raw connection ID bytes, or stateless reset tokens.",
+    "Implementing a QUIC loss bit.",
+    "Adding public migration-control APIs.",
+    "Adding DSCP, QoS, load-balancer, or ECMP features."
+  ],
+  "completion_notes": "Completed as an informational observability hardening slice. Remaining RFC 9312 deployment guidance that requires host integration, external packet capture, or future operational features remains classified as documentation, not applicable, or future extension."
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9308-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9308 Applicability Hardening Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9308",
+    "ARC-QUIC-RFC9308-0001",
+    "VER-QUIC-RFC9308-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9308-S3P1-0001",
+    "REQ-QUIC-RFC9308-S3P2-0001",
+    "REQ-QUIC-RFC9308-S4P1-0001",
+    "REQ-QUIC-RFC9308-S4P4-0001",
+    "REQ-QUIC-RFC9308-S4P5-0001",
+    "REQ-QUIC-RFC9308-S6-0001",
+    "REQ-QUIC-RFC9308-S9-0001",
+    "REQ-QUIC-RFC9308-S11-0001",
+    "REQ-QUIC-RFC9308-S13-0001",
+    "REQ-QUIC-RFC9308-S15-0001"
+  ],
+  "summary": "Harden the application-facing RFC 9308 guidance surface with canonical informational requirements, API comments, application-developer documentation, focused requirement-home tests, flow-control and stream-limit diagnostics, and qlog mappings.",
+  "planned_changes": "- Add `SPEC-QUIC-RFC9308.json`, `ARC-QUIC-RFC9308-0001.json`, `WI-QUIC-RFC9308-0001.json`, and `VER-QUIC-RFC9308-0001.json`.\n- Add application-facing XML comments for 0-RTT replay-safety boundaries, keep-alive versus resumption, stream mapping, stream priority, stream-capacity backpressure, DATAGRAM scope, and application close codes.\n- Add `docs/design/rfc9308-application-guidance.md` for protocol authors building on this QUIC stack.\n- Add `FlowControlBlocked` and `StreamLimitBlocked` diagnostics and qlog mappings for application backpressure troubleshooting.\n- Add RFC 9308 requirement-home tests for public 0-RTT absence, stream priority boundary, flow-control blocked state preservation, stream-limit blocked state preservation, qlog diagnostic mapping, application close-code propagation, and NAT rebinding candidate non-promotion.",
+  "verification_plan": "Run focused RFC9308 requirement-home tests, run diagnostic/qlog tests affected by the new mappings, run core SpecTrace JSON validation, run generated QUIC requirement coverage triage, and run diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9308-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9308-0001"
+  ],
+  "out_of_scope": [
+    "Automatic fallback to TCP/TLS or another application transport.",
+    "Public application 0-RTT enablement.",
+    "HTTP/3 priority signaling.",
+    "Alt-Svc, SVCB, or HTTPS endpoint discovery.",
+    "Public DSCP/QoS controls.",
+    "HTTP Datagrams, CONNECT-UDP, MASQUE, or QUIC-LB behavior."
+  ],
+  "completion_notes": "Completed as an informational hardening slice: no new speculative RFC 9308 protocol features were added, and unsupported applicability topics remain explicitly deferred or application-owned."
+}

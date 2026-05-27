@@ -116,6 +116,8 @@ Each canonical artifact is authored in `.json`.
 - [`WI-QUIC-RFC9001-0006.json`](WI-QUIC-RFC9001-0006.json): canonical RFC 9001 repeated epoch ownership work-item source
 - [`WI-QUIC-RFC9001-0007.json`](WI-QUIC-RFC9001-0007.json): canonical RFC 9001 known stateless reset loop suppression work-item source
 - [`WI-QUIC-RFC9001-0009.json`](WI-QUIC-RFC9001-0009.json): canonical RFC 9001 large key-update epoch work-item source
+- [`WI-QUIC-RFC9308-0001.json`](WI-QUIC-RFC9308-0001.json): canonical RFC 9308 applicability hardening work-item source
+- [`WI-QUIC-RFC9312-0001.json`](WI-QUIC-RFC9312-0001.json): canonical RFC 9312 manageability diagnostics work-item source
 - [`WI-QUIC-RFC9368-0001.json`](WI-QUIC-RFC9368-0001.json): canonical RFC 9368 compatible-version floor work-item source
 - [`WI-QUIC-RFC9368-0002.json`](WI-QUIC-RFC9368-0002.json): canonical RFC 9368 compatible-version runtime-selection work-item source
 - [`WI-QUIC-RFC9369-0001.json`](WI-QUIC-RFC9369-0001.json): canonical RFC 9369 QUIC v2 static floor work-item source

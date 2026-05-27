@@ -255,10 +255,12 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
                 {
+                    EmitUdpReceiveError(ex);
                     continue;
                 }
-                catch (SocketException)
+                catch (SocketException ex)
                 {
+                    EmitUdpReceiveError(ex);
                     continue;
                 }
             }
@@ -311,8 +313,9 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         {
             // Best-effort reset emission only.
         }
-        catch (SocketException)
+        catch (SocketException ex)
         {
+            EmitUdpSendError(ex);
             // Best-effort reset emission only.
         }
         catch (IOException)
@@ -382,8 +385,36 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         {
             // Expected during shutdown.
         }
+        catch (SocketException ex)
+        {
+            EmitUdpSendError(ex);
+        }
 
         return false;
+    }
+
+    private void EmitUdpReceiveError(SocketException exception)
+    {
+        if (!diagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        diagnosticsSink.Emit(QuicDiagnostics.UdpReceiveError(
+            exception.SocketErrorCode.ToString(),
+            exception.ErrorCode));
+    }
+
+    private void EmitUdpSendError(SocketException exception)
+    {
+        if (!diagnosticsSink.IsEnabled)
+        {
+            return;
+        }
+
+        diagnosticsSink.Emit(QuicDiagnostics.UdpSendError(
+            exception.SocketErrorCode.ToString(),
+            exception.ErrorCode));
     }
 
     private bool TryUpdateSocketBinding(QuicConnectionPathIdentity pathIdentity)

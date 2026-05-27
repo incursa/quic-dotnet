@@ -118,6 +118,8 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9000-0086.json`](VER-QUIC-RFC9000-0086.json): canonical RFC 9000 HANDSHAKE_DONE proof tail verification source
 - [`VER-QUIC-RFC9000-0087.json`](VER-QUIC-RFC9000-0087.json): canonical RFC 9000 S17P2P4 handshake packet format proof tail verification source
 - [`VER-QUIC-RFC9001-0001.json`](VER-QUIC-RFC9001-0001.json): canonical RFC 9001 verification source
+- [`VER-QUIC-RFC9308-0001.json`](VER-QUIC-RFC9308-0001.json): canonical RFC 9308 applicability hardening verification source
+- [`VER-QUIC-RFC9312-0001.json`](VER-QUIC-RFC9312-0001.json): canonical RFC 9312 manageability diagnostics verification source
 - [`VER-QUIC-RFC9368-0001.json`](VER-QUIC-RFC9368-0001.json): canonical RFC 9368 compatible-version floor verification source
 - [`VER-QUIC-RFC9368-0002.json`](VER-QUIC-RFC9368-0002.json): canonical RFC 9368 compatible-version runtime-selection verification source
 - [`VER-QUIC-RFC9369-0001.json`](VER-QUIC-RFC9369-0001.json): canonical RFC 9369 QUIC v2 static floor verification source

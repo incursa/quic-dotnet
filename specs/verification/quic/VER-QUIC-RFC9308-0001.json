@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9308-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9308 Applicability Hardening Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9308",
+    "ARC-QUIC-RFC9308-0001",
+    "WI-QUIC-RFC9308-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, API/comment review, application-developer documentation review, qlog diagnostic mapping tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9308-S3P1-0001",
+    "REQ-QUIC-RFC9308-S3P2-0001",
+    "REQ-QUIC-RFC9308-S4P1-0001",
+    "REQ-QUIC-RFC9308-S4P4-0001",
+    "REQ-QUIC-RFC9308-S4P5-0001",
+    "REQ-QUIC-RFC9308-S6-0001",
+    "REQ-QUIC-RFC9308-S9-0001",
+    "REQ-QUIC-RFC9308-S11-0001",
+    "REQ-QUIC-RFC9308-S13-0001",
+    "REQ-QUIC-RFC9308-S15-0001"
+  ],
+  "scope": "This verification covers the informational RFC 9308 hardening surface: public 0-RTT absence, keep-alive/resumption documentation, application stream mapping documentation, flow-control and stream-limit blocked-state preservation, application close-code propagation, NAT rebinding candidate non-promotion, qlog diagnostic mapping, connection-ID privacy boundary documentation, version deployment boundary documentation, and DATAGRAM applicability documentation.",
+  "preconditions": [
+    "RFC 9308 remains classified as informational guidance.",
+    "The current public API does not expose application 0-RTT.",
+    "RFC 9000 path-validation, flow-control, stream-limit, and close behavior remains the owning protocol behavior.",
+    "RFC 9221 remains the only implemented DATAGRAM transport floor."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~RFC9308\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~REQ_QUIC_CRT_0136|FullyQualifiedName~RFC9308\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~REQ_QUIC_CRT_0138\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "Focused RFC9308 tests pass, qlog diagnostic mappings include flow-control and stream-limit blocked events, core SpecTrace validation accepts the new artifacts, generated requirement coverage includes the RFC9308 applicability family without breaking existing RFC 8999/9000/9001/9002/9114/9204/9221/9287/9368/9369 status, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9308/REQ-QUIC-RFC9308-ApplicabilityHardening.cs",
+    "docs/design/rfc9308-application-guidance.md",
+    "docs/application-protocol-guidance.md",
+    "docs/rfc9308-rfc9312-coverage.md",
+    "src/Incursa.Quic/QuicConnection.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicStreamCapacityChangedArgs.cs",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogDiagnosticsMapper.cs"
+  ],
+  "status_summary": "Focused RFC9308 verification passed in this branch: RFC9308 requirement-home tests passed 12/12; the combined RFC9308/RFC9312 focused filter passed 18/18; the qlog smoke filter passed 7/7; core SpecTrace validation accepted 619 JSON artifacts; generated coverage reports RFC9308 at 10/10 trace clean. Unsupported RFC 9308 guidance remains application-owned, not applicable, or deferred rather than represented as newly implemented transport behavior."
+}

@@ -40,6 +40,25 @@ internal enum QuicDiagnosticKind
     ListenerIngressClassified = 21,
     ListenerPreAcceptanceClassified = 22,
     ListenerInitialAdmissionResult = 23,
+    FlowControlBlocked = 24,
+    StreamLimitBlocked = 25,
+    PacketHeaderObserved = 26,
+    CoalescedDatagramReceived = 27,
+    ConnectionIdIssued = 28,
+    ConnectionIdRetired = 29,
+    ConnectionIdUsedOnPath = 30,
+    PathValidationChallengeSent = 31,
+    PathValidationSucceeded = 32,
+    PathValidationFailed = 33,
+    PathValidationTimedOut = 34,
+    PathPromoted = 35,
+    SpinBitUpdated = 36,
+    IcmpPacketTooBigReceived = 37,
+    PmtuUpdated = 38,
+    ConnectionCloseStateChanged = 39,
+    UdpReceiveError = 40,
+    UdpSendError = 41,
+    AntiAmplificationBlocked = 42,
 }
 
 /// <summary>
@@ -125,6 +144,101 @@ internal readonly record struct QuicDiagnosticEvent(
     /// </summary>
     public bool? Succeeded { get; init; }
 
+    /// <summary>
+    /// Gets the affected stream identifier associated with the diagnostic, if any.
+    /// </summary>
+    public ulong? StreamId { get; init; }
+
+    /// <summary>
+    /// Gets whether the diagnostic applies to bidirectional streams, if any.
+    /// </summary>
+    public bool? IsBidirectionalStream { get; init; }
+
+    /// <summary>
+    /// Gets the flow-control or stream-limit value associated with the diagnostic, if any.
+    /// </summary>
+    public ulong? Limit { get; init; }
+
+    /// <summary>
+    /// Gets the observed QUIC header form, if any.
+    /// </summary>
+    public QuicHeaderForm? HeaderForm { get; init; }
+
+    /// <summary>
+    /// Gets the observed QUIC packet type, if any.
+    /// </summary>
+    public string? PacketType { get; init; }
+
+    /// <summary>
+    /// Gets the zero-based packet index within a UDP datagram, if any.
+    /// </summary>
+    public int? PacketIndex { get; init; }
+
+    /// <summary>
+    /// Gets the byte offset of the packet within a UDP datagram, if any.
+    /// </summary>
+    public int? PacketOffset { get; init; }
+
+    /// <summary>
+    /// Gets the number of QUIC packets split from a UDP datagram, if any.
+    /// </summary>
+    public int? PacketCount { get; init; }
+
+    /// <summary>
+    /// Gets whether a boolean state is set, if any.
+    /// </summary>
+    public bool? IsSet { get; init; }
+
+    /// <summary>
+    /// Gets whether a diagnostic condition was accepted by the transport, if any.
+    /// </summary>
+    public bool? Accepted { get; init; }
+
+    /// <summary>
+    /// Gets a datagram size associated with the diagnostic, if any.
+    /// </summary>
+    public ulong? MaximumDatagramSizeBytes { get; init; }
+
+    /// <summary>
+    /// Gets whether a path MTU value is provisional, if any.
+    /// </summary>
+    public bool? IsProvisional { get; init; }
+
+    /// <summary>
+    /// Gets a path-validation probe send count, if any.
+    /// </summary>
+    public ulong? ChallengeSendCount { get; init; }
+
+    /// <summary>
+    /// Gets the connection close origin associated with the diagnostic, if any.
+    /// </summary>
+    public QuicConnectionCloseOrigin? CloseOrigin { get; init; }
+
+    /// <summary>
+    /// Gets the connection phase associated with the diagnostic, if any.
+    /// </summary>
+    public QuicConnectionPhase? ConnectionPhase { get; init; }
+
+    /// <summary>
+    /// Gets the socket error name associated with the diagnostic, if any.
+    /// </summary>
+    public string? SocketErrorName { get; init; }
+
+    /// <summary>
+    /// Gets the socket error code associated with the diagnostic, if any.
+    /// </summary>
+    public int? SocketErrorCode { get; init; }
+
+    /// <summary>
+    /// Gets a byte count associated with an attempted operation, if any.
+    /// </summary>
+    public ulong? AttemptedBytes { get; init; }
+
+    /// <summary>
+    /// Gets the remaining anti-amplification send budget, if any.
+    /// </summary>
+    public ulong? RemainingSendBudget { get; init; }
+
     private static QuicDiagnosticKind InferKind(string category, string name)
     {
         return (category, name) switch
@@ -147,6 +261,25 @@ internal readonly record struct QuicDiagnosticEvent(
             ("connection.listener", "ingress-classified") => QuicDiagnosticKind.ListenerIngressClassified,
             ("connection.listener", "pre-acceptance-classified") => QuicDiagnosticKind.ListenerPreAcceptanceClassified,
             ("connection.listener", "initial-admission-result") => QuicDiagnosticKind.ListenerInitialAdmissionResult,
+            ("connection.runtime.flow-control", "blocked") => QuicDiagnosticKind.FlowControlBlocked,
+            ("connection.runtime.streams", "limit-blocked") => QuicDiagnosticKind.StreamLimitBlocked,
+            ("connection.runtime.packet", "header-observed") => QuicDiagnosticKind.PacketHeaderObserved,
+            ("connection.runtime.packet", "coalesced-datagram-received") => QuicDiagnosticKind.CoalescedDatagramReceived,
+            ("connection.runtime.connection-id", "issued") => QuicDiagnosticKind.ConnectionIdIssued,
+            ("connection.runtime.connection-id", "retired") => QuicDiagnosticKind.ConnectionIdRetired,
+            ("connection.runtime.connection-id", "used-on-path") => QuicDiagnosticKind.ConnectionIdUsedOnPath,
+            ("connection.runtime.path", "path-validation-challenge-sent") => QuicDiagnosticKind.PathValidationChallengeSent,
+            ("connection.runtime.path", "path-validation-succeeded") => QuicDiagnosticKind.PathValidationSucceeded,
+            ("connection.runtime.path", "path-validation-failed") => QuicDiagnosticKind.PathValidationFailed,
+            ("connection.runtime.path", "path-validation-timed-out") => QuicDiagnosticKind.PathValidationTimedOut,
+            ("connection.runtime.path", "promoted") => QuicDiagnosticKind.PathPromoted,
+            ("connection.runtime.path", "spin-bit-updated") => QuicDiagnosticKind.SpinBitUpdated,
+            ("connection.runtime.path", "icmp-packet-too-big-received") => QuicDiagnosticKind.IcmpPacketTooBigReceived,
+            ("connection.runtime.path", "pmtu-updated") => QuicDiagnosticKind.PmtuUpdated,
+            ("connection.runtime.lifecycle", "connection-close-state-changed") => QuicDiagnosticKind.ConnectionCloseStateChanged,
+            ("connection.socket", "udp-receive-error") => QuicDiagnosticKind.UdpReceiveError,
+            ("connection.socket", "udp-send-error") => QuicDiagnosticKind.UdpSendError,
+            ("connection.runtime.path", "anti-amplification-blocked") => QuicDiagnosticKind.AntiAmplificationBlocked,
             ("connection.runtime.path", "validated-paths-exhausted") => QuicDiagnosticKind.PathValidationFailedNoValidatedPathsRemain,
             ("connection.runtime.path", "path-validation-timer-exhausted") => QuicDiagnosticKind.PathValidationTimerExpiredNoValidatedPathsRemain,
             ("connection.runtime.lifecycle", "accepted-stateless-reset") => QuicDiagnosticKind.AcceptedStatelessReset,
@@ -180,6 +313,8 @@ internal interface IQuicDiagnosticsSink
 /// </summary>
 internal static class QuicDiagnostics
 {
+    private const int MinimumCoalescedPacketCount = 2;
+
     /// <summary>
     /// Resolves the diagnostics sink for a single connection.
     /// </summary>
@@ -488,6 +623,370 @@ internal static class QuicDiagnostics
             PathIdentity = pathIdentity,
             PathClassification = QuicConnectionPathClassification.NoiseOrAttack,
         };
+    }
+
+    internal static QuicDiagnosticEvent FlowControlBlocked(QuicDataBlockedFrame frame)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.flow-control",
+            "blocked",
+            $"Application stream data is blocked by the connection flow-control limit {frame.MaximumData}.",
+            QuicDiagnosticSeverity.Info)
+        {
+            Limit = frame.MaximumData,
+        };
+    }
+
+    internal static QuicDiagnosticEvent FlowControlBlocked(QuicStreamDataBlockedFrame frame)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.flow-control",
+            "blocked",
+            $"Application stream {frame.StreamId} data is blocked by the stream flow-control limit {frame.MaximumStreamData}.",
+            QuicDiagnosticSeverity.Info)
+        {
+            StreamId = frame.StreamId,
+            Limit = frame.MaximumStreamData,
+        };
+    }
+
+    internal static QuicDiagnosticEvent StreamLimitBlocked(QuicStreamsBlockedFrame frame)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.streams",
+            "limit-blocked",
+            $"{(frame.IsBidirectional ? "Bidirectional" : "Unidirectional")} stream opening is blocked by the peer stream limit {frame.MaximumStreams}.",
+            QuicDiagnosticSeverity.Info)
+        {
+            IsBidirectionalStream = frame.IsBidirectional,
+            Limit = frame.MaximumStreams,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PacketHeaderObserved(
+        QuicConnectionPathIdentity pathIdentity,
+        ReadOnlySpan<byte> packet,
+        int packetIndex,
+        int packetOffset,
+        int datagramLength)
+    {
+        if (packetIndex < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(packetIndex));
+        }
+
+        if (packetOffset < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(packetOffset));
+        }
+
+        if (datagramLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(datagramLength));
+        }
+
+        QuicHeaderForm? headerForm = null;
+        string? packetType = null;
+        if (QuicPacketParser.TryClassifyHeaderForm(packet, out QuicHeaderForm parsedHeaderForm))
+        {
+            headerForm = parsedHeaderForm;
+            packetType = DescribePacketType(packet, parsedHeaderForm);
+        }
+
+        string typeDescription = packetType ?? "unknown";
+        return new QuicDiagnosticEvent(
+            "connection.runtime.packet",
+            "header-observed",
+            $"Observed {typeDescription} packet header on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            HeaderForm = headerForm,
+            PacketType = packetType,
+            PacketIndex = packetIndex,
+            PacketOffset = packetOffset,
+            DatagramLength = datagramLength,
+        };
+    }
+
+    internal static QuicDiagnosticEvent CoalescedDatagramReceived(
+        QuicConnectionPathIdentity pathIdentity,
+        int packetCount,
+        int datagramLength)
+    {
+        if (packetCount < MinimumCoalescedPacketCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(packetCount));
+        }
+
+        if (datagramLength < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(datagramLength));
+        }
+
+        return new QuicDiagnosticEvent(
+            "connection.runtime.packet",
+            "coalesced-datagram-received",
+            $"Split coalesced UDP datagram from {DescribePath(pathIdentity)} into {packetCount} QUIC packets.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            PacketCount = packetCount,
+            DatagramLength = datagramLength,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ConnectionIdIssued(ulong connectionId)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.connection-id",
+            "issued",
+            $"Issued connection ID sequence {connectionId}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            ConnectionId = connectionId,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ConnectionIdRetired(ulong connectionId)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.connection-id",
+            "retired",
+            $"Retired connection ID sequence {connectionId}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            ConnectionId = connectionId,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ConnectionIdUsedOnPath(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong connectionId)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.connection-id",
+            "used-on-path",
+            $"Connection ID sequence {connectionId} was first observed on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            ConnectionId = connectionId,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PathValidationChallengeSent(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong challengeSendCount)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "path-validation-challenge-sent",
+            $"Path validation challenge {challengeSendCount} was sent on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            ChallengeSendCount = challengeSendCount,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PathValidationSucceeded(QuicConnectionPathIdentity pathIdentity)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "path-validation-succeeded",
+            $"Path validation succeeded on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Info)
+        {
+            PathIdentity = pathIdentity,
+            Succeeded = true,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PathValidationFailed(QuicConnectionPathIdentity pathIdentity)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "path-validation-failed",
+            $"Path validation failed on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Warning)
+        {
+            PathIdentity = pathIdentity,
+            Succeeded = false,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PathValidationTimedOut(QuicConnectionPathIdentity pathIdentity)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "path-validation-timed-out",
+            $"Path validation timed out on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Warning)
+        {
+            PathIdentity = pathIdentity,
+            Succeeded = false,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PathPromoted(
+        QuicConnectionPathIdentity pathIdentity,
+        bool preserveRecoveryState)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "promoted",
+            $"Validated path {DescribePath(pathIdentity)} was promoted to active.",
+            QuicDiagnosticSeverity.Info)
+        {
+            PathIdentity = pathIdentity,
+            IsSet = preserveRecoveryState,
+        };
+    }
+
+    internal static QuicDiagnosticEvent SpinBitUpdated(
+        QuicConnectionPathIdentity pathIdentity,
+        bool spinBit)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "spin-bit-updated",
+            $"Spin bit state updated on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            IsSet = spinBit,
+        };
+    }
+
+    internal static QuicDiagnosticEvent IcmpPacketTooBigReceived(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong maximumDatagramSizeBytes,
+        bool accepted)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "icmp-packet-too-big-received",
+            accepted
+                ? $"Accepted ICMP Packet Too Big maximum datagram size {maximumDatagramSizeBytes} on {DescribePath(pathIdentity)}."
+                : $"Ignored ICMP Packet Too Big maximum datagram size {maximumDatagramSizeBytes} on {DescribePath(pathIdentity)}.",
+            accepted ? QuicDiagnosticSeverity.Info : QuicDiagnosticSeverity.Trace)
+        {
+            PathIdentity = pathIdentity,
+            MaximumDatagramSizeBytes = maximumDatagramSizeBytes,
+            Accepted = accepted,
+        };
+    }
+
+    internal static QuicDiagnosticEvent PmtuUpdated(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong maximumDatagramSizeBytes,
+        bool isProvisional)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "pmtu-updated",
+            $"Path maximum datagram size is now {maximumDatagramSizeBytes} bytes on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Info)
+        {
+            PathIdentity = pathIdentity,
+            MaximumDatagramSizeBytes = maximumDatagramSizeBytes,
+            IsProvisional = isProvisional,
+        };
+    }
+
+    internal static QuicDiagnosticEvent ConnectionCloseStateChanged(
+        QuicConnectionCloseOrigin origin,
+        QuicConnectionPhase phase)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.lifecycle",
+            "connection-close-state-changed",
+            $"Connection entered {phase} due to {origin} close.",
+            QuicDiagnosticSeverity.Info)
+        {
+            CloseOrigin = origin,
+            ConnectionPhase = phase,
+        };
+    }
+
+    internal static QuicDiagnosticEvent UdpReceiveError(string socketErrorName, int socketErrorCode)
+    {
+        return UdpError("udp-receive-error", "UDP receive error", socketErrorName, socketErrorCode, QuicDiagnosticSeverity.Warning);
+    }
+
+    internal static QuicDiagnosticEvent UdpSendError(string socketErrorName, int socketErrorCode)
+    {
+        return UdpError("udp-send-error", "UDP send error", socketErrorName, socketErrorCode, QuicDiagnosticSeverity.Warning);
+    }
+
+    internal static QuicDiagnosticEvent AntiAmplificationBlocked(
+        QuicConnectionPathIdentity pathIdentity,
+        ulong attemptedBytes,
+        ulong remainingSendBudget)
+    {
+        return new QuicDiagnosticEvent(
+            "connection.runtime.path",
+            "anti-amplification-blocked",
+            $"Anti-amplification budget blocked {attemptedBytes} bytes on {DescribePath(pathIdentity)}.",
+            QuicDiagnosticSeverity.Warning)
+        {
+            PathIdentity = pathIdentity,
+            AttemptedBytes = attemptedBytes,
+            RemainingSendBudget = remainingSendBudget,
+        };
+    }
+
+    private static QuicDiagnosticEvent UdpError(
+        string name,
+        string message,
+        string socketErrorName,
+        int socketErrorCode,
+        QuicDiagnosticSeverity severity)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(socketErrorName);
+
+        return new QuicDiagnosticEvent(
+            "connection.socket",
+            name,
+            $"{message}: {socketErrorName} ({socketErrorCode}).",
+            severity)
+        {
+            SocketErrorName = socketErrorName,
+            SocketErrorCode = socketErrorCode,
+        };
+    }
+
+    private static string DescribePacketType(ReadOnlySpan<byte> packet, QuicHeaderForm headerForm)
+    {
+        if (headerForm == QuicHeaderForm.Short)
+        {
+            return "short";
+        }
+
+        if (!QuicPacketParser.TryParseLongHeader(packet, allowClearedFixedBit: true, out QuicLongHeaderPacket longHeader))
+        {
+            return "long";
+        }
+
+        if (longHeader.IsVersionNegotiation)
+        {
+            return "version_negotiation";
+        }
+
+        return QuicVersionNegotiation.TryGetLongHeaderPacketType(
+                longHeader.Version,
+                longHeader.LongPacketTypeBits,
+                out QuicLongPacketType longPacketType)
+            ? longPacketType switch
+            {
+                QuicLongPacketType.Initial => "initial",
+                QuicLongPacketType.ZeroRtt => "0rtt",
+                QuicLongPacketType.Handshake => "handshake",
+                QuicLongPacketType.Retry => "retry",
+                _ => "long",
+            }
+            : "long";
     }
 
     private static string DescribePath(QuicConnectionPathIdentity pathIdentity)

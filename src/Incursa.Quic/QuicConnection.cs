@@ -34,6 +34,10 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Creates and starts a client-side connection shell and completes only when the supported establishment boundary is reached.
     /// </summary>
+    /// <remarks>
+    /// This public entry point does not expose application 0-RTT. Applications that later enable early data must
+    /// define replay-safe request semantics before sending application bytes before handshake completion.
+    /// </remarks>
     public static ValueTask<QuicConnection> ConnectAsync(QuicClientConnectionOptions options, CancellationToken cancellationToken = default)
     {
         return ConnectAsync(
@@ -74,6 +78,10 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Accepts the next inbound stream exposed by the supported active connection path.
     /// </summary>
+    /// <remarks>
+    /// QUIC streams are ordered, reliable byte streams. Application protocols are responsible for mapping
+    /// control streams, request streams, and any higher-level message boundaries onto accepted streams.
+    /// </remarks>
     public ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -83,6 +91,10 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Opens a new outbound stream on the supported active connection path.
     /// </summary>
+    /// <remarks>
+    /// Stream opening is subject to the peer's stream limits. Use <see cref="QuicConnectionOptions.StreamCapacityCallback"/>
+    /// for application backpressure instead of assuming immediate stream availability.
+    /// </remarks>
     public ValueTask<QuicStream> OpenOutboundStreamAsync(QuicStreamType streamType, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -92,6 +104,9 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Sends one unreliable QUIC DATAGRAM payload on the supported active connection path.
     /// </summary>
+    /// <remarks>
+    /// This is the RFC 9221 QUIC DATAGRAM transport surface. It is not HTTP Datagrams, CONNECT-UDP, or MASQUE.
+    /// </remarks>
     public ValueTask SendDatagramAsync(ReadOnlyMemory<byte> datagram, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -101,6 +116,9 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Receives one unreliable QUIC DATAGRAM payload from the supported active connection path.
     /// </summary>
+    /// <remarks>
+    /// Application protocols are responsible for any datagram payload format, loss tolerance, and multiplexing policy.
+    /// </remarks>
     public ValueTask<ReadOnlyMemory<byte>> ReceiveDatagramAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
@@ -140,6 +158,10 @@ public sealed class QuicConnection : IAsyncDisposable
     /// <summary>
     /// Closes the connection with the provided application error code.
     /// </summary>
+    /// <remarks>
+    /// The error code is delivered as application close metadata. It is intended for the protocol layered over QUIC
+    /// and is distinct from QUIC transport error codes.
+    /// </remarks>
     public ValueTask CloseAsync(long errorCode, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);

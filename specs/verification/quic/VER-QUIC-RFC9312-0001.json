@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9312-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9312 Manageability Diagnostics Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9312",
+    "ARC-QUIC-RFC9312-0001",
+    "WI-QUIC-RFC9312-0001"
+  ],
+  "verification_method": "Focused requirement-home tests, qlog diagnostic mapping tests, runtime NAT-rebinding/path-validation diagnostic tests, local close diagnostic tests, solution build, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9312-S2-0001",
+    "REQ-QUIC-RFC9312-S2-0002",
+    "REQ-QUIC-RFC9312-S3-0001",
+    "REQ-QUIC-RFC9312-S3-0002",
+    "REQ-QUIC-RFC9312-S4-0001"
+  ],
+  "scope": "This verification covers the metadata-only RFC 9312 diagnostics added in this slice: packet header form/type, coalesced datagram packet count, connection ID lifecycle, path validation and migration promotion, spin bit state, ICMP Packet Too Big, PMTU updates, close/draining state, UDP errors, anti-amplification blocking, and stateless reset qlog mapping.",
+  "preconditions": [
+    "RFC 9312 remains classified as informational manageability guidance.",
+    "The transport already owns the RFC 9000 wire-image, migration, PMTU, close, stateless reset, and spin-bit behavior.",
+    "Diagnostics remain disabled unless an enabled diagnostics sink is supplied.",
+    "The qlog adapter remains outside the transport core."
+  ],
+  "procedure": [
+    "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~RFC9312\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The solution builds, focused RFC9312 tests pass, qlog mappings include the new metadata-only events, core SpecTrace validation accepts the new artifacts, generated requirement coverage includes the RFC9312 manageability family, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9312/REQ-QUIC-RFC9312-ManageabilityDiagnostics.cs",
+    "docs/design/rfc9312-manageability-diagnostics.md",
+    "docs/operations-and-manageability.md",
+    "docs/troubleshooting-quic.md",
+    "docs/rfc9308-rfc9312-coverage.md",
+    "src/Incursa.Quic/QuicDiagnostics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic.Qlog/QuicQlogDiagnosticsMapper.cs"
+  ],
+  "status_summary": "Focused RFC9312 verification passed in this branch: the solution build passed, focused RFC9312 requirement-home tests passed 6/6; the combined RFC9308/RFC9312 focused filter passed 18/18; the qlog smoke filter passed 7/7; core SpecTrace validation accepted 619 JSON artifacts; generated coverage reports RFC9312 at 5/5 trace clean."
+}

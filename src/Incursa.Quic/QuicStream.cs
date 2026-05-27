@@ -5,6 +5,10 @@ namespace Incursa.Quic;
 /// <summary>
 /// Stream facade backed by the connection stream-state seam.
 /// </summary>
+/// <remarks>
+/// A QUIC stream provides ordered, reliable bytes for the application protocol. Message framing, request mapping,
+/// cancellation meaning, and priority policy are application-layer responsibilities.
+/// </remarks>
 public sealed class QuicStream : Stream
 {
     private const long MaximumErrorCodeValue = (1L << 62) - 1;
@@ -80,6 +84,10 @@ public sealed class QuicStream : Stream
     /// Higher values are scheduled before lower values when pending application sends are flushed.
     /// This priority is local-only and is not exchanged on the wire.
     /// </summary>
+    /// <remarks>
+    /// This is a local send-scheduling hint. It does not implement HTTP/3 priority signaling and it does not
+    /// guarantee peer processing order.
+    /// </remarks>
     public int Priority
     {
         get
