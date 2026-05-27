@@ -40,6 +40,29 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0047")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task QueryAsync_PropagatesServfailResponseCodeFromHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static _ =>
+            new DoqQueryResult(CreateDnsServfailResponse()));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x0b)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(CreateDnsServfailResponse(), result.Response.ToArray());
+        Assert.Equal(0x02, result.Response.Span[3] & 0x0f);
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0011")]
     [Requirement("REQ-QUIC-RFC9250-0012")]
     [Requirement("REQ-QUIC-RFC9250-0017")]
@@ -209,6 +232,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0042")]
     [Requirement("REQ-QUIC-RFC9250-0034")]
     [Requirement("REQ-QUIC-RFC9250-0035")]
     [Requirement("REQ-QUIC-RFC9250-0036")]
@@ -224,7 +248,9 @@ public sealed class DoqStreamLifecycleTests
         }
 
         DelayedDoqHandler handler = new();
-        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            handler,
+            new DoqServerOptions { MaxCancellationRequests = 1 });
         await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         using CancellationTokenSource queryCancellation = new();
 
@@ -238,6 +264,47 @@ public sealed class DoqStreamLifecycleTests
         DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x05)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
         Assert.Equal([0x00, 0x00, 0xd5], result.Response.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0042")]
+    [Requirement("REQ-QUIC-RFC9250-0043")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task CancellationVolumeLimitClosesConnectionWithExcessiveLoad()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CancellationVolumeDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            handler,
+            new DoqServerOptions { MaxCancellationRequests = 1 });
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await using DoqClient client = DoqClient.Attach(connection);
+
+        using CancellationTokenSource firstCancellation = new();
+        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsQuery(0x04), firstCancellation.Token).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        await firstCancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(() => firstQuery.WaitAsync(TimeSpan.FromSeconds(10)));
+        handler.ReleaseFirstQuery();
+
+        using CancellationTokenSource secondCancellation = new();
+        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsQuery(0x05), secondCancellation.Token).AsTask();
+        await handler.SecondQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        await secondCancellation.CancelAsync();
+        await Assert.ThrowsAsync<OperationCanceledException>(() => secondQuery.WaitAsync(TimeSpan.FromSeconds(10)));
+        handler.ReleaseSecondQuery();
+
+        QuicException exception = await WaitForConnectionAbortAsync(connection);
+
+        Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
+        Assert.Equal((long)DoqErrorCode.ExcessiveLoad, exception.ApplicationErrorCode);
     }
 
     [Fact]
@@ -280,7 +347,7 @@ public sealed class DoqStreamLifecycleTests
     [Requirement("REQ-QUIC-RFC9250-0050")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public async Task HandlerFailureAbortsStreamWithInternalErrorAndLeavesConnectionUsable()
+    public async Task HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
         {
@@ -291,15 +358,11 @@ public sealed class DoqStreamLifecycleTests
         await using TestServerContext context = await TestServerContext.StartAsync(handler);
         await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
             client.QueryAsync(CreateDnsQuery(0x07)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
 
-        Assert.Equal(QuicError.StreamAborted, exception.QuicError);
-        Assert.Equal((long)DoqErrorCode.InternalError, exception.ApplicationErrorCode);
-
-        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x08)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-
-        Assert.Equal([0x00, 0x00, 0xf8], result.Response.ToArray());
+        Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
+        Assert.Single(handler.Queries);
     }
 
     [Fact]
@@ -320,12 +383,14 @@ public sealed class DoqStreamLifecycleTests
         await using TestServerContext context = await TestServerContext.StartAsync(
             handler,
             new DoqServerOptions { MaxDanglingStreams = 1 });
-        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await using DoqClient client = DoqClient.Attach(connection);
         Task<DoqQueryResult> first = client.QueryAsync(CreateDnsQuery(0x09)).AsTask();
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
-        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
-            client.QueryAsync(CreateDnsQuery(0x0a)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsQuery(0x0a)).AsTask();
+
+        QuicException exception = await WaitForConnectionAbortAsync(connection);
 
         Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
         Assert.Equal((long)DoqErrorCode.ExcessiveLoad, exception.ApplicationErrorCode);
@@ -339,6 +404,9 @@ public sealed class DoqStreamLifecycleTests
 
     private static byte[] CreateDnsResponse(ReadOnlySpan<byte> query, byte responseMarker)
         => [0x00, query.Length > 1 ? query[1] : (byte)0x00, responseMarker];
+
+    private static byte[] CreateDnsServfailResponse()
+        => [0x00, 0x00, 0x81, 0x82, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
 
     private static async Task DrainStreamAsync(QuicStream stream)
     {
@@ -357,6 +425,37 @@ public sealed class DoqStreamLifecycleTests
             if (DateTimeOffset.UtcNow >= deadline)
             {
                 return;
+            }
+
+            await Task.Delay(pollInterval).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task<QuicException> WaitForConnectionAbortAsync(QuicConnection connection)
+    {
+        TimeSpan pollInterval = TimeSpan.FromMilliseconds(25);
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
+
+        while (true)
+        {
+            try
+            {
+                QuicStream stream = await connection
+                    .OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(10))
+                    .ConfigureAwait(false);
+
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (QuicException exception) when (exception.QuicError == QuicError.ConnectionAborted)
+            {
+                return exception;
+            }
+
+            if (DateTimeOffset.UtcNow >= deadline)
+            {
+                throw new TimeoutException("Timed out waiting for the QUIC connection to close after excessive cancellation volume.");
             }
 
             await Task.Delay(pollInterval).ConfigureAwait(false);
@@ -461,12 +560,65 @@ public sealed class DoqStreamLifecycleTests
         }
     }
 
+    private sealed class CancellationVolumeDoqHandler : IDoqQueryHandler
+    {
+        private readonly TaskCompletionSource<object?> firstQueryArrived = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object?> secondQueryArrived = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object?> releaseFirstQuery = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<object?> releaseSecondQuery = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int queryCount;
+
+        public TaskCompletionSource<object?> FirstQueryArrived => firstQueryArrived;
+
+        public TaskCompletionSource<object?> SecondQueryArrived => secondQueryArrived;
+
+        public void ReleaseFirstQuery()
+            => releaseFirstQuery.TrySetResult(null);
+
+        public void ReleaseSecondQuery()
+            => releaseSecondQuery.TrySetResult(null);
+
+        public async ValueTask<DoqQueryResult> HandleAsync(DoqQueryContext context, CancellationToken cancellationToken = default)
+        {
+            int currentQuery = Interlocked.Increment(ref queryCount);
+            if (currentQuery == 1)
+            {
+                firstQueryArrived.TrySetResult(null);
+                await releaseFirstQuery.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+            else if (currentQuery == 2)
+            {
+                secondQueryArrived.TrySetResult(null);
+                await releaseSecondQuery.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            return new DoqQueryResult(CreateDnsResponse(context.Query.Span, (byte)(0xd5 + currentQuery)));
+        }
+    }
+
     private sealed class ThrowOnceDoqHandler : IDoqQueryHandler
     {
+        private readonly List<DoqQueryContext> queries = [];
         private int queryCount;
+
+        public DoqQueryContext[] Queries
+        {
+            get
+            {
+                lock (queries)
+                {
+                    return [.. queries];
+                }
+            }
+        }
 
         public ValueTask<DoqQueryResult> HandleAsync(DoqQueryContext context, CancellationToken cancellationToken = default)
         {
+            lock (queries)
+            {
+                queries.Add(context);
+            }
+
             if (Interlocked.Increment(ref queryCount) == 1)
             {
                 throw new InvalidOperationException("Simulated DNS handler failure.");

@@ -46,10 +46,25 @@ internal static class DoqStream
         ArgumentNullException.ThrowIfNull(stream);
         byte[] readBuffer = new byte[InitialBufferSize];
         byte[] pending = [];
+        Task writeAbortTask = stream.WaitForWriteAbortAsync(cancellationToken);
 
         while (true)
         {
-            int bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken).ConfigureAwait(false);
+            if (writeAbortTask.IsCompleted)
+            {
+                await writeAbortTask.ConfigureAwait(false);
+            }
+
+            Task<int> readTask = stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken);
+            Task completed = await Task.WhenAny(readTask, writeAbortTask).ConfigureAwait(false);
+
+            if (completed == writeAbortTask)
+            {
+                await writeAbortTask.ConfigureAwait(false);
+            }
+
+            int bytesRead = await readTask.ConfigureAwait(false);
+
             if (bytesRead == 0)
             {
                 return DecodeExactlyOneMessage(pending);

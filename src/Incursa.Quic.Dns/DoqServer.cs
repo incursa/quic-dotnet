@@ -137,8 +137,11 @@ public sealed class DoqServer : IAsyncDisposable
 
                 if (stream.Type != QuicStreamType.Bidirectional)
                 {
+                    await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+                    await Task.Yield();
+                    await connectionCancellation.CancelAsync().ConfigureAwait(false);
                     await stream.DisposeAsync().ConfigureAwait(false);
-                    continue;
+                    break;
                 }
 
                 if (!resourceState.TryRegisterDanglingStream())
@@ -184,6 +187,7 @@ public sealed class DoqServer : IAsyncDisposable
                 if (exception.ErrorCode == DoqErrorCode.ProtocolError)
                 {
                     await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+                    await Task.Yield();
                     await connectionCancellation.CancelAsync().ConfigureAwait(false);
                 }
             }

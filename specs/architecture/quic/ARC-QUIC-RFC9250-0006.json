@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 SERVFAIL Response Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the DoQ adapter behavior for preserving handler-provided SERVFAIL DNS responses without transport remapping.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0006",
+    "VER-QUIC-RFC9250-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0047"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs"
+  ],
+  "design_summary": "The DoQ server writes the handler-provided DNS response payload back to the peer on the same bidirectional stream. The adapter does not inspect or rewrite DNS response codes, so a handler that returns a SERVFAIL payload delivers that SERVFAIL response to the client unchanged.",
+  "data_and_state_considerations": "No new adapter state is needed for SERVFAIL pass-through. The response remains an opaque DNS payload at the DoQ layer, subject only to the existing two-octet length prefix and zero-message-ID client checks.",
+  "edge_cases_and_constraints": [
+    "The response must still carry a zero DNS Message ID to satisfy DoQ framing expectations.",
+    "The adapter does not derive SERVFAIL from exceptions; it only preserves the handler-provided response payload."
+  ],
+  "risks": [
+    "This slice does not add a dedicated resolver implementation or DNS message builder.",
+    "The proof uses a focused loopback payload check rather than a resolver-backed end-to-end scenario."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "DNS resolver policy that decides when to emit SERVFAIL remains above the transport adapter. The DoQ layer only preserves the bytes supplied by the handler."
+    }
+  ]
+}

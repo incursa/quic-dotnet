@@ -1078,6 +1078,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
         ]
       }
     },
@@ -1095,6 +1104,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
         ]
       }
     },
@@ -1192,6 +1210,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.2 RFC9250-S4P3P2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0006"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0006"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0006"
         ]
       }
     },
@@ -1356,6 +1383,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0005"
         ]
       }
     },
@@ -1399,6 +1435,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0005"
         ]
       }
     },
@@ -1416,6 +1461,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0007"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0007"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0007"
         ]
       }
     },
@@ -1467,6 +1521,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0005"
         ]
       }
     },
@@ -1501,6 +1564,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0005"
         ]
       }
     },
@@ -1518,6 +1590,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0005"
         ]
       }
     },

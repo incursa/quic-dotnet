@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0007",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Peer STOP_SENDING Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0007",
+    "VER-QUIC-RFC9250-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0057"
+  ],
+  "summary": "Add focused DoQ proof for peer STOP_SENDING fatal handling.",
+  "planned_changes": "- Add a raw loopback test that aborts the server-side read path on an inbound DoQ query stream and asserts the client turns the peer STOP_SENDING into a fatal protocol error.\n- Link the requirement-home, architecture, and verification trace artifacts for REQ-QUIC-RFC9250-0057.",
+  "verification_plan": "Run the DoQ fatal protocol-error tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0007"
+  ],
+  "out_of_scope": [
+    "Missing expected STREAM FIN timeout policy.",
+    "EDNS(0) keepalive parsing.",
+    "Server-initiated bidirectional stream handling, padding, AXFR/IXFR, 0-RTT, Retry/address validation, gateway rewriting, and external DoQ interop proof."
+  ],
+  "completion_notes": "The DoQ client now has a focused proof that a peer STOP_SENDING on the outstanding query stream is treated as a fatal protocol error and closes the connection."
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0005",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Fatal Protocol Error Expansion Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0005",
+    "WI-QUIC-RFC9250-0005"
+  ],
+  "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for DoQ fatal protocol-error handling.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0054",
+    "REQ-QUIC-RFC9250-0056",
+    "REQ-QUIC-RFC9250-0060",
+    "REQ-QUIC-RFC9250-0062",
+    "REQ-QUIC-RFC9250-0063"
+  ],
+  "scope": "This verification covers truncated responses that reach STREAM FIN too early, extra response bytes that form more than one DNS message, inbound unidirectional streams observed by the server, and the shared connection-close behavior that uses `DOQ_PROTOCOL_ERROR`. It does not cover missing expected STREAM FIN timeout policy, peer STOP_SENDING, EDNS keepalive, or server-initiated bidirectional stream fatal handling.",
+  "preconditions": [
+    "The DoQ foundation and minimal stream lifecycle slices exist.",
+    "The local managed QUIC loopback support is available for malformed stream and connection-close tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFatalProtocolErrorTests|FullyQualifiedName~REQ_QUIC_RFC9250\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ fatal-protocol-error tests and RFC 9250 requirement-home tests pass, core SpecTrace validation accepts the RFC 9250 artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0005.cs"
+  ],
+  "status_summary": "The DoQ adapter now proves fatal-protocol-error handling for truncated responses, extra response bytes, and inbound unidirectional streams over real QUIC loopback, while leaving the missing-FIN, peer STOP_SENDING, EDNS keepalive, and server-initiated bidirectional stream cases as explicit follow-up scope."
+}

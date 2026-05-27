@@ -21,6 +21,7 @@ public sealed class QuicStream : Stream
     private readonly bool canWrite;
     private readonly TaskCompletionSource<object?> readsClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly TaskCompletionSource<object?> writesClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource<object?> writeAborted = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly SemaphoreSlim readGate = new(0, int.MaxValue);
     private readonly SemaphoreSlim writeGate = new(1, 1);
     private readonly long? runtimeObserverId;
@@ -78,6 +79,25 @@ public sealed class QuicStream : Stream
     /// Gets the connection runtime backing this stream when it is attached to one.
     /// </summary>
     internal QuicConnectionRuntime? Runtime => runtime;
+
+    /// <summary>
+    /// Gets a task that faults when the peer aborts the write side or the connection terminates.
+    /// </summary>
+    internal Task WaitForWriteAbortAsync(CancellationToken cancellationToken = default)
+    {
+        if (writeTerminalException is Exception writeException)
+        {
+            return Task.FromException(writeException);
+        }
+
+        Exception? runtimeException = runtime?.GetStreamOperationException();
+        if (runtimeException is not null)
+        {
+            return Task.FromException(runtimeException);
+        }
+
+        return writeAborted.Task.WaitAsync(cancellationToken);
+    }
 
     /// <summary>
     /// Gets or sets the local scheduling priority for this stream.
@@ -599,6 +619,7 @@ public sealed class QuicStream : Stream
                 break;
             case QuicStreamNotificationKind.WriteAborted:
                 writeTerminalException ??= notification.Exception;
+                writeAborted.TrySetException(notification.Exception!);
                 writesClosed.TrySetException(notification.Exception!);
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
@@ -614,6 +635,12 @@ public sealed class QuicStream : Stream
                 {
                     writeTerminalException ??= notification.Exception;
                     writesClosed.TrySetException(notification.Exception!);
+                }
+
+                if (!writeAborted.Task.IsCompleted)
+                {
+                    writeTerminalException ??= notification.Exception;
+                    writeAborted.TrySetException(notification.Exception!);
                 }
 
                 break;

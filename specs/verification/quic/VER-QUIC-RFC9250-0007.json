@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0007",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Peer STOP_SENDING Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0007",
+    "WI-QUIC-RFC9250-0007"
+  ],
+  "verification_method": "Focused raw loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for peer STOP_SENDING fatal handling.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0057"
+  ],
+  "scope": "This verification covers the client reaction to a peer STOP_SENDING on an outstanding query stream and the resulting connection close. It does not verify missing expected STREAM FIN timeout policy or EDNS keepalive behavior.",
+  "preconditions": [
+    "The DoQ foundation and minimal stream lifecycle slices exist.",
+    "Managed QUIC loopback support is available so the raw server can synthesize peer STOP_SENDING on a live query stream."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFatalProtocolErrorTests|FullyQualifiedName~REQ_QUIC_RFC9250_0007\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ fatal-error and RFC 9250 requirement-home tests pass, core SpecTrace validation accepts the RFC 9250 artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs"
+  ],
+  "status_summary": "The DoQ adapter now proves a peer STOP_SENDING on the outstanding query stream is treated as a fatal protocol error. Missing expected STREAM FIN timeout policy, EDNS keepalive handling, and server-initiated bidirectional stream handling remain open."
+}

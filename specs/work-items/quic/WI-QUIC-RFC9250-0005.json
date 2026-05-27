@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Fatal Protocol Error Expansion Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0005",
+    "VER-QUIC-RFC9250-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0054",
+    "REQ-QUIC-RFC9250-0056",
+    "REQ-QUIC-RFC9250-0060",
+    "REQ-QUIC-RFC9250-0062",
+    "REQ-QUIC-RFC9250-0063"
+  ],
+  "summary": "Add DoQ fatal protocol-error handling for truncated responses, extra response bytes, inbound unidirectional streams, and connection-close semantics.",
+  "planned_changes": "- Treat early response FIN and extra response bytes as fatal protocol errors on the client.\n- Reject inbound unidirectional streams on the server with a fatal connection close.\n- Keep the shared connection-close and error-code behavior trace-linked to the fatal protocol-error requirements.\n- Add focused loopback tests and a requirement-home test for the covered fatal protocol-error requirements.",
+  "verification_plan": "Run the DoQ fatal-protocol-error tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0005"
+  ],
+  "out_of_scope": [
+    "Missing expected STREAM FIN timeout policy.",
+    "Peer STOP_SENDING fatal handling.",
+    "EDNS keepalive fatal handling.",
+    "Server-initiated bidirectional stream fatal handling."
+  ],
+  "completion_notes": "The DoQ adapter now closes the fatal-protocol-error loop for truncated responses, extra response bytes, and inbound unidirectional streams, while keeping the remaining fatal protocol-error cases as explicit follow-up scope."
+}

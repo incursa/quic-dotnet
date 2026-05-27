@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0007",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Peer STOP_SENDING Fatal Error Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the DoQ client-side behavior for treating a peer STOP_SENDING request as a fatal protocol error on the outstanding query stream.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0007",
+    "VER-QUIC-RFC9250-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0057"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs"
+  ],
+  "design_summary": "The DoQ client already maps stream-abort exceptions on the outstanding query stream to DOQ_PROTOCOL_ERROR and closes the owned connection after the failure is observed. A raw loopback server that aborts the read side of the inbound query stream synthesizes a peer STOP_SENDING request, proving that the client surfaces the event as a fatal error and stops using the connection.",
+  "data_and_state_considerations": "No new adapter state is required. The slice uses the existing client query path, the existing stream-abort exception mapping, and a raw loopback server to deliver the peer STOP_SENDING stimulus.",
+  "edge_cases_and_constraints": [
+    "The proof must let the client finish sending the query so the peer STOP_SENDING is observed on the read path rather than as a local write cancellation.",
+    "The adapter does not introduce new STOP_SENDING policy knobs or retry behavior in this slice."
+  ],
+  "risks": [
+    "This slice proves the client reaction to peer STOP_SENDING but does not change server-side request-cancellation policy.",
+    "Missing expected STREAM FIN timeout policy, EDNS keepalive handling, and server-initiated bidirectional stream handling remain separate slices."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Peer STOP_SENDING is exercised through a raw loopback server stream abort. The DoQ adapter stays thin and continues to rely on the underlying QUIC stream-abort surface to observe the peer request."
+    }
+  ]
+}

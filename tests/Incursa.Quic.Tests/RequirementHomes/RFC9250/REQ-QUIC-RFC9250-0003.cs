@@ -9,6 +9,8 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9250-0037")]
 [Requirement("REQ-QUIC-RFC9250-0038")]
 [Requirement("REQ-QUIC-RFC9250-0040")]
+[Requirement("REQ-QUIC-RFC9250-0042")]
+[Requirement("REQ-QUIC-RFC9250-0043")]
 [Requirement("REQ-QUIC-RFC9250-0044")]
 [Requirement("REQ-QUIC-RFC9250-0045")]
 [Requirement("REQ-QUIC-RFC9250-0046")]
@@ -32,12 +34,18 @@ public sealed class REQ_QUIC_RFC9250_0003
         Assert.Contains("VER-QUIC-RFC9250-0003", spec, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0019", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0034", architecture, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0042", architecture, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0043", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0050", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0019", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0034", workItem, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0042", workItem, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0043", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0050", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0019", verification, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0034", verification, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0042", verification, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0043", verification, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9250-0050", verification, StringComparison.Ordinal);
     }
 
@@ -57,8 +65,9 @@ public sealed class REQ_QUIC_RFC9250_0003
         Assert.Contains("CloseConnectionAsync(connection, DoqErrorCode.ExcessiveLoad", server, StringComparison.Ordinal);
         Assert.Contains("AbortStreamWrite(stream, DoqErrorCode.InternalError)", server, StringComparison.Ordinal);
         Assert.Contains("QueryCancellationAbortsReadSideAndLeavesConnectionUsable", tests, StringComparison.Ordinal);
+        Assert.Contains("CancellationVolumeLimitClosesConnectionWithExcessiveLoad", tests, StringComparison.Ordinal);
         Assert.Contains("EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable", tests, StringComparison.Ordinal);
-        Assert.Contains("HandlerFailureAbortsStreamWithInternalErrorAndLeavesConnectionUsable", tests, StringComparison.Ordinal);
+        Assert.Contains("HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection", tests, StringComparison.Ordinal);
         Assert.Contains("DanglingStreamLimitClosesConnectionWithExcessiveLoad", tests, StringComparison.Ordinal);
     }
 

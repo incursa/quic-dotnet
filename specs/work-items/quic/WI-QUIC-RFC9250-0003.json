@@ -21,6 +21,8 @@
     "REQ-QUIC-RFC9250-0037",
     "REQ-QUIC-RFC9250-0038",
     "REQ-QUIC-RFC9250-0040",
+    "REQ-QUIC-RFC9250-0042",
+    "REQ-QUIC-RFC9250-0043",
     "REQ-QUIC-RFC9250-0044",
     "REQ-QUIC-RFC9250-0045",
     "REQ-QUIC-RFC9250-0046",
@@ -28,8 +30,8 @@
     "REQ-QUIC-RFC9250-0049",
     "REQ-QUIC-RFC9250-0050"
   ],
-  "summary": "Add focused DoQ stream cancellation, reset, internal-error, and dangling-stream limit behavior.",
-  "planned_changes": "- Add `DoqServerOptions` for bounded connection-local resource policy.\n- Map client query cancellation to read-side abort with `DOQ_REQUEST_CANCELLED`.\n- Track active accepted query streams and close the connection with `DOQ_EXCESSIVE_LOAD` when the configured dangling-stream limit is exceeded.\n- Treat early client stream resets as request cancellation without dispatching incomplete DNS messages.\n- Map unexpected DNS handler failures to `DOQ_INTERNAL_ERROR` stream aborts.\n- Add focused loopback tests and a requirement-home test for the cancellation/resource-limit slice.",
+  "summary": "Add focused DoQ stream cancellation, cancellation-volume, reset, internal-error, and dangling-stream limit behavior.",
+  "planned_changes": "- Add `DoqServerOptions` for bounded connection-local resource policy.\n- Map client query cancellation to read-side abort with `DOQ_REQUEST_CANCELLED`.\n- Track active accepted query streams and close the connection with `DOQ_EXCESSIVE_LOAD` when the configured dangling-stream limit is exceeded.\n- Enforce configured cancellation-request volume with `MaxCancellationRequests` and close the connection with `DOQ_EXCESSIVE_LOAD` when the limit is exceeded.\n- Treat early client stream resets as request cancellation without dispatching incomplete DNS messages.\n- Map unexpected DNS handler failures to `DOQ_INTERNAL_ERROR` stream aborts.\n- Add focused loopback tests and a requirement-home test for the cancellation/resource-limit slice.",
   "verification_plan": "Run the DoQ stream lifecycle tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9250-0003"
@@ -39,11 +41,10 @@
   ],
   "out_of_scope": [
     "Client-side unsolicited RESET_STREAM volume limits.",
-    "Focused proof for cancellation-request volume limits.",
     "DNS SERVFAIL response mapping for resolver-originated failures.",
     "Padding and traffic-analysis policy.",
     "AXFR/IXFR multi-response zone-transfer behavior.",
     "0-RTT, Retry/address-validation policy, and external DoQ interop proof."
   ],
-  "completion_notes": "The DoQ adapter now has verified stream cancellation/reset handling, internal-error abort mapping, and opt-in dangling-stream connection closure. Remaining RFC 9250 work stays explicitly trace-owned instead of being hidden in this slice."
+  "completion_notes": "The DoQ adapter now has verified stream cancellation/reset handling, cancellation-volume limit enforcement, internal-error abort mapping, and opt-in dangling-stream connection closure. Remaining RFC 9250 work stays explicitly trace-owned instead of being hidden in this slice."
 }

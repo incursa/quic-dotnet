@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9250-0003",
     "WI-QUIC-RFC9250-0003"
   ],
-  "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for DoQ cancellation, reset, internal-error, and dangling-stream limit behavior.",
+  "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for DoQ cancellation, reset, cancellation-volume, internal-error, and dangling-stream limit behavior.",
   "verifies": [
     "REQ-QUIC-RFC9250-0019",
     "REQ-QUIC-RFC9250-0020",
@@ -22,6 +22,8 @@
     "REQ-QUIC-RFC9250-0037",
     "REQ-QUIC-RFC9250-0038",
     "REQ-QUIC-RFC9250-0040",
+    "REQ-QUIC-RFC9250-0042",
+    "REQ-QUIC-RFC9250-0043",
     "REQ-QUIC-RFC9250-0044",
     "REQ-QUIC-RFC9250-0045",
     "REQ-QUIC-RFC9250-0046",
@@ -29,7 +31,7 @@
     "REQ-QUIC-RFC9250-0049",
     "REQ-QUIC-RFC9250-0050"
   ],
-  "scope": "This verification covers caller cancellation while awaiting a DoQ response, early client stream reset before FIN, opt-in dangling-stream connection closure, and unexpected handler failure mapping to `DOQ_INTERNAL_ERROR`. It does not verify client-side unsolicited RESET_STREAM volume limits, cancellation-volume closure, SERVFAIL resolver policy, padding, AXFR/IXFR, 0-RTT, address validation, or external interop.",
+  "scope": "This verification covers caller cancellation while awaiting a DoQ response, configured cancellation-request volume closure, early client stream reset before FIN, opt-in dangling-stream connection closure, and unexpected handler failure mapping to `DOQ_INTERNAL_ERROR`. It does not verify client-side unsolicited RESET_STREAM volume limits, SERVFAIL resolver policy, padding, AXFR/IXFR, 0-RTT, address validation, or external interop.",
   "preconditions": [
     "The DoQ foundation and minimal stream lifecycle slices exist.",
     "The local managed QUIC loopback support is available for cancellation and reset tests."
@@ -48,5 +50,5 @@
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs"
   ],
-  "status_summary": "The DoQ adapter now proves stream cancellation/reset behavior, internal-error abort mapping, and opt-in dangling-stream connection closure over real QUIC loopback. Remaining RFC 9250 cancellation-volume, unsolicited-reset, resolver-policy, privacy, transfer, 0-RTT, address-validation, and interop work remains future trace-owned scope."
+  "status_summary": "The DoQ adapter now proves stream cancellation/reset behavior, cancellation-volume limit enforcement, internal-error abort mapping, and opt-in dangling-stream connection closure over real QUIC loopback. Remaining RFC 9250 unsolicited-reset, resolver-policy, privacy, transfer, 0-RTT, address-validation, and interop work remains future trace-owned scope."
 }

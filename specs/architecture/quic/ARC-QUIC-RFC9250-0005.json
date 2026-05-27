@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Fatal Protocol Error Expansion Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define DoQ fatal-error handling for early response termination, unexpected response count, inbound unidirectional streams, and shared protocol-close behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0004",
+    "WI-QUIC-RFC9250-0005",
+    "VER-QUIC-RFC9250-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0054",
+    "REQ-QUIC-RFC9250-0056",
+    "REQ-QUIC-RFC9250-0060",
+    "REQ-QUIC-RFC9250-0062",
+    "REQ-QUIC-RFC9250-0063"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0005.cs"
+  ],
+  "design_summary": "The DoQ stream helper already enforces the one-message-until-FIN boundary, so early FIN and extra-byte cases fail as fatal protocol errors when the client attempts to decode a response that is truncated or contains more than one DNS message. The server closes the connection when it accepts a non-bidirectional inbound stream because the DoQ adapter only serves client-initiated bidirectional query streams.",
+  "data_and_state_considerations": "The fatal-error cases are connection-local policy decisions layered on top of the stream helper. Malformed response frames close the DoQ session after the failed stream is observed, while inbound unidirectional streams are rejected before dispatch so no DNS handler state is created for them.",
+  "edge_cases_and_constraints": [
+    "The client maps malformed response framing to `DOQ_PROTOCOL_ERROR` and closes the connection after the failing stream is observed.",
+    "The server closes the connection when it accepts a non-bidirectional inbound stream, because the DoQ adapter only serves queries on client-initiated bidirectional streams.",
+    "The stream helper already proves the one-message-until-FIN frame boundary for extra bytes and early FIN cases.",
+    "The slice does not attempt to implement missing-FIN timeout policy, EDNS keepalive handling, peer STOP_SENDING handling, or server-initiated bidirectional stream handling."
+  ],
+  "risks": [
+    "Missing expected STREAM FIN, peer STOP_SENDING, EDNS keepalive, and server-initiated bidirectional stream fatal handling remain separate slices.",
+    "The DoQ server has no direct outbound server-stream path in this adapter, so 0061 needs a separate proof seam if it is to be closed later."
+  ]
+}

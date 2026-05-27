@@ -59,6 +59,11 @@ public sealed class DoqClient : IAsyncDisposable
             AbortStreamRead(stream, DoqErrorCode.RequestCancelled);
             throw;
         }
+        catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
+        {
+            await CloseConnectionAsync(DoqErrorCode.ProtocolError, cancellationToken).ConfigureAwait(false);
+            throw new DoqException(DoqErrorCode.ProtocolError, "The DoQ response stream was aborted by the peer.");
+        }
         catch (DoqException exception) when (exception.ErrorCode == DoqErrorCode.ProtocolError)
         {
             await CloseConnectionAsync(DoqErrorCode.ProtocolError, cancellationToken).ConfigureAwait(false);

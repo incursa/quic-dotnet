@@ -1,0 +1,31 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0006",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 SERVFAIL Response Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0006",
+    "VER-QUIC-RFC9250-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0047"
+  ],
+  "summary": "Add focused DoQ SERVFAIL response pass-through behavior.",
+  "planned_changes": "- Add a focused loopback test that returns a DNS SERVFAIL response and asserts the client receives the same payload bytes and response code.\n- Link the requirement-home, architecture, and verification trace artifacts for REQ-QUIC-RFC9250-0047.",
+  "verification_plan": "Run the DoQ stream lifecycle tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0006"
+  ],
+  "out_of_scope": [
+    "Resolver decision logic for when to emit SERVFAIL.",
+    "Padding, AXFR/IXFR, 0-RTT, Retry/address-validation, and external DoQ interop proof."
+  ],
+  "completion_notes": "The DoQ adapter now proves handler-provided SERVFAIL response bytes pass through to the client unchanged over QUIC loopback."
+}

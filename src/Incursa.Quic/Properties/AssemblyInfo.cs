@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Incursa.Quic.Tests")]
+[assembly: InternalsVisibleTo("Incursa.Quic.Dns")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Benchmarks")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Http3")]
 [assembly: InternalsVisibleTo("Incursa.Quic.InteropHarness")]
