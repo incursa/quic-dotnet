@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Foundation Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0001",
+    "WI-QUIC-RFC9250-0001"
+  ],
+  "verification_method": "Focused unit tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for the DoQ foundation surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0004",
+    "REQ-QUIC-RFC9250-0005",
+    "REQ-QUIC-RFC9250-0006",
+    "REQ-QUIC-RFC9250-0007",
+    "REQ-QUIC-RFC9250-0010",
+    "REQ-QUIC-RFC9250-0026",
+    "REQ-QUIC-RFC9250-0027",
+    "REQ-QUIC-RFC9250-0028",
+    "REQ-QUIC-RFC9250-0029",
+    "REQ-QUIC-RFC9250-0030",
+    "REQ-QUIC-RFC9250-0031",
+    "REQ-QUIC-RFC9250-0032",
+    "REQ-QUIC-RFC9250-0033",
+    "REQ-QUIC-RFC9250-0134",
+    "REQ-QUIC-RFC9250-0135",
+    "REQ-QUIC-RFC9250-0136",
+    "REQ-QUIC-RFC9250-0137",
+    "REQ-QUIC-RFC9250-0138",
+    "REQ-QUIC-RFC9250-0139",
+    "REQ-QUIC-RFC9250-0140"
+  ],
+  "scope": "This verification covers the DoQ foundation package: ALPN `doq`, UDP port 853 default helpers, UDP port 53 rejection, RFC 9250 error-code constants, and the two-octet DNS message length-prefix codec. It does not verify complete DNS query/response stream dispatch.",
+  "preconditions": [
+    "The RFC 9250 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9250.json`.",
+    "DoQ behavior remains in `Incursa.Quic.Dns` rather than in the transport runtime."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFoundationTests|FullyQualifiedName~REQ_QUIC_RFC9250_0001\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ foundation tests pass, core SpecTrace validation accepts the RFC 9250 artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs"
+  ],
+  "status_summary": "The DoQ foundation is trace-owned and verified as a constants, option-validation, and message-framing floor. Full RFC 9250 stream lifecycle and interop behavior remains future work."
+}

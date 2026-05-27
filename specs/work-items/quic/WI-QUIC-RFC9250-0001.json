@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Foundation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0001",
+    "VER-QUIC-RFC9250-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0004",
+    "REQ-QUIC-RFC9250-0005",
+    "REQ-QUIC-RFC9250-0006",
+    "REQ-QUIC-RFC9250-0007",
+    "REQ-QUIC-RFC9250-0010",
+    "REQ-QUIC-RFC9250-0026",
+    "REQ-QUIC-RFC9250-0027",
+    "REQ-QUIC-RFC9250-0028",
+    "REQ-QUIC-RFC9250-0029",
+    "REQ-QUIC-RFC9250-0030",
+    "REQ-QUIC-RFC9250-0031",
+    "REQ-QUIC-RFC9250-0032",
+    "REQ-QUIC-RFC9250-0033",
+    "REQ-QUIC-RFC9250-0134",
+    "REQ-QUIC-RFC9250-0135",
+    "REQ-QUIC-RFC9250-0136",
+    "REQ-QUIC-RFC9250-0137",
+    "REQ-QUIC-RFC9250-0138",
+    "REQ-QUIC-RFC9250-0139",
+    "REQ-QUIC-RFC9250-0140"
+  ],
+  "summary": "Add the first DoQ adapter foundation without moving DNS semantics into the QUIC transport runtime.",
+  "planned_changes": "- Add `Incursa.Quic.Dns` to the solution as the DoQ adapter package.\n- Add RFC 9250 defaults for ALPN `doq`, UDP port 853, and UDP port 53 rejection.\n- Add DoQ error-code constants for the registered RFC 9250 values.\n- Add a span-oriented codec for the two-octet DNS message length prefix.\n- Add focused tests and requirement-home trace proof for the foundation slice.",
+  "verification_plan": "Run a focused build for the new DoQ package, run DoQ foundation and RFC 9250 requirement-home tests, validate core SpecTrace JSON artifacts, and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0001"
+  ],
+  "out_of_scope": [
+    "End-to-end DoQ query/response stream dispatch.",
+    "DNS parser, resolver, cache, recursive resolver, or authoritative server behavior.",
+    "DoQ cancellation/reset policy beyond error-code constants.",
+    "DoQ padding policy, connection reuse, AXFR/IXFR, 0-RTT, Retry/address validation, and external interop proof."
+  ],
+  "completion_notes": "The foundation package creates the stable constants and framing surface needed by later DoQ stream-adapter work."
+}

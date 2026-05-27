@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Foundation Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first DNS over QUIC adapter boundary above the managed QUIC transport, covering ALPN, default port policy, DoQ error-code constants, and DNS message length-prefix framing.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0001",
+    "VER-QUIC-RFC9250-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0004",
+    "REQ-QUIC-RFC9250-0005",
+    "REQ-QUIC-RFC9250-0006",
+    "REQ-QUIC-RFC9250-0007",
+    "REQ-QUIC-RFC9250-0010",
+    "REQ-QUIC-RFC9250-0026",
+    "REQ-QUIC-RFC9250-0027",
+    "REQ-QUIC-RFC9250-0028",
+    "REQ-QUIC-RFC9250-0029",
+    "REQ-QUIC-RFC9250-0030",
+    "REQ-QUIC-RFC9250-0031",
+    "REQ-QUIC-RFC9250-0032",
+    "REQ-QUIC-RFC9250-0033",
+    "REQ-QUIC-RFC9250-0134",
+    "REQ-QUIC-RFC9250-0135",
+    "REQ-QUIC-RFC9250-0136",
+    "REQ-QUIC-RFC9250-0137",
+    "REQ-QUIC-RFC9250-0138",
+    "REQ-QUIC-RFC9250-0139",
+    "REQ-QUIC-RFC9250-0140"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqException.cs",
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "src/Incursa.Quic.Dns/README.md",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs"
+  ],
+  "design_summary": "The DoQ foundation is implemented as a new `Incursa.Quic.Dns` adapter package above the core transport. `DoqDefaults` owns the ALPN token `doq`, default endpoint helpers for UDP port 853, and validation that rejects UDP port 53. `DoqErrorCode` owns the RFC 9250 application error-code values. `DoqMessageCodec` owns the two-octet big-endian DNS message length prefix and leaves DNS payload semantics to a later DNS parser or resolver boundary.",
+  "data_and_state_considerations": "The foundation slice is stateless. It validates option bags before connection or listener startup and encodes or decodes one framed DNS payload at a time. The codec supports span-based encoding and decoding so later stream readers can reuse it without forcing transport-core allocations or DNS parser coupling.",
+  "edge_cases_and_constraints": [
+    "The DoQ adapter may add ALPN `doq` when the caller has not supplied any ALPN protocols, but it rejects an explicit non-DoQ ALPN list.",
+    "UDP port 53 is rejected for client and listener endpoint helpers because RFC 9250 reserves DoQ for port 853 or an explicitly agreed alternate port.",
+    "A partial length prefix or a partial payload is reported as incomplete by `TryDecode` and as a DoQ protocol error by `Decode`.",
+    "Payloads larger than 65535 bytes cannot be encoded in the RFC 9250 two-octet length prefix."
+  ],
+  "risks": [
+    "This foundation slice does not yet prove end-to-end query/response stream mapping; that remains a later stream-adapter slice.",
+    "Padding policy, connection reuse, cancellation/reset handling, 0-RTT, Retry/address validation, and zone-transfer concurrency remain separate RFC 9250 slices.",
+    "Putting DNS resolver semantics in `Incursa.Quic` would blur the transport boundary; the adapter package keeps that behavior out of `QuicConnectionRuntime`."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The QUIC transport remains responsible for TLS, streams, flow control, and packet processing. The DoQ package owns application protocol constants and DNS-message framing above those streams. Full request/response dispatch will build on this adapter surface in a later slice."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Protocol Error Enforcement Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define fatal DoQ protocol-error enforcement for the single-query, single-response stream path.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0002",
+    "WI-QUIC-RFC9250-0004",
+    "VER-QUIC-RFC9250-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0052",
+    "REQ-QUIC-RFC9250-0053",
+    "REQ-QUIC-RFC9250-0055"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0004.cs"
+  ],
+  "design_summary": "The DoQ stream helper can now read exactly one length-prefixed DNS message and require the peer's STREAM FIN before returning it to the adapter. The client validates response DNS Message ID zero after the response stream FIN is observed, while the server validates query DNS Message ID zero after the client stream FIN is observed. Protocol failures abort the affected stream with `DOQ_PROTOCOL_ERROR` and request fatal connection closure with the same DoQ application error code.",
+  "data_and_state_considerations": "The one-message-until-FIN reader accumulates at most one representable DoQ frame. Extra bytes after the first frame prove multiple messages on a stream and fail before DNS handler dispatch. A FIN before the declared length is fully available fails as an incomplete DoQ message.",
+  "edge_cases_and_constraints": [
+    "This slice applies to the minimal one-query, one-response path already implemented by `DoqClient.QueryAsync` and `DoqServer`.",
+    "Client and server DNS Message ID validation rejects any non-zero two-octet ID field.",
+    "The server does not dispatch a DNS handler for malformed query streams.",
+    "The stream-level proof observes `DOQ_PROTOCOL_ERROR` through the failing stream; peer connection-close observation remains runtime-dependent."
+  ],
+  "risks": [
+    "AXFR/IXFR multi-response streams need a later response-count model before their protocol-error requirements can be claimed.",
+    "Missing-FIN timeout behavior is not implemented in this slice because it needs explicit lifecycle policy.",
+    "EDNS keepalive and unidirectional/server-initiated stream fatal errors remain separate protocol-error work."
+  ]
+}

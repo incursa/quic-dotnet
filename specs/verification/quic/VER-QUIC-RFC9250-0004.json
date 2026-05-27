@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0004",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Protocol Error Enforcement Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0004",
+    "WI-QUIC-RFC9250-0004"
+  ],
+  "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for DoQ one-query protocol-error enforcement.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0052",
+    "REQ-QUIC-RFC9250-0053",
+    "REQ-QUIC-RFC9250-0055"
+  ],
+  "scope": "This verification covers non-zero received DNS Message IDs, STREAM FIN before the declared DoQ message length is complete, and more than one client query on a server-side stream. It does not cover multi-response count enforcement, peer STOP_SENDING to the client, missing expected FIN timeout policy, EDNS keepalive, unidirectional stream fatal errors, or server-initiated bidirectional stream fatal errors.",
+  "preconditions": [
+    "The DoQ foundation, stream lifecycle, and cancellation/resource-limit slices exist.",
+    "The local managed QUIC loopback support is available for malformed stream tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqStreamLifecycleTests|FullyQualifiedName~REQ_QUIC_RFC9250\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ stream lifecycle and RFC 9250 requirement-home tests pass, core SpecTrace validation accepts the RFC 9250 artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0004.cs"
+  ],
+  "status_summary": "The one-query DoQ path now proves `DOQ_PROTOCOL_ERROR` enforcement for non-zero DNS Message ID, incomplete DoQ frames, and multiple queries on one stream."
+}

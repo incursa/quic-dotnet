@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Protocol Error Enforcement Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0004",
+    "VER-QUIC-RFC9250-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0052",
+    "REQ-QUIC-RFC9250-0053",
+    "REQ-QUIC-RFC9250-0055"
+  ],
+  "summary": "Add focused fatal protocol-error handling for malformed DoQ messages on the one-query stream path.",
+  "planned_changes": "- Add a DoQ stream helper that reads exactly one DNS message and requires STREAM FIN.\n- Reject non-zero DNS Message IDs on received DoQ queries and responses.\n- Reject incomplete length-prefixed messages when STREAM FIN arrives early.\n- Reject more than one query on a server-side query stream.\n- Add focused loopback tests and a requirement-home test for the covered protocol-error requirements.",
+  "verification_plan": "Run the DoQ stream lifecycle tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0004"
+  ],
+  "out_of_scope": [
+    "Unexpected response count for AXFR/IXFR or other multi-response streams.",
+    "Client fatal handling for peer STOP_SENDING.",
+    "Missing expected STREAM FIN timeout policy.",
+    "EDNS keepalive fatal handling.",
+    "Unidirectional and server-initiated stream fatal handling."
+  ],
+  "completion_notes": "The one-query DoQ path now rejects non-zero received DNS Message IDs, incomplete DoQ frames, and multiple client queries on one stream with `DOQ_PROTOCOL_ERROR`."
+}

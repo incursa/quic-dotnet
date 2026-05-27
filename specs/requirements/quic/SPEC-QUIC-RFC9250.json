@@ -1,0 +1,3042 @@
+{
+  "artifact_id": "SPEC-QUIC-RFC9250",
+  "artifact_type": "specification",
+  "title": "QUIC RFC 9250 Requirements",
+  "domain": "quic",
+  "capability": "quic-rfc9250",
+  "status": "draft",
+  "owner": "protocol-team",
+  "purpose": "Capture QUIC RFC 9250 requirements.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9250-0001",
+    "ARC-QUIC-RFC9250-0002",
+    "WI-QUIC-RFC9250-0001",
+    "WI-QUIC-RFC9250-0002",
+    "VER-QUIC-RFC9250-0001",
+    "VER-QUIC-RFC9250-0002",
+    "ARC-QUIC-RFC9250-0003",
+    "WI-QUIC-RFC9250-0003",
+    "VER-QUIC-RFC9250-0003",
+    "ARC-QUIC-RFC9250-0004",
+    "WI-QUIC-RFC9250-0004",
+    "VER-QUIC-RFC9250-0004"
+  ],
+  "requirements": [
+    {
+      "id": "REQ-QUIC-RFC9250-0001",
+      "title": "Avoid path MTU limits on DNS response size",
+      "statement": "The DoQ transport MUST NOT impose path MTU limitations on the size of DNS responses it can send.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 3 RFC9250-S3-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0002",
+      "title": "Map each DNS query/response transaction to a separate stream",
+      "statement": "Each DNS Query/Response transaction MUST be mapped to a separate stream to mitigate head-of-line blocking.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 3 RFC9250-S3-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0003",
+      "title": "Negotiate TLS security parameters during QUIC setup",
+      "statement": "QUIC connection setup MUST negotiate security parameters using TLS.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 3.1 RFC9250-S3P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-3.1"
+        ]
+      },
+      "notes": [
+        "Trimmed to the smallest independently testable obligation; the RFC9001 reference is preserved in upstream trace rather than the requirement text."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0004",
+      "title": "Indicate DoQ support with ALPN token doq",
+      "statement": "During connection establishment, DoQ support MUST be indicated by selecting the Application-Layer Protocol Negotiation (ALPN) token \"doq\" in the crypto handshake.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.1 RFC9250-S4P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Single testable invariant; wording already minimal and traceable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0005",
+      "title": "Listen on UDP port 853 by default",
+      "statement": "A DNS server that supports DoQ MUST listen for and accept QUIC connections on the dedicated UDP port 853, unless there is a mutual agreement to use another port.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.1.1 RFC9250-S4P1P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.1.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0006",
+      "title": "Connect to UDP port 853 by default",
+      "statement": "A DNS client desiring to use DoQ with a particular server MUST establish a QUIC connection to UDP port 853 on the server, unless there is a mutual agreement to use another port.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.1.1 RFC9250-S4P1P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.1.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0007",
+      "title": "Disallow UDP port 53",
+      "statement": "A DoQ connection MUST NOT use UDP port 53.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.1.1 RFC9250-S4P1P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.1.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0008",
+      "title": "Select a separate QUIC stream for each query",
+      "statement": "The client MUST select a separate QUIC stream for each query.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0009",
+      "title": "Use one stream for all responses to a query",
+      "statement": "The server MUST use the same stream to provide all response messages for that query.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0010",
+      "title": "Encode DNS messages with a 2-octet length field",
+      "statement": "All DNS messages sent over DoQ connections MUST be encoded as a 2-octet length field followed by the message content as specified in [RFC1035].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0011",
+      "title": "Select the next available client-initiated bidirectional stream",
+      "statement": "The client MUST select the next available client-initiated bidirectional stream for each subsequent query on a QUIC connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0012",
+      "title": "Process queries as they arrive",
+      "statement": "Servers SHOULD process queries as they arrive.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0013",
+      "title": "Send DNS query on selected stream",
+      "statement": "A client MUST send the DNS query over the selected stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0014",
+      "title": "Signal end of client stream with STREAM FIN",
+      "statement": "A client MUST indicate through the STREAM FIN mechanism that no further data will be sent on that stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0015",
+      "title": "Send responses on the same stream",
+      "statement": "The server MUST send the response(s) on the same stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0016",
+      "title": "Signal end of server stream with STREAM FIN",
+      "statement": "The server MUST indicate, after the last response, through the STREAM FIN mechanism that no further data will be sent on that stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0017",
+      "title": "Map client queries to QUIC client-initiated streams in order",
+      "statement": "The client's first query MUST occur on QUIC stream 0, the second on 4, and so on.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B8-P8-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0018",
+      "title": "Allow deferred processing until client STREAM FIN",
+      "statement": "A server MAY defer processing of a query until the STREAM FIN has been indicated on the stream selected by the client.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0019",
+      "title": "Monitor dangling streams",
+      "statement": "Servers and clients MAY monitor the number of dangling streams.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0020",
+      "title": "Impose a limit on dangling streams",
+      "statement": "Implementations MAY impose a limit on the number of such dangling streams.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0021",
+      "title": "Close the connection when limits are encountered",
+      "statement": "If limits are encountered, implementations MAY close the connection.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2 RFC9250-S4P2-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0022",
+      "title": "Set DNS Message ID to zero",
+      "statement": "When sending queries over a QUIC connection, the DNS Message ID MUST be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.2.1 RFC9250-S4P2P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0023",
+      "title": "DoQ stream mapping does not require Message ID",
+      "statement": "The DoQ stream mapping MUST allow unambiguous correlation of queries and responses without requiring the Message ID field.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.2.1 RFC9250-S4P2P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0024",
+      "title": "Generate Message ID when forwarding from DoQ",
+      "statement": "When forwarding a DNS message from DoQ over another transport, a DNS Message ID MUST be generated according to the rules of the protocol that is in use.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.2.1 RFC9250-S4P2P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0025",
+      "title": "Set Message ID to zero when forwarding to DoQ",
+      "statement": "When forwarding a DNS message from another transport over DoQ, the Message ID MUST be set to 0.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.2.1 RFC9250-S4P2P1-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0026",
+      "title": "DOQ_NO_ERROR indicates no error",
+      "statement": "DOQ_NO_ERROR (0x0) MUST indicate that there is no error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Wording trimmed to the smallest standalone invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0027",
+      "title": "Use DOQ_NO_ERROR when closing without error",
+      "statement": "The DOQ_NO_ERROR code MUST be used when the connection or stream needs to be closed, but there is no error to signal.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Keeps the usage condition and removes extra framing."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0028",
+      "title": "Use DOQ_INTERNAL_ERROR for unrecoverable internal failures",
+      "statement": "A DoQ implementation MUST use DOQ_INTERNAL_ERROR (0x1) when it encounters an internal error and is incapable of pursuing the transaction or the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Captures the trigger condition as a single testable invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0029",
+      "title": "Use DOQ_PROTOCOL_ERROR for protocol failures",
+      "statement": "A DoQ implementation MUST use DOQ_PROTOCOL_ERROR (0x2) when it encounters a protocol error and is forcibly aborting the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Keeps only the protocol-error trigger and required code."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0030",
+      "title": "Use DOQ_REQUEST_CANCELLED to cancel an outstanding transaction",
+      "statement": "A DoQ client MUST use DOQ_REQUEST_CANCELLED (0x3) to signal that it wants to cancel an outstanding transaction.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Preserves the client-only trigger and cancellation intent."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0031",
+      "title": "Use DOQ_EXCESSIVE_LOAD when closing due to excessive load",
+      "statement": "A DoQ implementation MUST use DOQ_EXCESSIVE_LOAD (0x4) to signal when closing a connection due to excessive load.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Trims the sentence to the required close-on-load condition."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0032",
+      "title": "Use DOQ_UNSPECIFIED_ERROR when no specific code applies",
+      "statement": "A DoQ implementation MUST use DOQ_UNSPECIFIED_ERROR (0x5) in the absence of a more specific error code.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Keeps the fallback-code condition explicit and testable."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0033",
+      "title": "Reserved test error code may be used for tests",
+      "statement": "DOQ_ERROR_RESERVED (0xd098ea5e) MAY be used for tests.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3 RFC9250-S4P3-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      },
+      "notes": [
+        "Retains the reserved test-code allowance with minimal wording."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0034",
+      "title": "STOP_SENDING requests peer cease transmission",
+      "statement": "Sending STOP_SENDING MUST request that a peer cease transmission on a stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0035",
+      "title": "Cancel outstanding request with STOP_SENDING",
+      "statement": "A DoQ client that wishes to cancel an outstanding request MUST issue a QUIC STOP_SENDING.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0036",
+      "title": "Prefer DOQ_REQUEST_CANCELLED for cancellation",
+      "statement": "A DoQ client that cancels an outstanding request SHOULD use the error code DOQ_REQUEST_CANCELLED.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0037",
+      "title": "Discard response after late STOP_SENDING",
+      "statement": "If the server response has already been sent, the client MUST discard the incoming response.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0038",
+      "title": "Send STOP_SENDING at any time",
+      "statement": "A DoQ client MAY send a STOP_SENDING request at any time.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0039",
+      "title": "Use registered specific error code",
+      "statement": "A DoQ client MAY use a more specific error code registered according to Section 8.4.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0040",
+      "title": "Abandon corresponding DNS transaction",
+      "statement": "The corresponding DNS transaction MUST be abandoned.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0041",
+      "title": "Stop processing after STOP_SENDING",
+      "statement": "Servers SHOULD NOT continue processing a DNS transaction if they receive a STOP_SENDING.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0042",
+      "title": "Limit cancellation request volume",
+      "statement": "Servers MAY impose implementation limits on the total number or rate of cancellation requests.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0043",
+      "title": "Close connection on cancellation limits",
+      "statement": "If limits are encountered, servers MAY close the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0044",
+      "title": "Use DOQ_EXCESSIVE_LOAD for debugging",
+      "statement": "Servers wanting to help client debugging MAY use the error code DOQ_EXCESSIVE_LOAD.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0045",
+      "title": "Stop processing on early RESET_STREAM",
+      "statement": "Servers MUST NOT continue processing a DNS transaction if they receive a RESET_STREAM request from the client before the client indicates the STREAM FIN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0046",
+      "title": "Issue RESET_STREAM unless already reset or response complete",
+      "statement": "The server MUST issue a RESET_STREAM to indicate that the transaction is abandoned unless it has already done so for another reason or it has already sent the response and indicated the STREAM FIN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B5-P5-S2",
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B6-P6-S1",
+          "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0047",
+      "title": "Notify client of SERVFAIL with SERVFAIL response",
+      "statement": "A client SHOULD be notified of SERVFAIL through a response whose Response Code is set to SERVFAIL.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.2 RFC9250-S4P3P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0048",
+      "title": "Issue RESET_STREAM on internal error",
+      "statement": "If a server cannot send a DNS response because of an internal error, it SHOULD issue a QUIC RESET_STREAM frame.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.2 RFC9250-S4P3P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0049",
+      "title": "Set RESET_STREAM error code to DOQ_INTERNAL_ERROR",
+      "statement": "The error code SHOULD be set to DOQ_INTERNAL_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.2 RFC9250-S4P3P2-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0050",
+      "title": "Abandon the corresponding DNS transaction",
+      "statement": "The corresponding DNS transaction MUST be abandoned.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.2 RFC9250-S4P3P2-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0003"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0051",
+      "title": "Limit unsolicited RESET_STREAM frames before closing",
+      "statement": "Clients MAY limit unsolicited QUIC RESET_STREAM frames received on a connection before closing it.",
+      "coverage": {
+        "positive": "required",
+        "negative": "not_applicable",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.2 RFC9250-S4P3P2-B2-P2-S4",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0052",
+      "title": "Protocol error: non-zero Message ID",
+      "statement": "If a client or server receives a message with a non-zero Message ID, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0004"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0053",
+      "title": "Protocol error: STREAM FIN before complete message",
+      "statement": "If a client or server receives a STREAM FIN before receiving all the bytes for a message indicated in the 2-octet length field, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0004"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0054",
+      "title": "Protocol error: early STREAM FIN",
+      "statement": "If a client receives a STREAM FIN before receiving all the expected responses, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0055",
+      "title": "Protocol error: multiple queries on a stream",
+      "statement": "If a server receives more than one query on a stream, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0004"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0056",
+      "title": "Protocol error: unexpected response count",
+      "statement": "If a client receives a different number of responses on a stream than expected, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0057",
+      "title": "Protocol error: receiving STOP_SENDING",
+      "statement": "If a client receives a STOP_SENDING request, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0058",
+      "title": "Protocol error: missing expected STREAM FIN",
+      "statement": "If the client or server does not indicate the expected STREAM FIN after sending requests or responses, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0059",
+      "title": "Protocol error: edns-tcp-keepalive option",
+      "statement": "If an implementation receives a message containing the edns-tcp-keepalive EDNS(0) Option, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B9-P9-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0060",
+      "title": "Protocol error: opening a unidirectional stream",
+      "statement": "If a client or a server attempts to open a unidirectional QUIC stream, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B10-P10-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0061",
+      "title": "Protocol error: opening a server-initiated bidirectional stream",
+      "statement": "If a server attempts to open a server-initiated bidirectional QUIC stream, it MUST treat this as a fatal error.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B11-P11-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0062",
+      "title": "Abort the connection with CONNECTION_CLOSE",
+      "statement": "A DoQ endpoint SHOULD forcibly abort the connection using QUIC's CONNECTION_CLOSE mechanism.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0063",
+      "title": "Use DOQ_PROTOCOL_ERROR",
+      "statement": "A DoQ endpoint SHOULD use the DoQ error code DOQ_PROTOCOL_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.3 RFC9250-S4P3P3-B13-P13-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0064",
+      "title": "Treat unknown or unexpected error codes as unspecified",
+      "statement": "An implementation MUST treat use of an error code in an unexpected context or receipt of an unknown error code as equivalent to DOQ_UNSPECIFIED_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.3.4 RFC9250-S4P3P4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0065",
+      "title": "Negotiate idle timeout",
+      "statement": "DoQ endpoints SHOULD negotiate the idle timeout.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0066",
+      "title": "Idle timeout effective value",
+      "statement": "The effective idle timeout MUST be the minimum of the two endpoints' advertised values.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0067",
+      "title": "Monitor server idle time",
+      "statement": "Clients SHOULD monitor server idle time, defined as the time since the last packet from the server was received.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0068",
+      "title": "Check idle time before sending a query",
+      "statement": "When a client prepares to send a new DNS query to the server, it SHOULD check whether the idle time is sufficiently lower than the idle timer.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0069",
+      "title": "Send query over existing connection when idle time permits",
+      "statement": "If the client's idle time is sufficiently lower than the idle timer, the client SHOULD send the DNS query over the existing connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0070",
+      "title": "Open a new connection when idle time is not low enough",
+      "statement": "If the client's idle time is not sufficiently lower than the idle timer, the client SHOULD establish a new connection and send the query over that connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S4",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0071",
+      "title": "Discard connections before idle timeout",
+      "statement": "Clients MAY discard server connections before the idle timeout expires.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.4 RFC9250-S4P4-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0072",
+      "title": "Close outstanding queries explicitly",
+      "statement": "A client with outstanding queries SHOULD close the connection explicitly using QUIC's CONNECTION_CLOSE mechanism.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.4 RFC9250-S4P4-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0073",
+      "title": "Use DOQ_NO_ERROR on explicit close",
+      "statement": "A client with outstanding queries SHOULD use the DoQ error code DOQ_NO_ERROR when closing the connection explicitly.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.4 RFC9250-S4P4-B7-P7-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0074",
+      "title": "Allow other reasons for connection close",
+      "statement": "Clients and servers MAY close the connection using QUIC's CONNECTION_CLOSE for other reasons.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.4 RFC9250-S4P4-B8-P8-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0075",
+      "title": "Abandon in-progress transactions on connection failure",
+      "statement": "If a connection fails, all the in-progress transactions on that connection MUST be abandoned.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.4 RFC9250-S4P4-B8-P8-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0076",
+      "title": "Allow session resumption and 0-RTT when supported",
+      "statement": "A client MAY use session resumption and 0-RTT if the server supports them.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B1-P1-S1",
+          "RFC9000",
+          "RFC9001",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ]
+      },
+      "notes": [
+        "Trimmed the transport and TLS citations into upstream_refs; this remains one permission clause."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0077",
+      "title": "Prohibit 0-RTT for non-replayable transactions",
+      "statement": "The 0-RTT mechanism MUST NOT be used to send DNS requests that are not replayable transactions.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ]
+      },
+      "notes": [
+        "Single prohibition clause; no split needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0078",
+      "title": "Classify QUERY and NOTIFY transactions as replayable",
+      "statement": "Transactions with an OPCODE of QUERY or NOTIFY MUST be considered replayable.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ]
+      },
+      "notes": [
+        "Trimmed the trailing consequence because the 0-RTT prohibition is already covered by the preceding source unit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0079",
+      "title": "Session resumption support",
+      "statement": "A server MAY support session resumption, with or without 0-RTT.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B3-P3-S1",
+          "RFC9001 section 4.6.1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4.6.1"
+        ]
+      },
+      "notes": [
+        "Trimmed the RFC9001 mechanism citation into upstream_refs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0080",
+      "title": "Reject immediate 0-RTT processing",
+      "statement": "Servers supporting 0-RTT MUST NOT immediately process non-replayable transactions received in 0-RTT data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ]
+      },
+      "notes": [
+        "Standalone prohibition; the following list items carry the concrete follow-up behaviors."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0081",
+      "title": "Queue non-replayable transactions",
+      "statement": "A server MUST queue the offending transaction and only process it after the QUIC handshake has completed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B4-P4-S1",
+          "RFC9001 section 4.1.1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
+          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4.1.1"
+        ]
+      },
+      "notes": [
+        "Trimmed the RFC9001 handshake citation into upstream_refs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0082",
+      "title": "Refuse too-early transactions",
+      "statement": "A server MUST reply to the offending transaction with response code REFUSED and an Extended DNS Error Code (EDE) \"Too Early\".",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B5-P5-S1",
+          "RFC6891",
+          "RFC8914",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
+          "https://www.rfc-editor.org/rfc/rfc6891.html",
+          "https://www.rfc-editor.org/rfc/rfc8914.html"
+        ]
+      },
+      "notes": [
+        "Trimmed the RFC6891 and RFC8914 citations into upstream_refs."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0083",
+      "title": "Close on protocol error",
+      "statement": "A server MUST close the connection with the error code DOQ_PROTOCOL_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250 section 4.5 RFC9250-S4P5-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ]
+      },
+      "notes": [
+        "Standalone failure-handling requirement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0084",
+      "title": "Ignore EDNS(0) UDP message size parameter",
+      "statement": "DoQ implementations MUST ignore the EDNS(0) UDP message size parameter.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.6 RFC9250-S4P6-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.6"
+        ]
+      },
+      "notes": [
+        "Single testable DoQ invariant; wording trimmed to the normative core."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0085",
+      "title": "Assume 65535-byte maximum message size",
+      "statement": "DoQ implementations MUST always assume that the maximum message size is 65535 bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 4.6 RFC9250-S4P6-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.6"
+        ]
+      },
+      "notes": [
+        "Single testable DoQ invariant; no wording repair needed beyond canonicalization."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0086",
+      "title": "Use a Strict usage profile for DoQ stubs",
+      "statement": "DoQ stubs SHOULD use a Strict usage profile.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.1 RFC9250-S5P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0087",
+      "title": "Allow fallback after DoQ connection failure",
+      "statement": "If DoQ connection establishment fails, clients MAY fall back to DoT and cleartext according to their usage profile.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Trimmed wording to the smallest independently testable invariant; preserved the usage-profile condition."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0088",
+      "title": "Remember servers that do not support DoQ",
+      "statement": "DNS clients SHOULD remember server IP addresses that do not support DoQ.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Directly testable advisory behavior; no additional cleanup needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0089",
+      "title": "Treat connection failures as DoQ support indicators",
+      "statement": "Timeouts, connection refusals, and QUIC handshake failures MUST be treated as indicators that a server does not support DoQ.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Already a single independently testable invariant; kept the failure conditions explicit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0090",
+      "title": "Back off DoQ queries to unsupported servers",
+      "statement": "Clients SHOULD NOT attempt DoQ queries to a server that does not support DoQ for a reasonable period.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Trimmed the illustrative example while preserving the backed-off retry invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0091",
+      "title": "Allow more aggressive retrying for key-pinned clients",
+      "statement": "DNS clients following an out-of-band key-pinned usage profile MAY be more aggressive about retrying after DoQ connection failures.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ]
+      },
+      "notes": [
+        "Retained as advisory latitude for a specific usage profile; no further reduction needed."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0092",
+      "title": "Limit worst-case amplification to 3x",
+      "statement": "DoQ implementations MUST limit the worst-case amplification to a factor of 3.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.3 RFC9250-S5P3-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0093",
+      "title": "Consider Retry Packets for address validation",
+      "statement": "DoQ implementations SHOULD consider configuring servers to use the Address Validation using Retry Packets procedure defined in Section 8.1.2 of RFC 9000.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.3 RFC9250-S5P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0094",
+      "title": "Implement future-connections validation after Retry Packets",
+      "statement": "DoQ implementations that configure Address Validation using Retry Packets SHOULD implement the Address Validation for Future Connections procedure defined in Section 8.1.3 of RFC 9000.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.3 RFC9250-S5P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0095",
+      "title": "Protect against traffic analysis with padding",
+      "statement": "Implementations MUST protect against the traffic analysis attacks described in Section 7.5 by injecting padding.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.4 RFC9250-S5P4-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4"
+        ]
+      },
+      "notes": [
+        "Trimmed to the standalone normative clause; no change in obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0096",
+      "title": "Use QUIC padding policy APIs when available",
+      "statement": "If the implementation of QUIC exposes APIs to set a padding policy, DoQ SHOULD use those APIs to align packet lengths to a small set of fixed sizes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.4 RFC9250-S5P4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4"
+        ]
+      },
+      "notes": [
+        "Trimmed wording only; same conditional recommendation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0097",
+      "title": "Pad DNS queries and responses without packet-level padding",
+      "statement": "If packet-level padding is unavailable or unused, DoQ MUST ensure all DNS queries and responses are padded to a small set of fixed sizes using EDNS(0) padding as specified in [RFC7830].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.4 RFC9250-S5P4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4",
+          "https://www.rfc-editor.org/rfc/rfc7830.html"
+        ]
+      },
+      "notes": [
+        "Trimmed wording only; same fallback padding obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0098",
+      "title": "Follow RFC8467 padding size recommendations",
+      "statement": "In the absence of a standard policy for padding sizes, implementations SHOULD follow RFC8467 recommendations.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.4 RFC9250-S5P4-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4",
+          "https://www.rfc-editor.org/rfc/rfc8467.html"
+        ]
+      },
+      "notes": [
+        "Trimmed wording only; same recommendation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0099",
+      "title": "Support connection reuse over persistent QUIC connections",
+      "statement": "DoQ clients and servers SHOULD support connection reuse by sending multiple queries and responses over a single persistent QUIC connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0100",
+      "title": "Send queries concurrently on QUIC streams",
+      "statement": "DNS clients SHOULD send their queries concurrently over the QUIC streams on a QUIC connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0101",
+      "title": "Do not wait for replies before sending the next query",
+      "statement": "When a DNS client sends multiple queries to a server over a QUIC connection, it SHOULD NOT wait for an outstanding reply before sending the next query.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0002"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0002"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0002"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0102",
+      "title": "Use QUIC idle timeout for long-lived connections",
+      "statement": "Clients that want to maintain long-duration DoQ connections SHOULD use the idle timeout mechanisms in RFC9000 Section 10.1.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.5.2 RFC9250-S5P5P2-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
+        ]
+      },
+      "notes": [
+        "Trimmed for canonical requirement wording while preserving the referenced normative source."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0103",
+      "title": "Do not send EDNS TCP keepalive on DoQ connections",
+      "statement": "Clients and servers MUST not send the edns-tcp-keepalive EDNS(0) Option [RFC7828] in any messages sent on a DoQ connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 5.5.2 RFC9250-S5P5P2-B6-P6-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc7828.html"
+        ]
+      },
+      "notes": [
+        "Normalized modal phrasing to keep exactly one uppercase normative keyword in the statement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0104",
+      "title": "Use resumption tickets only once",
+      "statement": "Clients SHOULD use resumption tickets only once, as specified in Appendix C.4 of RFC8446.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P3-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0105",
+      "title": "Avoid resumption after connectivity changes",
+      "statement": "By default, clients SHOULD NOT use session resumption if the client's connectivity has changed.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P3-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0106",
+      "title": "Use address validation tokens only with resumption",
+      "statement": "Clients SHOULD only use the address validation tokens when they are also using session resumption.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P3-B4-P4-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0107",
+      "title": "Issue long-lived resumption tickets",
+      "statement": "Servers SHOULD issue session resumption tickets with a sufficiently long lifetime.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P3-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ]
+      },
+      "notes": [
+        "RFC 9250 gives 6 hours as an example lifetime."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0108",
+      "title": "Implement anti-replay mechanisms",
+      "statement": "Servers SHOULD implement the anti-replay mechanisms specified in Section 8 of RFC8446.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P3-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0109",
+      "title": "Default to privacy-preserving new sessions",
+      "statement": "Clients SHOULD prioritize privacy and start new sessions when connectivity changes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P5P4-B1-P1-S4",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.4"
+        ]
+      },
+      "notes": [
+        "Trimmed wording while preserving the same testable obligation."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0110",
+      "title": "Send responses promptly on the specific stream",
+      "statement": "A DoQ implementation SHOULD send responses on the specific stream as soon as possible, without waiting for availability of responses for previously opened streams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P6-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.6"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0111",
+      "title": "Handle concurrent IXFR requests",
+      "statement": "DoQ servers MUST be able to handle multiple concurrent IXFR requests on a single QUIC connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P7-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0112",
+      "title": "Handle concurrent AXFR requests",
+      "statement": "DoQ servers MUST be able to handle multiple concurrent AXFR requests on a single QUIC connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S5P7-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0113",
+      "title": "Use one QUIC connection for AXFR and IXFR to the same primary",
+      "statement": "The same QUIC connection MUST be used for both AXFR and IXFR requests to the same primary.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.7 RFC9250-S5P7-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0114",
+      "title": "Send queued zone transfer requests in parallel",
+      "statement": "Queued zone transfer requests MUST be sent in parallel as soon as they are queued, without waiting for a response before sending the next query on the connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.7 RFC9250-S5P7-B6-P6-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0115",
+      "title": "Intermingled response streams",
+      "statement": "The response streams for each request MAY be sent intermingled as soon as they are available.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.7 RFC9250-S5P7-B7-P7-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0116",
+      "title": "Use RFC 9000 flow control mechanisms",
+      "statement": "Servers and clients MUST use the flow control mechanisms defined in Section 4 of RFC 9000.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0117",
+      "title": "Specify aggregate data limit",
+      "statement": "Flow control mechanisms MUST allow clients and servers to specify how much data can be sent on the union of all streams.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0118",
+      "title": "Specify per-stream data limit",
+      "statement": "Flow control mechanisms MUST allow clients and servers to specify how much data can be sent on a stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0119",
+      "title": "Specify stream creation limit",
+      "statement": "Flow control mechanisms MUST allow clients and servers to specify how many streams can be created.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0120",
+      "title": "Server flow control limits",
+      "statement": "Servers MUST use global and per-stream flow control limits to control how much data clients can send.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0121",
+      "title": "Client flow control limits",
+      "statement": "Clients MUST use global and per-stream flow control limits to control how much data servers can send.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B2-P2-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0122",
+      "title": "Handshake transport parameters carry flow control limits",
+      "statement": "Flow control limits MUST be specified in transport parameters exchanged during the connection handshake.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B3-P3-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0123",
+      "title": "Use initial connection flow control limits for 0-RTT",
+      "statement": "The flow control limits received in the initial connection MUST control how many requests and how much data clients can send using 0-RTT data in a resumed connection.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.8 RFC9250-S5P8-B3-P3-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0124",
+      "title": "State-preserving 0-RTT transactions",
+      "statement": "Transactions allowed by Section 4.5 MUST preserve the long-term state of the server.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 7.1 RFC9250-S7P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-7.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0125",
+      "title": "Mitigate traffic analysis attacks",
+      "statement": "Implementations SHOULD use the mechanisms defined in Section 5.4 to mitigate this attack.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S7P5-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-7.5"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0126",
+      "title": "Use the DoQ ALPN identification sequence",
+      "statement": "The DoQ ALPN identification sequence MUST be 0x64 0x6F 0x71 (\"doq\").",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC9250-S8P1-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.1"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0127",
+      "title": "Use a 62-bit registry space",
+      "statement": "The DNS-over-QUIC Error Codes registry MUST govern a 62-bit space.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "Normalized from a descriptive registry invariant."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0128",
+      "title": "Assign permanent registrations in the 0x00 to 0x3f range with approved policies",
+      "statement": "Permanent registrations for values between 0x00 and 0x3f inclusive MUST be assigned using Standards Action or IESG Approval as defined in Sections 4.9 and 4.10 of RFC8126.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "Normalized from a figure bullet."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0129",
+      "title": "Assign specification-required permanent registrations above 0x3f",
+      "statement": "Permanent registrations for values larger than 0x3f MUST be assigned using the Specification Required policy as defined in RFC8126.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "Corrected the requirement wording to match the source unit."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0130",
+      "title": "Require Expert Review for provisional registrations above 0x3f",
+      "statement": "Provisional registrations for values larger than 0x3f MUST require Expert Review, as defined in Section 4.5 of RFC8126.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "This source unit is a standalone normative bullet and should not be skipped."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0131",
+      "title": "Specification optional for provisional registrations",
+      "statement": "The Specification field MAY be omitted for provisional registrations.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B13-P13-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "Normalized from a field-definition optionality statement."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0132",
+      "title": "Allow summary descriptions when a specification reference exists",
+      "statement": "The Description field MAY be a summary if a Specification reference is provided.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B14-P14-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0133",
+      "title": "Allow date updates on provisional registrations without expert review",
+      "statement": "A request to update the Date on any provisional registration MAY be made without review from the designated expert(s).",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B17-P17-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ]
+      },
+      "notes": [
+        "Normalized from expert-review waiver language."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0134",
+      "title": "Assign 0x0 to DOQ_NO_ERROR",
+      "statement": "The value 0x0 MUST be assigned to DOQ_NO_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0135",
+      "title": "Assign 0x1 to DOQ_INTERNAL_ERROR",
+      "statement": "The value 0x1 MUST be assigned to DOQ_INTERNAL_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0136",
+      "title": "Assign 0x2 to DOQ_PROTOCOL_ERROR",
+      "statement": "The value 0x2 MUST be assigned to DOQ_PROTOCOL_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0137",
+      "title": "Assign 0x3 to DOQ_REQUEST_CANCELLED",
+      "statement": "The value 0x3 MUST be assigned to DOQ_REQUEST_CANCELLED.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0138",
+      "title": "Assign 0x4 to DOQ_EXCESSIVE_LOAD",
+      "statement": "The value 0x4 MUST be assigned to DOQ_EXCESSIVE_LOAD.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0139",
+      "title": "Assign 0x5 to DOQ_UNSPECIFIED_ERROR",
+      "statement": "The value 0x5 MUST be assigned to DOQ_UNSPECIFIED_ERROR.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0140",
+      "title": "Assign 0xd098ea5e to DOQ_ERROR_RESERVED",
+      "statement": "The value 0xd098ea5e MUST be assigned to DOQ_ERROR_RESERVED.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 8.4 RFC9250-S8P4-B22-P22-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0001"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0141",
+      "title": "Allow NOTIFY in 0-RTT data",
+      "statement": "A NOTIFY MAY be sent in 0-RTT data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 Appendix A RFC9250-SA-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#appendix-A"
+        ]
+      }
+    }
+  ]
+}

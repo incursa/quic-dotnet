@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Cancellation and Resource Limit Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the DoQ adapter behavior for request cancellation, early stream reset, internal handler failures, and bounded dangling stream pressure.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0001",
+    "ARC-QUIC-RFC9250-0002",
+    "WI-QUIC-RFC9250-0003",
+    "VER-QUIC-RFC9250-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0019",
+    "REQ-QUIC-RFC9250-0020",
+    "REQ-QUIC-RFC9250-0021",
+    "REQ-QUIC-RFC9250-0034",
+    "REQ-QUIC-RFC9250-0035",
+    "REQ-QUIC-RFC9250-0036",
+    "REQ-QUIC-RFC9250-0037",
+    "REQ-QUIC-RFC9250-0038",
+    "REQ-QUIC-RFC9250-0040",
+    "REQ-QUIC-RFC9250-0044",
+    "REQ-QUIC-RFC9250-0045",
+    "REQ-QUIC-RFC9250-0046",
+    "REQ-QUIC-RFC9250-0048",
+    "REQ-QUIC-RFC9250-0049",
+    "REQ-QUIC-RFC9250-0050"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs"
+  ],
+  "design_summary": "The DoQ client maps caller cancellation while waiting for a response to a read-side stream abort using `DOQ_REQUEST_CANCELLED`, which causes the peer to stop sending on that stream while preserving the connection for later queries. The DoQ server tracks active accepted query streams through per-connection resource state, optionally closes the connection with `DOQ_EXCESSIVE_LOAD` when a configured dangling-stream threshold is exceeded, ignores client write-side resets before a complete query reaches the handler, and maps unexpected handler failures to `DOQ_INTERNAL_ERROR` stream aborts.",
+  "data_and_state_considerations": "Resource counters are connection-local and remain adapter policy rather than transport state. A dangling stream is counted from bidirectional stream acceptance until the query stream handler completes, resets, or aborts. Cancellation/reset pressure is counted independently so a future slice can add explicit cancellation volume enforcement without changing the public adapter shape.",
+  "edge_cases_and_constraints": [
+    "The dangling-stream limit is disabled by default and opt-in through `DoqServerOptions.MaxDanglingStreams`.",
+    "Caller cancellation does not dispose the connection and later DoQ queries can continue when the peer keeps the connection open.",
+    "Early client RESET_STREAM before FIN does not dispatch a DNS query to the handler.",
+    "Internal DNS handler failures abort only the affected stream with `DOQ_INTERNAL_ERROR`."
+  ],
+  "risks": [
+    "This slice does not yet prove a client-side unsolicited RESET_STREAM volume limit.",
+    "Cancellation volume limits are exposed as server policy but still need their own focused proof before their RFC requirements are marked complete.",
+    "SERVFAIL response mapping for resolver-originated DNS failures is separate from adapter internal-error handling."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The DoQ adapter owns stream abort mapping and connection-level excessive-load policy. DNS resolver semantics and transport-level flow-control behavior remain outside this slice."
+    }
+  ]
+}

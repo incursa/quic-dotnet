@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Stream Lifecycle Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the minimal DoQ query/response stream lifecycle above the managed QUIC transport.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0001",
+    "WI-QUIC-RFC9250-0002",
+    "VER-QUIC-RFC9250-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0002",
+    "REQ-QUIC-RFC9250-0008",
+    "REQ-QUIC-RFC9250-0009",
+    "REQ-QUIC-RFC9250-0011",
+    "REQ-QUIC-RFC9250-0012",
+    "REQ-QUIC-RFC9250-0013",
+    "REQ-QUIC-RFC9250-0014",
+    "REQ-QUIC-RFC9250-0015",
+    "REQ-QUIC-RFC9250-0016",
+    "REQ-QUIC-RFC9250-0017",
+    "REQ-QUIC-RFC9250-0018",
+    "REQ-QUIC-RFC9250-0022",
+    "REQ-QUIC-RFC9250-0023",
+    "REQ-QUIC-RFC9250-0099",
+    "REQ-QUIC-RFC9250-0100",
+    "REQ-QUIC-RFC9250-0101"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/IDoqQueryHandler.cs",
+    "src/Incursa.Quic.Dns/DoqQueryContext.cs",
+    "src/Incursa.Quic.Dns/DoqQueryResult.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs"
+  ],
+  "design_summary": "The DoQ stream lifecycle is implemented in `Incursa.Quic.Dns` as an adapter over `QuicConnection` and `QuicStream`. `DoqClient` opens a new client-initiated bidirectional stream for every query, sets the DNS Message ID field to zero, writes one length-prefixed DNS message, completes writes to send STREAM FIN, reads one response from the same stream, and then disposes the stream. `DoqServer` accepts QUIC connections from a listener, accepts inbound bidirectional streams, and handles each query stream independently through `IDoqQueryHandler`, writing the response on the same stream and completing writes after the response bytes.",
+  "data_and_state_considerations": "The stream lifecycle uses the foundation `DoqMessageCodec` for message boundaries and relies on QUIC stream IDs for transaction correlation. The adapter does not require DNS Message ID correlation for DoQ-local request/response matching. Server stream handlers are scheduled independently so multiple queries can be in flight on one persistent connection.",
+  "edge_cases_and_constraints": [
+    "Only bidirectional streams are accepted for DoQ query/response transactions in this slice.",
+    "The server may wait until the complete length-prefixed query is available before dispatching to the handler.",
+    "Incomplete DoQ frames fail deterministically with `DOQ_PROTOCOL_ERROR` through `DoqException`.",
+    "Gateway-specific DNS Message ID generation when forwarding from DoQ to another transport remains outside this slice."
+  ],
+  "risks": [
+    "This slice proves minimal one-response transactions only; AXFR/IXFR multi-response behavior needs a later stream sequencing design.",
+    "Cancellation, STOP_SENDING, RESET_STREAM, dangling stream limits, and excessive load policy need separate proof because they affect error handling and resource limits.",
+    "External DoQ interop should wait until cancellation, padding, and lifecycle policies are trace-owned."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The DoQ adapter owns query/response stream mapping. The QUIC transport remains responsible for opening, accepting, reading, writing, FIN, flow control, and TLS. DNS resolver behavior remains behind `IDoqQueryHandler`."
+    }
+  ]
+}

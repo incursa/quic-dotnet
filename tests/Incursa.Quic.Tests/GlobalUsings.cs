@@ -1,5 +1,6 @@
 global using Incursa.Qpack;
 global using Incursa.Quic;
+global using Incursa.Quic.Dns;
 global using Incursa.Quic.Http3;
 global using Incursa.Quic.InteropHarness;
 global using Hashtable = System.Collections.Hashtable;

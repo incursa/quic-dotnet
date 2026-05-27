@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Stream Lifecycle Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0002",
+    "VER-QUIC-RFC9250-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0002",
+    "REQ-QUIC-RFC9250-0008",
+    "REQ-QUIC-RFC9250-0009",
+    "REQ-QUIC-RFC9250-0011",
+    "REQ-QUIC-RFC9250-0012",
+    "REQ-QUIC-RFC9250-0013",
+    "REQ-QUIC-RFC9250-0014",
+    "REQ-QUIC-RFC9250-0015",
+    "REQ-QUIC-RFC9250-0016",
+    "REQ-QUIC-RFC9250-0017",
+    "REQ-QUIC-RFC9250-0018",
+    "REQ-QUIC-RFC9250-0022",
+    "REQ-QUIC-RFC9250-0023",
+    "REQ-QUIC-RFC9250-0099",
+    "REQ-QUIC-RFC9250-0100",
+    "REQ-QUIC-RFC9250-0101"
+  ],
+  "summary": "Add the minimal DoQ query/response stream lifecycle over the existing QUIC stream facade.",
+  "planned_changes": "- Add `DoqClient` for one query per client-initiated bidirectional stream.\n- Set the DNS Message ID field to zero before sending a query over DoQ.\n- Add `DoqServer` and `IDoqQueryHandler` for accepting query streams and writing responses on the same stream.\n- Add shared stream helpers for length-prefixed DoQ reads and writes with FIN.\n- Add loopback tests that prove one-stream-per-query, same-stream responses, and concurrent queries on one connection.",
+  "verification_plan": "Run the focused DoQ stream lifecycle tests, the RFC 9250 requirement-home tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0002"
+  ],
+  "out_of_scope": [
+    "STOP_SENDING, RESET_STREAM, cancellation limits, dangling stream limits, and excessive load policy.",
+    "Padding and traffic-analysis policy.",
+    "AXFR/IXFR multi-response zone-transfer behavior.",
+    "0-RTT and Retry/address-validation policy.",
+    "Gateway DNS Message ID generation when forwarding from DoQ to non-DoQ transports.",
+    "External DoQ interop proof."
+  ],
+  "completion_notes": "The DoQ adapter can now perform minimal query/response transactions over real QUIC streams, while later RFC 9250 slices retain ownership of cancellation, privacy, transfer, and interop behavior."
+}

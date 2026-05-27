@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Stream Lifecycle Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0002",
+    "WI-QUIC-RFC9250-0002"
+  ],
+  "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for the DoQ query/response stream lifecycle.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0002",
+    "REQ-QUIC-RFC9250-0008",
+    "REQ-QUIC-RFC9250-0009",
+    "REQ-QUIC-RFC9250-0011",
+    "REQ-QUIC-RFC9250-0012",
+    "REQ-QUIC-RFC9250-0013",
+    "REQ-QUIC-RFC9250-0014",
+    "REQ-QUIC-RFC9250-0015",
+    "REQ-QUIC-RFC9250-0016",
+    "REQ-QUIC-RFC9250-0017",
+    "REQ-QUIC-RFC9250-0018",
+    "REQ-QUIC-RFC9250-0022",
+    "REQ-QUIC-RFC9250-0023",
+    "REQ-QUIC-RFC9250-0099",
+    "REQ-QUIC-RFC9250-0100",
+    "REQ-QUIC-RFC9250-0101"
+  ],
+  "scope": "This verification covers minimal DoQ query/response transactions: separate bidirectional streams per query, same-stream response writes, client and server write FIN behavior, and concurrent queries over one persistent connection. It does not verify cancellation/reset policy, padding, AXFR/IXFR, 0-RTT, Retry/address validation, or external interop.",
+  "preconditions": [
+    "The DoQ foundation package and message codec exist.",
+    "The local managed QUIC loopback support is available for stream-level tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqStreamLifecycleTests|FullyQualifiedName~REQ_QUIC_RFC9250_0002\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ stream lifecycle tests pass, core SpecTrace validation accepts the RFC 9250 artifacts, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/IDoqQueryHandler.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs"
+  ],
+  "status_summary": "The DoQ adapter now proves minimal query/response stream mapping over real QUIC streams. Remaining RFC 9250 cancellation, padding, zone transfer, 0-RTT, address validation, and interop behavior remains future work."
+}
