@@ -123,6 +123,59 @@ public sealed class Http3FrameLayerTests
             QPackDecoder.DecodeFieldSection(encoded));
     }
 
+    [Theory]
+    [InlineData("text/plain", "Hello, World!")]
+    [InlineData("application/json", """{"message":"Hello, World!"}""")]
+    public void ResponseFrames_WrappedInFinalStreamPayloadPreserveBytesAndMetadata(string contentType, string bodyText)
+    {
+        const ulong streamId = 0;
+        byte[] body = System.Text.Encoding.UTF8.GetBytes(bodyText);
+        byte[] encodedFieldSection = EncodeTechEmpowerResponseFieldSection(contentType, body.Length);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
+        byte[] dataFrame = Http3FrameWriter.WriteData(body);
+        byte[] responseFrames =
+        [
+            .. headersFrame,
+            .. dataFrame,
+        ];
+
+        byte[] streamPayload = BuildStreamPayload(streamId, responseFrames, fin: true);
+
+        Assert.True(QuicStreamParser.TryParseStreamFrame(streamPayload, out QuicStreamFrame streamFrame));
+        Assert.Equal(streamId, streamFrame.StreamId.Value);
+        Assert.True(streamFrame.IsFin);
+        Assert.True(streamFrame.HasLength);
+        Assert.False(streamFrame.HasOffset);
+        Assert.Equal(0UL, streamFrame.Offset);
+        Assert.Equal(responseFrames.Length, streamFrame.StreamDataLength);
+        Assert.Equal(responseFrames, streamFrame.StreamData.ToArray());
+        Assert.All(streamPayload.AsSpan(streamFrame.ConsumedLength).ToArray(), value => Assert.Equal(0, value));
+
+        Http3Frame[] frames = new Http3FrameReader().Read(streamFrame.StreamData);
+        Assert.Collection(
+            frames,
+            frame =>
+            {
+                Http3HeadersFrame headers = Assert.IsType<Http3HeadersFrame>(frame);
+                Assert.Equal(headersFrame, Http3FrameWriter.WriteHeaders(headers.EncodedFieldSection.Span));
+                Assert.Equal(
+                    [
+                        new QPackFieldLine(":status", "200"),
+                        new QPackFieldLine("server", "incursa"),
+                        new QPackFieldLine("date", "Wed, 27 May 2026 15:00:00 GMT"),
+                        new QPackFieldLine("content-type", contentType),
+                        new QPackFieldLine("content-length", body.Length.ToString()),
+                    ],
+                    QPackDecoder.DecodeFieldSection(headers.EncodedFieldSection));
+            },
+            frame =>
+            {
+                Http3DataFrame data = Assert.IsType<Http3DataFrame>(frame);
+                Assert.Equal(dataFrame, Http3FrameWriter.WriteData(data.Data.Span));
+                Assert.Equal(body, data.Data.ToArray());
+            });
+    }
+
     [Fact]
     public void FrameWriter_And_Reader_RoundTripSettingsFrame()
     {
@@ -466,5 +519,22 @@ public sealed class Http3FrameLayerTests
     private static byte[] EncodePlaintextRequestFieldSection()
     {
         return QPackEncoder.EncodeFieldSection(BuildPlaintextRequestHeaders());
+    }
+
+    private static byte[] BuildStreamPayload(ulong streamId, ReadOnlySpan<byte> streamData, bool fin)
+    {
+        byte frameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
+        if (fin)
+        {
+            frameType |= QuicStreamFrameBits.FinBitMask;
+        }
+
+        int bufferLength = Math.Max(
+            QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength,
+            streamData.Length + 32);
+        byte[] buffer = new byte[bufferLength];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(frameType, streamId, 0, streamData, buffer, out int frameBytesWritten));
+        buffer.AsSpan(frameBytesWritten).Fill(0);
+        return buffer;
     }
 }

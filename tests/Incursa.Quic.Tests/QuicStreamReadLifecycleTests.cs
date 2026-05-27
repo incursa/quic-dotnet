@@ -79,6 +79,202 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task ReadAsync_WaitsWhenNoDataIsAvailable()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        using CancellationTokenSource cancellation = new();
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory(), cancellation.Token).AsTask();
+
+        await AssertPendingAsync(readTask);
+
+        await cancellation.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await readTask);
+    }
+
+    [Fact]
+    public async Task ReadAsync_WaitingReadCompletesWithExactBytesWhenDataArrives()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[3];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        InjectStreamData(stream, [0x51, 0x52, 0x53], offset: 0, fin: false);
+
+        Assert.Equal(3, await readTask);
+        Assert.True(((ReadOnlySpan<byte>)[0x51, 0x52, 0x53]).SequenceEqual(destination));
+    }
+
+    [Fact]
+    public async Task ReadAsync_WaitingPartialReadPreservesUnreadTail()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] first = new byte[2];
+        Task<int> firstRead = stream.ReadAsync(first.AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+
+        InjectStreamData(stream, [0x61, 0x62, 0x63, 0x64, 0x65], offset: 0, fin: false);
+
+        Assert.Equal(2, await firstRead);
+        Assert.True(((ReadOnlySpan<byte>)[0x61, 0x62]).SequenceEqual(first));
+
+        byte[] second = new byte[3];
+        int secondBytesRead = await stream.ReadAsync(second.AsMemory());
+
+        Assert.Equal(3, secondBytesRead);
+        Assert.True(((ReadOnlySpan<byte>)[0x63, 0x64, 0x65]).SequenceEqual(second));
+    }
+
+    [Fact]
+    public async Task ReadAsync_MultipleReadsPreserveByteOrderAcrossWaits()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] first = new byte[2];
+        Task<int> firstRead = stream.ReadAsync(first.AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+
+        InjectStreamData(stream, [0x71, 0x72], offset: 0, fin: false);
+
+        Assert.Equal(2, await firstRead);
+        Assert.True(((ReadOnlySpan<byte>)[0x71, 0x72]).SequenceEqual(first));
+
+        byte[] second = new byte[2];
+        Task<int> secondRead = stream.ReadAsync(second.AsMemory()).AsTask();
+        await AssertPendingAsync(secondRead);
+
+        InjectStreamData(stream, [0x73, 0x74], offset: 2, fin: false);
+
+        Assert.Equal(2, await secondRead);
+        Assert.True(((ReadOnlySpan<byte>)[0x73, 0x74]).SequenceEqual(second));
+    }
+
+    [Fact]
+    public async Task ReadAsync_CancellationBeforeDataArrivesPreservesCancellation()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        using CancellationTokenSource cancellation = new();
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory(), cancellation.Token).AsTask();
+        await AssertPendingAsync(readTask);
+
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await readTask);
+    }
+
+    [Fact]
+    public async Task ReadAsync_CancellationAfterDataArrivesBeforeWakePreservesCancellationAndBytes()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        using CancellationTokenSource cancellation = new();
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory(), cancellation.Token).AsTask();
+        await AssertPendingAsync(readTask);
+
+        ReceiveStreamData(stream.Bookkeeping, [0x7A], offset: 0, fin: false);
+        await cancellation.CancelAsync();
+        stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await readTask);
+
+        int bytesRead = await stream.ReadAsync(destination.AsMemory());
+        Assert.Equal(1, bytesRead);
+        Assert.Equal(0x7A, destination[0]);
+    }
+
+    [Fact]
+    public async Task ReadAsync_AbortWhileWaitingPreservesException()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        QuicException abortException = new(QuicError.StreamAborted, 0x52, "test read abort");
+        stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.ReadAborted, abortException));
+
+        QuicException actual = await Assert.ThrowsAsync<QuicException>(async () => await readTask);
+        Assert.Same(abortException, actual);
+    }
+
+    [Fact]
+    public async Task ReadAsync_FinWhileWaitingCompletesWithZeroAndClosesReads()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] destination = new byte[1];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        InjectStreamData(stream, [], offset: 0, fin: true);
+
+        Assert.Equal(0, await readTask);
+        Assert.True(stream.ReadsClosed.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public async Task ReadAsync_ReadAfterFinPreservesEndOfStream()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        InjectStreamData(stream, [], offset: 0, fin: true);
+
+        byte[] destination = new byte[1];
+        Assert.Equal(0, await stream.ReadAsync(destination.AsMemory()));
+        Assert.Equal(0, await stream.ReadAsync(destination.AsMemory()));
+        Assert.True(stream.ReadsClosed.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public async Task ReadAsync_OnlyOneWaitingReadIsReleasedPerNotification()
+    {
+        using QuicStream stream = CreateReadableStream();
+
+        byte[] first = new byte[1];
+        byte[] second = new byte[1];
+        Task<int> firstRead = stream.ReadAsync(first.AsMemory()).AsTask();
+        Task<int> secondRead = stream.ReadAsync(second.AsMemory()).AsTask();
+        await AssertPendingAsync(firstRead);
+        await AssertPendingAsync(secondRead);
+
+        InjectStreamData(stream, [0x81], offset: 0, fin: false);
+
+        Assert.Equal(1, await firstRead);
+        Assert.Equal(0x81, first[0]);
+        await AssertPendingAsync(secondRead);
+
+        InjectStreamData(stream, [0x82], offset: 1, fin: false);
+
+        Assert.Equal(1, await secondRead);
+        Assert.Equal(0x82, second[0]);
+    }
+
+    [Fact]
+    public async Task ReadAsync_WaitingReadPreservesFlowControlCreditAccounting()
+    {
+        using QuicStream stream = CreateReadableStream(initialReceiveLimit: 8);
+
+        byte[] destination = new byte[2];
+        Task<int> readTask = stream.ReadAsync(destination.AsMemory()).AsTask();
+        await AssertPendingAsync(readTask);
+
+        InjectStreamData(stream, [0x91, 0x92], offset: 0, fin: false);
+
+        Assert.Equal(2, await readTask);
+        Assert.True(stream.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(2UL, snapshot.ReadOffset);
+        Assert.Equal(10UL, snapshot.ReceiveLimit);
+    }
+
+    [Fact]
     [SuppressMessage(
         "Reliability",
         "CA2022:Avoid inexact read",
@@ -125,18 +321,44 @@ public sealed class QuicStreamReadLifecycleTests
         return new QuicStream(state, streamId: 0);
     }
 
-    private static QuicConnectionStreamState CreateServerReceiveState()
+    private static QuicStream CreateReadableStream(ulong initialReceiveLimit = 4096)
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState(initialReceiveLimit);
+        ReceiveStreamData(state, [], offset: 0, fin: false);
+        return new QuicStream(state, streamId: 0);
+    }
+
+    private static void InjectStreamData(QuicStream stream, ReadOnlySpan<byte> payload, ulong offset, bool fin)
+    {
+        ReceiveStreamData(stream.Bookkeeping, payload, offset, fin);
+        stream.HandleRuntimeNotification(new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
+    }
+
+    private static void ReceiveStreamData(QuicConnectionStreamState state, ReadOnlySpan<byte> payload, ulong offset, bool fin)
+    {
+        QuicStreamFrame frame = ParseStreamFrame(streamId: 0, offset, payload, fin);
+        Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+    }
+
+    private static async Task AssertPendingAsync(Task<int> readTask)
+    {
+        await Task.Delay(20);
+        Assert.False(readTask.IsCompleted);
+    }
+
+    private static QuicConnectionStreamState CreateServerReceiveState(ulong initialReceiveLimit = 4096)
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(
             IsServer: true,
-            InitialConnectionReceiveLimit: 4096,
+            InitialConnectionReceiveLimit: initialReceiveLimit,
             InitialConnectionSendLimit: 4096,
             InitialIncomingBidirectionalStreamLimit: 16,
             InitialIncomingUnidirectionalStreamLimit: 16,
             InitialPeerBidirectionalStreamLimit: 16,
             InitialPeerUnidirectionalStreamLimit: 16,
-            InitialLocalBidirectionalReceiveLimit: 4096,
-            InitialPeerBidirectionalReceiveLimit: 4096,
+            InitialLocalBidirectionalReceiveLimit: initialReceiveLimit,
+            InitialPeerBidirectionalReceiveLimit: initialReceiveLimit,
             InitialPeerUnidirectionalReceiveLimit: 4096,
             InitialLocalBidirectionalSendLimit: 4096,
             InitialLocalUnidirectionalSendLimit: 4096,

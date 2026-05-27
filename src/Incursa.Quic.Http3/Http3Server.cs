@@ -834,7 +834,7 @@ public sealed class Http3Server : IAsyncDisposable
             offset += count;
         }
 
-        await WriteFinalFrameBytesAsync(stream, writer.WrittenSpan.ToArray(), cancellationToken).ConfigureAwait(false);
+        await WriteFinalFrameBytesAsync(stream, writer.WrittenMemory, cancellationToken).ConfigureAwait(false);
     }
 
     private void EmitResponseDataFrames(
@@ -943,6 +943,12 @@ public sealed class Http3Server : IAsyncDisposable
         QuicStream stream,
         byte[] frameBytes,
         CancellationToken cancellationToken)
+        => await WriteFinalFrameBytesAsync(stream, frameBytes.AsMemory(), cancellationToken).ConfigureAwait(false);
+
+    private static async ValueTask WriteFinalFrameBytesAsync(
+        QuicStream stream,
+        ReadOnlyMemory<byte> frameBytes,
+        CancellationToken cancellationToken)
     {
         int offset = 0;
         while (offset < frameBytes.Length)
@@ -950,11 +956,11 @@ public sealed class Http3Server : IAsyncDisposable
             int count = Math.Min(ResponseWriteChunkSize, frameBytes.Length - offset);
             if (offset + count == frameBytes.Length)
             {
-                await stream.WriteFinalAsync(frameBytes, offset, count, cancellationToken).ConfigureAwait(false);
+                await stream.WriteFinalAsync(frameBytes.Slice(offset, count), cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                await stream.WriteAsync(frameBytes, offset, count, cancellationToken).ConfigureAwait(false);
+                await stream.WriteAsync(frameBytes.Slice(offset, count), cancellationToken).ConfigureAwait(false);
             }
 
             offset += count;

@@ -433,6 +433,28 @@ public class Http3AllocationPathBenchmarks
     }
 
     /// <summary>
+    /// Measures the tiny plaintext response byte-array chain from field-section encoding through STREAM payload build.
+    /// </summary>
+    [Benchmark]
+    public int ResponsePipeline_EncodeBufferAndBuildPlaintextStreamPayload()
+    {
+        byte[] encodedFieldSection = QPackEncoder.EncodeFieldSection(plaintextResponseHeaders);
+        byte[] payload = BuildResponseStreamPayload(encodedFieldSection, PlaintextBody);
+        return payload.Length;
+    }
+
+    /// <summary>
+    /// Measures the tiny JSON response byte-array chain from field-section encoding through STREAM payload build.
+    /// </summary>
+    [Benchmark]
+    public int ResponsePipeline_EncodeBufferAndBuildJsonStreamPayload()
+    {
+        byte[] encodedFieldSection = QPackEncoder.EncodeFieldSection(jsonResponseHeaders);
+        byte[] payload = BuildResponseStreamPayload(encodedFieldSection, JsonBody);
+        return payload.Length;
+    }
+
+    /// <summary>
     /// Measures the queued-send selection and payload-combine shape used by pending application-send flushes.
     /// </summary>
     [Benchmark]
@@ -480,6 +502,16 @@ public class Http3AllocationPathBenchmarks
         Http3FrameWriter.WriteFrame(writer, (ulong)Http3FrameType.Headers, encodedFieldSection);
         Http3FrameWriter.WriteFrame(writer, (ulong)Http3FrameType.Data, body);
         return writer.WrittenSpan.ToArray();
+    }
+
+    private static byte[] BuildResponseStreamPayload(byte[] encodedFieldSection, ReadOnlySpan<byte> body)
+    {
+        ArrayBufferWriter<byte> writer = new(
+            GetFrameLength((ulong)Http3FrameType.Headers, encodedFieldSection.Length)
+            + GetFrameLength((ulong)Http3FrameType.Data, body.Length));
+        Http3FrameWriter.WriteFrame(writer, (ulong)Http3FrameType.Headers, encodedFieldSection);
+        Http3FrameWriter.WriteFrame(writer, (ulong)Http3FrameType.Data, body);
+        return BuildOutboundStreamPayload(0, 0, writer.WrittenSpan, fin: true);
     }
 
     private static int GetFrameLength(ulong frameType, int payloadLength)

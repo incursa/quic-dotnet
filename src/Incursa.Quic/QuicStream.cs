@@ -190,14 +190,14 @@ public sealed class QuicStream : Stream
         return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
-    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
         if (TryCompleteReadSynchronously(buffer, cancellationToken, out int bytesRead))
         {
-            return bytesRead;
+            return ValueTask.FromResult(bytesRead);
         }
 
-        return await ReadCoreAsync(buffer, cancellationToken).ConfigureAwait(false);
+        return ReadCoreAsync(buffer, cancellationToken);
     }
 
     public override void Write(byte[] buffer, int offset, int count)
@@ -214,11 +214,21 @@ public sealed class QuicStream : Stream
         await WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
     }
 
+    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        return WriteCoreAsync(buffer, cancellationToken);
+    }
+
     internal async ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(buffer);
         ValidateRange(buffer.Length, offset, count);
         await WriteFinalCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+    }
+
+    internal async ValueTask WriteFinalAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    {
+        await WriteFinalCoreAsync(buffer, cancellationToken).ConfigureAwait(false);
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -629,7 +639,7 @@ public sealed class QuicStream : Stream
         }
     }
 
-    private void HandleRuntimeNotification(QuicStreamNotification notification)
+    internal void HandleRuntimeNotification(QuicStreamNotification notification)
     {
         switch (notification.Kind)
         {
