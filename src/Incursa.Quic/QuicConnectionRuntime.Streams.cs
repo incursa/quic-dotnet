@@ -3930,24 +3930,13 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
-        if (!QuicFrameCodec.TryFormatMaxDataFrame(frame, buffer, out int frameBytesWritten))
+        Span<byte> frameBuffer = stackalloc byte[64];
+        if (!QuicFrameCodec.TryFormatMaxDataFrame(frame, frameBuffer, out int frameBytesWritten))
         {
             return false;
         }
 
-        if (frameBytesWritten > buffer.Length)
-        {
-            return false;
-        }
-
-        if (frameBytesWritten < buffer.Length)
-        {
-            buffer.AsSpan(frameBytesWritten).Fill(0);
-        }
-
-        payload = buffer;
-        return true;
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
     }
 
     private bool TryBuildOutboundMaxStreamDataPayload(
@@ -3956,24 +3945,13 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
-        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(frame, buffer, out int frameBytesWritten))
+        Span<byte> frameBuffer = stackalloc byte[64];
+        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(frame, frameBuffer, out int frameBytesWritten))
         {
             return false;
         }
 
-        if (frameBytesWritten > buffer.Length)
-        {
-            return false;
-        }
-
-        if (frameBytesWritten < buffer.Length)
-        {
-            buffer.AsSpan(frameBytesWritten).Fill(0);
-        }
-
-        payload = buffer;
-        return true;
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
     }
 
     private bool TryBuildOutboundDataBlockedPayload(
@@ -4058,23 +4036,26 @@ internal sealed partial class QuicConnectionRuntime
     {
         payload = [];
 
-        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, 64)];
-        if (!QuicFrameCodec.TryFormatMaxStreamsFrame(frame, buffer, out int frameBytesWritten))
+        Span<byte> frameBuffer = stackalloc byte[64];
+        if (!QuicFrameCodec.TryFormatMaxStreamsFrame(frame, frameBuffer, out int frameBytesWritten))
         {
             return false;
         }
 
-        if (frameBytesWritten > buffer.Length)
+        return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
+    }
+
+    private static bool TryCreatePaddedApplicationPayload(ReadOnlySpan<byte> frameBytes, out byte[] payload)
+    {
+        payload = [];
+        if (frameBytes.IsEmpty)
         {
             return false;
         }
 
-        if (frameBytesWritten < buffer.Length)
-        {
-            buffer.AsSpan(frameBytesWritten).Fill(0);
-        }
-
-        payload = buffer;
+        int payloadLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameBytes.Length);
+        payload = new byte[payloadLength];
+        frameBytes.CopyTo(payload);
         return true;
     }
 
