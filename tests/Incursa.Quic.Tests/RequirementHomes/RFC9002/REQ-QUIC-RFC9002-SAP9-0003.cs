@@ -11,6 +11,9 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9002-SAP9-0003")]
 public sealed class REQ_QUIC_RFC9002_SAP9_0003
 {
+    private const int ExactSizedResponseBodyDatagramLength = 1049;
+    private const int ExactSizedFinOnlyCloseDatagramLength = 41;
+
     private static readonly byte[] PacketConnectionId =
     [
         0x0A, 0x0B, 0x0C,
@@ -347,8 +350,10 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-160400023-server-nginx
         //   runner-logs\nginx_quic-go\handshakeloss\output.txt:
         //     the managed server completed the 1024-byte multiconnect response, the simulator dropped one
-        //     1077-byte server->client datagram, then later forwarded only a 53-byte FIN-only packet and
-        //     subsequent 3-byte PTO probes.
+        //     server->client response body datagram, then later forwarded only a FIN-only packet
+        //     and subsequent 3-byte PTO probes. The captured artifact used the older 1077-byte padded
+        //     body datagram and 53-byte padded FIN-only datagram; current exact STREAM payload sizing emits
+        //     those packets as 1049 bytes and 41 bytes respectively.
         //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
         //     quic-go later received only STREAM stream_id=0 offset=1024 len=0 fin=true and timed out
         //     waiting for the missing 1024 body bytes.
@@ -598,7 +603,9 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         //     packet 56 carried STREAM stream_id=0 offset=0 length=1024 fin=false,
         //     packet 57 remained missing, and packet 18 ACKed 58 and 56 but not 57 before idle timeout.
         //   runner-logs\nginx_quic-go\handshakeloss\output.txt:
-        //     the simulator dropped one later 53-byte server->client datagram on the second managed transfer.
+        //     the simulator dropped one later FIN-only server->client datagram on the second managed
+        //     transfer. The captured artifact used the older 53-byte padded packet shape; current exact
+        //     STREAM payload sizing emits the same FIN-only close as 41 bytes.
         // The bounded regression is the application PTO content choice after the peer has already
         // acknowledged the response body but not the later FIN-only close while the server is using
         // a zero-length peer destination connection ID.
@@ -741,8 +748,10 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         // C:\src\incursa\quic-dotnet\artifacts\interop-runner\20260422-162814565-server-nginx
         //   runner-logs\nginx_quic-go\handshakeloss\client\log.txt:
         //     the second connection received packet 56 with the 1024-byte response body, packet 57 was the
-        //     dropped 53-byte server->client datagram, packet 58 carried MAX_STREAMS, and client packet 18
+        //     dropped FIN-only server->client datagram, packet 58 carried MAX_STREAMS, and client packet 18
         //     ACKed 58 and 56 but not 57 before the server later idled.
+        //     The captured artifact used the older 53-byte padded FIN-only packet shape; current exact
+        //     STREAM payload sizing emits the same FIN-only close as 41 bytes.
         // The bounded regression follows that server-role peer-initiated path through the later credit ACKs,
         // drops the immediate FIN-only repair that follows, and then verifies PTO still replays the close.
         using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath();
@@ -954,8 +963,10 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         //     1024-byte response body and packet 58 carrying MAX_STREAMS, but not the missing packet 57
         //     carrying the FIN-only close.
         //   runner-logs\nginx_quic-go\handshakeloss\output.txt:
-        //     the simulator forwarded the 1077-byte body, dropped the following 53-byte server->client
+        //     the simulator forwarded the response body, dropped the following FIN-only server->client
         //     datagram, and forwarded the later 85-byte server->client datagram before quic-go timed out.
+        //     The captured artifact used the older 1077-byte padded body datagram; current exact STREAM
+        //     payload sizing emits the body as 1049 bytes and the FIN-only close as 41 bytes.
         // This replay keeps the server-side pre-body application send history instead of clearing it, so the
         // selective ACK shape matches the live gap more closely than the distilled repair test above.
         using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
@@ -1047,8 +1058,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
 
         Assert.False(finKeyPhase);
-        Assert.Equal(1077, bodyEffect.Datagram.Length);
-        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(ExactSizedResponseBodyDatagramLength, bodyEffect.Datagram.Length);
+        Assert.Equal(ExactSizedFinOnlyCloseDatagramLength, finEffect.Datagram.Length);
         Assert.Equal(85, maxStreamsEffect.Datagram.Length);
         Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
         Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);
@@ -1143,8 +1154,10 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         //     21, 17-16, 14-11, and 9-0 while omitting packet 57 carrying the
         //     FIN-only close and also leaving multiple older credit packet holes.
         //   runner-logs\nginx_quic-go\handshakeloss\output.txt lines 554-558:
-        //     the simulator forwarded the 1077-byte body, dropped the 53-byte FIN-only
-        //     datagram, and forwarded the later 85-byte MAX_STREAMS datagram.
+        //     the simulator forwarded the response body, dropped the FIN-only
+        //     datagram, and forwarded the later 85-byte MAX_STREAMS datagram. The captured artifact used
+        //     the older 1077-byte padded body datagram; current exact STREAM payload sizing emits it as
+        //     1049 bytes and emits the FIN-only close as 41 bytes.
         using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
             connectionFlowControlLimit: 4096,
             streamFlowControlLimit: 4096,
@@ -1236,8 +1249,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
 
         Assert.False(finKeyPhase);
-        Assert.Equal(1077, bodyEffect.Datagram.Length);
-        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(ExactSizedResponseBodyDatagramLength, bodyEffect.Datagram.Length);
+        Assert.Equal(ExactSizedFinOnlyCloseDatagramLength, finEffect.Datagram.Length);
         Assert.Equal(85, maxStreamsEffect.Datagram.Length);
         Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
         Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);
@@ -1324,9 +1337,11 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         //     the live peer ACKed packets 58 and 56 while omitting packet 57, then left multiple older
         //     credit-packet holes.
         //   runner-logs\nginx_quic-go\handshakeloss\output.txt lines 554-596:
-        //     the simulator forwarded the 1077-byte body, dropped the 53-byte FIN-only datagram, forwarded
+        //     the simulator forwarded the response body, dropped the FIN-only datagram, forwarded
         //     the later 85-byte MAX_STREAMS datagram, and then observed only client->server traffic until
-        //     the runner timed out.
+        //     the runner timed out. The captured artifact used the older 1077-byte padded body datagram;
+        //     current exact STREAM payload sizing emits the body as 1049 bytes and the FIN-only close as
+        //     41 bytes.
         using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
             connectionFlowControlLimit: 4096,
             streamFlowControlLimit: 4096,
@@ -1418,8 +1433,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedMaxStreamsPacket = FindTrackedPacket(runtime, maxStreamsEffect.Datagram);
 
         Assert.False(finKeyPhase);
-        Assert.Equal(1077, bodyEffect.Datagram.Length);
-        Assert.Equal(53, finEffect.Datagram.Length);
+        Assert.Equal(ExactSizedResponseBodyDatagramLength, bodyEffect.Datagram.Length);
+        Assert.Equal(ExactSizedFinOnlyCloseDatagramLength, finEffect.Datagram.Length);
         Assert.Equal(85, maxStreamsEffect.Datagram.Length);
         Assert.Equal(trackedBodyPacket.Key.PacketNumber + 1, trackedFinPacket.Key.PacketNumber);
         Assert.Equal(trackedFinPacket.Key.PacketNumber + 1, trackedMaxStreamsPacket.Key.PacketNumber);

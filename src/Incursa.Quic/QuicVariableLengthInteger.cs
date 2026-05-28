@@ -158,7 +158,7 @@ internal static class QuicVariableLengthInteger
         return true;
     }
 
-    private static bool TryGetEncodedLength(ulong value, out int length)
+    internal static bool TryGetEncodedLength(ulong value, out int length)
     {
         if (value <= MaxOneByteValue)
         {
@@ -188,4 +188,3 @@ internal static class QuicVariableLengthInteger
         return false;
     }
 }
-

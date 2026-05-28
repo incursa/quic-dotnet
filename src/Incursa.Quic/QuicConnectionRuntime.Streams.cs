@@ -3744,7 +3744,12 @@ internal sealed partial class QuicConnectionRuntime
             frameType |= QuicStreamFrameBits.FinBitMask;
         }
 
-        int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, streamData.Length + 32);
+        if (!TryGetOutboundStreamFrameLength(frameType, streamId, offset, streamData.Length, out int frameLength))
+        {
+            return false;
+        }
+
+        int bufferLength = Math.Max(ApplicationMinimumProtectedPayloadLength, frameLength);
         byte[] buffer = new byte[bufferLength];
         if (!QuicFrameCodec.TryFormatStreamFrame(
             frameType,
@@ -3768,6 +3773,54 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         payload = buffer;
+        return true;
+    }
+
+    private static bool TryGetOutboundStreamFrameLength(
+        byte frameType,
+        ulong streamId,
+        ulong offset,
+        int streamDataLength,
+        out int frameLength)
+    {
+        frameLength = default;
+        if (streamDataLength < 0)
+        {
+            return false;
+        }
+
+        bool hasOffset = (frameType & QuicStreamFrameBits.OffsetBitMask) != 0;
+        bool hasLength = (frameType & QuicStreamFrameBits.LengthBitMask) != 0;
+        ulong streamDataLengthValue = checked((ulong)streamDataLength);
+        if (offset > QuicVariableLengthInteger.MaxValue - streamDataLengthValue
+            || !QuicVariableLengthInteger.TryGetEncodedLength(frameType, out int frameTypeLength)
+            || !QuicVariableLengthInteger.TryGetEncodedLength(streamId, out int streamIdLength))
+        {
+            return false;
+        }
+
+        int length = checked(frameTypeLength + streamIdLength);
+        if (hasOffset)
+        {
+            if (!QuicVariableLengthInteger.TryGetEncodedLength(offset, out int offsetLength))
+            {
+                return false;
+            }
+
+            length = checked(length + offsetLength);
+        }
+
+        if (hasLength)
+        {
+            if (!QuicVariableLengthInteger.TryGetEncodedLength(streamDataLengthValue, out int streamDataLengthFieldLength))
+            {
+                return false;
+            }
+
+            length = checked(length + streamDataLengthFieldLength);
+        }
+
+        frameLength = checked(length + streamDataLength);
         return true;
     }
 
