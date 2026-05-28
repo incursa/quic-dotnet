@@ -956,23 +956,27 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         List<ulong>? lostPacketNumbers = null;
         ulong? nextLossDelayMicros = null;
 
-        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
+        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
+            ulong packetNumber = packetNumbersInFlight[index];
+            QuicRecoverySentPacketState packet = packetsInFlight[index];
             if (!QuicRecoveryTiming.CanDeclarePacketLost(
                 packetAcknowledged: false,
                 packetInFlight: true,
-                packetNumber: packet.Key,
+                packetNumber: packetNumber,
                 largestAcknowledgedPacketNumber: LargestAcknowledgedPacketNumber))
             {
                 continue;
             }
 
             bool byPacketThreshold = QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
-                packet.Key,
+                packetNumber,
                 LargestAcknowledgedPacketNumber);
 
             QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
-                packet.Value.SentAtMicros,
+                packet.SentAtMicros,
                 nowMicros,
                 RttEstimator.LatestRttMicros,
                 RttEstimator.SmoothedRttMicros,
@@ -980,7 +984,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
             if (byPacketThreshold || remainingLossDelayMicros == 0)
             {
-                (lostPacketNumbers ??= []).Add(packet.Key);
+                (lostPacketNumbers ??= []).Add(packetNumber);
                 continue;
             }
 
@@ -1020,23 +1024,27 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         bool hasImmediateLoss = false;
         ulong? nextLossDelayMicros = null;
 
-        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
+        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
+            ulong packetNumber = packetNumbersInFlight[index];
+            QuicRecoverySentPacketState packet = packetsInFlight[index];
             if (!QuicRecoveryTiming.CanDeclarePacketLost(
                 packetAcknowledged: false,
                 packetInFlight: true,
-                packetNumber: packet.Key,
+                packetNumber: packetNumber,
                 largestAcknowledgedPacketNumber: LargestAcknowledgedPacketNumber))
             {
                 continue;
             }
 
             bool byPacketThreshold = QuicRecoveryTiming.ShouldDeclarePacketLostByPacketThreshold(
-                packet.Key,
+                packetNumber,
                 LargestAcknowledgedPacketNumber);
 
             QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
-                packet.Value.SentAtMicros,
+                packet.SentAtMicros,
                 nowMicros,
                 RttEstimator.LatestRttMicros,
                 RttEstimator.SmoothedRttMicros,
@@ -1080,14 +1088,17 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         }
 
         List<ulong>? removedPacketNumbers = null;
-        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
+        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
-            if (packet.Value.PacketProtectionLevel != packetProtectionLevel)
+            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            if (packet.PacketProtectionLevel != packetProtectionLevel)
             {
                 continue;
             }
 
-            (removedPacketNumbers ??= []).Add(packet.Key);
+            (removedPacketNumbers ??= []).Add(packetNumbersInFlight[index]);
         }
 
         if (removedPacketNumbers is null)
@@ -1114,15 +1125,18 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         }
 
         List<ulong>? removedPacketNumbers = null;
-        foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
+        IList<ulong> packetNumbersInFlight = ackElicitingPacketsInFlight.Keys;
+        IList<QuicRecoverySentPacketState> packetsInFlight = ackElicitingPacketsInFlight.Values;
+        for (int index = 0; index < ackElicitingPacketsInFlight.Count; index++)
         {
-            if (packet.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
-                || packet.Value.OneRttKeyPhase != keyPhase)
+            QuicRecoverySentPacketState packet = packetsInFlight[index];
+            if (packet.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
+                || packet.OneRttKeyPhase != keyPhase)
             {
                 continue;
             }
 
-            (removedPacketNumbers ??= []).Add(packet.Key);
+            (removedPacketNumbers ??= []).Add(packetNumbersInFlight[index]);
         }
 
         if (removedPacketNumbers is null)
