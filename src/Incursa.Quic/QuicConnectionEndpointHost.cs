@@ -188,86 +188,99 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
-        byte[] buffer = QuicBufferPool.RentBytes(receiveBufferBytes);
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            GetSocketBinding(out Socket currentSocket);
+            EndPoint remoteEndPoint = currentSocket.AddressFamily == AddressFamily.InterNetworkV6
+                ? new IPEndPoint(IPAddress.IPv6Any, 0)
+                : new IPEndPoint(IPAddress.Any, 0);
+
+            byte[]? datagramBuffer = QuicBufferPool.RentBytes(receiveBufferBytes);
+            try
             {
-                GetSocketBinding(out Socket currentSocket);
-                EndPoint remoteEndPoint = currentSocket.AddressFamily == AddressFamily.InterNetworkV6
-                    ? new IPEndPoint(IPAddress.IPv6Any, 0)
-                    : new IPEndPoint(IPAddress.Any, 0);
+                SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
+                    datagramBuffer.AsMemory(0, receiveBufferBytes),
+                    SocketFlags.None,
+                    remoteEndPoint,
+                    cancellationToken).ConfigureAwait(false);
 
-                try
-                {
-                    SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
-                        buffer.AsMemory(0, receiveBufferBytes),
-                        SocketFlags.None,
-                        remoteEndPoint,
-                        cancellationToken).ConfigureAwait(false);
-
-                    if (receiveResult.ReceivedBytes <= 0)
-                    {
-                        continue;
-                    }
-
-                    IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
-                    IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
-                        (IPEndPoint)currentSocket.LocalEndPoint!,
-                        receiveResult.PacketInformation.Address);
-                    QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
-
-                    EmitSocketDatagramReceived(currentPathIdentity, receiveResult.ReceivedBytes);
-                    byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
-                    QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, currentPathIdentity);
-                    if (EndpointIngressDebugEnabled)
-                    {
-                        await Console.Error.WriteLineAsync(
-                            $"endpoint-rx len={receiveResult.ReceivedBytes} disposition={ingressResult.Disposition} handling={ingressResult.HandlingKind} routed={ingressResult.Handle.HasValue}.");
-                    }
-
-                    if (ingressResult.Disposition is not QuicConnectionIngressDisposition.RoutedToConnection
-                        and not QuicConnectionIngressDisposition.EndpointHandling
-                        and not QuicConnectionIngressDisposition.Dropped)
-                    {
-                        SendStatelessResetResponse(currentSocket, datagram, currentPathIdentity);
-                    }
-
-                    ingressDatagramObserver?.Invoke(datagram, ingressResult);
-                    ingressObserver?.Invoke(ingressResult);
-                    continue;
-                }
-                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-                catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
-                {
-                    break;
-                }
-                catch (ObjectDisposedException)
+                if (receiveResult.ReceivedBytes <= 0)
                 {
                     continue;
                 }
-                catch (SocketException) when (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
+
+                IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
+                IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
+                    (IPEndPoint)currentSocket.LocalEndPoint!,
+                    receiveResult.PacketInformation.Address);
+                QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
+
+                EmitSocketDatagramReceived(currentPathIdentity, receiveResult.ReceivedBytes);
+                ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
+                QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
+                    datagram,
+                    currentPathIdentity,
+                    ownedDatagramBuffer: datagramBuffer);
+                ReadOnlyMemory<byte> observerDatagram = datagram;
+                if (ingressDatagramObserver is not null
+                    && ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                 {
-                    break;
+                    observerDatagram = datagram.ToArray();
                 }
-                catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+
+                if (EndpointIngressDebugEnabled)
                 {
-                    EmitUdpReceiveError(ex);
-                    continue;
+                    await Console.Error.WriteLineAsync(
+                        $"endpoint-rx len={receiveResult.ReceivedBytes} disposition={ingressResult.Disposition} handling={ingressResult.HandlingKind} routed={ingressResult.Handle.HasValue}.");
                 }
-                catch (SocketException ex)
+
+                if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                 {
-                    EmitUdpReceiveError(ex);
-                    continue;
+                    datagramBuffer = null;
+                }
+                else if (ingressResult.Disposition is not QuicConnectionIngressDisposition.EndpointHandling
+                    and not QuicConnectionIngressDisposition.Dropped)
+                {
+                    SendStatelessResetResponse(currentSocket, datagram, currentPathIdentity);
+                }
+
+                ingressDatagramObserver?.Invoke(observerDatagram, ingressResult);
+                ingressObserver?.Invoke(ingressResult);
+                continue;
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+            catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
+            {
+                break;
+            }
+            catch (ObjectDisposedException)
+            {
+                continue;
+            }
+            catch (SocketException) when (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
+            {
+                break;
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode is SocketError.ConnectionReset or SocketError.ConnectionAborted or SocketError.ConnectionRefused)
+            {
+                EmitUdpReceiveError(ex);
+                continue;
+            }
+            catch (SocketException ex)
+            {
+                EmitUdpReceiveError(ex);
+                continue;
+            }
+            finally
+            {
+                if (datagramBuffer is not null)
+                {
+                    QuicBufferPool.ReturnBytes(datagramBuffer);
                 }
             }
-        }
-        finally
-        {
-            QuicBufferPool.ReturnBytes(buffer);
         }
     }
 

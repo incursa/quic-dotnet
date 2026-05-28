@@ -248,11 +248,12 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
         if (ingressResult.HandlingKind == QuicConnectionEndpointHandlingKind.VersionNegotiation)
         {
+            byte[] versionNegotiationDatagram = datagram.ToArray();
             _ = endpoint.Host.TryPostEvent(
                 handle,
                 new QuicConnectionVersionNegotiationReceivedEvent(
                     runtime.Clock.Ticks,
-                    datagram));
+                    versionNegotiationDatagram));
             return;
         }
 
@@ -266,17 +267,21 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             return;
         }
 
-        retrySourceConnectionIdFromRetry = retryMetadata.RetrySourceConnectionId.ToArray();
-        retryTokenFromRetry = retryMetadata.RetryToken.ToArray();
-        retryTokenFromRetryHex = Convert.ToHexString(retryMetadata.RetryToken);
+        byte[] retrySourceConnectionId = retryMetadata.RetrySourceConnectionId.ToArray();
+        byte[] retryToken = retryMetadata.RetryToken.ToArray();
+        byte[] retryDatagram = datagram.ToArray();
+
+        retrySourceConnectionIdFromRetry = retrySourceConnectionId;
+        retryTokenFromRetry = retryToken;
+        retryTokenFromRetryHex = Convert.ToHexString(retryToken);
 
         _ = endpoint.Host.TryPostEvent(
             handle,
             new QuicConnectionRetryReceivedEvent(
                 runtime.Clock.Ticks,
-                retryMetadata.RetrySourceConnectionId,
-                retryMetadata.RetryToken,
-                datagram));
+                retrySourceConnectionId,
+                retryToken,
+                retryDatagram));
     }
 
     private bool IsReplayInitialPacket(ReadOnlyMemory<byte> datagram)

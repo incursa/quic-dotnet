@@ -214,6 +214,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicConnectionPacketReceivedEvent packetEvent = packetReceivedEvent with
             {
                 Datagram = remainingDatagram[..packetLength],
+                OwnedDatagramBuffer = null,
             };
 
             processedAnyPacket = true;

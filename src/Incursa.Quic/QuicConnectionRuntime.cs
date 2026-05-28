@@ -1357,22 +1357,44 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             {
                 while (reader.TryRead(out QuicConnectionEvent? connectionEvent))
                 {
-                    QuicConnectionTransitionResult result = Transition(connectionEvent);
-                    transitionObserver?.Invoke(result);
-
-                    if (effectObserver is not null)
+                    try
                     {
-                        foreach (QuicConnectionEffect effect in result.Effects)
+                        QuicConnectionTransitionResult result = Transition(connectionEvent);
+                        transitionObserver?.Invoke(result);
+
+                        if (effectObserver is not null)
                         {
-                            effectObserver(effect);
+                            foreach (QuicConnectionEffect effect in result.Effects)
+                            {
+                                effectObserver(effect);
+                            }
                         }
+                    }
+                    finally
+                    {
+                        ReleaseConnectionEventResources(connectionEvent);
                     }
                 }
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // The owner requested a stop; queued events are left to the caller's shutdown policy.
+            // The owner requested a stop; queued owned packet buffers are released below.
+        }
+        finally
+        {
+            while (reader.TryRead(out QuicConnectionEvent? connectionEvent))
+            {
+                ReleaseConnectionEventResources(connectionEvent);
+            }
+        }
+    }
+
+    private static void ReleaseConnectionEventResources(QuicConnectionEvent connectionEvent)
+    {
+        if (connectionEvent is QuicConnectionPacketReceivedEvent packetReceivedEvent)
+        {
+            packetReceivedEvent.ReleaseOwnedDatagramBuffer();
         }
     }
 

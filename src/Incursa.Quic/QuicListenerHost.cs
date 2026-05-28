@@ -350,20 +350,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
     private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
     {
-        byte[] buffer = QuicBufferPool.RentBytes(4096);
-        try
-        {
-            EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
-                ? new IPEndPoint(IPAddress.IPv6Any, 0)
-                : new IPEndPoint(IPAddress.Any, 0);
+        EndPoint remoteEndPoint = socket.AddressFamily == AddressFamily.InterNetworkV6
+            ? new IPEndPoint(IPAddress.IPv6Any, 0)
+            : new IPEndPoint(IPAddress.Any, 0);
 
-            while (!cancellationToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            byte[]? datagramBuffer = QuicBufferPool.RentBytes(4096);
+            try
             {
                 SocketReceiveMessageFromResult receiveResult;
                 try
                 {
                     receiveResult = await socket.ReceiveMessageFromAsync(
-                        buffer.AsMemory(),
+                        datagramBuffer.AsMemory(),
                         SocketFlags.None,
                         remoteEndPoint,
                         cancellationToken).ConfigureAwait(false);
@@ -407,11 +407,19 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
-                var datagram = buffer.AsMemory(0, receiveResult.ReceivedBytes);
-                QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
+                QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
+                    datagram,
+                    pathIdentity,
+                    ownedDatagramBuffer: datagramBuffer);
                 EmitListenerIngressClassified(pathIdentity, ingressResult);
-                if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection
-                    || ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling
+                if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
+                {
+                    datagramBuffer = null;
+                    continue;
+                }
+
+                if (ingressResult.Disposition == QuicConnectionIngressDisposition.EndpointHandling
                     || ingressResult.Disposition == QuicConnectionIngressDisposition.Dropped)
                 {
                     continue;
@@ -469,7 +477,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             initialToken,
                             cancellationToken).ConfigureAwait(false))
                         {
-                            _ = endpoint.ReceiveDatagram(datagram, pathIdentity);
+                            ingressResult = endpoint.ReceiveDatagram(
+                                datagram,
+                                pathIdentity,
+                                ownedDatagramBuffer: datagramBuffer);
+                            if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
+                            {
+                                datagramBuffer = null;
+                            }
+
                             FlushBufferedZeroRttDatagrams(initialDestinationConnectionId.Span);
                         }
                     }
@@ -490,10 +506,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
             }
-        }
-        finally
-        {
-            QuicBufferPool.ReturnBytes(buffer);
+            finally
+            {
+                if (datagramBuffer is not null)
+                {
+                    QuicBufferPool.ReturnBytes(datagramBuffer);
+                }
+            }
         }
     }
 

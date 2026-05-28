@@ -61,8 +61,21 @@ internal sealed record QuicConnectionPacketReceivedEvent(
     QuicConnectionPathIdentity PathIdentity,
     ReadOnlyMemory<byte> Datagram,
     ulong? RoutedLocallyIssuedConnectionId = null,
-    QuicEcnCounts? EcnCounts = null)
-    : QuicConnectionEvent(QuicConnectionEventKind.PacketReceived, ObservedAtTicks);
+    QuicEcnCounts? EcnCounts = null,
+    byte[]? OwnedDatagramBuffer = null)
+    : QuicConnectionEvent(QuicConnectionEventKind.PacketReceived, ObservedAtTicks)
+{
+    private byte[]? ownedDatagramBuffer = OwnedDatagramBuffer;
+
+    internal void ReleaseOwnedDatagramBuffer()
+    {
+        byte[]? buffer = Interlocked.Exchange(ref ownedDatagramBuffer, null);
+        if (buffer is not null)
+        {
+            QuicBufferPool.ReturnBytes(buffer);
+        }
+    }
+}
 
 internal sealed record QuicConnectionTimerExpiredEvent(
     long ObservedAtTicks,
