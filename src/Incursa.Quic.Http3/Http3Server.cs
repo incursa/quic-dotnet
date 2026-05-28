@@ -31,7 +31,6 @@ public sealed class Http3Server : IAsyncDisposable
     private const byte QPackIntegerContinuationValueMask = 0x7F;
     private const byte QPackIntegerContinuationFlag = 0x80;
     private const int QPackIntegerContinuationShift = 7;
-    private const int QPackIntegerMaxEncodedLength = 9;
     private static readonly Encoding HeaderTextEncoding = Encoding.Latin1;
 
     private readonly QuicListener listener;
@@ -1013,79 +1012,87 @@ public sealed class Http3Server : IAsyncDisposable
 
     internal static byte[] EncodeResponseFieldSection(IReadOnlyList<QPackFieldLine> headers)
     {
-        ArrayBufferWriter<byte> writer = new(EstimateResponseFieldSectionLength(headers));
-        WriteInteger(writer, 0, FieldSectionRequiredInsertCountPrefixBits);
-        WriteInteger(writer, 0, FieldSectionBasePrefixBits);
+        byte[] encoded = new byte[GetResponseFieldSectionLength(headers)];
+        int offset = 0;
+        WriteInteger(encoded, ref offset, 0, FieldSectionRequiredInsertCountPrefixBits);
+        WriteInteger(encoded, ref offset, 0, FieldSectionBasePrefixBits);
 
         foreach (QPackFieldLine header in headers)
         {
             if (header.Name == ":status")
             {
-                WriteLiteralWithStaticNameReference(writer, StatusStaticNameIndex, header.Value);
+                WriteLiteralWithStaticNameReference(encoded, ref offset, StatusStaticNameIndex, header.Value);
                 continue;
             }
 
             int staticFieldIndex = FindStaticFieldLineIndex(header);
             if (staticFieldIndex >= 0)
             {
-                WriteInteger(writer, checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix);
+                WriteInteger(encoded, ref offset, checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix);
                 continue;
             }
 
             int staticNameIndex = FindStaticNameIndex(header.Name);
             if (staticNameIndex >= 0)
             {
-                WriteLiteralWithStaticNameReference(writer, staticNameIndex, header.Value);
+                WriteLiteralWithStaticNameReference(encoded, ref offset, staticNameIndex, header.Value);
                 continue;
             }
 
-            WriteInteger(writer, checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix);
-            WriteRawString(writer, header.Name);
-            WriteStringLiteral(writer, header.Value);
+            WriteInteger(encoded, ref offset, checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix);
+            WriteRawString(encoded, ref offset, header.Name);
+            WriteStringLiteral(encoded, ref offset, header.Value);
         }
 
-        return writer.WrittenSpan.ToArray();
+        return encoded;
     }
 
-    private static int EstimateResponseFieldSectionLength(IReadOnlyList<QPackFieldLine> headers)
+    private static int GetResponseFieldSectionLength(IReadOnlyList<QPackFieldLine> headers)
     {
-        int length = QPackIntegerMaxEncodedLength * 2;
+        int length = GetIntegerEncodedLength(0, FieldSectionRequiredInsertCountPrefixBits)
+            + GetIntegerEncodedLength(0, FieldSectionBasePrefixBits);
         foreach (QPackFieldLine header in headers)
         {
             if (header.Name == ":status")
             {
-                length = checked(length
-                    + QPackIntegerMaxEncodedLength
-                    + QPackIntegerMaxEncodedLength
-                    + HeaderTextEncoding.GetByteCount(header.Value));
+                int valueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
+                length = checked(length + GetLiteralWithStaticNameReferenceLength(StatusStaticNameIndex, valueByteCount));
                 continue;
             }
 
             int staticFieldIndex = FindStaticFieldLineIndex(header);
             if (staticFieldIndex >= 0)
             {
-                length = checked(length + QPackIntegerMaxEncodedLength);
+                length = checked(length + GetIntegerEncodedLength(checked((ulong)staticFieldIndex), IndexedFieldPrefixBits));
                 continue;
             }
 
             int staticNameIndex = FindStaticNameIndex(header.Name);
             if (staticNameIndex >= 0)
             {
-                length = checked(length
-                    + QPackIntegerMaxEncodedLength
-                    + QPackIntegerMaxEncodedLength
-                    + HeaderTextEncoding.GetByteCount(header.Value));
+                int staticNameValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
+                length = checked(length + GetLiteralWithStaticNameReferenceLength(staticNameIndex, staticNameValueByteCount));
                 continue;
             }
 
+            int nameByteCount = HeaderTextEncoding.GetByteCount(header.Name);
+            int literalValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
             length = checked(length
-                + QPackIntegerMaxEncodedLength
-                + HeaderTextEncoding.GetByteCount(header.Name)
-                + QPackIntegerMaxEncodedLength
-                + HeaderTextEncoding.GetByteCount(header.Value));
+                + GetIntegerEncodedLength(checked((ulong)nameByteCount), LiteralNamePrefixBits - 1)
+                + nameByteCount
+                + GetIntegerEncodedLength(checked((ulong)literalValueByteCount), StringLiteralPrefixBits - 1)
+                + literalValueByteCount);
         }
 
         return length;
+    }
+
+    private static int GetLiteralWithStaticNameReferenceLength(int staticNameIndex, int valueByteCount)
+    {
+        return checked(
+            GetIntegerEncodedLength(checked((ulong)staticNameIndex), StaticNameReferencePrefixBits)
+            + GetIntegerEncodedLength(checked((ulong)valueByteCount), StringLiteralPrefixBits - 1)
+            + valueByteCount);
     }
 
     internal static void EmitStreamOpenedDiagnostic(
@@ -1240,27 +1247,31 @@ public sealed class Http3Server : IAsyncDisposable
         return sink?.IsEnabled == true;
     }
 
-    private static void WriteLiteralWithStaticNameReference(IBufferWriter<byte> writer, int staticNameIndex, string value)
+    private static void WriteLiteralWithStaticNameReference(byte[] destination, ref int offset, int staticNameIndex, string value)
     {
-        WriteInteger(writer, checked((ulong)staticNameIndex), StaticNameReferencePrefixBits, LiteralWithStaticNameReferencePrefix);
-        WriteStringLiteral(writer, value);
+        WriteInteger(destination, ref offset, checked((ulong)staticNameIndex), StaticNameReferencePrefixBits, LiteralWithStaticNameReferencePrefix);
+        WriteStringLiteral(destination, ref offset, value);
     }
 
-    private static void WriteStringLiteral(IBufferWriter<byte> writer, string value)
+    private static void WriteStringLiteral(byte[] destination, ref int offset, string value)
     {
-        WriteInteger(writer, checked((ulong)HeaderTextEncoding.GetByteCount(value)), StringLiteralPrefixBits - 1);
-        WriteRawString(writer, value);
+        WriteInteger(destination, ref offset, checked((ulong)HeaderTextEncoding.GetByteCount(value)), StringLiteralPrefixBits - 1);
+        WriteRawString(destination, ref offset, value);
     }
 
-    private static void WriteRawString(IBufferWriter<byte> writer, string value)
+    private static void WriteRawString(byte[] destination, ref int offset, string value)
     {
         int byteCount = HeaderTextEncoding.GetByteCount(value);
-        Span<byte> destination = writer.GetSpan(byteCount);
-        int bytesWritten = HeaderTextEncoding.GetBytes(value.AsSpan(), destination);
-        writer.Advance(bytesWritten);
+        int bytesWritten = HeaderTextEncoding.GetBytes(value.AsSpan(), destination.AsSpan(offset, byteCount));
+        offset += bytesWritten;
     }
 
-    private static void WriteInteger(IBufferWriter<byte> writer, ulong value, int prefixBitCount, byte prefixBits = 0)
+    private static void WriteInteger(byte[] destination, ref int offset, ulong value, int prefixBitCount, byte prefixBits = 0)
+    {
+        offset += WriteInteger(destination.AsSpan(offset), value, prefixBitCount, prefixBits);
+    }
+
+    private static int WriteInteger(Span<byte> destination, ulong value, int prefixBitCount, byte prefixBits = 0)
     {
         if (prefixBitCount is < 1 or > QPackIntegerMaxPrefixBitCount)
         {
@@ -1275,13 +1286,11 @@ public sealed class Http3Server : IAsyncDisposable
         byte mask = prefixBitCount == QPackIntegerMaxPrefixBitCount
             ? byte.MaxValue
             : (byte)((1 << prefixBitCount) - 1);
-        Span<byte> destination = writer.GetSpan(QPackIntegerMaxEncodedLength);
         int bytesWritten = 0;
         if (value < mask)
         {
             destination[bytesWritten++] = (byte)(prefixBits | value);
-            writer.Advance(bytesWritten);
-            return;
+            return bytesWritten;
         }
 
         destination[bytesWritten++] = (byte)(prefixBits | mask);
@@ -1294,7 +1303,38 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         destination[bytesWritten++] = (byte)value;
-        writer.Advance(bytesWritten);
+        return bytesWritten;
+    }
+
+    private static int GetIntegerEncodedLength(ulong value, int prefixBitCount)
+    {
+        if (prefixBitCount is < 1 or > QPackIntegerMaxPrefixBitCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(prefixBitCount));
+        }
+
+        if (value > QPackIntegerMaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        byte mask = prefixBitCount == QPackIntegerMaxPrefixBitCount
+            ? byte.MaxValue
+            : (byte)((1 << prefixBitCount) - 1);
+        if (value < mask)
+        {
+            return 1;
+        }
+
+        int length = 1;
+        value -= mask;
+        while (value >= QPackIntegerContinuationThreshold)
+        {
+            length++;
+            value >>= QPackIntegerContinuationShift;
+        }
+
+        return length + 1;
     }
 
     private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)
