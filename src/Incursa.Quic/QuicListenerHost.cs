@@ -756,7 +756,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return;
         }
 
-        SendDatagram(state.FlowLabelSeed, sendDatagramEffect);
+        SendDatagram(state.FlowLabelSeed, sendDatagramEffect, state.GetRemoteSocketAddress(sendDatagramEffect.PathIdentity));
     }
 
     internal void SendDatagram(QuicConnectionSendDatagramEffect sendDatagramEffect)
@@ -764,16 +764,18 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         SendDatagram(flowLabelSeed, sendDatagramEffect);
     }
 
-    private void SendDatagram(uint flowLabelSeed, QuicConnectionSendDatagramEffect sendDatagramEffect)
+    private void SendDatagram(
+        uint flowLabelSeed,
+        QuicConnectionSendDatagramEffect sendDatagramEffect,
+        SocketAddress? remoteSocketAddress = null)
     {
         try
         {
-            IPEndPoint remoteEndPoint = CreateRemoteEndPoint(sendDatagramEffect.PathIdentity);
-
             _ = QuicSocketEcnControl.TrySetEcnMarkingIfPossible(socket, sendDatagramEffect.EcnMarking);
             int bytesSent;
             IPEndPoint socketLocalEndPoint = (IPEndPoint)socket.LocalEndPoint!;
-            if (TryResolvePacketInformationSourceAddress(
+            if (OperatingSystem.IsLinux()
+                && TryResolvePacketInformationSourceAddress(
                 socketLocalEndPoint,
                 socket.AddressFamily,
                 sendDatagramEffect.PathIdentity,
@@ -781,31 +783,27 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 && (socket.AddressFamily == AddressFamily.InterNetworkV6
                     || !sourceAddress.Equals(socketLocalEndPoint.Address)))
             {
-                if (OperatingSystem.IsLinux())
-                {
-                    uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
-                        ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
-                        : 0;
+                uint flowLabel = sourceAddress.AddressFamily == AddressFamily.InterNetworkV6
+                    ? QuicSocketPacketInformationSender.CreateIpv6FlowLabel(flowLabelSeed, sendDatagramEffect.PathIdentity)
+                    : 0;
 
-                    if (!QuicSocketPacketInformationSender.TrySendTo(
-                        socket,
-                        sendDatagramEffect.Datagram.Span,
-                        remoteEndPoint,
-                        sourceAddress,
-                        flowLabel,
-                        out bytesSent))
-                    {
-                        return;
-                    }
-                }
-                else
+                if (!QuicSocketPacketInformationSender.TrySendTo(
+                    socket,
+                    sendDatagramEffect.Datagram.Span,
+                    CreateRemoteEndPoint(sendDatagramEffect.PathIdentity),
+                    sourceAddress,
+                    flowLabel,
+                    out bytesSent))
                 {
-                    bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                    return;
                 }
             }
             else
             {
-                bytesSent = socket.SendTo(sendDatagramEffect.Datagram.Span, SocketFlags.None, remoteEndPoint);
+                bytesSent = socket.SendTo(
+                    sendDatagramEffect.Datagram.Span,
+                    SocketFlags.None,
+                    remoteSocketAddress ?? CreateRemoteSocketAddress(sendDatagramEffect.PathIdentity));
             }
 
             if (bytesSent != sendDatagramEffect.Datagram.Length)
@@ -958,6 +956,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return new IPEndPoint(
             IPAddress.Parse(pathIdentity.RemoteAddress),
             pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
+    }
+
+    private static SocketAddress CreateRemoteSocketAddress(QuicConnectionPathIdentity pathIdentity)
+    {
+        return CreateRemoteEndPoint(pathIdentity).Serialize();
     }
 
     private void TrySendProtocolViolationCloseResponse(QuicConnectionPathIdentity pathIdentity)
@@ -1983,6 +1986,25 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         public uint FlowLabelSeed { get; }
 
         public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
+
+        private QuicConnectionPathIdentity? cachedRemoteSocketAddressPathIdentity;
+
+        private SocketAddress? cachedRemoteSocketAddress;
+
+        public SocketAddress GetRemoteSocketAddress(QuicConnectionPathIdentity pathIdentity)
+        {
+            if (cachedRemoteSocketAddress is not null
+                && cachedRemoteSocketAddressPathIdentity is QuicConnectionPathIdentity cachedPathIdentity
+                && cachedPathIdentity.Equals(pathIdentity))
+            {
+                return cachedRemoteSocketAddress;
+            }
+
+            SocketAddress socketAddress = CreateRemoteSocketAddress(pathIdentity);
+            cachedRemoteSocketAddressPathIdentity = pathIdentity;
+            cachedRemoteSocketAddress = socketAddress;
+            return socketAddress;
+        }
 
         public bool TryMarkAccepted()
         {
