@@ -27,7 +27,8 @@ internal readonly record struct QuicConnectionSentPacket(
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
-    ulong? OneRttKeyPhase = null);
+    ulong? OneRttKeyPhase = null,
+    byte[]? PacketBytesOwner = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicPacketNumberSpace PacketNumberSpace,
@@ -40,7 +41,8 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
-    ulong? OneRttKeyPhase = null);
+    ulong? OneRttKeyPhase = null,
+    byte[]? PacketBytesOwner = null);
 
 /// <summary>
 /// Owns connection-scoped send state, PTO bookkeeping, and retransmission planning.
@@ -157,6 +159,11 @@ internal sealed class QuicConnectionSendRuntime
         ValidateCryptoMetadata(packet);
         ecnValidationState.RecordPacketSent(packet.PacketNumberSpace, CurrentEcnMarking);
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
+        if (sentPackets.Remove(key, out QuicConnectionSentPacket replacedPacket))
+        {
+            ReleasePacketBytesOwner(replacedPacket);
+        }
+
         sentPackets[key] = packet;
         flowController.RecordPacketSent(
             packet.PacketNumberSpace,
@@ -193,6 +200,7 @@ internal sealed class QuicConnectionSendRuntime
         if (removedSentPacket)
         {
             _ = TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(acknowledgedPacket.PlaintextPayload.Span);
+            ReleasePacketBytesOwner(acknowledgedPacket);
         }
 
         bool acknowledgmentRestartsProbeTimeout =
@@ -231,7 +239,11 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                updated |= sentPackets.Remove(key);
+                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                {
+                    ReleasePacketBytesOwner(removedPacket);
+                    updated = true;
+                }
             }
         }
 
@@ -301,7 +313,11 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                updated |= sentPackets.Remove(key);
+                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                {
+                    ReleasePacketBytesOwner(removedPacket);
+                    updated = true;
+                }
             }
         }
 
@@ -338,7 +354,11 @@ internal sealed class QuicConnectionSendRuntime
         {
             foreach (QuicConnectionSentPacketKey key in removedKeys)
             {
-                updated |= sentPackets.Remove(key);
+                if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
+                {
+                    ReleasePacketBytesOwner(removedPacket);
+                    updated = true;
+                }
             }
         }
 
@@ -402,7 +422,12 @@ internal sealed class QuicConnectionSendRuntime
                 packet.PacketProtectionLevel,
                 packet.StreamIds,
                 packet.PlaintextPayload,
-                packet.OneRttKeyPhase));
+                packet.OneRttKeyPhase,
+                packet.PacketBytesOwner));
+        }
+        else
+        {
+            ReleasePacketBytesOwner(packet);
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -633,6 +658,11 @@ internal sealed class QuicConnectionSendRuntime
         retransmissionQueue.QueueRetransmission(retransmission);
     }
 
+    internal static void ReleaseRetransmissionPlanResources(QuicConnectionRetransmissionPlan retransmission)
+    {
+        ReleasePacketBytesOwner(retransmission.PacketBytesOwner);
+    }
+
     public void ClearLossDetectionDeadline()
     {
         LossDetectionDeadlineMicros = null;
@@ -684,6 +714,19 @@ internal sealed class QuicConnectionSendRuntime
             throw new ArgumentException(
                 "Crypto metadata must match the packet number space.",
                 nameof(packet));
+        }
+    }
+
+    private static void ReleasePacketBytesOwner(QuicConnectionSentPacket packet)
+    {
+        ReleasePacketBytesOwner(packet.PacketBytesOwner);
+    }
+
+    private static void ReleasePacketBytesOwner(byte[]? packetBytesOwner)
+    {
+        if (packetBytesOwner is not null)
+        {
+            QuicBufferPool.ReturnBytes(packetBytesOwner);
         }
     }
 

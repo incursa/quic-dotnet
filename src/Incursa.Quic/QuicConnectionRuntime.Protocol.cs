@@ -2431,7 +2431,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects,
                 out QuicConnectionActivePathRecord currentPath,
                 out QuicConnectionPathAmplificationState updatedAmplificationState,
-                out byte[] protectedPacket,
+                out ReadOnlyMemory<byte> protectedPacket,
                 out _))
             {
                 return false;
@@ -2802,7 +2802,7 @@ internal sealed partial class QuicConnectionRuntime
                     "The connection cannot send the PATH_RESPONSE packet.",
                     ref effects,
                     out QuicConnectionPathIdentity actualPathIdentity,
-                    out byte[] protectedPacket,
+                    out ReadOnlyMemory<byte> protectedPacket,
                     out Exception? exception,
                     retransmittable: false,
                     probePacket: true,
@@ -2895,7 +2895,7 @@ internal sealed partial class QuicConnectionRuntime
                     "The connection cannot send the PATH_RESPONSE packet.",
                     ref effects,
                     out QuicConnectionPathIdentity actualPathIdentity,
-                    out byte[] protectedPacket,
+                    out ReadOnlyMemory<byte> protectedPacket,
                     out Exception? exception,
                     retransmittable: false,
                     probePacket: true,
@@ -3618,7 +3618,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects,
                 out QuicConnectionActivePathRecord currentPath,
                 out QuicConnectionPathAmplificationState updatedAmplificationState,
-                out byte[] protectedPacket,
+                out ReadOnlyMemory<byte> protectedPacket,
                 out Exception? exception))
             {
                 _ = exception;
@@ -3673,7 +3673,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -3861,7 +3861,7 @@ internal sealed partial class QuicConnectionRuntime
             "The connection cannot send the NEW_TOKEN packet.",
             ref effects,
             out QuicConnectionPathIdentity actualPathIdentity,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;

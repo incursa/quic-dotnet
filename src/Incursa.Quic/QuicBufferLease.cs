@@ -24,6 +24,20 @@ internal struct QuicBufferLease : IDisposable
         ? ReadOnlyMemory<byte>.Empty
         : buffer.AsMemory(0, length);
 
+    internal byte[] TransferOwnership(out int transferredLength)
+    {
+        if (buffer is null)
+        {
+            throw new ObjectDisposedException(nameof(QuicBufferLease));
+        }
+
+        byte[] transferredBuffer = buffer;
+        transferredLength = length;
+        buffer = null;
+        length = 0;
+        return transferredBuffer;
+    }
+
     internal void SetLength(int length)
     {
         if (buffer is null)

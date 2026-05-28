@@ -123,7 +123,7 @@ internal sealed partial class QuicConnectionRuntime
                 DatagramSendBlockedMessage,
                 ref effects,
                 out QuicConnectionPathIdentity sendPathIdentity,
-                out byte[] protectedPacket,
+                out ReadOnlyMemory<byte> protectedPacket,
                 out exception,
                 retransmittable: false,
                 probePacket: false,
@@ -262,7 +262,7 @@ internal sealed partial class QuicConnectionRuntime
             streamIds: null,
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? payloadException))
         {
             openCompletion!.TrySetException(payloadException!);
@@ -454,7 +454,7 @@ internal sealed partial class QuicConnectionRuntime
             streamIds: new[] { streamId },
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
             if (IsTransientApplicationSendPathBlocked(exception))
@@ -652,7 +652,7 @@ internal sealed partial class QuicConnectionRuntime
             streamIds,
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
             if (IsTransientApplicationSendPathBlocked(exception))
@@ -694,11 +694,11 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? streamIds,
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionPathIdentity sendPathIdentity,
-        out byte[] protectedPacket,
+        out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception)
     {
         sendPathIdentity = default;
-        protectedPacket = [];
+        protectedPacket = ReadOnlyMemory<byte>.Empty;
 
         if (activePath is null)
         {
@@ -915,7 +915,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -951,7 +951,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -987,7 +987,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -1024,7 +1024,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -1061,7 +1061,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -1127,7 +1127,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
             completion.TrySetException(exception!);
@@ -1192,7 +1192,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
             completion.TrySetException(exception!);
@@ -1320,7 +1320,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out exception))
         {
             return false;
@@ -1364,7 +1364,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;
@@ -1390,7 +1390,7 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
-        out byte[] protectedPacket,
+        out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception)
     {
         return TryProtectAndAccountApplicationPayload(
@@ -1419,12 +1419,12 @@ internal sealed partial class QuicConnectionRuntime
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
-        out byte[] protectedPacket,
+        out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception)
     {
         currentPath = default;
         updatedAmplificationState = default;
-        protectedPacket = [];
+        protectedPacket = ReadOnlyMemory<byte>.Empty;
 
         currentPath = activePath!.Value;
         if (!currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets)
@@ -1483,21 +1483,34 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+        QuicBufferLease protectedPacketLease = default;
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
             packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             currentPath.SpinBitState.StoredValue,
             PeerSupportsGreasedQuicBit,
             out ulong packetNumber,
-            out protectedPacket))
+            out protectedPacketLease))
         {
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
 
+        byte[]? protectedPacketOwner = null;
+        try
+        {
+            protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
+            protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+        }
+        finally
+        {
+            protectedPacketLease.Dispose();
+        }
+
         if (!tlsState.TryRecordCurrentOneRttProtectionUse())
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
@@ -1508,12 +1521,14 @@ internal sealed partial class QuicConnectionRuntime
             isAckOnlyPacket: ackOnlyPacket,
             isProbePacket: probePacket))
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
             return false;
         }
 
         if (!currentPath.MaximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException("The active path cannot send an ordinary packet.");
             return false;
         }
@@ -1522,6 +1537,7 @@ internal sealed partial class QuicConnectionRuntime
             protectedPacket.Length,
             out updatedAmplificationState))
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(amplificationFailureMessage);
             return false;
         }
@@ -1534,7 +1550,8 @@ internal sealed partial class QuicConnectionRuntime
             retransmittable: !ackOnlyPacket,
             probePacket: probePacket,
             streamIds: streamIds,
-            plaintextPayload: retainPlaintextPayload ? payload : default);
+            plaintextPayload: retainPlaintextPayload ? payload : default,
+            packetBytesOwner: protectedPacketOwner);
         if (piggybackedAckFrame is not null)
         {
             MarkApplicationAckFrameSent(
@@ -1555,7 +1572,7 @@ internal sealed partial class QuicConnectionRuntime
         string amplificationFailureMessage,
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionPathIdentity sendPathIdentity,
-        out byte[] protectedPacket,
+        out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception,
         bool retransmittable = true,
         bool probePacket = false,
@@ -1564,7 +1581,7 @@ internal sealed partial class QuicConnectionRuntime
         bool enforcePathMaximumDatagramSize = false)
     {
         sendPathIdentity = default;
-        protectedPacket = [];
+        protectedPacket = ReadOnlyMemory<byte>.Empty;
 
         if (!tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
@@ -1638,21 +1655,34 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacket(
+        QuicBufferLease protectedPacketLease = default;
+        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
             packetPayload.Span,
             tlsState.OneRttProtectPacketProtectionMaterial!.Value,
             tlsState.CurrentOneRttKeyPhaseBit,
             pathSpinBit,
             PeerSupportsGreasedQuicBit,
             out ulong packetNumber,
-            out protectedPacket))
+            out protectedPacketLease))
         {
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
 
+        byte[]? protectedPacketOwner = null;
+        try
+        {
+            protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
+            protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+        }
+        finally
+        {
+            protectedPacketLease.Dispose();
+        }
+
         if (!tlsState.TryRecordCurrentOneRttProtectionUse())
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(protectFailureMessage);
             return false;
         }
@@ -1662,6 +1692,7 @@ internal sealed partial class QuicConnectionRuntime
                 (ulong)protectedPacket.Length,
                 isProbePacket: probePacket))
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
             return false;
         }
@@ -1669,6 +1700,7 @@ internal sealed partial class QuicConnectionRuntime
         if (enforcePathMaximumDatagramSize
             && !maximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException("The requested path cannot send an ordinary packet.");
             return false;
         }
@@ -1681,6 +1713,7 @@ internal sealed partial class QuicConnectionRuntime
                 protectedPacket.Length,
                 out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
                 exception = new InvalidOperationException(amplificationFailureMessage);
                 return false;
             }
@@ -1696,6 +1729,7 @@ internal sealed partial class QuicConnectionRuntime
                 protectedPacket.Length,
                 out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
                 exception = new InvalidOperationException(amplificationFailureMessage);
                 return false;
             }
@@ -1708,6 +1742,7 @@ internal sealed partial class QuicConnectionRuntime
         }
         else
         {
+            QuicBufferPool.ReturnBytes(protectedPacketOwner);
             exception = new InvalidOperationException(amplificationFailureMessage);
             return false;
         }
@@ -1718,7 +1753,8 @@ internal sealed partial class QuicConnectionRuntime
             retransmittable: retransmittable,
             probePacket: probePacket,
             streamIds: streamIds,
-            plaintextPayload: payload);
+            plaintextPayload: payload,
+            packetBytesOwner: protectedPacketOwner);
         if (piggybackedAckFrame is not null)
         {
             MarkApplicationAckFrameSent(
@@ -1924,6 +1960,7 @@ internal sealed partial class QuicConnectionRuntime
 
             if (datagram.IsEmpty)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(probeRetransmission);
                 return false;
             }
 
@@ -1943,7 +1980,7 @@ internal sealed partial class QuicConnectionRuntime
                     retransmissionPathIdentity,
                     cryptoProtectionLevel,
                     rebuiltPacketNumber,
-                    datagram.ToArray(),
+                    rebuiltDatagram,
                     probePacket,
                     ref effects);
                 MarkCryptoRetransmissionAckFrameSent(
@@ -1957,7 +1994,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 TrackApplicationRetransmissionSent(
                     rebuiltPacketNumber,
-                    datagram.ToArray(),
+                    rebuiltDatagram,
                     sentAtMicros,
                     probePacket,
                     probeRetransmission.StreamIds,
@@ -1971,6 +2008,11 @@ internal sealed partial class QuicConnectionRuntime
                     sentAtMicros,
                     probePacket,
                     ref effects);
+            }
+
+            if (rebuildableCryptoRetransmission || rebuildableApplicationRetransmission)
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(probeRetransmission);
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
@@ -2032,6 +2074,7 @@ internal sealed partial class QuicConnectionRuntime
 
             if (datagram.IsEmpty)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 continue;
             }
 
@@ -2051,7 +2094,7 @@ internal sealed partial class QuicConnectionRuntime
                     retransmissionPathIdentity,
                     cryptoProtectionLevel,
                     rebuiltPacketNumber,
-                    datagram.ToArray(),
+                    rebuiltDatagram,
                     probePacket,
                     ref effects);
                 MarkCryptoRetransmissionAckFrameSent(
@@ -2065,7 +2108,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 TrackApplicationRetransmissionSent(
                     rebuiltPacketNumber,
-                    datagram.ToArray(),
+                    rebuiltDatagram,
                     sentAtMicros,
                     probePacket,
                     retransmission.StreamIds,
@@ -2079,6 +2122,11 @@ internal sealed partial class QuicConnectionRuntime
                     sentAtMicros,
                     probePacket,
                     ref effects);
+            }
+
+            if (rebuildableCryptoRetransmission || rebuildableApplicationRetransmission)
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
             }
 
             AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
@@ -2559,10 +2607,18 @@ internal sealed partial class QuicConnectionRuntime
             {
                 sendRuntime.QueueRetransmission(initialRetransmission);
             }
+            else
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(initialRetransmission);
+            }
 
             if (queueHandshakeForRetry)
             {
                 sendRuntime.QueueRetransmission(handshakeRetransmission);
+            }
+            else
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(handshakeRetransmission);
             }
         }
     }
@@ -2717,10 +2773,18 @@ internal sealed partial class QuicConnectionRuntime
             {
                 sendRuntime.QueueRetransmission(handshakeRetransmission);
             }
+            else
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(handshakeRetransmission);
+            }
 
             if (queueApplicationForRetry)
             {
                 sendRuntime.QueueRetransmission(applicationRetransmission);
+            }
+            else
+            {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(applicationRetransmission);
             }
         }
     }
@@ -3426,14 +3490,15 @@ internal sealed partial class QuicConnectionRuntime
             ProbePacket: probePacket,
             Retransmittable: true,
             CryptoMetadata: retransmission.CryptoMetadata,
-                PacketBytes: retransmission.PacketBytes,
-                PacketProtectionLevel: retransmission.PacketProtectionLevel,
-                StreamIds: retransmission.StreamIds,
-                PlaintextPayload: retransmission.PlaintextPayload,
-                OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
-                    && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
-                    ? tlsState.CurrentOneRttKeyPhase
-                    : null));
+            PacketBytes: retransmission.PacketBytes,
+            PacketProtectionLevel: retransmission.PacketProtectionLevel,
+            StreamIds: retransmission.StreamIds,
+            PlaintextPayload: retransmission.PlaintextPayload,
+            PacketBytesOwner: retransmission.PacketBytesOwner,
+            OneRttKeyPhase: retransmission.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
+                ? tlsState.CurrentOneRttKeyPhase
+                : null));
         recoveryController.RecordPacketSent(
             retransmission.PacketNumberSpace,
             retransmission.PacketNumber,
@@ -3565,14 +3630,15 @@ internal sealed partial class QuicConnectionRuntime
 
     internal void TrackApplicationPacket(
         ulong packetNumber,
-        byte[] protectedPacket,
+        ReadOnlyMemory<byte> protectedPacket,
         bool ackEliciting = true,
         bool ackOnlyPacket = false,
         bool retransmittable = true,
         bool probePacket = false,
         QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt,
         ulong[]? streamIds = null,
-        ReadOnlyMemory<byte> plaintextPayload = default)
+        ReadOnlyMemory<byte> plaintextPayload = default,
+        byte[]? packetBytesOwner = null)
     {
         sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
             QuicPacketNumberSpace.ApplicationData,
@@ -3587,6 +3653,7 @@ internal sealed partial class QuicConnectionRuntime
             PacketProtectionLevel: packetProtectionLevel,
             StreamIds: streamIds,
             PlaintextPayload: plaintextPayload,
+            PacketBytesOwner: packetBytesOwner,
             OneRttKeyPhase: packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 ? tlsState.CurrentOneRttKeyPhase
                 : null));
@@ -4100,7 +4167,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects,
             out QuicConnectionActivePathRecord currentPath,
             out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
+            out ReadOnlyMemory<byte> protectedPacket,
             out Exception? exception))
         {
             _ = exception;

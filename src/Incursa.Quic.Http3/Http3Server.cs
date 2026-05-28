@@ -31,6 +31,7 @@ public sealed class Http3Server : IAsyncDisposable
     private const byte QPackIntegerContinuationValueMask = 0x7F;
     private const byte QPackIntegerContinuationFlag = 0x80;
     private const int QPackIntegerContinuationShift = 7;
+    private const int QPackIntegerMaxEncodedLength = 9;
     private static readonly Encoding HeaderTextEncoding = Encoding.Latin1;
 
     private readonly QuicListener listener;
@@ -1012,7 +1013,7 @@ public sealed class Http3Server : IAsyncDisposable
 
     internal static byte[] EncodeResponseFieldSection(IReadOnlyList<QPackFieldLine> headers)
     {
-        ArrayBufferWriter<byte> writer = new();
+        ArrayBufferWriter<byte> writer = new(EstimateResponseFieldSectionLength(headers));
         WriteInteger(writer, 0, FieldSectionRequiredInsertCountPrefixBits);
         WriteInteger(writer, 0, FieldSectionBasePrefixBits);
 
@@ -1044,6 +1045,47 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         return writer.WrittenSpan.ToArray();
+    }
+
+    private static int EstimateResponseFieldSectionLength(IReadOnlyList<QPackFieldLine> headers)
+    {
+        int length = QPackIntegerMaxEncodedLength * 2;
+        foreach (QPackFieldLine header in headers)
+        {
+            if (header.Name == ":status")
+            {
+                length = checked(length
+                    + QPackIntegerMaxEncodedLength
+                    + QPackIntegerMaxEncodedLength
+                    + HeaderTextEncoding.GetByteCount(header.Value));
+                continue;
+            }
+
+            int staticFieldIndex = FindStaticFieldLineIndex(header);
+            if (staticFieldIndex >= 0)
+            {
+                length = checked(length + QPackIntegerMaxEncodedLength);
+                continue;
+            }
+
+            int staticNameIndex = FindStaticNameIndex(header.Name);
+            if (staticNameIndex >= 0)
+            {
+                length = checked(length
+                    + QPackIntegerMaxEncodedLength
+                    + QPackIntegerMaxEncodedLength
+                    + HeaderTextEncoding.GetByteCount(header.Value));
+                continue;
+            }
+
+            length = checked(length
+                + QPackIntegerMaxEncodedLength
+                + HeaderTextEncoding.GetByteCount(header.Name)
+                + QPackIntegerMaxEncodedLength
+                + HeaderTextEncoding.GetByteCount(header.Value));
+        }
+
+        return length;
     }
 
     internal static void EmitStreamOpenedDiagnostic(
@@ -1233,29 +1275,26 @@ public sealed class Http3Server : IAsyncDisposable
         byte mask = prefixBitCount == QPackIntegerMaxPrefixBitCount
             ? byte.MaxValue
             : (byte)((1 << prefixBitCount) - 1);
-        Span<byte> first = writer.GetSpan(1);
+        Span<byte> destination = writer.GetSpan(QPackIntegerMaxEncodedLength);
+        int bytesWritten = 0;
         if (value < mask)
         {
-            first[0] = (byte)(prefixBits | value);
-            writer.Advance(1);
+            destination[bytesWritten++] = (byte)(prefixBits | value);
+            writer.Advance(bytesWritten);
             return;
         }
 
-        first[0] = (byte)(prefixBits | mask);
-        writer.Advance(1);
+        destination[bytesWritten++] = (byte)(prefixBits | mask);
 
         value -= mask;
         while (value >= QPackIntegerContinuationThreshold)
         {
-            Span<byte> continuation = writer.GetSpan(1);
-            continuation[0] = (byte)((value & QPackIntegerContinuationValueMask) | QPackIntegerContinuationFlag);
-            writer.Advance(1);
+            destination[bytesWritten++] = (byte)((value & QPackIntegerContinuationValueMask) | QPackIntegerContinuationFlag);
             value >>= QPackIntegerContinuationShift;
         }
 
-        Span<byte> terminal = writer.GetSpan(1);
-        terminal[0] = (byte)value;
-        writer.Advance(1);
+        destination[bytesWritten++] = (byte)value;
+        writer.Advance(bytesWritten);
     }
 
     private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)

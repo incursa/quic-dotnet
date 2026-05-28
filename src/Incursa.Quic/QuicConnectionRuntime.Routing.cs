@@ -834,7 +834,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects,
                 out QuicConnectionActivePathRecord currentPath,
                 out QuicConnectionPathAmplificationState updatedAmplificationState,
-                out byte[] protectedPacket,
+                out ReadOnlyMemory<byte> protectedPacket,
                 out Exception? exception))
         {
             _ = exception;

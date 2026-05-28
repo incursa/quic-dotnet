@@ -66,6 +66,7 @@ internal sealed class QuicRetransmissionQueue
             if (retransmission.PacketNumberSpace == key.PacketNumberSpace
                 && retransmission.PacketNumber == key.PacketNumber)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 removed = true;
                 continue;
             }
@@ -95,6 +96,7 @@ internal sealed class QuicRetransmissionQueue
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketNumberSpace == packetNumberSpace)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
             }
@@ -124,6 +126,7 @@ internal sealed class QuicRetransmissionQueue
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketProtectionLevel == packetProtectionLevel)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
             }
@@ -154,6 +157,7 @@ internal sealed class QuicRetransmissionQueue
             if (retransmission.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt
                 && retransmission.OneRttKeyPhase == keyPhase)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
             }
@@ -183,6 +187,7 @@ internal sealed class QuicRetransmissionQueue
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
             {
+                QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
                 updated = true;
                 continue;
             }
@@ -219,6 +224,7 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
         while (retainedRetransmissions.Count > 0)
@@ -248,6 +254,7 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
         while (retainedRetransmissions.Count > 0)
@@ -277,6 +284,7 @@ internal sealed class QuicRetransmissionQueue
             }
 
             updated = true;
+            QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
         }
 
         while (retainedRetransmissions.Count > 0)
@@ -334,7 +342,11 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            (retainedRetransmissions ??= []).Add(retransmission with { PacketBytes = default });
+            (retainedRetransmissions ??= []).Add(retransmission with
+            {
+                PacketBytes = default,
+                PacketBytesOwner = null,
+            });
         }
     }
 

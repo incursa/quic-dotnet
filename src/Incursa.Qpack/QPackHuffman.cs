@@ -10,13 +10,18 @@ namespace Incursa.Qpack;
 internal static class QPackHuffman
 {
     private const int EndOfStringSymbol = 256;
+    private const int DecodedCapacityMultiplier = 2;
+    private const int MinimumDecodedCapacity = 1;
     private const int MaximumPaddingBits = 7;
 
     private static readonly Node Root = BuildTree();
 
     public static string Decode(ReadOnlySpan<byte> source, QPackErrorCode errorCode)
     {
-        ArrayBufferWriter<byte> writer = new(source.Length);
+        int initialCapacity = source.Length <= int.MaxValue / DecodedCapacityMultiplier
+            ? source.Length * DecodedCapacityMultiplier
+            : source.Length;
+        ArrayBufferWriter<byte> writer = new(Math.Max(MinimumDecodedCapacity, initialCapacity));
         Node node = Root;
 
         for (int byteIndex = 0; byteIndex < source.Length; byteIndex++)
