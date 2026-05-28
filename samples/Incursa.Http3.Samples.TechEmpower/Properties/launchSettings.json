@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Incursa.Http3.Samples.TechEmpower": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 5444"
+    }
+  }
+}

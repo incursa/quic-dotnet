@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <StartupObject>Incursa.Http3.Samples.TechEmpower.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

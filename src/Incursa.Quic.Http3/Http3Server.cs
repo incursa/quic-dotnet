@@ -582,42 +582,49 @@ public sealed class Http3Server : IAsyncDisposable
         Http3FrameReader frameReader = new();
         Http3RequestMessageValidator validator = new();
         ArrayBufferWriter<byte>? body = null;
-        byte[] buffer = new byte[readBufferSize];
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(readBufferSize);
 
-        while (true)
+        try
         {
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
-            if (bytesRead == 0)
+            while (true)
             {
-                foreach (Http3Frame frame in frameReader.Complete())
+                int bytesRead = await stream.ReadAsync(buffer, 0, readBufferSize, cancellationToken).ConfigureAwait(false);
+                if (bytesRead == 0)
+                {
+                    foreach (Http3Frame frame in frameReader.Complete())
+                    {
+                        EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
+                        body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    break;
+                }
+
+                foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
                 {
                     EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
                     body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
                 }
 
-                break;
+                if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
+                {
+                    return request;
+                }
             }
 
-            foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
+            validator.Complete();
+            IReadOnlyList<QPackFieldLine>? headers = validator.Headers;
+            if (headers is null)
             {
-                EmitFrame(Http3DiagnosticKind.FrameReceived, stream.Id, frame);
-                body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
+                throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 request did not contain a HEADERS frame.");
             }
 
-            if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
-            {
-                return request;
-            }
+            return CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty);
         }
-
-        validator.Complete();
-        IReadOnlyList<QPackFieldLine>? headers = validator.Headers;
-        if (headers is null)
+        finally
         {
-            throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 request did not contain a HEADERS frame.");
+            ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
         }
-
-        return CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty);
     }
 
     private static bool TryCreateNoBodyGetRequest(

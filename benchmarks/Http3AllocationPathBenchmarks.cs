@@ -11,21 +11,29 @@ namespace Incursa.Quic.Benchmarks;
 [MemoryDiagnoser]
 public class Http3AllocationPathBenchmarks
 {
+    private const int DefaultServerReadBufferSize = 16 * 1024;
+
     private static readonly byte[] PlaintextBody = "Hello, World!"u8.ToArray();
     private static readonly byte[] JsonBody = """{"message":"Hello, World!"}"""u8.ToArray();
+    private static readonly byte[] SmallRequestBody = "small body"u8.ToArray();
 
     private QPackFieldLine[] plaintextRequestHeaders = [];
     private QPackFieldLine[] jsonRequestHeaders = [];
+    private QPackFieldLine[] postRequestHeaders = [];
     private QPackFieldLine[] plaintextResponseHeaders = [];
     private QPackFieldLine[] jsonResponseHeaders = [];
     private byte[] plaintextRequestFieldSection = [];
     private byte[] jsonRequestFieldSection = [];
+    private byte[] postRequestFieldSection = [];
     private byte[] plaintextHeadersFrame = [];
     private byte[] jsonHeadersFrame = [];
     private byte[] plaintextDataFrame = [];
     private byte[] jsonDataFrame = [];
     private byte[] plaintextRequestHeadersFrame = [];
     private byte[] jsonRequestHeadersFrame = [];
+    private byte[] postRequestHeadersFrame = [];
+    private byte[] smallRequestDataFrame = [];
+    private byte[] postRequestHeadersAndDataFrames = [];
     private byte[] plaintextResponseFrames = [];
     private byte[] jsonResponseFrames = [];
 
@@ -53,10 +61,20 @@ public class Http3AllocationPathBenchmarks
             new QPackFieldLine("user-agent", "h2load"),
             new QPackFieldLine("accept", "*/*"),
         ];
+        postRequestHeaders =
+        [
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost:5444"),
+            new QPackFieldLine(":path", "/upload"),
+            new QPackFieldLine("content-length", SmallRequestBody.Length.ToString()),
+            new QPackFieldLine("content-type", "text/plain"),
+        ];
         plaintextResponseHeaders = BuildResponseHeaders("text/plain", PlaintextBody.Length);
         jsonResponseHeaders = BuildResponseHeaders("application/json", JsonBody.Length);
         plaintextRequestFieldSection = QPackEncoder.EncodeFieldSection(plaintextRequestHeaders);
         jsonRequestFieldSection = QPackEncoder.EncodeFieldSection(jsonRequestHeaders);
+        postRequestFieldSection = QPackEncoder.EncodeFieldSection(postRequestHeaders);
 
         plaintextHeadersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(plaintextResponseHeaders));
         jsonHeadersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(jsonResponseHeaders));
@@ -64,6 +82,9 @@ public class Http3AllocationPathBenchmarks
         jsonDataFrame = Http3FrameWriter.WriteData(JsonBody);
         plaintextRequestHeadersFrame = Http3FrameWriter.WriteHeaders(plaintextRequestFieldSection);
         jsonRequestHeadersFrame = Http3FrameWriter.WriteHeaders(jsonRequestFieldSection);
+        postRequestHeadersFrame = Http3FrameWriter.WriteHeaders(postRequestFieldSection);
+        smallRequestDataFrame = Http3FrameWriter.WriteData(SmallRequestBody);
+        postRequestHeadersAndDataFrames = Concat(postRequestHeadersFrame, smallRequestDataFrame);
         plaintextResponseFrames = BufferResponseFrames(plaintextHeadersFrame, PlaintextBody);
         jsonResponseFrames = BufferResponseFrames(jsonHeadersFrame, JsonBody);
     }
@@ -101,6 +122,64 @@ public class Http3AllocationPathBenchmarks
         Http3Frame[] first = reader.Read(plaintextRequestHeadersFrame.AsSpan(0, split));
         Http3Frame[] second = reader.Read(plaintextRequestHeadersFrame.AsSpan(split));
         return CountFramePayloadBytes(first) ^ CountFramePayloadBytes(second) ^ reader.PendingByteCount;
+    }
+
+    /// <summary>
+    /// Measures the server request-read buffer allocation plus frame-reader pass identified in the P17 trace.
+    /// </summary>
+    [Benchmark]
+    public int RequestReadBuffer_FrameReaderPlaintextHeaders()
+    {
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(DefaultServerReadBufferSize);
+
+        try
+        {
+            plaintextRequestHeadersFrame.CopyTo(buffer, 0);
+
+            Http3FrameReader reader = new();
+            Http3Frame[] frames = reader.Read(buffer.AsSpan(0, plaintextRequestHeadersFrame.Length));
+            return CountFramePayloadBytes(frames) ^ reader.PendingByteCount ^ DefaultServerReadBufferSize;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
+        }
+    }
+
+    /// <summary>
+    /// Measures the request read loop shape for a HEADERS-only plaintext GET request.
+    /// </summary>
+    [Benchmark]
+    public int ReadRequestAsync_HeadersOnlyGetPlaintext()
+    {
+        return ReadRequestLikeServer(plaintextRequestHeadersFrame, splitOffset: null);
+    }
+
+    /// <summary>
+    /// Measures the request read loop shape for a HEADERS-only JSON GET request.
+    /// </summary>
+    [Benchmark]
+    public int ReadRequestAsync_HeadersOnlyGetJson()
+    {
+        return ReadRequestLikeServer(jsonRequestHeadersFrame, splitOffset: null);
+    }
+
+    /// <summary>
+    /// Measures the request read loop shape when a HEADERS frame arrives across partial reads.
+    /// </summary>
+    [Benchmark]
+    public int ReadRequestAsync_FragmentedHeaders()
+    {
+        return ReadRequestLikeServer(plaintextRequestHeadersFrame, splitOffset: Math.Max(1, plaintextRequestHeadersFrame.Length / 2));
+    }
+
+    /// <summary>
+    /// Measures the request read loop shape for HEADERS followed by a small DATA frame.
+    /// </summary>
+    [Benchmark]
+    public int ReadRequestAsync_HeadersAndSmallData()
+    {
+        return ReadRequestLikeServer(postRequestHeadersAndDataFrames, splitOffset: postRequestHeadersFrame.Length);
     }
 
     /// <summary>
@@ -576,6 +655,116 @@ public class Http3AllocationPathBenchmarks
         }
 
         return buffer;
+    }
+
+    private static byte[] Concat(byte[] first, byte[] second)
+    {
+        byte[] combined = new byte[first.Length + second.Length];
+        first.CopyTo(combined, 0);
+        second.CopyTo(combined, first.Length);
+        return combined;
+    }
+
+    private static int ReadRequestLikeServer(byte[] requestBytes, int? splitOffset)
+    {
+        Http3FrameReader reader = new();
+        Http3RequestMessageValidator validator = new();
+        ArrayBufferWriter<byte>? body = null;
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(DefaultServerReadBufferSize);
+
+        try
+        {
+            if (splitOffset is { } split)
+            {
+                requestBytes.AsSpan(0, split).CopyTo(buffer);
+                body = ProcessBenchmarkRequestFrames(reader.Read(buffer.AsSpan(0, split)), validator, body);
+                if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request splitRequest))
+                {
+                    return splitRequest.Headers.Count ^ splitRequest.Path.Length ^ splitRequest.Body.Length ^ DefaultServerReadBufferSize;
+                }
+
+                int remaining = requestBytes.Length - split;
+                requestBytes.AsSpan(split).CopyTo(buffer);
+                body = ProcessBenchmarkRequestFrames(reader.Read(buffer.AsSpan(0, remaining)), validator, body);
+            }
+            else
+            {
+                requestBytes.CopyTo(buffer, 0);
+                body = ProcessBenchmarkRequestFrames(reader.Read(buffer.AsSpan(0, requestBytes.Length)), validator, body);
+            }
+
+            if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
+            {
+                return request.Headers.Count ^ request.Path.Length ^ request.Body.Length ^ DefaultServerReadBufferSize;
+            }
+
+            validator.Complete();
+            IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+            Http3Request completedRequest = CreateRequest(headers, body?.WrittenMemory ?? ReadOnlyMemory<byte>.Empty);
+            return completedRequest.Headers.Count ^ completedRequest.Path.Length ^ completedRequest.Body.Length ^ DefaultServerReadBufferSize;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
+        }
+    }
+
+    private static ArrayBufferWriter<byte>? ProcessBenchmarkRequestFrames(
+        ReadOnlySpan<Http3Frame> frames,
+        Http3RequestMessageValidator validator,
+        ArrayBufferWriter<byte>? body)
+    {
+        foreach (Http3Frame frame in frames)
+        {
+            switch (frame)
+            {
+                case Http3HeadersFrame headersFrame:
+                    validator.ReceiveOwnedHeaders(DecodeRequestHeaders(headersFrame.EncodedFieldSection));
+                    break;
+                case Http3DataFrame dataFrame:
+                    validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
+                    body ??= new ArrayBufferWriter<byte>();
+                    body.Write(dataFrame.Data.Span);
+                    break;
+                case Http3UnknownFrame:
+                    break;
+                default:
+                    throw new InvalidOperationException("The benchmark request stream contained an invalid frame type.");
+            }
+        }
+
+        return body;
+    }
+
+    private static bool TryCreateNoBodyGetRequest(IReadOnlyList<QPackFieldLine>? headers, out Http3Request request)
+    {
+        request = null!;
+        if (headers is null || HasContentLength(headers))
+        {
+            return false;
+        }
+
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        if (result.Method != "GET")
+        {
+            return false;
+        }
+
+        request = new Http3Request(result.Method, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, headers);
+        return true;
+    }
+
+    private static bool HasContentLength(IReadOnlyList<QPackFieldLine> headers)
+    {
+        foreach (QPackFieldLine header in headers)
+        {
+            if (StringComparer.Ordinal.Equals(header.Name, "content-length"))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static byte[] CombinePayloads(ReadOnlySpan<PendingApplicationSendRequest> selectedWrites)

@@ -181,6 +181,31 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task HeadersOnlyGet_WithFragmentedHeaders_DeliversRequest()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CaptureRequestHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteFragmentedGetRequestAsync(requestStream, "/plaintext");
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("GET", handler.Method);
+        Assert.Equal("/plaintext", handler.Path);
+        Assert.Empty(handler.Body);
+        Assert.Contains(handler.Headers, header => header.Name == ":path" && header.Value == "/plaintext");
+    }
+
+    [Fact]
     public async Task PostDataRequest_DeliversBodyToHandler()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -362,6 +387,33 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task TruncatedRequestFrame_Returns400()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] truncatedHeadersFrame = [0x01, 0x05, 0x00, 0x00];
+        await requestStream.WriteAsync(truncatedHeadersFrame, 0, truncatedHeadersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(400, response.StatusCode);
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.Error
+                && diagnostic.ErrorCode == nameof(Http3ErrorCode.FrameError));
+    }
+
+    [Fact]
     public async Task StreamingResponse_WritesAsyncDataFramesToResponseBody()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -456,6 +508,22 @@ public sealed class Http3MinimalServerTests
     private static async Task WriteGetRequestAsync(QuicStream requestStream, string path)
     {
         await WriteGetRequestHeadersAsync(requestStream, path);
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WriteFragmentedGetRequestAsync(QuicStream requestStream, string path)
+    {
+        byte[] encoded = QPackEncoder.EncodeFieldSection(
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+        ]);
+        byte[] frame = Http3FrameWriter.WriteHeaders(encoded);
+        int split = Math.Max(1, frame.Length / 2);
+        await requestStream.WriteAsync(frame, 0, split).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(frame, split, frame.Length - split).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
     }
 
