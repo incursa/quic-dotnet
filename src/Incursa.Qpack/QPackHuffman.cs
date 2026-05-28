@@ -10,54 +10,80 @@ namespace Incursa.Qpack;
 internal static class QPackHuffman
 {
     private const int EndOfStringSymbol = 256;
-    private const int DecodedCapacityMultiplier = 2;
-    private const int MinimumDecodedCapacity = 1;
+    private const int StackDecodedByteThreshold = 256;
     private const int MaximumPaddingBits = 7;
 
     private static readonly Node Root = BuildTree();
 
     public static string Decode(ReadOnlySpan<byte> source, QPackErrorCode errorCode)
     {
-        int initialCapacity = source.Length <= int.MaxValue / DecodedCapacityMultiplier
-            ? source.Length * DecodedCapacityMultiplier
-            : source.Length;
-        ArrayBufferWriter<byte> writer = new(Math.Max(MinimumDecodedCapacity, initialCapacity));
+        Span<byte> decoded = stackalloc byte[StackDecodedByteThreshold];
+        byte[]? rentedDecoded = null;
+        int decodedLength = 0;
         Node node = Root;
 
-        for (int byteIndex = 0; byteIndex < source.Length; byteIndex++)
+        try
         {
-            byte value = source[byteIndex];
-            for (int bitIndex = 7; bitIndex >= 0; bitIndex--)
+            for (int byteIndex = 0; byteIndex < source.Length; byteIndex++)
             {
-                Node? next = ((value >> bitIndex) & 0x01) == 0 ? node.Zero : node.One;
-                if (next is null)
+                byte value = source[byteIndex];
+                for (int bitIndex = 7; bitIndex >= 0; bitIndex--)
                 {
-                    throw new QPackException(errorCode, "The QPACK Huffman string literal is malformed.");
-                }
+                    Node? next = ((value >> bitIndex) & 0x01) == 0 ? node.Zero : node.One;
+                    if (next is null)
+                    {
+                        throw new QPackException(errorCode, "The QPACK Huffman string literal is malformed.");
+                    }
 
-                node = next;
-                if (!node.HasSymbol)
-                {
-                    continue;
-                }
+                    node = next;
+                    if (!node.HasSymbol)
+                    {
+                        continue;
+                    }
 
-                if (node.Symbol == EndOfStringSymbol)
-                {
-                    throw new QPackException(errorCode, "The QPACK Huffman string literal contains EOS.");
-                }
+                    if (node.Symbol == EndOfStringSymbol)
+                    {
+                        throw new QPackException(errorCode, "The QPACK Huffman string literal contains EOS.");
+                    }
 
-                writer.GetSpan(1)[0] = checked((byte)node.Symbol);
-                writer.Advance(1);
-                node = Root;
+                    if (decodedLength == decoded.Length)
+                    {
+                        GrowDecodedBuffer(ref decoded, ref rentedDecoded, decodedLength);
+                    }
+
+                    decoded[decodedLength++] = checked((byte)node.Symbol);
+                    node = Root;
+                }
+            }
+
+            if (node != Root && (!node.IsEndOfStringPrefix || node.Depth > MaximumPaddingBits))
+            {
+                throw new QPackException(errorCode, "The QPACK Huffman string literal padding is invalid.");
+            }
+
+            return Encoding.Latin1.GetString(decoded[..decodedLength]);
+        }
+        finally
+        {
+            if (rentedDecoded is not null)
+            {
+                ArrayPool<byte>.Shared.Return(rentedDecoded);
             }
         }
+    }
 
-        if (node != Root && (!node.IsEndOfStringPrefix || node.Depth > MaximumPaddingBits))
+    private static void GrowDecodedBuffer(ref Span<byte> decoded, ref byte[]? rentedDecoded, int decodedLength)
+    {
+        int nextLength = decoded.Length == 0 ? StackDecodedByteThreshold : checked(decoded.Length * 2);
+        byte[] next = ArrayPool<byte>.Shared.Rent(nextLength);
+        decoded[..decodedLength].CopyTo(next);
+        if (rentedDecoded is not null)
         {
-            throw new QPackException(errorCode, "The QPACK Huffman string literal padding is invalid.");
+            ArrayPool<byte>.Shared.Return(rentedDecoded);
         }
 
-        return Encoding.Latin1.GetString(writer.WrittenSpan);
+        rentedDecoded = next;
+        decoded = rentedDecoded;
     }
 
     private static Node BuildTree()
