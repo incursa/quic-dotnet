@@ -138,6 +138,7 @@ public class MetricsTests
         };
 
         private readonly MeterListener listener = new();
+        private readonly object sync = new();
         private readonly List<MeasurementRecord> measurements = [];
 
         private MetricsRecorder(string meterName)
@@ -154,7 +155,16 @@ public class MetricsTests
             listener.Start();
         }
 
-        public IReadOnlyList<MeasurementRecord> Measurements => measurements;
+        public IReadOnlyList<MeasurementRecord> Measurements
+        {
+            get
+            {
+                lock (sync)
+                {
+                    return measurements.ToArray();
+                }
+            }
+        }
 
         public static MetricsRecorder Start(string meterName)
         {
@@ -186,7 +196,10 @@ public class MetricsTests
                 capturedTags[tag.Key] = tag.Value?.ToString() ?? string.Empty;
             }
 
-            measurements.Add(new MeasurementRecord(instrument.Name, measurement, capturedTags));
+            lock (sync)
+            {
+                measurements.Add(new MeasurementRecord(instrument.Name, measurement, capturedTags));
+            }
         }
 
         public sealed record MeasurementRecord(
