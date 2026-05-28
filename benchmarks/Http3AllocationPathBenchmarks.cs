@@ -22,6 +22,8 @@ public class Http3AllocationPathBenchmarks
     private QPackFieldLine[] postRequestHeaders = [];
     private QPackFieldLine[] plaintextResponseHeaders = [];
     private QPackFieldLine[] jsonResponseHeaders = [];
+    private Http3ServerResponse plaintextResponse = null!;
+    private Http3ServerResponse jsonResponse = null!;
     private byte[] plaintextRequestFieldSection = [];
     private byte[] jsonRequestFieldSection = [];
     private byte[] postRequestFieldSection = [];
@@ -72,6 +74,8 @@ public class Http3AllocationPathBenchmarks
         ];
         plaintextResponseHeaders = BuildResponseHeaders("text/plain", PlaintextBody.Length);
         jsonResponseHeaders = BuildResponseHeaders("application/json", JsonBody.Length);
+        plaintextResponse = new Http3ServerResponse(200, PlaintextBody, plaintextResponseHeaders.AsSpan(1).ToArray());
+        jsonResponse = new Http3ServerResponse(200, JsonBody, jsonResponseHeaders.AsSpan(1).ToArray());
         plaintextRequestFieldSection = QPackEncoder.EncodeFieldSection(plaintextRequestHeaders);
         jsonRequestFieldSection = QPackEncoder.EncodeFieldSection(jsonRequestHeaders);
         postRequestFieldSection = QPackEncoder.EncodeFieldSection(postRequestHeaders);
@@ -304,7 +308,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestHeaders_DecodeValidateMaterialize_Plaintext()
     {
-        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeRequestHeadersForServer(plaintextRequestFieldSection);
         Http3RequestMessageValidator validator = new();
         validator.ReceiveOwnedHeaders(decoded);
         IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
@@ -324,7 +328,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestHeaders_DecodeValidateMaterialize_Json()
     {
-        QPackFieldLine[] decoded = DecodeRequestHeaders(jsonRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeRequestHeadersForServer(jsonRequestFieldSection);
         Http3RequestMessageValidator validator = new();
         validator.ReceiveOwnedHeaders(decoded);
         IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
@@ -344,9 +348,9 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestHeaders_DecodeAndValidatePlaintext()
     {
-        QPackFieldLine[] headers = DecodeRequestHeaders(plaintextRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> headers = DecodeRequestHeadersForServer(plaintextRequestFieldSection);
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
-        return CountHeaderCharacters(headers) ^ (result.Method?.Length ?? 0) ^ (result.Path?.Length ?? 0);
+        return CountHeaderCharactersList(headers) ^ (result.Method?.Length ?? 0) ^ (result.Path?.Length ?? 0);
     }
 
     /// <summary>
@@ -355,7 +359,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestHeaders_DecodeValidateAndMaterializeNoBodyPlaintext()
     {
-        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeRequestHeadersForServer(plaintextRequestFieldSection);
         Http3RequestMessageValidator validator = new();
         validator.ReceiveOwnedHeaders(decoded);
         IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
@@ -375,7 +379,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestLifecycle_HeadersOnlyGetPlaintext()
     {
-        QPackFieldLine[] decoded = DecodeRequestHeaders(plaintextRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeRequestHeadersForServer(plaintextRequestFieldSection);
         Http3RequestMessageValidator validator = new();
         ArrayBufferWriter<byte>? body = null;
         validator.ReceiveOwnedHeaders(decoded);
@@ -401,7 +405,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int RequestLifecycle_HeadersOnlyGetJson()
     {
-        QPackFieldLine[] decoded = DecodeRequestHeaders(jsonRequestFieldSection);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeRequestHeadersForServer(jsonRequestFieldSection);
         Http3RequestMessageValidator validator = new();
         ArrayBufferWriter<byte>? body = null;
         validator.ReceiveOwnedHeaders(decoded);
@@ -441,12 +445,32 @@ public class Http3AllocationPathBenchmarks
     }
 
     /// <summary>
+    /// Measures server response header field-line construction for a tiny plaintext response.
+    /// </summary>
+    [Benchmark]
+    public int ResponseHeaders_BuildPlaintextHeaders()
+    {
+        IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(plaintextResponse);
+        return CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
+    /// Measures server response header field-line construction for a tiny JSON response.
+    /// </summary>
+    [Benchmark]
+    public int ResponseHeaders_BuildJsonHeaders()
+    {
+        IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(jsonResponse);
+        return CountHeaderCharactersList(headers);
+    }
+
+    /// <summary>
     /// Measures public static QPACK field-section encoding for a tiny plaintext response.
     /// </summary>
     [Benchmark]
     public int ResponseHeaders_EncodePlaintextFieldSection()
     {
-        byte[] encoded = QPackEncoder.EncodeFieldSection(plaintextResponseHeaders);
+        byte[] encoded = Http3Server.EncodeResponseFieldSection(plaintextResponseHeaders);
         return encoded.Length;
     }
 
@@ -456,7 +480,7 @@ public class Http3AllocationPathBenchmarks
     [Benchmark]
     public int ResponseHeaders_EncodeJsonFieldSection()
     {
-        byte[] encoded = QPackEncoder.EncodeFieldSection(jsonResponseHeaders);
+        byte[] encoded = Http3Server.EncodeResponseFieldSection(jsonResponseHeaders);
         return encoded.Length;
     }
 
@@ -719,7 +743,7 @@ public class Http3AllocationPathBenchmarks
             switch (frame)
             {
                 case Http3HeadersFrame headersFrame:
-                    validator.ReceiveOwnedHeaders(DecodeRequestHeaders(headersFrame.EncodedFieldSection));
+                    validator.ReceiveOwnedHeaders(DecodeRequestHeadersForServer(headersFrame.EncodedFieldSection));
                     break;
                 case Http3DataFrame dataFrame:
                     validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
@@ -756,8 +780,9 @@ public class Http3AllocationPathBenchmarks
 
     private static bool HasContentLength(IReadOnlyList<QPackFieldLine> headers)
     {
-        foreach (QPackFieldLine header in headers)
+        for (int index = 0; index < headers.Count; index++)
         {
+            QPackFieldLine header = headers[index];
             if (StringComparer.Ordinal.Equals(header.Name, "content-length"))
             {
                 return true;
@@ -798,6 +823,19 @@ public class Http3AllocationPathBenchmarks
         return result.FieldLines;
     }
 
+    private static IReadOnlyList<QPackFieldLine> DecodeRequestHeadersForServer(ReadOnlyMemory<byte> encodedFieldSection)
+    {
+        QPackDecoder decoder = new(0, 0);
+        Http3FieldLineBuffer destination = new();
+        QPackFieldSectionDecodeStatus result = decoder.DecodeFieldSection(0, encodedFieldSection, destination);
+        if (result.IsBlocked)
+        {
+            throw new InvalidOperationException("The benchmark request field section unexpectedly blocked.");
+        }
+
+        return destination.CommitToReadOnlyList();
+    }
+
     private static int CountHeaderCharacters(ReadOnlySpan<QPackFieldLine> headers)
     {
         int total = 0;
@@ -812,8 +850,9 @@ public class Http3AllocationPathBenchmarks
     private static int CountHeaderCharactersList(IReadOnlyList<QPackFieldLine> headers)
     {
         int total = 0;
-        foreach (QPackFieldLine header in headers)
+        for (int index = 0; index < headers.Count; index++)
         {
+            QPackFieldLine header = headers[index];
             total += header.Name.Length + header.Value.Length;
         }
 

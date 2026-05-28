@@ -124,6 +124,87 @@ public sealed class Http3FrameLayerTests
     }
 
     [Theory]
+    [InlineData(
+        "text/plain",
+        "Hello, World!",
+        "00005F09033230305F4D07696E6375727361561D5765642C203237204D617920323032362031353A30303A303020474D54F554023133")]
+    [InlineData(
+        "application/json",
+        """{"message":"Hello, World!"}""",
+        "00005F09033230305F4D07696E6375727361561D5765642C203237204D617920323032362031353A30303A303020474D54EE54023237")]
+    public void ServerResponseBuilder_PreservesTechEmpowerFieldSectionAndFrameBytes(
+        string contentType,
+        string bodyText,
+        string expectedFieldSectionHex)
+    {
+        byte[] body = System.Text.Encoding.UTF8.GetBytes(bodyText);
+        Http3ServerResponse response = new(200, body, BuildTechEmpowerResponseHeaders(contentType, body.Length));
+
+        IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
+        byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
+        byte[] dataFrame = Http3FrameWriter.WriteData(body);
+        byte[] responseFrames = [.. headersFrame, .. dataFrame];
+
+        Assert.Equal(expectedFieldSectionHex, Convert.ToHexString(encodedFieldSection));
+        Assert.Equal(Http3FrameWriter.WriteHeaders(Convert.FromHexString(expectedFieldSectionHex)), headersFrame);
+        Assert.Equal(Http3FrameWriter.WriteData(body), dataFrame);
+        Assert.Equal([.. Http3FrameWriter.WriteHeaders(encodedFieldSection), .. Http3FrameWriter.WriteData(body)], responseFrames);
+        Assert.Equal(
+            [
+                new QPackFieldLine(":status", "200"),
+                new QPackFieldLine("server", "incursa"),
+                new QPackFieldLine("date", "Wed, 27 May 2026 15:00:00 GMT"),
+                new QPackFieldLine("content-type", contentType),
+                new QPackFieldLine("content-length", body.Length.ToString()),
+            ],
+            headers);
+        Assert.Equal(headers, QPackDecoder.DecodeFieldSection(encodedFieldSection));
+
+        Http3Frame[] frames = new Http3FrameReader().Read(responseFrames);
+        Assert.Collection(
+            frames,
+            frame =>
+            {
+                Http3HeadersFrame headersFrame = Assert.IsType<Http3HeadersFrame>(frame);
+                Assert.Equal(encodedFieldSection, headersFrame.EncodedFieldSection.ToArray());
+            },
+            frame =>
+            {
+                Http3DataFrame data = Assert.IsType<Http3DataFrame>(frame);
+                Assert.Equal(body, data.Data.ToArray());
+            });
+    }
+
+    [Fact]
+    public void ServerResponseBuilder_PreservesCustomHeadersAndSkipsDuplicateStatus()
+    {
+        Http3ServerResponse response = new(
+            204,
+            ReadOnlyMemory<byte>.Empty,
+            [
+                new QPackFieldLine("server", "incursa"),
+                new QPackFieldLine(":status", "599"),
+                new QPackFieldLine("x-custom", "one"),
+                new QPackFieldLine("cache-control", "no-store"),
+            ]);
+
+        IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
+        byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+
+        Assert.Equal(
+            [
+                new QPackFieldLine(":status", "204"),
+                new QPackFieldLine("server", "incursa"),
+                new QPackFieldLine("x-custom", "one"),
+                new QPackFieldLine("cache-control", "no-store"),
+            ],
+            headers);
+        Assert.Equal(headers, QPackDecoder.DecodeFieldSection(encodedFieldSection));
+        Assert.Single(headers, header => header.Name == ":status");
+    }
+
+    [Theory]
     [InlineData("text/plain", "Hello, World!")]
     [InlineData("application/json", """{"message":"Hello, World!"}""")]
     public void ResponseFrames_WrappedInFinalStreamPayloadPreserveBytesAndMetadata(string contentType, string bodyText)
@@ -496,11 +577,19 @@ public sealed class Http3FrameLayerTests
         return QPackEncoder.EncodeFieldSection(
         [
             new QPackFieldLine(":status", "200"),
+            .. BuildTechEmpowerResponseHeaders(contentType, contentLength),
+        ]);
+    }
+
+    private static QPackFieldLine[] BuildTechEmpowerResponseHeaders(string contentType, int contentLength)
+    {
+        return
+        [
             new QPackFieldLine("server", "incursa"),
             new QPackFieldLine("date", "Wed, 27 May 2026 15:00:00 GMT"),
             new QPackFieldLine("content-type", contentType),
             new QPackFieldLine("content-length", contentLength.ToString()),
-        ]);
+        ];
     }
 
     private static QPackFieldLine[] BuildPlaintextRequestHeaders()

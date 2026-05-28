@@ -10,7 +10,7 @@ public sealed class Http3RequestMessageValidator
     private bool headersSeen;
     private bool trailersSeen;
     private ulong dataLength;
-    private QPackFieldLine[]? headers;
+    private IReadOnlyList<QPackFieldLine>? headers;
 
     /// <summary>
     /// Gets the validated request headers after header validation completes.
@@ -32,9 +32,15 @@ public sealed class Http3RequestMessageValidator
         ReceiveHeadersCore(fieldSection, fieldSection, trailersSupported);
     }
 
+    internal void ReceiveOwnedHeaders(IReadOnlyList<QPackFieldLine> fieldSection, bool trailersSupported = false)
+    {
+        ArgumentNullException.ThrowIfNull(fieldSection);
+        ReceiveHeadersCore(fieldSection, fieldSection, trailersSupported);
+    }
+
     private void ReceiveHeadersCore(
         IReadOnlyList<QPackFieldLine> fieldSection,
-        QPackFieldLine[]? ownedFieldSection,
+        IReadOnlyList<QPackFieldLine>? ownedFieldSection,
         bool trailersSupported)
     {
         if (!headersSeen)

@@ -62,6 +62,139 @@ public sealed class Http3HeaderValidationTests
         Assert.Contains(request.Headers, header => header.Name == "accept" && header.Value == "*/*");
     }
 
+    [Theory]
+    [InlineData("/plaintext")]
+    [InlineData("/json")]
+    public void ServerOwnedDecodeValidateAndMaterializeRequest_TechEmpowerGet_PreservesRequestSemantics(string path)
+    {
+        QPackFieldLine[] expected = TechEmpowerRequestHeaders(path);
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(expected);
+        Http3RequestMessageValidator validator = new();
+
+        validator.ReceiveOwnedHeaders(decoded);
+        IReadOnlyList<QPackFieldLine> headers = validator.Headers ?? throw new InvalidOperationException("No headers were decoded.");
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
+        Http3Request request = new(
+            result.Method ?? string.Empty,
+            result.Scheme ?? string.Empty,
+            result.Authority ?? string.Empty,
+            result.Path ?? string.Empty,
+            headers);
+
+        Assert.Equal("GET", request.Method);
+        Assert.Equal("https", request.Scheme);
+        Assert.Equal("localhost:5444", request.Authority);
+        Assert.Equal(path, request.Path);
+        Assert.Equal(0, request.Body.Length);
+        Assert.Equal(expected, request.Headers);
+        Assert.Equal(expected.Select(static header => header.Name), request.Headers.Select(static header => header.Name));
+        Assert.Contains(request.Headers, header => header.Name == ":method" && header.Value == "GET");
+        Assert.Contains(request.Headers, header => header.Name == ":scheme" && header.Value == "https");
+        Assert.Contains(request.Headers, header => header.Name == ":authority" && header.Value == "localhost:5444");
+        Assert.Contains(request.Headers, header => header.Name == ":path" && header.Value == path);
+        Assert.Contains(request.Headers, header => header.Name == "user-agent" && header.Value == "h2load");
+        Assert.Contains(request.Headers, header => header.Name == "accept" && header.Value == "*/*");
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_UnknownRegularHeader_RemainsAccepted()
+    {
+        QPackFieldLine[] expected =
+        [
+            .. TechEmpowerRequestHeaders("/plaintext"),
+            new QPackFieldLine("x-benchmark-fixture", "present"),
+        ];
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(expected);
+
+        Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false);
+
+        Assert.Equal(expected, decoded);
+        Assert.Equal("/plaintext", result.Path);
+        Assert.Contains(decoded, header => header.Name == "x-benchmark-fixture" && header.Value == "present");
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_DuplicatePseudoHeader_ThrowsMessageError()
+    {
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(
+        [
+            .. TechEmpowerRequestHeaders("/plaintext"),
+            new QPackFieldLine(":path", "/other"),
+        ]);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_MissingRequiredPseudoHeader_ThrowsMessageError()
+    {
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(
+            Without(TechEmpowerRequestHeaders("/json"), ":scheme"));
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_PseudoHeaderAfterRegularHeader_ThrowsMessageError()
+    {
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine("accept", "*/*"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost:5444"),
+            new QPackFieldLine(":path", "/plaintext"),
+        ]);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3HeaderValidator.ValidateRequestHeaders(decoded, validateContentLength: false));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_MalformedQPackFieldSection_ThrowsDecompressionFailed()
+    {
+        byte[] invalidStaticIndex = [0x00, 0x00, .. QPackInteger.Encode(99, 6, 0xC0)];
+        QPackDecoder decoder = new(0, 0);
+        Http3FieldLineBuffer destination = new();
+
+        QPackException exception = Assert.Throws<QPackException>(
+            () => decoder.DecodeFieldSection(0, invalidStaticIndex, destination));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void PublicDecodeFieldSection_ReturnsCallerOwnedArray()
+    {
+        QPackFieldLine[] expected = TechEmpowerRequestHeaders("/plaintext");
+        byte[] encoded = QPackEncoder.EncodeFieldSection(expected);
+        QPackFieldLine[] decoded = QPackDecoder.DecodeFieldSection(encoded);
+
+        decoded[3] = new QPackFieldLine(":path", "/mutated");
+        QPackFieldLine[] decodedAgain = QPackDecoder.DecodeFieldSection(encoded);
+
+        Assert.Equal(expected, decodedAgain);
+        Assert.Contains(decodedAgain, header => header.Name == ":path" && header.Value == "/plaintext");
+        Assert.DoesNotContain(decodedAgain, header => header.Name == ":path" && header.Value == "/mutated");
+    }
+
+    [Fact]
+    public void ServerOwnedDecodeRequestHeaders_DoesNotExposeMutableArrayStorage()
+    {
+        IReadOnlyList<QPackFieldLine> decoded = DecodeServerOwnedRequestHeaders(TechEmpowerRequestHeaders("/plaintext"));
+
+        Assert.IsNotType<QPackFieldLine[]>(decoded);
+        Assert.Equal("/plaintext", decoded.Single(header => header.Name == ":path").Value);
+    }
+
     [Fact]
     public void RequestSequence_PublicReceiveHeadersCopiesMutableInput()
     {
@@ -393,6 +526,19 @@ public sealed class Http3HeaderValidationTests
     private static QPackFieldLine[] Without(QPackFieldLine[] headers, string name)
     {
         return [.. headers.Where(header => header.Name != name)];
+    }
+
+    private static IReadOnlyList<QPackFieldLine> DecodeServerOwnedRequestHeaders(QPackFieldLine[] headers)
+    {
+        QPackDecoder decoder = new(0, 0);
+        Http3FieldLineBuffer destination = new();
+        QPackFieldSectionDecodeStatus result = decoder.DecodeFieldSection(0, QPackEncoder.EncodeFieldSection(headers), destination);
+        if (result.IsBlocked)
+        {
+            throw new InvalidOperationException("The server-owned test field section unexpectedly blocked.");
+        }
+
+        return destination.CommitToReadOnlyList();
     }
 
     private static object[] Row(QPackFieldLine[] headers)

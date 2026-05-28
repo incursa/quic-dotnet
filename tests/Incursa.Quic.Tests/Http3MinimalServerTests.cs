@@ -459,6 +459,173 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    public async Task DiagnosticsDisabled_SuppressesEventsAndPreservesRequestResponseBehavior()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        SwitchableHttp3DiagnosticsSink diagnostics = new(enabled: false);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/hello", "hello from disabled diagnostics"),
+            diagnostics);
+
+        Http3Response response = await context.GetAsync("/hello");
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal("hello from disabled diagnostics", System.Text.Encoding.UTF8.GetString(response.Body));
+        Assert.Empty(diagnostics.Events);
+        Assert.Equal(0, diagnostics.EmitCalls);
+        Assert.True(diagnostics.IsEnabledCalls > 0);
+    }
+
+    [Fact]
+    public void DiagnosticsDisabled_HelperSuppressesStreamFrameAndLifecycleEvents()
+    {
+        SwitchableHttp3DiagnosticsSink diagnostics = new(enabled: false);
+
+        Http3Server.EmitStreamOpenedDiagnostic(diagnostics, "server", 4, Http3StreamKind.Request);
+        Http3Server.EmitFrameDiagnostic(diagnostics, Http3DiagnosticKind.FrameReceived, "server", 4, Http3FrameType.Headers, 16);
+        Http3Server.EmitRequestStartedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext");
+        Http3Server.EmitResponseStartedDiagnostic(diagnostics, "server", 4, 200);
+        Http3Server.EmitResponseCompletedDiagnostic(diagnostics, "server", 4, 200, 13);
+        Http3Server.EmitRequestCompletedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext", 200, 13);
+        Http3Server.EmitStreamClosedDiagnostic(diagnostics, "server", 4, Http3StreamKind.Request);
+
+        Assert.Empty(diagnostics.Events);
+        Assert.Equal(0, diagnostics.EmitCalls);
+        Assert.Equal(7, diagnostics.IsEnabledCalls);
+    }
+
+    [Fact]
+    public void DiagnosticsEnabled_HelperPreservesEventPayloadsAndOrdering()
+    {
+        SwitchableHttp3DiagnosticsSink diagnostics = new(enabled: true);
+
+        Http3Server.EmitStreamOpenedDiagnostic(diagnostics, "server", 4, Http3StreamKind.Request);
+        Http3Server.EmitFrameDiagnostic(diagnostics, Http3DiagnosticKind.FrameReceived, "server", 4, Http3FrameType.Headers, 16);
+        Http3Server.EmitRequestStartedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext");
+        Http3Server.EmitResponseStartedDiagnostic(diagnostics, "server", 4, 200);
+        Http3Server.EmitFrameDiagnostic(diagnostics, Http3DiagnosticKind.FrameSent, "server", 4, Http3FrameType.Data, 13);
+        Http3Server.EmitResponseCompletedDiagnostic(diagnostics, "server", 4, 200, 13);
+        Http3Server.EmitRequestCompletedDiagnostic(diagnostics, "server", 4, "GET", "/plaintext", 200, 13);
+        Http3Server.EmitStreamClosedDiagnostic(diagnostics, "server", 4, Http3StreamKind.Request);
+
+        Assert.Collection(
+            diagnostics.Events,
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.StreamOpened, diagnostic.Kind);
+                Assert.Equal("server", diagnostic.Role);
+                Assert.Equal(4, diagnostic.StreamId);
+                Assert.Equal(Http3StreamKind.Request, diagnostic.StreamKind);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.FrameReceived, diagnostic.Kind);
+                Assert.Equal(Http3FrameType.Headers, diagnostic.FrameType);
+                Assert.Equal((ulong)Http3FrameType.Headers, diagnostic.RawFrameType);
+                Assert.Equal(16, diagnostic.PayloadLength);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.RequestStarted, diagnostic.Kind);
+                Assert.Equal("GET", diagnostic.Method);
+                Assert.Equal("/plaintext", diagnostic.Path);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.ResponseStarted, diagnostic.Kind);
+                Assert.Equal(200, diagnostic.StatusCode);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.FrameSent, diagnostic.Kind);
+                Assert.Equal(Http3FrameType.Data, diagnostic.FrameType);
+                Assert.Equal(13, diagnostic.PayloadLength);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.ResponseCompleted, diagnostic.Kind);
+                Assert.Equal(200, diagnostic.StatusCode);
+                Assert.Equal(13, diagnostic.PayloadLength);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.RequestCompleted, diagnostic.Kind);
+                Assert.Equal("GET", diagnostic.Method);
+                Assert.Equal("/plaintext", diagnostic.Path);
+                Assert.Equal(200, diagnostic.StatusCode);
+                Assert.Equal(13, diagnostic.PayloadLength);
+            },
+            diagnostic =>
+            {
+                Assert.Equal(Http3DiagnosticKind.StreamClosed, diagnostic.Kind);
+                Assert.Equal(Http3StreamKind.Request, diagnostic.StreamKind);
+            });
+        Assert.Equal(8, diagnostics.EmitCalls);
+        Assert.Equal(8, diagnostics.IsEnabledCalls);
+    }
+
+    [Fact]
+    public async Task DiagnosticsEnabled_SimpleRequestLifecyclePayloadsAndOrderingStayStable()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/hello", "hello diagnostics"),
+            diagnostics);
+
+        Http3Response response = await context.GetAsync("/hello");
+        await WaitForDiagnosticAsync(
+            diagnostics,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.RequestCompleted
+                && diagnostic.Path == "/hello"
+                && diagnostic.StatusCode == 200);
+
+        Assert.Equal(200, response.StatusCode);
+        Http3DiagnosticEvent[] events = diagnostics.Events;
+        Http3DiagnosticEvent requestStarted = Assert.Single(
+            events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.RequestStarted
+                && diagnostic.Path == "/hello");
+        long streamId = requestStarted.StreamId ?? throw new InvalidOperationException("Request diagnostic did not carry a stream id.");
+        Http3DiagnosticEvent[] streamEvents = events
+            .Where(diagnostic => diagnostic.StreamId == streamId)
+            .ToArray();
+
+        Assert.Contains(
+            streamEvents,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.StreamOpened
+                && diagnostic.Role == "server"
+                && diagnostic.StreamKind == Http3StreamKind.Request);
+        Assert.Contains(
+            streamEvents,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                && diagnostic.FrameType == Http3FrameType.Headers
+                && diagnostic.PayloadLength > 0);
+        Assert.Contains(
+            streamEvents,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameSent
+                && diagnostic.FrameType == Http3FrameType.Headers
+                && diagnostic.PayloadLength > 0);
+        Assert.Contains(
+            streamEvents,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameSent
+                && diagnostic.FrameType == Http3FrameType.Data
+                && diagnostic.PayloadLength == response.Body.Length);
+
+        AssertDiagnosticOrder(streamEvents, Http3DiagnosticKind.RequestStarted, Http3DiagnosticKind.ResponseStarted);
+        AssertDiagnosticOrder(streamEvents, Http3DiagnosticKind.ResponseStarted, Http3DiagnosticKind.ResponseCompleted);
+        AssertDiagnosticOrder(streamEvents, Http3DiagnosticKind.ResponseCompleted, Http3DiagnosticKind.RequestCompleted);
+    }
+
+    [Fact]
     public async Task AbruptStreamReset_DoesNotStopLaterRequest()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -700,6 +867,31 @@ public sealed class Http3MinimalServerTests
         Assert.Fail("The expected HTTP/3 diagnostic event was not observed.");
     }
 
+    private static void AssertDiagnosticOrder(
+        IReadOnlyList<Http3DiagnosticEvent> diagnostics,
+        Http3DiagnosticKind before,
+        Http3DiagnosticKind after)
+    {
+        int beforeIndex = -1;
+        int afterIndex = -1;
+        for (int index = 0; index < diagnostics.Count; index++)
+        {
+            if (beforeIndex < 0 && diagnostics[index].Kind == before)
+            {
+                beforeIndex = index;
+            }
+
+            if (afterIndex < 0 && diagnostics[index].Kind == after)
+            {
+                afterIndex = index;
+            }
+        }
+
+        Assert.True(beforeIndex >= 0, $"Missing diagnostic kind {before}.");
+        Assert.True(afterIndex >= 0, $"Missing diagnostic kind {after}.");
+        Assert.True(beforeIndex < afterIndex, $"{before} should be emitted before {after}.");
+    }
+
     private sealed class TestServerContext : IAsyncDisposable
     {
         private readonly Http3Server server;
@@ -794,6 +986,46 @@ public sealed class Http3MinimalServerTests
 
         public void Emit(Http3DiagnosticEvent diagnosticEvent)
         {
+            lock (events)
+            {
+                events.Add(diagnosticEvent);
+            }
+        }
+    }
+
+    private sealed class SwitchableHttp3DiagnosticsSink(bool enabled) : IHttp3DiagnosticsSink
+    {
+        private readonly List<Http3DiagnosticEvent> events = [];
+        private int emitCalls;
+        private int isEnabledCalls;
+
+        public bool IsEnabled
+        {
+            get
+            {
+                Interlocked.Increment(ref isEnabledCalls);
+                return enabled;
+            }
+        }
+
+        internal int EmitCalls => Volatile.Read(ref emitCalls);
+
+        internal int IsEnabledCalls => Volatile.Read(ref isEnabledCalls);
+
+        internal Http3DiagnosticEvent[] Events
+        {
+            get
+            {
+                lock (events)
+                {
+                    return [.. events];
+                }
+            }
+        }
+
+        public void Emit(Http3DiagnosticEvent diagnosticEvent)
+        {
+            Interlocked.Increment(ref emitCalls);
             lock (events)
             {
                 events.Add(diagnosticEvent);

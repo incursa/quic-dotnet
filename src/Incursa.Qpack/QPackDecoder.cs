@@ -119,6 +119,29 @@ public sealed class QPackDecoder
         return new QPackFieldSectionDecodeResult(streamId, false, prefix.RequiredInsertCount, fields);
     }
 
+    internal QPackFieldSectionDecodeStatus DecodeFieldSection(
+        ulong streamId,
+        ReadOnlyMemory<byte> encodedFieldSection,
+        IBufferWriter<QPackFieldLine> fieldSink)
+    {
+        ArgumentNullException.ThrowIfNull(fieldSink);
+
+        FieldSectionPrefix prefix = DecodeFieldSectionPrefix(encodedFieldSection.Span);
+        if (prefix.RequiredInsertCount > dynamicTable.InsertCount)
+        {
+            if (!blockedFieldSections.ContainsKey(streamId) && blockedFieldSections.Count >= maximumBlockedStreams)
+            {
+                throw new QPackException(QPackErrorCode.DecompressionFailed, "The QPACK blocked stream limit was exceeded.");
+            }
+
+            blockedFieldSections[streamId] = new BlockedFieldSection(streamId, encodedFieldSection.ToArray(), prefix.RequiredInsertCount);
+            return new QPackFieldSectionDecodeStatus(streamId, true, prefix.RequiredInsertCount);
+        }
+
+        DecodeAvailableFieldSection(encodedFieldSection.Span, prefix, fieldSink);
+        return new QPackFieldSectionDecodeStatus(streamId, false, prefix.RequiredInsertCount);
+    }
+
     /// <summary>
     /// Applies encoder-stream instructions and returns field sections that became unblocked.
     /// </summary>
@@ -178,6 +201,16 @@ public sealed class QPackDecoder
         ArrayBufferWriter<QPackFieldLine> fields = remainingRepresentationBytes == 0
             ? new()
             : new(GetInitialFieldLineCapacity(remainingRepresentationBytes));
+        DecodeAvailableFieldSection(encodedFieldSection, prefix, fields);
+        return fields.WrittenSpan.ToArray();
+    }
+
+    private void DecodeAvailableFieldSection(
+        ReadOnlySpan<byte> encodedFieldSection,
+        FieldSectionPrefix prefix,
+        IBufferWriter<QPackFieldLine> fields)
+    {
+        int index = prefix.BytesConsumed;
         ulong largestReferencedInsertCount = 0;
 
         while (index < encodedFieldSection.Length)
@@ -213,8 +246,6 @@ public sealed class QPackDecoder
         {
             throw new QPackException(QPackErrorCode.DecompressionFailed, "The QPACK Required Insert Count is too small.");
         }
-
-        return fields.WrittenSpan.ToArray();
     }
 
     private static int GetInitialFieldLineCapacity(int encodedRepresentationBytes)

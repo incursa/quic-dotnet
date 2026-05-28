@@ -39,8 +39,9 @@ public static class Http3HeaderValidator
         string? host = null;
         List<ulong> contentLengths = [];
 
-        foreach (QPackFieldLine header in headers)
+        for (int index = 0; index < headers.Count; index++)
         {
+            QPackFieldLine header = headers[index];
             switch (header.Name)
             {
                 case ":method":
@@ -138,8 +139,9 @@ public static class Http3HeaderValidator
 
         int? statusCode = null;
         List<ulong> contentLengths = [];
-        foreach (QPackFieldLine header in headers)
+        for (int index = 0; index < headers.Count; index++)
         {
+            QPackFieldLine header = headers[index];
             switch (header.Name)
             {
                 case ":status":
@@ -186,8 +188,9 @@ public static class Http3HeaderValidator
         bool trailers)
     {
         bool regularFieldSeen = false;
-        foreach (QPackFieldLine field in fields)
+        for (int index = 0; index < fields.Count; index++)
         {
+            QPackFieldLine field = fields[index];
             if (string.IsNullOrEmpty(field.Name))
             {
                 throw MessageError("HTTP/3 field names must not be empty.");
@@ -311,8 +314,9 @@ public static class Http3HeaderValidator
         }
 
         ulong expected = contentLengths[0];
-        foreach (ulong contentLength in contentLengths)
+        for (int index = 0; index < contentLengths.Count; index++)
         {
+            ulong contentLength = contentLengths[index];
             if (contentLength != expected)
             {
                 throw MessageError("HTTP/3 duplicate Content-Length values must match.");
