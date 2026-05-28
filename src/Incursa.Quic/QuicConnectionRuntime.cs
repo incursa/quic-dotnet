@@ -62,7 +62,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingDatagramSendRequests = new();
     private readonly ConcurrentDictionary<ulong, byte> queuedInboundStreamIds = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
-    private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> streamObservers = new();
+    private readonly ConcurrentDictionary<ulong, QuicStreamObserverSet> streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
@@ -750,9 +750,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ArgumentNullException.ThrowIfNull(observer);
 
         long observerId = Interlocked.Increment(ref nextStreamObserverId);
-        ConcurrentDictionary<long, Action<QuicStreamNotification>> observers = streamObservers.GetOrAdd(
+        QuicStreamObserverSet observers = streamObservers.GetOrAdd(
             streamId,
-            static _ => new ConcurrentDictionary<long, Action<QuicStreamNotification>>());
+            static _ => new QuicStreamObserverSet());
 
         if (!observers.TryAdd(observerId, observer))
         {
@@ -787,12 +787,12 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     internal void UnregisterStreamObserver(ulong streamId, long observerId)
     {
-        if (!streamObservers.TryGetValue(streamId, out ConcurrentDictionary<long, Action<QuicStreamNotification>>? observers))
+        if (!streamObservers.TryGetValue(streamId, out QuicStreamObserverSet? observers))
         {
             return;
         }
 
-        observers.TryRemove(observerId, out _);
+        observers.TryRemove(observerId);
         if (observers.IsEmpty)
         {
             streamObservers.TryRemove(streamId, out _);

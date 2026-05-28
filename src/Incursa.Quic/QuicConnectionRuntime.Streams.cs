@@ -4328,22 +4328,12 @@ internal sealed partial class QuicConnectionRuntime
 
     private void NotifyStreamObservers(ulong streamId, QuicStreamNotification notification)
     {
-        if (!streamObservers.TryGetValue(streamId, out ConcurrentDictionary<long, Action<QuicStreamNotification>>? observers))
+        if (!streamObservers.TryGetValue(streamId, out QuicStreamObserverSet? observers))
         {
             return;
         }
 
-        foreach (Action<QuicStreamNotification> observer in observers.Values)
-        {
-            try
-            {
-                observer(notification);
-            }
-            catch
-            {
-                // Stream observer failures remain local to the public facade boundary.
-            }
-        }
+        observers.Notify(notification);
     }
 
     private void NotifyAllStreamObservers(Exception completionException)
@@ -4353,23 +4343,13 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        foreach (KeyValuePair<ulong, ConcurrentDictionary<long, Action<QuicStreamNotification>>> entry in streamObservers)
+        foreach (KeyValuePair<ulong, QuicStreamObserverSet> entry in streamObservers)
         {
             QuicStreamNotification notification = new(
                 QuicStreamNotificationKind.ConnectionTerminated,
                 completionException);
 
-            foreach (Action<QuicStreamNotification> observer in entry.Value.Values)
-            {
-                try
-                {
-                    observer(notification);
-                }
-                catch
-                {
-                    // Stream observer failures remain local to the public facade boundary.
-                }
-            }
+            entry.Value.Notify(notification);
         }
     }
 }
