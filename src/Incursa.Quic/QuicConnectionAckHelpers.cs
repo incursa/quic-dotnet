@@ -159,15 +159,21 @@ internal static class QuicConnectionAckHelpers
             || !flowController.TryBuildAckFrame(
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackPayload))
+                out ackFrame))
         {
             return false;
         }
 
-        piggybackedPayload = new byte[checked(ackPayload.Length + payload.Length)];
-        ackPayload.CopyTo(piggybackedPayload.AsSpan());
-        payload.Span.CopyTo(piggybackedPayload.AsSpan(ackPayload.Length));
+        Span<byte> ackPayload = stackalloc byte[MinimumAckPayloadBufferLength];
+        int ackPayloadLength;
+        if (!TryFormatOutboundAckFramePayload(ackFrame, ackPayload, out ackPayloadLength))
+        {
+            return false;
+        }
+
+        piggybackedPayload = new byte[checked(ackPayloadLength + payload.Length)];
+        ackPayload.Slice(0, ackPayloadLength).CopyTo(piggybackedPayload.AsSpan());
+        payload.Span.CopyTo(piggybackedPayload.AsSpan(ackPayloadLength));
         return true;
     }
 
@@ -188,12 +194,19 @@ internal static class QuicConnectionAckHelpers
             || !flowController.TryBuildAckFrame(
                 packetNumberSpace,
                 nowMicros,
-                out ackFrame)
-            || !TryBuildOutboundAckFramePayload(ackFrame, out ackFramePayload))
+                out ackFrame))
         {
             return false;
         }
 
+        Span<byte> framePayloadBuffer = stackalloc byte[MinimumAckPayloadBufferLength];
+        if (!TryFormatOutboundAckFramePayload(ackFrame, framePayloadBuffer, out int frameBytesWritten))
+        {
+            return false;
+        }
+
+        ackFramePayload = new byte[frameBytesWritten];
+        framePayloadBuffer.Slice(0, frameBytesWritten).CopyTo(ackFramePayload);
         return true;
     }
 
@@ -204,15 +217,52 @@ internal static class QuicConnectionAckHelpers
     {
         payload = [];
 
-        if (!TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackFramePayload))
+        Span<byte> ackFramePayload = stackalloc byte[MinimumAckPayloadBufferLength];
+        if (!TryFormatOutboundAckFramePayload(ackFrame, ackFramePayload, out int frameBytesWritten))
         {
             return false;
         }
 
-        byte[] buffer = new byte[Math.Max(minimumPayloadLength, ackFramePayload.Length)];
-        ackFramePayload.CopyTo(buffer.AsSpan());
+        byte[] buffer = new byte[Math.Max(minimumPayloadLength, frameBytesWritten)];
+        ackFramePayload.Slice(0, frameBytesWritten).CopyTo(buffer.AsSpan());
         payload = buffer;
         return true;
+    }
+
+    internal static bool TryBuildOutboundAckPayloadLease(
+        QuicAckFrame ackFrame,
+        int minimumPayloadLength,
+        out QuicBufferLease payload)
+    {
+        payload = default;
+
+        int payloadBufferLength = Math.Max(minimumPayloadLength, MinimumAckPayloadBufferLength);
+        payload = QuicBufferPool.RentLease(payloadBufferLength);
+        try
+        {
+            Span<byte> buffer = payload.Span;
+            if (!TryFormatOutboundAckFramePayload(ackFrame, buffer, out int frameBytesWritten))
+            {
+                payload.Dispose();
+                payload = default;
+                return false;
+            }
+
+            int payloadLength = Math.Max(minimumPayloadLength, frameBytesWritten);
+            if (payloadLength > frameBytesWritten)
+            {
+                buffer.Slice(frameBytesWritten, payloadLength - frameBytesWritten).Fill(0);
+            }
+
+            payload.SetLength(payloadLength);
+            return true;
+        }
+        catch
+        {
+            payload.Dispose();
+            payload = default;
+            return false;
+        }
     }
 
     internal static IEnumerable<ulong> EnumerateAcknowledgedPacketNumbers(QuicAckFrame ackFrame)
@@ -246,19 +296,13 @@ internal static class QuicConnectionAckHelpers
         }
     }
 
-    private static bool TryBuildOutboundAckFramePayload(QuicAckFrame ackFrame, out byte[] payload)
+    private static bool TryFormatOutboundAckFramePayload(
+        QuicAckFrame ackFrame,
+        Span<byte> destination,
+        out int frameBytesWritten)
     {
-        payload = [];
-
-        byte[] buffer = new byte[MinimumAckPayloadBufferLength];
-        if (!QuicFrameCodec.TryFormatAckFrame(ackFrame, buffer, out int frameBytesWritten)
-            || frameBytesWritten <= 0
-            || frameBytesWritten > buffer.Length)
-        {
-            return false;
-        }
-
-        payload = buffer.AsSpan(0, frameBytesWritten).ToArray();
-        return true;
+        return QuicFrameCodec.TryFormatAckFrame(ackFrame, destination, out frameBytesWritten)
+            && frameBytesWritten > 0
+            && frameBytesWritten <= destination.Length;
     }
 }

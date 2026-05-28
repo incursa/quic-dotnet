@@ -43,6 +43,34 @@ public sealed class QuicConnectionAckHelpersTests
     }
 
     [Fact]
+    public void TryBuildOutboundAckPayloadLease_PadsToMinimumLengthAndPreservesAckBytes()
+    {
+        QuicAckFrame frame = new()
+        {
+            FrameType = 0x02,
+            LargestAcknowledged = 3,
+            AckDelay = 7,
+            FirstAckRange = 0,
+        };
+
+        Assert.True(QuicConnectionAckHelpers.TryBuildOutboundAckPayloadLease(frame, 64, out QuicBufferLease payload));
+        try
+        {
+            Assert.Equal(64, payload.Length);
+            Assert.True(QuicFrameCodec.TryParseAckFrame(payload.Memory.Span, out QuicAckFrame parsedFrame, out int bytesConsumed));
+            Assert.Equal(frame.LargestAcknowledged, parsedFrame.LargestAcknowledged);
+            Assert.Equal(frame.AckDelay, parsedFrame.AckDelay);
+            Assert.Equal(frame.FirstAckRange, parsedFrame.FirstAckRange);
+            Assert.True(bytesConsumed > 0);
+            Assert.True(bytesConsumed <= payload.Length);
+        }
+        finally
+        {
+            payload.Dispose();
+        }
+    }
+
+    [Fact]
     public void TryBuildApplicationAckPiggybackPayload_PrependsAckPayloadToApplicationPayload()
     {
         QuicSenderFlowController flowController = new();

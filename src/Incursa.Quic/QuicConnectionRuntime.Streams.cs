@@ -1394,6 +1394,7 @@ internal sealed partial class QuicConnectionRuntime
             probePacket: false,
             ackOnlyPacket: false,
             streamIds: null,
+            retainPlaintextPayload: true,
             ref effects,
             out currentPath,
             out updatedAmplificationState,
@@ -1408,6 +1409,7 @@ internal sealed partial class QuicConnectionRuntime
         bool probePacket,
         bool ackOnlyPacket,
         ulong[]? streamIds,
+        bool retainPlaintextPayload,
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
@@ -1526,7 +1528,7 @@ internal sealed partial class QuicConnectionRuntime
             retransmittable: !ackOnlyPacket,
             probePacket: probePacket,
             streamIds: streamIds,
-            plaintextPayload: payload);
+            plaintextPayload: retainPlaintextPayload ? payload : default);
         if (piggybackedAckFrame is not null)
         {
             MarkApplicationAckFrameSent(

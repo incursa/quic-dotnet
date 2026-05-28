@@ -505,31 +505,38 @@ internal sealed class QuicHandshakeFlowCoordinator
         ulong currentPacketNumber = nextApplicationPacketNumber;
 
         if (!TryBuildApplicationDataPlaintextPacket(
-            applicationPayload,
-            keyPhase,
-            spinBit,
-            greaseQuicBit,
-            currentPacketNumber,
-            out byte[] plaintextPacket,
-            out int packetNumberOffset,
-            out int packetNumberLength))
+                applicationPayload,
+                keyPhase,
+                spinBit,
+                greaseQuicBit,
+                currentPacketNumber,
+                out QuicBufferLease plaintextPacket,
+                out int packetNumberOffset,
+                out int packetNumberLength))
         {
             return false;
         }
 
-        if (!TryProtectApplicationDataPacket(
-            material,
-            plaintextPacket,
-            packetNumberOffset,
-            packetNumberLength,
-            out protectedPacket))
+        try
         {
-            return false;
-        }
+            if (!TryProtectApplicationDataPacket(
+                    material,
+                    plaintextPacket.Span,
+                    packetNumberOffset,
+                    packetNumberLength,
+                    out protectedPacket))
+            {
+                return false;
+            }
 
-        packetNumber = currentPacketNumber;
-        nextApplicationPacketNumber = currentPacketNumber + 1;
-        return true;
+            packetNumber = currentPacketNumber;
+            nextApplicationPacketNumber = currentPacketNumber + 1;
+            return true;
+        }
+        finally
+        {
+            plaintextPacket.Dispose();
+        }
     }
 
     internal bool TryBuildProtectedApplicationDataPacketLease(
@@ -2189,53 +2196,6 @@ internal sealed class QuicHandshakeFlowCoordinator
         bool spinBit,
         bool greaseQuicBit,
         ulong packetNumber,
-        out byte[] plaintextPacket,
-        out int packetNumberOffset,
-        out int packetNumberLength)
-    {
-        plaintextPacket = [];
-        packetNumberOffset = default;
-        packetNumberLength = ApplicationPacketNumberLength;
-
-        if (destinationConnectionId.Length > MaximumConnectionIdLength
-            || applicationPayload.Length > int.MaxValue - 1 - destinationConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
-        {
-            return false;
-        }
-
-        int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
-            packetNumberOffset = 1 + destinationConnectionId.Length;
-            bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
-
-            byte[] packet = new byte[packetNumberOffset + packetNumberLength + paddedPayloadLength];
-            packet[0] = (byte)(
-                (greaseQuicBit ? 0 : QuicPacketHeaderBits.FixedBitMask)
-                | (spinBitEnabled ? QuicPacketHeaderBits.SpinBitMask : 0)
-                | (keyPhase ? QuicPacketHeaderBits.KeyPhaseBitMask : 0)
-                | (packetNumberLength - 1));
-        destinationConnectionId.CopyTo(packet.AsSpan(1));
-
-        BinaryPrimitives.WriteUInt32BigEndian(
-            packet.AsSpan(packetNumberOffset, packetNumberLength),
-            unchecked((uint)packetNumber));
-
-        applicationPayload.CopyTo(packet.AsSpan(packetNumberOffset + packetNumberLength));
-
-        if (paddedPayloadLength > applicationPayload.Length)
-        {
-            packet.AsSpan(packetNumberOffset + packetNumberLength + applicationPayload.Length, paddedPayloadLength - applicationPayload.Length).Fill(0);
-        }
-
-        plaintextPacket = packet;
-        return true;
-    }
-
-    private bool TryBuildApplicationDataPlaintextPacket(
-        ReadOnlySpan<byte> applicationPayload,
-        bool keyPhase,
-        bool spinBit,
-        bool greaseQuicBit,
-        ulong packetNumber,
         out QuicBufferLease plaintextPacket,
         out int packetNumberOffset,
         out int packetNumberLength)
@@ -2403,7 +2363,7 @@ internal sealed class QuicHandshakeFlowCoordinator
             plaintextPacket.Slice(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
             protectedPacketBuffer.AsSpan(packetNumberOffset + packetNumberLength, plaintextPayloadLength),
             protectedPacketBuffer.AsSpan(plaintextPacket.Length, QuicInitialPacketProtection.AuthenticationTagLength),
-            protectedPacketBuffer[..(packetNumberOffset + packetNumberLength)]))
+            protectedPacketBuffer.AsSpan(0, packetNumberOffset + packetNumberLength)))
         {
             return false;
         }

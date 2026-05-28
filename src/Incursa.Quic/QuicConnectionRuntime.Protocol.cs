@@ -2404,42 +2404,50 @@ internal sealed partial class QuicConnectionRuntime
                 QuicPacketNumberSpace.ApplicationData,
                 nowMicros,
                 out QuicAckFrame ackFrame)
-            || !TryBuildOutboundAckPayload(ackFrame, out byte[] ackPayload))
+            || !TryBuildOutboundAckPayloadLease(ackFrame, out QuicBufferLease ackPayload))
         {
             return false;
         }
 
-        if (!TryProtectAndAccountApplicationPayload(
-            ackPayload,
-            "The connection runtime could not protect the ACK packet.",
-            "The connection cannot send the ACK packet.",
-            probePacket: false,
-            ackOnlyPacket: true,
-            streamIds: null,
-            ref effects,
-            out QuicConnectionActivePathRecord currentPath,
-            out QuicConnectionPathAmplificationState updatedAmplificationState,
-            out byte[] protectedPacket,
-            out _))
+        try
         {
-            return false;
+            if (!TryProtectAndAccountApplicationPayload(
+                ackPayload.Memory,
+                "The connection runtime could not protect the ACK packet.",
+                "The connection cannot send the ACK packet.",
+                probePacket: false,
+                ackOnlyPacket: true,
+                streamIds: null,
+                retainPlaintextPayload: false,
+                ref effects,
+                out QuicConnectionActivePathRecord currentPath,
+                out QuicConnectionPathAmplificationState updatedAmplificationState,
+                out byte[] protectedPacket,
+                out _))
+            {
+                return false;
+            }
+
+            activePath = currentPath with
+            {
+                AmplificationState = updatedAmplificationState,
+            };
+
+            MarkApplicationAckFrameSent(
+                ackFrame,
+                packetNumber: null,
+                sentAtMicros: nowMicros,
+                ackOnlyPacket: true);
+
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                currentPath.Identity,
+                protectedPacket));
+            return true;
         }
-
-        activePath = currentPath with
+        finally
         {
-            AmplificationState = updatedAmplificationState,
-        };
-
-        MarkApplicationAckFrameSent(
-            ackFrame,
-            packetNumber: null,
-            sentAtMicros: nowMicros,
-            ackOnlyPacket: true);
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            currentPath.Identity,
-            protectedPacket));
-        return true;
+            ackPayload.Dispose();
+        }
     }
 
     private bool TrySendPendingClientHandshakeAckProbeWhenNoHandshakeDataInFlight(
@@ -2704,19 +2712,12 @@ internal sealed partial class QuicConnectionRuntime
             ackOnlyPacket);
     }
 
-    private bool TryBuildOutboundAckPayload(QuicAckFrame ackFrame, out byte[] payload)
+    private static bool TryBuildOutboundAckPayloadLease(QuicAckFrame ackFrame, out QuicBufferLease payload)
     {
-        payload = [];
-
-        if (!TryBuildOutboundAckFramePayload(ackFrame, out byte[] ackFramePayload))
-        {
-            return false;
-        }
-
-        byte[] buffer = new byte[Math.Max(ApplicationMinimumProtectedPayloadLength, ackFramePayload.Length)];
-        ackFramePayload.CopyTo(buffer.AsSpan());
-        payload = buffer;
-        return true;
+        return QuicConnectionAckHelpers.TryBuildOutboundAckPayloadLease(
+            ackFrame,
+            ApplicationMinimumProtectedPayloadLength,
+            out payload);
     }
 
     private bool TryBuildLongHeaderAckPiggybackFramePayload(
