@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Incursa LLC.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 namespace Incursa.Quic;
 
 // TLS/bootstrap handling, packet ingress, and transport-parameter commits.
@@ -2346,7 +2349,7 @@ internal sealed partial class QuicConnectionRuntime
                 handshakeConfirmed: HandshakeConfirmed);
         }
 
-        stateChanged |= recoveryController.RecordAcknowledgment(
+        bool rttSampleUpdated = recoveryController.RecordAcknowledgment(
             packetNumberSpace,
             ackFrame.LargestAcknowledged,
             ackReceivedAtMicros,
@@ -2354,9 +2357,10 @@ internal sealed partial class QuicConnectionRuntime
             ackDelayMicros: ackFrame.AckDelay,
             handshakeConfirmed: HandshakeConfirmed,
             peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
-        QuicRttEstimator rttEstimator = recoveryController.GetRttEstimator(packetNumberSpace);
-        if (rttEstimator.LatestRttMicros > 0)
+        stateChanged |= rttSampleUpdated;
+        if (rttSampleUpdated)
         {
+            QuicRttEstimator rttEstimator = recoveryController.GetRttEstimator(packetNumberSpace);
             QuicMetrics.RecordRtt(tlsState.Role, rttEstimator.LatestRttMicros);
         }
 

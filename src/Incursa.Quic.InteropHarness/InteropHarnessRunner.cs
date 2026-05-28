@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Incursa LLC.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using Incursa.Quic;
 using Incursa.Quic.Http3;
 using Incursa.Quic.Qlog;

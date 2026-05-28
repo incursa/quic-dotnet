@@ -957,7 +957,7 @@
     {
       "id": "REQ-QUIC-CRT-0155",
       "title": "Expose bounded System.Diagnostics.Metrics instruments",
-      "statement": "The library MUST expose a standard `System.Diagnostics.Metrics` surface for QUIC and HTTP/3 diagnostic counters and histograms without adding OpenTelemetry package dependencies, ETW, EventSource, EventCounters, qlog serialization, or protocol behavior changes. The metrics surface MUST use stable meter names, bounded low-cardinality tags, and disabled-listener guards on packet, datagram, byte, and recovery hot paths.",
+      "statement": "The library MUST expose a standard `System.Diagnostics.Metrics` surface for QUIC and HTTP/3 diagnostic counters and histograms without adding OpenTelemetry package dependencies, ETW, EventSource, EventCounters, qlog serialization, or protocol behavior changes.",
       "trace": {
         "upstream_refs": [
           "docs/requirements-workflow.md",
@@ -978,6 +978,7 @@
       "notes": [
         "Allowed tag keys are limited to role, direction, initiator, packet_type, close_reason, failure_reason, and status_class.",
         "The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.",
+        "The metrics surface uses stable meter names, bounded low-cardinality tags, and disabled-listener guards on packet, datagram, byte, and recovery hot paths.",
         "The core transport remains qlog-free; qlog mapping and serialization stay in the sibling adapter boundary.",
         "These metrics are diagnostic signals, not benchmark results."
       ]
