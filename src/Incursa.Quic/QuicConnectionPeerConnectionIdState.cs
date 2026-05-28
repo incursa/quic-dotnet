@@ -457,7 +457,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
                 currentDestinationConnectionIdSequence.Value,
                 out QuicConnectionPeerConnectionIdRecord currentRecord))
         {
-            currentDestinationConnectionId = currentRecord.ConnectionIdBytes.ToArray();
+            currentDestinationConnectionId = currentRecord.ConnectionIdBytes;
             return;
         }
 
@@ -475,7 +475,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
         }
 
         currentDestinationConnectionIdSequence = selectedSequence;
-        currentDestinationConnectionId = selectedRecord.ConnectionIdBytes.ToArray();
+        currentDestinationConnectionId = selectedRecord.ConnectionIdBytes;
     }
 
     private bool TryFindAvailableConnectionIdForPath(
@@ -537,7 +537,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
         }
 
         currentDestinationConnectionIdSequence = sequenceNumber;
-        currentDestinationConnectionId = record.ConnectionIdBytes.ToArray();
+        currentDestinationConnectionId = record.ConnectionIdBytes;
     }
 
     private static bool PathIdentityEquals(
