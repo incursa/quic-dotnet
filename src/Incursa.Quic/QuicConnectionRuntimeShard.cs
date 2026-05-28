@@ -177,7 +177,14 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // The shard owner requested a stop; any remaining queued events are left to its shutdown policy.
+            // The shard owner requested a stop; release any owned buffers that remain queued.
+        }
+        finally
+        {
+            while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
+            {
+                ReleaseWorkItemResources(workItem);
+            }
         }
     }
 
@@ -202,18 +209,33 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         Action<QuicConnectionHandle, QuicConnectionTransitionResult>? transitionObserver,
         Action<QuicConnectionHandle, QuicConnectionEffect>? effectObserver)
     {
-        if (workItem.Runtime.IsDisposed || workItem.Runtime.IsInboxConsumerRunning)
+        try
         {
-            return;
+            if (workItem.Runtime.IsDisposed || workItem.Runtime.IsInboxConsumerRunning)
+            {
+                return;
+            }
+
+            QuicConnectionTransitionResult result = workItem.Runtime.Transition(workItem.ConnectionEvent, clock.Ticks);
+            transitionObserver?.Invoke(workItem.Handle, result);
+
+            foreach (QuicConnectionEffect effect in result.Effects)
+            {
+                deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
+                effectObserver?.Invoke(workItem.Handle, effect);
+            }
         }
-
-        QuicConnectionTransitionResult result = workItem.Runtime.Transition(workItem.ConnectionEvent, clock.Ticks);
-        transitionObserver?.Invoke(workItem.Handle, result);
-
-        foreach (QuicConnectionEffect effect in result.Effects)
+        finally
         {
-            deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
-            effectObserver?.Invoke(workItem.Handle, effect);
+            ReleaseWorkItemResources(workItem);
+        }
+    }
+
+    private static void ReleaseWorkItemResources(QuicConnectionRuntimeShardWorkItem workItem)
+    {
+        if (workItem.ConnectionEvent is QuicConnectionPacketReceivedEvent packetReceivedEvent)
+        {
+            packetReceivedEvent.ReleaseOwnedDatagramBuffer();
         }
     }
 }

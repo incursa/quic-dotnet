@@ -62,17 +62,35 @@ internal sealed record QuicConnectionPacketReceivedEvent(
     ReadOnlyMemory<byte> Datagram,
     ulong? RoutedLocallyIssuedConnectionId = null,
     QuicEcnCounts? EcnCounts = null,
-    byte[]? OwnedDatagramBuffer = null)
+    byte[]? OwnedDatagramBuffer = null,
+    QuicReceiveBufferOwnership OwnedDatagramBufferOwnership = default)
     : QuicConnectionEvent(QuicConnectionEventKind.PacketReceived, ObservedAtTicks)
 {
     private byte[]? ownedDatagramBuffer = OwnedDatagramBuffer;
+
+    internal QuicConnectionPacketReceivedEvent WithBorrowedDatagramSlice(ReadOnlyMemory<byte> datagram)
+    {
+        return new QuicConnectionPacketReceivedEvent(
+            ObservedAtTicks,
+            PathIdentity,
+            datagram,
+            RoutedLocallyIssuedConnectionId,
+            EcnCounts);
+    }
 
     internal void ReleaseOwnedDatagramBuffer()
     {
         byte[]? buffer = Interlocked.Exchange(ref ownedDatagramBuffer, null);
         if (buffer is not null)
         {
-            QuicBufferPool.ReturnBytes(buffer);
+            if (OwnedDatagramBufferOwnership.Pool is { } pool)
+            {
+                pool.Return(buffer, OwnedDatagramBufferOwnership);
+            }
+            else
+            {
+                QuicBufferPool.ReturnBytes(buffer);
+            }
         }
     }
 }

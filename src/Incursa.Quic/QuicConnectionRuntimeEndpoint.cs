@@ -461,7 +461,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
         QuicEcnCounts? ecnCounts = null,
-        byte[]? ownedDatagramBuffer = null)
+        byte[]? ownedDatagramBuffer = null,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership = default)
     {
         if (datagram.IsEmpty)
         {
@@ -483,7 +484,13 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
         if (headerForm == QuicHeaderForm.Short)
         {
-            return ReceiveShortHeaderDatagram(datagram, pathIdentity, packet, ecnCounts, ownedDatagramBuffer);
+            return ReceiveShortHeaderDatagram(
+                datagram,
+                pathIdentity,
+                packet,
+                ecnCounts,
+                ownedDatagramBuffer,
+                ownedDatagramBufferOwnership);
         }
 
         if (QuicPacketParser.TryParseVersionNegotiation(packet, out _))
@@ -552,7 +559,14 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 return CreateDroppedIngressResult(routedHandle);
             }
 
-            if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId, ecnCounts, ownedDatagramBuffer))
+            if (TryPostPacketReceived(
+                    routedHandle,
+                    datagram,
+                    pathIdentity,
+                    routedLocallyIssuedConnectionId,
+                    ecnCounts,
+                    ownedDatagramBuffer,
+                    ownedDatagramBufferOwnership))
             {
                 return new QuicConnectionIngressResult(
                     QuicConnectionIngressDisposition.RoutedToConnection,
@@ -654,7 +668,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> packet,
         QuicEcnCounts? ecnCounts,
-        byte[]? ownedDatagramBuffer)
+        byte[]? ownedDatagramBuffer,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership)
     {
         if (packet.IsEmpty)
         {
@@ -677,7 +692,14 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                     return CreateDroppedIngressResult(routedHandle);
                 }
 
-                if (TryPostPacketReceived(routedHandle, datagram, pathIdentity, routedLocallyIssuedConnectionId, ecnCounts, ownedDatagramBuffer))
+                if (TryPostPacketReceived(
+                        routedHandle,
+                        datagram,
+                        pathIdentity,
+                        routedLocallyIssuedConnectionId,
+                        ecnCounts,
+                        ownedDatagramBuffer,
+                        ownedDatagramBufferOwnership))
                 {
                     return new QuicConnectionIngressResult(
                         QuicConnectionIngressDisposition.RoutedToConnection,
@@ -924,7 +946,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
         QuicConnectionPathIdentity pathIdentity,
         ulong? routedLocallyIssuedConnectionId,
         QuicEcnCounts? ecnCounts = null,
-        byte[]? ownedDatagramBuffer = null)
+        byte[]? ownedDatagramBuffer = null,
+        QuicReceiveBufferOwnership ownedDatagramBufferOwnership = default)
     {
         return host.TryPostEvent(handle, new QuicConnectionPacketReceivedEvent(
             clock.Ticks,
@@ -932,7 +955,8 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
             datagram,
             routedLocallyIssuedConnectionId,
             ecnCounts,
-            ownedDatagramBuffer));
+            ownedDatagramBuffer,
+            ownedDatagramBufferOwnership));
     }
 
     private bool TryDispatchStatelessReset(

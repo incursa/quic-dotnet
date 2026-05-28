@@ -21,7 +21,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private readonly Action<QuicConnectionTransitionResult>? transitionObserver;
     private readonly Action<QuicConnectionEffect>? effectObserver;
     private readonly IQuicDiagnosticsSink diagnosticsSink;
-    private readonly int receiveBufferBytes;
+    private readonly QuicReceiveBufferPool receiveBufferPool;
     private readonly object socketGate = new();
     private readonly CancellationTokenSource shutdown = new();
     private readonly uint flowLabelSeed;
@@ -60,7 +60,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         this.transitionObserver = transitionObserver;
         this.effectObserver = effectObserver;
         this.diagnosticsSink = QuicDiagnostics.ResolveConnectionSink(diagnosticsSink);
-        this.receiveBufferBytes = receiveBufferBytes;
+        receiveBufferPool = new QuicReceiveBufferPool(receiveBufferBytes, ownerName: nameof(QuicConnectionEndpointHost));
         flowLabelSeed = unchecked((uint)RandomNumberGenerator.GetInt32(1, int.MaxValue));
 
         // Keep the socket open to migrated source endpoints. Outbound effects still use the
@@ -153,6 +153,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
         }
 
         linkedCancellation?.Dispose();
+        receiveBufferPool.Dispose();
         shutdown.Dispose();
     }
 
@@ -164,6 +165,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     internal Socket Socket => socket;
 
     internal QuicConnectionPathIdentity PeerPathIdentity => peerPathIdentity;
+
+    internal QuicReceiveBufferPoolSnapshot ReceiveBufferPoolSnapshot => receiveBufferPool.Snapshot;
 
     internal bool TryApplyEffect(QuicConnectionEffect effect)
     {
@@ -195,11 +198,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 ? new IPEndPoint(IPAddress.IPv6Any, 0)
                 : new IPEndPoint(IPAddress.Any, 0);
 
-            byte[]? datagramBuffer = QuicBufferPool.RentBytes(receiveBufferBytes);
+            QuicReceiveBufferLease datagramLease = receiveBufferPool.Rent();
             try
             {
                 SocketReceiveMessageFromResult receiveResult = await currentSocket.ReceiveMessageFromAsync(
-                    datagramBuffer.AsMemory(0, receiveBufferBytes),
+                    datagramLease.Memory,
                     SocketFlags.None,
                     remoteEndPoint,
                     cancellationToken).ConfigureAwait(false);
@@ -216,11 +219,13 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 QuicConnectionPathIdentity currentPathIdentity = CreatePathIdentity(receivedFrom, localEndPoint);
 
                 EmitSocketDatagramReceived(currentPathIdentity, receiveResult.ReceivedBytes);
+                byte[] datagramBuffer = datagramLease.Buffer;
                 ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
                     datagram,
                     currentPathIdentity,
-                    ownedDatagramBuffer: datagramBuffer);
+                    ownedDatagramBuffer: datagramBuffer,
+                    ownedDatagramBufferOwnership: datagramLease.Ownership);
                 ReadOnlyMemory<byte> observerDatagram = datagram;
                 if (ingressDatagramObserver is not null
                     && ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
@@ -236,7 +241,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
 
                 if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                 {
-                    datagramBuffer = null;
+                    datagramLease.TransferToRuntime();
                 }
                 else if (ingressResult.Disposition is not QuicConnectionIngressDisposition.EndpointHandling
                     and not QuicConnectionIngressDisposition.Dropped)
@@ -276,10 +281,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
             }
             finally
             {
-                if (datagramBuffer is not null)
-                {
-                    QuicBufferPool.ReturnBytes(datagramBuffer);
-                }
+                datagramLease.Dispose();
             }
         }
     }

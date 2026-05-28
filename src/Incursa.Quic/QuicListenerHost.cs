@@ -29,6 +29,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private const int RetryBootstrapReplayValidationFailureSourceEndpointMismatch = 9;
     private const int RetryBootstrapReplayValidationFailureTokenValidation = 10;
     private const int RetryBootstrapReplayValidationFailurePacketNumberReset = 11;
+    private const int ReceiveBufferBytes = 4096;
     private const int MaximumBufferedZeroRttDatagramsPerConnection = 2;
     private static readonly TimeSpan RetryBootstrapTokenLifetime = TimeSpan.FromMinutes(1);
 
@@ -41,6 +42,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private readonly IQuicDiagnosticsSink listenerDiagnosticsSink;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly QuicConnectionRuntimeEndpoint endpoint;
+    private readonly QuicReceiveBufferPool receiveBufferPool = new(ReceiveBufferBytes, ownerName: nameof(QuicListenerHost));
     private readonly QuicListenerZeroRttPreInitialBuffer zeroRttPreInitialBuffer = new(MaximumBufferedZeroRttDatagramsPerConnection);
     private readonly QuicServerResumptionTicketStore serverResumptionTicketStore = new();
     private readonly ConcurrentDictionary<QuicConnectionHandle, PendingConnectionState> connections = new();
@@ -148,6 +150,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     internal string? NewTokenValidationTokenHex => newTokenValidationTokenHex;
 
     internal Socket Socket => socket;
+
+    internal QuicReceiveBufferPoolSnapshot ReceiveBufferPoolSnapshot => receiveBufferPool.Snapshot;
 
     internal QuicConnectionRuntimeEndpoint Endpoint => endpoint;
 
@@ -340,6 +344,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         versionNegotiationResponseCountsByRemoteAddress.Clear();
         serverResumptionTicketStore.Clear();
         cancellationSource?.Dispose();
+        receiveBufferPool.Dispose();
         shutdown.Dispose();
     }
 
@@ -356,14 +361,14 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         while (!cancellationToken.IsCancellationRequested)
         {
-            byte[]? datagramBuffer = QuicBufferPool.RentBytes(4096);
+            QuicReceiveBufferLease datagramLease = receiveBufferPool.Rent();
             try
             {
                 SocketReceiveMessageFromResult receiveResult;
                 try
                 {
                     receiveResult = await socket.ReceiveMessageFromAsync(
-                        datagramBuffer.AsMemory(),
+                        datagramLease.Memory,
                         SocketFlags.None,
                         remoteEndPoint,
                         cancellationToken).ConfigureAwait(false);
@@ -407,15 +412,17 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
+                byte[] datagramBuffer = datagramLease.Buffer;
                 ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
                     datagram,
                     pathIdentity,
-                    ownedDatagramBuffer: datagramBuffer);
+                    ownedDatagramBuffer: datagramBuffer,
+                    ownedDatagramBufferOwnership: datagramLease.Ownership);
                 EmitListenerIngressClassified(pathIdentity, ingressResult);
                 if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                 {
-                    datagramBuffer = null;
+                    datagramLease.TransferToRuntime();
                     continue;
                 }
 
@@ -480,10 +487,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             ingressResult = endpoint.ReceiveDatagram(
                                 datagram,
                                 pathIdentity,
-                                ownedDatagramBuffer: datagramBuffer);
+                                ownedDatagramBuffer: datagramBuffer,
+                                ownedDatagramBufferOwnership: datagramLease.Ownership);
                             if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection)
                             {
-                                datagramBuffer = null;
+                                datagramLease.TransferToRuntime();
                             }
 
                             FlushBufferedZeroRttDatagrams(initialDestinationConnectionId.Span);
@@ -508,10 +516,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
             finally
             {
-                if (datagramBuffer is not null)
-                {
-                    QuicBufferPool.ReturnBytes(datagramBuffer);
-                }
+                datagramLease.Dispose();
             }
         }
     }

@@ -211,11 +211,8 @@ internal sealed partial class QuicConnectionRuntime
                 return processedAnyPacket && stateChanged;
             }
 
-            QuicConnectionPacketReceivedEvent packetEvent = packetReceivedEvent with
-            {
-                Datagram = remainingDatagram[..packetLength],
-                OwnedDatagramBuffer = null,
-            };
+            QuicConnectionPacketReceivedEvent packetEvent =
+                packetReceivedEvent.WithBorrowedDatagramSlice(remainingDatagram[..packetLength]);
 
             processedAnyPacket = true;
             if (diagnosticsEnabled)
