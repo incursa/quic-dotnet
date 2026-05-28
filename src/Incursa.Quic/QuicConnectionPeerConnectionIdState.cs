@@ -333,7 +333,7 @@ internal sealed class QuicConnectionPeerConnectionIdState
             }
         }
 
-        List<ulong> sequencesToRetire = [];
+        List<ulong>? sequencesToRetire = null;
         if (retireInactivePathConnectionIds)
         {
             foreach (KeyValuePair<ulong, QuicConnectionPathIdentity> entry in pathBySequence)
@@ -345,11 +345,12 @@ internal sealed class QuicConnectionPeerConnectionIdState
                     continue;
                 }
 
-                sequencesToRetire.Add(entry.Key);
+                (sequencesToRetire ??= []).Add(entry.Key);
             }
         }
 
-        if (!CanReportRetiredSequenceNumbers(sequencesToRetire, activeConnectionIdLimit, out errorCode))
+        if (sequencesToRetire is not null
+            && !CanReportRetiredSequenceNumbers(sequencesToRetire, activeConnectionIdLimit, out errorCode))
         {
             return false;
         }
@@ -357,18 +358,21 @@ internal sealed class QuicConnectionPeerConnectionIdState
         SetCurrentDestinationConnectionId(selectedSequence);
         pathBySequence[selectedSequence] = pathIdentity;
 
-        List<ulong> newlyRetiredSequenceNumbers = [];
-        foreach (ulong sequenceNumber in sequencesToRetire)
+        List<ulong>? newlyRetiredSequenceNumbers = null;
+        if (sequencesToRetire is not null)
         {
-            connectionIdsBySequence.Remove(sequenceNumber);
-            pathBySequence.Remove(sequenceNumber);
-            if (retiredSequenceNumbersReportedToRuntime.Add(sequenceNumber))
+            foreach (ulong sequenceNumber in sequencesToRetire)
             {
-                newlyRetiredSequenceNumbers.Add(sequenceNumber);
+                connectionIdsBySequence.Remove(sequenceNumber);
+                pathBySequence.Remove(sequenceNumber);
+                if (retiredSequenceNumbersReportedToRuntime.Add(sequenceNumber))
+                {
+                    (newlyRetiredSequenceNumbers ??= []).Add(sequenceNumber);
+                }
             }
         }
 
-        retiredSequenceNumbers = newlyRetiredSequenceNumbers.ToArray();
+        retiredSequenceNumbers = newlyRetiredSequenceNumbers?.ToArray() ?? Array.Empty<ulong>();
         destinationConnectionIdChanged =
             previousDestinationSequence != currentDestinationConnectionIdSequence
             || !previousDestinationConnectionId.AsSpan().SequenceEqual(currentDestinationConnectionId);

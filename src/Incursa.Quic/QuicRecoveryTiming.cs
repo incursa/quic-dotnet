@@ -623,7 +623,7 @@ internal sealed class QuicRecoveryController
         out ulong? earliestLossDetectionTimeMicros,
         out QuicPacketNumberSpace earliestLossPacketNumberSpace)
     {
-        List<QuicLostPacket> lostPackets = new();
+        List<QuicLostPacket>? lostPackets = null;
         earliestLossDetectionTimeMicros = null;
         earliestLossPacketNumberSpace = default;
 
@@ -632,7 +632,7 @@ internal sealed class QuicRecoveryController
             IReadOnlyList<ulong> spaceLostPacketNumbers = state.DetectLostPackets(nowMicros, out ulong? spaceLossTimeMicros);
             foreach (ulong lostPacketNumber in spaceLostPacketNumbers)
             {
-                lostPackets.Add(new QuicLostPacket(state.PacketNumberSpace, lostPacketNumber));
+                (lostPackets ??= []).Add(new QuicLostPacket(state.PacketNumberSpace, lostPacketNumber));
             }
 
             if (spaceLossTimeMicros is null)
@@ -647,7 +647,7 @@ internal sealed class QuicRecoveryController
             }
         }
 
-        return lostPackets;
+        return lostPackets is null ? Array.Empty<QuicLostPacket>() : lostPackets;
     }
 
     /// <summary>
@@ -953,7 +953,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
         ulong nowMicros,
         out ulong? nextLossDetectionTimeMicros)
     {
-        List<ulong> lostPacketNumbers = new();
+        List<ulong>? lostPacketNumbers = null;
         ulong? nextLossDelayMicros = null;
 
         foreach (KeyValuePair<ulong, QuicRecoverySentPacketState> packet in ackElicitingPacketsInFlight)
@@ -980,7 +980,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
 
             if (byPacketThreshold || remainingLossDelayMicros == 0)
             {
-                lostPacketNumbers.Add(packet.Key);
+                (lostPacketNumbers ??= []).Add(packet.Key);
                 continue;
             }
 
@@ -990,9 +990,12 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
             }
         }
 
-        foreach (ulong lostPacketNumber in lostPacketNumbers)
+        if (lostPacketNumbers is not null)
         {
-            ackElicitingPacketsInFlight.Remove(lostPacketNumber);
+            foreach (ulong lostPacketNumber in lostPacketNumbers)
+            {
+                ackElicitingPacketsInFlight.Remove(lostPacketNumber);
+            }
         }
 
         if (nextLossDelayMicros is null)
@@ -1004,7 +1007,7 @@ internal sealed class QuicRecoveryPacketNumberSpaceState
             nextLossDetectionTimeMicros = SaturatingAdd(nowMicros, nextLossDelayMicros.Value);
         }
 
-        return lostPacketNumbers;
+        return lostPacketNumbers is null ? Array.Empty<ulong>() : lostPacketNumbers;
     }
 
     /// <summary>

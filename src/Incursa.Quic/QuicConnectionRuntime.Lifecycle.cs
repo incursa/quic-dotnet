@@ -390,7 +390,7 @@ internal sealed partial class QuicConnectionRuntime
         RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
         _ = RecomputeIdleTimeoutState(lastTransitionTicks);
 
-        List<QuicConnectionEffect> effects = [];
+        List<QuicConnectionEffect>? effects = null;
         long? idleDueTicks = phase switch
         {
             QuicConnectionPhase.Establishing or QuicConnectionPhase.Active when idleTimeoutState is not null
@@ -409,15 +409,15 @@ internal sealed partial class QuicConnectionRuntime
         long? closeDueTicks = phase == QuicConnectionPhase.Closing ? lifecycleTimerState.TerminalEndTicks : null;
         long? drainDueTicks = phase == QuicConnectionPhase.Draining ? lifecycleTimerState.TerminalEndTicks : null;
 
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
-        effects.AddRange(SetTimerDeadline(QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks));
-        return effects.ToArray();
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
+        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks));
+        return effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
     }
 
     private long? GetApplicationAckDelayDueTicks()
