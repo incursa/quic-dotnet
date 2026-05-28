@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-CRT-0053",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC and HTTP/3 System.Diagnostics.Metrics surface work item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add the first standard Meter-based QUIC and HTTP/3 diagnostic instrument surface without changing protocol behavior or qlog boundaries.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-RFC9312"
+  ],
+  "design_links": [
+    "ARC-QUIC-CRT-0052"
+  ],
+  "verification_links": [
+    "VER-QUIC-CRT-0053"
+  ],
+  "addresses": [
+    "REQ-QUIC-CRT-0155"
+  ],
+  "planned_changes": "- Add internal QUIC and HTTP/3 Meter helpers with stable meter names and the requested instrument names.\n- Wire connection, stream, socket datagram, blocked, PTO, RTT, and HTTP/3 request observations without changing protocol behavior.\n- Keep tags bounded and exclude connection IDs, stream IDs, endpoints, peer addresses, URL paths, exception messages, and raw errors.\n- Document the metric names, meanings, and tag contract.\n- Add focused MeterListener tests and a BenchmarkDotNet disabled-listener benchmark for the socket datagram metric path.",
+  "verification_plan": "Run focused metrics tests, focused HTTP/3 diagnostics tests, the QUIC test project, dotnet build, a focused BenchmarkDotNet disabled-listener check, SpecTrace validation, and git diff whitespace checks.",
+  "completion_notes": "Implemented the first internal System.Diagnostics.Metrics surface for QUIC and HTTP/3. The transport core remains qlog-free and metrics do not depend on diagnostics sinks. Socket datagram and byte paths use Instrument.Enabled gates before tag construction; HTTP/3 request metrics classify status and failure by bounded values only.",
+  "out_of_scope": [
+    "OpenTelemetry package dependencies or exporters",
+    "ETW, EventSource, or EventCounters",
+    "qlog serialization changes",
+    "ProtocolLab changes",
+    "wire behavior changes",
+    "scheduling or recovery semantic changes",
+    "high-cardinality tags",
+    "sample application rewrites"
+  ]
+}

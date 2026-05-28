@@ -645,6 +645,7 @@ internal sealed partial class QuicConnectionRuntime
             candidatePath.AmplificationState,
             out byte[] challengeDatagramPayload))
         {
+            QuicMetrics.RecordAntiAmplificationBlocked(tlsState.Role);
             if (diagnosticsEnabled)
             {
                 EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(
@@ -740,6 +741,7 @@ internal sealed partial class QuicConnectionRuntime
                     pathValidationDatagram.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                QuicMetrics.RecordAntiAmplificationBlocked(tlsState.Role);
                 if (diagnosticsEnabled)
                 {
                     EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(
@@ -763,6 +765,7 @@ internal sealed partial class QuicConnectionRuntime
                     pathValidationDatagram.Length,
                     out QuicConnectionPathAmplificationState updatedAmplificationState))
             {
+                QuicMetrics.RecordAntiAmplificationBlocked(tlsState.Role);
                 if (diagnosticsEnabled)
                 {
                     EmitDiagnostic(ref effects, QuicDiagnostics.AntiAmplificationBlocked(

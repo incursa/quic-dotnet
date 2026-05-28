@@ -114,8 +114,13 @@ public sealed class Http3Client : IAsyncDisposable
             throw new ArgumentException("The HTTP/3 request URI must be absolute.", nameof(requestUri));
         }
 
+        long requestStartedTimestamp = 0;
+        bool requestStarted = false;
         try
         {
+            requestStartedTimestamp = Http3Metrics.GetTimestamp();
+            requestStarted = true;
+            Http3Metrics.RecordRequestStarted("client");
             Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestStarted)
             {
                 Role = "client",
@@ -150,6 +155,7 @@ public sealed class Http3Client : IAsyncDisposable
                 StatusCode = response.StatusCode,
                 PayloadLength = response.Body.Length,
             });
+            Http3Metrics.RecordRequestCompleted("client", response.StatusCode, requestStartedTimestamp);
             Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamClosed)
             {
                 Role = "client",
@@ -160,6 +166,11 @@ public sealed class Http3Client : IAsyncDisposable
         }
         catch (Exception ex)
         {
+            if (requestStarted)
+            {
+                Http3Metrics.RecordRequestFailed("client", Http3Metrics.NormalizeFailureReason(ex), requestStartedTimestamp);
+            }
+
             EmitError(ex);
             throw;
         }

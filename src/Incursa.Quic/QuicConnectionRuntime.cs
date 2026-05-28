@@ -255,6 +255,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         this.currentProbeTimeoutMicros = currentProbeTimeoutMicros;
         this.addressValidationTokenProtector = addressValidationTokenProtector ?? QuicAddressValidationTokenProtector.CreateEphemeral();
         this.allowClientPeerInitialReplacementBeforeTranscript = allowClientPeerInitialReplacementBeforeTranscript;
+        QuicMetrics.RecordConnectionStarted(tlsState.Role);
     }
 
     public QuicConnectionPhase Phase => phase;
@@ -1322,21 +1323,28 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
-        Exception completionException = terminalState is QuicConnectionTerminalState terminalStateValue
-            ? CreateTerminalException(terminalStateValue)
-            : new ObjectDisposedException(nameof(QuicConnectionRuntime));
-
-        CompletePendingStreamOperations(completionException);
-        inbox.Writer.TryComplete();
-
-        Task? processing = processingTask;
-        if (processing is not null)
+        try
         {
-            await processing.ConfigureAwait(false);
-        }
+            Exception completionException = terminalState is QuicConnectionTerminalState terminalStateValue
+                ? CreateTerminalException(terminalStateValue)
+                : new ObjectDisposedException(nameof(QuicConnectionRuntime));
 
-        peerConnectionIdState.Clear();
-        issuedConnectionIdState.Reset();
+            CompletePendingStreamOperations(completionException);
+            inbox.Writer.TryComplete();
+
+            Task? processing = processingTask;
+            if (processing is not null)
+            {
+                await processing.ConfigureAwait(false);
+            }
+
+            peerConnectionIdState.Clear();
+            issuedConnectionIdState.Reset();
+        }
+        finally
+        {
+            QuicMetrics.RecordConnectionClosed(tlsState.Role, terminalState);
+        }
     }
 
     public void Dispose()

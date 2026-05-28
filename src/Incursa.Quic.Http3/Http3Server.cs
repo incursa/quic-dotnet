@@ -490,9 +490,14 @@ public sealed class Http3Server : IAsyncDisposable
     {
         await using (stream.ConfigureAwait(false))
         {
+            long requestStartedTimestamp = 0;
+            bool requestStarted = false;
             try
             {
                 Http3Request request = await ReadRequestAsync(stream, qpackState, cancellationToken).ConfigureAwait(false);
+                requestStartedTimestamp = Http3Metrics.GetTimestamp();
+                requestStarted = true;
+                Http3Metrics.RecordRequestStarted("server");
                 EmitRequestStartedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path);
                 Http3ServerResponse response = await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
                 await WriteResponseAsync(stream, response, cancellationToken).ConfigureAwait(false);
@@ -506,29 +511,55 @@ public sealed class Http3Server : IAsyncDisposable
                     await connection.CloseAsync(0, cancellationToken).ConfigureAwait(false);
                 }
 
+                Http3Metrics.RecordRequestCompleted("server", response.StatusCode, requestStartedTimestamp);
                 EmitResponseCompletedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode, response.Body.Length);
                 EmitRequestCompletedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path, response.StatusCode, response.Body.Length);
             }
             catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
             {
+                if (requestStarted)
+                {
+                    Http3Metrics.RecordRequestFailed("server", "canceled", requestStartedTimestamp);
+                }
+
                 SuppressExpectedException(exception);
             }
             catch (QuicException exception)
             {
+                if (requestStarted)
+                {
+                    Http3Metrics.RecordRequestFailed("server", "quic", requestStartedTimestamp);
+                }
+
                 SuppressExpectedException(exception);
             }
             catch (QPackException exception)
             {
+                if (requestStarted)
+                {
+                    Http3Metrics.RecordRequestFailed("server", "qpack", requestStartedTimestamp);
+                }
+
                 EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
             }
             catch (Http3Exception exception)
             {
+                if (requestStarted)
+                {
+                    Http3Metrics.RecordRequestFailed("server", "http3", requestStartedTimestamp);
+                }
+
                 EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
             }
             catch (ArgumentException exception)
             {
+                if (requestStarted)
+                {
+                    Http3Metrics.RecordRequestFailed("server", "argument", requestStartedTimestamp);
+                }
+
                 EmitError(exception);
                 await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
             }

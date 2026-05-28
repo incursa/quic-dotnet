@@ -2354,6 +2354,11 @@ internal sealed partial class QuicConnectionRuntime
             ackDelayMicros: ackFrame.AckDelay,
             handshakeConfirmed: HandshakeConfirmed,
             peerMaxAckDelayMicros: tlsState.PeerTransportParameters?.MaxAckDelay ?? 0);
+        QuicRttEstimator rttEstimator = recoveryController.GetRttEstimator(packetNumberSpace);
+        if (rttEstimator.LatestRttMicros > 0)
+        {
+            QuicMetrics.RecordRtt(tlsState.Role, rttEstimator.LatestRttMicros);
+        }
 
         stateChanged |= TryRegisterDetectedLosses(nowTicks);
         if (acknowledgedCurrentOneRttKeyPhasePacket && TryRecordConfirmedCurrentOneRttKeyPhase(nowTicks))

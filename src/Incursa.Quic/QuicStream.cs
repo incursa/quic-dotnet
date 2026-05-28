@@ -56,6 +56,7 @@ public sealed class QuicStream : Stream
 
         if (runtime is not null)
         {
+            QuicMetrics.RecordStreamOpened(runtime.TlsState.Role, streamId, type);
             runtimeObserverId = runtime.RegisterStreamObserver(streamId, HandleRuntimeNotification);
         }
     }
@@ -434,6 +435,11 @@ public sealed class QuicStream : Stream
         }
         finally
         {
+            if (runtime is not null)
+            {
+                QuicMetrics.RecordStreamClosed(runtime.TlsState.Role, streamId, type);
+            }
+
             readsClosed.TrySetResult(null);
             writesClosed.TrySetResult(null);
             readGate.Release();

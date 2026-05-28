@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-CRT-0052",
+  "artifact_type": "architecture",
+  "status": "draft",
+  "title": "QUIC and HTTP/3 System.Diagnostics.Metrics boundary architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe the first built-in metrics surface that satisfies REQ-QUIC-CRT-0155 while preserving the existing diagnostics sink and qlog adapter boundaries.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "SPEC-QUIC-RFC9312",
+    "ARC-QUIC-CRT-0032"
+  ],
+  "satisfies": [
+    "REQ-QUIC-CRT-0155"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "src/Incursa.Quic.Http3/Http3Metrics.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.cs",
+    "src/Incursa.Quic/QuicStream.cs",
+    "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "docs/metrics.md"
+  ],
+  "design_summary": "The QUIC transport owns one internal Meter helper with meter name Incursa.Quic and the HTTP/3 layer owns one internal Meter helper with meter name Incursa.Quic.Http3. The helpers create standard counters, up-down counters, and histograms only; they do not reference OpenTelemetry packages, qlog packages, serializers, or diagnostics sinks. Runtime, stream, socket, recovery, and HTTP/3 request code calls the helpers at existing observation points so the emitted measurements are diagnostic side effects only. Hot packet, datagram, byte, and recovery paths check Instrument.Enabled before constructing tag lists, and every tag value is selected from a bounded string set.",
+  "alternatives_considered": [
+    "Add OpenTelemetry package references and exporters directly. Rejected because the package should expose standard Meter instruments and leave collection policy to callers.",
+    "Map metrics through the existing qlog adapter. Rejected because metrics are live diagnostic signals and must not move qlog concerns into the transport core.",
+    "Tag measurements with connection IDs, stream IDs, endpoints, URL paths, or exception text. Rejected because those tags are high cardinality and may expose sensitive data.",
+    "Defer all socket datagram and byte counters. Rejected for the first surface because the endpoint socket boundary can use Instrument.Enabled guards and is covered by a focused disabled-listener benchmark."
+  ],
+  "edge_cases_and_constraints": [
+    "Metrics emission must not alter wire behavior, scheduling, recovery semantics, qlog serialization, ProtocolLab behavior, or benchmark behavior outside the added metrics benchmark.",
+    "Active connection and stream instruments are up-down counters and must emit matching decrement measurements when the runtime or stream facade is disposed.",
+    "HTTP/3 request metrics must classify status by status class and failures by bounded reason categories instead of method, path, exception message, or raw error text.",
+    "The metrics helpers remain internal implementation details; callers subscribe through the public Meter names."
+  ],
+  "data_and_state_considerations": "Metrics state is limited to static Meter instruments and per-call tag lists constructed only when at least one relevant instrument is enabled. The implementation does not retain connection IDs, stream IDs, endpoint addresses, paths, or raw errors in metric state.",
+  "risks": [
+    "Accidentally building tags on disabled per-datagram paths would add unnecessary hot-path allocation pressure.",
+    "Adding high-cardinality tags would make the metrics unsafe for production collectors.",
+    "Routing metrics through diagnostics sinks would make disabled diagnostics and metrics enablement dependent on each other.",
+    "Treating these counters as benchmark evidence would blur the repo's diagnostic and performance-proof boundaries."
+  ]
+}

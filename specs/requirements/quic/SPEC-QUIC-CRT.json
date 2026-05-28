@@ -955,6 +955,34 @@
       "statement": "The runtime SHOULD expose metrics or structured diagnostics for shard queue depth, timer lateness, phase transitions, path promotions, validation failures, and stream-count growth."
     },
     {
+      "id": "REQ-QUIC-CRT-0155",
+      "title": "Expose bounded System.Diagnostics.Metrics instruments",
+      "statement": "The library MUST expose a standard `System.Diagnostics.Metrics` surface for QUIC and HTTP/3 diagnostic counters and histograms without adding OpenTelemetry package dependencies, ETW, EventSource, EventCounters, qlog serialization, or protocol behavior changes. The metrics surface MUST use stable meter names, bounded low-cardinality tags, and disabled-listener guards on packet, datagram, byte, and recovery hot paths.",
+      "trace": {
+        "upstream_refs": [
+          "docs/requirements-workflow.md",
+          "specs/requirements/quic/REQUIREMENT-GAPS.md",
+          "src/Incursa.Quic/QuicDiagnostics.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.cs",
+          "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
+          "src/Incursa.Quic/QuicListenerHost.cs",
+          "src/Incursa.Quic.Http3/Http3Server.cs",
+          "src/Incursa.Quic.Http3/Http3Client.cs",
+          "src/Incursa.Quic.Http3/IHttp3DiagnosticsSink.cs",
+          "src/Incursa.Quic.Qlog/README.md",
+          "docs/metrics.md",
+          "benchmarks/QuicDiagnosticsBenchmarks.cs",
+          "tests/Incursa.Quic.Tests/MetricsTests.cs"
+        ]
+      },
+      "notes": [
+        "Allowed tag keys are limited to role, direction, initiator, packet_type, close_reason, failure_reason, and status_class.",
+        "The metrics surface must not tag by connection ID, stream ID, endpoint, peer address, URL path, exception message, or raw error text.",
+        "The core transport remains qlog-free; qlog mapping and serialization stay in the sibling adapter boundary.",
+        "These metrics are diagnostic signals, not benchmark results."
+      ]
+    },
+    {
       "id": "REQ-QUIC-CRT-0099",
       "title": "Prove execution-profile equivalence",
       "statement": "Verification of the runtime MUST demonstrate that dedicated-owner and sharded profiles produce the same externally visible connection semantics for the same event sequence."

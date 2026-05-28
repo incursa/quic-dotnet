@@ -42,6 +42,20 @@ public class QuicDiagnosticsBenchmarks
     }
 
     [Benchmark]
+    public int MetricsDisabled_DatagramReceived()
+    {
+        QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, 1200);
+        return 1200;
+    }
+
+    [Benchmark]
+    public int MetricsDisabled_DatagramSent()
+    {
+        QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, 1200);
+        return 1200;
+    }
+
+    [Benchmark]
     public int EnabledHotPathConstructsTypedEvent()
     {
         if (enabledSink.IsEnabled)

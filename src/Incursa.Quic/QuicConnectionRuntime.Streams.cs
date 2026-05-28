@@ -825,6 +825,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (dataBlockedFrame.MaximumData != 0)
         {
+            QuicMetrics.RecordFlowControlBlocked(tlsState.Role);
             EmitDiagnostic(ref effects, QuicDiagnostics.FlowControlBlocked(dataBlockedFrame));
             return TrySendFlowControlBlockedSignal(
                 dataBlockedFrame,
@@ -835,6 +836,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (streamDataBlockedFrame.MaximumStreamData != 0)
         {
+            QuicMetrics.RecordFlowControlBlocked(tlsState.Role);
             EmitDiagnostic(ref effects, QuicDiagnostics.FlowControlBlocked(streamDataBlockedFrame));
             return TrySendFlowControlBlockedSignal(
                 streamDataBlockedFrame,
@@ -855,6 +857,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        QuicMetrics.RecordStreamLimitBlocked(tlsState.Role, streamsBlockedFrame.IsBidirectional);
         EmitDiagnostic(ref effects, QuicDiagnostics.StreamLimitBlocked(streamsBlockedFrame));
         return TrySendStreamsBlockedSignal(
             streamsBlockedFrame,

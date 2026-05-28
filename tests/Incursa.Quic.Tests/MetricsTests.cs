@@ -1,0 +1,206 @@
+using System.Diagnostics.Metrics;
+using Incursa.Quic.Http3;
+
+namespace Incursa.Quic.Tests;
+
+public class MetricsTests
+{
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public async Task QuicConnectionAndStreamPathsEmitActiveCounterDeltas()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+        QuicConnectionStreamState streamState = QuicConnectionStreamStateTestHelpers.CreateState(peerBidirectionalStreamLimit: 1);
+
+        await using QuicConnectionRuntime runtime = new(streamState, tlsRole: QuicTlsRole.Client);
+        Assert.True(streamState.TryOpenLocalStream(
+            bidirectional: true,
+            out QuicStreamId streamId,
+            out QuicStreamsBlockedFrame _));
+
+        QuicMetrics.RecordStreamOpened(QuicTlsRole.Client, streamId.Value, QuicStreamType.Bidirectional);
+        QuicMetrics.RecordStreamClosed(QuicTlsRole.Client, streamId.Value, QuicStreamType.Bidirectional);
+
+        await runtime.DisposeAsync();
+
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.connections.started"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.connections.active"
+            && measurement.Value == 1
+            && measurement.HasTag("role", "client"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.connections.active"
+            && measurement.Value == -1
+            && measurement.HasTag("role", "client"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.connections.closed"
+            && measurement.Value == 1
+            && measurement.HasTag("close_reason", "disposed"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.streams.opened"
+            && measurement.Value == 1
+            && measurement.HasTag("direction", "bidirectional")
+            && measurement.HasTag("initiator", "local"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.streams.active"
+            && measurement.Value == -1
+            && measurement.HasTag("direction", "bidirectional")
+            && measurement.HasTag("initiator", "local"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void QuicMetricTagsStayLowCardinality()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(QuicMetrics.MeterName);
+
+        QuicMetrics.RecordDatagramReceived(QuicTlsRole.Server, 1200);
+        QuicMetrics.RecordDatagramSent(QuicTlsRole.Server, 1180);
+        QuicMetrics.RecordPacketDropped(QuicTlsRole.Client, "connection-id-42");
+        QuicMetrics.RecordFlowControlBlocked(QuicTlsRole.Client);
+        QuicMetrics.RecordStreamLimitBlocked(QuicTlsRole.Server, bidirectional: false);
+        QuicMetrics.RecordAntiAmplificationBlocked(QuicTlsRole.Server);
+        QuicMetrics.RecordProbeTimeout(QuicTlsRole.Client, QuicPacketNumberSpace.Initial);
+        QuicMetrics.RecordRtt(QuicTlsRole.Client, 12_500);
+
+        Assert.DoesNotContain(recorder.Measurements, measurement => measurement.HasAnyForbiddenTag());
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.packets.dropped"
+            && measurement.HasTag("packet_type", "unknown"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.stream_limit.blocked"
+            && measurement.HasTag("direction", "unidirectional"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.quic.pto.count"
+            && measurement.HasTag("packet_type", "initial"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void Http3RequestMetricsEmitBoundedStatusAndFailureTags()
+    {
+        using MetricsRecorder recorder = MetricsRecorder.Start(Http3Metrics.MeterName);
+
+        long completedStart = Http3Metrics.GetTimestamp();
+        Http3Metrics.RecordRequestStarted("server");
+        Http3Metrics.RecordRequestCompleted("server", 204, completedStart);
+
+        long failedStart = Http3Metrics.GetTimestamp();
+        Http3Metrics.RecordRequestStarted("client");
+        Http3Metrics.RecordRequestFailed("client", "raw exception text that must not leak", failedStart);
+
+        Assert.DoesNotContain(recorder.Measurements, measurement => measurement.HasAnyForbiddenTag());
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.http3.requests.completed"
+            && measurement.HasTag("status_class", "2xx"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.http3.requests.failed"
+            && measurement.HasTag("failure_reason", "exception"));
+        Assert.Contains(recorder.Measurements, measurement =>
+            measurement.InstrumentName == "incursa.http3.request.duration.ms"
+            && measurement.HasTag("role", "server"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-CRT-0155")]
+    public void MetricsDisabledPathDoesNotRequireDiagnosticsOrQlogSinks()
+    {
+        QuicMetrics.RecordDatagramReceived(QuicTlsRole.Client, 1200);
+        QuicMetrics.RecordDatagramSent(QuicTlsRole.Client, 1200);
+        QuicMetrics.RecordPacketDropped(QuicTlsRole.Client);
+
+        long started = Http3Metrics.GetTimestamp();
+        Http3Metrics.RecordRequestStarted("server");
+        Http3Metrics.RecordRequestCompleted("server", 200, started);
+        Http3Metrics.RecordRequestFailed("server", "http3", started);
+
+        Assert.False(QuicDiagnostics.ResolveConnectionSink().IsEnabled);
+    }
+
+    private sealed class MetricsRecorder : IDisposable
+    {
+        private static readonly HashSet<string> ForbiddenTagNames = new(StringComparer.Ordinal)
+        {
+            "connection_id",
+            "stream_id",
+            "endpoint",
+            "peer_address",
+            "url_path",
+            "path",
+            "exception_message",
+            "error_text",
+        };
+
+        private readonly MeterListener listener = new();
+        private readonly List<MeasurementRecord> measurements = [];
+
+        private MetricsRecorder(string meterName)
+        {
+            listener.InstrumentPublished = (instrument, meterListener) =>
+            {
+                if (instrument.Meter.Name == meterName)
+                {
+                    meterListener.EnableMeasurementEvents(instrument);
+                }
+            };
+            listener.SetMeasurementEventCallback<long>(Record);
+            listener.SetMeasurementEventCallback<double>(Record);
+            listener.Start();
+        }
+
+        public IReadOnlyList<MeasurementRecord> Measurements => measurements;
+
+        public static MetricsRecorder Start(string meterName)
+        {
+            return new MetricsRecorder(meterName);
+        }
+
+        public void Dispose()
+        {
+            listener.Dispose();
+        }
+
+        private void Record(Instrument instrument, long measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags, object? state)
+        {
+            _ = state;
+            RecordMeasurement(instrument, measurement, tags);
+        }
+
+        private void Record(Instrument instrument, double measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags, object? state)
+        {
+            _ = state;
+            RecordMeasurement(instrument, measurement, tags);
+        }
+
+        private void RecordMeasurement(Instrument instrument, double measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags)
+        {
+            Dictionary<string, string> capturedTags = new(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, object?> tag in tags)
+            {
+                capturedTags[tag.Key] = tag.Value?.ToString() ?? string.Empty;
+            }
+
+            measurements.Add(new MeasurementRecord(instrument.Name, measurement, capturedTags));
+        }
+
+        public sealed record MeasurementRecord(
+            string InstrumentName,
+            double Value,
+            IReadOnlyDictionary<string, string> Tags)
+        {
+            public bool HasTag(string name, string value)
+            {
+                return Tags.TryGetValue(name, out string? actual)
+                    && string.Equals(actual, value, StringComparison.Ordinal);
+            }
+
+            public bool HasAnyForbiddenTag()
+            {
+                return Tags.Keys.Any(ForbiddenTagNames.Contains);
+            }
+        }
+    }
+}

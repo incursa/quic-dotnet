@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-CRT-0053",
+  "artifact_type": "verification",
+  "status": "draft",
+  "title": "QUIC and HTTP/3 System.Diagnostics.Metrics verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "Focused MeterListener tests, HTTP/3 diagnostics regression tests, full QUIC test-project validation, build validation, SpecTrace validation, diff checks, and a focused BenchmarkDotNet disabled-listener benchmark.",
+  "scope": "Verify that the QUIC and HTTP/3 Meter instruments emit representative measurements, active counters increment and decrement, tags remain bounded, disabled paths do not need diagnostics or qlog sinks, and hot datagram metric paths have negligible disabled-listener overhead.",
+  "preconditions": [
+    "No collector or MeterListener is required for disabled-path operation.",
+    "The core transport does not reference qlog packages or serializers.",
+    "Metrics remain observational and do not alter protocol state transitions."
+  ],
+  "evidence": [
+    "src/Incursa.Quic/QuicMetrics.cs",
+    "src/Incursa.Quic.Http3/Http3Metrics.cs",
+    "tests/Incursa.Quic.Tests/MetricsTests.cs",
+    "benchmarks/QuicDiagnosticsBenchmarks.cs",
+    "docs/metrics.md",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~MetricsTests",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter FullyQualifiedName~Http3MinimalServerTests",
+    "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj",
+    "dotnet build",
+    "dotnet run --project benchmarks/Incursa.Quic.Benchmarks.csproj -c Release -- --filter \"*QuicDiagnosticsBenchmarks.MetricsDisabled_Datagram*\" --job Short --noOverwrite",
+    "pwsh -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core",
+    "git diff --check"
+  ],
+  "procedure": [
+    "Run the focused metrics tests and confirm QUIC connection, stream, datagram, blocked, PTO, RTT, and HTTP/3 request measurements are observed.",
+    "Confirm active connection and stream measurements include positive and negative deltas.",
+    "Confirm tag keys and values remain bounded and do not include connection IDs, stream IDs, endpoints, peer addresses, paths, exception messages, or raw error text.",
+    "Confirm disabled/no-listener metric calls do not require diagnostics or qlog sinks.",
+    "Run existing HTTP/3 diagnostics tests to prove diagnostics behavior remains stable.",
+    "Run the QUIC test project and build validation.",
+    "Run the focused BenchmarkDotNet disabled-listener benchmark for datagram metrics.",
+    "Run SpecTrace core validation and git diff whitespace checks."
+  ],
+  "expected_result": "The requested Meter instruments are emitted with bounded tags, active up-down counters emit matching decrement measurements, disabled metric paths do not depend on diagnostics or qlog sinks, and focused benchmark evidence shows the disabled-listener datagram path remains negligible.",
+  "related_artifacts": [
+    "SPEC-QUIC-CRT",
+    "ARC-QUIC-CRT-0052",
+    "WI-QUIC-CRT-0053"
+  ],
+  "verifies": [
+    "REQ-QUIC-CRT-0155"
+  ]
+}

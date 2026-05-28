@@ -958,6 +958,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         recoveryController.RecordProbeTimeoutExpired();
+        QuicMetrics.RecordProbeTimeout(tlsState.Role, selectedPacketNumberSpace);
         AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
         return true;
     }

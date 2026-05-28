@@ -212,6 +212,7 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                QuicMetrics.RecordDatagramReceived(QuicTlsRole.Client, receiveResult.ReceivedBytes);
                 IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
                 IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
                     (IPEndPoint)currentSocket.LocalEndPoint!,
@@ -247,6 +248,10 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     and not QuicConnectionIngressDisposition.Dropped)
                 {
                     SendStatelessResetResponse(currentSocket, datagram, currentPathIdentity);
+                }
+                else if (ingressResult.Disposition == QuicConnectionIngressDisposition.Dropped)
+                {
+                    QuicMetrics.RecordPacketDropped(QuicTlsRole.Client);
                 }
 
                 ingressDatagramObserver?.Invoke(observerDatagram, ingressResult);
@@ -388,6 +393,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 {
                     throw new IOException("Failed to send the complete QUIC datagram.");
                 }
+
+                QuicMetrics.RecordDatagramSent(QuicTlsRole.Client, bytesSent);
             }
 
             return true;
