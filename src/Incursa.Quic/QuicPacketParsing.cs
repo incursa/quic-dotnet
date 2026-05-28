@@ -72,6 +72,41 @@ internal static class QuicPacketParsing
         return true;
     }
 
+    internal static bool TryParseLongHeaderMemoryFields(
+        ReadOnlyMemory<byte> packet,
+        out byte headerControlBits,
+        out uint version,
+        out ReadOnlyMemory<byte> destinationConnectionId,
+        out ReadOnlyMemory<byte> sourceConnectionId,
+        out ReadOnlyMemory<byte> trailingData)
+    {
+        headerControlBits = default;
+        version = default;
+        destinationConnectionId = default;
+        sourceConnectionId = default;
+        trailingData = default;
+
+        if (!TryParseLongHeaderFields(
+            packet.Span,
+            out headerControlBits,
+            out version,
+            out ReadOnlySpan<byte> parsedDestinationConnectionId,
+            out ReadOnlySpan<byte> parsedSourceConnectionId,
+            out ReadOnlySpan<byte> parsedTrailingData))
+        {
+            return false;
+        }
+
+        int destinationConnectionIdOffset = LongHeaderConnectionIdOffset;
+        int sourceConnectionIdOffset = destinationConnectionIdOffset + parsedDestinationConnectionId.Length + 1;
+        int trailingDataOffset = sourceConnectionIdOffset + parsedSourceConnectionId.Length;
+
+        destinationConnectionId = packet.Slice(destinationConnectionIdOffset, parsedDestinationConnectionId.Length);
+        sourceConnectionId = packet.Slice(sourceConnectionIdOffset, parsedSourceConnectionId.Length);
+        trailingData = packet.Slice(trailingDataOffset, parsedTrailingData.Length);
+        return true;
+    }
+
     internal static bool TryValidateVersionSpecificLongHeaderFields(
         byte headerControlBits,
         uint version,

@@ -314,7 +314,9 @@ internal static class QuicResumptionClientHelloTestSupport
 
     internal static byte[] GetInitialBootstrapClientHelloBytes(QuicConnectionRuntime runtime)
     {
-        return Assert.IsType<byte[]>(runtime.InitialBootstrapClientHelloBytes);
+        ReadOnlyMemory<byte>? clientHelloBytes = runtime.InitialBootstrapClientHelloBytes;
+        Assert.True(clientHelloBytes.HasValue);
+        return clientHelloBytes.Value.ToArray();
     }
 
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)

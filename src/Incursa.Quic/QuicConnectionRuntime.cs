@@ -79,20 +79,20 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private QuicInitialPacketProtection? initialPacketProtection;
     private QuicInitialPacketProtection? peerInitialPacketProtection;
     private QuicConnectionPathIdentity? bootstrapOutboundPathIdentity;
-    private byte[]? initialBootstrapClientHelloBytes;
-    private byte[]? ownedResumptionTicketBytes;
-    private byte[]? ownedResumptionTicketNonce;
+    private ReadOnlyMemory<byte>? initialBootstrapClientHelloBytes;
+    private ReadOnlyMemory<byte>? ownedResumptionTicketBytes;
+    private ReadOnlyMemory<byte>? ownedResumptionTicketNonce;
     private uint? ownedResumptionTicketLifetimeSeconds;
     private uint? ownedResumptionTicketAgeAdd;
     private uint? ownedResumptionTicketMaxEarlyDataSize;
     private QuicTransportParameters? ownedResumptionTicketPeerTransportParameters;
     private long? ownedResumptionTicketCapturedAtTicks;
-    private byte[]? initialAddressValidationToken;
-    private byte[]? resumptionMasterSecret;
-    private byte[]? retrySourceConnectionId;
-    private byte[]? retryToken;
-    private byte[]? observedPeerInitialSourceConnectionId;
-    private byte[]? observedPeerInitialCryptoFrameData;
+    private ReadOnlyMemory<byte>? initialAddressValidationToken;
+    private ReadOnlyMemory<byte>? resumptionMasterSecret;
+    private ReadOnlyMemory<byte>? retrySourceConnectionId;
+    private ReadOnlyMemory<byte>? retryToken;
+    private ReadOnlyMemory<byte>? observedPeerInitialSourceConnectionId;
+    private ReadOnlyMemory<byte>? observedPeerInitialCryptoFrameData;
     private bool retryBootstrapPendingReplay;
     private bool zeroRttPacketSent;
     private bool handshakeDonePacketSent;
@@ -136,8 +136,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private sealed record BufferedEstablishmentHandshakePacket(
         QuicConnectionPathIdentity PathIdentity,
-        byte[] SourceConnectionId,
-        byte[] Datagram,
+        ReadOnlyMemory<byte> SourceConnectionId,
+        ReadOnlyMemory<byte> Datagram,
         QuicEcnCounts? EcnCounts);
 
     public QuicConnectionRuntime(
@@ -311,7 +311,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private bool diagnosticsEnabled => diagnosticsState.IsEnabled;
 
-    internal byte[]? InitialBootstrapClientHelloBytes => initialBootstrapClientHelloBytes;
+    internal ReadOnlyMemory<byte>? InitialBootstrapClientHelloBytes => initialBootstrapClientHelloBytes;
 
     internal ReadOnlyMemory<byte> CurrentPeerDestinationConnectionId
     {
@@ -612,8 +612,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         detachedResumptionTicketSnapshot = new QuicDetachedResumptionTicketSnapshot(
-            ownedResumptionTicketBytes,
-            ownedResumptionTicketNonce,
+            ownedResumptionTicketBytes.Value,
+            ownedResumptionTicketNonce.Value,
             ownedResumptionTicketLifetimeSeconds.Value,
             ownedResumptionTicketAgeAdd.Value,
             ownedResumptionTicketCapturedAtTicks.Value,

@@ -64,9 +64,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private int newTokenValidationSucceeded;
     private int newTokenValidationFailureCode;
     private ulong retryBootstrapLargestObservedInitialPacketNumber;
-    private byte[]? retryBootstrapOriginalDestinationConnectionId;
-    private byte[]? retryBootstrapSourceConnectionId;
-    private byte[]? retryBootstrapToken;
+    private ReadOnlyMemory<byte>? retryBootstrapOriginalDestinationConnectionId;
+    private ReadOnlyMemory<byte>? retryBootstrapSourceConnectionId;
+    private ReadOnlyMemory<byte>? retryBootstrapToken;
     private QuicConnectionPathIdentity? retryBootstrapPathIdentity;
     private uint? retryBootstrapVersion;
     private string? retryBootstrapTokenHex;
@@ -407,7 +407,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 }
 
                 EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
-                byte[] datagram = buffer.AsSpan(0, receiveResult.ReceivedBytes).ToArray();
+                var datagram = buffer.AsMemory(0, receiveResult.ReceivedBytes);
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(datagram, pathIdentity);
                 EmitListenerIngressClassified(pathIdentity, ingressResult);
                 if (ingressResult.Disposition == QuicConnectionIngressDisposition.RoutedToConnection
@@ -424,7 +424,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
                 QuicListenerPreAcceptanceDatagramAction action =
                     QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
-                        datagram,
+                        datagram.Span,
                         ListenerSupportedVersions,
                         retryBootstrapEnabled,
                         maximumBufferedZeroRttDatagramsPerConnection: MaximumBufferedZeroRttDatagramsPerConnection);
@@ -432,7 +432,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
                 if (action == QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation)
                 {
-                    _ = TrySendVersionNegotiationResponse(datagram, pathIdentity);
+                    _ = TrySendVersionNegotiationResponse(datagram.Span, pathIdentity);
                     continue;
                 }
 
@@ -454,9 +454,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         pathIdentity,
                         out ReadOnlyMemory<byte> initialPacket,
                         out uint initialVersion,
-                        out byte[] initialDestinationConnectionId,
-                        out byte[] clientSourceConnectionId,
-                        out byte[] initialToken))
+                        out ReadOnlyMemory<byte> initialDestinationConnectionId,
+                        out ReadOnlyMemory<byte> clientSourceConnectionId,
+                        out ReadOnlyMemory<byte> initialToken))
                 {
                     try
                     {
@@ -470,7 +470,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             cancellationToken).ConfigureAwait(false))
                         {
                             _ = endpoint.ReceiveDatagram(datagram, pathIdentity);
-                            FlushBufferedZeroRttDatagrams(initialDestinationConnectionId);
+                            FlushBufferedZeroRttDatagrams(initialDestinationConnectionId.Span);
                         }
                     }
                     catch (Exception ex)
@@ -545,9 +545,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         listenerDiagnosticsSink.Emit(QuicDiagnostics.ListenerInitialAdmissionResult(pathIdentity, stage, succeeded, reason));
     }
 
-    private bool TryBufferZeroRttPreInitialDatagram(byte[] datagram, QuicConnectionPathIdentity pathIdentity)
+    private bool TryBufferZeroRttPreInitialDatagram(ReadOnlyMemory<byte> datagram, QuicConnectionPathIdentity pathIdentity)
     {
-        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket zeroRttHeader))
+        if (!QuicPacketParser.TryParseLongHeader(datagram.Span, out QuicLongHeaderPacket zeroRttHeader))
         {
             return false;
         }
@@ -559,19 +559,19 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     }
 
     private bool TryPrepareInitialAdmissionFields(
-        byte[] datagram,
+        ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
         out ReadOnlyMemory<byte> initialPacket,
         out uint initialVersion,
-        out byte[] initialDestinationConnectionId,
-        out byte[] clientSourceConnectionId,
-        out byte[] initialToken)
+        out ReadOnlyMemory<byte> initialDestinationConnectionId,
+        out ReadOnlyMemory<byte> clientSourceConnectionId,
+        out ReadOnlyMemory<byte> initialToken)
     {
         initialPacket = default;
         initialVersion = default;
-        initialDestinationConnectionId = [];
-        clientSourceConnectionId = [];
-        initialToken = [];
+        initialDestinationConnectionId = default;
+        clientSourceConnectionId = default;
+        initialToken = default;
 
         if (!QuicListenerPreAcceptanceIngressPolicy.TrySliceFirstPacketForAdmission(datagram, out initialPacket))
         {
@@ -584,7 +584,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         }
 
         if (!TryReadInitialAdmissionFields(
-            initialPacket.Span,
+            initialPacket,
             out initialVersion,
             out initialDestinationConnectionId,
             out clientSourceConnectionId,
@@ -607,26 +607,34 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     }
 
     private static bool TryReadInitialAdmissionFields(
-        ReadOnlySpan<byte> datagram,
+        ReadOnlyMemory<byte> datagram,
         out uint initialVersion,
-        out byte[] initialDestinationConnectionId,
-        out byte[] clientSourceConnectionId,
-        out byte[] initialToken)
+        out ReadOnlyMemory<byte> initialDestinationConnectionId,
+        out ReadOnlyMemory<byte> clientSourceConnectionId,
+        out ReadOnlyMemory<byte> initialToken)
     {
         initialVersion = default;
-        initialDestinationConnectionId = [];
-        clientSourceConnectionId = [];
-        initialToken = [];
+        initialDestinationConnectionId = default;
+        clientSourceConnectionId = default;
+        initialToken = default;
 
-        if (!TryParseInitialDatagram(datagram, out QuicLongHeaderPacket initialHeader) ||
-            !TryParseInitialToken(initialHeader.VersionSpecificData, out initialToken))
+        if (!QuicPacketParsing.TryParseLongHeaderMemoryFields(
+                datagram,
+                out byte headerControlBits,
+                out initialVersion,
+                out initialDestinationConnectionId,
+                out clientSourceConnectionId,
+                out ReadOnlyMemory<byte> versionSpecificData)
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(initialVersion)
+            || !QuicVersionNegotiation.IsLongHeaderPacketType(
+                initialVersion,
+                (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
+                QuicLongPacketType.Initial)
+            || !TryParseInitialToken(versionSpecificData, out initialToken))
         {
             return false;
         }
 
-        initialVersion = initialHeader.Version;
-        initialDestinationConnectionId = initialHeader.DestinationConnectionId.ToArray();
-        clientSourceConnectionId = initialHeader.SourceConnectionId.ToArray();
         return true;
     }
 
@@ -917,22 +925,6 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             pathIdentity.RemotePort ?? throw new InvalidOperationException("The listener connection path is missing a remote port."));
     }
 
-    private static bool TryParseInitialDatagram(ReadOnlySpan<byte> datagram, out QuicLongHeaderPacket longHeader)
-    {
-        if (!QuicPacketParser.TryParseLongHeader(datagram, out longHeader)
-            || !QuicVersionNegotiation.IsSupportedTransportVersion(longHeader.Version)
-            || !QuicVersionNegotiation.IsLongHeaderPacketType(
-                longHeader.Version,
-                longHeader.LongPacketTypeBits,
-                QuicLongPacketType.Initial))
-        {
-            longHeader = default;
-            return false;
-        }
-
-        return true;
-    }
-
     private void TrySendProtocolViolationCloseResponse(QuicConnectionPathIdentity pathIdentity)
     {
         byte[] closeDatagram = QuicBufferPool.RentBytes(32);
@@ -1026,15 +1018,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity,
         uint initialVersion,
-        byte[] initialDestinationConnectionId,
-        byte[] clientSourceConnectionId,
-        byte[] initialToken,
+        ReadOnlyMemory<byte> initialDestinationConnectionId,
+        ReadOnlyMemory<byte> clientSourceConnectionId,
+        ReadOnlyMemory<byte> initialToken,
         CancellationToken cancellationToken)
     {
         bool isRetryBootstrapReplayCandidate =
             retryBootstrapEnabled
             && retryBootstrapSourceConnectionId is not null
-            && initialDestinationConnectionId.AsSpan().SequenceEqual(retryBootstrapSourceConnectionId);
+            && initialDestinationConnectionId.Span.SequenceEqual(retryBootstrapSourceConnectionId.Value.Span);
         bool newTokenValidated = false;
 
         QuicServerConnectionOptions selectedOptions = new();
@@ -1054,7 +1046,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             if (!QuicInitialPacketProtection.TryCreate(
                 QuicTlsRole.Server,
                 initialVersion,
-                initialDestinationConnectionId,
+                initialDestinationConnectionId.Span,
                 out QuicInitialPacketProtection initialProtection))
             {
                 return Fail("create-initial-packet-protection", "unsupported-version-or-protection-create-failed");
@@ -1124,12 +1116,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                             case RetryBootstrapReplayValidationFailureTokenValidation:
                             {
                                 byte[] invalidTokenCloseServerSourceConnectionId =
-                                    GenerateDistinctServerSourceConnectionId(initialDestinationConnectionId);
+                                    GenerateDistinctServerSourceConnectionId(initialDestinationConnectionId.Span);
                                 _ = TrySendInitialCloseResponse(
                                     pathIdentity,
                                     initialVersion,
-                                    initialDestinationConnectionId,
-                                    clientSourceConnectionId,
+                                    initialDestinationConnectionId.Span,
+                                    clientSourceConnectionId.Span,
                                     invalidTokenCloseServerSourceConnectionId,
                                     QuicTransportErrorCode.InvalidToken);
                                 break;
@@ -1154,7 +1146,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 else if (initialToken.Length > 0)
                 {
                     QuicAddressValidationTokenValidationResult validationResult =
-                        ValidateNewTokenForIncomingInitial(initialToken, pathIdentity);
+                        ValidateNewTokenForIncomingInitial(initialToken.Span, pathIdentity);
                     if (validationResult == QuicAddressValidationTokenValidationResult.Valid)
                     {
                         newTokenValidated = true;
@@ -1194,7 +1186,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             else if (initialToken.Length > 0)
             {
                 QuicAddressValidationTokenValidationResult validationResult =
-                    ValidateNewTokenForIncomingInitial(initialToken, pathIdentity);
+                    ValidateNewTokenForIncomingInitial(initialToken.Span, pathIdentity);
                 if (validationResult == QuicAddressValidationTokenValidationResult.Valid)
                 {
                     newTokenValidated = true;
@@ -1212,7 +1204,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             connection = new QuicConnection(runtime, selectedOptions, lifetimeOwner);
 
             if (!endpoint.TryRegisterConnection(handle, runtime)
-                || !endpoint.TryRegisterConnectionId(handle, initialDestinationConnectionId)
+                || !endpoint.TryRegisterConnectionId(handle, initialDestinationConnectionId.Span)
                 || !endpoint.TryRegisterConnectionId(handle, serverSourceConnectionId, statelessResetConnectionId: 0UL)
                 || !endpoint.TryUpdateEndpointBinding(handle, pathIdentity))
             {
@@ -1226,9 +1218,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return Fail("register-pending-connection", "pending-connection-registration-failed");
             }
 
-            if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId)
-                || !runtime.TryConfigureInitialPacketProtection(selectedVersion, initialDestinationConnectionId)
-                || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId)
+            if (!runtime.TryConfigurePeerInitialPacketProtection(initialVersion, initialDestinationConnectionId.Span)
+                || !runtime.TryConfigureInitialPacketProtection(selectedVersion, initialDestinationConnectionId.Span)
+                || !runtime.TrySetHandshakeDestinationConnectionId(clientSourceConnectionId.Span)
                 || !runtime.TrySetHandshakeSourceConnectionId(serverSourceConnectionId)
                 || !runtime.TryConfigureLocalApplicationProtocols(applicationProtocols))
             {
@@ -1246,8 +1238,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 _ = TrySendConnectionRefusedCloseResponse(
                     pathIdentity,
                     initialVersion,
-                    initialDestinationConnectionId,
-                    clientSourceConnectionId,
+                    initialDestinationConnectionId.Span,
+                    clientSourceConnectionId.Span,
                     serverSourceConnectionId);
                 return Fail("select-server-options", "connection-options-callback-returned-null");
             }
@@ -1283,9 +1275,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                         runtime.VersionProfile.SupportedVersions.Span,
                         serverSourceConnectionId,
                         retryBootstrapOriginalDestinationConnectionId is null
-                            ? initialDestinationConnectionId
-                            : retryBootstrapOriginalDestinationConnectionId,
-                        retryBootstrapSourceConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapSourceConnectionId))))
+                            ? initialDestinationConnectionId.Span
+                            : retryBootstrapOriginalDestinationConnectionId.Value.Span,
+                        retryBootstrapSourceConnectionId is null ? ReadOnlySpan<byte>.Empty : retryBootstrapSourceConnectionId.Value.Span))))
             {
                 return Fail("post-handshake-bootstrap", "handshake-bootstrap-post-failed");
             }
@@ -1441,8 +1433,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     private bool TryIssueRetryBootstrapResponse(
         QuicConnectionPathIdentity pathIdentity,
         uint version,
-        ReadOnlySpan<byte> originalDestinationConnectionId,
-        ReadOnlySpan<byte> clientSourceConnectionId)
+        ReadOnlyMemory<byte> originalDestinationConnectionId,
+        ReadOnlyMemory<byte> clientSourceConnectionId)
     {
         int remotePort = pathIdentity.RemotePort
             ?? throw new InvalidOperationException("The listener connection path is missing a remote port.");
@@ -1453,29 +1445,29 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             && retryBootstrapPathIdentity is not null
             && retryBootstrapVersion.HasValue;
 
-        byte[] retryBootstrapOriginalDestinationConnectionIdBytes = hasRetryBootstrapState
-            ? this.retryBootstrapOriginalDestinationConnectionId!
+        ReadOnlyMemory<byte> retryBootstrapOriginalDestinationConnectionIdBytes = hasRetryBootstrapState
+            ? this.retryBootstrapOriginalDestinationConnectionId!.Value
             : originalDestinationConnectionId.ToArray();
-        byte[] retrySourceConnectionId = hasRetryBootstrapState
-            ? this.retryBootstrapSourceConnectionId!
-            : GenerateDistinctServerSourceConnectionId(retryBootstrapOriginalDestinationConnectionIdBytes);
-        byte[] retryToken = hasRetryBootstrapState
-            ? this.retryBootstrapToken!
+        ReadOnlyMemory<byte> retrySourceConnectionId = hasRetryBootstrapState
+            ? this.retryBootstrapSourceConnectionId!.Value
+            : GenerateDistinctServerSourceConnectionId(retryBootstrapOriginalDestinationConnectionIdBytes.Span);
+        ReadOnlyMemory<byte> retryToken = hasRetryBootstrapState
+            ? this.retryBootstrapToken!.Value
             : addressValidationTokenProtector.IssueNewToken(
                 pathIdentity.RemoteAddress,
                 remotePort,
                 DateTimeOffset.UtcNow,
-                RetryBootstrapTokenLifetime);
+                RetryBootstrapTokenLifetime).AsMemory();
         uint retryVersion = hasRetryBootstrapState
             ? retryBootstrapVersion!.Value
             : version;
 
         if (!QuicRetryIntegrity.TryBuildRetryPacket(
             retryVersion,
-            retryBootstrapOriginalDestinationConnectionIdBytes,
-            clientSourceConnectionId,
-            retrySourceConnectionId,
-            retryToken,
+            retryBootstrapOriginalDestinationConnectionIdBytes.Span,
+            clientSourceConnectionId.Span,
+            retrySourceConnectionId.Span,
+            retryToken.Span,
             out byte[] retryPacket))
         {
             return false;
@@ -1513,7 +1505,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             retryBootstrapToken = retryToken;
             retryBootstrapPathIdentity = pathIdentity;
             retryBootstrapVersion = retryVersion;
-            retryBootstrapTokenHex = Convert.ToHexString(retryToken);
+            retryBootstrapTokenHex = Convert.ToHexString(retryToken.Span);
         }
 
         Interlocked.Exchange(ref retryBootstrapIssued, 1);
@@ -1521,14 +1513,20 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
     }
 
     private bool TryIssueRetryBootstrapResponseFromZeroRttDatagram(
-        ReadOnlySpan<byte> datagram,
+        ReadOnlyMemory<byte> datagram,
         QuicConnectionPathIdentity pathIdentity)
     {
-        if (!QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket longHeader)
-            || !QuicVersionNegotiation.IsSupportedTransportVersion(longHeader.Version)
+        if (!QuicPacketParsing.TryParseLongHeaderMemoryFields(
+                datagram,
+                out byte headerControlBits,
+                out uint version,
+                out ReadOnlyMemory<byte> destinationConnectionId,
+                out ReadOnlyMemory<byte> sourceConnectionId,
+                out _)
+            || !QuicVersionNegotiation.IsSupportedTransportVersion(version)
             || !QuicVersionNegotiation.IsLongHeaderPacketType(
-                longHeader.Version,
-                longHeader.LongPacketTypeBits,
+                version,
+                (byte)((headerControlBits & QuicPacketHeaderBits.LongPacketTypeBitsMask) >> QuicPacketHeaderBits.LongPacketTypeBitsShift),
                 QuicLongPacketType.ZeroRtt))
         {
             return false;
@@ -1536,9 +1534,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         return TryIssueRetryBootstrapResponse(
             pathIdentity,
-            longHeader.Version,
-            longHeader.DestinationConnectionId,
-            longHeader.SourceConnectionId);
+            version,
+            destinationConnectionId,
+            sourceConnectionId);
     }
 
     private bool TryValidateRetryBootstrapReplay(
@@ -1572,13 +1570,13 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        if (!retryHeader.DestinationConnectionId.SequenceEqual(retryBootstrapSourceConnectionId))
+        if (!retryHeader.DestinationConnectionId.SequenceEqual(retryBootstrapSourceConnectionId.Value.Span))
         {
             Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureDestinationConnectionIdMismatch);
             return false;
         }
 
-        if (!TryParseInitialToken(retryHeader.VersionSpecificData, out byte[] retryToken))
+        if (!TryParseInitialTokenSpan(retryHeader.VersionSpecificData, out ReadOnlySpan<byte> retryToken))
         {
             Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureTokenParse);
             return false;
@@ -1586,7 +1584,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
 
         retryBootstrapReplayTokenHex = Convert.ToHexString(retryToken);
 
-        if (!retryToken.SequenceEqual(retryBootstrapToken))
+        if (!retryToken.SequenceEqual(retryBootstrapToken.Value.Span))
         {
             Interlocked.Exchange(ref retryBootstrapReplayValidationFailureCode, RetryBootstrapReplayValidationFailureTokenMismatch);
             return false;
@@ -1712,9 +1710,23 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         return result;
     }
 
-    private static bool TryParseInitialToken(ReadOnlySpan<byte> versionSpecificData, out byte[] retryToken)
+    private static bool TryParseInitialToken(ReadOnlyMemory<byte> versionSpecificData, out ReadOnlyMemory<byte> retryToken)
     {
-        retryToken = [];
+        retryToken = default;
+
+        if (!QuicVariableLengthInteger.TryParse(versionSpecificData.Span, out ulong tokenLength, out int tokenLengthBytes)
+            || tokenLength > (ulong)(versionSpecificData.Length - tokenLengthBytes))
+        {
+            return false;
+        }
+
+        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength);
+        return true;
+    }
+
+    private static bool TryParseInitialTokenSpan(ReadOnlySpan<byte> versionSpecificData, out ReadOnlySpan<byte> retryToken)
+    {
+        retryToken = default;
 
         if (!QuicVariableLengthInteger.TryParse(versionSpecificData, out ulong tokenLength, out int tokenLengthBytes)
             || tokenLength > (ulong)(versionSpecificData.Length - tokenLengthBytes))
@@ -1722,7 +1734,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return false;
         }
 
-        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength).ToArray();
+        retryToken = versionSpecificData.Slice(tokenLengthBytes, (int)tokenLength);
         return true;
     }
 

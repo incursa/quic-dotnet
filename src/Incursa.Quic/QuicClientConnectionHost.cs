@@ -220,7 +220,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             Interlocked.Exchange(ref retryReceivedObserved, 1);
             if (transition.HasEffects && transition.Effects.Any(effect =>
                 effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-                && IsReplayInitialPacket(sendDatagramEffect.Datagram.Span)))
+                && IsReplayInitialPacket(sendDatagramEffect.Datagram)))
             {
                 Interlocked.Exchange(ref retryBootstrapReplayDatagramSent, 1);
             }
@@ -279,11 +279,11 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
                 datagram));
     }
 
-    private bool IsReplayInitialPacket(ReadOnlySpan<byte> datagram)
+    private bool IsReplayInitialPacket(ReadOnlyMemory<byte> datagram)
     {
         if (retrySourceConnectionIdFromRetry is null
             || retryTokenFromRetry is null
-            || !QuicPacketParser.TryParseLongHeader(datagram, out QuicLongHeaderPacket sentPacket)
+            || !QuicPacketParser.TryParseLongHeader(datagram.Span, out QuicLongHeaderPacket sentPacket)
             || sentPacket.Version != runtime.VersionProfile.SelectedVersion
             || !QuicVersionNegotiation.IsSupportedTransportVersion(sentPacket.Version)
             || !QuicVersionNegotiation.TryGetLongHeaderPacketType(

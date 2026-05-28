@@ -95,4 +95,3 @@ internal readonly ref struct QuicLongHeaderPacket
     /// </summary>
     internal ReadOnlySpan<byte> VersionSpecificData => versionSpecificData;
 }
-

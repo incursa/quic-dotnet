@@ -39,7 +39,7 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 packetReceivedEvent.Datagram.Span,
                 packetReceivedEvent.RoutedLocallyIssuedConnectionId,
-                ShouldDeferTrustedPathReusePromotion(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram.Span),
+                ShouldDeferTrustedPathReusePromotion(packetReceivedEvent.PathIdentity, packetReceivedEvent.Datagram),
                 ref effects,
                 out packetDiscarded);
         }

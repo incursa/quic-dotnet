@@ -138,7 +138,7 @@ internal static class QuicPostHandshakeTicketTestSupport
                 LocalTransportParameters: localTransportParameters),
             nowTicks: 1).StateChanged);
 
-        byte[] clientHelloBytes = runtime.InitialBootstrapClientHelloBytes!;
+        byte[] clientHelloBytes = runtime.InitialBootstrapClientHelloBytes!.Value.ToArray();
         (
             byte[] serverHelloTranscript,
             byte[] encryptedExtensionsTranscript,

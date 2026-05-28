@@ -456,12 +456,12 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool ShouldDeferTrustedPathReusePromotion(
         QuicConnectionPathIdentity pathIdentity,
-        ReadOnlySpan<byte> datagram)
+        ReadOnlyMemory<byte> datagram)
     {
         return activePath is not null
             && !EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity)
             && TryGetRecentlyValidatedPath(pathIdentity, out _)
-            && QuicPacketParser.TryGetPacketNumberSpace(datagram, out QuicPacketNumberSpace packetNumberSpace)
+            && QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
             && packetNumberSpace == QuicPacketNumberSpace.ApplicationData;
     }
 
@@ -1061,7 +1061,7 @@ internal sealed partial class QuicConnectionRuntime
 
     internal bool TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
         QuicConnectionPathIdentity pathIdentity,
-        ReadOnlySpan<byte> quotedPacket,
+        ReadOnlyMemory<byte> quotedPacket,
         ulong maximumDatagramSizeBytes)
     {
         if (activePath is null
@@ -1086,7 +1086,7 @@ internal sealed partial class QuicConnectionRuntime
 
         bool accepted = TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
             icmpMaximumDatagramSizeReductionEvent.PathIdentity,
-            icmpMaximumDatagramSizeReductionEvent.QuotedPacket.Span,
+            icmpMaximumDatagramSizeReductionEvent.QuotedPacket,
             icmpMaximumDatagramSizeReductionEvent.MaximumDatagramSizeBytes);
 
         if (diagnosticsEnabled)
@@ -1107,14 +1107,14 @@ internal sealed partial class QuicConnectionRuntime
         return accepted;
     }
 
-    private bool TryValidateIcmpQuotedPacket(ReadOnlySpan<byte> quotedPacket)
+    private bool TryValidateIcmpQuotedPacket(ReadOnlyMemory<byte> quotedPacket)
     {
         if (quotedPacket.IsEmpty)
         {
             return false;
         }
 
-        if (QuicPacketParser.TryParseLongHeader(quotedPacket, out QuicLongHeaderPacket longHeader))
+        if (QuicPacketParser.TryParseLongHeader(quotedPacket.Span, out QuicLongHeaderPacket longHeader))
         {
             if (longHeader.IsVersionNegotiation)
             {
@@ -1136,7 +1136,7 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        return QuicPacketParser.TryParseShortHeader(quotedPacket, out _);
+        return QuicPacketParser.TryParseShortHeader(quotedPacket.Span, out _);
     }
 
     private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
