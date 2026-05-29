@@ -1414,7 +1414,7 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            if (QuicFrameCodec.TryConsumeAckFrame(remaining, out int ackBytesConsumed))
             {
                 offset += ackBytesConsumed;
                 continue;

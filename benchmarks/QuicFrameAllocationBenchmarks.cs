@@ -126,6 +126,28 @@ public class QuicFrameAllocationBenchmarks
     }
 
     /// <summary>
+    /// Measures ACK length-only consumption for skip paths that do not need ACK fields.
+    /// </summary>
+    [Benchmark]
+    public int ConsumeAckNoAdditionalRanges()
+    {
+        return QuicFrameCodec.TryConsumeAckFrame(ackNoAdditionalRanges, out int bytesConsumed)
+            ? bytesConsumed
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures ACK_ECN length-only consumption for skip paths that do not need ACK fields.
+    /// </summary>
+    [Benchmark]
+    public int ConsumeAckEcnNoAdditionalRanges()
+    {
+        return QuicFrameCodec.TryConsumeAckFrame(ackEcnNoAdditionalRanges, out int bytesConsumed)
+            ? bytesConsumed
+            : -1;
+    }
+
+    /// <summary>
     /// Measures a representative ACK + STREAM sequence parse handoff.
     /// </summary>
     [Benchmark]

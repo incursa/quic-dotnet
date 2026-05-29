@@ -637,7 +637,7 @@ internal static class QuicTlsClientHelloExtensions
                 continue;
             }
 
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            if (QuicFrameCodec.TryConsumeAckFrame(remaining, out int ackBytesConsumed))
             {
                 if (ackBytesConsumed <= 0)
                 {
