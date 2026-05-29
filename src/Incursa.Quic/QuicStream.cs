@@ -234,7 +234,7 @@ public sealed class QuicStream : Stream
         {
             ArgumentNullException.ThrowIfNull(buffer);
             ValidateRange(buffer.Length, offset, count);
-            return WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+            return WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -248,7 +248,7 @@ public sealed class QuicStream : Stream
 
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
     {
-        return WriteCoreAsync(buffer, cancellationToken);
+        return new ValueTask(WriteCoreAsync(buffer, cancellationToken));
     }
 
     internal async ValueTask WriteFinalAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
@@ -571,7 +571,7 @@ public sealed class QuicStream : Stream
         return false;
     }
 
-    private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
+    private async Task WriteCoreAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
