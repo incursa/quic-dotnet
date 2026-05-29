@@ -95,6 +95,8 @@ The benchmark project also contains the following permanent suites:
 - `QuicStatelessResetBenchmarks`
 - `QuicAckPiggybackPolicyBenchmarks`
 - `QuicAckPiggybackPayloadBenchmarks`
+- `QuicAckFrameSentRangeStorageBenchmarks`
+- `QuicAckGenerationStateRangeEnumerationBenchmarks`
 - `QuicDiagnosticsBenchmarks`
 - `QuicDatagramFrameBenchmarks`
 - `QuicApplicationSendDistinctStreamIdBenchmarks`
@@ -111,6 +113,8 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Http3AllocationPathBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPayloadBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckFrameSentRangeStorageBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckGenerationStateRangeEnumerationBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendDistinctStreamIdBenchmarks*" --inProcess

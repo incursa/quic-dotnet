@@ -224,7 +224,7 @@ internal sealed class QuicAckGenerationState
 
         try
         {
-            int rangeCount = BuildRanges(state.Receipts.Keys, ranges);
+            int rangeCount = BuildRanges(state.Receipts, ranges);
             if (rangeCount == 0)
             {
                 return false;
@@ -306,11 +306,11 @@ internal sealed class QuicAckGenerationState
     {
         ArgumentNullException.ThrowIfNull(ackFrame);
 
-        PacketRange[] ackedRanges = BuildAckFrameRanges(ackFrame);
+        SentAckFrameState ackedRanges = BuildAckFrameRanges(ackFrame);
         MarkAckFrameSent(packetNumberSpace, sentAtMicros, ackOnlyPacket);
 
         SpaceState state = GetOrCreateSpaceState(packetNumberSpace);
-        state.SentAckFrames[packetNumber] = new SentAckFrameState(ackedRanges);
+        state.SentAckFrames[packetNumber] = ackedRanges;
     }
 
     /// <summary>
@@ -390,7 +390,13 @@ internal sealed class QuicAckGenerationState
     /// </summary>
     internal bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
     {
-        return spaces.Remove(packetNumberSpace);
+        if (!spaces.Remove(packetNumberSpace, out SpaceState? state))
+        {
+            return false;
+        }
+
+        state.Clear();
+        return true;
     }
 
     private static bool AckFrameAcknowledgesPacketNumber(QuicAckFrame ackFrame, ulong packetNumber)
@@ -415,10 +421,12 @@ internal sealed class QuicAckGenerationState
     private static void RetireSentAckFrame(SpaceState state, ulong packetNumber, SentAckFrameState sentAckFrame)
     {
         state.SentAckFrames.Remove(packetNumber);
-        foreach (PacketRange range in sentAckFrame.AckedRanges)
+        foreach (PacketRange range in sentAckFrame.AckedRanges.AsSpan(0, sentAckFrame.AckedRangeCount))
         {
             RemoveRange(state.Receipts, range);
         }
+
+        ReturnAckFrameRanges(sentAckFrame.AckedRanges);
 
         if (state.Receipts.Count == 0)
         {
@@ -426,21 +434,21 @@ internal sealed class QuicAckGenerationState
         }
     }
 
-    private static int BuildRanges(IEnumerable<ulong> packetNumbers, Span<PacketRange> ranges)
+    private static int BuildRanges(SortedList<ulong, PacketReceipt> receipts, Span<PacketRange> ranges)
     {
-        using IEnumerator<ulong> enumerator = packetNumbers.GetEnumerator();
-        if (!enumerator.MoveNext())
+        if (receipts.Count == 0)
         {
             return 0;
         }
 
+        IList<ulong> packetNumbers = receipts.Keys;
         int rangeCount = 0;
-        ulong rangeStart = enumerator.Current;
+        ulong rangeStart = packetNumbers[0];
         ulong rangeEnd = rangeStart;
 
-        while (enumerator.MoveNext())
+        for (int index = 1; index < packetNumbers.Count; index++)
         {
-            ulong packetNumber = enumerator.Current;
+            ulong packetNumber = packetNumbers[index];
             if (rangeEnd != ulong.MaxValue && packetNumber == rangeEnd + 1)
             {
                 rangeEnd = packetNumber;
@@ -466,14 +474,15 @@ internal sealed class QuicAckGenerationState
         ranges[rangeCount++] = range;
     }
 
-    private static PacketRange[] BuildAckFrameRanges(QuicAckFrame frame)
+    private static SentAckFrameState BuildAckFrameRanges(QuicAckFrame frame)
     {
         if (frame.FirstAckRange > frame.LargestAcknowledged)
         {
             throw new ArgumentException("The ACK frame is invalid.", nameof(frame));
         }
 
-        PacketRange[] ranges = new PacketRange[1 + frame.AdditionalRangeCount];
+        int rangeCount = checked(1 + frame.AdditionalRangeCount);
+        PacketRange[] ranges = ArrayPool<PacketRange>.Shared.Rent(rangeCount);
         ranges[0] = new PacketRange(frame.LargestAcknowledged - frame.FirstAckRange, frame.LargestAcknowledged);
         int rangeIndex = 1;
         foreach (QuicAckRange additionalRange in frame.AdditionalRangeSpan)
@@ -481,7 +490,15 @@ internal sealed class QuicAckGenerationState
             ranges[rangeIndex++] = new PacketRange(additionalRange.SmallestAcknowledged, additionalRange.LargestAcknowledged);
         }
 
-        return ranges;
+        return new SentAckFrameState(ranges, rangeCount);
+    }
+
+    private static void ReturnAckFrameRanges(PacketRange[] ranges)
+    {
+        if (ranges.Length > 0)
+        {
+            ArrayPool<PacketRange>.Shared.Return(ranges);
+        }
     }
 
     private void TrimOldestRangesIfNeeded(SpaceState state)
@@ -496,7 +513,7 @@ internal sealed class QuicAckGenerationState
 
         try
         {
-            int rangeCount = BuildRanges(state.Receipts.Keys, ranges);
+            int rangeCount = BuildRanges(state.Receipts, ranges);
             if (rangeCount <= maximumRetainedAckRanges)
             {
                 return;
@@ -593,7 +610,7 @@ internal sealed class QuicAckGenerationState
 
     private readonly record struct PacketRange(ulong Smallest, ulong Largest);
 
-    private readonly record struct SentAckFrameState(PacketRange[] AckedRanges);
+    private readonly record struct SentAckFrameState(PacketRange[] AckedRanges, int AckedRangeCount);
 
     private readonly record struct PacketReceipt(
         ulong ReceivedAtMicros,
@@ -612,5 +629,19 @@ internal sealed class QuicAckGenerationState
         internal ulong? LastAckFrameSentAtMicros { get; set; }
 
         internal ulong? LastAckFrameTriggerPacketNumber { get; set; }
+
+        internal void Clear()
+        {
+            foreach (SentAckFrameState sentAckFrame in SentAckFrames.Values)
+            {
+                ReturnAckFrameRanges(sentAckFrame.AckedRanges);
+            }
+
+            SentAckFrames.Clear();
+            Receipts.Clear();
+            ImmediateAckRequired = false;
+            LastAckFrameSentAtMicros = null;
+            LastAckFrameTriggerPacketNumber = null;
+        }
     }
 }
