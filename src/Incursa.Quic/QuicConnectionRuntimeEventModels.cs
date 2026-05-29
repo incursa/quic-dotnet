@@ -284,10 +284,84 @@ internal sealed record QuicConnectionDiscardConnectionStateEffect(
 internal sealed record QuicConnectionEmitDiagnosticEffect(QuicDiagnosticEvent Diagnostic)
     : QuicConnectionEffect(QuicConnectionEffectKind.EmitDiagnostic);
 
+internal struct QuicConnectionEffectAccumulator
+{
+    private QuicConnectionEffect? singleEffect;
+    private List<QuicConnectionEffect>? effectList;
+
+    private QuicConnectionEffectAccumulator(List<QuicConnectionEffect> effectList)
+    {
+        singleEffect = null;
+        this.effectList = effectList;
+    }
+
+    internal static QuicConnectionEffectAccumulator FromList(List<QuicConnectionEffect> effectList)
+    {
+        return new QuicConnectionEffectAccumulator(effectList);
+    }
+
+    internal QuicConnectionEffect? SingleEffect => effectList is null ? singleEffect : null;
+
+    internal List<QuicConnectionEffect>? EffectList => effectList;
+
+    internal bool HasEffects => singleEffect is not null || effectList is { Count: > 0 };
+
+    internal int Count => effectList?.Count ?? (singleEffect is null ? 0 : 1);
+
+    internal void Add(QuicConnectionEffect effect)
+    {
+        if (effectList is not null)
+        {
+            effectList.Add(effect);
+            return;
+        }
+
+        if (singleEffect is null)
+        {
+            singleEffect = effect;
+            return;
+        }
+
+        effectList = new List<QuicConnectionEffect>(capacity: 4)
+        {
+            singleEffect,
+            effect,
+        };
+        singleEffect = null;
+    }
+
+    internal QuicConnectionEffect[] ToArray()
+    {
+        if (effectList is not null)
+        {
+            return effectList.ToArray();
+        }
+
+        return singleEffect is null
+            ? Array.Empty<QuicConnectionEffect>()
+            : [singleEffect];
+    }
+
+    internal List<QuicConnectionEffect>? ToList()
+    {
+        if (effectList is not null)
+        {
+            return effectList;
+        }
+
+        if (singleEffect is null)
+        {
+            return null;
+        }
+
+        return [singleEffect];
+    }
+}
+
 internal readonly struct QuicConnectionTransitionResult
 {
     private readonly QuicConnectionEffect[]? effects;
-    private readonly List<QuicConnectionEffect>? effectList;
+    private readonly QuicConnectionEffectAccumulator effectAccumulator;
 
     public QuicConnectionTransitionResult(
         ulong Sequence,
@@ -305,7 +379,7 @@ internal readonly struct QuicConnectionTransitionResult
         this.CurrentPhase = CurrentPhase;
         this.StateChanged = StateChanged;
         this.effects = Effects ?? Array.Empty<QuicConnectionEffect>();
-        effectList = null;
+        effectAccumulator = default;
     }
 
     internal QuicConnectionTransitionResult(
@@ -315,7 +389,7 @@ internal readonly struct QuicConnectionTransitionResult
         QuicConnectionPhase PreviousPhase,
         QuicConnectionPhase CurrentPhase,
         bool StateChanged,
-        List<QuicConnectionEffect>? EffectList)
+        QuicConnectionEffectAccumulator EffectAccumulator)
     {
         this.Sequence = Sequence;
         this.ObservedAtTicks = ObservedAtTicks;
@@ -324,7 +398,7 @@ internal readonly struct QuicConnectionTransitionResult
         this.CurrentPhase = CurrentPhase;
         this.StateChanged = StateChanged;
         effects = null;
-        this.effectList = EffectList;
+        effectAccumulator = EffectAccumulator;
     }
 
     public ulong Sequence { get; }
@@ -339,9 +413,11 @@ internal readonly struct QuicConnectionTransitionResult
 
     public bool StateChanged { get; }
 
-    internal List<QuicConnectionEffect>? EffectList => effectList;
+    internal QuicConnectionEffect? SingleEffect => effects is null ? effectAccumulator.SingleEffect : null;
 
-    public QuicConnectionEffect[] Effects => effects ?? effectList?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
+    internal List<QuicConnectionEffect>? EffectList => effects is null ? effectAccumulator.EffectList : null;
 
-    public bool HasEffects => effectList is { Count: > 0 } || effects is { Length: > 0 };
+    public QuicConnectionEffect[] Effects => effects ?? effectAccumulator.ToArray();
+
+    public bool HasEffects => effects is { Length: > 0 } || effectAccumulator.HasEffects;
 }

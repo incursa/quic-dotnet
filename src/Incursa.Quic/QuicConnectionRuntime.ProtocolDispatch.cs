@@ -8,10 +8,10 @@ namespace Incursa.Quic;
 internal sealed partial class QuicConnectionRuntime
 {
     private bool ApplyTlsStateUpdates(
-        IReadOnlyList<QuicTlsStateUpdate> updates,
+        QuicTlsStateUpdateBatch updates,
         long observedAtTicks,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return ApplyTlsStateUpdates(
             updates,
@@ -23,10 +23,10 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool ApplyTlsStateUpdates(
-        IReadOnlyList<QuicTlsStateUpdate> updates,
+        QuicTlsStateUpdateBatch updates,
         long observedAtTicks,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         bool stopOnFatalAlert,
         out bool sawFatalAlert)
     {

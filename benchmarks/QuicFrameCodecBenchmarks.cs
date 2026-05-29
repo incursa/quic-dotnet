@@ -164,12 +164,22 @@ public class QuicFrameCodecBenchmarks
     [Benchmark]
     public int ParseAckFrame()
     {
-        return QuicFrameCodec.TryParseAckFrame(ackFrame, out QuicAckFrame frame, out int bytesConsumed)
-            ? bytesConsumed
+        if (!QuicFrameCodec.TryParseAckFrame(ackFrame, out QuicAckFrame frame, out int bytesConsumed))
+        {
+            return -1;
+        }
+
+        try
+        {
+            return bytesConsumed
                 ^ unchecked((int)frame.LargestAcknowledged)
                 ^ (int)frame.AckDelay
-                ^ frame.AdditionalRanges.Length
-            : -1;
+                ^ frame.AdditionalRangeSpan.Length;
+        }
+        finally
+        {
+            frame.Dispose();
+        }
     }
 
     /// <summary>
@@ -189,15 +199,25 @@ public class QuicFrameCodecBenchmarks
     [Benchmark]
     public int ParseAckEcnFrame()
     {
-        return QuicFrameCodec.TryParseAckFrame(ackEcnFrame, out QuicAckFrame frame, out int bytesConsumed)
-            ? bytesConsumed
+        if (!QuicFrameCodec.TryParseAckFrame(ackEcnFrame, out QuicAckFrame frame, out int bytesConsumed))
+        {
+            return -1;
+        }
+
+        try
+        {
+            return bytesConsumed
                 ^ unchecked((int)frame.LargestAcknowledged)
                 ^ (int)frame.AckDelay
-                ^ frame.AdditionalRanges.Length
+                ^ frame.AdditionalRangeSpan.Length
                 ^ unchecked((int)(frame.EcnCounts?.Ect0Count ?? 0))
                 ^ unchecked((int)(frame.EcnCounts?.Ect1Count ?? 0))
-                ^ unchecked((int)(frame.EcnCounts?.EcnCeCount ?? 0))
-            : -1;
+                ^ unchecked((int)(frame.EcnCounts?.EcnCeCount ?? 0));
+        }
+        finally
+        {
+            frame.Dispose();
+        }
     }
 
     /// <summary>

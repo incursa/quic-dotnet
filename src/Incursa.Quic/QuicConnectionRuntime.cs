@@ -57,11 +57,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<ulong> inboundStreamIds;
     private readonly Channel<ReadOnlyMemory<byte>>? inboundDatagrams;
     private readonly Channel<QuicConnectionEvent> inbox;
-    private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
+    private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
-    private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingDatagramSendRequests = new();
+    private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
+    private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
+    private readonly ConcurrentQueue<DatagramSendRequestCompletionSource> datagramSendRequestCompletionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly ConcurrentDictionary<ulong, byte> queuedInboundStreamIds = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
@@ -140,11 +142,48 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private bool hasObservedCurrentOneRttKeyPhasePacketNumber;
     private bool pendingClientHandshakeAckProbeOnPto;
 
-    private sealed record BufferedEstablishmentHandshakePacket(
-        QuicConnectionPathIdentity PathIdentity,
-        ReadOnlyMemory<byte> SourceConnectionId,
-        ReadOnlyMemory<byte> Datagram,
-        QuicEcnCounts? EcnCounts);
+    private sealed class BufferedEstablishmentHandshakePacket : IDisposable
+    {
+        private byte[]? sourceConnectionIdOwner;
+        private byte[]? datagramOwner;
+        private readonly int sourceConnectionIdLength;
+        private readonly int datagramLength;
+
+        internal BufferedEstablishmentHandshakePacket(
+            QuicConnectionPathIdentity pathIdentity,
+            byte[] sourceConnectionIdOwner,
+            int sourceConnectionIdLength,
+            byte[] datagramOwner,
+            int datagramLength,
+            QuicEcnCounts? ecnCounts)
+        {
+            PathIdentity = pathIdentity;
+            this.sourceConnectionIdOwner = sourceConnectionIdOwner;
+            this.sourceConnectionIdLength = sourceConnectionIdLength;
+            this.datagramOwner = datagramOwner;
+            this.datagramLength = datagramLength;
+            EcnCounts = ecnCounts;
+        }
+
+        internal QuicConnectionPathIdentity PathIdentity { get; }
+        internal ReadOnlyMemory<byte> SourceConnectionId => sourceConnectionIdOwner is null
+            ? ReadOnlyMemory<byte>.Empty
+            : sourceConnectionIdOwner.AsMemory(0, sourceConnectionIdLength);
+        internal ReadOnlyMemory<byte> Datagram => datagramOwner is null
+            ? ReadOnlyMemory<byte>.Empty
+            : datagramOwner.AsMemory(0, datagramLength);
+        internal QuicEcnCounts? EcnCounts { get; }
+
+        public void Dispose()
+        {
+            byte[]? sourceConnectionIdBuffer = sourceConnectionIdOwner;
+            byte[]? datagramBuffer = datagramOwner;
+            sourceConnectionIdOwner = null;
+            datagramOwner = null;
+            QuicBufferPool.ReturnBytes(sourceConnectionIdBuffer);
+            QuicBufferPool.ReturnBytes(datagramBuffer);
+        }
+    }
 
     private sealed class StreamActionRequestCompletionSource : IValueTaskSource
     {
@@ -209,6 +248,148 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
+    private sealed class StreamOpenRequestCompletionSource : IValueTaskSource<ulong>
+    {
+        private readonly QuicConnectionRuntime owner;
+        private ManualResetValueTaskSourceCore<ulong> source;
+
+        internal StreamOpenRequestCompletionSource(QuicConnectionRuntime owner)
+        {
+            this.owner = owner;
+            source = new ManualResetValueTaskSourceCore<ulong>
+            {
+                RunContinuationsAsynchronously = true,
+            };
+        }
+
+        internal ValueTask<ulong> Task => new(this, source.Version);
+
+        internal void Prepare()
+        {
+            source.Reset();
+        }
+
+        internal void TrySetResult(ulong streamId)
+            => TryComplete(() => source.SetResult(streamId));
+
+        internal void TrySetException(Exception exception)
+            => TryComplete(() => source.SetException(exception));
+
+        internal void TrySetCanceled(CancellationToken cancellationToken)
+            => TrySetException(new OperationCanceledException(cancellationToken));
+
+        ulong IValueTaskSource<ulong>.GetResult(short token)
+        {
+            try
+            {
+                return source.GetResult(token);
+            }
+            finally
+            {
+                owner.ReturnStreamOpenRequestCompletionSource(this);
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource<ulong>.GetStatus(short token)
+        {
+            return source.GetStatus(token);
+        }
+
+        void IValueTaskSource<ulong>.OnCompleted(
+            Action<object?> continuation,
+            object? state,
+            short token,
+            ValueTaskSourceOnCompletedFlags flags)
+        {
+            source.OnCompleted(continuation, state, token, flags);
+        }
+    }
+
+    private sealed class DatagramSendRequestCompletionSource : IValueTaskSource
+    {
+        private readonly QuicConnectionRuntime owner;
+        private ManualResetValueTaskSourceCore<bool> source;
+
+        internal DatagramSendRequestCompletionSource(QuicConnectionRuntime owner)
+        {
+            this.owner = owner;
+            source = new ManualResetValueTaskSourceCore<bool>
+            {
+                RunContinuationsAsynchronously = true,
+            };
+        }
+
+        internal ValueTask Task => new(this, source.Version);
+
+        internal void Prepare()
+        {
+            source.Reset();
+        }
+
+        internal void TrySetResult()
+            => TryComplete(() => source.SetResult(true));
+
+        internal void TrySetException(Exception exception)
+            => TryComplete(() => source.SetException(exception));
+
+        internal void TrySetCanceled(CancellationToken cancellationToken)
+            => TrySetException(new OperationCanceledException(cancellationToken));
+
+        void IValueTaskSource.GetResult(short token)
+        {
+            try
+            {
+                _ = source.GetResult(token);
+            }
+            finally
+            {
+                owner.ReturnDatagramSendRequestCompletionSource(this);
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
+        {
+            return source.GetStatus(token);
+        }
+
+        void IValueTaskSource.OnCompleted(
+            Action<object?> continuation,
+            object? state,
+            short token,
+            ValueTaskSourceOnCompletedFlags flags)
+        {
+            source.OnCompleted(continuation, state, token, flags);
+        }
+    }
+
+    private static void TryComplete(Action complete)
+    {
+        try
+        {
+            complete();
+        }
+        catch (InvalidOperationException)
+        {
+            // Match TaskCompletionSource.TrySet* behavior when cancellation wins a completion race.
+        }
+    }
+
+    private StreamOpenRequestCompletionSource RentStreamOpenRequestCompletionSource()
+    {
+        if (!streamOpenRequestCompletionSourcePool.TryDequeue(out StreamOpenRequestCompletionSource? completionSource))
+        {
+            completionSource = new StreamOpenRequestCompletionSource(this);
+        }
+
+        completionSource.Prepare();
+        return completionSource;
+    }
+
+    private void ReturnStreamOpenRequestCompletionSource(StreamOpenRequestCompletionSource completionSource)
+    {
+        streamOpenRequestCompletionSourcePool.Enqueue(completionSource);
+    }
+
     private StreamActionRequestCompletionSource RentStreamActionRequestCompletionSource()
     {
         if (!streamActionRequestCompletionSourcePool.TryDequeue(out StreamActionRequestCompletionSource? completionSource))
@@ -223,6 +404,22 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
     {
         streamActionRequestCompletionSourcePool.Enqueue(completionSource);
+    }
+
+    private DatagramSendRequestCompletionSource RentDatagramSendRequestCompletionSource()
+    {
+        if (!datagramSendRequestCompletionSourcePool.TryDequeue(out DatagramSendRequestCompletionSource? completionSource))
+        {
+            completionSource = new DatagramSendRequestCompletionSource(this);
+        }
+
+        completionSource.Prepare();
+        return completionSource;
+    }
+
+    private void ReturnDatagramSendRequestCompletionSource(DatagramSendRequestCompletionSource completionSource)
+    {
+        datagramSendRequestCompletionSourcePool.Enqueue(completionSource);
     }
 
     private bool TryAddPendingStreamActionRequest(long requestId, StreamActionRequestCompletionSource completionSource)
@@ -980,12 +1177,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        TaskCompletionSource<ulong> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        StreamOpenRequestCompletionSource completion = RentStreamOpenRequestCompletionSource();
         if (!pendingStreamOpenRequests.TryAdd(requestId, completion)
             || !pendingStreamOpenTypes.TryAdd(requestId, streamType))
         {
             pendingStreamOpenRequests.TryRemove(requestId, out _);
             pendingStreamOpenTypes.TryRemove(requestId, out _);
+            ReturnStreamOpenRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream open request.");
         }
 
@@ -995,7 +1193,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? pendingCompletion))
                 {
                     pendingCompletion!.TrySetCanceled(token);
                 }
@@ -1008,7 +1206,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             QuicConnectionStreamActionKind.Open,
             StreamType: streamType)))
         {
-            TryRemovePendingStreamOpenRequest(requestId, out _);
+            if (TryRemovePendingStreamOpenRequest(requestId, out StreamOpenRequestCompletionSource? removedCompletion))
+            {
+                ReturnStreamOpenRequestCompletionSource(removedCompletion!);
+            }
+            else
+            {
+                await completion.Task.ConfigureAwait(false);
+            }
+
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream open request.");
@@ -1108,9 +1314,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextDatagramSendRequestId);
-        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        DatagramSendRequestCompletionSource completion = RentDatagramSendRequestCompletionSource();
         if (!pendingDatagramSendRequests.TryAdd(requestId, completion))
         {
+            ReturnDatagramSendRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the DATAGRAM send request.");
         }
 
@@ -1120,7 +1327,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingDatagramSendRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                if (runtime.pendingDatagramSendRequests.TryRemove(requestId, out DatagramSendRequestCompletionSource? pendingCompletion))
                 {
                     pendingCompletion.TrySetCanceled(token);
                 }
@@ -1132,7 +1339,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             requestId,
             datagram)))
         {
-            pendingDatagramSendRequests.TryRemove(requestId, out _);
+            if (pendingDatagramSendRequests.TryRemove(requestId, out DatagramSendRequestCompletionSource? removedCompletion))
+            {
+                ReturnDatagramSendRequestCompletionSource(removedCompletion);
+            }
+            else
+            {
+                await completion.Task.ConfigureAwait(false);
+            }
+
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the DATAGRAM send request.");
@@ -1376,7 +1591,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         lastTransitionTicks = nowTicks;
         transitionSequence++;
 
-        List<QuicConnectionEffect>? effects = null;
+        QuicConnectionEffectAccumulator effects = default;
 
         bool stateChanged = connectionEvent switch
         {
@@ -1459,6 +1674,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
             peerConnectionIdState.Clear();
             issuedConnectionIdState.Reset();
+            ClearBufferedEstablishmentHandshakePackets();
         }
         finally
         {
@@ -1491,7 +1707,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
                         if (effectObserver is not null)
                         {
-                            if (result.EffectList is { } effectList)
+                            if (result.SingleEffect is { } singleEffect)
+                            {
+                                effectObserver(singleEffect);
+                            }
+                            else if (result.EffectList is { } effectList)
                             {
                                 foreach (QuicConnectionEffect effect in effectList)
                                 {

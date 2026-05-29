@@ -305,8 +305,9 @@ internal static class QuicConnectionAckHelpers
             }
         }
 
-        foreach (QuicAckRange range in ackFrame.AdditionalRanges)
+        for (int rangeIndex = 0; rangeIndex < ackFrame.AdditionalRangeCount; rangeIndex++)
         {
+            QuicAckRange range = ackFrame.GetAdditionalRange(rangeIndex);
             for (ulong packetNumber = range.SmallestAcknowledged; ; packetNumber++)
             {
                 yield return packetNumber;

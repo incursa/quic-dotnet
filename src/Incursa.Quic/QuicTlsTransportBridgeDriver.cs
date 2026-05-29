@@ -176,17 +176,17 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <inheritdoc />
-    public IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters)
+    public QuicTlsStateUpdateBatch StartHandshake(QuicTransportParameters localTransportParameters)
         => StartHandshake(localTransportParameters, detachedResumptionTicketSnapshot: null, nowTicks: 0);
 
-    internal IReadOnlyList<QuicTlsStateUpdate> StartHandshake(
+    internal QuicTlsStateUpdateBatch StartHandshake(
         QuicTransportParameters localTransportParameters,
         QuicDetachedResumptionTicketSnapshot? detachedResumptionTicketSnapshot,
         long nowTicks)
     {
-        List<QuicTlsStateUpdate> updates = [];
+        QuicTlsStateUpdateBatch.Builder updates = default;
 
-        AppendPublishedUpdates(updates, PublishLocalTransportParameters(localTransportParameters));
+        AppendPublishedUpdates(ref updates, PublishLocalTransportParameters(localTransportParameters));
 
         if (Role == QuicTlsRole.Client
             && keySchedule is not null
@@ -218,7 +218,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             }
         }
 
-        return updates;
+        return updates.ToBatch();
     }
 
     internal bool TryConfigureServerAuthenticationMaterial(
@@ -310,7 +310,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     }
 
     /// <inheritdoc />
-    public IReadOnlyList<QuicTlsStateUpdate> ProcessCryptoFrame(
+    public QuicTlsStateUpdateBatch ProcessCryptoFrame(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlyMemory<byte> cryptoFramePayload)
     {
@@ -326,12 +326,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Returns a committed peer-parameter update only when the bridge gate admits it.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> CommitPeerTransportParameters(
+    public QuicTlsStateUpdateBatch CommitPeerTransportParameters(
         QuicTransportParameters peerTransportParameters)
     {
         return bridgeState.CanCommitPeerTransportParameters(peerTransportParameters)
             ? PublishCommittedPeerTransportParameters(peerTransportParameters)
-            : Array.Empty<QuicTlsStateUpdate>();
+            : QuicTlsStateUpdateBatch.Empty;
     }
 
     /// <summary>
@@ -339,53 +339,53 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// </summary>
     /// <param name="encryptionLevel">The encryption level to advance.</param>
     /// <returns>The state updates produced by the transcript step.</returns>
-    public IReadOnlyList<QuicTlsStateUpdate> AdvanceHandshakeTranscript(QuicTlsEncryptionLevel encryptionLevel)
+    public QuicTlsStateUpdateBatch AdvanceHandshakeTranscript(QuicTlsEncryptionLevel encryptionLevel)
     {
         if (encryptionLevel is not (QuicTlsEncryptionLevel.Initial or QuicTlsEncryptionLevel.Handshake or QuicTlsEncryptionLevel.OneRtt))
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (bridgeState.IsTerminal)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (bridgeState.InitialIngressCryptoBuffer.BufferedBytes <= 0
             && bridgeState.HandshakeIngressCryptoBuffer.BufferedBytes <= 0
             && bridgeState.OneRttIngressCryptoBuffer.BufferedBytes <= 0)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (encryptionLevel == QuicTlsEncryptionLevel.OneRtt)
         {
             if (bridgeState.OneRttIngressCryptoBuffer.BufferedBytes == 0)
             {
-                return Array.Empty<QuicTlsStateUpdate>();
+                return QuicTlsStateUpdateBatch.Empty;
             }
 
-            List<QuicTlsStateUpdate> oneRttUpdates = [];
+            QuicTlsStateUpdateBatch.Builder oneRttUpdates = default;
             if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.OneRtt))
             {
-                DriveTranscriptProgress(oneRttUpdates);
+                DriveTranscriptProgress(ref oneRttUpdates);
             }
 
-            return oneRttUpdates;
+            return oneRttUpdates.ToBatch();
         }
 
         if (bridgeState.LocalTransportParameters is null)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
-        List<QuicTlsStateUpdate> updates = [];
+        QuicTlsStateUpdateBatch.Builder updates = default;
         if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Initial))
         {
-            DriveTranscriptProgress(updates);
+            DriveTranscriptProgress(ref updates);
             if (bridgeState.IsTerminal)
             {
-                return updates;
+                return updates.ToBatch();
             }
         }
 
@@ -394,11 +394,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         {
             if (DrainBufferedCryptoIntoTranscript(QuicTlsEncryptionLevel.Handshake))
             {
-                DriveTranscriptProgress(updates);
+                DriveTranscriptProgress(ref updates);
             }
         }
 
-        return updates;
+        return updates.ToBatch();
     }
 
     /// <summary>
@@ -412,7 +412,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes the local transport parameters to the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishLocalTransportParameters(
+    public QuicTlsStateUpdateBatch PublishLocalTransportParameters(
         QuicTransportParameters localTransportParameters)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
@@ -423,7 +423,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes committed peer transport parameters to the bridge state.
     /// </summary>
-    private IReadOnlyList<QuicTlsStateUpdate> PublishCommittedPeerTransportParameters(
+    private QuicTlsStateUpdateBatch PublishCommittedPeerTransportParameters(
         QuicTransportParameters peerTransportParameters)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
@@ -434,7 +434,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes that keys are available for the specified encryption level.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishKeysAvailable(QuicTlsEncryptionLevel encryptionLevel)
+    public QuicTlsStateUpdateBatch PublishKeysAvailable(QuicTlsEncryptionLevel encryptionLevel)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.KeysAvailable,
@@ -444,7 +444,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes a key-discard update for the specified encryption level.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishKeyDiscard(QuicTlsEncryptionLevel encryptionLevel)
+    public QuicTlsStateUpdateBatch PublishKeyDiscard(QuicTlsEncryptionLevel encryptionLevel)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.KeysDiscarded,
@@ -454,7 +454,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes a fatal TLS alert into the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishFatalAlert(ushort alertDescription)
+    public QuicTlsStateUpdateBatch PublishFatalAlert(ushort alertDescription)
     {
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.FatalAlert,
@@ -480,7 +480,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes the QUIC-specific TLS KeyUpdate violation into the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishProhibitedKeyUpdateViolation()
+    public QuicTlsStateUpdateBatch PublishProhibitedKeyUpdateViolation()
     {
         return PublishUpdate(new QuicTlsStateUpdate(QuicTlsUpdateKind.ProhibitedKeyUpdateViolation));
     }
@@ -688,7 +688,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
     /// <summary>
     /// Publishes handshake transcript progression to the bridge state.
     /// </summary>
-    public IReadOnlyList<QuicTlsStateUpdate> PublishTranscriptProgressed(
+    public QuicTlsStateUpdateBatch PublishTranscriptProgressed(
         QuicTlsTranscriptPhase transcriptPhase,
         QuicTlsHandshakeMessageType? handshakeMessageType = null,
         uint? handshakeMessageLength = null,
@@ -697,9 +697,9 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         QuicTransportParameters? transportParameters = null,
         QuicTlsEarlyDataDisposition? earlyDataDisposition = null)
     {
-        List<QuicTlsStateUpdate> updates = [];
+        QuicTlsStateUpdateBatch.Builder updates = default;
 
-        AppendPublishedUpdates(updates, PublishUpdate(new QuicTlsStateUpdate(
+        AppendPublishedUpdates(ref updates, PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.TranscriptProgressed,
             TransportParameters: transportParameters,
             HandshakeMessageType: handshakeMessageType,
@@ -710,12 +710,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         if (earlyDataDisposition.HasValue)
         {
-            AppendPublishedUpdates(updates, PublishUpdate(new QuicTlsStateUpdate(
+            AppendPublishedUpdates(ref updates, PublishUpdate(new QuicTlsStateUpdate(
                 QuicTlsUpdateKind.PeerEarlyDataDispositionAvailable,
                 PeerEarlyDataDisposition: earlyDataDisposition)));
         }
 
-        return updates;
+        return updates.ToBatch();
     }
 
     /// <summary>
@@ -800,14 +800,14 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return bridgeState.TryPeekOutgoingCryptoData(encryptionLevel, destination, out offset, out bytesWritten);
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishUpdate(QuicTlsStateUpdate update)
+    private QuicTlsStateUpdateBatch PublishUpdate(QuicTlsStateUpdate update)
     {
-        return bridgeState.TryApply(update) ? [update] : Array.Empty<QuicTlsStateUpdate>();
+        return bridgeState.TryApply(update) ? QuicTlsStateUpdateBatch.One(update) : QuicTlsStateUpdateBatch.Empty;
     }
 
     private static void AppendPublishedUpdates(
-        List<QuicTlsStateUpdate> updates,
-        IReadOnlyList<QuicTlsStateUpdate> publishedUpdates)
+        ref QuicTlsStateUpdateBatch.Builder updates,
+        QuicTlsStateUpdateBatch publishedUpdates)
     {
         if (publishedUpdates.Count > 0)
         {
@@ -872,7 +872,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return drainedAny;
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishPeerHandshakeTranscriptCompleted()
+    private QuicTlsStateUpdateBatch PublishPeerHandshakeTranscriptCompleted()
     {
         return PublishUpdate(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PeerHandshakeTranscriptCompleted,
@@ -883,11 +883,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             TranscriptPhase: QuicTlsTranscriptPhase.Completed));
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishKeyScheduleUpdates(QuicTlsTranscriptStep step)
+    private QuicTlsStateUpdateBatch PublishKeyScheduleUpdates(QuicTlsTranscriptStep step)
     {
         if (keySchedule is null)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         IReadOnlyList<QuicTlsStateUpdate> keyScheduleUpdates = keySchedule.ProcessTranscriptStep(
@@ -897,10 +897,10 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             localServerLeafSigningPrivateKey);
         if (keyScheduleUpdates.Count == 0)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
-        List<QuicTlsStateUpdate> publishedUpdates = [];
+        QuicTlsStateUpdateBatch.Builder publishedUpdates = default;
         foreach (QuicTlsStateUpdate update in keyScheduleUpdates)
         {
             if (update.Kind == QuicTlsUpdateKind.KeyLogSecretAvailable && !emitKeyLogSecrets)
@@ -908,28 +908,28 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                 continue;
             }
 
-            IReadOnlyList<QuicTlsStateUpdate> publishedUpdate = PublishUpdate(update);
-            AppendPublishedUpdates(publishedUpdates, publishedUpdate);
+            QuicTlsStateUpdateBatch publishedUpdate = PublishUpdate(update);
+            AppendPublishedUpdates(ref publishedUpdates, publishedUpdate);
 
             if (publishedUpdate.Count > 0
                 && update.Kind == QuicTlsUpdateKind.PeerCertificateVerifyVerified)
             {
-                AppendPublishedUpdates(publishedUpdates, PublishPeerCertificatePolicyAcceptance());
+                AppendPublishedUpdates(ref publishedUpdates, PublishPeerCertificatePolicyAcceptance());
                 if (bridgeState.IsTerminal)
                 {
-                    return publishedUpdates;
+                    return publishedUpdates.ToBatch();
                 }
             }
         }
 
-        return publishedUpdates;
+        return publishedUpdates.ToBatch();
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishPeerCertificatePolicyAcceptance()
+    private QuicTlsStateUpdateBatch PublishPeerCertificatePolicyAcceptance()
     {
         if (keySchedule is null || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (Role == QuicTlsRole.Server && serverClientCertificateRequired)
@@ -954,12 +954,12 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
         if (pinnedPeerLeafCertificateSha256 is null || pinnedPeerLeafCertificateSha256.Length == 0)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (!keySchedule.TryGetPeerLeafCertificateSha256Fingerprint(out byte[] peerLeafCertificateSha256))
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         try
@@ -977,13 +977,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishSnapshotAcceptedPeerCertificatePolicy()
+    private QuicTlsStateUpdateBatch PublishSnapshotAcceptedPeerCertificatePolicy()
     {
         if (keySchedule is null
             || clientCertificatePolicySnapshot is null
             || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (!clientCertificatePolicySnapshot.IsComplete)
@@ -1026,13 +1026,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishStandardValidationAcceptedPeerCertificatePolicy()
+    private QuicTlsStateUpdateBatch PublishStandardValidationAcceptedPeerCertificatePolicy()
     {
         if (keySchedule is null
             || clientAuthenticationOptions is null
             || !bridgeState.CanEmitPeerCertificatePolicyAccepted())
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         if (!keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
@@ -1078,14 +1078,14 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishCallbackAcceptedPeerCertificatePolicy()
+    private QuicTlsStateUpdateBatch PublishCallbackAcceptedPeerCertificatePolicy()
     {
         if (remoteCertificateValidationCallback is null
             || keySchedule is null
             || !keySchedule.TryCreatePeerLeafCertificate(out X509Certificate2? peerCertificate)
             || peerCertificate is null)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         using (peerCertificate)
@@ -1113,7 +1113,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishServerClientCertificateAcceptance()
+    private QuicTlsStateUpdateBatch PublishServerClientCertificateAcceptance()
     {
         if (serverRemoteCertificateValidationCallback is null
             || keySchedule is null
@@ -1277,7 +1277,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         return !name.ContainsAnyExcept(s_safeDnsChars);
     }
 
-    private void DriveTranscriptProgress(List<QuicTlsStateUpdate> updates)
+    private void DriveTranscriptProgress(ref QuicTlsStateUpdateBatch.Builder updates)
     {
         while (true)
         {
@@ -1299,7 +1299,7 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                             ? QuicTlsEarlyDataDisposition.Accepted
                             : QuicTlsEarlyDataDisposition.Rejected;
                     }
-                    IReadOnlyList<QuicTlsStateUpdate> progressedUpdates = PublishTranscriptProgressed(
+                    QuicTlsStateUpdateBatch progressedUpdates = PublishTranscriptProgressed(
                     step.TranscriptPhase ?? QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
                     step.HandshakeMessageType,
                     step.HandshakeMessageLength,
@@ -1307,13 +1307,13 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
                     step.TranscriptHashAlgorithm,
                     step.TransportParameters,
                     earlyDataDisposition);
-                    AppendPublishedUpdates(updates, progressedUpdates);
+                    AppendPublishedUpdates(ref updates, progressedUpdates);
                     if (progressedUpdates.Count == 0)
                     {
                         return;
                     }
 
-                    AppendPublishedUpdates(updates, PublishKeyScheduleUpdates(step));
+                    AppendPublishedUpdates(ref updates, PublishKeyScheduleUpdates(step));
                     if (bridgeState.IsTerminal)
                     {
                         return;
@@ -1321,24 +1321,24 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 
                     if (bridgeState.CanEmitPeerHandshakeTranscriptCompleted())
                     {
-                        AppendPublishedUpdates(updates, PublishPeerHandshakeTranscriptCompleted());
+                        AppendPublishedUpdates(ref updates, PublishPeerHandshakeTranscriptCompleted());
                     }
 
                     break;
                 }
 
                 case QuicTlsTranscriptStepKind.PostHandshakeTicketAvailable:
-                    AppendPublishedUpdates(updates, PublishPostHandshakeTicketUpdate(step));
+                    AppendPublishedUpdates(ref updates, PublishPostHandshakeTicketUpdate(step));
                     return;
 
                 case QuicTlsTranscriptStepKind.ProhibitedKeyUpdateViolation:
-                    AppendPublishedUpdates(updates, PublishProhibitedKeyUpdateViolation());
+                    AppendPublishedUpdates(ref updates, PublishProhibitedKeyUpdateViolation());
                     return;
 
                 case QuicTlsTranscriptStepKind.Fatal:
                     if (step.AlertDescription.HasValue)
                     {
-                        AppendPublishedUpdates(updates, PublishFatalAlert(step.AlertDescription.Value));
+                        AppendPublishedUpdates(ref updates, PublishFatalAlert(step.AlertDescription.Value));
                     }
 
                     return;
@@ -1346,11 +1346,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
         }
     }
 
-    private IReadOnlyList<QuicTlsStateUpdate> PublishPostHandshakeTicketUpdate(QuicTlsTranscriptStep step)
+    private QuicTlsStateUpdateBatch PublishPostHandshakeTicketUpdate(QuicTlsTranscriptStep step)
     {
         if (step.TicketBytes.IsEmpty)
         {
-            return Array.Empty<QuicTlsStateUpdate>();
+            return QuicTlsStateUpdateBatch.Empty;
         }
 
         return PublishUpdate(new QuicTlsStateUpdate(

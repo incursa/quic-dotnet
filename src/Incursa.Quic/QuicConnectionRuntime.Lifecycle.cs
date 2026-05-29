@@ -33,7 +33,7 @@ internal sealed partial class QuicConnectionRuntime
         NotifyAllStreamObservers(terminalException);
     }
 
-    private void AppendTerminalEffects(ref List<QuicConnectionEffect>? effects, bool emitClosePacket)
+    private void AppendTerminalEffects(ref QuicConnectionEffectAccumulator effects, bool emitClosePacket)
     {
         if (terminalState.HasValue)
         {
@@ -52,7 +52,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private void AppendConnectionClosePacket(
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         QuicConnectionCloseMetadata closeMetadata)
     {
         if (activePath is null)
@@ -89,7 +89,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryFormatConnectionCloseDatagrams(
         QuicConnectionCloseMetadata closeMetadata,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         List<ReadOnlyMemory<byte>> closeDatagrams)
     {
         if (HandshakeConfirmed)
@@ -129,7 +129,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryFormatOneRttConnectionCloseDatagram(
         QuicConnectionCloseMetadata closeMetadata,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out ReadOnlyMemory<byte> closeDatagram)
     {
         closeDatagram = default;
@@ -215,7 +215,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryPrepareOneRttProtectionForAeadLimit(
         string failureMessage,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
         exception = null;
@@ -239,7 +239,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryStopUsingConnectionForOneRttOpenAeadLimit(
         QuicAeadKeyLifecycle? keyLifecycle,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (keyLifecycle is null)
         {
@@ -263,7 +263,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool StopUsingConnectionForAeadLimit(
         string reasonPhrase,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
         QuicConnectionCloseMetadata closeMetadata = new(
@@ -288,7 +288,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryStopUsingConnectionForPacketNumberExhaustion(
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase == QuicConnectionPhase.Discarded)
         {
@@ -311,7 +311,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryHandlePacketNumberExhaustion(
         QuicPacketNumberSpace packetNumberSpace,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = packetNumberSpace;
 
@@ -387,12 +387,12 @@ internal sealed partial class QuicConnectionRuntime
 
     internal QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
     {
-        List<QuicConnectionEffect>? effects = null;
+        QuicConnectionEffectAccumulator effects = default;
         AppendLifecycleTimerEffects(ref effects);
-        return effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
+        return effects.ToArray();
     }
 
-    private void AppendLifecycleTimerEffects(ref List<QuicConnectionEffect>? effects)
+    private void AppendLifecycleTimerEffects(ref QuicConnectionEffectAccumulator effects)
     {
         RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
         _ = RecomputeIdleTimeoutState(lastTransitionTicks);
@@ -511,7 +511,7 @@ internal sealed partial class QuicConnectionRuntime
         return GetAbsoluteTicks(tlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.Value);
     }
 
-    private bool TryArmRetainedOldOneRttKeyDiscard(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool TryArmRetainedOldOneRttKeyDiscard(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (!tlsState.RetainedOldOneRttOpenPacketProtectionMaterial.HasValue
             || tlsState.RetainedOldOneRttPacketProtectionDiscardAtMicros.HasValue
@@ -536,7 +536,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref List<QuicConnectionEffect>? effects)
+    private bool TryDiscardExpiredRetainedOldOneRttKeyMaterial(ref QuicConnectionEffectAccumulator effects)
     {
         if (!tlsState.RetainedOldOneRttPacketProtectionKeyPhase.HasValue)
         {
@@ -682,23 +682,35 @@ internal sealed partial class QuicConnectionRuntime
         internal bool IsEmitted { get; set; }
     }
 
-    private void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
+    private void EmitDiagnostic(ref QuicConnectionEffectAccumulator effects, QuicDiagnosticEvent diagnosticEvent)
     {
         diagnosticsState.EmitDiagnostic(ref effects, diagnosticEvent);
     }
 
-    private void AppendEffect(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect effect)
+    private void AppendEffect(ref QuicConnectionEffectAccumulator effects, QuicConnectionEffect effect)
     {
         if (effect is QuicConnectionSendDatagramEffect sendDatagramEffect)
         {
             effect = sendDatagramEffect with { EcnMarking = sendRuntime.CurrentEcnMarking };
         }
 
-        (effects ??= []).Add(effect);
+        effects.Add(effect);
+    }
+
+    private static QuicConnectionEffectAccumulator CreateEffectAccumulator(List<QuicConnectionEffect>? effects)
+    {
+        return effects is null ? default : QuicConnectionEffectAccumulator.FromList(effects);
+    }
+
+    private static void StoreEffectAccumulator(
+        ref List<QuicConnectionEffect>? effects,
+        QuicConnectionEffectAccumulator accumulator)
+    {
+        effects = accumulator.ToList();
     }
 
     private void AppendTimerDeadlineEffect(
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         QuicConnectionTimerKind timerKind,
         long? dueTicks)
     {

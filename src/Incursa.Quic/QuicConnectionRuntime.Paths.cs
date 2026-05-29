@@ -148,7 +148,7 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlySpan<byte> datagram,
         ulong? routedLocallyIssuedConnectionId,
         bool deferTrustedPathReusePromotion,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out bool packetDiscarded)
     {
         packetDiscarded = false;
@@ -207,7 +207,7 @@ internal sealed partial class QuicConnectionRuntime
         int payloadBytes,
         long nowTicks,
         ref QuicConnectionCandidatePathRecord candidatePath,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (candidatePath.Validation.IsValidated && !candidatePath.Validation.IsAbandoned)
         {
@@ -402,7 +402,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         QuicConnectionValidatedPathRecord recentlyValidatedPath,
         bool deferPromotion,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicConnectionPathAmplificationState amplificationState = recentlyValidatedPath.AmplificationState.MarkAddressValidated();
         if (!amplificationState.TryRegisterReceivedDatagramPayloadBytes(
@@ -473,7 +473,7 @@ internal sealed partial class QuicConnectionRuntime
         int payloadBytes,
         long nowTicks,
         QuicConnectionValidatedPathRecord? recentlyValidatedPath,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicConnectionPathAmplificationState amplificationState = default;
         if (!amplificationState.TryRegisterReceivedDatagramPayloadBytes(payloadBytes, uniquelyAttributedToSingleConnection: true, out amplificationState))
@@ -538,7 +538,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryStartPreferredAddressPathValidation(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (tlsState.Role != QuicTlsRole.Client
             || !HandshakeConfirmed
@@ -613,7 +613,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
         ref QuicConnectionCandidatePathRecord candidatePath,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (candidatePath.Validation.IsValidated || candidatePath.Validation.IsAbandoned)
         {
@@ -705,7 +705,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         ReadOnlySpan<byte> pathValidationDatagram,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (pathValidationDatagram.IsEmpty)
         {
@@ -947,7 +947,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         ulong packetNumber,
         bool receivedSpinBit,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is QuicConnectionActivePathRecord activePathValue
             && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePathValue.Identity, pathIdentity))
@@ -1085,7 +1085,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleIcmpMaximumDatagramSizeReduction(
         QuicConnectionIcmpMaximumDatagramSizeReductionEvent icmpMaximumDatagramSizeReductionEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = nowTicks;
         _ = effects;
@@ -1145,7 +1145,7 @@ internal sealed partial class QuicConnectionRuntime
         return QuicPacketParser.TryParseShortHeader(quotedPacket.Span, out _);
     }
 
-    private bool TryPromoteValidatedCandidatePath(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool TryPromoteValidatedCandidatePath(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         QuicConnectionPathIdentity? bestPathIdentity = null;
         long bestActivityTicks = long.MinValue;
@@ -1176,7 +1176,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryPromoteValidatedCandidatePath(
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath)
             || !candidatePath.Validation.IsValidated
@@ -1272,7 +1272,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryPromoteFallbackValidatedPath(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool TryPromoteFallbackValidatedPath(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (recentlyValidatedPaths.Count == 0)
         {

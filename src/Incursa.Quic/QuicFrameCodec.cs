@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -113,7 +115,7 @@ internal static class QuicFrameCodec
         out QuicDatagramFrame frame,
         out int bytesConsumed)
     {
-        frame = new QuicDatagramFrame();
+        frame = default;
         bytesConsumed = default;
         ReadOnlySpan<byte> packetPayloadSpan = packetPayload.Span;
 
@@ -141,11 +143,9 @@ internal static class QuicFrameCodec
             datagramDataLength = packetPayload.Length - index;
         }
 
-        frame = new QuicDatagramFrame
-        {
-            FrameType = (byte)frameTypeValue,
-            DatagramData = packetPayload.Slice(index, datagramDataLength),
-        };
+        frame = new QuicDatagramFrame(
+            (byte)frameTypeValue,
+            packetPayload.Slice(index, datagramDataLength));
         bytesConsumed = index + datagramDataLength;
         return true;
     }
@@ -156,8 +156,7 @@ internal static class QuicFrameCodec
     internal static bool TryFormatDatagramFrame(QuicDatagramFrame frame, Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;
-        if (frame is null
-            || (frame.FrameType != DatagramWithoutLengthFrameType && frame.FrameType != DatagramWithLengthFrameType))
+        if (frame.FrameType != DatagramWithoutLengthFrameType && frame.FrameType != DatagramWithLengthFrameType)
         {
             return false;
         }
@@ -229,21 +228,27 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        QuicAckRange[] additionalRanges = ackRangeCount == 0
-            ? []
-            : new QuicAckRange[(int)ackRangeCount];
-        ulong previousSmallestAcknowledged = largestAcknowledged - firstAckRange;
+        QuicAckRange[] additionalRanges = [];
+        if (ackRangeCount > 0)
+        {
+            additionalRanges = ArrayPool<QuicAckRange>.Shared.Rent((int)ackRangeCount);
+        }
 
-        for (int rangeIndex = 0; rangeIndex < additionalRanges.Length; rangeIndex++)
+        ulong previousSmallestAcknowledged = largestAcknowledged - firstAckRange;
+        int additionalRangeCount = (int)ackRangeCount;
+
+        for (int rangeIndex = 0; rangeIndex < additionalRangeCount; rangeIndex++)
         {
             if (!TryParseVarint(packetPayload, ref index, out ulong gap)
                 || !TryParseVarint(packetPayload, ref index, out ulong ackRangeLength))
             {
+                ReturnAckRangeBuffer(additionalRanges, additionalRangeCount);
                 return false;
             }
 
             if (!TryComputeAckRange(previousSmallestAcknowledged, gap, ackRangeLength, out ulong smallestAcknowledged, out ulong largestRangeAcknowledged))
             {
+                ReturnAckRangeBuffer(additionalRanges, additionalRangeCount);
                 return false;
             }
 
@@ -258,6 +263,7 @@ internal static class QuicFrameCodec
                 || !TryParseVarint(packetPayload, ref index, out ulong ect1Count)
                 || !TryParseVarint(packetPayload, ref index, out ulong ecnCeCount))
             {
+                ReturnAckRangeBuffer(additionalRanges, additionalRangeCount);
                 return false;
             }
 
@@ -270,11 +276,23 @@ internal static class QuicFrameCodec
             LargestAcknowledged = largestAcknowledged,
             AckDelay = ackDelay,
             FirstAckRange = firstAckRange,
-            AdditionalRanges = additionalRanges,
             EcnCounts = ecnCounts,
         };
+        if (additionalRangeCount > 0)
+        {
+            frame.SetOwnedAdditionalRanges(additionalRanges, additionalRangeCount);
+        }
+
         bytesConsumed = index;
         return true;
+    }
+
+    private static void ReturnAckRangeBuffer(QuicAckRange[] additionalRanges, int additionalRangeCount)
+    {
+        if (additionalRangeCount > 0)
+        {
+            ArrayPool<QuicAckRange>.Shared.Return(additionalRanges);
+        }
     }
 
     /// <summary>
@@ -378,7 +396,7 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        QuicAckRange[] additionalRanges = frame.AdditionalRanges ?? [];
+        ReadOnlySpan<QuicAckRange> additionalRanges = frame.AdditionalRangeSpan;
 
         int index = 0;
         if (!TryWriteVarint(frame.FrameType, destination, ref index)
@@ -454,7 +472,7 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        QuicAckRange[] additionalRanges = frame.AdditionalRanges ?? [];
+        ReadOnlySpan<QuicAckRange> additionalRanges = frame.AdditionalRangeSpan;
         int length = 0;
         if (!TryAddVarintEncodedLength(frame.FrameType, ref length)
             || !TryAddVarintEncodedLength(frame.LargestAcknowledged, ref length)

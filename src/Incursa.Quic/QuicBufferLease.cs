@@ -8,10 +8,10 @@ internal struct QuicBufferLease : IDisposable
     private byte[]? buffer;
     private int length;
 
-    internal QuicBufferLease(byte[] buffer)
+    internal QuicBufferLease(byte[] buffer, int length)
     {
         this.buffer = buffer;
-        length = buffer.Length;
+        this.length = length;
     }
 
     internal int Length => length;

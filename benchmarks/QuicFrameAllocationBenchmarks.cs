@@ -86,13 +86,23 @@ public class QuicFrameAllocationBenchmarks
     [Benchmark]
     public int ParseAckNoAdditionalRanges()
     {
-        return QuicFrameCodec.TryParseAckFrame(ackNoAdditionalRanges, out QuicAckFrame frame, out int bytesConsumed)
-            ? bytesConsumed
+        if (!QuicFrameCodec.TryParseAckFrame(ackNoAdditionalRanges, out QuicAckFrame frame, out int bytesConsumed))
+        {
+            return -1;
+        }
+
+        try
+        {
+            return bytesConsumed
                 ^ unchecked((int)frame.LargestAcknowledged)
                 ^ unchecked((int)frame.AckDelay)
                 ^ unchecked((int)frame.FirstAckRange)
-                ^ frame.AdditionalRanges.Length
-            : -1;
+                ^ frame.AdditionalRangeSpan.Length;
+        }
+        finally
+        {
+            frame.Dispose();
+        }
     }
 
     /// <summary>
@@ -101,14 +111,25 @@ public class QuicFrameAllocationBenchmarks
     [Benchmark]
     public int ParseAckMultipleRanges()
     {
-        return QuicFrameCodec.TryParseAckFrame(ackMultipleRanges, out QuicAckFrame frame, out int bytesConsumed)
-            ? bytesConsumed
+        if (!QuicFrameCodec.TryParseAckFrame(ackMultipleRanges, out QuicAckFrame frame, out int bytesConsumed))
+        {
+            return -1;
+        }
+
+        try
+        {
+            ReadOnlySpan<QuicAckRange> additionalRanges = frame.AdditionalRangeSpan;
+            return bytesConsumed
                 ^ unchecked((int)frame.LargestAcknowledged)
                 ^ unchecked((int)frame.AckDelay)
                 ^ unchecked((int)frame.FirstAckRange)
-                ^ frame.AdditionalRanges.Length
-                ^ unchecked((int)frame.AdditionalRanges[0].SmallestAcknowledged)
-            : -1;
+                ^ additionalRanges.Length
+                ^ unchecked((int)additionalRanges[0].SmallestAcknowledged);
+        }
+        finally
+        {
+            frame.Dispose();
+        }
     }
 
     /// <summary>
@@ -117,12 +138,22 @@ public class QuicFrameAllocationBenchmarks
     [Benchmark]
     public int ParseAckEcnNoAdditionalRanges()
     {
-        return QuicFrameCodec.TryParseAckFrame(ackEcnNoAdditionalRanges, out QuicAckFrame frame, out int bytesConsumed)
-            ? bytesConsumed
+        if (!QuicFrameCodec.TryParseAckFrame(ackEcnNoAdditionalRanges, out QuicAckFrame frame, out int bytesConsumed))
+        {
+            return -1;
+        }
+
+        try
+        {
+            return bytesConsumed
                 ^ unchecked((int)frame.LargestAcknowledged)
                 ^ unchecked((int)(frame.EcnCounts?.Ect0Count ?? 0))
-                ^ unchecked((int)(frame.EcnCounts?.EcnCeCount ?? 0))
-            : -1;
+                ^ unchecked((int)(frame.EcnCounts?.EcnCeCount ?? 0));
+        }
+        finally
+        {
+            frame.Dispose();
+        }
     }
 
     /// <summary>
@@ -159,16 +190,23 @@ public class QuicFrameAllocationBenchmarks
             return -1;
         }
 
-        remaining = remaining[ackBytesConsumed..];
-        if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+        try
         {
-            return -1;
-        }
+            remaining = remaining[ackBytesConsumed..];
+            if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                return -1;
+            }
 
-        return ackBytesConsumed
-            ^ unchecked((int)ackFrame.LargestAcknowledged)
-            ^ streamFrame.ConsumedLength
-            ^ streamFrame.StreamDataLength;
+            return ackBytesConsumed
+                ^ unchecked((int)ackFrame.LargestAcknowledged)
+                ^ streamFrame.ConsumedLength
+                ^ streamFrame.StreamDataLength;
+        }
+        finally
+        {
+            ackFrame.Dispose();
+        }
     }
 
     /// <summary>

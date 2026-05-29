@@ -5,21 +5,13 @@ namespace Incursa.Quic;
 
 internal sealed class QuicStreamObserverSet
 {
+    private static readonly ObserverEntry[] EmptyObservers = [];
+
     private readonly object sync = new();
-    private long singleObserverId;
-    private Action<QuicStreamNotification>? singleObserver;
-    private Dictionary<long, Action<QuicStreamNotification>>? observers;
+    private ObserverEntry[] observers = EmptyObservers;
 
     internal bool IsEmpty
-    {
-        get
-        {
-            lock (sync)
-            {
-                return singleObserver is null && (observers is null || observers.Count == 0);
-            }
-        }
-    }
+        => System.Threading.Volatile.Read(ref observers).Length == 0;
 
     internal bool TryAdd(long observerId, Action<QuicStreamNotification> observer)
     {
@@ -27,24 +19,20 @@ internal sealed class QuicStreamObserverSet
 
         lock (sync)
         {
-            if (singleObserver is null && observers is null)
+            ObserverEntry[] snapshot = observers;
+            for (int index = 0; index < snapshot.Length; index++)
             {
-                singleObserverId = observerId;
-                singleObserver = observer;
-                return true;
-            }
-
-            if (observers is null)
-            {
-                observers = new Dictionary<long, Action<QuicStreamNotification>>(capacity: 2)
+                if (snapshot[index].ObserverId == observerId)
                 {
-                    [singleObserverId] = singleObserver!,
-                };
-                singleObserverId = 0;
-                singleObserver = null;
+                    return false;
+                }
             }
 
-            return observers.TryAdd(observerId, observer);
+            ObserverEntry[] updated = new ObserverEntry[snapshot.Length + 1];
+            Array.Copy(snapshot, updated, snapshot.Length);
+            updated[^1] = new ObserverEntry(observerId, observer);
+            System.Threading.Volatile.Write(ref observers, updated);
+            return true;
         }
     }
 
@@ -52,63 +40,51 @@ internal sealed class QuicStreamObserverSet
     {
         lock (sync)
         {
-            if (observers is null)
+            ObserverEntry[] snapshot = observers;
+            int removedIndex = -1;
+            for (int index = 0; index < snapshot.Length; index++)
             {
-                if (singleObserver is null || singleObserverId != observerId)
+                if (snapshot[index].ObserverId == observerId)
                 {
-                    return false;
+                    removedIndex = index;
+                    break;
                 }
+            }
 
-                singleObserverId = 0;
-                singleObserver = null;
+            if (removedIndex < 0)
+            {
+                return false;
+            }
+
+            if (snapshot.Length == 1)
+            {
+                System.Threading.Volatile.Write(ref observers, EmptyObservers);
                 return true;
             }
 
-            bool removed = observers.Remove(observerId);
-            if (observers.Count == 1)
+            ObserverEntry[] updated = new ObserverEntry[snapshot.Length - 1];
+            if (removedIndex > 0)
             {
-                using Dictionary<long, Action<QuicStreamNotification>>.Enumerator enumerator = observers.GetEnumerator();
-                if (enumerator.MoveNext())
-                {
-                    KeyValuePair<long, Action<QuicStreamNotification>> remaining = enumerator.Current;
-                    singleObserverId = remaining.Key;
-                    singleObserver = remaining.Value;
-                    observers = null;
-                }
-            }
-            else if (observers.Count == 0)
-            {
-                observers = null;
+                Array.Copy(snapshot, 0, updated, 0, removedIndex);
             }
 
-            return removed;
+            int remainingAfterRemoved = snapshot.Length - removedIndex - 1;
+            if (remainingAfterRemoved > 0)
+            {
+                Array.Copy(snapshot, removedIndex + 1, updated, removedIndex, remainingAfterRemoved);
+            }
+
+            System.Threading.Volatile.Write(ref observers, updated);
+            return true;
         }
     }
 
     internal void Notify(QuicStreamNotification notification)
     {
-        Action<QuicStreamNotification>? single;
-        Action<QuicStreamNotification>[]? snapshot;
-        lock (sync)
+        ObserverEntry[] snapshot = System.Threading.Volatile.Read(ref observers);
+        for (int index = 0; index < snapshot.Length; index++)
         {
-            single = singleObserver;
-            snapshot = observers?.Values.ToArray();
-        }
-
-        if (single is not null)
-        {
-            InvokeObserver(single, notification);
-            return;
-        }
-
-        if (snapshot is null)
-        {
-            return;
-        }
-
-        foreach (Action<QuicStreamNotification> observer in snapshot)
-        {
-            InvokeObserver(observer, notification);
+            InvokeObserver(snapshot[index].Observer, notification);
         }
     }
 
@@ -125,4 +101,8 @@ internal sealed class QuicStreamObserverSet
             // Stream observer failures remain local to the public facade boundary.
         }
     }
+
+    private readonly record struct ObserverEntry(
+        long ObserverId,
+        Action<QuicStreamNotification> Observer);
 }

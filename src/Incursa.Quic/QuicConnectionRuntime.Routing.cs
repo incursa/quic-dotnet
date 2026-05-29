@@ -15,7 +15,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (SendingMode == QuicConnectionSendingMode.None)
         {
@@ -107,7 +107,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleClosingPacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!tlsState.OneRttKeysAvailable
             || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
@@ -189,7 +189,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleReceivedPacketDatagram(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
         bool processedAnyPacket = false;
@@ -273,7 +273,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePathValidationSucceeded(
         QuicConnectionPathValidationSucceededEvent pathValidationSucceededEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryGetCandidatePath(pathValidationSucceededEvent.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
@@ -355,7 +355,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePathValidationFailed(
         QuicConnectionPathValidationFailedEvent pathValidationFailedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryGetCandidatePath(pathValidationFailedEvent.PathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
         {
@@ -455,7 +455,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandlePathValidationTimerExpired(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
         foreach (KeyValuePair<QuicConnectionPathIdentity, QuicConnectionCandidatePathRecord> entry in candidatePaths.ToArray())
@@ -525,7 +525,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleLocalCloseRequested(
         QuicConnectionLocalCloseRequestedEvent localCloseRequestedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase == QuicConnectionPhase.Closing)
         {
@@ -580,7 +580,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        List<QuicConnectionEffect>? effects = null;
+        QuicConnectionEffectAccumulator effects = default;
         if (TryHandlePacketNumberExhaustion(QuicPacketNumberSpace.ApplicationData, ref effects))
         {
             return true;
@@ -607,7 +607,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleConnectionCloseFrameReceived(
         QuicConnectionConnectionCloseFrameReceivedEvent connectionCloseFrameReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
         {
@@ -648,7 +648,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleAcceptedStatelessReset(
         QuicConnectionAcceptedStatelessResetEvent acceptedStatelessResetEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase is QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
         {
@@ -684,7 +684,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleConnectionIdIssued(
         QuicConnectionConnectionIdIssuedEvent connectionIdIssuedEvent,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (connectionIdIssuedEvent.StatelessResetToken.Length != QuicStatelessReset.StatelessResetTokenLength
             || issuedConnectionIdState.StatelessResetTokensByConnectionId.ContainsKey(connectionIdIssuedEvent.ConnectionId)
@@ -740,7 +740,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleConnectionIdRetired(
         QuicConnectionConnectionIdRetiredEvent connectionIdRetiredEvent,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryRetireIssuedConnectionId(connectionIdRetiredEvent.ConnectionId, ref effects))
         {
@@ -759,7 +759,7 @@ internal sealed partial class QuicConnectionRuntime
         return false;
     }
 
-    private bool TryRetireIssuedConnectionId(ulong connectionId, ref List<QuicConnectionEffect>? effects)
+    private bool TryRetireIssuedConnectionId(ulong connectionId, ref QuicConnectionEffectAccumulator effects)
     {
         if (!issuedConnectionIdState.TryRetireIssuedConnectionId(connectionId, out byte[]? connectionIdBytes))
         {
@@ -782,7 +782,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryHandlePreviouslyUnusedIssuedConnectionId(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (packetReceivedEvent.RoutedLocallyIssuedConnectionId is not ulong connectionId
             || !issuedConnectionIdState.TryMarkIssuedConnectionIdUsed(connectionId))
@@ -801,7 +801,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryReplenishIssuedConnectionId(ref List<QuicConnectionEffect>? effects)
+    private bool TryReplenishIssuedConnectionId(ref QuicConnectionEffectAccumulator effects)
     {
         if (!issuedConnectionIdState.HasRoomForAdditionalPeerIssuedConnectionId(GetPeerActiveConnectionIdLimit())
             || issuedConnectionIdState.HighestConnectionIdIssuedToPeer == ulong.MaxValue
@@ -888,7 +888,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleTimerExpired(
         QuicConnectionTimerExpiredEvent timerExpiredEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!lifecycleTimerState.TryConsumeTimerExpiration(timerExpiredEvent.TimerKind, timerExpiredEvent.Generation))
         {
@@ -926,7 +926,7 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private bool HandleIdleTimeoutExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool HandleIdleTimeoutExpired(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (phase is QuicConnectionPhase.Closing or QuicConnectionPhase.Draining or QuicConnectionPhase.Discarded)
         {
@@ -936,7 +936,7 @@ internal sealed partial class QuicConnectionRuntime
         return DiscardConnection(nowTicks, QuicConnectionCloseOrigin.IdleTimeout, default, ref effects);
     }
 
-    private bool HandleRecoveryTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool HandleRecoveryTimerExpired(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active))
         {
@@ -967,7 +967,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool HandleKeyUpdateRetentionTimerExpired(ref List<QuicConnectionEffect>? effects)
+    private bool HandleKeyUpdateRetentionTimerExpired(ref QuicConnectionEffectAccumulator effects)
     {
         if (phase is not (QuicConnectionPhase.Establishing or QuicConnectionPhase.Active))
         {
@@ -1004,7 +1004,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TrySendRecoveryProbes(
         QuicPacketNumberSpace selectedPacketNumberSpace,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool sentProbe;
         switch (selectedPacketNumberSpace)
@@ -1050,6 +1050,17 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace packetNumberSpace,
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TrySendRecoveryProbeDatagram(packetNumberSpace, nowTicks, ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    internal bool TrySendRecoveryProbeDatagram(
+        QuicPacketNumberSpace packetNumberSpace,
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects)
     {
         return packetNumberSpace switch
         {
@@ -1485,7 +1496,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace secondPacketNumberSpace,
         QuicPacketNumberSpace thirdPacketNumberSpace,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (TrySendCoalescedCryptoRecoveryProbeDatagram(
             firstPacketNumberSpace,
@@ -1525,6 +1536,26 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool initialAndHandshakeAlreadyCoalesced,
         ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TrySendAdditionalRecoveryProbeDatagram(
+            firstPacketNumberSpace,
+            secondPacketNumberSpace,
+            thirdPacketNumberSpace,
+            nowTicks,
+            initialAndHandshakeAlreadyCoalesced,
+            ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    internal bool TrySendAdditionalRecoveryProbeDatagram(
+        QuicPacketNumberSpace firstPacketNumberSpace,
+        QuicPacketNumberSpace secondPacketNumberSpace,
+        QuicPacketNumberSpace thirdPacketNumberSpace,
+        long nowTicks,
+        bool initialAndHandshakeAlreadyCoalesced,
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (initialAndHandshakeAlreadyCoalesced)
         {
@@ -1578,6 +1609,14 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     internal bool TrySendRecoveryPingProbe(ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TrySendRecoveryPingProbe(ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    private bool TrySendRecoveryPingProbe(ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null
             || !activePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets
@@ -1653,7 +1692,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         QuicConnectionCloseOrigin origin,
         QuicConnectionCloseMetadata closeMetadata,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         phase = QuicConnectionPhase.Discarded;
         idleTimeoutState = null;
@@ -1673,7 +1712,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private void RetireAllStatelessResetTokens(ref List<QuicConnectionEffect>? effects)
+    private void RetireAllStatelessResetTokens(ref QuicConnectionEffectAccumulator effects)
     {
         if (issuedConnectionIdState.IssuedConnectionIdCount == 0)
         {

@@ -17,7 +17,7 @@ internal readonly struct QuicConnectionDiagnosticsState
 
     internal bool IsEnabled { get; }
 
-    internal void EmitDiagnostic(ref List<QuicConnectionEffect>? effects, QuicDiagnosticEvent diagnosticEvent)
+    internal void EmitDiagnostic(ref QuicConnectionEffectAccumulator effects, QuicDiagnosticEvent diagnosticEvent)
     {
         if (!IsEnabled)
         {
@@ -25,6 +25,6 @@ internal readonly struct QuicConnectionDiagnosticsState
         }
 
         Sink.Emit(diagnosticEvent);
-        (effects ??= []).Add(new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
+        effects.Add(new QuicConnectionEmitDiagnosticEffect(diagnosticEvent));
     }
 }

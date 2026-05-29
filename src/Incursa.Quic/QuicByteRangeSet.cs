@@ -134,6 +134,7 @@ internal sealed class QuicByteRangeSet
     internal void Restore(QuicByteRangeSetSnapshot snapshot)
     {
         ranges.Clear();
+        ranges.EnsureCapacity(snapshot.Ranges.Length);
         for (int index = 0; index < snapshot.Ranges.Length; index++)
         {
             QuicByteRange range = snapshot.Ranges[index];

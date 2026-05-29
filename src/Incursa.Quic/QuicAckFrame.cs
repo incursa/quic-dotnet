@@ -1,13 +1,19 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
+
 namespace Incursa.Quic;
 
 /// <summary>
 /// A parsed or constructed ACK frame view.
 /// </summary>
-internal sealed class QuicAckFrame
+internal sealed class QuicAckFrame : IDisposable
 {
+    private QuicAckRange[] additionalRanges = [];
+    private int additionalRangeCount;
+    private bool ownsAdditionalRanges;
+
     /// <summary>
     /// Gets or sets the ACK frame type. Valid values are 0x02 and 0x03.
     /// </summary>
@@ -31,7 +37,40 @@ internal sealed class QuicAckFrame
     /// <summary>
     /// Gets or sets the additional ACK Ranges after the first ACK Range.
     /// </summary>
-    internal QuicAckRange[] AdditionalRanges { get; set; } = [];
+    internal QuicAckRange[] AdditionalRanges
+    {
+        get
+        {
+            if (additionalRangeCount == additionalRanges.Length)
+            {
+                return additionalRanges;
+            }
+
+            if (additionalRangeCount == 0)
+            {
+                return [];
+            }
+
+            return additionalRanges.AsSpan(0, additionalRangeCount).ToArray();
+        }
+
+        set
+        {
+            ReleaseOwnedAdditionalRanges();
+            additionalRanges = value ?? [];
+            additionalRangeCount = additionalRanges.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the additional ACK ranges as a non-allocating logical slice.
+    /// </summary>
+    internal ReadOnlySpan<QuicAckRange> AdditionalRangeSpan => additionalRanges.AsSpan(0, additionalRangeCount);
+
+    /// <summary>
+    /// Gets the number of additional ACK ranges as a signed count.
+    /// </summary>
+    internal int AdditionalRangeCount => additionalRangeCount;
 
     /// <summary>
     /// Gets or sets the optional ECN counters carried by ACK frame type 0x03.
@@ -41,6 +80,54 @@ internal sealed class QuicAckFrame
     /// <summary>
     /// Gets the number of additional ACK Ranges.
     /// </summary>
-    internal ulong AckRangeCount => (ulong)AdditionalRanges.Length;
-}
+    internal ulong AckRangeCount => (ulong)additionalRangeCount;
 
+    /// <summary>
+    /// Gets an additional ACK range by logical index.
+    /// </summary>
+    internal QuicAckRange GetAdditionalRange(int index)
+    {
+        if ((uint)index >= (uint)additionalRangeCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        return additionalRanges[index];
+    }
+
+    /// <summary>
+    /// Takes ownership of a pooled additional range buffer.
+    /// </summary>
+    internal void SetOwnedAdditionalRanges(QuicAckRange[] ranges, int count)
+    {
+        ArgumentNullException.ThrowIfNull(ranges);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        if (count > ranges.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count));
+        }
+
+        ReleaseOwnedAdditionalRanges();
+        additionalRanges = ranges;
+        additionalRangeCount = count;
+        ownsAdditionalRanges = true;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        ReleaseOwnedAdditionalRanges();
+    }
+
+    private void ReleaseOwnedAdditionalRanges()
+    {
+        if (ownsAdditionalRanges)
+        {
+            ArrayPool<QuicAckRange>.Shared.Return(additionalRanges);
+        }
+
+        additionalRanges = [];
+        additionalRangeCount = 0;
+        ownsAdditionalRanges = false;
+    }
+}

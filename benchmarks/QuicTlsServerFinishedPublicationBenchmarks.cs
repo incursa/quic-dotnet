@@ -61,7 +61,7 @@ public class QuicTlsServerFinishedPublicationBenchmarks
     [Benchmark]
     public int PublishServerFinishedMaterial()
     {
-        IReadOnlyList<QuicTlsStateUpdate> updates = driver.ProcessCryptoFrame(
+        QuicTlsStateUpdateBatch updates = driver.ProcessCryptoFrame(
             QuicTlsEncryptionLevel.Handshake,
             finishedTranscript);
 

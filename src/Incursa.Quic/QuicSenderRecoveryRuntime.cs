@@ -16,7 +16,7 @@ internal readonly record struct QuicSenderPacketRecord(
 /// </summary>
 internal sealed class QuicSenderRecoveryRuntime
 {
-    private readonly Dictionary<QuicPacketNumberSpace, SortedDictionary<ulong, QuicSenderPacketRecord>> sentPacketsBySpace = [];
+    private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, QuicSenderPacketRecord>> sentPacketsBySpace = [];
 
     /// <summary>
     /// Initializes a new sender/recovery runtime owner.
@@ -57,7 +57,7 @@ internal sealed class QuicSenderRecoveryRuntime
         get
         {
             int count = 0;
-            foreach (SortedDictionary<ulong, QuicSenderPacketRecord> sentPackets in sentPacketsBySpace.Values)
+            foreach (SortedList<ulong, QuicSenderPacketRecord> sentPackets in sentPacketsBySpace.Values)
             {
                 count += sentPackets.Count;
             }
@@ -108,7 +108,7 @@ internal sealed class QuicSenderRecoveryRuntime
             return;
         }
 
-        SortedDictionary<ulong, QuicSenderPacketRecord> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
+        SortedList<ulong, QuicSenderPacketRecord> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
         sentPackets[packetNumber] = new QuicSenderPacketRecord(
             packetNumberSpace,
             packetNumber,
@@ -138,7 +138,7 @@ internal sealed class QuicSenderRecoveryRuntime
 
         foreach (QuicLostPacket lostPacket in lostPackets)
         {
-            if (!sentPacketsBySpace.TryGetValue(lostPacket.PacketNumberSpace, out SortedDictionary<ulong, QuicSenderPacketRecord>? sentPackets))
+            if (!sentPacketsBySpace.TryGetValue(lostPacket.PacketNumberSpace, out SortedList<ulong, QuicSenderPacketRecord>? sentPackets))
             {
                 continue;
             }
@@ -195,7 +195,7 @@ internal sealed class QuicSenderRecoveryRuntime
     {
         packetRecord = default;
 
-        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedDictionary<ulong, QuicSenderPacketRecord>? sentPackets))
+        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedList<ulong, QuicSenderPacketRecord>? sentPackets))
         {
             return false;
         }
@@ -203,9 +203,9 @@ internal sealed class QuicSenderRecoveryRuntime
         return sentPackets.TryGetValue(packetNumber, out packetRecord);
     }
 
-    private SortedDictionary<ulong, QuicSenderPacketRecord> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)
+    private SortedList<ulong, QuicSenderPacketRecord> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)
     {
-        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedDictionary<ulong, QuicSenderPacketRecord>? sentPackets))
+        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedList<ulong, QuicSenderPacketRecord>? sentPackets))
         {
             sentPackets = [];
             sentPacketsBySpace[packetNumberSpace] = sentPackets;

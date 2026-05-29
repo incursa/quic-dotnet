@@ -142,6 +142,48 @@ public class QuicHandshakePacketProtectionBenchmarks
     }
 
     /// <summary>
+    /// Measures protected Handshake packet opening through the public byte-array API.
+    /// </summary>
+    [Benchmark(Baseline = true)]
+    public int OpenHandshakePacketAsArray()
+    {
+        return handshakePacketBuilder.TryOpenHandshakePacket(
+            protectedPacket,
+            handshakePacketMaterial,
+            out byte[] packet,
+            out int payloadOffset,
+            out int payloadLength)
+            ? packet.Length ^ payloadOffset ^ payloadLength
+            : -1;
+    }
+
+    /// <summary>
+    /// Measures protected Handshake packet opening through pooled lease ownership.
+    /// </summary>
+    [Benchmark]
+    public int OpenHandshakePacketAsLease()
+    {
+        if (!handshakePacketBuilder.TryOpenHandshakePacketLease(
+                protectedPacket,
+                handshakePacketMaterial,
+                out QuicBufferLease packet,
+                out int payloadOffset,
+                out int payloadLength))
+        {
+            return -1;
+        }
+
+        try
+        {
+            return packet.Length ^ payloadOffset ^ payloadLength;
+        }
+        finally
+        {
+            packet.Dispose();
+        }
+    }
+
+    /// <summary>
     /// Measures protected Initial CRYPTO packet construction without an ACK prefix.
     /// </summary>
     [Benchmark]

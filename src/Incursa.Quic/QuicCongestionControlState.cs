@@ -771,7 +771,7 @@ internal readonly struct QuicPersistentCongestionPacket
 /// </summary>
 internal sealed class QuicSenderFlowController
 {
-    private readonly Dictionary<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpace = [];
+    private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, SentPacketState>> sentPacketsBySpace = [];
 
     /// <summary>
     /// Initializes a new sender-flow controller.
@@ -833,7 +833,7 @@ internal sealed class QuicSenderFlowController
             return;
         }
 
-        SortedDictionary<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
+        SortedList<ulong, SentPacketState> sentPackets = GetOrCreateSentPackets(packetNumberSpace);
         sentPackets[packetNumber] = new SentPacketState(
             sentBytes,
             sentAtMicros,
@@ -859,7 +859,7 @@ internal sealed class QuicSenderFlowController
         bool updated = false;
         ulong largestAcknowledgedPacketSentAtMicros = 0;
 
-        if (TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        if (TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
             List<ulong>? acknowledgedSentPacketNumbers = null;
             foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
@@ -921,7 +921,7 @@ internal sealed class QuicSenderFlowController
         bool sentAfterEarliestAcknowledgedPacket = true,
         bool allowAckOnlyLossSignal = false)
     {
-        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets)
+        if (!TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets)
             || !sentPackets.TryGetValue(packetNumber, out SentPacketState sentPacket))
         {
             return false;
@@ -949,7 +949,7 @@ internal sealed class QuicSenderFlowController
         bool updated = discardAckGenerationState
             && AckGenerationState.TryDiscardPacketNumberSpace(packetNumberSpace);
 
-        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        if (!TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
             return updated;
         }
@@ -1070,7 +1070,7 @@ internal sealed class QuicSenderFlowController
             return true;
         }
 
-        foreach (QuicAckRange range in ackFrame.AdditionalRanges ?? [])
+        foreach (QuicAckRange range in ackFrame.AdditionalRangeSpan)
         {
             if (packetNumber >= range.SmallestAcknowledged && packetNumber <= range.LargestAcknowledged)
             {
@@ -1081,9 +1081,9 @@ internal sealed class QuicSenderFlowController
         return false;
     }
 
-    private SortedDictionary<ulong, SentPacketState> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)
+    private SortedList<ulong, SentPacketState> GetOrCreateSentPackets(QuicPacketNumberSpace packetNumberSpace)
     {
-        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        if (!sentPacketsBySpace.TryGetValue(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
             sentPackets = [];
             sentPacketsBySpace[packetNumberSpace] = sentPackets;
@@ -1092,7 +1092,7 @@ internal sealed class QuicSenderFlowController
         return sentPackets;
     }
 
-    private bool TryGetSentPackets(QuicPacketNumberSpace packetNumberSpace, [NotNullWhen(true)] out SortedDictionary<ulong, SentPacketState>? sentPackets)
+    private bool TryGetSentPackets(QuicPacketNumberSpace packetNumberSpace, [NotNullWhen(true)] out SortedList<ulong, SentPacketState>? sentPackets)
     {
         return sentPacketsBySpace.TryGetValue(packetNumberSpace, out sentPackets);
     }
@@ -1112,7 +1112,7 @@ internal sealed class QuicSenderFlowController
         QuicPacketNumberSpace packetNumberSpace,
         QuicTlsEncryptionLevel packetProtectionLevel)
     {
-        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        if (!TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
             return false;
         }
@@ -1154,7 +1154,7 @@ internal sealed class QuicSenderFlowController
 
     private bool TryDiscardOneRttKeyPhase(QuicPacketNumberSpace packetNumberSpace, ulong keyPhase)
     {
-        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        if (!TryGetSentPackets(packetNumberSpace, out SortedList<ulong, SentPacketState>? sentPackets))
         {
             return false;
         }
@@ -1197,7 +1197,7 @@ internal sealed class QuicSenderFlowController
 
     private void RemoveDiscardedPacketNumbers(
         QuicPacketNumberSpace packetNumberSpace,
-        SortedDictionary<ulong, SentPacketState> sentPackets,
+        SortedList<ulong, SentPacketState> sentPackets,
         ulong[]? removedPacketNumbers,
         int removedPacketNumberCount)
     {

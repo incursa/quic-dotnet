@@ -19,7 +19,7 @@ internal static class QuicBufferPool
 
     internal static QuicBufferLease RentLease(int minimumLength)
     {
-        return new QuicBufferLease(RentBytes(minimumLength));
+        return new QuicBufferLease(RentBytes(minimumLength), minimumLength);
     }
 
     internal static void ReturnBytes(byte[]? buffer, bool clearArray = false)

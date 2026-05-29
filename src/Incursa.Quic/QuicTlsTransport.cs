@@ -1,6 +1,9 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Collections;
+using System.Collections.Generic;
+
 namespace Incursa.Quic;
 
 /// <summary>
@@ -164,6 +167,240 @@ internal readonly record struct QuicTlsStateUpdate(
     QuicTlsKeyLogSecret? KeyLogSecret = null);
 
 /// <summary>
+/// A small allocation-free batch of TLS state updates.
+/// </summary>
+internal readonly struct QuicTlsStateUpdateBatch : IReadOnlyList<QuicTlsStateUpdate>
+{
+    private const int FirstIndex = 0;
+    private const int SecondIndex = 1;
+    private const int ThirdIndex = 2;
+    private const int FourthIndex = 3;
+    private const int InlineCapacity = 4;
+    private const int InitialOverflowCapacity = 8;
+    private const int OverflowGrowthFactor = 2;
+
+    private readonly QuicTlsStateUpdate first;
+    private readonly QuicTlsStateUpdate second;
+    private readonly QuicTlsStateUpdate third;
+    private readonly QuicTlsStateUpdate fourth;
+    private readonly QuicTlsStateUpdate[]? overflow;
+    private readonly int count;
+
+    private QuicTlsStateUpdateBatch(QuicTlsStateUpdate first)
+    {
+        this.first = first;
+        second = default;
+        third = default;
+        fourth = default;
+        overflow = null;
+        count = 1;
+    }
+
+    private QuicTlsStateUpdateBatch(
+        QuicTlsStateUpdate first,
+        QuicTlsStateUpdate second,
+        QuicTlsStateUpdate third,
+        QuicTlsStateUpdate fourth,
+        int count)
+    {
+        this.first = first;
+        this.second = second;
+        this.third = third;
+        this.fourth = fourth;
+        overflow = null;
+        this.count = count;
+    }
+
+    private QuicTlsStateUpdateBatch(QuicTlsStateUpdate[] overflow, int count)
+    {
+        first = default;
+        second = default;
+        third = default;
+        fourth = default;
+        this.overflow = overflow;
+        this.count = count;
+    }
+
+    internal static QuicTlsStateUpdateBatch Empty { get; } = new();
+
+    internal static QuicTlsStateUpdateBatch One(QuicTlsStateUpdate update)
+    {
+        return new QuicTlsStateUpdateBatch(update);
+    }
+
+    public int Count => count;
+
+    public QuicTlsStateUpdate this[int index]
+    {
+        get
+        {
+            if ((uint)index >= (uint)count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            if (overflow is not null)
+            {
+                return overflow[index];
+            }
+
+            return index switch
+            {
+                FirstIndex => first,
+                SecondIndex => second,
+                ThirdIndex => third,
+                FourthIndex => fourth,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
+        }
+    }
+
+    public Enumerator GetEnumerator()
+    {
+        return new Enumerator(this);
+    }
+
+    IEnumerator<QuicTlsStateUpdate> IEnumerable<QuicTlsStateUpdate>.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    internal struct Builder
+    {
+        private QuicTlsStateUpdate first;
+        private QuicTlsStateUpdate second;
+        private QuicTlsStateUpdate third;
+        private QuicTlsStateUpdate fourth;
+        private QuicTlsStateUpdate[]? overflow;
+        private int count;
+
+        internal int Count => count;
+
+        internal void Add(QuicTlsStateUpdate update)
+        {
+            if (overflow is not null)
+            {
+                AddOverflow(update);
+                return;
+            }
+
+            switch (count)
+            {
+                case FirstIndex:
+                    first = update;
+                    count = SecondIndex;
+                    return;
+                case SecondIndex:
+                    second = update;
+                    count = ThirdIndex;
+                    return;
+                case ThirdIndex:
+                    third = update;
+                    count = FourthIndex;
+                    return;
+                case FourthIndex:
+                    fourth = update;
+                    count = InlineCapacity;
+                    return;
+                default:
+                    overflow = new QuicTlsStateUpdate[InitialOverflowCapacity];
+                    overflow[FirstIndex] = first;
+                    overflow[SecondIndex] = second;
+                    overflow[ThirdIndex] = third;
+                    overflow[FourthIndex] = fourth;
+                    AddOverflow(update);
+                    return;
+            }
+        }
+
+        internal void AddRange(QuicTlsStateUpdateBatch updates)
+        {
+            for (int index = 0; index < updates.Count; index++)
+            {
+                Add(updates[index]);
+            }
+        }
+
+        internal void AddRange(IReadOnlyList<QuicTlsStateUpdate> updates)
+        {
+            for (int index = 0; index < updates.Count; index++)
+            {
+                Add(updates[index]);
+            }
+        }
+
+        internal QuicTlsStateUpdateBatch ToBatch()
+        {
+            return count switch
+            {
+                0 => Empty,
+                1 => One(first),
+                <= InlineCapacity => new QuicTlsStateUpdateBatch(first, second, third, fourth, count),
+                _ => new QuicTlsStateUpdateBatch(overflow!, count),
+            };
+        }
+
+        private void AddOverflow(QuicTlsStateUpdate update)
+        {
+            if (overflow is null)
+            {
+                throw new InvalidOperationException("The overflow buffer has not been initialized.");
+            }
+
+            if (count >= overflow.Length)
+            {
+                Array.Resize(ref overflow, overflow.Length * OverflowGrowthFactor);
+            }
+
+            overflow[count] = update;
+            count++;
+        }
+    }
+
+    internal struct Enumerator : IEnumerator<QuicTlsStateUpdate>
+    {
+        private readonly QuicTlsStateUpdateBatch batch;
+        private int index;
+
+        internal Enumerator(QuicTlsStateUpdateBatch batch)
+        {
+            this.batch = batch;
+            index = -1;
+        }
+
+        public QuicTlsStateUpdate Current => batch[index];
+
+        object IEnumerator.Current => Current;
+
+        public bool MoveNext()
+        {
+            int next = index + 1;
+            if (next >= batch.Count)
+            {
+                return false;
+            }
+
+            index = next;
+            return true;
+        }
+
+        public void Reset()
+        {
+            index = -1;
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+}
+
+/// <summary>
 /// A transport-facing bridge to a concrete TLS implementation.
 /// </summary>
 internal interface IQuicTlsTransportBridge
@@ -178,7 +415,7 @@ internal interface IQuicTlsTransportBridge
     /// </summary>
     /// <param name="localTransportParameters">The local transport parameters to advertise.</param>
     /// <returns>The state updates produced by TLS.</returns>
-    IReadOnlyList<QuicTlsStateUpdate> StartHandshake(QuicTransportParameters localTransportParameters);
+    QuicTlsStateUpdateBatch StartHandshake(QuicTransportParameters localTransportParameters);
 
     /// <summary>
     /// Processes CRYPTO payload received at one encryption level.
@@ -186,7 +423,7 @@ internal interface IQuicTlsTransportBridge
     /// <param name="encryptionLevel">The encryption level for the CRYPTO payload.</param>
     /// <param name="cryptoFramePayload">The CRYPTO frame payload bytes.</param>
     /// <returns>The state updates produced by TLS.</returns>
-    IReadOnlyList<QuicTlsStateUpdate> ProcessCryptoFrame(
+    QuicTlsStateUpdateBatch ProcessCryptoFrame(
         QuicTlsEncryptionLevel encryptionLevel,
         ReadOnlyMemory<byte> cryptoFramePayload);
 
@@ -195,6 +432,6 @@ internal interface IQuicTlsTransportBridge
     /// </summary>
     /// <param name="peerTransportParameters">The staged peer transport parameters to commit.</param>
     /// <returns>The state updates produced by TLS.</returns>
-    IReadOnlyList<QuicTlsStateUpdate> CommitPeerTransportParameters(
+    QuicTlsStateUpdateBatch CommitPeerTransportParameters(
         QuicTransportParameters peerTransportParameters);
 }

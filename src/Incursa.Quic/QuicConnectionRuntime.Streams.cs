@@ -20,7 +20,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleStreamAction(
         QuicConnectionStreamActionEvent streamActionEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return streamActionEvent.ActionKind switch
         {
@@ -70,11 +70,11 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleDatagramSendRequested(
         QuicConnectionDatagramSendRequestedEvent datagramSendRequestedEvent,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!pendingDatagramSendRequests.TryRemove(
                 datagramSendRequestedEvent.RequestId,
-                out TaskCompletionSource<object?>? completion))
+                out QuicConnectionRuntime.DatagramSendRequestCompletionSource? completion))
         {
             return false;
         }
@@ -133,7 +133,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (IsTransientApplicationSendPathBlocked(exception))
             {
-                completion.TrySetResult(null);
+                completion.TrySetResult();
                 return false;
             }
 
@@ -145,14 +145,14 @@ internal sealed partial class QuicConnectionRuntime
             sendPathIdentity,
             protectedPacket));
         AppendLifecycleTimerEffects(ref effects);
-        completion.TrySetResult(null);
+        completion.TrySetResult();
         return true;
     }
 
     private bool HandleOpenStreamAction(
         long requestId,
         QuicStreamType streamType,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryProcessPendingStreamOpenRequest(requestId, streamType, ref effects, out bool stillPending))
         {
@@ -165,7 +165,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryRetryPendingStreamOpenRequests(
         bool bidirectional,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (pendingStreamOpenTypes.IsEmpty)
         {
@@ -206,12 +206,12 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryProcessPendingStreamOpenRequest(
         long requestId,
         QuicStreamType streamType,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out bool stillPending)
     {
         stillPending = false;
 
-        if (!pendingStreamOpenRequests.TryGetValue(requestId, out TaskCompletionSource<ulong>? completion)
+        if (!pendingStreamOpenRequests.TryGetValue(requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? completion)
             || !pendingStreamOpenTypes.TryGetValue(requestId, out QuicStreamType trackedStreamType)
             || trackedStreamType != streamType)
         {
@@ -220,7 +220,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (!TryValidateStreamSendBoundary(out Exception? exception))
         {
-            if (TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? removedCompletion))
+            if (TryRemovePendingStreamOpenRequest(requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? removedCompletion))
             {
                 removedCompletion!.TrySetException(exception!);
             }
@@ -243,7 +243,7 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
-        if (!TryRemovePendingStreamOpenRequest(requestId, out TaskCompletionSource<ulong>? openCompletion))
+        if (!TryRemovePendingStreamOpenRequest(requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? openCompletion))
         {
             return false;
         }
@@ -306,7 +306,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong streamId,
         ReadOnlyMemory<byte> streamData,
         bool finishWrites,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
@@ -578,7 +578,7 @@ internal sealed partial class QuicConnectionRuntime
         byte[] streamPayload,
         int streamPayloadLength,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         applicationSendQueue.Enqueue(streamId, priority, streamPayload, streamPayloadLength);
 
@@ -625,25 +625,25 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool FlushPendingApplicationSends(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool FlushPendingApplicationSends(long nowTicks, ref QuicConnectionEffectAccumulator effects)
         => FlushPendingApplicationSends(nowTicks, ref effects, out _);
 
     private bool FlushPendingApplicationSends(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
         => FlushPendingApplicationSends(nowTicks, probePacket: false, ref effects, out exception);
 
     private bool FlushPendingApplicationSends(
         long nowTicks,
         bool probePacket,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
         => FlushPendingApplicationSends(nowTicks, probePacket, ref effects, out _);
 
     private bool FlushPendingApplicationSends(
         long nowTicks,
         bool probePacket,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
         if (applicationSendQueue.Count == 0)
@@ -657,6 +657,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? streamIds = null;
         PendingApplicationSendRequest onlyQueuedWrite = default;
         PendingApplicationSendRequest[]? queuedWrites = null;
+        byte[]? combinedPayloadOwner = null;
         int queuedWriteCount = 0;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
         try
@@ -683,22 +684,22 @@ internal sealed partial class QuicConnectionRuntime
                     combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
                 }
 
-                byte[] combinedPayloadBuffer = new byte[combinedPayloadLength];
+                combinedPayloadOwner = QuicBufferPool.RentBytes(combinedPayloadLength);
                 int copyOffset = 0;
                 foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
                 {
                     queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
-                        .CopyTo(combinedPayloadBuffer.AsSpan(copyOffset));
+                        .CopyTo(combinedPayloadOwner.AsSpan(copyOffset));
                     copyOffset += queuedWrite.StreamPayloadLength;
                 }
 
-                combinedPayload = combinedPayloadBuffer;
+                combinedPayload = combinedPayloadOwner.AsMemory(0, combinedPayloadLength);
                 streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
             }
 
             if (!TryProtectAndAccountStreamApplicationPayload(
                 combinedPayload,
-                hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : null,
+                hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : combinedPayloadOwner,
                 "The connection runtime could not protect the queued stream write packet.",
                 QueuedStreamWriteSendBlockedMessage,
                 probePacket,
@@ -726,6 +727,7 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
+                combinedPayloadOwner = null;
                 applicationSendQueue.TryRemoveQueuedWrites(selectedWrites);
             }
 
@@ -749,6 +751,11 @@ internal sealed partial class QuicConnectionRuntime
         }
         finally
         {
+            if (combinedPayloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(combinedPayloadOwner);
+            }
+
             if (queuedWrites is not null)
             {
                 QuicApplicationSendQueue.ReturnRentedQueuedWrites(queuedWrites);
@@ -764,7 +771,7 @@ internal sealed partial class QuicConnectionRuntime
         bool probePacket,
         ulong? streamId,
         ulong[]? streamIds,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out QuicConnectionPathIdentity sendPathIdentity,
         out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception)
@@ -803,7 +810,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryFlushPendingApplicationSendsAfterRecoveryProgress(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
         {
@@ -851,7 +858,7 @@ internal sealed partial class QuicConnectionRuntime
                     StringComparison.Ordinal));
     }
 
-    private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref List<QuicConnectionEffect>? effects)
+    private void TryRemoveQueuedApplicationSendsForStream(ulong streamId, ref QuicConnectionEffectAccumulator effects)
     {
         if (!applicationSendQueue.TryRemoveQueuedWritesForStream(streamId, returnPayloads: true))
         {
@@ -893,7 +900,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryEmitFlowControlBlockedSignal(
         QuicDataBlockedFrame dataBlockedFrame,
         QuicStreamDataBlockedFrame streamDataBlockedFrame,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (sendRuntime.HasAckElicitingPacketsInFlight || sendRuntime.PendingRetransmissionCount > 0)
         {
@@ -927,7 +934,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryEmitStreamsBlockedSignal(
         QuicStreamsBlockedFrame streamsBlockedFrame,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (sendRuntime.HasAckElicitingPacketsInFlight || sendRuntime.PendingRetransmissionCount > 0)
         {
@@ -946,7 +953,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryEmitFlowControlCreditUpdate(
         QuicMaxDataFrame? maxDataFrame,
         QuicMaxStreamDataFrame? maxStreamDataFrame,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
 
@@ -975,7 +982,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicMaxDataFrame frame,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundMaxDataPayload(frame, out byte[] payload))
         {
@@ -1011,7 +1018,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicMaxStreamDataFrame frame,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundMaxStreamDataPayload(frame, out byte[] payload))
         {
@@ -1047,7 +1054,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicDataBlockedFrame frame,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundDataBlockedPayload(frame, out byte[] blockedPayload))
         {
@@ -1084,7 +1091,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicStreamDataBlockedFrame frame,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundStreamDataBlockedPayload(frame, out byte[] blockedPayload))
         {
@@ -1121,7 +1128,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicStreamsBlockedFrame frame,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundStreamsBlockedPayload(frame, out byte[] blockedPayload))
         {
@@ -1158,7 +1165,7 @@ internal sealed partial class QuicConnectionRuntime
         long requestId,
         ulong streamId,
         ulong applicationErrorCode,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
@@ -1233,7 +1240,7 @@ internal sealed partial class QuicConnectionRuntime
         long requestId,
         ulong streamId,
         ulong applicationErrorCode,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
@@ -1297,14 +1304,14 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool HandleReleaseCapacityStreamAction(
         ulong streamId,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return TryReleasePeerStreamCapacity(streamId, ref effects);
     }
 
     private bool HandleFlowControlCreditUpdated(
         QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return TryEmitFlowControlCreditUpdate(
             flowControlCreditUpdatedEvent.MaxDataFrame,
@@ -1369,7 +1376,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryReleasePeerStreamCapacity(ulong streamId, ref List<QuicConnectionEffect>? effects)
+    private bool TryReleasePeerStreamCapacity(ulong streamId, ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryValidateStreamSendBoundary(out Exception? exception))
         {
@@ -1419,7 +1426,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TrySendRetireConnectionIdFrame(
         ulong connectionId,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryValidateStreamSendBoundary(out _))
         {
@@ -1461,7 +1468,7 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out ReadOnlyMemory<byte> protectedPacket,
@@ -1490,7 +1497,7 @@ internal sealed partial class QuicConnectionRuntime
         bool ackOnlyPacket,
         ulong[]? streamIds,
         bool retainPlaintextPayload,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out QuicConnectionActivePathRecord currentPath,
         out QuicConnectionPathAmplificationState updatedAmplificationState,
         out ReadOnlyMemory<byte> protectedPacket,
@@ -1664,7 +1671,7 @@ internal sealed partial class QuicConnectionRuntime
         ReadOnlyMemory<byte> payload,
         string protectFailureMessage,
         string amplificationFailureMessage,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out QuicConnectionPathIdentity sendPathIdentity,
         out ReadOnlyMemory<byte> protectedPacket,
         out Exception? exception,
@@ -1941,7 +1948,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryUsePeerDestinationConnectionIdOnPath(
         QuicConnectionPathIdentity pathIdentity,
         bool retireInactivePathConnectionIds,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
     {
         exception = null;
@@ -2009,6 +2016,22 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool probePacket,
         ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TryFlushPendingRetransmissions(
+            packetNumberSpace,
+            nowTicks,
+            probePacket,
+            ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    private bool TryFlushPendingRetransmissions(
+        QuicPacketNumberSpace packetNumberSpace,
+        long nowTicks,
+        bool probePacket,
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null || sendRuntime.PendingRetransmissionCount == 0)
         {
@@ -2563,7 +2586,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace firstPacketNumberSpace,
         QuicPacketNumberSpace secondPacketNumberSpace,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null
             || !IsInitialAndHandshakePair(firstPacketNumberSpace, secondPacketNumberSpace))
@@ -2740,6 +2763,16 @@ internal sealed partial class QuicConnectionRuntime
     internal bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
         long nowTicks,
         ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(nowTicks, ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    internal bool TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram(
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null)
         {
@@ -3097,45 +3130,52 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacketLease(
                 retransmission.PacketBytes.Span,
                 handshakeMaterial,
-                out byte[] openedPacket,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
             return false;
         }
 
-        if (!TryParseRetransmittableCryptoFrame(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
-                out ulong cryptoOffset,
-                out byte[] cryptoPayload))
+        try
         {
-            return false;
-        }
+            if (!TryParseRetransmittableCryptoFrame(
+                    openedPacket.Span.Slice(payloadOffset, payloadLength),
+                    out ulong cryptoOffset,
+                    out byte[] cryptoPayload))
+            {
+                return false;
+            }
 
-        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            {
+                return false;
+            }
+
+            hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+                QuicPacketNumberSpace.Handshake,
+                nowMicros,
+                out byte[] ackFramePayload,
+                out _,
+                out piggybackedAckFrame);
+
+            return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+                cryptoPayload,
+                cryptoOffset,
+                longHeader.DestinationConnectionId,
+                longHeader.SourceConnectionId,
+                ackFramePayload,
+                handshakeMaterial,
+                out packetNumber,
+                out protectedPacket);
+        }
+        finally
         {
-            return false;
+            openedPacket.Dispose();
         }
-
-        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
-            QuicPacketNumberSpace.Handshake,
-            nowMicros,
-            out byte[] ackFramePayload,
-            out _,
-            out piggybackedAckFrame);
-
-        return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
-            cryptoPayload,
-            cryptoOffset,
-            longHeader.DestinationConnectionId,
-            longHeader.SourceConnectionId,
-            ackFramePayload,
-            handshakeMaterial,
-            out packetNumber,
-            out protectedPacket);
     }
 
     private static bool TryParseRetransmittableCryptoFrame(
@@ -3249,19 +3289,26 @@ internal sealed partial class QuicConnectionRuntime
                     out cryptoEndOffset);
             case QuicTlsEncryptionLevel.Handshake:
                 if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial)
-                    || !handshakeFlowCoordinator.TryOpenHandshakePacket(
+                    || !handshakeFlowCoordinator.TryOpenHandshakePacketLease(
                         packetBytes.Span,
                         handshakeMaterial,
-                        out byte[] openedHandshakePacket,
+                        out QuicBufferLease openedHandshakePacket,
                         out int handshakePayloadOffset,
                         out int handshakePayloadLength))
                 {
                     return false;
                 }
 
-                return TryParseCryptoProbeSelectionPriority(
-                    openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
-                    out cryptoEndOffset);
+                try
+                {
+                    return TryParseCryptoProbeSelectionPriority(
+                        openedHandshakePacket.Span.Slice(handshakePayloadOffset, handshakePayloadLength),
+                        out cryptoEndOffset);
+                }
+                finally
+                {
+                    openedHandshakePacket.Dispose();
+                }
             default:
                 return false;
         }
@@ -3347,7 +3394,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryBuildApplicationRetransmissionPacket(
         QuicConnectionRetransmissionPlan retransmission,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out ulong packetNumber,
         out byte[] protectedPacket,
         out ReadOnlyMemory<byte> plaintextPayload)
@@ -3449,48 +3496,55 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacketLease(
                 retransmission.PacketBytes.Span,
                 handshakeMaterial,
-                out byte[] openedPacket,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
             return false;
         }
 
-        if (!TryParseRetransmittableCryptoFrame(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
-                out ulong cryptoOffset,
-                out byte[] cryptoPayload))
+        try
         {
-            return false;
-        }
+            if (!TryParseRetransmittableCryptoFrame(
+                    openedPacket.Span.Slice(payloadOffset, payloadLength),
+                    out ulong cryptoOffset,
+                    out byte[] cryptoPayload))
+            {
+                return false;
+            }
 
-        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            {
+                return false;
+            }
+
+            ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
+                ? longHeader.DestinationConnectionId
+                : destinationConnectionIdOverride;
+            hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+                QuicPacketNumberSpace.Handshake,
+                nowMicros,
+                out byte[] ackFramePayload,
+                out _,
+                out piggybackedAckFrame);
+
+            return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+                cryptoPayload,
+                cryptoOffset,
+                destinationConnectionId,
+                longHeader.SourceConnectionId,
+                ackFramePayload,
+                handshakeMaterial,
+                out packetNumber,
+                out protectedPacket);
+        }
+        finally
         {
-            return false;
+            openedPacket.Dispose();
         }
-
-        ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
-            ? longHeader.DestinationConnectionId
-            : destinationConnectionIdOverride;
-        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
-            QuicPacketNumberSpace.Handshake,
-            nowMicros,
-            out byte[] ackFramePayload,
-            out _,
-            out piggybackedAckFrame);
-
-        return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
-            cryptoPayload,
-            cryptoOffset,
-            destinationConnectionId,
-            longHeader.SourceConnectionId,
-            ackFramePayload,
-            handshakeMaterial,
-            out packetNumber,
-            out protectedPacket);
     }
 
     private void MarkCryptoRetransmissionAckFrameSent(
@@ -3525,7 +3579,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong packetNumber,
         byte[] protectedPacket,
         bool probePacket,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         switch (packetProtectionLevel)
         {
@@ -3594,7 +3648,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionRetransmissionPlan retransmission,
         ulong sentAtMicros,
         bool probePacket,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicTlsEncryptionLevel packetProtectionLevel = retransmission.PacketProtectionLevel
             ?? retransmission.CryptoMetadata?.EncryptionLevel
@@ -4267,7 +4321,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleResetStreamFrame(
         QuicResetStreamFrame resetStreamFrame,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (!streamRegistry.Bookkeeping.TryReceiveResetStreamFrame(
             resetStreamFrame,
@@ -4308,7 +4362,7 @@ internal sealed partial class QuicConnectionRuntime
         return true;
     }
 
-    private bool TryHandleStopSendingFrame(QuicStopSendingFrame stopSendingFrame, ref List<QuicConnectionEffect>? effects)
+    private bool TryHandleStopSendingFrame(QuicStopSendingFrame stopSendingFrame, ref QuicConnectionEffectAccumulator effects)
     {
         if (!streamRegistry.Bookkeeping.TryReceiveStopSendingFrame(
             stopSendingFrame,
@@ -4449,16 +4503,16 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        foreach (KeyValuePair<long, TaskCompletionSource<ulong>> entry in pendingStreamOpenRequests.ToArray())
+        foreach (KeyValuePair<long, QuicConnectionRuntime.StreamOpenRequestCompletionSource> entry in pendingStreamOpenRequests.ToArray())
         {
-            if (TryRemovePendingStreamOpenRequest(entry.Key, out TaskCompletionSource<ulong>? completion))
+            if (TryRemovePendingStreamOpenRequest(entry.Key, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? completion))
             {
                 completion!.TrySetException(completionException);
             }
         }
     }
 
-    private bool TryRemovePendingStreamOpenRequest(long requestId, out TaskCompletionSource<ulong>? completion)
+    private bool TryRemovePendingStreamOpenRequest(long requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? completion)
     {
         if (!pendingStreamOpenRequests.TryRemove(requestId, out completion))
         {
@@ -4494,9 +4548,9 @@ internal sealed partial class QuicConnectionRuntime
             return;
         }
 
-        foreach (KeyValuePair<long, TaskCompletionSource<object?>> entry in pendingDatagramSendRequests.ToArray())
+        foreach (KeyValuePair<long, QuicConnectionRuntime.DatagramSendRequestCompletionSource> entry in pendingDatagramSendRequests.ToArray())
         {
-            if (pendingDatagramSendRequests.TryRemove(entry.Key, out TaskCompletionSource<object?>? completion))
+            if (pendingDatagramSendRequests.TryRemove(entry.Key, out QuicConnectionRuntime.DatagramSendRequestCompletionSource? completion))
             {
                 completion.TrySetException(completionException);
             }

@@ -148,12 +148,85 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
-        byte[] openedPacketBuffer = QuicBufferPool.RentBytes(protectedPacket.Length);
+        int openedPacketBufferLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
+        if (openedPacketBufferLength < 0)
+        {
+            return false;
+        }
+
+        byte[] openedPacketBuffer = new byte[openedPacketBufferLength];
+        if (!protection.TryOpen(
+                protectedPacket,
+                openedPacketBuffer,
+                allowClearedFixedBit,
+                out int openedBytesWritten))
+        {
+            return false;
+        }
+
+        if (!TryParseHandshakePayloadLayout(
+            openedPacketBuffer.AsSpan(0, openedBytesWritten),
+            out payloadOffset,
+            out payloadLength))
+        {
+            return false;
+        }
+
+        if (openedBytesWritten != openedPacketBuffer.Length)
+        {
+            Array.Resize(ref openedPacketBuffer, openedBytesWritten);
+        }
+
+        openedPacket = openedPacketBuffer;
+        return true;
+    }
+
+    internal bool TryOpenHandshakePacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        return TryOpenHandshakePacketLease(
+            protectedPacket,
+            material,
+            allowClearedFixedBit: false,
+            out openedPacket,
+            out payloadOffset,
+            out payloadLength);
+    }
+
+    internal bool TryOpenHandshakePacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicTlsPacketProtectionMaterial material,
+        bool allowClearedFixedBit,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = default;
+        payloadOffset = default;
+        payloadLength = default;
+
+        if (!QuicHandshakePacketProtection.TryCreate(material, out QuicHandshakePacketProtection protection))
+        {
+            return false;
+        }
+
+        int openedPacketBufferLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
+        if (openedPacketBufferLength < 0)
+        {
+            return false;
+        }
+
+        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        bool success = false;
         try
         {
             if (!protection.TryOpen(
                     protectedPacket,
-                    openedPacketBuffer,
+                    openedPacket.Span,
                     allowClearedFixedBit,
                     out int openedBytesWritten))
             {
@@ -161,19 +234,24 @@ internal sealed class QuicHandshakeFlowCoordinator
             }
 
             if (!TryParseHandshakePayloadLayout(
-                openedPacketBuffer.AsSpan(0, openedBytesWritten),
-                out payloadOffset,
-                out payloadLength))
+                    openedPacket.Span[..openedBytesWritten],
+                    out payloadOffset,
+                    out payloadLength))
             {
                 return false;
             }
 
-            openedPacket = openedPacketBuffer.AsSpan(0, openedBytesWritten).ToArray();
+            openedPacket.SetLength(openedBytesWritten);
+            success = true;
             return true;
         }
         finally
         {
-            QuicBufferPool.ReturnBytes(openedPacketBuffer);
+            if (!success)
+            {
+                openedPacket.Dispose();
+                openedPacket = default;
+            }
         }
     }
 

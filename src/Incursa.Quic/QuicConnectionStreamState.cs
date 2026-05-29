@@ -563,7 +563,7 @@ internal sealed class QuicConnectionStreamState
                 }
             }
 
-            state.BufferedSegments.Clear();
+            ReleaseBufferedSegments(state);
             state.BufferedReadableBytes = 0;
             state.ReceiveFinalSize = frame.FinalSize;
             state.HighestReceivedOffset = Math.Max(state.HighestReceivedOffset, frame.FinalSize);
@@ -718,7 +718,7 @@ internal sealed class QuicConnectionStreamState
                     if (skip >= entry.Length)
                     {
                         state.BufferedReadableBytes -= entry.Length;
-                        state.BufferedSegments.RemoveAt(0);
+                        RemoveBufferedSegmentAt(state, 0);
                         continue;
                     }
 
@@ -733,7 +733,7 @@ internal sealed class QuicConnectionStreamState
 
                 if (bytesToCopy == entry.Length)
                 {
-                    state.BufferedSegments.RemoveAt(0);
+                    RemoveBufferedSegmentAt(state, 0);
                 }
                 else
                 {
@@ -1248,7 +1248,13 @@ internal sealed class QuicConnectionStreamState
         ulong endOffset = offset + (ulong)data.Length;
         int dataIndex = 0;
         int currentIndex = 0;
-        List<BufferedSegment> updated = new(state.BufferedSegments.Count + 2);
+        List<BufferedSegment> updated = state.BufferedSegmentScratch ??= new List<BufferedSegment>(state.BufferedSegments.Count + 2);
+        updated.Clear();
+        int expectedUpdatedCount = state.BufferedSegments.Count + 2;
+        if (updated.Capacity < expectedUpdatedCount)
+        {
+            updated.Capacity = expectedUpdatedCount;
+        }
 
         while (currentIndex < state.BufferedSegments.Count && state.BufferedSegments[currentIndex].End <= currentOffset)
         {
@@ -1304,12 +1310,30 @@ internal sealed class QuicConnectionStreamState
 
         state.BufferedSegments.Clear();
         state.BufferedSegments.AddRange(updated);
+        updated.Clear();
     }
 
     private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
     {
-        byte[] segmentData = data.Slice(dataIndex, length).ToArray();
-        return new BufferedSegment(offset, segmentData);
+        byte[] segmentData = QuicBufferPool.RentBytes(length);
+        data.Slice(dataIndex, length).CopyTo(segmentData);
+        return new BufferedSegment(offset, segmentData, DataOffset: 0, Length: length, OwnsData: true);
+    }
+
+    private static void RemoveBufferedSegmentAt(StreamState state, int index)
+    {
+        state.BufferedSegments[index].Release();
+        state.BufferedSegments.RemoveAt(index);
+    }
+
+    private static void ReleaseBufferedSegments(StreamState state)
+    {
+        for (int index = 0; index < state.BufferedSegments.Count; index++)
+        {
+            state.BufferedSegments[index].Release();
+        }
+
+        state.BufferedSegments.Clear();
     }
 
     private static bool HasContiguousReadableBytes(StreamState state)
@@ -1353,12 +1377,13 @@ internal sealed class QuicConnectionStreamState
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];
+        public List<BufferedSegment>? BufferedSegmentScratch { get; set; }
     }
 
-    private readonly record struct BufferedSegment(ulong Offset, byte[] Data, int DataOffset, int Length)
+    private readonly record struct BufferedSegment(ulong Offset, byte[] Data, int DataOffset, int Length, bool OwnsData)
     {
         public BufferedSegment(ulong offset, byte[] data)
-            : this(offset, data, 0, data.Length)
+            : this(offset, data, 0, data.Length, OwnsData: false)
         {
         }
 
@@ -1372,7 +1397,16 @@ internal sealed class QuicConnectionStreamState
                 Offset + (ulong)bytesConsumed,
                 Data,
                 DataOffset + bytesConsumed,
-                Length - bytesConsumed);
+                Length - bytesConsumed,
+                OwnsData);
+        }
+
+        public void Release()
+        {
+            if (OwnsData)
+            {
+                QuicBufferPool.ReturnBytes(Data);
+            }
         }
     }
 }

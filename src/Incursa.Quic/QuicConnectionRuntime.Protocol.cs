@@ -23,7 +23,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandlePeerHandshakeTranscriptCompleted(
         QuicConnectionPeerHandshakeTranscriptCompletedEvent peerHandshakeTranscriptCompletedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = peerHandshakeTranscriptCompletedEvent;
 
@@ -33,7 +33,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             peerHandshakeTranscriptCompleted = true;
             stateChanged = true;
-            bufferedEstablishmentHandshakePackets.Clear();
+            ClearBufferedEstablishmentHandshakePackets();
             EmitDiagnostic(ref effects, QuicDiagnostics.PeerHandshakeTranscriptCompleted());
 
             if (phase == QuicConnectionPhase.Establishing)
@@ -86,7 +86,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleHandshakeBootstrapRequested(
         QuicConnectionHandshakeBootstrapRequestedEvent handshakeBootstrapRequestedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Establishing
             || tlsState.IsTerminal
@@ -107,7 +107,7 @@ internal sealed partial class QuicConnectionRuntime
             initialAddressValidationToken = handshakeBootstrapRequestedEvent.InitialAddressValidationToken.ToArray();
         }
 
-        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.StartHandshake(
+        QuicTlsStateUpdateBatch updates = tlsBridgeDriver.StartHandshake(
             localTransportParameters,
             dormantDetachedResumptionTicketSnapshot,
             nowTicks);
@@ -123,7 +123,7 @@ internal sealed partial class QuicConnectionRuntime
             nowTicks,
             ref effects);
 
-        IReadOnlyList<QuicTlsStateUpdate> replayedHandshakeUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
+        QuicTlsStateUpdateBatch replayedHandshakeUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(QuicTlsEncryptionLevel.Handshake);
         if (replayedHandshakeUpdates.Count > 0)
         {
             stateChanged = true;
@@ -140,7 +140,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleRetryReceived(
         QuicConnectionRetryReceivedEvent retryReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = nowTicks;
         _ = effects;
@@ -168,7 +168,7 @@ internal sealed partial class QuicConnectionRuntime
         retryToken = retryReceivedEvent.RetryToken.ToArray();
         initialAddressValidationToken = null;
         observedPeerInitialCryptoFrameData = null;
-        bufferedEstablishmentHandshakePackets.Clear();
+        ClearBufferedEstablishmentHandshakePackets();
         retryBootstrapPendingReplay = true;
         hasSuccessfullyProcessedAnotherPacket = true;
 
@@ -187,7 +187,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleVersionNegotiationReceived(
         QuicConnectionVersionNegotiationReceivedEvent versionNegotiationReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = nowTicks;
 
@@ -229,7 +229,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleTlsStateUpdated(
         QuicConnectionTlsStateUpdatedEvent tlsStateUpdatedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = tlsBridgeDriver.TryApply(tlsStateUpdatedEvent.Update);
 
@@ -350,7 +350,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleCryptoFrameReceived(
         QuicConnectionCryptoFrameReceivedEvent cryptoFrameReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         _ = nowTicks;
         _ = effects;
@@ -365,7 +365,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleInitialPacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         ReadOnlyMemory<byte> datagram = packetReceivedEvent.Datagram;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
@@ -570,7 +570,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleHandshakePacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return TryHandleHandshakePacketReceived(
             packetReceivedEvent,
@@ -583,7 +583,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
         bool allowDeferredBuffering,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         ReadOnlyMemory<byte> datagram = packetReceivedEvent.Datagram;
         if (!QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
@@ -634,10 +634,10 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryOpenHandshakePacket(
+        if (!handshakeFlowCoordinator.TryOpenHandshakePacketLease(
                 datagram.Span,
                 packetProtectionMaterial,
-                out byte[] openedPacket,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
@@ -657,59 +657,66 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-        QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Handshake);
-        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
+        try
         {
-            return false;
-        }
-
-        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
-        {
-            return HandleFatalTlsSignal(
-                nowTicks,
-                QuicTransportErrorCode.ProtocolViolation,
-                "The peer sent a frame in a weakly protected packet type that is not permitted.",
-                ref effects);
-        }
-
-        bool processed = TryProcessHandshakePacketPayload(
-            payload,
-            QuicTlsEncryptionLevel.Handshake,
-            nowTicks,
-            out bool packetAckEliciting,
-            out bool packetProcessed,
-            ref effects);
-        if (packetProcessed)
-        {
-            if (!TryExpandOpenedPacketNumber(
-                    openedPacket,
-                    payloadOffset,
-                    QuicPacketNumberSpace.Handshake,
-                    out ulong packetNumber))
+            ReadOnlySpan<byte> payload = openedPacket.Span.Slice(payloadOffset, payloadLength);
+            QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
+                QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Handshake);
+            if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
             {
                 return false;
             }
 
-            RecordIncomingPacket(
-                QuicPacketNumberSpace.Handshake,
-                packetNumber,
-                packetAckEliciting,
-                nowTicks,
-                packetReceivedEvent.EcnCounts);
-            UpdateObservedPacketNumber(QuicPacketNumberSpace.Handshake, packetNumber);
-        }
+            if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
+            {
+                return HandleFatalTlsSignal(
+                    nowTicks,
+                    QuicTransportErrorCode.ProtocolViolation,
+                    "The peer sent a frame in a weakly protected packet type that is not permitted.",
+                    ref effects);
+            }
 
-        if (processed)
-        {
-            processed |= TryPublishTlsKeyDiscard(
-                QuicTlsEncryptionLevel.Initial,
+            bool processed = TryProcessHandshakePacketPayload(
+                payload,
+                QuicTlsEncryptionLevel.Handshake,
                 nowTicks,
+                out bool packetAckEliciting,
+                out bool packetProcessed,
                 ref effects);
-        }
+            if (packetProcessed)
+            {
+                if (!TryExpandOpenedPacketNumber(
+                        openedPacket.Span,
+                        payloadOffset,
+                        QuicPacketNumberSpace.Handshake,
+                        out ulong packetNumber))
+                {
+                    return false;
+                }
 
-        return processed;
+                RecordIncomingPacket(
+                    QuicPacketNumberSpace.Handshake,
+                    packetNumber,
+                    packetAckEliciting,
+                    nowTicks,
+                    packetReceivedEvent.EcnCounts);
+                UpdateObservedPacketNumber(QuicPacketNumberSpace.Handshake, packetNumber);
+            }
+
+            if (processed)
+            {
+                processed |= TryPublishTlsKeyDiscard(
+                    QuicTlsEncryptionLevel.Initial,
+                    nowTicks,
+                    ref effects);
+            }
+
+            return processed;
+        }
+        finally
+        {
+            openedPacket.Dispose();
+        }
     }
 
     private bool TryBufferEstablishmentHandshakePacketForDeferredRetry(
@@ -747,13 +754,20 @@ internal sealed partial class QuicConnectionRuntime
 
         if (bufferedEstablishmentHandshakePackets.Count >= MaximumBufferedEstablishmentHandshakePackets)
         {
-            bufferedEstablishmentHandshakePackets.RemoveAt(0);
+            RemoveBufferedEstablishmentHandshakePacketAt(0);
         }
+
+        byte[] sourceConnectionIdBuffer = QuicBufferPool.RentBytes(sourceConnectionId.Length);
+        sourceConnectionId.CopyTo(sourceConnectionIdBuffer);
+        byte[] datagramBuffer = QuicBufferPool.RentBytes(packetReceivedEvent.Datagram.Length);
+        packetReceivedEvent.Datagram.CopyTo(datagramBuffer);
 
         bufferedEstablishmentHandshakePackets.Add(new BufferedEstablishmentHandshakePacket(
             packetReceivedEvent.PathIdentity,
-            sourceConnectionId.ToArray(),
-            packetReceivedEvent.Datagram.ToArray(),
+            sourceConnectionIdBuffer,
+            sourceConnectionId.Length,
+            datagramBuffer,
+            packetReceivedEvent.Datagram.Length,
             packetReceivedEvent.EcnCounts));
 
         return true;
@@ -762,7 +776,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryReplayBufferedEstablishmentHandshakePackets(
         ReadOnlySpan<byte> acceptedPeerInitialSourceConnectionId,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (acceptedPeerInitialSourceConnectionId.Length == 0
             || bufferedEstablishmentHandshakePackets.Count == 0)
@@ -792,18 +806,42 @@ internal sealed partial class QuicConnectionRuntime
         bool stateChanged = false;
         foreach (BufferedEstablishmentHandshakePacket bufferedPacket in matchingPackets)
         {
-            stateChanged |= TryHandleHandshakePacketReceived(
-                new QuicConnectionPacketReceivedEvent(
+            try
+            {
+                stateChanged |= TryHandleHandshakePacketReceived(
+                    new QuicConnectionPacketReceivedEvent(
+                        nowTicks,
+                        bufferedPacket.PathIdentity,
+                        bufferedPacket.Datagram,
+                        EcnCounts: bufferedPacket.EcnCounts),
                     nowTicks,
-                    bufferedPacket.PathIdentity,
-                    bufferedPacket.Datagram,
-                    EcnCounts: bufferedPacket.EcnCounts),
-                nowTicks,
-                allowDeferredBuffering: false,
-                ref effects);
+                    allowDeferredBuffering: false,
+                    ref effects);
+            }
+            finally
+            {
+                bufferedPacket.Dispose();
+            }
         }
 
         return stateChanged;
+    }
+
+    private void RemoveBufferedEstablishmentHandshakePacketAt(int index)
+    {
+        BufferedEstablishmentHandshakePacket bufferedPacket = bufferedEstablishmentHandshakePackets[index];
+        bufferedEstablishmentHandshakePackets.RemoveAt(index);
+        bufferedPacket.Dispose();
+    }
+
+    private void ClearBufferedEstablishmentHandshakePackets()
+    {
+        foreach (BufferedEstablishmentHandshakePacket bufferedPacket in bufferedEstablishmentHandshakePackets)
+        {
+            bufferedPacket.Dispose();
+        }
+
+        bufferedEstablishmentHandshakePackets.Clear();
     }
 
     internal bool TryProcessHandshakePacketPayload(
@@ -813,6 +851,26 @@ internal sealed partial class QuicConnectionRuntime
         out bool packetAckEliciting,
         out bool packetProcessed,
         ref List<QuicConnectionEffect>? effects)
+    {
+        QuicConnectionEffectAccumulator accumulator = CreateEffectAccumulator(effects);
+        bool stateChanged = TryProcessHandshakePacketPayload(
+            payload,
+            encryptionLevel,
+            nowTicks,
+            out packetAckEliciting,
+            out packetProcessed,
+            ref accumulator);
+        StoreEffectAccumulator(ref effects, accumulator);
+        return stateChanged;
+    }
+
+    internal bool TryProcessHandshakePacketPayload(
+        ReadOnlySpan<byte> payload,
+        QuicTlsEncryptionLevel encryptionLevel,
+        long nowTicks,
+        out bool packetAckEliciting,
+        out bool packetProcessed,
+        ref QuicConnectionEffectAccumulator effects)
     {
         packetAckEliciting = false;
         packetProcessed = false;
@@ -862,12 +920,20 @@ internal sealed partial class QuicConnectionRuntime
                     _ => throw new InvalidOperationException($"Unsupported handshake packet encryption level {encryptionLevel}."),
                 };
 
-                stateChanged |= HandleAckFrame(
-                    packetNumberSpace,
-                    ackFrame,
-                    nowTicks,
-                    receivedInRetainedOldOneRttPacket: false,
-                    ref effects);
+                try
+                {
+                    stateChanged |= HandleAckFrame(
+                        packetNumberSpace,
+                        ackFrame,
+                        nowTicks,
+                        receivedInRetainedOldOneRttPacket: false,
+                        ref effects);
+                }
+                finally
+                {
+                    ackFrame.Dispose();
+                }
+
                 payloadOffset += ackBytesConsumed;
                 continue;
             }
@@ -945,7 +1011,7 @@ internal sealed partial class QuicConnectionRuntime
                 return false;
             }
 
-            IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
+            QuicTlsStateUpdateBatch transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
                 encryptionLevel);
             if (diagnosticsEnabled)
             {
@@ -1019,7 +1085,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryReplayOutstandingCryptoAfterDuplicateInitialIngress(
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (encryptionLevel != QuicTlsEncryptionLevel.Initial
             || tlsState.Role != QuicTlsRole.Server
@@ -1061,7 +1127,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleApplicationPacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (IsVersion1ZeroRttPacket(packetReceivedEvent.Datagram))
         {
@@ -1321,11 +1387,19 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                stateChanged |= HandleApplicationAckFrame(
-                    ackFrame,
-                    nowTicks,
-                    openedWithRetainedOldOpenMaterial,
-                    ref effects);
+                try
+                {
+                    stateChanged |= HandleApplicationAckFrame(
+                        ackFrame,
+                        nowTicks,
+                        openedWithRetainedOldOpenMaterial,
+                        ref effects);
+                }
+                finally
+                {
+                    ackFrame.Dispose();
+                }
+
                 processedApplicationAckFrame = true;
                 offset += ackBytesConsumed;
                 continue;
@@ -1489,7 +1563,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                IReadOnlyList<QuicTlsStateUpdate> transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
+                QuicTlsStateUpdateBatch transcriptUpdates = tlsBridgeDriver.AdvanceHandshakeTranscript(
                     QuicTlsEncryptionLevel.OneRtt);
                 stateChanged |= ApplyTlsStateUpdates(
                     transcriptUpdates,
@@ -1908,7 +1982,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleZeroRttApplicationPacketReceived(
         QuicConnectionPacketReceivedEvent packetReceivedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Establishing
             || tlsState.Role != QuicTlsRole.Server
@@ -2276,7 +2350,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicAckFrame ackFrame,
         long nowTicks,
         bool receivedInRetainedOldOneRttPacket,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         return HandleAckFrame(
             QuicPacketNumberSpace.ApplicationData,
@@ -2291,7 +2365,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicAckFrame ackFrame,
         long nowTicks,
         bool receivedInRetainedOldOneRttPacket,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         ArgumentNullException.ThrowIfNull(ackFrame);
 
@@ -2397,7 +2471,7 @@ internal sealed partial class QuicConnectionRuntime
             currentProbeTimeoutMicros);
     }
 
-    private bool TrySendPendingApplicationAck(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool TrySendPendingApplicationAck(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
         {
@@ -2462,7 +2536,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TrySendPendingClientHandshakeAckProbeWhenNoHandshakeDataInFlight(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (tlsState.Role != QuicTlsRole.Client
             || phase != QuicConnectionPhase.Establishing
@@ -2502,7 +2576,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool probePacket,
         bool requireAckFrame,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (activePath is null
             || packetNumberSpace is not (QuicPacketNumberSpace.Initial or QuicPacketNumberSpace.Handshake)
@@ -2681,7 +2755,7 @@ internal sealed partial class QuicConnectionRuntime
         }
     }
 
-    private bool HandleAckDelayTimerExpired(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool HandleAckDelayTimerExpired(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         applicationAckState.ClearDueTicks();
 
@@ -2773,7 +2847,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionPathIdentity pathIdentity,
         QuicPathChallengeFrame pathChallengeFrame,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         Span<byte> responseFrameBuffer = stackalloc byte[16];
         if (!QuicFrameCodec.TryFormatPathResponseFrame(
@@ -2945,7 +3019,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryHandleNewConnectionIdFrame(
         QuicNewConnectionIdFrame newConnectionIdFrame,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         out bool stateChanged)
     {
         stateChanged = false;
@@ -3005,7 +3079,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicRetireConnectionIdFrame retireConnectionIdFrame,
         ulong? packetDestinationConnectionIdSequence,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (LocallySelectedZeroLengthConnectionId())
         {
@@ -3056,7 +3130,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryFlushInitialPackets(
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         bool probePacket = false,
         int maximumDatagrams = int.MaxValue)
     {
@@ -3264,7 +3338,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicInitialPacketProtection protection,
         bool probePacket,
         int maximumDatagrams,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (initialClientHelloBytes.IsEmpty)
         {
@@ -3337,7 +3411,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushZeroRttPackets(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushZeroRttPackets(ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Establishing
             || tlsState.Role != QuicTlsRole.Client
@@ -3396,7 +3470,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicInitialPacketProtection protection,
         bool probePacket,
         int maximumDatagrams,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (initialClientHelloBytes.IsEmpty)
         {
@@ -3468,7 +3542,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool TryFlushHandshakePackets(
-        ref List<QuicConnectionEffect>? effects,
+        ref QuicConnectionEffectAccumulator effects,
         bool probePacket = false,
         int maximumDatagrams = int.MaxValue)
     {
@@ -3579,7 +3653,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushOneRttCryptoPackets(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushOneRttCryptoPackets(ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Active
             || activePath is null
@@ -3657,7 +3731,7 @@ internal sealed partial class QuicConnectionRuntime
         return stateChanged;
     }
 
-    private bool TryFlushHandshakeDonePacket(ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushHandshakeDonePacket(ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Active
             || tlsState.Role != QuicTlsRole.Server
@@ -3701,7 +3775,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryHandleHandshakeDoneFrameReceived(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (tlsState.Role == QuicTlsRole.Server)
         {
@@ -3736,7 +3810,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         QuicTransportErrorCode errorCode,
         string reasonPhrase,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: errorCode,
@@ -3755,7 +3829,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong triggeringFrameType,
         QuicTransportErrorCode errorCode,
         string reasonPhrase,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (errorCode == default)
         {
@@ -3774,7 +3848,7 @@ internal sealed partial class QuicConnectionRuntime
             ref effects);
     }
 
-    private bool TryFlushNewTokenEmissions(long nowTicks, ref List<QuicConnectionEffect>? effects)
+    private bool TryFlushNewTokenEmissions(long nowTicks, ref QuicConnectionEffectAccumulator effects)
     {
         if (phase != QuicConnectionPhase.Active
             || tlsState.Role != QuicTlsRole.Server
@@ -3801,7 +3875,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryQueueNewTokenEmission(
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (tlsState.Role != QuicTlsRole.Server)
         {
@@ -3830,7 +3904,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryFlushNewTokenEmission(
         QuicConnectionNewTokenEmissionRecord emissionRecord,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (emissionRecord.IsEmitted)
         {
@@ -4064,7 +4138,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryCommitLocalTransportParametersFromTlsBridgeState(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicTransportParameters? localTransportParameters = tlsState.LocalTransportParameters;
         if (localTransportParameters is null)
@@ -4092,7 +4166,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryRegisterPreferredAddressConnectionId(
         QuicPreferredAddress preferredAddress,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         if (preferredAddress.ConnectionId is null
             || preferredAddress.StatelessResetToken is null
@@ -4172,7 +4246,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryCommitPeerTransportParametersFromTlsBridgeDriver(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicTransportParameters? stagedPeerTransportParameters = tlsState.StagedPeerTransportParameters;
         if (stagedPeerTransportParameters is null)
@@ -4185,7 +4259,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.CommitPeerTransportParameters(
+        QuicTlsStateUpdateBatch updates = tlsBridgeDriver.CommitPeerTransportParameters(
             stagedPeerTransportParameters);
         if (updates.Count == 0)
         {
@@ -4197,7 +4271,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryCommitPeerTransportParametersFromTlsBridgeState(
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicTransportParameters? peerTransportParameters = tlsState.PeerTransportParameters;
         if (peerTransportParameters is null)
@@ -4362,7 +4436,7 @@ internal sealed partial class QuicConnectionRuntime
             : observedPeerInitialSourceConnectionId.Value.Span;
     }
 
-    private bool HandleTlsKeyDiscard(QuicTlsEncryptionLevel encryptionLevel, ref List<QuicConnectionEffect>? effects)
+    private bool HandleTlsKeyDiscard(QuicTlsEncryptionLevel encryptionLevel, ref QuicConnectionEffectAccumulator effects)
     {
         _ = effects;
 
@@ -4404,9 +4478,9 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryPublishTlsKeyDiscard(
         QuicTlsEncryptionLevel encryptionLevel,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
-        IReadOnlyList<QuicTlsStateUpdate> updates = tlsBridgeDriver.PublishKeyDiscard(encryptionLevel);
+        QuicTlsStateUpdateBatch updates = tlsBridgeDriver.PublishKeyDiscard(encryptionLevel);
         if (updates.Count == 0)
         {
             return false;
@@ -4419,7 +4493,7 @@ internal sealed partial class QuicConnectionRuntime
         long observedAtTicks,
         QuicTransportErrorCode errorCode,
         string? description,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         QuicConnectionCloseMetadata closeMetadata = new(
             TransportErrorCode: errorCode,
@@ -4436,7 +4510,7 @@ internal sealed partial class QuicConnectionRuntime
     private bool ApplyTransportParameters(
         QuicConnectionTransportParametersCommittedEvent transportParametersCommittedEvent,
         long nowTicks,
-        ref List<QuicConnectionEffect>? effects)
+        ref QuicConnectionEffectAccumulator effects)
     {
         bool stateChanged = false;
 
