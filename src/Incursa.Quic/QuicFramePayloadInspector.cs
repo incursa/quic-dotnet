@@ -48,6 +48,8 @@ internal static class QuicFramePayloadInspector
 
     internal static ulong[] GetStreamDataStreamIds(ReadOnlySpan<byte> payload)
     {
+        ulong firstStreamId = 0;
+        bool hasFirstStreamId = false;
         List<ulong>? streamIds = null;
         int offset = 0;
         while (offset < payload.Length)
@@ -57,7 +59,11 @@ internal static class QuicFramePayloadInspector
             {
                 if (streamFrame.StreamDataLength > 0)
                 {
-                    AddDistinctStreamId(ref streamIds, streamFrame.StreamId.Value);
+                    AddDistinctStreamId(
+                        streamFrame.StreamId.Value,
+                        ref firstStreamId,
+                        ref hasFirstStreamId,
+                        ref streamIds);
                 }
 
                 offset += streamFrame.ConsumedLength;
@@ -73,7 +79,12 @@ internal static class QuicFramePayloadInspector
             break;
         }
 
-        return streamIds?.ToArray() ?? [];
+        if (streamIds is not null)
+        {
+            return streamIds.ToArray();
+        }
+
+        return hasFirstStreamId ? [firstStreamId] : [];
     }
 
     internal static bool ContainsStreamDataForStream(ReadOnlySpan<byte> payload, ulong streamId)
@@ -152,9 +163,25 @@ internal static class QuicFramePayloadInspector
         return false;
     }
 
-    private static void AddDistinctStreamId(ref List<ulong>? streamIds, ulong streamId)
+    private static void AddDistinctStreamId(
+        ulong streamId,
+        ref ulong firstStreamId,
+        ref bool hasFirstStreamId,
+        ref List<ulong>? streamIds)
     {
-        streamIds ??= [];
+        if (!hasFirstStreamId)
+        {
+            firstStreamId = streamId;
+            hasFirstStreamId = true;
+            return;
+        }
+
+        if (streamId == firstStreamId)
+        {
+            return;
+        }
+
+        streamIds ??= [firstStreamId];
         if (!streamIds.Contains(streamId))
         {
             streamIds.Add(streamId);

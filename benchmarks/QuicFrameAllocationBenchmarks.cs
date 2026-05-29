@@ -15,8 +15,10 @@ public class QuicFrameAllocationBenchmarks
     private byte[] ackMultipleRanges = [];
     private byte[] ackEcnNoAdditionalRanges = [];
     private byte[] ackThenStream = [];
+    private byte[] singleStream = [];
     private byte[] streamData = [];
     private byte[] destination = [];
+    private ulong[]? inspectedStreamIds;
     private QuicAckFrame ackNoAdditionalRangesTemplate = new();
     private QuicAckFrame ackMultipleRangesTemplate = new();
     private QuicAckFrame ackEcnNoAdditionalRangesTemplate = new();
@@ -68,6 +70,8 @@ public class QuicFrameAllocationBenchmarks
         {
             throw new InvalidOperationException("Failed to prepare STREAM frame benchmark payload.");
         }
+
+        singleStream = streamDestination[..streamBytesWritten].ToArray();
 
         ackThenStream = new byte[ackNoAdditionalRanges.Length + streamBytesWritten];
         ackNoAdditionalRanges.CopyTo(ackThenStream.AsSpan());
@@ -143,6 +147,30 @@ public class QuicFrameAllocationBenchmarks
             ^ unchecked((int)ackFrame.LargestAcknowledged)
             ^ streamFrame.ConsumedLength
             ^ streamFrame.StreamDataLength;
+    }
+
+    /// <summary>
+    /// Measures STREAM payload inspection without preceding ACK parsing.
+    /// </summary>
+    [Benchmark]
+    public int InspectSingleStreamDataIds()
+    {
+        inspectedStreamIds = QuicFramePayloadInspector.GetStreamDataStreamIds(singleStream);
+        return inspectedStreamIds.Length == 0
+            ? -1
+            : inspectedStreamIds.Length ^ unchecked((int)inspectedStreamIds[0]);
+    }
+
+    /// <summary>
+    /// Measures ACKed STREAM payload inspection for the common one-stream retransmission bookkeeping case.
+    /// </summary>
+    [Benchmark]
+    public int InspectAckThenSingleStreamDataIds()
+    {
+        inspectedStreamIds = QuicFramePayloadInspector.GetStreamDataStreamIds(ackThenStream);
+        return inspectedStreamIds.Length == 0
+            ? -1
+            : inspectedStreamIds.Length ^ unchecked((int)inspectedStreamIds[0]);
     }
 
     /// <summary>
