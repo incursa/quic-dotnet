@@ -28,6 +28,6 @@ public sealed class REQ_QUIC_RFC9221_S5_0005
             runtime,
             result.SendEffect);
         Assert.Equal(QuicFrameCodec.DatagramWithLengthFrameType, frame.FrameType);
-        Assert.Equal(datagramData, frame.DatagramData);
+        Assert.Equal(datagramData, frame.DatagramData.ToArray());
     }
 }

@@ -21,5 +21,5 @@ internal sealed class QuicDatagramFrame
     /// <summary>
     /// Gets or sets the application datagram payload.
     /// </summary>
-    internal byte[] DatagramData { get; set; } = [];
+    internal ReadOnlyMemory<byte> DatagramData { get; set; } = ReadOnlyMemory<byte>.Empty;
 }

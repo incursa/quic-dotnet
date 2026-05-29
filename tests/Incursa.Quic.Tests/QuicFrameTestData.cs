@@ -26,7 +26,7 @@ internal static class QuicFrameTestData
             bytes.AddRange(EncodeVarint((ulong)frame.DatagramData.Length));
         }
 
-        bytes.AddRange(frame.DatagramData);
+        bytes.AddRange(frame.DatagramData.ToArray());
         return bytes.ToArray();
     }
 

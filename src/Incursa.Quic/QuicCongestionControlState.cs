@@ -1,8 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace Incursa.Quic;
 
@@ -968,55 +968,9 @@ internal sealed class QuicSenderFlowController
     /// </summary>
     internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
     {
-        bool updated = false;
-        List<QuicPacketNumberSpace>? emptyPacketNumberSpaces = null;
-
-        foreach (KeyValuePair<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpaceEntry in sentPacketsBySpace.ToArray())
-        {
-            SortedDictionary<ulong, SentPacketState> sentPackets = sentPacketsBySpaceEntry.Value;
-            if (sentPackets.Count == 0)
-            {
-                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
-                continue;
-            }
-
-            List<ulong>? removedPacketNumbers = null;
-            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
-            {
-                if (sentPacketEntry.Value.PacketProtectionLevel != packetProtectionLevel)
-                {
-                    continue;
-                }
-
-                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
-                (removedPacketNumbers ??= []).Add(sentPacketEntry.Key);
-            }
-
-            if (removedPacketNumbers is null)
-            {
-                continue;
-            }
-
-            foreach (ulong packetNumber in removedPacketNumbers)
-            {
-                sentPackets.Remove(packetNumber);
-            }
-
-            if (sentPackets.Count == 0)
-            {
-                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
-            }
-        }
-
-        if (emptyPacketNumberSpaces is not null)
-        {
-            foreach (QuicPacketNumberSpace emptyPacketNumberSpace in emptyPacketNumberSpaces)
-            {
-                sentPacketsBySpace.Remove(emptyPacketNumberSpace);
-            }
-        }
-
-        return updated;
+        return TryDiscardPacketProtectionLevel(
+            GetPacketNumberSpaceForPacketProtectionLevel(packetProtectionLevel),
+            packetProtectionLevel);
     }
 
     /// <summary>
@@ -1024,56 +978,7 @@ internal sealed class QuicSenderFlowController
     /// </summary>
     internal bool TryDiscardOneRttKeyPhase(ulong keyPhase)
     {
-        bool updated = false;
-        List<QuicPacketNumberSpace>? emptyPacketNumberSpaces = null;
-
-        foreach (KeyValuePair<QuicPacketNumberSpace, SortedDictionary<ulong, SentPacketState>> sentPacketsBySpaceEntry in sentPacketsBySpace.ToArray())
-        {
-            SortedDictionary<ulong, SentPacketState> sentPackets = sentPacketsBySpaceEntry.Value;
-            if (sentPackets.Count == 0)
-            {
-                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
-                continue;
-            }
-
-            List<ulong>? removedPacketNumbers = null;
-            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
-            {
-                if (sentPacketEntry.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
-                    || sentPacketEntry.Value.OneRttKeyPhase != keyPhase)
-                {
-                    continue;
-                }
-
-                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
-                (removedPacketNumbers ??= []).Add(sentPacketEntry.Key);
-            }
-
-            if (removedPacketNumbers is null)
-            {
-                continue;
-            }
-
-            foreach (ulong packetNumber in removedPacketNumbers)
-            {
-                sentPackets.Remove(packetNumber);
-            }
-
-            if (sentPackets.Count == 0)
-            {
-                (emptyPacketNumberSpaces ??= []).Add(sentPacketsBySpaceEntry.Key);
-            }
-        }
-
-        if (emptyPacketNumberSpaces is not null)
-        {
-            foreach (QuicPacketNumberSpace emptyPacketNumberSpace in emptyPacketNumberSpaces)
-            {
-                sentPacketsBySpace.Remove(emptyPacketNumberSpace);
-            }
-        }
-
-        return updated;
+        return TryDiscardOneRttKeyPhase(QuicPacketNumberSpace.ApplicationData, keyPhase);
     }
 
     /// <summary>
@@ -1190,6 +1095,126 @@ internal sealed class QuicSenderFlowController
     private bool TryGetSentPackets(QuicPacketNumberSpace packetNumberSpace, [NotNullWhen(true)] out SortedDictionary<ulong, SentPacketState>? sentPackets)
     {
         return sentPacketsBySpace.TryGetValue(packetNumberSpace, out sentPackets);
+    }
+
+    private static QuicPacketNumberSpace GetPacketNumberSpaceForPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        return packetProtectionLevel switch
+        {
+            QuicTlsEncryptionLevel.Initial => QuicPacketNumberSpace.Initial,
+            QuicTlsEncryptionLevel.Handshake => QuicPacketNumberSpace.Handshake,
+            QuicTlsEncryptionLevel.ZeroRtt or QuicTlsEncryptionLevel.OneRtt => QuicPacketNumberSpace.ApplicationData,
+            _ => QuicPacketNumberSpace.ApplicationData,
+        };
+    }
+
+    private bool TryDiscardPacketProtectionLevel(
+        QuicPacketNumberSpace packetNumberSpace,
+        QuicTlsEncryptionLevel packetProtectionLevel)
+    {
+        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        {
+            return false;
+        }
+
+        if (sentPackets.Count == 0)
+        {
+            sentPacketsBySpace.Remove(packetNumberSpace);
+            return false;
+        }
+
+        ulong[]? removedPacketNumbers = null;
+        int removedPacketNumberCount = 0;
+        bool updated = false;
+
+        try
+        {
+            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
+            {
+                if (sentPacketEntry.Value.PacketProtectionLevel != packetProtectionLevel)
+                {
+                    continue;
+                }
+
+                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
+                (removedPacketNumbers ??= ArrayPool<ulong>.Shared.Rent(sentPackets.Count))[removedPacketNumberCount++] = sentPacketEntry.Key;
+            }
+
+            RemoveDiscardedPacketNumbers(packetNumberSpace, sentPackets, removedPacketNumbers, removedPacketNumberCount);
+            return updated;
+        }
+        finally
+        {
+            if (removedPacketNumbers is not null)
+            {
+                ArrayPool<ulong>.Shared.Return(removedPacketNumbers);
+            }
+        }
+    }
+
+    private bool TryDiscardOneRttKeyPhase(QuicPacketNumberSpace packetNumberSpace, ulong keyPhase)
+    {
+        if (!TryGetSentPackets(packetNumberSpace, out SortedDictionary<ulong, SentPacketState>? sentPackets))
+        {
+            return false;
+        }
+
+        if (sentPackets.Count == 0)
+        {
+            sentPacketsBySpace.Remove(packetNumberSpace);
+            return false;
+        }
+
+        ulong[]? removedPacketNumbers = null;
+        int removedPacketNumberCount = 0;
+        bool updated = false;
+
+        try
+        {
+            foreach (KeyValuePair<ulong, SentPacketState> sentPacketEntry in sentPackets)
+            {
+                if (sentPacketEntry.Value.PacketProtectionLevel != QuicTlsEncryptionLevel.OneRtt
+                    || sentPacketEntry.Value.OneRttKeyPhase != keyPhase)
+                {
+                    continue;
+                }
+
+                updated = CongestionControlState.TryDiscardPacket(sentPacketEntry.Value.SentBytes, sentPacketEntry.Value.InFlight) || updated;
+                (removedPacketNumbers ??= ArrayPool<ulong>.Shared.Rent(sentPackets.Count))[removedPacketNumberCount++] = sentPacketEntry.Key;
+            }
+
+            RemoveDiscardedPacketNumbers(packetNumberSpace, sentPackets, removedPacketNumbers, removedPacketNumberCount);
+            return updated;
+        }
+        finally
+        {
+            if (removedPacketNumbers is not null)
+            {
+                ArrayPool<ulong>.Shared.Return(removedPacketNumbers);
+            }
+        }
+    }
+
+    private void RemoveDiscardedPacketNumbers(
+        QuicPacketNumberSpace packetNumberSpace,
+        SortedDictionary<ulong, SentPacketState> sentPackets,
+        ulong[]? removedPacketNumbers,
+        int removedPacketNumberCount)
+    {
+        if (removedPacketNumberCount == 0 || removedPacketNumbers is null)
+        {
+            return;
+        }
+
+        for (int index = 0; index < removedPacketNumberCount; index++)
+        {
+            sentPackets.Remove(removedPacketNumbers[index]);
+        }
+
+        if (sentPackets.Count == 0)
+        {
+            sentPacketsBySpace.Remove(packetNumberSpace);
+        }
     }
 
     private readonly record struct SentPacketState(

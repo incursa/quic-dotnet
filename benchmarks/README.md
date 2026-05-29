@@ -94,10 +94,13 @@ The benchmark project also contains the following permanent suites:
 - `QuicTlsClientZeroRttRejectionCleanupBenchmarks`
 - `QuicStatelessResetBenchmarks`
 - `QuicAckPiggybackPolicyBenchmarks`
+- `QuicAckPiggybackPayloadBenchmarks`
 - `QuicDiagnosticsBenchmarks`
 - `QuicDatagramFrameBenchmarks`
 - `QuicApplicationSendDistinctStreamIdBenchmarks`
 - `QuicApplicationSendQueueSortingBenchmarks`
+- `QuicRetransmissionQueueRemovalBenchmarks`
+- `QuicCongestionControlDiscardBenchmarks`
 
 Target a specific suite with `--filter` when iterating locally:
 
@@ -105,10 +108,13 @@ Target a specific suite with `--filter` when iterating locally:
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicFrameCodecBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Http3AllocationPathBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPayloadBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendDistinctStreamIdBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendQueueSortingBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetransmissionQueueRemovalBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlDiscardBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDatagramFrameBenchmarks*" --inProcess
 ```

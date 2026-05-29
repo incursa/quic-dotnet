@@ -175,7 +175,7 @@ internal static class QuicFrameCodecFuzzSupport
         byte[] packet = QuicFrameTestData.BuildDatagramFrame(frame);
         Assert.True(QuicFrameCodec.TryParseDatagramFrame(packet, out QuicDatagramFrame parsed, out int bytesConsumed));
         Assert.Equal(frame.FrameType, parsed.FrameType);
-        Assert.True(datagramData.AsSpan().SequenceEqual(parsed.DatagramData));
+        Assert.True(datagramData.AsSpan().SequenceEqual(parsed.DatagramData.Span));
         Assert.Equal(packet.Length, bytesConsumed);
 
         Span<byte> destination = stackalloc byte[64];

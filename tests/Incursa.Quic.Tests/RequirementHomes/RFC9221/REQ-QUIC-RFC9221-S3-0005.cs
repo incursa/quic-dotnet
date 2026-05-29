@@ -61,6 +61,6 @@ public sealed class REQ_QUIC_RFC9221_S3_0005
         QuicDatagramFrame frame = QuicDatagramRuntimeTestSupport.ParseFirstOutgoingDatagramFrame(
             runtime,
             result.SendEffect);
-        Assert.Equal([0xD1, 0xD2], frame.DatagramData);
+        Assert.Equal([0xD1, 0xD2], frame.DatagramData.ToArray());
     }
 }

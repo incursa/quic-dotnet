@@ -169,8 +169,7 @@ internal static class QuicConnectionAckHelpers
             return false;
         }
 
-        Span<byte> ackPayload = stackalloc byte[MinimumAckPayloadBufferLength];
-        if (!TryFormatOutboundAckFramePayload(ackFrame, ackPayload, out int ackPayloadLength))
+        if (!QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out int ackPayloadLength))
         {
             return false;
         }
@@ -180,7 +179,12 @@ internal static class QuicConnectionAckHelpers
         try
         {
             Span<byte> buffer = piggybackedPayloadLease.Span;
-            ackPayload.Slice(0, ackPayloadLength).CopyTo(buffer);
+            if (!TryFormatOutboundAckFramePayload(ackFrame, buffer.Slice(0, ackPayloadLength), out int formattedAckPayloadLength)
+                || formattedAckPayloadLength != ackPayloadLength)
+            {
+                return false;
+            }
+
             payload.Span.CopyTo(buffer.Slice(ackPayloadLength));
             piggybackedPayloadLease.SetLength(computedPiggybackedPayloadLength);
             piggybackedPayload = piggybackedPayloadLease.TransferOwnership(out piggybackedPayloadLength);

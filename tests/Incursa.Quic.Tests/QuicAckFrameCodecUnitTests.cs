@@ -34,6 +34,29 @@ public sealed class QuicAckFrameCodecUnitTests
     }
 
     [Fact]
+    public void TryGetAckFramePayloadLength_MatchesFormattedAckFrameLength()
+    {
+        QuicAckFrame frame = new()
+        {
+            FrameType = 0x03,
+            LargestAcknowledged = 128,
+            AckDelay = 16,
+            FirstAckRange = 7,
+            AdditionalRanges =
+            [
+                new QuicAckRange(1, 3, 115, 118),
+                new QuicAckRange(0, 1, 112, 113),
+            ],
+            EcnCounts = new QuicEcnCounts(32, 0, 1),
+        };
+
+        Span<byte> destination = stackalloc byte[64];
+        Assert.True(QuicFrameCodec.TryFormatAckFrame(frame, destination, out int bytesWritten));
+        Assert.True(QuicFrameCodec.TryGetAckFramePayloadLength(frame, out int payloadLength));
+        Assert.Equal(bytesWritten, payloadLength);
+    }
+
+    [Fact]
     public void TryParseAckFrame_MultipleRanges_PreservesOrderingAndBytes()
     {
         QuicAckFrame frame = new()

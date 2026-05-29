@@ -1290,6 +1290,7 @@ internal sealed partial class QuicConnectionRuntime
         while (offset < payloadEnd)
         {
             ReadOnlySpan<byte> remaining = openedPacket.Span.Slice(offset, payloadEnd - offset);
+            ReadOnlyMemory<byte> remainingMemory = openedPacket.Memory.Slice(offset, payloadEnd - offset);
             if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
             {
                 if (paddingBytesConsumed <= 0)
@@ -1683,7 +1684,7 @@ internal sealed partial class QuicConnectionRuntime
                 continue;
             }
 
-            if (QuicFrameCodec.TryParseDatagramFrame(remaining, out QuicDatagramFrame datagramFrame, out int datagramBytesConsumed))
+            if (QuicFrameCodec.TryParseDatagramFrame(remainingMemory, out QuicDatagramFrame datagramFrame, out int datagramBytesConsumed))
             {
                 if (datagramBytesConsumed <= 0)
                 {
@@ -1711,13 +1712,13 @@ internal sealed partial class QuicConnectionRuntime
                         ref effects);
                 }
 
-                if (TryQueueInboundDatagram(datagramFrame.DatagramData))
+                if (TryQueueInboundDatagram(datagramFrame.DatagramData, out ReadOnlyMemory<byte> queuedDatagram))
                 {
                     AppendEffect(
                         ref effects,
                         new QuicConnectionDeliverDatagramEffect(
                             packetReceivedEvent.PathIdentity,
-                            datagramFrame.DatagramData,
+                            queuedDatagram,
                             datagramFrame.FrameType));
                 }
 

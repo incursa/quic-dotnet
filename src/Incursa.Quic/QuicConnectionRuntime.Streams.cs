@@ -3971,7 +3971,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicDatagramFrame frame = new()
         {
             FrameType = QuicFrameCodec.DatagramWithLengthFrameType,
-            DatagramData = datagramData.ToArray(),
+            DatagramData = datagramData,
         };
 
         if (!QuicFrameCodec.TryFormatDatagramFrame(frame, buffer, out int bytesWritten))
@@ -4384,14 +4384,22 @@ internal sealed partial class QuicConnectionRuntime
             : parsedStreamId.IsServerInitiated;
     }
 
-    private bool TryQueueInboundDatagram(ReadOnlyMemory<byte> datagram)
+    private bool TryQueueInboundDatagram(ReadOnlyMemory<byte> datagram, out ReadOnlyMemory<byte> queuedDatagram)
     {
+        queuedDatagram = ReadOnlyMemory<byte>.Empty;
         if (inboundDatagrams is null)
         {
             return false;
         }
 
-        return inboundDatagrams.Writer.TryWrite(datagram.ToArray());
+        byte[] ownedDatagram = datagram.ToArray();
+        if (!inboundDatagrams.Writer.TryWrite(ownedDatagram))
+        {
+            return false;
+        }
+
+        queuedDatagram = ownedDatagram;
+        return true;
     }
 
     private void CompletePendingStreamOperations(Exception completionException)

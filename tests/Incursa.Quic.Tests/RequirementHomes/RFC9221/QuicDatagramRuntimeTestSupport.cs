@@ -55,7 +55,8 @@ internal static class QuicDatagramRuntimeTestSupport
         QuicConnectionSendDatagramEffect sendEffect)
     {
         byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
-        ReadOnlySpan<byte> remaining = SkipAckAndPadding(payload);
+        int datagramFrameOffset = SkipAckAndPaddingLength(payload);
+        ReadOnlyMemory<byte> remaining = payload.AsMemory(datagramFrameOffset);
 
         Assert.True(QuicFrameCodec.TryParseDatagramFrame(
             remaining,
@@ -116,16 +117,28 @@ internal static class QuicDatagramRuntimeTestSupport
 
     private static ReadOnlySpan<byte> SkipAckAndPadding(ReadOnlySpan<byte> payload)
     {
-        ReadOnlySpan<byte> remaining = SkipPadding(payload);
+        return payload[SkipAckAndPaddingLength(payload)..];
+    }
+
+    private static int SkipAckAndPaddingLength(ReadOnlySpan<byte> payload)
+    {
+        int skippedLength = CountPadding(payload);
+        ReadOnlySpan<byte> remaining = payload[skippedLength..];
         if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
         {
-            remaining = SkipPadding(remaining[ackBytesConsumed..]);
+            skippedLength += ackBytesConsumed;
+            skippedLength += CountPadding(payload[skippedLength..]);
         }
 
-        return remaining;
+        return skippedLength;
     }
 
     private static ReadOnlySpan<byte> SkipPadding(ReadOnlySpan<byte> payload)
+    {
+        return payload[CountPadding(payload)..];
+    }
+
+    private static int CountPadding(ReadOnlySpan<byte> payload)
     {
         int offset = 0;
         while (offset < payload.Length && payload[offset] == 0)
@@ -133,7 +146,7 @@ internal static class QuicDatagramRuntimeTestSupport
             offset++;
         }
 
-        return payload[offset..];
+        return offset;
     }
 }
 

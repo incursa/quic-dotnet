@@ -19,7 +19,7 @@ public sealed class REQ_QUIC_RFC9221_S3_0007
             new QuicDatagramFrame
             {
                 FrameType = QuicFrameCodec.DatagramWithLengthFrameType,
-                DatagramData = [0x61],
+                DatagramData = new byte[] { 0x61 },
             });
 
         Assert.Single(result.Effects.OfType<QuicConnectionDeliverDatagramEffect>());
@@ -40,7 +40,7 @@ public sealed class REQ_QUIC_RFC9221_S3_0007
             new QuicDatagramFrame
             {
                 FrameType = QuicFrameCodec.DatagramWithLengthFrameType,
-                DatagramData = [0x61, 0x62],
+                DatagramData = new byte[] { 0x61, 0x62 },
             });
 
         Assert.True(result.StateChanged);
@@ -63,7 +63,7 @@ public sealed class REQ_QUIC_RFC9221_S3_0007
             new QuicDatagramFrame
             {
                 FrameType = QuicFrameCodec.DatagramWithLengthFrameType,
-                DatagramData = [0x61, 0x62],
+                DatagramData = new byte[] { 0x61, 0x62 },
             });
 
         Assert.Single(result.Effects.OfType<QuicConnectionDeliverDatagramEffect>());

@@ -105,3 +105,55 @@ public class QuicAckPiggybackPolicyBenchmarks
         return bytesWritten;
     }
 }
+
+/// <summary>
+/// Benchmarks the payload construction path used when application data piggybacks a pending 1-RTT ACK.
+/// </summary>
+[MemoryDiagnoser]
+public class QuicAckPiggybackPayloadBenchmarks
+{
+    private QuicSenderFlowController pendingAck = null!;
+    private byte[] payload = null!;
+
+    [Params(32, 1024)]
+    public int PayloadLength { get; set; }
+
+    [GlobalSetup]
+    public void GlobalSetup()
+    {
+        pendingAck = new QuicSenderFlowController();
+        pendingAck.RecordIncomingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            packetNumber: 31,
+            ackEliciting: true,
+            receivedAtMicros: 1_000);
+
+        payload = new byte[PayloadLength];
+        new Random(42).NextBytes(payload);
+    }
+
+    [Benchmark]
+    public int BuildApplicationAckPiggybackPayload()
+    {
+        byte[]? piggybackedPayload = null;
+        try
+        {
+            if (!QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
+                    payload,
+                    pendingAck,
+                    nowMicros: 1_000,
+                    out piggybackedPayload,
+                    out int piggybackedPayloadLength,
+                    out QuicAckFrame ackFrame))
+            {
+                throw new InvalidOperationException("The benchmark could not build the ACK piggyback payload.");
+            }
+
+            return piggybackedPayloadLength ^ ackFrame.FrameType ^ piggybackedPayload[0];
+        }
+        finally
+        {
+            QuicBufferPool.ReturnBytes(piggybackedPayload);
+        }
+    }
+}

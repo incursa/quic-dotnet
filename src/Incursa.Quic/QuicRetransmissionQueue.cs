@@ -53,14 +53,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TryRemovePendingRetransmission(QuicConnectionSentPacketKey key)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool removed = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketNumberSpace == key.PacketNumberSpace
@@ -71,12 +71,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            pendingRetransmissions.Enqueue(retransmission);
         }
 
         return removed;
@@ -84,14 +79,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TryDiscardPacketNumberSpace(QuicPacketNumberSpace packetNumberSpace)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketNumberSpace == packetNumberSpace)
@@ -101,12 +96,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            pendingRetransmissions.Enqueue(retransmission);
         }
 
         return updated;
@@ -114,14 +104,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketProtectionLevel == packetProtectionLevel)
@@ -131,12 +121,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            pendingRetransmissions.Enqueue(retransmission);
         }
 
         return updated;
@@ -144,14 +129,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TryDiscardOneRttKeyPhase(ulong keyPhase)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt
@@ -162,12 +147,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            pendingRetransmissions.Enqueue(retransmission);
         }
 
         return updated;
@@ -175,14 +155,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TryDiscardPendingRetransmissionsOlderThan(ulong discardBeforeSentAtMicros)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.SentAtMicros < discardBeforeSentAtMicros)
@@ -192,12 +172,7 @@ internal sealed class QuicRetransmissionQueue
                 continue;
             }
 
-            retainedRetransmissions.Enqueue(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
+            pendingRetransmissions.Enqueue(retransmission);
         }
 
         return updated;
@@ -205,14 +180,14 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TrySuppressRetransmissionForStream(ulong streamId)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (retransmission.StreamId != streamId
@@ -220,17 +195,12 @@ internal sealed class QuicRetransmissionQueue
                     || retransmission.StreamIds.Length != 1
                     || retransmission.StreamIds[0] != streamId))
             {
-                retainedRetransmissions.Enqueue(retransmission);
+                pendingRetransmissions.Enqueue(retransmission);
                 continue;
             }
 
             updated = true;
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
         }
 
         return updated;
@@ -238,29 +208,24 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TrySuppressStopSendingRetransmissionForStream(ulong streamId)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (!QuicFramePayloadInspector.ContainsStopSendingFrameForStream(retransmission.PlaintextPayload.Span, streamId))
             {
-                retainedRetransmissions.Enqueue(retransmission);
+                pendingRetransmissions.Enqueue(retransmission);
                 continue;
             }
 
             updated = true;
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
         }
 
         return updated;
@@ -268,29 +233,24 @@ internal sealed class QuicRetransmissionQueue
 
     public bool TrySuppressResetStreamRetransmissionForStream(ulong streamId)
     {
-        if (pendingRetransmissions.Count == 0)
+        int pendingCount = pendingRetransmissions.Count;
+        if (pendingCount == 0)
         {
             return false;
         }
 
         bool updated = false;
-        Queue<QuicConnectionRetransmissionPlan> retainedRetransmissions = [];
-        while (pendingRetransmissions.Count > 0)
+        for (int index = 0; index < pendingCount; index++)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
             if (!QuicFramePayloadInspector.ContainsResetStreamFrameForStream(retransmission.PlaintextPayload.Span, streamId))
             {
-                retainedRetransmissions.Enqueue(retransmission);
+                pendingRetransmissions.Enqueue(retransmission);
                 continue;
             }
 
             updated = true;
             QuicConnectionSendRuntime.ReleaseRetransmissionPlanResources(retransmission);
-        }
-
-        while (retainedRetransmissions.Count > 0)
-        {
-            pendingRetransmissions.Enqueue(retainedRetransmissions.Dequeue());
         }
 
         return updated;

@@ -109,14 +109,15 @@ internal static class QuicFrameCodec
     /// Parses an RFC 9221 DATAGRAM frame from the start of a packet payload slice.
     /// </summary>
     internal static bool TryParseDatagramFrame(
-        ReadOnlySpan<byte> packetPayload,
+        ReadOnlyMemory<byte> packetPayload,
         out QuicDatagramFrame frame,
         out int bytesConsumed)
     {
         frame = new QuicDatagramFrame();
         bytesConsumed = default;
+        ReadOnlySpan<byte> packetPayloadSpan = packetPayload.Span;
 
-        if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index)
+        if (!QuicVariableLengthInteger.TryParse(packetPayloadSpan, out ulong frameTypeValue, out int index)
             || index != 1
             || (frameTypeValue != DatagramWithoutLengthFrameType && frameTypeValue != DatagramWithLengthFrameType))
         {
@@ -126,7 +127,7 @@ internal static class QuicFrameCodec
         int datagramDataLength;
         if (frameTypeValue == DatagramWithLengthFrameType)
         {
-            if (!TryParseVarint(packetPayload, ref index, out ulong length)
+            if (!TryParseVarint(packetPayloadSpan, ref index, out ulong length)
                 || length > (ulong)(packetPayload.Length - index)
                 || length > int.MaxValue)
             {
@@ -143,7 +144,7 @@ internal static class QuicFrameCodec
         frame = new QuicDatagramFrame
         {
             FrameType = (byte)frameTypeValue,
-            DatagramData = packetPayload.Slice(index, datagramDataLength).ToArray(),
+            DatagramData = packetPayload.Slice(index, datagramDataLength),
         };
         bytesConsumed = index + datagramDataLength;
         return true;
@@ -161,7 +162,7 @@ internal static class QuicFrameCodec
             return false;
         }
 
-        ReadOnlySpan<byte> datagramData = frame.DatagramData;
+        ReadOnlySpan<byte> datagramData = frame.DatagramData.Span;
         int index = 0;
         if (!TryWriteVarint(frame.FrameType, destination, ref index))
         {
@@ -422,6 +423,73 @@ internal static class QuicFrameCodec
         }
 
         bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Computes the encoded length of an ACK frame without writing the frame payload.
+    /// </summary>
+    internal static bool TryGetAckFramePayloadLength(QuicAckFrame frame, out int payloadLength)
+    {
+        payloadLength = default;
+
+        if (frame is null)
+        {
+            return false;
+        }
+
+        if (frame.FrameType != AckFrameType && frame.FrameType != AckEcnFrameType)
+        {
+            return false;
+        }
+
+        if (frame.FirstAckRange > frame.LargestAcknowledged)
+        {
+            return false;
+        }
+
+        bool hasEcnCounts = frame.FrameType == AckEcnFrameType;
+        if (hasEcnCounts != frame.EcnCounts.HasValue)
+        {
+            return false;
+        }
+
+        QuicAckRange[] additionalRanges = frame.AdditionalRanges ?? [];
+        int length = 0;
+        if (!TryAddVarintEncodedLength(frame.FrameType, ref length)
+            || !TryAddVarintEncodedLength(frame.LargestAcknowledged, ref length)
+            || !TryAddVarintEncodedLength(frame.AckDelay, ref length)
+            || !TryAddVarintEncodedLength((ulong)additionalRanges.Length, ref length)
+            || !TryAddVarintEncodedLength(frame.FirstAckRange, ref length))
+        {
+            return false;
+        }
+
+        ulong previousSmallestAcknowledged = frame.LargestAcknowledged - frame.FirstAckRange;
+        for (int rangeIndex = 0; rangeIndex < additionalRanges.Length; rangeIndex++)
+        {
+            QuicAckRange range = additionalRanges[rangeIndex];
+            if (!TryComputeAckRange(previousSmallestAcknowledged, range.Gap, range.AckRangeLength, out ulong smallestAcknowledged, out ulong largestRangeAcknowledged)
+                || range.SmallestAcknowledged != smallestAcknowledged
+                || range.LargestAcknowledged != largestRangeAcknowledged
+                || !TryAddVarintEncodedLength(range.Gap, ref length)
+                || !TryAddVarintEncodedLength(range.AckRangeLength, ref length))
+            {
+                return false;
+            }
+
+            previousSmallestAcknowledged = smallestAcknowledged;
+        }
+
+        if (frame.EcnCounts is QuicEcnCounts ecnCounts
+            && (!TryAddVarintEncodedLength(ecnCounts.Ect0Count, ref length)
+                || !TryAddVarintEncodedLength(ecnCounts.Ect1Count, ref length)
+                || !TryAddVarintEncodedLength(ecnCounts.EcnCeCount, ref length)))
+        {
+            return false;
+        }
+
+        payloadLength = length;
         return true;
     }
 
@@ -1364,6 +1432,18 @@ internal static class QuicFrameCodec
         }
 
         index += bytesWritten;
+        return true;
+    }
+
+    private static bool TryAddVarintEncodedLength(ulong value, ref int length)
+    {
+        if (!QuicVariableLengthInteger.TryGetEncodedLength(value, out int encodedLength)
+            || length > int.MaxValue - encodedLength)
+        {
+            return false;
+        }
+
+        length += encodedLength;
         return true;
     }
 

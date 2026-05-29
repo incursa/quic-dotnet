@@ -28,7 +28,7 @@ public sealed class REQ_QUIC_RFC9221_S4_0001
 
         Assert.True(QuicFrameCodec.TryParseDatagramFrame(encoded, out QuicDatagramFrame parsed, out int bytesConsumed));
         Assert.Equal(frameType, parsed.FrameType);
-        Assert.True(datagramData.AsSpan().SequenceEqual(parsed.DatagramData));
+        Assert.True(datagramData.AsSpan().SequenceEqual(parsed.DatagramData.Span));
         Assert.Equal(encoded.Length, bytesConsumed);
 
         Span<byte> destination = stackalloc byte[32];
@@ -41,10 +41,10 @@ public sealed class REQ_QUIC_RFC9221_S4_0001
     [Trait("Category", "Negative")]
     public void TryParseDatagramFrame_RejectsInvalidTypesAndTruncatedLength()
     {
-        Assert.False(QuicFrameCodec.TryParseDatagramFrame([0x2F, 0x00], out _, out _));
-        Assert.False(QuicFrameCodec.TryParseDatagramFrame([0x32, 0x00], out _, out _));
-        Assert.False(QuicFrameCodec.TryParseDatagramFrame([0x31, 0x03, 0xA0], out _, out _));
-        Assert.False(QuicFrameCodec.TryParseDatagramFrame([0x31, 0x40], out _, out _));
+        Assert.False(QuicFrameCodec.TryParseDatagramFrame(new byte[] { 0x2F, 0x00 }, out _, out _));
+        Assert.False(QuicFrameCodec.TryParseDatagramFrame(new byte[] { 0x32, 0x00 }, out _, out _));
+        Assert.False(QuicFrameCodec.TryParseDatagramFrame(new byte[] { 0x31, 0x03, 0xA0 }, out _, out _));
+        Assert.False(QuicFrameCodec.TryParseDatagramFrame(new byte[] { 0x31, 0x40 }, out _, out _));
     }
 
     [Fact]
