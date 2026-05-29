@@ -916,19 +916,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         return new QuicStream(streamRegistry.Bookkeeping, streamId, this);
     }
 
-    internal async ValueTask WriteStreamAsync(
+    internal ValueTask WriteStreamAsync(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => await WriteStreamAsync(streamId, buffer, finishWrites: false, cancellationToken).ConfigureAwait(false);
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: false, cancellationToken));
 
-    internal async ValueTask WriteFinalStreamAsync(
+    internal ValueTask WriteFinalStreamAsync(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         CancellationToken cancellationToken = default)
-        => await WriteStreamAsync(streamId, buffer, finishWrites: true, cancellationToken).ConfigureAwait(false);
+        => new(WriteStreamAsyncCore(streamId, buffer, finishWrites: true, cancellationToken));
 
-    private async ValueTask WriteStreamAsync(
+    private async Task WriteStreamAsyncCore(
         ulong streamId,
         ReadOnlyMemory<byte> buffer,
         bool finishWrites,
