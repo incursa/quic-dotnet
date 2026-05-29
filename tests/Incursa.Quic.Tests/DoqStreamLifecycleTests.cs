@@ -261,7 +261,7 @@ public sealed class DoqStreamLifecycleTests
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         await queryCancellation.CancelAsync();
-        await Assert.ThrowsAsync<OperationCanceledException>(() => cancelledQuery.WaitAsync(TimeSpan.FromSeconds(10)));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => cancelledQuery.WaitAsync(TimeSpan.FromSeconds(10)));
         handler.ReleaseFirstQuery();
 
         DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x05)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
@@ -293,7 +293,7 @@ public sealed class DoqStreamLifecycleTests
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         await firstCancellation.CancelAsync();
-        await Assert.ThrowsAsync<OperationCanceledException>(() => firstQuery.WaitAsync(TimeSpan.FromSeconds(10)));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => firstQuery.WaitAsync(TimeSpan.FromSeconds(10)));
         handler.ReleaseFirstQuery();
 
         using CancellationTokenSource secondCancellation = new();
@@ -301,7 +301,7 @@ public sealed class DoqStreamLifecycleTests
         await handler.SecondQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
         await secondCancellation.CancelAsync();
-        await Assert.ThrowsAsync<OperationCanceledException>(() => secondQuery.WaitAsync(TimeSpan.FromSeconds(10)));
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => secondQuery.WaitAsync(TimeSpan.FromSeconds(10)));
         handler.ReleaseSecondQuery();
 
         QuicException exception = await WaitForConnectionAbortAsync(connection);

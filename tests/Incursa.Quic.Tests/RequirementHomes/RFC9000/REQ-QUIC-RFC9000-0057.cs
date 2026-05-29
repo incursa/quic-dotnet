@@ -73,8 +73,8 @@ public sealed class REQ_QUIC_RFC9000_0057
     {
         QuicApplicationSendQueue sendQueue = new();
 
-        sendQueue.Enqueue(streamId: 1, priority: 0, streamPayload: [0x11]);
-        sendQueue.Enqueue(streamId: 5, priority: 10, streamPayload: [0x22]);
+        sendQueue.Enqueue(streamId: 1, priority: 0, streamPayload: [0x11], streamPayloadLength: 1);
+        sendQueue.Enqueue(streamId: 5, priority: 10, streamPayload: [0x22], streamPayloadLength: 1);
 
         PendingApplicationSendRequest[] sortedWrites = sendQueue.GetSortedQueuedWrites();
 

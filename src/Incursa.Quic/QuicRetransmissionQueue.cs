@@ -331,7 +331,8 @@ internal sealed class QuicRetransmissionQueue
                 packet.PacketProtectionLevel,
                 packet.StreamIds,
                 packet.PlaintextPayload,
-                packet.OneRttKeyPhase));
+                packet.OneRttKeyPhase,
+                packet.PlaintextPayloadOwner));
         }
 
         foreach (QuicConnectionRetransmissionPlan retransmission in pendingRetransmissions)
@@ -345,6 +346,7 @@ internal sealed class QuicRetransmissionQueue
             (retainedRetransmissions ??= []).Add(retransmission with
             {
                 PacketBytes = default,
+                PlaintextPayloadOwner = retransmission.PlaintextPayloadOwner,
                 PacketBytesOwner = null,
             });
         }

@@ -308,7 +308,9 @@ internal static class QuicReceiveBufferPoolDiagnostics
 
         lock (gate)
         {
-            File.AppendAllText(path, line + Environment.NewLine);
+            using FileStream stream = new(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using StreamWriter writer = new(stream);
+            writer.WriteLine(line);
         }
     }
 

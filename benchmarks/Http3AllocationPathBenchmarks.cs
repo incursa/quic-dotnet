@@ -569,8 +569,8 @@ public class Http3AllocationPathBenchmarks
         byte[] first = BuildOutboundStreamPayload(0, 0, plaintextDataFrame, fin: false);
         byte[] second = BuildOutboundStreamPayload(4, 0, jsonDataFrame, fin: true);
         QuicApplicationSendQueue queue = new();
-        queue.Enqueue(0, 0, first);
-        queue.Enqueue(4, 0, second);
+        queue.Enqueue(0, 0, first, first.Length);
+        queue.Enqueue(4, 0, second, second.Length);
 
         PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
         int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(queuedWrites, 4096);

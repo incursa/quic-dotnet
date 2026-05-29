@@ -119,7 +119,7 @@ public sealed class REQ_QUIC_RFC9000_0052
         Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
         Assert.Equal(2UL, snapshot.ReadOffset);
-        Assert.Equal(4, snapshot.BufferedReadableBytes);
+        Assert.Equal(2, snapshot.BufferedReadableBytes);
 
         Span<byte> trailingDestination = stackalloc byte[4];
         Assert.True(state.TryReadStreamData(

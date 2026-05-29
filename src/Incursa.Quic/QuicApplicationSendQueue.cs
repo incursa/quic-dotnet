@@ -7,7 +7,8 @@ internal readonly record struct PendingApplicationSendRequest(
     long Sequence,
     ulong StreamId,
     int Priority,
-    byte[] StreamPayload);
+    byte[] StreamPayload,
+    int StreamPayloadLength);
 
 /// <summary>
 /// Owns the pending application-send queue and its selection/bookkeeping rules.
@@ -32,13 +33,14 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
-    public void Enqueue(ulong streamId, int priority, byte[] streamPayload)
+    public void Enqueue(ulong streamId, int priority, byte[] streamPayload, int streamPayloadLength)
     {
         pendingRequests.Add(new PendingApplicationSendRequest(
             nextSequence++,
             streamId,
             priority,
-            streamPayload));
+            streamPayload,
+            streamPayloadLength));
     }
 
     public bool TryGetLatestQueuedWriteForStream(ulong streamId, out PendingApplicationSendRequest queuedWrite)
@@ -56,7 +58,19 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
-    public bool TryReplaceQueuedWritePayload(long sequence, byte[] streamPayload)
+    internal bool TryGetOnlyQueuedWrite(out PendingApplicationSendRequest queuedWrite)
+    {
+        if (pendingRequests.Count == 1)
+        {
+            queuedWrite = pendingRequests[0];
+            return true;
+        }
+
+        queuedWrite = default;
+        return false;
+    }
+
+    public bool TryReplaceQueuedWritePayload(long sequence, byte[] streamPayload, int streamPayloadLength)
     {
         for (int index = 0; index < pendingRequests.Count; index++)
         {
@@ -66,9 +80,11 @@ internal sealed class QuicApplicationSendQueue
                 continue;
             }
 
+            QuicBufferPool.ReturnBytes(queuedWrite.StreamPayload);
             pendingRequests[index] = queuedWrite with
             {
                 StreamPayload = streamPayload,
+                StreamPayloadLength = streamPayloadLength,
             };
             return true;
         }
@@ -89,6 +105,9 @@ internal sealed class QuicApplicationSendQueue
     }
 
     public bool TryRemoveQueuedWritesForStream(ulong streamId)
+        => TryRemoveQueuedWritesForStream(streamId, returnPayloads: false);
+
+    public bool TryRemoveQueuedWritesForStream(ulong streamId, bool returnPayloads)
     {
         bool removedAny = false;
         for (int index = pendingRequests.Count - 1; index >= 0; index--)
@@ -96,6 +115,11 @@ internal sealed class QuicApplicationSendQueue
             if (pendingRequests[index].StreamId != streamId)
             {
                 continue;
+            }
+
+            if (returnPayloads)
+            {
+                QuicBufferPool.ReturnBytes(pendingRequests[index].StreamPayload);
             }
 
             pendingRequests.RemoveAt(index);
@@ -128,6 +152,11 @@ internal sealed class QuicApplicationSendQueue
 
     public void Clear()
     {
+        foreach (PendingApplicationSendRequest pendingWrite in pendingRequests)
+        {
+            QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
+        }
+
         pendingRequests.Clear();
     }
 
@@ -139,7 +168,7 @@ internal sealed class QuicApplicationSendQueue
         int selectedBytes = 0;
         foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
         {
-            int nextSelectedBytes = checked(selectedBytes + queuedWrite.StreamPayload.Length);
+            int nextSelectedBytes = checked(selectedBytes + queuedWrite.StreamPayloadLength);
             if (selectedCount > 0 && nextSelectedBytes > maximumPayloadBytes)
             {
                 break;

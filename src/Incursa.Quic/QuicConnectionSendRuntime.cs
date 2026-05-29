@@ -28,6 +28,7 @@ internal readonly record struct QuicConnectionSentPacket(
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
     ulong? OneRttKeyPhase = null,
+    byte[]? PlaintextPayloadOwner = null,
     byte[]? PacketBytesOwner = null);
 
 internal readonly record struct QuicConnectionRetransmissionPlan(
@@ -42,6 +43,7 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
     ulong? OneRttKeyPhase = null,
+    byte[]? PlaintextPayloadOwner = null,
     byte[]? PacketBytesOwner = null);
 
 /// <summary>
@@ -161,7 +163,7 @@ internal sealed class QuicConnectionSendRuntime
         QuicConnectionSentPacketKey key = new(packet.PacketNumberSpace, packet.PacketNumber);
         if (sentPackets.Remove(key, out QuicConnectionSentPacket replacedPacket))
         {
-            ReleasePacketBytesOwner(replacedPacket);
+            ReleasePacketOwners(replacedPacket);
         }
 
         sentPackets[key] = packet;
@@ -200,7 +202,7 @@ internal sealed class QuicConnectionSendRuntime
         if (removedSentPacket)
         {
             _ = TrySuppressResetStreamRetransmissionForAcknowledgedStreamData(acknowledgedPacket.PlaintextPayload.Span);
-            ReleasePacketBytesOwner(acknowledgedPacket);
+            ReleasePacketOwners(acknowledgedPacket);
         }
 
         bool acknowledgmentRestartsProbeTimeout =
@@ -241,7 +243,7 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketBytesOwner(removedPacket);
+                    ReleasePacketOwners(removedPacket);
                     updated = true;
                 }
             }
@@ -315,7 +317,7 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketBytesOwner(removedPacket);
+                    ReleasePacketOwners(removedPacket);
                     updated = true;
                 }
             }
@@ -356,7 +358,7 @@ internal sealed class QuicConnectionSendRuntime
             {
                 if (sentPackets.Remove(key, out QuicConnectionSentPacket removedPacket))
                 {
-                    ReleasePacketBytesOwner(removedPacket);
+                    ReleasePacketOwners(removedPacket);
                     updated = true;
                 }
             }
@@ -423,11 +425,12 @@ internal sealed class QuicConnectionSendRuntime
                 packet.StreamIds,
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,
+                packet.PlaintextPayloadOwner,
                 packet.PacketBytesOwner));
         }
         else
         {
-            ReleasePacketBytesOwner(packet);
+            ReleasePacketOwners(packet);
         }
 
         ProbeTimeoutCount = QuicRecoveryTiming.ResetProbeTimeoutBackoffCount(
@@ -660,7 +663,7 @@ internal sealed class QuicConnectionSendRuntime
 
     internal static void ReleaseRetransmissionPlanResources(QuicConnectionRetransmissionPlan retransmission)
     {
-        ReleasePacketBytesOwner(retransmission.PacketBytesOwner);
+        ReleasePacketOwners(retransmission.PlaintextPayloadOwner, retransmission.PacketBytesOwner);
     }
 
     public void ClearLossDetectionDeadline()
@@ -717,13 +720,18 @@ internal sealed class QuicConnectionSendRuntime
         }
     }
 
-    private static void ReleasePacketBytesOwner(QuicConnectionSentPacket packet)
+    private static void ReleasePacketOwners(QuicConnectionSentPacket packet)
     {
-        ReleasePacketBytesOwner(packet.PacketBytesOwner);
+        ReleasePacketOwners(packet.PlaintextPayloadOwner, packet.PacketBytesOwner);
     }
 
-    private static void ReleasePacketBytesOwner(byte[]? packetBytesOwner)
+    private static void ReleasePacketOwners(byte[]? plaintextPayloadOwner, byte[]? packetBytesOwner)
     {
+        if (plaintextPayloadOwner is not null)
+        {
+            QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
+        }
+
         if (packetBytesOwner is not null)
         {
             QuicBufferPool.ReturnBytes(packetBytesOwner);

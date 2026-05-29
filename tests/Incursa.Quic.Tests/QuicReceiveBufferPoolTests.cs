@@ -117,4 +117,32 @@ public sealed class QuicReceiveBufferPoolTests
             File.Delete(path);
         }
     }
+
+    [Fact]
+    public void Dispose_WritesDiagnosticSnapshotWhileDestinationIsOpen()
+    {
+        string path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.jsonl");
+        string? original = Environment.GetEnvironmentVariable(QuicReceiveBufferPoolDiagnostics.SnapshotPathEnvironmentVariable);
+        try
+        {
+            Environment.SetEnvironmentVariable(QuicReceiveBufferPoolDiagnostics.SnapshotPathEnvironmentVariable, path);
+            using FileStream heldOpen = new(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+
+            using (QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 1, ownerName: "shared-file"))
+            {
+                using QuicReceiveBufferLease lease = pool.Rent();
+            }
+
+            heldOpen.Position = 0;
+            using StreamReader reader = new(heldOpen, leaveOpen: true);
+            string contents = reader.ReadToEnd();
+            Assert.Contains("\"reason\":\"dispose\"", contents, StringComparison.Ordinal);
+            Assert.Contains("\"ownerName\":\"shared-file\"", contents, StringComparison.Ordinal);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(QuicReceiveBufferPoolDiagnostics.SnapshotPathEnvironmentVariable, original);
+            File.Delete(path);
+        }
+    }
 }

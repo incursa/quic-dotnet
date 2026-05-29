@@ -9,10 +9,10 @@ public sealed class QuicApplicationSendQueueTests
     public void GetSortedQueuedWrites_SortsByPriorityDescendingAndPreservesFifoForEqualPriority()
     {
         QuicApplicationSendQueue queue = new();
-        queue.Enqueue(1, priority: 0, [0x10]);
-        queue.Enqueue(2, priority: 5, [0x20]);
-        queue.Enqueue(3, priority: 5, [0x30]);
-        queue.Enqueue(4, priority: 1, [0x40]);
+        queue.Enqueue(1, priority: 0, [0x10], 1);
+        queue.Enqueue(2, priority: 5, [0x20], 1);
+        queue.Enqueue(3, priority: 5, [0x30], 1);
+        queue.Enqueue(4, priority: 1, [0x40], 1);
 
         PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
 
@@ -25,9 +25,9 @@ public sealed class QuicApplicationSendQueueTests
     public void TryGetLatestQueuedWriteForStream_ReturnsTheMostRecentQueuedWriteForThatStream()
     {
         QuicApplicationSendQueue queue = new();
-        queue.Enqueue(7, priority: 0, [0x10]);
-        queue.Enqueue(8, priority: 1, [0x20]);
-        queue.Enqueue(7, priority: 2, [0x30]);
+        queue.Enqueue(7, priority: 0, [0x10], 1);
+        queue.Enqueue(8, priority: 1, [0x20], 1);
+        queue.Enqueue(7, priority: 2, [0x30], 1);
 
         Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest queuedWrite));
         Assert.Equal(7UL, queuedWrite.StreamId);
@@ -41,8 +41,8 @@ public sealed class QuicApplicationSendQueueTests
     {
         PendingApplicationSendRequest[] queuedWrites =
         [
-            new PendingApplicationSendRequest(0, 1, 0, new byte[9]),
-            new PendingApplicationSendRequest(1, 2, 0, new byte[1]),
+            new PendingApplicationSendRequest(0, 1, 0, new byte[9], 9),
+            new PendingApplicationSendRequest(1, 2, 0, new byte[1], 1),
         ];
 
         int selectedCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(queuedWrites, maximumPayloadBytes: 8);
@@ -55,11 +55,11 @@ public sealed class QuicApplicationSendQueueTests
     {
         PendingApplicationSendRequest[] queuedWrites =
         [
-            new PendingApplicationSendRequest(0, 7, 0, [0x10]),
-            new PendingApplicationSendRequest(1, 3, 0, [0x20]),
-            new PendingApplicationSendRequest(2, 7, 0, [0x30]),
-            new PendingApplicationSendRequest(3, 5, 0, [0x40]),
-            new PendingApplicationSendRequest(4, 3, 0, [0x50]),
+            new PendingApplicationSendRequest(0, 7, 0, [0x10], 1),
+            new PendingApplicationSendRequest(1, 3, 0, [0x20], 1),
+            new PendingApplicationSendRequest(2, 7, 0, [0x30], 1),
+            new PendingApplicationSendRequest(3, 5, 0, [0x40], 1),
+            new PendingApplicationSendRequest(4, 3, 0, [0x50], 1),
         ];
 
         ulong[] streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(queuedWrites);
@@ -71,9 +71,9 @@ public sealed class QuicApplicationSendQueueTests
     public void TryRemoveQueuedWritesForStream_RemovesOnlyMatchingStreamWrites()
     {
         QuicApplicationSendQueue queue = new();
-        queue.Enqueue(7, priority: 0, [0x10]);
-        queue.Enqueue(8, priority: 0, [0x20]);
-        queue.Enqueue(7, priority: 0, [0x30]);
+        queue.Enqueue(7, priority: 0, [0x10], 1);
+        queue.Enqueue(8, priority: 0, [0x20], 1);
+        queue.Enqueue(7, priority: 0, [0x30], 1);
 
         Assert.True(queue.TryRemoveQueuedWritesForStream(7));
         Assert.Equal(1, queue.Count);
@@ -90,16 +90,31 @@ public sealed class QuicApplicationSendQueueTests
     public void TryReplaceQueuedWritePayload_ReplacesTheMatchingQueuedRequestWithoutChangingSequence()
     {
         QuicApplicationSendQueue queue = new();
-        queue.Enqueue(7, priority: 0, [0x10]);
-        queue.Enqueue(7, priority: 1, [0x20]);
+        byte[] firstPayload = QuicBufferPool.RentBytes(1);
+        byte[] secondPayload = QuicBufferPool.RentBytes(1);
+        byte[] replacementPayload = QuicBufferPool.RentBytes(2);
+        firstPayload[0] = 0x10;
+        secondPayload[0] = 0x20;
+        replacementPayload[0] = 0xAA;
+        replacementPayload[1] = 0xBB;
 
-        Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest queuedWrite));
-        Assert.True(queue.TryReplaceQueuedWritePayload(queuedWrite.Sequence, [0xAA, 0xBB]));
+        try
+        {
+            queue.Enqueue(7, priority: 0, firstPayload, 1);
+            queue.Enqueue(7, priority: 1, secondPayload, 1);
 
-        PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
+            Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest queuedWrite));
+            Assert.True(queue.TryReplaceQueuedWritePayload(queuedWrite.Sequence, replacementPayload, 2));
 
-        Assert.Equal(2, queuedWrites.Length);
-        Assert.Equal(new byte[] { 0xAA, 0xBB }, queuedWrites[0].StreamPayload);
-        Assert.Equal(queuedWrite.Sequence, queuedWrites[0].Sequence);
+            PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
+
+            Assert.Equal(2, queuedWrites.Length);
+            Assert.Equal(new byte[] { 0xAA, 0xBB }, queuedWrites[0].StreamPayload[..2].ToArray());
+            Assert.Equal(queuedWrite.Sequence, queuedWrites[0].Sequence);
+        }
+        finally
+        {
+            queue.Clear();
+        }
     }
 }
