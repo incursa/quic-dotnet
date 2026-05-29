@@ -6,6 +6,19 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicReceiveBufferPoolTests
 {
     [Fact]
+    public void Constructor_PreservesRingCapacityWithoutAllocatingBuffers()
+    {
+        using QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 2);
+
+        QuicReceiveBufferPoolSnapshot snapshot = pool.Snapshot;
+
+        Assert.Equal(2, snapshot.RingSize);
+        Assert.Equal(0, snapshot.AllocatedRingBuffers);
+        Assert.Equal(0, snapshot.RingRents);
+        Assert.Equal(0, snapshot.FallbackRents);
+    }
+
+    [Fact]
     public void Rent_UsesRingBeforeFallback()
     {
         using QuicReceiveBufferPool pool = new(bufferSize: 32, ringSize: 2);
@@ -18,6 +31,7 @@ public sealed class QuicReceiveBufferPoolTests
 
         Assert.Equal(2, snapshot.RingRents);
         Assert.Equal(1, snapshot.FallbackRents);
+        Assert.Equal(2, snapshot.AllocatedRingBuffers);
         Assert.Equal(3, snapshot.CurrentOutstanding);
         Assert.Equal(3, snapshot.MaxOutstanding);
         Assert.True(first.Ownership.FromRing);
@@ -93,6 +107,7 @@ public sealed class QuicReceiveBufferPoolTests
             Assert.Contains("\"reason\":\"dispose\"", line, StringComparison.Ordinal);
             Assert.Contains("\"ownerName\":\"test\"", line, StringComparison.Ordinal);
             Assert.Contains("\"ringSize\":1", line, StringComparison.Ordinal);
+            Assert.Contains("\"allocatedRingBuffers\":1", line, StringComparison.Ordinal);
             Assert.Contains("\"ringRents\":1", line, StringComparison.Ordinal);
             Assert.Contains("\"fallbackRents\":0", line, StringComparison.Ordinal);
         }

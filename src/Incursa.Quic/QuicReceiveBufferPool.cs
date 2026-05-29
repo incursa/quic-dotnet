@@ -10,7 +10,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
 
     private static int nextPoolId;
     private readonly object gate = new();
-    private readonly byte[][] ringBuffers;
+    private readonly byte[]?[] ringBuffers;
     private readonly int[] freeIndexes;
     private readonly bool[] rentedRingBuffers;
     private readonly Dictionary<byte[], int> ringIndexes;
@@ -25,6 +25,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
     private long fallbackRents;
     private long returns;
     private long doubleReturnAttempts;
+    private long allocatedRingBuffers;
     private int disposed;
 
     internal QuicReceiveBufferPool(
@@ -53,10 +54,7 @@ internal sealed class QuicReceiveBufferPool : IDisposable
 
         for (int index = 0; index < effectiveRingSize; index++)
         {
-            byte[] buffer = new byte[bufferSize];
-            ringBuffers[index] = buffer;
             freeIndexes[index] = index;
-            ringIndexes.Add(buffer, index);
         }
 
         freeCount = effectiveRingSize;
@@ -73,7 +71,8 @@ internal sealed class QuicReceiveBufferPool : IDisposable
         Volatile.Read(ref ringRents),
         Volatile.Read(ref fallbackRents),
         Volatile.Read(ref returns),
-        Volatile.Read(ref doubleReturnAttempts));
+        Volatile.Read(ref doubleReturnAttempts),
+        Volatile.Read(ref allocatedRingBuffers));
 
     public void Dispose()
     {
@@ -93,9 +92,18 @@ internal sealed class QuicReceiveBufferPool : IDisposable
             if (freeCount > 0)
             {
                 int index = freeIndexes[--freeCount];
+                byte[]? buffer = ringBuffers[index];
+                if (buffer is null)
+                {
+                    buffer = new byte[bufferSize];
+                    ringBuffers[index] = buffer;
+                    ringIndexes.Add(buffer, index);
+                    Interlocked.Increment(ref allocatedRingBuffers);
+                }
+
                 rentedRingBuffers[index] = true;
                 RecordRent(ring: true);
-                return new QuicReceiveBufferLease(this, ringBuffers[index], bufferSize, fromRing: true);
+                return new QuicReceiveBufferLease(this, buffer, bufferSize, fromRing: true);
             }
         }
 
@@ -245,7 +253,8 @@ internal readonly record struct QuicReceiveBufferPoolSnapshot(
     long RingRents,
     long FallbackRents,
     long Returns,
-    long DoubleReturnAttempts);
+    long DoubleReturnAttempts,
+    long AllocatedRingBuffers);
 
 internal static class QuicReceiveBufferPoolDiagnostics
 {
@@ -295,7 +304,7 @@ internal static class QuicReceiveBufferPoolDiagnostics
 
         string line = string.Create(
             System.Globalization.CultureInfo.InvariantCulture,
-            $$"""{"timestampUtc":"{{DateTimeOffset.UtcNow:O}}","processId":{{Environment.ProcessId}},"reason":"{{reason}}","poolId":{{snapshot.PoolId}},"ownerName":"{{Escape(snapshot.OwnerName)}}","bufferSize":{{snapshot.BufferSize}},"ringSize":{{snapshot.RingSize}},"currentOutstanding":{{snapshot.CurrentOutstanding}},"maxOutstanding":{{snapshot.MaxOutstanding}},"ringRents":{{snapshot.RingRents}},"fallbackRents":{{snapshot.FallbackRents}},"returns":{{snapshot.Returns}},"doubleReturnAttempts":{{snapshot.DoubleReturnAttempts}}}""");
+            $$"""{"timestampUtc":"{{DateTimeOffset.UtcNow:O}}","processId":{{Environment.ProcessId}},"reason":"{{reason}}","poolId":{{snapshot.PoolId}},"ownerName":"{{Escape(snapshot.OwnerName)}}","bufferSize":{{snapshot.BufferSize}},"ringSize":{{snapshot.RingSize}},"allocatedRingBuffers":{{snapshot.AllocatedRingBuffers}},"currentOutstanding":{{snapshot.CurrentOutstanding}},"maxOutstanding":{{snapshot.MaxOutstanding}},"ringRents":{{snapshot.RingRents}},"fallbackRents":{{snapshot.FallbackRents}},"returns":{{snapshot.Returns}},"doubleReturnAttempts":{{snapshot.DoubleReturnAttempts}}}""");
 
         lock (gate)
         {
