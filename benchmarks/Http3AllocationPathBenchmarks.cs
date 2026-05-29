@@ -572,12 +572,20 @@ public class Http3AllocationPathBenchmarks
         queue.Enqueue(0, 0, first, first.Length);
         queue.Enqueue(4, 0, second, second.Length);
 
-        PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
-        int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(queuedWrites, 4096);
-        ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = queuedWrites.AsSpan(0, batchCount);
-        byte[] combined = CombinePayloads(selectedWrites);
-        ulong[] streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
-        return combined.Length ^ streamIds.Length;
+        PendingApplicationSendRequest[] queuedWrites = queue.RentSortedQueuedWrites(out int queuedWriteCount);
+        try
+        {
+            ReadOnlySpan<PendingApplicationSendRequest> sortedWrites = queuedWrites.AsSpan(0, queuedWriteCount);
+            int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(sortedWrites, 4096);
+            ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = sortedWrites[..batchCount];
+            byte[] combined = CombinePayloads(selectedWrites);
+            ulong[] streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
+            return combined.Length ^ streamIds.Length;
+        }
+        finally
+        {
+            QuicApplicationSendQueue.ReturnRentedQueuedWrites(queuedWrites);
+        }
     }
 
     private static QPackFieldLine[] BuildResponseHeaders(string contentType, int contentLength)

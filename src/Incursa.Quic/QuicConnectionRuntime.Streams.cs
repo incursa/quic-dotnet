@@ -657,89 +657,103 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? streamIds = null;
         PendingApplicationSendRequest onlyQueuedWrite = default;
         PendingApplicationSendRequest[]? queuedWrites = null;
+        int queuedWriteCount = 0;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
-        bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
-
-        if (hasOnlyQueuedWrite)
+        try
         {
-            combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
-        }
-        else
-        {
-            queuedWrites = applicationSendQueue.GetSortedQueuedWrites();
+            bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
 
-            int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
-                queuedWrites,
-                GetMaximumQueuedApplicationPayloadBytes());
-            selectedWrites = queuedWrites.AsSpan(0, batchCount);
-            int combinedPayloadLength = 0;
-            foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+            if (hasOnlyQueuedWrite)
             {
-                combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
+                combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
+            }
+            else
+            {
+                queuedWrites = applicationSendQueue.RentSortedQueuedWrites(out queuedWriteCount);
+                ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites =
+                    queuedWrites.AsSpan(0, queuedWriteCount);
+
+                int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
+                    sortedQueuedWrites,
+                    GetMaximumQueuedApplicationPayloadBytes());
+                selectedWrites = sortedQueuedWrites[..batchCount];
+                int combinedPayloadLength = 0;
+                foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+                {
+                    combinedPayloadLength = checked(combinedPayloadLength + queuedWrite.StreamPayloadLength);
+                }
+
+                byte[] combinedPayloadBuffer = new byte[combinedPayloadLength];
+                int copyOffset = 0;
+                foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+                {
+                    queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
+                        .CopyTo(combinedPayloadBuffer.AsSpan(copyOffset));
+                    copyOffset += queuedWrite.StreamPayloadLength;
+                }
+
+                combinedPayload = combinedPayloadBuffer;
+                streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
             }
 
-            byte[] combinedPayloadBuffer = new byte[combinedPayloadLength];
-            int copyOffset = 0;
-            foreach (PendingApplicationSendRequest queuedWrite in selectedWrites)
+            if (!TryProtectAndAccountStreamApplicationPayload(
+                combinedPayload,
+                hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : null,
+                "The connection runtime could not protect the queued stream write packet.",
+                QueuedStreamWriteSendBlockedMessage,
+                probePacket,
+                streamId: hasOnlyQueuedWrite ? onlyQueuedWrite.StreamId : null,
+                streamIds: streamIds,
+                ref effects,
+                out QuicConnectionPathIdentity sendPathIdentity,
+                out ReadOnlyMemory<byte> protectedPacket,
+                out exception))
             {
-                queuedWrite.StreamPayload.AsSpan(0, queuedWrite.StreamPayloadLength)
-                    .CopyTo(combinedPayloadBuffer.AsSpan(copyOffset));
-                copyOffset += queuedWrite.StreamPayloadLength;
+                if (IsTransientApplicationSendPathBlocked(exception))
+                {
+                    pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                        nowTicks,
+                        ConvertMicrosToTicks(ApplicationSendDelayMicros));
+                    AppendLifecycleTimerEffects(ref effects);
+                }
+
+                return false;
             }
 
-            combinedPayload = combinedPayloadBuffer;
-            streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(selectedWrites);
-        }
+            if (hasOnlyQueuedWrite)
+            {
+                applicationSendQueue.TryRemoveQueuedWritesForStream(onlyQueuedWrite.StreamId);
+            }
+            else
+            {
+                applicationSendQueue.TryRemoveQueuedWrites(selectedWrites);
+            }
 
-        if (!TryProtectAndAccountStreamApplicationPayload(
-            combinedPayload,
-            hasOnlyQueuedWrite ? onlyQueuedWrite.StreamPayload : null,
-            "The connection runtime could not protect the queued stream write packet.",
-            QueuedStreamWriteSendBlockedMessage,
-            probePacket,
-            streamId: hasOnlyQueuedWrite ? onlyQueuedWrite.StreamId : null,
-            streamIds: streamIds,
-            ref effects,
-            out QuicConnectionPathIdentity sendPathIdentity,
-            out ReadOnlyMemory<byte> protectedPacket,
-            out exception))
-        {
-            if (IsTransientApplicationSendPathBlocked(exception))
+            if (applicationSendQueue.Count == 0)
+            {
+                pendingApplicationSendDelayDueTicks = null;
+            }
+            else
             {
                 pendingApplicationSendDelayDueTicks = SaturatingAdd(
                     nowTicks,
                     ConvertMicrosToTicks(ApplicationSendDelayMicros));
-                AppendLifecycleTimerEffects(ref effects);
             }
 
-            return false;
+            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                sendPathIdentity,
+                protectedPacket));
+            AppendLifecycleTimerEffects(ref effects);
+            exception = null;
+            return true;
         }
-
-        if (hasOnlyQueuedWrite)
+        finally
         {
-            applicationSendQueue.TryRemoveQueuedWritesForStream(onlyQueuedWrite.StreamId);
+            if (queuedWrites is not null)
+            {
+                QuicApplicationSendQueue.ReturnRentedQueuedWrites(queuedWrites);
+            }
         }
-        else
-        {
-            applicationSendQueue.TryRemoveQueuedWrites(selectedWrites);
-        }
-        if (applicationSendQueue.Count == 0)
-        {
-            pendingApplicationSendDelayDueTicks = null;
-        }
-        else
-        {
-            pendingApplicationSendDelayDueTicks = SaturatingAdd(
-                nowTicks,
-                ConvertMicrosToTicks(ApplicationSendDelayMicros));
-        }
-
-        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-            sendPathIdentity,
-            protectedPacket));
-        AppendLifecycleTimerEffects(ref effects);
-        exception = null;
-        return true;
     }
 
     private bool TryProtectAndAccountStreamApplicationPayload(

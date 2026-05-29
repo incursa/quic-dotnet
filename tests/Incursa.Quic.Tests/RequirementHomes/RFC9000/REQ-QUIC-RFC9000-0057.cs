@@ -76,9 +76,17 @@ public sealed class REQ_QUIC_RFC9000_0057
         sendQueue.Enqueue(streamId: 1, priority: 0, streamPayload: [0x11], streamPayloadLength: 1);
         sendQueue.Enqueue(streamId: 5, priority: 10, streamPayload: [0x22], streamPayloadLength: 1);
 
-        PendingApplicationSendRequest[] sortedWrites = sendQueue.GetSortedQueuedWrites();
+        PendingApplicationSendRequest[] sortedWrites = sendQueue.RentSortedQueuedWrites(out int queuedWriteCount);
+        try
+        {
+            ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = sortedWrites.AsSpan(0, queuedWriteCount);
 
-        Assert.Equal(5UL, sortedWrites[0].StreamId);
-        Assert.NotEqual(1UL, sortedWrites[0].StreamId);
+            Assert.Equal(5UL, selectedWrites[0].StreamId);
+            Assert.NotEqual(1UL, selectedWrites[0].StreamId);
+        }
+        finally
+        {
+            QuicApplicationSendQueue.ReturnRentedQueuedWrites(sortedWrites);
+        }
     }
 }

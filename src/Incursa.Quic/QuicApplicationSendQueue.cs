@@ -99,16 +99,33 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
-    public PendingApplicationSendRequest[] GetSortedQueuedWrites()
+    public PendingApplicationSendRequest[] RentSortedQueuedWrites(out int queuedWriteCount)
     {
-        if (pendingRequests.Count == 0)
+        queuedWriteCount = pendingRequests.Count;
+        if (queuedWriteCount == 0)
         {
             return [];
         }
 
-        PendingApplicationSendRequest[] queuedWrites = pendingRequests.ToArray();
-        Array.Sort(queuedWrites, ComparePendingApplicationSendRequests);
+        PendingApplicationSendRequest[] queuedWrites =
+            ArrayPool<PendingApplicationSendRequest>.Shared.Rent(queuedWriteCount);
+
+        pendingRequests.CopyTo(queuedWrites);
+        Array.Sort(
+            queuedWrites,
+            index: 0,
+            length: queuedWriteCount,
+            PendingApplicationSendRequestComparer.Instance);
+
         return queuedWrites;
+    }
+
+    public static void ReturnRentedQueuedWrites(PendingApplicationSendRequest[] queuedWrites)
+    {
+        if (queuedWrites.Length != 0)
+        {
+            ArrayPool<PendingApplicationSendRequest>.Shared.Return(queuedWrites, clearArray: true);
+        }
     }
 
     public bool TryRemoveQueuedWritesForStream(ulong streamId)
@@ -320,5 +337,17 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return left.Sequence.CompareTo(right.Sequence);
+    }
+
+    private sealed class PendingApplicationSendRequestComparer : IComparer<PendingApplicationSendRequest>
+    {
+        public static readonly PendingApplicationSendRequestComparer Instance = new();
+
+        private PendingApplicationSendRequestComparer()
+        {
+        }
+
+        public int Compare(PendingApplicationSendRequest left, PendingApplicationSendRequest right)
+            => ComparePendingApplicationSendRequests(left, right);
     }
 }

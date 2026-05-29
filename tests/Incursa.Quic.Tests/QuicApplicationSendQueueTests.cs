@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicApplicationSendQueueTests
 {
     [Fact]
-    public void GetSortedQueuedWrites_SortsByPriorityDescendingAndPreservesFifoForEqualPriority()
+    public void RentSortedQueuedWrites_SortsByPriorityDescendingAndPreservesFifoForEqualPriority()
     {
         QuicApplicationSendQueue queue = new();
         queue.Enqueue(1, priority: 0, [0x10], 1);
@@ -14,7 +14,7 @@ public sealed class QuicApplicationSendQueueTests
         queue.Enqueue(3, priority: 5, [0x30], 1);
         queue.Enqueue(4, priority: 1, [0x40], 1);
 
-        PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
+        PendingApplicationSendRequest[] queuedWrites = CopySortedQueuedWrites(queue);
 
         Assert.Equal(new[] { 2UL, 3UL, 4UL, 1UL }, queuedWrites.Select(queuedWrite => queuedWrite.StreamId));
         Assert.Equal(new[] { 5, 5, 1, 0 }, queuedWrites.Select(queuedWrite => queuedWrite.Priority));
@@ -95,7 +95,7 @@ public sealed class QuicApplicationSendQueueTests
         Assert.False(queue.HasPendingWritesForStream(7));
         Assert.True(queue.HasPendingWritesForStream(8));
 
-        PendingApplicationSendRequest[] remaining = queue.GetSortedQueuedWrites();
+        PendingApplicationSendRequest[] remaining = CopySortedQueuedWrites(queue);
 
         Assert.Single(remaining);
         Assert.Equal(8UL, remaining[0].StreamId);
@@ -121,7 +121,7 @@ public sealed class QuicApplicationSendQueueTests
             Assert.True(queue.TryGetLatestQueuedWriteForStream(7, out PendingApplicationSendRequest queuedWrite));
             Assert.True(queue.TryReplaceQueuedWritePayload(queuedWrite.Sequence, replacementPayload, 2));
 
-            PendingApplicationSendRequest[] queuedWrites = queue.GetSortedQueuedWrites();
+            PendingApplicationSendRequest[] queuedWrites = CopySortedQueuedWrites(queue);
 
             Assert.Equal(2, queuedWrites.Length);
             Assert.Equal(new byte[] { 0xAA, 0xBB }, queuedWrites[0].StreamPayload[..2].ToArray());
@@ -130,6 +130,19 @@ public sealed class QuicApplicationSendQueueTests
         finally
         {
             queue.Clear();
+        }
+    }
+
+    private static PendingApplicationSendRequest[] CopySortedQueuedWrites(QuicApplicationSendQueue queue)
+    {
+        PendingApplicationSendRequest[] rentedWrites = queue.RentSortedQueuedWrites(out int queuedWriteCount);
+        try
+        {
+            return rentedWrites.AsSpan(0, queuedWriteCount).ToArray();
+        }
+        finally
+        {
+            QuicApplicationSendQueue.ReturnRentedQueuedWrites(rentedWrites);
         }
     }
 }
