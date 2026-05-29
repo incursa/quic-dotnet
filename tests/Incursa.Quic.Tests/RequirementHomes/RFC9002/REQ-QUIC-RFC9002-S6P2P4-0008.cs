@@ -110,13 +110,14 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
         runtime.TrackApplicationPacket(
             packetNumber,
             protectedPacket,
-            true,
-            false,
-            false,
-            false,
-            QuicTlsEncryptionLevel.OneRtt,
-            null,
-            default(ReadOnlyMemory<byte>));
+            ackEliciting: true,
+            ackOnlyPacket: false,
+            retransmittable: false,
+            probePacket: false,
+            packetProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            streamId: null,
+            streamIds: null,
+            plaintextPayload: default(ReadOnlyMemory<byte>));
     }
 
     private static QuicConnectionEffect[] InvokeRecomputeLifecycleTimerEffects(QuicConnectionRuntime runtime)

@@ -215,9 +215,10 @@ internal sealed class QuicRetransmissionQueue
         while (pendingRetransmissions.Count > 0)
         {
             QuicConnectionRetransmissionPlan retransmission = pendingRetransmissions.Dequeue();
-            if (retransmission.StreamIds is null
-                || retransmission.StreamIds.Length != 1
-                || retransmission.StreamIds[0] != streamId)
+            if (retransmission.StreamId != streamId
+                && (retransmission.StreamIds is null
+                    || retransmission.StreamIds.Length != 1
+                    || retransmission.StreamIds[0] != streamId))
             {
                 retainedRetransmissions.Enqueue(retransmission);
                 continue;
@@ -329,6 +330,7 @@ internal sealed class QuicRetransmissionQueue
                 packet.CryptoMetadata,
                 default,
                 packet.PacketProtectionLevel,
+                packet.StreamId,
                 packet.StreamIds,
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,

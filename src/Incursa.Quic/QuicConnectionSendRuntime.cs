@@ -25,6 +25,7 @@ internal readonly record struct QuicConnectionSentPacket(
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+    ulong? StreamId = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
     ulong? OneRttKeyPhase = null,
@@ -40,6 +41,7 @@ internal readonly record struct QuicConnectionRetransmissionPlan(
     QuicConnectionCryptoSendMetadata? CryptoMetadata = null,
     ReadOnlyMemory<byte> PacketBytes = default,
     QuicTlsEncryptionLevel? PacketProtectionLevel = null,
+    ulong? StreamId = null,
     ulong[]? StreamIds = null,
     ReadOnlyMemory<byte> PlaintextPayload = default,
     ulong? OneRttKeyPhase = null,
@@ -422,6 +424,7 @@ internal sealed class QuicConnectionSendRuntime
                 packet.CryptoMetadata,
                 packet.PacketBytes,
                 packet.PacketProtectionLevel,
+                packet.StreamId,
                 packet.StreamIds,
                 packet.PlaintextPayload,
                 packet.OneRttKeyPhase,
@@ -453,9 +456,10 @@ internal sealed class QuicConnectionSendRuntime
 
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> entry in sentPackets)
         {
-            if (entry.Value.StreamIds is null
-                || entry.Value.StreamIds.Length != 1
-                || entry.Value.StreamIds[0] != streamId
+            if (entry.Value.StreamId != streamId
+                && (entry.Value.StreamIds is null
+                    || entry.Value.StreamIds.Length != 1
+                    || entry.Value.StreamIds[0] != streamId)
                 || !entry.Value.Retransmittable)
             {
                 continue;

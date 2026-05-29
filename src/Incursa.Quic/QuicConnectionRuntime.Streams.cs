@@ -266,6 +266,7 @@ internal sealed partial class QuicConnectionRuntime
             "The connection runtime could not protect the stream open packet.",
             "The connection cannot send the stream open packet.",
             probePacket: false,
+            streamId: streamId.Value,
             streamIds: null,
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
@@ -466,7 +467,8 @@ internal sealed partial class QuicConnectionRuntime
             "The connection runtime could not protect the stream write packet.",
             StreamWriteSendBlockedMessage,
             probePacket: false,
-            streamIds: new[] { streamId },
+            streamId: streamId,
+            streamIds: null,
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
             out ReadOnlyMemory<byte> protectedPacket,
@@ -652,7 +654,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ReadOnlyMemory<byte> combinedPayload;
-        ulong[] streamIds;
+        ulong[]? streamIds = null;
         PendingApplicationSendRequest onlyQueuedWrite = default;
         PendingApplicationSendRequest[]? queuedWrites = null;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
@@ -661,7 +663,6 @@ internal sealed partial class QuicConnectionRuntime
         if (hasOnlyQueuedWrite)
         {
             combinedPayload = onlyQueuedWrite.StreamPayload.AsMemory(0, onlyQueuedWrite.StreamPayloadLength);
-            streamIds = [onlyQueuedWrite.StreamId];
         }
         else
         {
@@ -696,7 +697,8 @@ internal sealed partial class QuicConnectionRuntime
             "The connection runtime could not protect the queued stream write packet.",
             QueuedStreamWriteSendBlockedMessage,
             probePacket,
-            streamIds,
+            streamId: hasOnlyQueuedWrite ? onlyQueuedWrite.StreamId : null,
+            streamIds: streamIds,
             ref effects,
             out QuicConnectionPathIdentity sendPathIdentity,
             out ReadOnlyMemory<byte> protectedPacket,
@@ -746,6 +748,7 @@ internal sealed partial class QuicConnectionRuntime
         string protectFailureMessage,
         string amplificationFailureMessage,
         bool probePacket,
+        ulong? streamId,
         ulong[]? streamIds,
         ref List<QuicConnectionEffect>? effects,
         out QuicConnectionPathIdentity sendPathIdentity,
@@ -779,6 +782,7 @@ internal sealed partial class QuicConnectionRuntime
             retransmittable: true,
             probePacket: probePacket,
             includeAckFrame: true,
+            streamId: streamId,
             streamIds: streamIds,
             plaintextPayloadOwner: plaintextPayloadOwner);
     }
@@ -1615,6 +1619,7 @@ internal sealed partial class QuicConnectionRuntime
                 ackOnlyPacket: ackOnlyPacket,
                 retransmittable: !ackOnlyPacket,
                 probePacket: probePacket,
+                streamId: null,
                 streamIds: streamIds,
                 plaintextPayload: retainPlaintextPayload ? payload : default,
                 packetBytesOwner: protectedPacketOwner);
@@ -1651,6 +1656,7 @@ internal sealed partial class QuicConnectionRuntime
         bool retransmittable = true,
         bool probePacket = false,
         bool includeAckFrame = true,
+        ulong? streamId = null,
         ulong[]? streamIds = null,
         byte[]? plaintextPayloadOwner = null,
         bool enforcePathMaximumDatagramSize = false)
@@ -1827,6 +1833,7 @@ internal sealed partial class QuicConnectionRuntime
             protectedPacket,
             retransmittable: retransmittable,
             probePacket: probePacket,
+            streamId: streamId,
             streamIds: streamIds,
             plaintextPayload: payload,
             plaintextPayloadOwner: plaintextPayloadOwner,
@@ -2073,6 +2080,7 @@ internal sealed partial class QuicConnectionRuntime
                     rebuiltDatagram,
                     sentAtMicros,
                     probePacket,
+                    probeRetransmission.StreamId,
                     probeRetransmission.StreamIds,
                     rebuiltApplicationPayload);
             }
@@ -2187,6 +2195,7 @@ internal sealed partial class QuicConnectionRuntime
                     rebuiltDatagram,
                     sentAtMicros,
                     probePacket,
+                    retransmission.StreamId,
                     retransmission.StreamIds,
                     rebuiltApplicationPayload);
             }
@@ -2334,7 +2343,8 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             bool candidateProbePacket = candidatePlan.ProbePacket;
-            bool candidateHasPreferredPayload = candidatePlan.StreamIds is { Length: > 0 };
+            bool candidateHasPreferredPayload = candidatePlan.StreamId.HasValue
+                || candidatePlan.StreamIds is { Length: > 0 };
             bool candidateCarriesStreamData = false;
             bool candidateClosesStream = false;
             ulong candidateStreamEndOffset = 0;
@@ -2832,6 +2842,7 @@ internal sealed partial class QuicConnectionRuntime
                 rebuiltApplicationPacketBytes,
                 sentAtMicros,
                 probePacket: true,
+                applicationRetransmission.StreamId,
                 applicationRetransmission.StreamIds,
                 rebuiltApplicationPayload);
 
@@ -3513,6 +3524,7 @@ internal sealed partial class QuicConnectionRuntime
         byte[] protectedPacket,
         ulong sentAtMicros,
         bool probePacket,
+        ulong? streamId,
         ulong[]? streamIds,
         ReadOnlyMemory<byte> plaintextPayload)
     {
@@ -3527,6 +3539,7 @@ internal sealed partial class QuicConnectionRuntime
             Retransmittable: true,
             PacketBytes: protectedPacket,
             PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+            StreamId: streamId,
             StreamIds: streamIds,
             PlaintextPayload: plaintextPayload,
             OneRttKeyPhase: tlsState.CurrentOneRttKeyPhase));
@@ -3568,6 +3581,7 @@ internal sealed partial class QuicConnectionRuntime
             CryptoMetadata: retransmission.CryptoMetadata,
             PacketBytes: retransmission.PacketBytes,
             PacketProtectionLevel: retransmission.PacketProtectionLevel,
+            StreamId: retransmission.StreamId,
             StreamIds: retransmission.StreamIds,
             PlaintextPayload: retransmission.PlaintextPayload,
             PacketBytesOwner: retransmission.PacketBytesOwner,
@@ -3712,6 +3726,7 @@ internal sealed partial class QuicConnectionRuntime
         bool retransmittable = true,
         bool probePacket = false,
         QuicTlsEncryptionLevel packetProtectionLevel = QuicTlsEncryptionLevel.OneRtt,
+        ulong? streamId = null,
         ulong[]? streamIds = null,
         ReadOnlyMemory<byte> plaintextPayload = default,
         byte[]? plaintextPayloadOwner = null,
@@ -3728,6 +3743,7 @@ internal sealed partial class QuicConnectionRuntime
             Retransmittable: retransmittable,
             PacketBytes: protectedPacket,
             PacketProtectionLevel: packetProtectionLevel,
+            StreamId: streamId,
             StreamIds: streamIds,
             PlaintextPayload: plaintextPayload,
             PlaintextPayloadOwner: plaintextPayloadOwner,

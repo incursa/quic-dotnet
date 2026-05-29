@@ -214,8 +214,9 @@ internal sealed partial class QuicConnectionRuntime
                 return processedAnyPacket && stateChanged;
             }
 
-            QuicConnectionPacketReceivedEvent packetEvent =
-                packetReceivedEvent.WithBorrowedDatagramSlice(remainingDatagram[..packetLength]);
+            QuicConnectionPacketReceivedEvent packetEvent = packetOffset == 0 && packetLength == packetReceivedEvent.Datagram.Length
+                ? packetReceivedEvent
+                : packetReceivedEvent.WithBorrowedDatagramSlice(remainingDatagram[..packetLength]);
 
             processedAnyPacket = true;
             if (diagnosticsEnabled)
@@ -1147,6 +1148,7 @@ internal sealed partial class QuicConnectionRuntime
             bool entryHasPreferredPayload = preferCryptoData
                 ? entryHasCryptoPriority
                 : !preferStreamData
+                || packet.StreamId.HasValue
                 || packet.StreamIds is { Length: > 0 };
             bool entryCarriesStreamData = false;
             bool entryClosesStream = false;

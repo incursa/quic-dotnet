@@ -1316,7 +1316,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             previousPhase,
             phase,
             stateChanged,
-            effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>());
+            effects);
     }
 
     public async ValueTask DisposeAsync()
@@ -1375,9 +1375,19 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
                         if (effectObserver is not null)
                         {
-                            foreach (QuicConnectionEffect effect in result.Effects)
+                            if (result.EffectList is { } effectList)
                             {
-                                effectObserver(effect);
+                                foreach (QuicConnectionEffect effect in effectList)
+                                {
+                                    effectObserver(effect);
+                                }
+                            }
+                            else
+                            {
+                                foreach (QuicConnectionEffect effect in result.Effects)
+                                {
+                                    effectObserver(effect);
+                                }
                             }
                         }
                     }

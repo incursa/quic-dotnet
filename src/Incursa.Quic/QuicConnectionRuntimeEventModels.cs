@@ -284,14 +284,64 @@ internal sealed record QuicConnectionDiscardConnectionStateEffect(
 internal sealed record QuicConnectionEmitDiagnosticEffect(QuicDiagnosticEvent Diagnostic)
     : QuicConnectionEffect(QuicConnectionEffectKind.EmitDiagnostic);
 
-internal readonly record struct QuicConnectionTransitionResult(
-    ulong Sequence,
-    long ObservedAtTicks,
-    QuicConnectionEventKind EventKind,
-    QuicConnectionPhase PreviousPhase,
-    QuicConnectionPhase CurrentPhase,
-    bool StateChanged,
-    QuicConnectionEffect[] Effects)
+internal readonly struct QuicConnectionTransitionResult
 {
-    public bool HasEffects => Effects.Length > 0;
+    private readonly QuicConnectionEffect[]? effects;
+    private readonly List<QuicConnectionEffect>? effectList;
+
+    public QuicConnectionTransitionResult(
+        ulong Sequence,
+        long ObservedAtTicks,
+        QuicConnectionEventKind EventKind,
+        QuicConnectionPhase PreviousPhase,
+        QuicConnectionPhase CurrentPhase,
+        bool StateChanged,
+        QuicConnectionEffect[] Effects)
+    {
+        this.Sequence = Sequence;
+        this.ObservedAtTicks = ObservedAtTicks;
+        this.EventKind = EventKind;
+        this.PreviousPhase = PreviousPhase;
+        this.CurrentPhase = CurrentPhase;
+        this.StateChanged = StateChanged;
+        this.effects = Effects ?? Array.Empty<QuicConnectionEffect>();
+        effectList = null;
+    }
+
+    internal QuicConnectionTransitionResult(
+        ulong Sequence,
+        long ObservedAtTicks,
+        QuicConnectionEventKind EventKind,
+        QuicConnectionPhase PreviousPhase,
+        QuicConnectionPhase CurrentPhase,
+        bool StateChanged,
+        List<QuicConnectionEffect>? EffectList)
+    {
+        this.Sequence = Sequence;
+        this.ObservedAtTicks = ObservedAtTicks;
+        this.EventKind = EventKind;
+        this.PreviousPhase = PreviousPhase;
+        this.CurrentPhase = CurrentPhase;
+        this.StateChanged = StateChanged;
+        effects = null;
+        this.effectList = EffectList;
+    }
+
+    public ulong Sequence { get; }
+
+    public long ObservedAtTicks { get; }
+
+    public QuicConnectionEventKind EventKind { get; }
+
+    public QuicConnectionPhase PreviousPhase { get; }
+
+    public QuicConnectionPhase CurrentPhase { get; }
+
+    public bool StateChanged { get; }
+
+    internal List<QuicConnectionEffect>? EffectList => effectList;
+
+    public QuicConnectionEffect[] Effects => effects ?? effectList?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
+
+    public bool HasEffects => effectList is { Count: > 0 } || effects is { Length: > 0 };
 }
