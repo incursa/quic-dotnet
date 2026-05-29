@@ -4,7 +4,8 @@ Runs the public QUIC comparison surface:
 - loopback bidirectional request/response stream transfer
 
 Use -Job Dry to validate the harness quickly or -Job Short for repeatable
-comparison measurements.
+comparison measurements. This script runs the public comparison in-process so
+BenchmarkDotNet does not discover artifact-staged duplicate project names.
 #>
 
 [CmdletBinding()]
@@ -31,6 +32,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $benchmarksProject = Join-Path $repoRoot "benchmarks\Incursa.Quic.Benchmarks.csproj"
+$benchmarksDirectory = Split-Path -Parent $benchmarksProject
 $resolvedArtifactsRoot = if ([System.IO.Path]::IsPathRooted($ArtifactsRoot)) {
     $ArtifactsRoot
 }
@@ -86,6 +88,7 @@ foreach ($filter in $BenchmarkFilter) {
         $filter
         "--artifacts"
         $filterArtifactsRoot
+        "--inProcess"
     )
 
     Write-Host ""
@@ -93,8 +96,14 @@ foreach ($filter in $BenchmarkFilter) {
     Write-Host "Artifacts: $filterArtifactsRoot" -ForegroundColor Yellow
     Write-Host "Command: dotnet $($runArgs -join ' ')" -ForegroundColor Yellow
 
-    & dotnet @runArgs
-    if ($LASTEXITCODE -ne 0) {
-        throw "Benchmark run failed for '$filter' with exit code $LASTEXITCODE."
+    Push-Location $benchmarksDirectory
+    try {
+        & dotnet @runArgs
+        if ($LASTEXITCODE -ne 0) {
+            throw "Benchmark run failed for '$filter' with exit code $LASTEXITCODE."
+        }
+    }
+    finally {
+        Pop-Location
     }
 }

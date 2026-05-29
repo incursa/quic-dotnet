@@ -9,6 +9,8 @@ param(
     [int] $Repetitions = 1,
     [int] $Connections = 16,
     [int] $StreamsPerConnection = 10,
+    [string] $TargetConfiguration = "Release",
+    [switch] $DisableLoadToolQlog = $true,
     [switch] $CollectCounters = $true,
     [switch] $CollectCpuTrace = $true,
     [switch] $CollectGcTrace = $true,
@@ -148,6 +150,7 @@ function New-ProtocolLabArguments(
         "--protocol", "h3",
         "--load-tool", "h2load",
         "--load-tool-mode", "docker",
+        "--target-configuration", $TargetConfiguration,
         "--connections", $Connections.ToString([Globalization.CultureInfo]::InvariantCulture),
         "--streams-per-connection", $StreamsPerConnection.ToString([Globalization.CultureInfo]::InvariantCulture),
         "--duration", $DurationSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
@@ -156,6 +159,10 @@ function New-ProtocolLabArguments(
         "--output", $ProtocolLabOutputRoot,
         "--run-id", $ProtocolLabRunId
     )
+
+    if ($DisableLoadToolQlog) {
+        $arguments += "--disable-load-tool-qlog"
+    }
 
     if ($CaptureCounterData) {
         $arguments += @("--capture-counters", "--counter-refresh-interval", "1")
@@ -216,9 +223,14 @@ function Invoke-WrapperPass(
         "-DurationSeconds", $DurationSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
         "-WarmupSeconds", $WarmupSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
         "-Repetitions", $Repetitions.ToString([Globalization.CultureInfo]::InvariantCulture),
+        "-TargetConfiguration", $TargetConfiguration,
         "-RunId", $protocolRunId,
         "-Output", $protocolLabOutputRoot
     )
+
+    if ($DisableLoadToolQlog) {
+        $arguments += "-DisableLoadToolQlog"
+    }
 
     if ($CaptureCounterData) {
         $arguments += "-CaptureCounters"
@@ -518,6 +530,8 @@ $profile = [ordered]@{
     repetitions = $Repetitions
     connections = $Connections
     streamsPerConnection = $StreamsPerConnection
+    targetConfiguration = $TargetConfiguration
+    disableLoadToolQlog = [bool]$DisableLoadToolQlog
     keepServerRunning = [bool]$KeepServerRunning
     toolRestore = $toolRestore
     toolVersions = $toolVersions

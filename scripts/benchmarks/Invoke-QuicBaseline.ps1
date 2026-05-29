@@ -34,6 +34,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $benchmarksProject = Join-Path $repoRoot "benchmarks\Incursa.Quic.Benchmarks.csproj"
+$benchmarksDirectory = Split-Path -Parent $benchmarksProject
 $resolvedArtifactsRoot = if ([System.IO.Path]::IsPathRooted($ArtifactsRoot)) {
     $ArtifactsRoot
 }
@@ -96,8 +97,14 @@ foreach ($filter in $BenchmarkFilter) {
     Write-Host "Artifacts: $filterArtifactsRoot" -ForegroundColor Yellow
     Write-Host "Command: dotnet $($runArgs -join ' ')" -ForegroundColor Yellow
 
-    & dotnet @runArgs
-    if ($LASTEXITCODE -ne 0) {
-        throw "Benchmark run failed for '$filter' with exit code $LASTEXITCODE."
+    Push-Location $benchmarksDirectory
+    try {
+        & dotnet @runArgs
+        if ($LASTEXITCODE -ne 0) {
+            throw "Benchmark run failed for '$filter' with exit code $LASTEXITCODE."
+        }
+    }
+    finally {
+        Pop-Location
     }
 }

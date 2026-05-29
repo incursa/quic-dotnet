@@ -7,6 +7,8 @@ param(
     [int] $DurationSeconds = 10,
     [int] $WarmupSeconds = 2,
     [int] $Repetitions = 1,
+    [string] $TargetConfiguration = "Release",
+    [switch] $DisableLoadToolQlog = $true,
     [string] $RunId,
     [switch] $CaptureCounters,
     [int] $CounterRefreshIntervalSeconds = 1,
@@ -61,6 +63,7 @@ $args = @(
     "--protocol", "h3",
     "--load-tool", "h2load",
     "--load-tool-mode", "docker",
+    "--target-configuration", $TargetConfiguration,
     "--connections", $Connections.ToString([Globalization.CultureInfo]::InvariantCulture),
     "--streams-per-connection", $StreamsPerConnection.ToString([Globalization.CultureInfo]::InvariantCulture),
     "--duration", $DurationSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
@@ -69,6 +72,10 @@ $args = @(
     "--output", $Output,
     "--run-id", $RunId
 )
+
+if ($DisableLoadToolQlog) {
+    $args += "--disable-load-tool-qlog"
+}
 
 if ($CaptureCounters) {
     $args += @(
@@ -188,6 +195,8 @@ try {
             output = $Output
             runRoot = $runRoot
             captureCounters = [bool]$CaptureCounters
+            targetConfiguration = $TargetConfiguration
+            disableLoadToolQlog = [bool]$DisableLoadToolQlog
             traceMode = $TraceMode
             traceArtifactRoot = $TraceArtifactRoot
             receiveBufferRingSize = if ($ReceiveBufferRingSize -gt 0) { $ReceiveBufferRingSize } else { $null }
@@ -207,6 +216,8 @@ try {
         output = $Output
         runRoot = $runRoot
         captureCounters = [bool]$CaptureCounters
+        targetConfiguration = $TargetConfiguration
+        disableLoadToolQlog = [bool]$DisableLoadToolQlog
         traceMode = $TraceMode
         traceArtifactRoot = $TraceArtifactRoot
         receiveBufferRingSize = if ($ReceiveBufferRingSize -gt 0) { $ReceiveBufferRingSize } else { $null }

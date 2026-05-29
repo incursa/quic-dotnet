@@ -72,6 +72,8 @@ $lines.Add("- scenario: ``$($profile.scenarioId)``")
 $lines.Add("- profile pack root: ``$resolvedRoot``")
 $lines.Add("- ProtocolLab root: ``$($profile.protocolLabRoot)``")
 $lines.Add("- shape: c$($profile.connections)-s$($profile.streamsPerConnection), duration $($profile.durationSeconds)s, warmup $($profile.warmupSeconds)s, repetitions $($profile.repetitions)")
+$lines.Add("- target configuration: ``$($profile.targetConfiguration)``")
+$lines.Add("- load-tool qlog disabled: ``$($profile.disableLoadToolQlog)``")
 $lines.Add("")
 $lines.Add("Diagnostic passes are separate ProtocolLab runs unless a pass explicitly says otherwise. Do not compare counters and traces as one shared interval.")
 
