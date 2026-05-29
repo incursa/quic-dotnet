@@ -79,7 +79,7 @@ internal sealed partial class QuicConnectionRuntime
             }
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return stateChanged;
     }
 
@@ -180,7 +180,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         stateChanged |= TryFlushInitialPackets(ref effects);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return stateChanged;
     }
 
@@ -341,7 +341,7 @@ internal sealed partial class QuicConnectionRuntime
         stateChanged |= TryCaptureResumptionMasterSecret();
         if (stateChanged)
         {
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         return stateChanged;
@@ -1888,7 +1888,7 @@ internal sealed partial class QuicConnectionRuntime
         if (UpdateApplicationAckDelayTimer(nowTicks))
         {
             stateChanged = true;
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         stateChanged |= TryHandlePreviouslyUnusedIssuedConnectionId(packetReceivedEvent, ref effects);
@@ -2117,7 +2117,7 @@ internal sealed partial class QuicConnectionRuntime
             if (UpdateApplicationAckDelayTimer(nowTicks))
             {
                 stateChanged = true;
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
             }
 
             stateChanged |= TryHandlePreviouslyUnusedIssuedConnectionId(packetReceivedEvent, ref effects);
@@ -2377,7 +2377,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects))
         {
             stateChanged = true;
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         return stateChanged;
@@ -2686,7 +2686,7 @@ internal sealed partial class QuicConnectionRuntime
 
         bool sentAck = TrySendPendingApplicationAck(nowTicks, ref effects);
         bool timerUpdated = UpdateApplicationAckDelayTimer(nowTicks);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return sentAck || timerUpdated;
     }
 
@@ -4474,7 +4474,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if (stateChanged)
         {
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         return stateChanged;

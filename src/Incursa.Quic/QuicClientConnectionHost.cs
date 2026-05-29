@@ -44,6 +44,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private int retryBootstrapReplayDatagramSent;
     private int retryBootstrapReplayPacketValidated;
     private int retryBootstrapReplayPacketValidationFailureCode;
+    private int transitionHistoryClosed;
     private byte[]? retrySourceConnectionIdFromRetry;
     private byte[]? retryTokenFromRetry;
     private string? retryTokenFromRetryHex;
@@ -203,7 +204,10 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 
     private void ObserveTransition(QuicConnectionTransitionResult transition)
     {
-        TransitionHistory.Enqueue(transition);
+        if (Volatile.Read(ref transitionHistoryClosed) == 0)
+        {
+            TransitionHistory.Enqueue(transition);
+        }
 
         if (transition.EventKind == QuicConnectionEventKind.RetryReceived)
         {
@@ -225,6 +229,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         if (transition.CurrentPhase == QuicConnectionPhase.Active
             && runtime.PeerHandshakeTranscriptCompleted)
         {
+            Interlocked.Exchange(ref transitionHistoryClosed, 1);
             establishedConnection.TrySetResult(connection);
         }
     }

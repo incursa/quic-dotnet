@@ -720,7 +720,10 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return;
         }
 
-        state.TransitionHistory.Enqueue(transition);
+        if (state.IsPending)
+        {
+            state.TransitionHistory.Enqueue(transition);
+        }
 
         if (state.Runtime.TerminalState is QuicConnectionTerminalState terminalState
             && state.TryMarkFailed())
@@ -1989,6 +1992,8 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         public uint FlowLabelSeed { get; }
 
         public ConcurrentQueue<QuicConnectionTransitionResult> TransitionHistory { get; } = new();
+
+        public bool IsPending => Volatile.Read(ref status) == 0;
 
         private QuicConnectionPathIdentity? cachedRemoteSocketAddressPathIdentity;
 

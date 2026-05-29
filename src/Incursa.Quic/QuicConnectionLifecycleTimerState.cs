@@ -32,10 +32,21 @@ internal sealed class QuicConnectionLifecycleTimerState
 
     internal QuicConnectionEffect[] SetTimerDeadline(QuicConnectionTimerKind timerKind, long? dueTicks)
     {
+        return TrySetTimerDeadline(timerKind, dueTicks, out QuicConnectionEffect? effect)
+            ? [effect!]
+            : Array.Empty<QuicConnectionEffect>();
+    }
+
+    internal bool TrySetTimerDeadline(
+        QuicConnectionTimerKind timerKind,
+        long? dueTicks,
+        out QuicConnectionEffect? effect)
+    {
         QuicConnectionTimerSchedule currentSchedule = GetTimerSchedule(timerKind);
         if (currentSchedule.DueTicks == dueTicks)
         {
-            return Array.Empty<QuicConnectionEffect>();
+            effect = null;
+            return false;
         }
 
         ulong nextGeneration = QuicConnectionTimerDeadlineState.IncrementCounter(currentSchedule.Generation);
@@ -43,12 +54,14 @@ internal sealed class QuicConnectionLifecycleTimerState
 
         if (!dueTicks.HasValue)
         {
-            return [new QuicConnectionCancelTimerEffect(timerKind, nextGeneration)];
+            effect = new QuicConnectionCancelTimerEffect(timerKind, nextGeneration);
+            return true;
         }
 
         QuicConnectionTimerPriority priority = TimerState.CreatePriority(dueTicks.Value);
         TimerState = TimerState.AdvancePrioritySequence();
-        return [new QuicConnectionArmTimerEffect(timerKind, nextGeneration, priority)];
+        effect = new QuicConnectionArmTimerEffect(timerKind, nextGeneration, priority);
+        return true;
     }
 
     internal bool TryConsumeTimerExpiration(QuicConnectionTimerKind timerKind, ulong generation)

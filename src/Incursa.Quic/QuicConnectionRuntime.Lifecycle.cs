@@ -387,10 +387,16 @@ internal sealed partial class QuicConnectionRuntime
 
     internal QuicConnectionEffect[] RecomputeLifecycleTimerEffects()
     {
+        List<QuicConnectionEffect>? effects = null;
+        AppendLifecycleTimerEffects(ref effects);
+        return effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
+    }
+
+    private void AppendLifecycleTimerEffects(ref List<QuicConnectionEffect>? effects)
+    {
         RefreshCurrentProbeTimeoutMicros(lastTransitionTicks);
         _ = RecomputeIdleTimeoutState(lastTransitionTicks);
 
-        List<QuicConnectionEffect>? effects = null;
         long? idleDueTicks = phase switch
         {
             QuicConnectionPhase.Establishing or QuicConnectionPhase.Active when idleTimeoutState is not null
@@ -409,15 +415,14 @@ internal sealed partial class QuicConnectionRuntime
         long? closeDueTicks = phase == QuicConnectionPhase.Closing ? lifecycleTimerState.TerminalEndTicks : null;
         long? drainDueTicks = phase == QuicConnectionPhase.Draining ? lifecycleTimerState.TerminalEndTicks : null;
 
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.IdleTimeout, idleDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.CloseLifetime, closeDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.DrainLifetime, drainDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.PathValidation, pathValidationDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.Recovery, recoveryDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks));
-        AppendEffects(ref effects, SetTimerDeadline(QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks));
-        return effects?.ToArray() ?? Array.Empty<QuicConnectionEffect>();
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.IdleTimeout, idleDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.CloseLifetime, closeDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.DrainLifetime, drainDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.PathValidation, pathValidationDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.Recovery, recoveryDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.KeyUpdateRetention, keyUpdateRetentionDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.ApplicationSendDelay, applicationSendDelayDueTicks);
+        AppendTimerDeadlineEffect(ref effects, QuicConnectionTimerKind.AckDelay, applicationAckDelayDueTicks);
     }
 
     private long? GetApplicationAckDelayDueTicks()
@@ -527,7 +532,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -547,7 +552,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -692,15 +697,15 @@ internal sealed partial class QuicConnectionRuntime
         (effects ??= []).Add(effect);
     }
 
-    private static void AppendEffects(ref List<QuicConnectionEffect>? effects, QuicConnectionEffect[] additionalEffects)
+    private void AppendTimerDeadlineEffect(
+        ref List<QuicConnectionEffect>? effects,
+        QuicConnectionTimerKind timerKind,
+        long? dueTicks)
     {
-        if (additionalEffects.Length == 0)
+        if (lifecycleTimerState.TrySetTimerDeadline(timerKind, dueTicks, out QuicConnectionEffect? effect))
         {
-            return;
+            AppendEffect(ref effects, effect!);
         }
-
-        effects ??= [];
-        effects.AddRange(additionalEffects);
     }
 
     internal bool TryMarkPeerAddressValidatedByAddressValidationToken(long nowTicks)

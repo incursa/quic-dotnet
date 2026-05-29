@@ -58,7 +58,7 @@ internal sealed partial class QuicConnectionRuntime
             if (stateChanged)
             {
                 hasSuccessfullyProcessedAnotherPacket = true;
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
             }
 
             return stateChanged;
@@ -98,7 +98,7 @@ internal sealed partial class QuicConnectionRuntime
         if (stateChanged)
         {
             hasSuccessfullyProcessedAnotherPacket = true;
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         return stateChanged;
@@ -334,7 +334,7 @@ internal sealed partial class QuicConnectionRuntime
         UpdatePeerAddressValidationFlag();
         stateChanged |= TryQueueNewTokenEmission(pathValidationSucceededEvent.PathIdentity, nowTicks, ref effects);
         stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         stateChanged |= TryFlushHandshakePackets(ref effects);
         stateChanged |= TryFlushHandshakeDonePacket(ref effects);
         if (TryFlushPendingRetransmissions(
@@ -344,7 +344,7 @@ internal sealed partial class QuicConnectionRuntime
                 ref effects))
         {
             stateChanged = true;
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         stateChanged |= TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
@@ -360,7 +360,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (HasValidatedPath)
             {
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
                 return false;
             }
 
@@ -417,7 +417,7 @@ internal sealed partial class QuicConnectionRuntime
             if (preserveActivePathAfterPreferredAddressFailure)
             {
                 UpdatePeerAddressValidationFlag();
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
                 return stateChanged;
             }
 
@@ -425,7 +425,7 @@ internal sealed partial class QuicConnectionRuntime
             if (HasPendingPathValidation())
             {
                 UpdatePeerAddressValidationFlag();
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
                 return stateChanged;
             }
 
@@ -439,7 +439,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         UpdatePeerAddressValidationFlag();
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return stateChanged;
     }
 
@@ -515,7 +515,7 @@ internal sealed partial class QuicConnectionRuntime
         if (stateChanged)
         {
             UpdatePeerAddressValidationFlag();
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
 
         return stateChanged;
@@ -534,7 +534,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 localCloseEffectsPending = false;
                 AppendTerminalEffects(ref effects, emitClosePacket: true);
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
                 return true;
             }
 
@@ -566,7 +566,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendTerminalEffects(ref effects, emitClosePacket: true);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -640,7 +640,7 @@ internal sealed partial class QuicConnectionRuntime
             AppendConnectionClosePacket(ref effects, CreatePeerConnectionCloseReplyMetadata());
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -677,7 +677,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendTerminalEffects(ref effects, emitClosePacket: false);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -912,7 +912,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
                 return true;
             case QuicConnectionTimerKind.AckDelay:
                 return HandleAckDelayTimerExpired(nowTicks, ref effects);
@@ -954,7 +954,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (stateChanged)
             {
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
             }
 
             return stateChanged;
@@ -962,7 +962,7 @@ internal sealed partial class QuicConnectionRuntime
 
         recoveryController.RecordProbeTimeoutExpired();
         QuicMetrics.RecordProbeTimeout(tlsState.Role, selectedPacketNumberSpace);
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 
@@ -1667,7 +1667,7 @@ internal sealed partial class QuicConnectionRuntime
         NotifyAllStreamObservers(terminalException);
         AppendEffect(ref effects, new QuicConnectionNotifyStreamsOfTerminalStateEffect(terminalState.Value));
         AppendEffect(ref effects, new QuicConnectionDiscardConnectionStateEffect(terminalState));
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         return true;
     }
 

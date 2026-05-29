@@ -156,6 +156,7 @@ public class QuicPublicApiLoopbackBenchmarks
 internal static class QuicPublicApiLoopbackBenchmarkSupport
 {
     private const string LoopbackHostName = "localhost";
+    private const int BenchmarkStreamLimit = 4096;
 
     internal static X509Certificate2 CreateServerCertificate()
     {
@@ -250,6 +251,7 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            MaxInboundBidirectionalStreams = BenchmarkStreamLimit,
             ServerAuthenticationOptions = serverAuthenticationOptions,
         };
     }
@@ -261,6 +263,7 @@ internal static class QuicPublicApiLoopbackBenchmarkSupport
         {
             DefaultCloseErrorCode = 0,
             DefaultStreamErrorCode = 0,
+            MaxInboundBidirectionalStreams = BenchmarkStreamLimit,
             ServerAuthenticationOptions = serverAuthenticationOptions,
         };
     }

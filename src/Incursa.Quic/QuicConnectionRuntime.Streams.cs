@@ -144,7 +144,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             sendPathIdentity,
             protectedPacket));
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         completion.TrySetResult(null);
         return true;
     }
@@ -285,7 +285,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             sendPathIdentity,
             protectedPacket));
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
 
         openCompletion!.TrySetResult(committedStreamId.Value);
         return true;
@@ -408,7 +408,7 @@ internal sealed partial class QuicConnectionRuntime
             }
 
             TryReleasePeerStreamCapacity(streamId, ref effects);
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
             completion.TrySetResult(null);
             return true;
         }
@@ -434,7 +434,7 @@ internal sealed partial class QuicConnectionRuntime
                 nowTicks,
                 probePacket: false,
                 ref effects);
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
             completion.TrySetResult(null);
             return true;
         }
@@ -479,7 +479,7 @@ internal sealed partial class QuicConnectionRuntime
             TryReleasePeerStreamCapacity(streamId, ref effects);
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         completion.TrySetResult(null);
         return true;
     }
@@ -570,7 +570,7 @@ internal sealed partial class QuicConnectionRuntime
                 ConvertMicrosToTicks(ApplicationSendDelayMicros));
         }
 
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
     }
 
     private bool TryPromoteQueuedApplicationSendToFinal(ulong streamId)
@@ -660,7 +660,7 @@ internal sealed partial class QuicConnectionRuntime
                 pendingApplicationSendDelayDueTicks = SaturatingAdd(
                     nowTicks,
                     ConvertMicrosToTicks(ApplicationSendDelayMicros));
-                AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+                AppendLifecycleTimerEffects(ref effects);
             }
 
             return false;
@@ -681,7 +681,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             sendPathIdentity,
             protectedPacket));
-        AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+        AppendLifecycleTimerEffects(ref effects);
         exception = null;
         return true;
     }
@@ -787,7 +787,7 @@ internal sealed partial class QuicConnectionRuntime
         if (applicationSendQueue.Count == 0)
         {
             pendingApplicationSendDelayDueTicks = null;
-            AppendEffects(ref effects, RecomputeLifecycleTimerEffects());
+            AppendLifecycleTimerEffects(ref effects);
         }
     }
 
