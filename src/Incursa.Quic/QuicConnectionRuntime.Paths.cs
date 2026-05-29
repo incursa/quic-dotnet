@@ -1555,7 +1555,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         pathIdentity = new QuicConnectionPathIdentity(
-            new IPAddress(addressBytes).ToString(),
+            QuicAddressFormatting.Format(addressBytes),
             activePathIdentity.LocalAddress,
             port,
             activePathIdentity.LocalPort);
@@ -1588,7 +1588,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return string.Equals(
-            new IPAddress(addressBytes).ToString(),
+            QuicAddressFormatting.Format(addressBytes),
             pathIdentity.RemoteAddress,
             StringComparison.Ordinal);
     }

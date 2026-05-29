@@ -308,7 +308,7 @@ internal sealed partial class QuicConnectionRuntime
         bool finishWrites,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? completion))
+        if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
             return false;
         }
@@ -406,7 +406,7 @@ internal sealed partial class QuicConnectionRuntime
             {
                 if (IsTransientApplicationSendPathBlocked(flushException))
                 {
-                    completion.TrySetResult(null);
+                    completion.TrySetResult();
                     return true;
                 }
 
@@ -418,7 +418,7 @@ internal sealed partial class QuicConnectionRuntime
 
             TryReleasePeerStreamCapacity(streamId, ref effects);
             AppendLifecycleTimerEffects(ref effects);
-            completion.TrySetResult(null);
+            completion.TrySetResult();
             return true;
         }
 
@@ -450,14 +450,14 @@ internal sealed partial class QuicConnectionRuntime
                 probePacket: false,
                 ref effects);
             AppendLifecycleTimerEffects(ref effects);
-            completion.TrySetResult(null);
+            completion.TrySetResult();
             return true;
         }
 
         if (!finishWrites && ShouldDelayApplicationSend(streamData.Span))
         {
             QueuePendingApplicationSend(streamId, streamPriority, streamPayload, streamPayloadLength, nowTicks, ref effects);
-            completion.TrySetResult(null);
+            completion.TrySetResult();
             return true;
         }
 
@@ -477,7 +477,7 @@ internal sealed partial class QuicConnectionRuntime
             if (IsTransientApplicationSendPathBlocked(exception))
             {
                 QueuePendingApplicationSend(streamId, streamPriority, streamPayload, streamPayloadLength, nowTicks, ref effects);
-                completion.TrySetResult(null);
+                completion.TrySetResult();
                 return true;
             }
 
@@ -498,7 +498,7 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         AppendLifecycleTimerEffects(ref effects);
-        completion.TrySetResult(null);
+        completion.TrySetResult();
         return true;
     }
 
@@ -548,7 +548,7 @@ internal sealed partial class QuicConnectionRuntime
     }
 
     private bool FailWriteAfterRollback(
-        TaskCompletionSource<object?> completion,
+        QuicConnectionRuntime.StreamActionRequestCompletionSource completion,
         QuicConnectionStreamSendStateSnapshot sendStateBeforeWrite,
         Exception exception)
     {
@@ -1146,7 +1146,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong applicationErrorCode,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? completion))
+        if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
             return false;
         }
@@ -1211,7 +1211,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicStreamNotificationKind.WriteAborted,
                 CreateLocalOperationAbortedException("The local write side was aborted.")));
 
-        completion.TrySetResult(null);
+        completion.TrySetResult();
         return true;
     }
 
@@ -1221,7 +1221,7 @@ internal sealed partial class QuicConnectionRuntime
         ulong applicationErrorCode,
         ref List<QuicConnectionEffect>? effects)
     {
-        if (!pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? completion))
+        if (!TryRemovePendingStreamActionRequest(requestId, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
         {
             return false;
         }
@@ -1235,7 +1235,7 @@ internal sealed partial class QuicConnectionRuntime
         if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot)
             && snapshot.ReceiveState is QuicStreamReceiveState.ResetRecvd or QuicStreamReceiveState.ResetRead)
         {
-            completion.TrySetResult(null);
+            completion.TrySetResult();
             return true;
         }
 
@@ -1277,7 +1277,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicStreamNotificationKind.ReadAborted,
                 CreateLocalOperationAbortedException("The local read side was aborted.")));
 
-        completion.TrySetResult(null);
+        completion.TrySetResult();
         return true;
     }
 
@@ -4450,14 +4450,15 @@ internal sealed partial class QuicConnectionRuntime
 
     private void CompletePendingStreamActionRequests(Exception completionException)
     {
-        if (pendingStreamActionRequests.IsEmpty)
+        KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource>[] pendingRequests = SnapshotPendingStreamActionRequests();
+        if (pendingRequests.Length == 0)
         {
             return;
         }
 
-        foreach (KeyValuePair<long, TaskCompletionSource<object?>> entry in pendingStreamActionRequests.ToArray())
+        foreach (KeyValuePair<long, QuicConnectionRuntime.StreamActionRequestCompletionSource> entry in pendingRequests)
         {
-            if (pendingStreamActionRequests.TryRemove(entry.Key, out TaskCompletionSource<object?>? completion))
+            if (TryRemovePendingStreamActionRequest(entry.Key, out QuicConnectionRuntime.StreamActionRequestCompletionSource completion))
             {
                 completion.TrySetException(completionException);
             }

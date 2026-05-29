@@ -26,7 +26,6 @@ public sealed class REQ_QUIC_CRT_0096
         Assert.Equal(
             [
                 "pendingDatagramSendRequests",
-                "pendingStreamActionRequests",
                 "pendingStreamOpenRequests",
                 "pendingStreamOpenTypes",
                 "queuedInboundStreamIds",

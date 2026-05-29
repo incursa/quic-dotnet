@@ -68,6 +68,21 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void BuildDistinctStreamIds_PreservesFirstOccurrencesInOrderForLargeBatches()
+    {
+        PendingApplicationSendRequest[] queuedWrites = new PendingApplicationSendRequest[40];
+        for (int index = 0; index < queuedWrites.Length; index++)
+        {
+            ulong streamId = (ulong)(index % 10) * 4;
+            queuedWrites[index] = new PendingApplicationSendRequest(index, streamId, 0, [0x10], 1);
+        }
+
+        ulong[] streamIds = QuicApplicationSendQueue.BuildDistinctStreamIds(queuedWrites);
+
+        Assert.Equal([0UL, 4UL, 8UL, 12UL, 16UL, 20UL, 24UL, 28UL, 32UL, 36UL], streamIds);
+    }
+
+    [Fact]
     public void TryRemoveQueuedWritesForStream_RemovesOnlyMatchingStreamWrites()
     {
         QuicApplicationSendQueue queue = new();

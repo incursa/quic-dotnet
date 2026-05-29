@@ -96,6 +96,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicAckPiggybackPolicyBenchmarks`
 - `QuicDiagnosticsBenchmarks`
 - `QuicDatagramFrameBenchmarks`
+- `QuicApplicationSendDistinctStreamIdBenchmarks`
 
 Target a specific suite with `--filter` when iterating locally:
 
@@ -105,6 +106,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendDistinctStreamIdBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDatagramFrameBenchmarks*" --inProcess
 ```

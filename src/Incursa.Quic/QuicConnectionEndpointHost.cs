@@ -504,8 +504,8 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
     private static QuicConnectionPathIdentity CreatePathIdentity(IPEndPoint remoteEndPoint, IPEndPoint localEndPoint)
     {
         return new QuicConnectionPathIdentity(
-            remoteEndPoint.Address.ToString(),
-            localEndPoint.Address.ToString(),
+            QuicAddressFormatting.Format(remoteEndPoint.Address),
+            QuicAddressFormatting.Format(localEndPoint.Address),
             remoteEndPoint.Port,
             localEndPoint.Port);
     }

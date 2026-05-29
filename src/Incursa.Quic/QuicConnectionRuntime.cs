@@ -10,6 +10,7 @@ using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks.Sources;
 
 namespace Incursa.Quic;
 
@@ -58,8 +59,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, TaskCompletionSource<ulong>> pendingStreamOpenRequests = new();
     private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
-    private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingStreamActionRequests = new();
+    private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<long, TaskCompletionSource<object?>> pendingDatagramSendRequests = new();
+    private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
+    private readonly object pendingStreamActionRequestsGate = new();
     private readonly ConcurrentDictionary<ulong, byte> queuedInboundStreamIds = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly ConcurrentDictionary<ulong, QuicStreamObserverSet> streamObservers = new();
@@ -142,6 +145,111 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ReadOnlyMemory<byte> SourceConnectionId,
         ReadOnlyMemory<byte> Datagram,
         QuicEcnCounts? EcnCounts);
+
+    private sealed class StreamActionRequestCompletionSource : IValueTaskSource
+    {
+        private readonly QuicConnectionRuntime owner;
+        private ManualResetValueTaskSourceCore<bool> source;
+
+        internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
+        {
+            this.owner = owner;
+            source = new ManualResetValueTaskSourceCore<bool>
+            {
+                RunContinuationsAsynchronously = true,
+            };
+        }
+
+        internal ValueTask Task => new(this, source.Version);
+
+        internal void Prepare()
+        {
+            source.Reset();
+        }
+
+        internal void TrySetResult()
+        {
+            source.SetResult(true);
+        }
+
+        internal void TrySetException(Exception exception)
+        {
+            source.SetException(exception);
+        }
+
+        internal void TrySetCanceled(CancellationToken cancellationToken)
+        {
+            source.SetException(new OperationCanceledException(cancellationToken));
+        }
+
+        void IValueTaskSource.GetResult(short token)
+        {
+            try
+            {
+                _ = source.GetResult(token);
+            }
+            finally
+            {
+                owner.ReturnStreamActionRequestCompletionSource(this);
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
+        {
+            return source.GetStatus(token);
+        }
+
+        void IValueTaskSource.OnCompleted(
+            Action<object?> continuation,
+            object? state,
+            short token,
+            ValueTaskSourceOnCompletedFlags flags)
+        {
+            source.OnCompleted(continuation, state, token, flags);
+        }
+    }
+
+    private StreamActionRequestCompletionSource RentStreamActionRequestCompletionSource()
+    {
+        if (!streamActionRequestCompletionSourcePool.TryDequeue(out StreamActionRequestCompletionSource? completionSource))
+        {
+            completionSource = new StreamActionRequestCompletionSource(this);
+        }
+
+        completionSource.Prepare();
+        return completionSource;
+    }
+
+    private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
+    {
+        streamActionRequestCompletionSourcePool.Enqueue(completionSource);
+    }
+
+    private bool TryAddPendingStreamActionRequest(long requestId, StreamActionRequestCompletionSource completionSource)
+    {
+        lock (pendingStreamActionRequestsGate)
+        {
+            return pendingStreamActionRequests.TryAdd(requestId, completionSource);
+        }
+    }
+
+    private bool TryRemovePendingStreamActionRequest(long requestId, out StreamActionRequestCompletionSource completionSource)
+    {
+        lock (pendingStreamActionRequestsGate)
+        {
+            bool removed = pendingStreamActionRequests.Remove(requestId, out StreamActionRequestCompletionSource? removedCompletion);
+            completionSource = removedCompletion!;
+            return removed;
+        }
+    }
+
+    private KeyValuePair<long, StreamActionRequestCompletionSource>[] SnapshotPendingStreamActionRequests()
+    {
+        lock (pendingStreamActionRequestsGate)
+        {
+            return pendingStreamActionRequests.ToArray();
+        }
+    }
 
     public QuicConnectionRuntime(
         QuicConnectionStreamState bookkeeping,
@@ -949,9 +1057,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
+            ReturnStreamActionRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream write request.");
         }
 
@@ -961,7 +1070,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamActionRequest(requestId, out StreamActionRequestCompletionSource pendingCompletion))
                 {
                     pendingCompletion.TrySetCanceled(token);
                 }
@@ -975,7 +1084,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId: streamId,
             StreamData: buffer)))
         {
-            pendingStreamActionRequests.TryRemove(requestId, out _);
+            TryRemovePendingStreamActionRequest(requestId, out _);
+            ReturnStreamActionRequestCompletionSource(completion);
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream write request.");
@@ -1093,9 +1203,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
+            ReturnStreamActionRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream finish request.");
         }
 
@@ -1105,7 +1216,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamActionRequest(requestId, out StreamActionRequestCompletionSource pendingCompletion))
                 {
                     pendingCompletion.TrySetCanceled(token);
                 }
@@ -1118,7 +1229,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             QuicConnectionStreamActionKind.Finish,
             StreamId: streamId)))
         {
-            pendingStreamActionRequests.TryRemove(requestId, out _);
+            TryRemovePendingStreamActionRequest(requestId, out _);
+            ReturnStreamActionRequestCompletionSource(completion);
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream finish request.");
@@ -1142,9 +1254,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
+            ReturnStreamActionRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream reset request.");
         }
 
@@ -1154,7 +1267,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamActionRequest(requestId, out StreamActionRequestCompletionSource pendingCompletion))
                 {
                     pendingCompletion.TrySetCanceled(token);
                 }
@@ -1168,7 +1281,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId: streamId,
             ApplicationErrorCode: applicationErrorCode)))
         {
-            pendingStreamActionRequests.TryRemove(requestId, out _);
+            TryRemovePendingStreamActionRequest(requestId, out _);
+            ReturnStreamActionRequestCompletionSource(completion);
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream reset request.");
@@ -1192,9 +1306,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        TaskCompletionSource<object?> completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        if (!pendingStreamActionRequests.TryAdd(requestId, completion))
+        StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
+            ReturnStreamActionRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream stop-sending request.");
         }
 
@@ -1204,7 +1319,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
                 (QuicConnectionRuntime runtime, long requestId, CancellationToken token) =
                     ((QuicConnectionRuntime, long, CancellationToken))state!;
 
-                if (runtime.pendingStreamActionRequests.TryRemove(requestId, out TaskCompletionSource<object?>? pendingCompletion))
+                if (runtime.TryRemovePendingStreamActionRequest(requestId, out StreamActionRequestCompletionSource pendingCompletion))
                 {
                     pendingCompletion.TrySetCanceled(token);
                 }
@@ -1218,7 +1333,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             StreamId: streamId,
             ApplicationErrorCode: applicationErrorCode)))
         {
-            pendingStreamActionRequests.TryRemove(requestId, out _);
+            TryRemovePendingStreamActionRequest(requestId, out _);
+            ReturnStreamActionRequestCompletionSource(completion);
             throw IsDisposed
                 ? new ObjectDisposedException(nameof(QuicConnectionRuntime))
                 : new InvalidOperationException("The connection runtime could not queue the stream stop-sending request.");

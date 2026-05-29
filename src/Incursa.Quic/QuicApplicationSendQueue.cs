@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
+
 namespace Incursa.Quic;
 
 internal readonly record struct PendingApplicationSendRequest(
@@ -15,6 +17,11 @@ internal readonly record struct PendingApplicationSendRequest(
 /// </summary>
 internal sealed class QuicApplicationSendQueue
 {
+    private const int LinearDistinctStreamIdThreshold = 16;
+    private const int PooledDistinctStreamIdSetMinimumCapacity = 32;
+    private const int StreamIdHashShift = 33;
+    private const ulong StreamIdHashMultiplier = 0xff51afd7ed558ccdUL;
+
     private readonly List<PendingApplicationSendRequest> pendingRequests = [];
     private long nextSequence;
 
@@ -188,6 +195,91 @@ internal sealed class QuicApplicationSendQueue
             return [];
         }
 
+        if (queuedWrites.Length <= LinearDistinctStreamIdThreshold)
+        {
+            return BuildDistinctStreamIdsByLinearScan(queuedWrites);
+        }
+
+        ulong[] streamIds = new ulong[queuedWrites.Length];
+        int setCapacity = GetDistinctStreamIdSetCapacity(queuedWrites.Length);
+        ulong[] setSlots = ArrayPool<ulong>.Shared.Rent(setCapacity);
+        bool[] occupiedSlots = ArrayPool<bool>.Shared.Rent(setCapacity);
+        int uniqueCount = 0;
+
+        Array.Clear(occupiedSlots, 0, setCapacity);
+
+        try
+        {
+            int setMask = setCapacity - 1;
+            foreach (PendingApplicationSendRequest queuedWrite in queuedWrites)
+            {
+                if (TryAddDistinctStreamId(setSlots, occupiedSlots, setMask, queuedWrite.StreamId))
+                {
+                    streamIds[uniqueCount++] = queuedWrite.StreamId;
+                }
+            }
+        }
+        finally
+        {
+            ArrayPool<bool>.Shared.Return(occupiedSlots);
+            ArrayPool<ulong>.Shared.Return(setSlots);
+        }
+
+        if (uniqueCount != streamIds.Length)
+        {
+            Array.Resize(ref streamIds, uniqueCount);
+        }
+
+        return streamIds;
+    }
+
+    private static int GetDistinctStreamIdSetCapacity(int itemCount)
+    {
+        int capacity = PooledDistinctStreamIdSetMinimumCapacity;
+        int minimumCapacity = itemCount * 2;
+        while (capacity < minimumCapacity)
+        {
+            capacity <<= 1;
+        }
+
+        return capacity;
+    }
+
+    private static bool TryAddDistinctStreamId(
+        ulong[] setSlots,
+        bool[] occupiedSlots,
+        int setMask,
+        ulong streamId)
+    {
+        int index = MixStreamIdHash(streamId) & setMask;
+        while (occupiedSlots[index])
+        {
+            if (setSlots[index] == streamId)
+            {
+                return false;
+            }
+
+            index = (index + 1) & setMask;
+        }
+
+        occupiedSlots[index] = true;
+        setSlots[index] = streamId;
+        return true;
+    }
+
+    private static int MixStreamIdHash(ulong streamId)
+    {
+        unchecked
+        {
+            streamId ^= streamId >> StreamIdHashShift;
+            streamId *= StreamIdHashMultiplier;
+            streamId ^= streamId >> StreamIdHashShift;
+            return (int)streamId;
+        }
+    }
+
+    private static ulong[] BuildDistinctStreamIdsByLinearScan(ReadOnlySpan<PendingApplicationSendRequest> queuedWrites)
+    {
         ulong[] streamIds = new ulong[queuedWrites.Length];
         int uniqueCount = 0;
 
