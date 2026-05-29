@@ -3078,55 +3078,69 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!handshakeFlowCoordinator.TryOpenOutboundInitialPacket(
+        if (!handshakeFlowCoordinator.TryOpenOutboundInitialPacketLease(
                 retransmission.PacketBytes.Span,
                 initialPacketProtection,
-                out byte[] openedPacket,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
             return false;
         }
 
-        if (!TryParseRetransmittableCryptoFrame(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
-                out ulong cryptoOffset,
-                out byte[] cryptoPayload))
+        try
         {
-            return false;
-        }
+            if (!TryParseRetransmittableCryptoFrame(
+                    openedPacket.Span.Slice(payloadOffset, payloadLength),
+                    out ulong cryptoOffset,
+                    out byte[] cryptoPayload))
+            {
+                return false;
+            }
 
-        if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            if (!QuicPacketParser.TryParseLongHeader(retransmission.PacketBytes.Span, out QuicLongHeaderPacket longHeader))
+            {
+                return false;
+            }
+
+            if (!TryParseInitialRetryToken(longHeader.VersionSpecificData, out byte[] parsedRetryToken))
+            {
+                return false;
+            }
+
+            ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
+                ? longHeader.DestinationConnectionId
+                : destinationConnectionIdOverride;
+            hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
+                QuicPacketNumberSpace.Initial,
+                nowMicros,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
+                out piggybackedAckFrame);
+
+            try
+            {
+                return handshakeFlowCoordinator.TryBuildProtectedInitialPacketForRetransmission(
+                    cryptoPayload,
+                    cryptoOffset,
+                    longHeader.DestinationConnectionId,
+                    destinationConnectionId,
+                    longHeader.SourceConnectionId,
+                    parsedRetryToken,
+                    ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                    initialPacketProtection,
+                    out packetNumber,
+                    out protectedPacket);
+            }
+            finally
+            {
+                ackFramePayload.Dispose();
+            }
+        }
+        finally
         {
-            return false;
+            openedPacket.Dispose();
         }
-
-        if (!TryParseInitialRetryToken(longHeader.VersionSpecificData, out byte[] parsedRetryToken))
-        {
-            return false;
-        }
-
-        ReadOnlySpan<byte> destinationConnectionId = destinationConnectionIdOverride.IsEmpty
-            ? longHeader.DestinationConnectionId
-            : destinationConnectionIdOverride;
-        hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
-            QuicPacketNumberSpace.Initial,
-            nowMicros,
-            out byte[] ackFramePayload,
-            out _,
-            out piggybackedAckFrame);
-
-        return handshakeFlowCoordinator.TryBuildProtectedInitialPacketForRetransmission(
-            cryptoPayload,
-            cryptoOffset,
-            longHeader.DestinationConnectionId,
-            destinationConnectionId,
-            longHeader.SourceConnectionId,
-            parsedRetryToken,
-            ackFramePayload,
-            initialPacketProtection,
-            out packetNumber,
-            out protectedPacket);
     }
 
     private bool TryBuildHandshakeCryptoRetransmissionPacket(
@@ -3175,19 +3189,25 @@ internal sealed partial class QuicConnectionRuntime
             hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Handshake,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out piggybackedAckFrame);
-
-            return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
-                cryptoPayload,
-                cryptoOffset,
-                longHeader.DestinationConnectionId,
-                longHeader.SourceConnectionId,
-                ackFramePayload,
-                handshakeMaterial,
-                out packetNumber,
-                out protectedPacket);
+            try
+            {
+                return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+                    cryptoPayload,
+                    cryptoOffset,
+                    longHeader.DestinationConnectionId,
+                    longHeader.SourceConnectionId,
+                    ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                    handshakeMaterial,
+                    out packetNumber,
+                    out protectedPacket);
+            }
+            finally
+            {
+                ackFramePayload.Dispose();
+            }
         }
         finally
         {
@@ -3291,19 +3311,26 @@ internal sealed partial class QuicConnectionRuntime
         {
             case QuicTlsEncryptionLevel.Initial:
                 if (initialPacketProtection is null
-                    || !handshakeFlowCoordinator.TryOpenOutboundInitialPacket(
+                    || !handshakeFlowCoordinator.TryOpenOutboundInitialPacketLease(
                         packetBytes.Span,
                         initialPacketProtection,
-                        out byte[] openedInitialPacket,
+                        out QuicBufferLease openedInitialPacket,
                         out int initialPayloadOffset,
                         out int initialPayloadLength))
                 {
                     return false;
                 }
 
-                return TryParseCryptoProbeSelectionPriority(
-                    openedInitialPacket.AsSpan(initialPayloadOffset, initialPayloadLength),
-                    out cryptoEndOffset);
+                try
+                {
+                    return TryParseCryptoProbeSelectionPriority(
+                        openedInitialPacket.Span.Slice(initialPayloadOffset, initialPayloadLength),
+                        out cryptoEndOffset);
+                }
+                finally
+                {
+                    openedInitialPacket.Dispose();
+                }
             case QuicTlsEncryptionLevel.Handshake:
                 if (!tlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial)
                     || !handshakeFlowCoordinator.TryOpenHandshakePacketLease(
@@ -3544,19 +3571,25 @@ internal sealed partial class QuicConnectionRuntime
             hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Handshake,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out piggybackedAckFrame);
-
-            return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
-                cryptoPayload,
-                cryptoOffset,
-                destinationConnectionId,
-                longHeader.SourceConnectionId,
-                ackFramePayload,
-                handshakeMaterial,
-                out packetNumber,
-                out protectedPacket);
+            try
+            {
+                return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
+                    cryptoPayload,
+                    cryptoOffset,
+                    destinationConnectionId,
+                    longHeader.SourceConnectionId,
+                    ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                    handshakeMaterial,
+                    out packetNumber,
+                    out protectedPacket);
+            }
+            finally
+            {
+                ackFramePayload.Dispose();
+            }
         }
         finally
         {

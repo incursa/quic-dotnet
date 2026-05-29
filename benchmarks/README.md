@@ -82,6 +82,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicStreamParsingBenchmarks`
 - `QuicVariableLengthIntegerBenchmarks`
 - `QuicInitialPacketProtectionBenchmarks`
+- `QuicInitialPacketOpenBenchmarks`
 - `QuicHandshakePacketProtectionBenchmarks`
 - `QuicRetryIntegrityBenchmarks`
 - `QuicAddressValidationTokenBenchmarks`
@@ -95,6 +96,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicStatelessResetBenchmarks`
 - `QuicAckPiggybackPolicyBenchmarks`
 - `QuicAckPiggybackPayloadBenchmarks`
+- `QuicLongHeaderAckPiggybackPayloadBenchmarks`
 - `QuicAckFrameSentRangeStorageBenchmarks`
 - `QuicAckGenerationStateRangeEnumerationBenchmarks`
 - `QuicDiagnosticsBenchmarks`
@@ -113,6 +115,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*Http3AllocationPathBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPolicyBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckPiggybackPayloadBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicLongHeaderAckPiggybackPayloadBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckFrameSentRangeStorageBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAckGenerationStateRangeEnumerationBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDiagnosticsBenchmarks*"
@@ -124,6 +127,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetransmissionQueueRemovalBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlDiscardBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketOpenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDatagramFrameBenchmarks*" --inProcess
 ```
 

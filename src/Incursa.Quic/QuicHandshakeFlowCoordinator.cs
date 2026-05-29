@@ -1301,14 +1301,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
-        return TryOpenInitialPacket(
-            protectedPacket,
-            protection,
-            requireZeroTokenLength: false,
-            allowClearedFixedBit: false,
-            out openedPacket,
-            out payloadOffset,
-            out payloadLength);
+        if (!TryOpenInitialPacketLease(
+                protectedPacket,
+                protection,
+                requireZeroTokenLength: false,
+                allowClearedFixedBit: false,
+                out QuicBufferLease openedPacketLease,
+                out payloadOffset,
+                out payloadLength))
+        {
+            openedPacket = [];
+            return false;
+        }
+
+        openedPacket = openedPacketLease.TransferOwnership(out int openedPacketLength);
+        if (openedPacketLength != openedPacket.Length)
+        {
+            Array.Resize(ref openedPacket, openedPacketLength);
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -1344,38 +1356,26 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
-        openedPacket = [];
-        payloadOffset = default;
-        payloadLength = default;
-
-        byte[] openedPacketBuffer = QuicBufferPool.RentBytes(protectedPacket.Length);
-        try
-        {
-            if (!protection.TryOpen(
+        if (!TryOpenInitialPacketLease(
                 protectedPacket,
-                openedPacketBuffer,
-                allowClearedFixedBit,
-                out int openedBytesWritten))
-            {
-                return false;
-            }
-
-            if (!TryParseInitialPayloadLayout(
-                openedPacketBuffer.AsSpan(0, openedBytesWritten),
+                protection,
                 requireZeroTokenLength,
+                allowClearedFixedBit,
+                out QuicBufferLease openedPacketLease,
                 out payloadOffset,
                 out payloadLength))
-            {
-                return false;
-            }
-
-            openedPacket = openedPacketBuffer.AsSpan(0, openedBytesWritten).ToArray();
-            return true;
-        }
-        finally
         {
-            QuicBufferPool.ReturnBytes(openedPacketBuffer);
+            openedPacket = [];
+            return false;
         }
+
+        openedPacket = openedPacketLease.TransferOwnership(out int openedPacketLength);
+        if (openedPacketLength != openedPacket.Length)
+        {
+            Array.Resize(ref openedPacket, openedPacketLength);
+        }
+
+        return true;
     }
 
     internal bool TryOpenOutboundInitialPacket(
@@ -1385,33 +1385,127 @@ internal sealed class QuicHandshakeFlowCoordinator
         out int payloadOffset,
         out int payloadLength)
     {
-        openedPacket = [];
+        if (!TryOpenOutboundInitialPacketLease(
+                protectedPacket,
+                protection,
+                out QuicBufferLease openedPacketLease,
+                out payloadOffset,
+                out payloadLength))
+        {
+            openedPacket = [];
+            return false;
+        }
+
+        openedPacket = openedPacketLease.TransferOwnership(out int openedPacketLength);
+        if (openedPacketLength != openedPacket.Length)
+        {
+            Array.Resize(ref openedPacket, openedPacketLength);
+        }
+
+        return true;
+    }
+
+    internal bool TryOpenInitialPacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicInitialPacketProtection protection,
+        bool requireZeroTokenLength,
+        bool allowClearedFixedBit,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = default;
         payloadOffset = default;
         payloadLength = default;
 
-        byte[] openedPacketBuffer = QuicBufferPool.RentBytes(protectedPacket.Length);
+        int openedPacketBufferLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
+        if (openedPacketBufferLength < 0)
+        {
+            return false;
+        }
+
+        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        bool success = false;
         try
         {
-            if (!protection.TryOpenOutbound(protectedPacket, openedPacketBuffer, out int openedBytesWritten))
+            if (!protection.TryOpen(
+                    protectedPacket,
+                    openedPacket.Span,
+                    allowClearedFixedBit,
+                    out int openedBytesWritten))
             {
                 return false;
             }
 
             if (!TryParseInitialPayloadLayout(
-                openedPacketBuffer.AsSpan(0, openedBytesWritten),
-                requireZeroTokenLength: false,
-                out payloadOffset,
-                out payloadLength))
+                    openedPacket.Span[..openedBytesWritten],
+                    requireZeroTokenLength,
+                    out payloadOffset,
+                    out payloadLength))
             {
                 return false;
             }
 
-            openedPacket = openedPacketBuffer.AsSpan(0, openedBytesWritten).ToArray();
+            openedPacket.SetLength(openedBytesWritten);
+            success = true;
             return true;
         }
         finally
         {
-            QuicBufferPool.ReturnBytes(openedPacketBuffer);
+            if (!success)
+            {
+                openedPacket.Dispose();
+                openedPacket = default;
+            }
+        }
+    }
+
+    internal bool TryOpenOutboundInitialPacketLease(
+        ReadOnlySpan<byte> protectedPacket,
+        QuicInitialPacketProtection protection,
+        out QuicBufferLease openedPacket,
+        out int payloadOffset,
+        out int payloadLength)
+    {
+        openedPacket = default;
+        payloadOffset = default;
+        payloadLength = default;
+
+        int openedPacketBufferLength = protectedPacket.Length - QuicInitialPacketProtection.AuthenticationTagLength;
+        if (openedPacketBufferLength < 0)
+        {
+            return false;
+        }
+
+        openedPacket = QuicBufferPool.RentLease(openedPacketBufferLength);
+        bool success = false;
+        try
+        {
+            if (!protection.TryOpenOutbound(protectedPacket, openedPacket.Span, out int openedBytesWritten))
+            {
+                return false;
+            }
+
+            if (!TryParseInitialPayloadLayout(
+                    openedPacket.Span[..openedBytesWritten],
+                    requireZeroTokenLength: false,
+                    out payloadOffset,
+                    out payloadLength))
+            {
+                return false;
+            }
+
+            openedPacket.SetLength(openedBytesWritten);
+            success = true;
+            return true;
+        }
+        finally
+        {
+            if (!success)
+            {
+                openedPacket.Dispose();
+                openedPacket = default;
+            }
         }
     }
 

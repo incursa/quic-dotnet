@@ -219,11 +219,11 @@ internal static class QuicConnectionAckHelpers
         QuicPacketNumberSpace packetNumberSpace,
         QuicSenderFlowController flowController,
         ulong nowMicros,
-        out byte[] ackFramePayload,
+        out QuicBufferLease ackFramePayload,
         out int ackFramePayloadLength,
         out QuicAckFrame ackFrame)
     {
-        ackFramePayload = [];
+        ackFramePayload = default;
         ackFramePayloadLength = 0;
         ackFrame = null!;
 
@@ -245,9 +245,20 @@ internal static class QuicConnectionAckHelpers
             return false;
         }
 
+        ackFramePayload = QuicBufferPool.RentLease(frameBytesWritten);
+        try
+        {
+            framePayloadBuffer.Slice(0, frameBytesWritten).CopyTo(ackFramePayload.Span);
+            ackFramePayload.SetLength(frameBytesWritten);
+        }
+        catch
+        {
+            ackFramePayload.Dispose();
+            ackFramePayload = default;
+            return false;
+        }
+
         ackFramePayloadLength = frameBytesWritten;
-        ackFramePayload = new byte[frameBytesWritten];
-        framePayloadBuffer.Slice(0, frameBytesWritten).CopyTo(ackFramePayload);
         return true;
     }
 

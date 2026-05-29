@@ -392,11 +392,12 @@ internal sealed partial class QuicConnectionRuntime
             EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketReceived(packetReceivedEvent.PathIdentity, datagram.Span));
         }
 
-        if (!handshakeFlowCoordinator.TryOpenInitialPacket(
+        if (!handshakeFlowCoordinator.TryOpenInitialPacketLease(
                 datagram.Span,
                 packetProtection,
                 requireZeroTokenLength: tlsState.Role == QuicTlsRole.Client,
-                out byte[] openedPacket,
+                allowClearedFixedBit: false,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
         {
@@ -408,115 +409,118 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-        QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
-            QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Initial);
-        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
+        using (openedPacket)
         {
-            return false;
-        }
-
-        if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
-        {
-            return HandleFatalTlsSignal(
-                nowTicks,
-                QuicTransportErrorCode.ProtocolViolation,
-                "The peer sent a frame in a weakly protected packet type that is not permitted.",
-                ref effects);
-        }
-
-        ReadOnlyMemory<byte>? acceptedPeerInitialSourceConnectionId = null;
-        if (tlsState.Role == QuicTlsRole.Client
-            && phase == QuicConnectionPhase.Establishing
-            && !peerHandshakeTranscriptCompleted
-            )
-        {
-            acceptedPeerInitialSourceConnectionId = sourceConnectionId;
-            bool hasOffsetZeroInitialCrypto = QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
-                payload,
-                out ReadOnlySpan<byte> initialCryptoFrameData);
-
-            if (observedPeerInitialSourceConnectionId is null)
-            {
-                observedPeerInitialSourceConnectionId = sourceConnectionId;
-                if (retrySourceConnectionId is null)
-                {
-                    _ = TrySetHandshakeDestinationConnectionId(sourceConnectionId.Span);
-                }
-
-                if (hasOffsetZeroInitialCrypto)
-                {
-                    observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
-                }
-            }
-            else if (hasOffsetZeroInitialCrypto)
-            {
-                bool differentInitialSourceConnectionId =
-                    !observedPeerInitialSourceConnectionId.Value.Span.SequenceEqual(sourceConnectionId.Span);
-
-                if (differentInitialSourceConnectionId
-                    && observedPeerInitialCryptoFrameData is not null
-                    && !HasMatchingInitialCryptoPrefix(
-                        observedPeerInitialCryptoFrameData.Value.Span,
-                        initialCryptoFrameData))
-                {
-                    _ = TryResetClientPeerHandshakeAttempt(
-                        sourceConnectionId.Span,
-                        initialCryptoFrameData);
-                }
-                else if (observedPeerInitialCryptoFrameData is null
-                    || (HasMatchingInitialCryptoPrefix(
-                            observedPeerInitialCryptoFrameData.Value.Span,
-                            initialCryptoFrameData)
-                        && initialCryptoFrameData.Length > observedPeerInitialCryptoFrameData.Value.Length))
-                {
-                    observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
-                }
-            }
-        }
-
-        bool processed = TryProcessHandshakePacketPayload(
-            payload,
-            QuicTlsEncryptionLevel.Initial,
-            nowTicks,
-            out bool packetAckEliciting,
-            out bool packetProcessed,
-            ref effects);
-        if (packetProcessed)
-        {
-            if (!TryExpandOpenedPacketNumber(
-                    openedPacket,
-                    payloadOffset,
-                    QuicPacketNumberSpace.Initial,
-                    out ulong packetNumber))
+            ReadOnlySpan<byte> payload = openedPacket.Span.Slice(payloadOffset, payloadLength);
+            QuicWeaklyProtectedPacketPayloadValidationResult payloadValidation =
+                QuicPacketFrameLegality.ValidateWeaklyProtectedHandshakePayload(payload, QuicTlsEncryptionLevel.Initial);
+            if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.Discard)
             {
                 return false;
             }
 
-            RecordIncomingPacket(
-                QuicPacketNumberSpace.Initial,
-                packetNumber,
-                packetAckEliciting,
-                nowTicks,
-                packetReceivedEvent.EcnCounts);
-            UpdateObservedPacketNumber(QuicPacketNumberSpace.Initial, packetNumber);
-        }
+            if (payloadValidation == QuicWeaklyProtectedPacketPayloadValidationResult.ConnectionError)
+            {
+                return HandleFatalTlsSignal(
+                    nowTicks,
+                    QuicTransportErrorCode.ProtocolViolation,
+                    "The peer sent a frame in a weakly protected packet type that is not permitted.",
+                    ref effects);
+            }
 
-        if (processed
-            && acceptedPeerInitialSourceConnectionId is not null)
-        {
-            processed |= TryReplayBufferedEstablishmentHandshakePackets(
-                acceptedPeerInitialSourceConnectionId.Value.Span,
+            ReadOnlyMemory<byte>? acceptedPeerInitialSourceConnectionId = null;
+            if (tlsState.Role == QuicTlsRole.Client
+                && phase == QuicConnectionPhase.Establishing
+                && !peerHandshakeTranscriptCompleted
+                )
+            {
+                acceptedPeerInitialSourceConnectionId = sourceConnectionId;
+                bool hasOffsetZeroInitialCrypto = QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
+                    payload,
+                    out ReadOnlySpan<byte> initialCryptoFrameData);
+
+                if (observedPeerInitialSourceConnectionId is null)
+                {
+                    observedPeerInitialSourceConnectionId = sourceConnectionId;
+                    if (retrySourceConnectionId is null)
+                    {
+                        _ = TrySetHandshakeDestinationConnectionId(sourceConnectionId.Span);
+                    }
+
+                    if (hasOffsetZeroInitialCrypto)
+                    {
+                        observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
+                    }
+                }
+                else if (hasOffsetZeroInitialCrypto)
+                {
+                    bool differentInitialSourceConnectionId =
+                        !observedPeerInitialSourceConnectionId.Value.Span.SequenceEqual(sourceConnectionId.Span);
+
+                    if (differentInitialSourceConnectionId
+                        && observedPeerInitialCryptoFrameData is not null
+                        && !HasMatchingInitialCryptoPrefix(
+                            observedPeerInitialCryptoFrameData.Value.Span,
+                            initialCryptoFrameData))
+                    {
+                        _ = TryResetClientPeerHandshakeAttempt(
+                            sourceConnectionId.Span,
+                            initialCryptoFrameData);
+                    }
+                    else if (observedPeerInitialCryptoFrameData is null
+                        || (HasMatchingInitialCryptoPrefix(
+                                observedPeerInitialCryptoFrameData.Value.Span,
+                                initialCryptoFrameData)
+                            && initialCryptoFrameData.Length > observedPeerInitialCryptoFrameData.Value.Length))
+                    {
+                        observedPeerInitialCryptoFrameData = initialCryptoFrameData.ToArray();
+                    }
+                }
+            }
+
+            bool processed = TryProcessHandshakePacketPayload(
+                payload,
+                QuicTlsEncryptionLevel.Initial,
                 nowTicks,
+                out bool packetAckEliciting,
+                out bool packetProcessed,
                 ref effects);
-        }
+            if (packetProcessed)
+            {
+                if (!TryExpandOpenedPacketNumber(
+                        openedPacket.Span,
+                        payloadOffset,
+                        QuicPacketNumberSpace.Initial,
+                        out ulong packetNumber))
+                {
+                    return false;
+                }
 
-        if (diagnosticsEnabled)
-        {
-            EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketProcessingResult(processed));
-        }
+                RecordIncomingPacket(
+                    QuicPacketNumberSpace.Initial,
+                    packetNumber,
+                    packetAckEliciting,
+                    nowTicks,
+                    packetReceivedEvent.EcnCounts);
+                UpdateObservedPacketNumber(QuicPacketNumberSpace.Initial, packetNumber);
+            }
 
-        return processed;
+            if (processed
+                && acceptedPeerInitialSourceConnectionId is not null)
+            {
+                processed |= TryReplayBufferedEstablishmentHandshakePackets(
+                    acceptedPeerInitialSourceConnectionId.Value.Span,
+                    nowTicks,
+                    ref effects);
+            }
+
+            if (diagnosticsEnabled)
+            {
+                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketProcessingResult(processed));
+            }
+
+            return processed;
+        }
     }
 
     private bool TryResetClientPeerHandshakeAttempt(
@@ -2807,26 +2811,21 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryBuildLongHeaderAckPiggybackFramePayload(
         QuicPacketNumberSpace packetNumberSpace,
         ulong nowMicros,
-        out byte[] ackFramePayload,
+        out QuicBufferLease ackFramePayload,
         out int ackFramePayloadLength,
         out QuicAckFrame ackFrame)
     {
-        ackFramePayload = [];
+        ackFramePayload = default;
         ackFramePayloadLength = 0;
         ackFrame = null!;
 
-        if (!QuicConnectionAckHelpers.TryBuildLongHeaderAckPiggybackFramePayload(
-                packetNumberSpace,
-                sendRuntime.FlowController,
-                nowMicros,
-                out ackFramePayload,
-                out ackFramePayloadLength,
-                out ackFrame))
-        {
-            return false;
-        }
-
-        return true;
+        return QuicConnectionAckHelpers.TryBuildLongHeaderAckPiggybackFramePayload(
+            packetNumberSpace,
+            sendRuntime.FlowController,
+            nowMicros,
+            out ackFramePayload,
+            out ackFramePayloadLength,
+            out ackFrame);
     }
 
     private static bool TryBuildOutboundAckFramePayload(QuicAckFrame ackFrame, out byte[] payload)
@@ -3237,69 +3236,76 @@ internal sealed partial class QuicConnectionRuntime
             bool hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out QuicAckFrame piggybackedAckFrame);
             byte[] protectedPacket;
             ulong packetNumber;
             bool builtProtectedPacket;
-            if (tlsState.Role == QuicTlsRole.Client)
+            try
             {
-                ReadOnlySpan<byte> outboundInitialToken = initialAddressValidationToken is null
-                    ? ReadOnlySpan<byte>.Empty
-                    : initialAddressValidationToken.Value.Span;
-                ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
-                builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
-                    cryptoChunk[..cryptoBytesWritten],
-                    cryptoOffset,
-                    destinationConnectionId,
-                    outboundInitialToken,
-                    ackFramePayload,
-                    initialPacketProtection,
-                    out packetNumber,
-                    out protectedPacket);
-
-                if (!builtProtectedPacket)
+                if (tlsState.Role == QuicTlsRole.Client)
                 {
-                    break;
+                    ReadOnlySpan<byte> outboundInitialToken = initialAddressValidationToken is null
+                        ? ReadOnlySpan<byte>.Empty
+                        : initialAddressValidationToken.Value.Span;
+                    ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
+                    builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                        cryptoChunk[..cryptoBytesWritten],
+                        cryptoOffset,
+                        destinationConnectionId,
+                        outboundInitialToken,
+                        ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                        initialPacketProtection,
+                        out packetNumber,
+                        out protectedPacket);
+
+                    if (!builtProtectedPacket)
+                    {
+                        break;
+                    }
+
+                    if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                        QuicTlsEncryptionLevel.Initial,
+                        cryptoChunk[..cryptoBytesWritten],
+                        out ulong dequeuedOffset,
+                        out int dequeuedBytesWritten)
+                        || dequeuedOffset != cryptoOffset
+                        || dequeuedBytesWritten != cryptoBytesWritten)
+                    {
+                        break;
+                    }
                 }
-
-                if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
-                    QuicTlsEncryptionLevel.Initial,
-                    cryptoChunk[..cryptoBytesWritten],
-                    out ulong dequeuedOffset,
-                    out int dequeuedBytesWritten)
-                    || dequeuedOffset != cryptoOffset
-                    || dequeuedBytesWritten != cryptoBytesWritten)
+                else
                 {
-                    break;
+                    builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+                        cryptoChunk[..cryptoBytesWritten],
+                        cryptoOffset,
+                        ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                        initialPacketProtection,
+                        out packetNumber,
+                        out protectedPacket);
+
+                    if (!builtProtectedPacket)
+                    {
+                        break;
+                    }
+
+                    if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                        QuicTlsEncryptionLevel.Initial,
+                        cryptoChunk[..cryptoBytesWritten],
+                        out ulong dequeuedOffset,
+                        out int dequeuedBytesWritten)
+                        || dequeuedOffset != cryptoOffset
+                        || dequeuedBytesWritten != cryptoBytesWritten)
+                    {
+                        break;
+                    }
                 }
             }
-            else
+            finally
             {
-                builtProtectedPacket = handshakeFlowCoordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
-                    cryptoChunk[..cryptoBytesWritten],
-                    cryptoOffset,
-                    ackFramePayload,
-                    initialPacketProtection,
-                    out packetNumber,
-                    out protectedPacket);
-
-                if (!builtProtectedPacket)
-                {
-                    break;
-                }
-
-                if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
-                    QuicTlsEncryptionLevel.Initial,
-                    cryptoChunk[..cryptoBytesWritten],
-                    out ulong dequeuedOffset,
-                    out int dequeuedBytesWritten)
-                    || dequeuedOffset != cryptoOffset
-                    || dequeuedBytesWritten != cryptoBytesWritten)
-                {
-                    break;
-                }
+                ackFramePayload.Dispose();
             }
 
             TrackInitialPacket(packetNumber, protectedPacket, probePacket);
@@ -3363,48 +3369,55 @@ internal sealed partial class QuicConnectionRuntime
             bool hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out QuicAckFrame piggybackedAckFrame);
             ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
-            if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
-                    cryptoChunk,
-                    (ulong)replayOffset,
-                    destinationConnectionId,
-                    initialToken,
-                    ackFramePayload,
-                    protection,
-                    out ulong packetNumber,
-                    out byte[] protectedPacket))
+            try
             {
-                break;
+                if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                        cryptoChunk,
+                        (ulong)replayOffset,
+                        destinationConnectionId,
+                        initialToken,
+                        ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                        protection,
+                        out ulong packetNumber,
+                        out byte[] protectedPacket))
+                {
+                    break;
+                }
+
+                TrackInitialPacket(packetNumber, protectedPacket, probePacket);
+                if (hasPiggybackedAck)
+                {
+                    sendRuntime.FlowController.MarkAckFrameSent(
+                        QuicPacketNumberSpace.Initial,
+                        packetNumber,
+                        piggybackedAckFrame,
+                        nowMicros,
+                        ackOnlyPacket: false);
+                }
+
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+                }
+
+                AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+
+                replayOffset += requestedBytes;
+                datagramsSent++;
+                stateChanged = true;
+
+                if (datagramsSent >= maximumDatagrams)
+                {
+                    break;
+                }
             }
-
-            TrackInitialPacket(packetNumber, protectedPacket, probePacket);
-            if (hasPiggybackedAck)
+            finally
             {
-                sendRuntime.FlowController.MarkAckFrameSent(
-                    QuicPacketNumberSpace.Initial,
-                    packetNumber,
-                    piggybackedAckFrame,
-                    nowMicros,
-                    ackOnlyPacket: false);
-            }
-
-            if (diagnosticsEnabled)
-            {
-                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
-            }
-
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
-
-            replayOffset += requestedBytes;
-            datagramsSent++;
-            stateChanged = true;
-
-            if (datagramsSent >= maximumDatagrams)
-            {
-                break;
+                ackFramePayload.Dispose();
             }
         }
 
@@ -3495,46 +3508,53 @@ internal sealed partial class QuicConnectionRuntime
             bool hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out QuicAckFrame piggybackedAckFrame);
-            if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
-                cryptoChunk,
-                (ulong)replayOffset,
-                retrySourceConnectionId,
-                retryToken,
-                ackFramePayload,
-                protection,
-                out ulong packetNumber,
-                out byte[] protectedPacket))
+            try
             {
-                break;
+                if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
+                    cryptoChunk,
+                    (ulong)replayOffset,
+                    retrySourceConnectionId,
+                    retryToken,
+                    ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                    protection,
+                    out ulong packetNumber,
+                    out byte[] protectedPacket))
+                {
+                    break;
+                }
+
+                TrackInitialPacket(packetNumber, protectedPacket, probePacket);
+                if (hasPiggybackedAck)
+                {
+                    sendRuntime.FlowController.MarkAckFrameSent(
+                        QuicPacketNumberSpace.Initial,
+                        packetNumber,
+                        piggybackedAckFrame,
+                        nowMicros,
+                        ackOnlyPacket: false);
+                }
+
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
+                }
+
+                AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
+                replayOffset += requestedBytes;
+                datagramsSent++;
+                stateChanged = true;
+
+                if (datagramsSent >= maximumDatagrams)
+                {
+                    break;
+                }
             }
-
-            TrackInitialPacket(packetNumber, protectedPacket, probePacket);
-            if (hasPiggybackedAck)
+            finally
             {
-                sendRuntime.FlowController.MarkAckFrameSent(
-                    QuicPacketNumberSpace.Initial,
-                    packetNumber,
-                    piggybackedAckFrame,
-                    nowMicros,
-                    ackOnlyPacket: false);
-            }
-
-            if (diagnosticsEnabled)
-            {
-                EmitDiagnostic(ref effects, QuicDiagnostics.InitialPacketSent(pathIdentity, protectedPacket));
-            }
-
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(pathIdentity, protectedPacket));
-            replayOffset += requestedBytes;
-            datagramsSent++;
-            stateChanged = true;
-
-            if (datagramsSent >= maximumDatagrams)
-            {
-                break;
+                ackFramePayload.Dispose();
             }
         }
 
@@ -3588,65 +3608,71 @@ internal sealed partial class QuicConnectionRuntime
             bool hasPiggybackedAck = TryBuildLongHeaderAckPiggybackFramePayload(
                 QuicPacketNumberSpace.Handshake,
                 nowMicros,
-                out byte[] ackFramePayload,
-                out _,
+                out QuicBufferLease ackFramePayload,
+                out int ackFramePayloadLength,
                 out QuicAckFrame piggybackedAckFrame);
-
-            if (!handshakeFlowCoordinator.TryBuildProtectedHandshakePacket(
-                cryptoChunk[..cryptoBytesWritten],
-                cryptoOffset,
-                ackFramePayload,
-                packetProtectionMaterial,
-                out ulong packetNumber,
-                out byte[] protectedPacket))
+            try
             {
-                break;
+                if (!handshakeFlowCoordinator.TryBuildProtectedHandshakePacket(
+                    cryptoChunk[..cryptoBytesWritten],
+                    cryptoOffset,
+                    ackFramePayload.Span.Slice(0, ackFramePayloadLength),
+                    packetProtectionMaterial,
+                    out ulong packetNumber,
+                    out byte[] protectedPacket))
+                {
+                    break;
+                }
+
+                if (!TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
+                    || !TryConsumeHandshakeSendBudget(
+                        pathIdentity,
+                        protectedPacket.Length,
+                        out QuicConnectionPathIdentity sendPathIdentity))
+                {
+                    break;
+                }
+
+                if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
+                    QuicTlsEncryptionLevel.Handshake,
+                    cryptoChunk[..cryptoBytesWritten],
+                    out ulong dequeuedOffset,
+                    out int dequeuedBytesWritten)
+                    || dequeuedOffset != cryptoOffset
+                    || dequeuedBytesWritten != cryptoBytesWritten)
+                {
+                    break;
+                }
+
+                TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
+                if (hasPiggybackedAck)
+                {
+                    sendRuntime.FlowController.MarkAckFrameSent(
+                        QuicPacketNumberSpace.Handshake,
+                        packetNumber,
+                        piggybackedAckFrame,
+                        nowMicros,
+                        ackOnlyPacket: false);
+                }
+
+                if (diagnosticsEnabled)
+                {
+                    EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(sendPathIdentity, protectedPacket));
+                }
+                AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+                    sendPathIdentity,
+                    protectedPacket));
+                stateChanged = true;
+
+                datagramsSent++;
+                if (datagramsSent >= maximumDatagrams)
+                {
+                    break;
+                }
             }
-
-            if (!TryGetHandshakeOutboundPath(out QuicConnectionPathIdentity pathIdentity)
-                || !TryConsumeHandshakeSendBudget(
-                    pathIdentity,
-                    protectedPacket.Length,
-                    out QuicConnectionPathIdentity sendPathIdentity))
+            finally
             {
-                break;
-            }
-
-            if (!tlsBridgeDriver.TryDequeueOutgoingCryptoData(
-                QuicTlsEncryptionLevel.Handshake,
-                cryptoChunk[..cryptoBytesWritten],
-                out ulong dequeuedOffset,
-                out int dequeuedBytesWritten)
-                || dequeuedOffset != cryptoOffset
-                || dequeuedBytesWritten != cryptoBytesWritten)
-            {
-                break;
-            }
-
-            TrackHandshakePacket(packetNumber, protectedPacket, probePacket);
-            if (hasPiggybackedAck)
-            {
-                sendRuntime.FlowController.MarkAckFrameSent(
-                    QuicPacketNumberSpace.Handshake,
-                    packetNumber,
-                    piggybackedAckFrame,
-                    nowMicros,
-                    ackOnlyPacket: false);
-            }
-
-            if (diagnosticsEnabled)
-            {
-                EmitDiagnostic(ref effects, QuicDiagnostics.HandshakePacketSent(sendPathIdentity, protectedPacket));
-            }
-            AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
-                sendPathIdentity,
-                protectedPacket));
-            stateChanged = true;
-
-            datagramsSent++;
-            if (datagramsSent >= maximumDatagrams)
-            {
-                break;
+                ackFramePayload.Dispose();
             }
         }
 

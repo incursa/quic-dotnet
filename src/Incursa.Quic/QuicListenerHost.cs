@@ -1101,10 +1101,12 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
 
             QuicHandshakeFlowCoordinator initialPacketCoordinator = new();
-            if (!initialPacketCoordinator.TryOpenInitialPacket(
+            if (!initialPacketCoordinator.TryOpenInitialPacketLease(
                 datagram.Span,
                 initialProtection,
-                out byte[] openedPacket,
+                requireZeroTokenLength: false,
+                allowClearedFixedBit: false,
+                out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
             {
@@ -1116,7 +1118,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return Fail("open-initial-packet", "initial-packet-open-failed");
             }
 
-            if (!TryValidateInitialCryptoPayload(openedPacket.AsSpan(payloadOffset, payloadLength), out string initialCryptoValidationReason))
+            try
+            {
+            if (!TryValidateInitialCryptoPayload(openedPacket.Span.Slice(payloadOffset, payloadLength), out string initialCryptoValidationReason))
             {
                 if (isRetryBootstrapReplayCandidate)
                 {
@@ -1126,7 +1130,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 return Fail("validate-initial-crypto-payload", initialCryptoValidationReason);
             }
 
-            if (!TryReadOpenedInitialPacketNumber(openedPacket, payloadOffset, out ulong openedInitialPacketNumber))
+            if (!TryReadOpenedInitialPacketNumber(openedPacket.Span, payloadOffset, out ulong openedInitialPacketNumber))
             {
                 return Fail("read-opened-initial-packet-number", "packet-number-read-failed");
             }
@@ -1136,7 +1140,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             // needed for transport-parameter parsing are available. In that case we keep the packet
             // admitted and let the replayed Initial datagram progress the runtime transcript.
             if (QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
-                openedPacket.AsSpan(payloadOffset, payloadLength),
+                openedPacket.Span.Slice(payloadOffset, payloadLength),
                 out ReadOnlySpan<byte> initialCryptoFrameData)
                 && QuicTlsClientHelloExtensions.TryReadClientHelloTransportParameters(
                     initialCryptoFrameData,
@@ -1337,6 +1341,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
             EmitListenerInitialAdmissionResult(pathIdentity, "admit-initial-connection", succeeded: true, "connection-admitted");
             return true;
+            }
+            finally
+            {
+                openedPacket.Dispose();
+            }
         }
         catch (Exception ex)
         {
