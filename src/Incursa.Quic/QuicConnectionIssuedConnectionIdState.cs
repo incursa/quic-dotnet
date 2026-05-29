@@ -111,8 +111,4 @@ internal sealed class QuicConnectionIssuedConnectionIdState
             && usedIssuedConnectionIds.Add(connectionId);
     }
 
-    internal ulong[] GetIssuedConnectionIdSnapshot()
-    {
-        return statelessResetTokensByConnectionId.Keys.ToArray();
-    }
 }

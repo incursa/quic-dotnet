@@ -51,7 +51,7 @@ public class QuicConnectionEffectAccumulatorBenchmarks
     }
 
     /// <summary>
-    /// Measures the single-effect accumulator shape.
+    /// Measures the inline accumulator shape.
     /// </summary>
     [Benchmark]
     public int Accumulator()

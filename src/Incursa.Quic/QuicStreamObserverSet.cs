@@ -8,10 +8,13 @@ internal sealed class QuicStreamObserverSet
     private static readonly ObserverEntry[] EmptyObservers = [];
 
     private readonly object sync = new();
+    private long singleObserverId;
+    private Action<QuicStreamNotification>? singleObserver;
     private ObserverEntry[] observers = EmptyObservers;
 
     internal bool IsEmpty
-        => System.Threading.Volatile.Read(ref observers).Length == 0;
+        => System.Threading.Volatile.Read(ref singleObserver) is null
+            && System.Threading.Volatile.Read(ref observers).Length == 0;
 
     internal bool TryAdd(long observerId, Action<QuicStreamNotification> observer)
     {
@@ -19,6 +22,32 @@ internal sealed class QuicStreamObserverSet
 
         lock (sync)
         {
+            Action<QuicStreamNotification>? single = singleObserver;
+            if (single is null && observers.Length == 0)
+            {
+                singleObserverId = observerId;
+                System.Threading.Volatile.Write(ref singleObserver, observer);
+                return true;
+            }
+
+            if (single is not null)
+            {
+                if (singleObserverId == observerId)
+                {
+                    return false;
+                }
+
+                ObserverEntry[] upgraded =
+                [
+                    new ObserverEntry(singleObserverId, single),
+                    new ObserverEntry(observerId, observer),
+                ];
+                System.Threading.Volatile.Write(ref observers, upgraded);
+                singleObserverId = 0;
+                System.Threading.Volatile.Write(ref singleObserver, null);
+                return true;
+            }
+
             ObserverEntry[] snapshot = observers;
             for (int index = 0; index < snapshot.Length; index++)
             {
@@ -40,6 +69,19 @@ internal sealed class QuicStreamObserverSet
     {
         lock (sync)
         {
+            Action<QuicStreamNotification>? single = singleObserver;
+            if (single is not null)
+            {
+                if (singleObserverId != observerId)
+                {
+                    return false;
+                }
+
+                singleObserverId = 0;
+                System.Threading.Volatile.Write(ref singleObserver, null);
+                return true;
+            }
+
             ObserverEntry[] snapshot = observers;
             int removedIndex = -1;
             for (int index = 0; index < snapshot.Length; index++)
@@ -62,6 +104,15 @@ internal sealed class QuicStreamObserverSet
                 return true;
             }
 
+            if (snapshot.Length == 2)
+            {
+                ObserverEntry remaining = snapshot[1 - removedIndex];
+                System.Threading.Volatile.Write(ref observers, EmptyObservers);
+                singleObserverId = remaining.ObserverId;
+                System.Threading.Volatile.Write(ref singleObserver, remaining.Observer);
+                return true;
+            }
+
             ObserverEntry[] updated = new ObserverEntry[snapshot.Length - 1];
             if (removedIndex > 0)
             {
@@ -81,6 +132,13 @@ internal sealed class QuicStreamObserverSet
 
     internal void Notify(QuicStreamNotification notification)
     {
+        Action<QuicStreamNotification>? single = System.Threading.Volatile.Read(ref singleObserver);
+        if (single is not null)
+        {
+            InvokeObserver(single, notification);
+            return;
+        }
+
         ObserverEntry[] snapshot = System.Threading.Volatile.Read(ref observers);
         for (int index = 0; index < snapshot.Length; index++)
         {

@@ -587,6 +587,8 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         if (!TryBuildApplicationDataPlaintextPacket(
                 applicationPayload,
+                ackFrame: null,
+                ackFramePayloadLength: 0,
                 keyPhase,
                 spinBit,
                 greaseQuicBit,
@@ -656,6 +658,55 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     internal bool TryBuildProtectedApplicationDataPacketLease(
         ReadOnlySpan<byte> applicationPayload,
+        QuicAckFrame ackFrame,
+        int ackFramePayloadLength,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out QuicBufferLease protectedPacket)
+    {
+        return TryBuildProtectedApplicationDataPacketLeaseCore(
+            applicationPayload,
+            ackFrame,
+            ackFramePayloadLength,
+            material,
+            keyPhase,
+            spinBit,
+            greaseQuicBit,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    internal bool TryBuildProtectedApplicationDataPacketLease(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicTlsPacketProtectionMaterial material,
+        bool keyPhase,
+        bool spinBit,
+        bool greaseQuicBit,
+        out ulong packetNumber,
+        out QuicBufferLease protectedPacket)
+    {
+        protectedPacket = default;
+        packetNumber = default;
+
+        return TryBuildProtectedApplicationDataPacketLeaseCore(
+            applicationPayload,
+            ackFrame: null,
+            ackFramePayloadLength: 0,
+            material,
+            keyPhase,
+            spinBit,
+            greaseQuicBit,
+            out packetNumber,
+            out protectedPacket);
+    }
+
+    private bool TryBuildProtectedApplicationDataPacketLeaseCore(
+        ReadOnlySpan<byte> applicationPayload,
+        QuicAckFrame? ackFrame,
+        int ackFramePayloadLength,
         QuicTlsPacketProtectionMaterial material,
         bool keyPhase,
         bool spinBit,
@@ -673,6 +724,11 @@ internal sealed class QuicHandshakeFlowCoordinator
             return false;
         }
 
+        if ((ackFrame is null) != (ackFramePayloadLength == 0))
+        {
+            return false;
+        }
+
         if (nextApplicationPacketNumber >= QuicVariableLengthInteger.MaxValue)
         {
             return false;
@@ -682,6 +738,8 @@ internal sealed class QuicHandshakeFlowCoordinator
 
         if (!TryBuildApplicationDataPlaintextPacket(
                 applicationPayload,
+                ackFrame,
+                ackFramePayloadLength,
                 keyPhase,
                 spinBit,
                 greaseQuicBit,
@@ -2273,6 +2331,8 @@ internal sealed class QuicHandshakeFlowCoordinator
 
     private bool TryBuildApplicationDataPlaintextPacket(
         ReadOnlySpan<byte> applicationPayload,
+        QuicAckFrame? ackFrame,
+        int ackFramePayloadLength,
         bool keyPhase,
         bool spinBit,
         bool greaseQuicBit,
@@ -2285,17 +2345,19 @@ internal sealed class QuicHandshakeFlowCoordinator
         packetNumberOffset = default;
         packetNumberLength = ApplicationPacketNumberLength;
 
+        int payloadLength = checked(applicationPayload.Length + ackFramePayloadLength);
+        int fixedPacketPrefixLength = 1 + destinationConnectionId.Length + packetNumberLength;
         if (destinationConnectionId.Length > MaximumConnectionIdLength
-            || applicationPayload.Length > int.MaxValue - 1 - destinationConnectionId.Length - packetNumberLength - ApplicationMinimumProtectedPayloadLength)
+            || payloadLength > int.MaxValue - fixedPacketPrefixLength)
         {
             return false;
         }
 
-        int paddedPayloadLength = Math.Max(applicationPayload.Length, ApplicationMinimumProtectedPayloadLength);
-        packetNumberOffset = 1 + destinationConnectionId.Length;
+        int paddedPayloadLength = Math.Max(payloadLength, ApplicationMinimumProtectedPayloadLength);
+        packetNumberOffset = fixedPacketPrefixLength - packetNumberLength;
         bool spinBitEnabled = enableRandomizedSpinBitSelection && spinBit && !ShouldDisableSpinBit(destinationConnectionId);
 
-        plaintextPacket = QuicBufferPool.RentLease(packetNumberOffset + packetNumberLength + paddedPayloadLength);
+        plaintextPacket = QuicBufferPool.RentLease(fixedPacketPrefixLength + paddedPayloadLength);
         try
         {
             Span<byte> packet = plaintextPacket.Span;
@@ -2310,16 +2372,27 @@ internal sealed class QuicHandshakeFlowCoordinator
                 packet.Slice(packetNumberOffset, packetNumberLength),
                 unchecked((uint)packetNumber));
 
-            applicationPayload.CopyTo(packet.Slice(packetNumberOffset + packetNumberLength));
-
-            if (paddedPayloadLength > applicationPayload.Length)
+            Span<byte> payloadDestination = packet.Slice(fixedPacketPrefixLength, paddedPayloadLength);
+            if (ackFrame is not null)
             {
-                packet.Slice(
-                    packetNumberOffset + packetNumberLength + applicationPayload.Length,
-                    paddedPayloadLength - applicationPayload.Length).Fill(0);
+                if (!QuicConnectionAckHelpers.TryFormatOutboundAckFramePayload(
+                    ackFrame,
+                    payloadDestination.Slice(0, ackFramePayloadLength),
+                    out int ackFrameBytesWritten)
+                    || ackFrameBytesWritten != ackFramePayloadLength)
+                {
+                    return false;
+                }
             }
 
-            plaintextPacket.SetLength(packetNumberOffset + packetNumberLength + paddedPayloadLength);
+            applicationPayload.CopyTo(payloadDestination.Slice(ackFramePayloadLength));
+
+            if (paddedPayloadLength > payloadLength)
+            {
+                payloadDestination.Slice(payloadLength, paddedPayloadLength - payloadLength).Fill(0);
+            }
+
+            plaintextPacket.SetLength(fixedPacketPrefixLength + paddedPayloadLength);
             return true;
         }
         catch

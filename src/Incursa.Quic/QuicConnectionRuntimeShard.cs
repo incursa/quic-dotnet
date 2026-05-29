@@ -226,26 +226,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
             QuicConnectionTransitionResult result = workItem.Runtime.Transition(workItem.ConnectionEvent, clock.Ticks);
             transitionObserver?.Invoke(workItem.Handle, result);
 
-            if (result.SingleEffect is { } singleEffect)
+            for (int index = 0; index < result.EffectCount; index++)
             {
-                deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, singleEffect);
-                effectObserver?.Invoke(workItem.Handle, singleEffect);
-            }
-            else if (result.EffectList is { } effectList)
-            {
-                foreach (QuicConnectionEffect effect in effectList)
-                {
-                    deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
-                    effectObserver?.Invoke(workItem.Handle, effect);
-                }
-            }
-            else
-            {
-                foreach (QuicConnectionEffect effect in result.Effects)
-                {
-                    deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
-                    effectObserver?.Invoke(workItem.Handle, effect);
-                }
+                QuicConnectionEffect effect = result.GetEffect(index);
+                deadlineScheduler.Apply(workItem.Handle, workItem.Runtime, effect);
+                effectObserver?.Invoke(workItem.Handle, effect);
             }
         }
         finally

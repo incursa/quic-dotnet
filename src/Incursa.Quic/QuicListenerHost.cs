@@ -184,8 +184,9 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
-                foreach (QuicConnectionEffect effect in transition.Effects)
+                for (int index = 0; index < transition.EffectCount; index++)
                 {
+                    QuicConnectionEffect effect = transition.GetEffect(index);
                     if (effect is not QuicConnectionSendDatagramEffect sendEffect)
                     {
                         continue;
@@ -215,9 +216,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
         if (firstTransition.Length > 0)
         {
             QuicConnectionTransitionResult transition = firstTransition[0];
+            string[] effectNames = new string[transition.EffectCount];
+            for (int index = 0; index < effectNames.Length; index++)
+            {
+                effectNames[index] = transition.GetEffect(index).GetType().Name;
+            }
+
             string effectSummary = string.Join(
                 ", ",
-                transition.Effects.Select(static effect => effect.GetType().Name));
+                effectNames);
 
             return $"ListenerPacketTransition=Prev:{transition.PreviousPhase}; Curr:{transition.CurrentPhase}; StateChanged:{transition.StateChanged}; Effects:[{effectSummary}]";
         }

@@ -12,12 +12,14 @@ public sealed class REQ_QUIC_CRT_0096
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public void RuntimeConcurrentCollectionsAreLimitedToApiQueuesAndObservers()
+    public void RuntimeConcurrentCollectionsAreLimitedToCrossThreadApiRequestState()
     {
         // Quarantined structural probe: follow-up work item will replace this reflection-based
         // field-shape check with a non-reflection repository-native assertion.
-        string[] concurrentFieldNames = typeof(QuicConnectionRuntime)
-            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+        FieldInfo[] runtimeFields = typeof(QuicConnectionRuntime)
+            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+
+        string[] concurrentFieldNames = runtimeFields
             .Where(field => IsConcurrentDictionary(field.FieldType))
             .Select(field => field.Name)
             .Order(StringComparer.Ordinal)
@@ -28,10 +30,15 @@ public sealed class REQ_QUIC_CRT_0096
                 "pendingDatagramSendRequests",
                 "pendingStreamOpenRequests",
                 "pendingStreamOpenTypes",
-                "queuedInboundStreamIds",
-                "streamObservers",
             ],
             concurrentFieldNames);
+
+        Assert.Equal(
+            typeof(HashSet<ulong>),
+            Assert.Single(runtimeFields, field => field.Name == "queuedInboundStreamIds").FieldType);
+        Assert.Equal(
+            typeof(QuicStreamObserverDirectory),
+            Assert.Single(runtimeFields, field => field.Name == "streamObservers").FieldType);
     }
 
     private static bool IsConcurrentDictionary(Type type)

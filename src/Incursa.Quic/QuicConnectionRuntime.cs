@@ -65,9 +65,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
     private readonly ConcurrentQueue<DatagramSendRequestCompletionSource> datagramSendRequestCompletionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
-    private readonly ConcurrentDictionary<ulong, byte> queuedInboundStreamIds = new();
+    private readonly HashSet<ulong> queuedInboundStreamIds = [];
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
-    private readonly ConcurrentDictionary<ulong, QuicStreamObserverSet> streamObservers = new();
+    private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
     private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
@@ -437,14 +437,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             bool removed = pendingStreamActionRequests.Remove(requestId, out StreamActionRequestCompletionSource? removedCompletion);
             completionSource = removedCompletion!;
             return removed;
-        }
-    }
-
-    private KeyValuePair<long, StreamActionRequestCompletionSource>[] SnapshotPendingStreamActionRequests()
-    {
-        lock (pendingStreamActionRequestsGate)
-        {
-            return pendingStreamActionRequests.ToArray();
         }
     }
 
@@ -1055,9 +1047,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         ArgumentNullException.ThrowIfNull(observer);
 
         long observerId = Interlocked.Increment(ref nextStreamObserverId);
-        QuicStreamObserverSet observers = streamObservers.GetOrAdd(
-            streamId,
-            static _ => new QuicStreamObserverSet());
+        QuicStreamObserverSet observers = streamObservers.GetOrAdd(streamId);
 
         if (!observers.TryAdd(observerId, observer))
         {
@@ -1098,10 +1088,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
 
         observers.TryRemove(observerId);
-        if (observers.IsEmpty)
-        {
-            streamObservers.TryRemove(streamId, out _);
-        }
+        streamObservers.TryRemoveIfEmpty(streamId, observers);
     }
 
     internal async ValueTask<QuicStream> AcceptInboundStreamAsync(CancellationToken cancellationToken = default)
@@ -1707,23 +1694,9 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
                         if (effectObserver is not null)
                         {
-                            if (result.SingleEffect is { } singleEffect)
+                            for (int index = 0; index < result.EffectCount; index++)
                             {
-                                effectObserver(singleEffect);
-                            }
-                            else if (result.EffectList is { } effectList)
-                            {
-                                foreach (QuicConnectionEffect effect in effectList)
-                                {
-                                    effectObserver(effect);
-                                }
-                            }
-                            else
-                            {
-                                foreach (QuicConnectionEffect effect in result.Effects)
-                                {
-                                    effectObserver(effect);
-                                }
+                                effectObserver(result.GetEffect(index));
                             }
                         }
                     }

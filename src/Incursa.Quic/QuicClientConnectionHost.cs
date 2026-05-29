@@ -212,11 +212,14 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         if (transition.EventKind == QuicConnectionEventKind.RetryReceived)
         {
             Interlocked.Exchange(ref retryReceivedObserved, 1);
-            if (transition.HasEffects && transition.Effects.Any(effect =>
-                effect is QuicConnectionSendDatagramEffect sendDatagramEffect
-                && IsReplayInitialPacket(sendDatagramEffect.Datagram)))
+            for (int index = 0; index < transition.EffectCount; index++)
             {
-                Interlocked.Exchange(ref retryBootstrapReplayDatagramSent, 1);
+                if (transition.GetEffect(index) is QuicConnectionSendDatagramEffect sendDatagramEffect
+                    && IsReplayInitialPacket(sendDatagramEffect.Datagram))
+                {
+                    Interlocked.Exchange(ref retryBootstrapReplayDatagramSent, 1);
+                    break;
+                }
             }
         }
 

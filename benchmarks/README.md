@@ -99,6 +99,8 @@ The benchmark project also contains the following permanent suites:
 - `QuicDatagramFrameBenchmarks`
 - `QuicApplicationSendDistinctStreamIdBenchmarks`
 - `QuicApplicationSendQueueSortingBenchmarks`
+- `QuicRuntimeCollectionBenchmarks`
+- `QuicConnectionSnapshotBenchmarks`
 - `QuicRetransmissionQueueRemovalBenchmarks`
 - `QuicCongestionControlDiscardBenchmarks`
 
@@ -113,6 +115,8 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendPriorityBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendDistinctStreamIdBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicApplicationSendQueueSortingBenchmarks*" --inProcess
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRuntimeCollectionBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicConnectionSnapshotBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetransmissionQueueRemovalBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlDiscardBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"

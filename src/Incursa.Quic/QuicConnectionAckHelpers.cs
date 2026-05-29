@@ -156,20 +156,12 @@ internal static class QuicConnectionAckHelpers
         piggybackedPayloadLength = 0;
         ackFrame = null!;
 
-        if (payload.IsEmpty
-            || !flowController.ShouldIncludeAckFrameWithOutgoingPacket(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                maxAckDelayMicros: 0)
-            || !flowController.TryBuildAckFrame(
-                QuicPacketNumberSpace.ApplicationData,
-                nowMicros,
-                out ackFrame))
-        {
-            return false;
-        }
-
-        if (!QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out int ackPayloadLength))
+        if (!TryBuildApplicationAckPiggybackFrame(
+            payload,
+            flowController,
+            nowMicros,
+            out int ackPayloadLength,
+            out ackFrame))
         {
             return false;
         }
@@ -194,6 +186,33 @@ internal static class QuicConnectionAckHelpers
         {
             piggybackedPayloadLease.Dispose();
         }
+    }
+
+    internal static bool TryBuildApplicationAckPiggybackFrame(
+        ReadOnlyMemory<byte> payload,
+        QuicSenderFlowController flowController,
+        ulong nowMicros,
+        out int ackPayloadLength,
+        out QuicAckFrame ackFrame)
+    {
+        ackPayloadLength = 0;
+        ackFrame = null!;
+
+        if (payload.IsEmpty
+            || !flowController.ShouldIncludeAckFrameWithOutgoingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                maxAckDelayMicros: 0)
+            || !flowController.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros,
+                out ackFrame)
+            || !QuicFrameCodec.TryGetAckFramePayloadLength(ackFrame, out ackPayloadLength))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     internal static bool TryBuildLongHeaderAckPiggybackFramePayload(
@@ -319,7 +338,7 @@ internal static class QuicConnectionAckHelpers
         }
     }
 
-    private static bool TryFormatOutboundAckFramePayload(
+    internal static bool TryFormatOutboundAckFramePayload(
         QuicAckFrame ackFrame,
         Span<byte> destination,
         out int frameBytesWritten)

@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers;
 using System.Security.Cryptography;
 
 namespace Incursa.Quic;
@@ -1714,23 +1715,38 @@ internal sealed partial class QuicConnectionRuntime
 
     private void RetireAllStatelessResetTokens(ref QuicConnectionEffectAccumulator effects)
     {
-        if (issuedConnectionIdState.IssuedConnectionIdCount == 0)
+        int issuedConnectionIdCount = issuedConnectionIdState.IssuedConnectionIdCount;
+        if (issuedConnectionIdCount == 0)
         {
             return;
         }
 
-        ulong[] connectionIds = issuedConnectionIdState.GetIssuedConnectionIdSnapshot();
-        foreach (ulong connectionId in connectionIds)
+        ulong[]? connectionIds = ArrayPool<ulong>.Shared.Rent(issuedConnectionIdCount);
+        int connectionIdCount = 0;
+        try
         {
-            if (issuedConnectionIdState.TryRetireIssuedConnectionId(connectionId, out byte[]? connectionIdBytes))
+            foreach (ulong connectionId in issuedConnectionIdState.StatelessResetTokensByConnectionId.Keys)
             {
-                if (connectionIdBytes is not null)
-                {
-                    AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));
-                }
-
-                AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+                connectionIds[connectionIdCount++] = connectionId;
             }
+
+            for (int index = 0; index < connectionIdCount; index++)
+            {
+                ulong connectionId = connectionIds[index];
+                if (issuedConnectionIdState.TryRetireIssuedConnectionId(connectionId, out byte[]? connectionIdBytes))
+                {
+                    if (connectionIdBytes is not null)
+                    {
+                        AppendEffect(ref effects, new QuicConnectionRetireConnectionIdRouteEffect(connectionId, connectionIdBytes));
+                    }
+
+                    AppendEffect(ref effects, new QuicConnectionRetireStatelessResetTokenEffect(connectionId));
+                }
+            }
+        }
+        finally
+        {
+            ArrayPool<ulong>.Shared.Return(connectionIds, clearArray: true);
         }
     }
 

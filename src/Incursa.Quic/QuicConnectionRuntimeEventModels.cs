@@ -286,12 +286,27 @@ internal sealed record QuicConnectionEmitDiagnosticEffect(QuicDiagnosticEvent Di
 
 internal struct QuicConnectionEffectAccumulator
 {
-    private QuicConnectionEffect? singleEffect;
+    private const int InlineEffectCapacity = 4;
+    private const int FirstInlineEffectIndex = 0;
+    private const int SecondInlineEffectIndex = 1;
+    private const int ThirdInlineEffectIndex = 2;
+    private const int FourthInlineEffectIndex = 3;
+    private const int OverflowEffectListCapacity = InlineEffectCapacity * 2;
+
+    private int effectCount;
+    private QuicConnectionEffect? effect0;
+    private QuicConnectionEffect? effect1;
+    private QuicConnectionEffect? effect2;
+    private QuicConnectionEffect? effect3;
     private List<QuicConnectionEffect>? effectList;
 
     private QuicConnectionEffectAccumulator(List<QuicConnectionEffect> effectList)
     {
-        singleEffect = null;
+        effectCount = 0;
+        effect0 = null;
+        effect1 = null;
+        effect2 = null;
+        effect3 = null;
         this.effectList = effectList;
     }
 
@@ -300,13 +315,9 @@ internal struct QuicConnectionEffectAccumulator
         return new QuicConnectionEffectAccumulator(effectList);
     }
 
-    internal QuicConnectionEffect? SingleEffect => effectList is null ? singleEffect : null;
+    internal bool HasEffects => Count > 0;
 
-    internal List<QuicConnectionEffect>? EffectList => effectList;
-
-    internal bool HasEffects => singleEffect is not null || effectList is { Count: > 0 };
-
-    internal int Count => effectList?.Count ?? (singleEffect is null ? 0 : 1);
+    internal int Count => effectList?.Count ?? effectCount;
 
     internal void Add(QuicConnectionEffect effect)
     {
@@ -316,18 +327,60 @@ internal struct QuicConnectionEffectAccumulator
             return;
         }
 
-        if (singleEffect is null)
+        switch (effectCount)
         {
-            singleEffect = effect;
-            return;
+            case FirstInlineEffectIndex:
+                effect0 = effect;
+                effectCount = SecondInlineEffectIndex;
+                return;
+            case SecondInlineEffectIndex:
+                effect1 = effect;
+                effectCount = ThirdInlineEffectIndex;
+                return;
+            case ThirdInlineEffectIndex:
+                effect2 = effect;
+                effectCount = FourthInlineEffectIndex;
+                return;
+            case FourthInlineEffectIndex:
+                effect3 = effect;
+                effectCount = InlineEffectCapacity;
+                return;
         }
 
-        effectList = new List<QuicConnectionEffect>(capacity: 4)
+        effectList = new List<QuicConnectionEffect>(capacity: OverflowEffectListCapacity)
         {
-            singleEffect,
+            effect0!,
+            effect1!,
+            effect2!,
+            effect3!,
             effect,
         };
-        singleEffect = null;
+        effectCount = 0;
+        effect0 = null;
+        effect1 = null;
+        effect2 = null;
+        effect3 = null;
+    }
+
+    internal QuicConnectionEffect GetEffect(int index)
+    {
+        if (effectList is not null)
+        {
+            return effectList[index];
+        }
+
+        if ((uint)index >= (uint)effectCount)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        return index switch
+        {
+            FirstInlineEffectIndex => effect0!,
+            SecondInlineEffectIndex => effect1!,
+            ThirdInlineEffectIndex => effect2!,
+            _ => effect3!,
+        };
     }
 
     internal QuicConnectionEffect[] ToArray()
@@ -337,9 +390,14 @@ internal struct QuicConnectionEffectAccumulator
             return effectList.ToArray();
         }
 
-        return singleEffect is null
-            ? Array.Empty<QuicConnectionEffect>()
-            : [singleEffect];
+        if (effectCount == 0)
+        {
+            return Array.Empty<QuicConnectionEffect>();
+        }
+
+        QuicConnectionEffect[] effects = new QuicConnectionEffect[effectCount];
+        CopyInlineEffectsTo(effects);
+        return effects;
     }
 
     internal List<QuicConnectionEffect>? ToList()
@@ -349,12 +407,37 @@ internal struct QuicConnectionEffectAccumulator
             return effectList;
         }
 
-        if (singleEffect is null)
+        if (effectCount == 0)
         {
             return null;
         }
 
-        return [singleEffect];
+        List<QuicConnectionEffect> effects = new(effectCount);
+        for (int index = 0; index < effectCount; index++)
+        {
+            effects.Add(GetEffect(index));
+        }
+
+        return effects;
+    }
+
+    private void CopyInlineEffectsTo(QuicConnectionEffect[] effects)
+    {
+        effects[FirstInlineEffectIndex] = effect0!;
+        if (effectCount > SecondInlineEffectIndex)
+        {
+            effects[SecondInlineEffectIndex] = effect1!;
+        }
+
+        if (effectCount > ThirdInlineEffectIndex)
+        {
+            effects[ThirdInlineEffectIndex] = effect2!;
+        }
+
+        if (effectCount > FourthInlineEffectIndex)
+        {
+            effects[FourthInlineEffectIndex] = effect3!;
+        }
     }
 }
 
@@ -413,11 +496,19 @@ internal readonly struct QuicConnectionTransitionResult
 
     public bool StateChanged { get; }
 
-    internal QuicConnectionEffect? SingleEffect => effects is null ? effectAccumulator.SingleEffect : null;
+    internal int EffectCount => effects?.Length ?? effectAccumulator.Count;
 
-    internal List<QuicConnectionEffect>? EffectList => effects is null ? effectAccumulator.EffectList : null;
+    internal QuicConnectionEffect GetEffect(int index)
+    {
+        if (effects is not null)
+        {
+            return effects[index];
+        }
+
+        return effectAccumulator.GetEffect(index);
+    }
 
     public QuicConnectionEffect[] Effects => effects ?? effectAccumulator.ToArray();
 
-    public bool HasEffects => effects is { Length: > 0 } || effectAccumulator.HasEffects;
+    public bool HasEffects => EffectCount > 0;
 }
