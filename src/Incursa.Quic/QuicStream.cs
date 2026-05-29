@@ -187,11 +187,28 @@ public sealed class QuicStream : Stream
         return ReadCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(buffer);
-        ValidateRange(buffer.Length, offset, count);
-        return await ReadCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ValidateRange(buffer.Length, offset, count);
+            Memory<byte> readBuffer = buffer.AsMemory(offset, count);
+            if (TryCompleteReadSynchronously(readBuffer, cancellationToken, out int bytesRead))
+            {
+                return Task.FromResult(bytesRead);
+            }
+
+            return ReadCoreAsync(readBuffer, cancellationToken).AsTask();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled<int>(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException<int>(ex);
+        }
     }
 
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
@@ -211,11 +228,22 @@ public sealed class QuicStream : Stream
         WriteCoreAsync(buffer.AsMemory(offset, count), CancellationToken.None).GetAwaiter().GetResult();
     }
 
-    public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(buffer);
-        ValidateRange(buffer.Length, offset, count);
-        await WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ArgumentNullException.ThrowIfNull(buffer);
+            ValidateRange(buffer.Length, offset, count);
+            return WriteCoreAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return Task.FromCanceled(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Task.FromException(ex);
+        }
     }
 
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)

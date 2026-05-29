@@ -82,6 +82,30 @@ public sealed class QuicStreamReadLifecycleTests
     }
 
     [Fact]
+    public async Task ReadAsync_InvalidByteArrayRangeReturnsFaultedTask()
+    {
+        using QuicStream stream = CreateReadableStream([0x35], fin: false);
+
+        Task<int> readTask = stream.ReadAsync(new byte[1], 0, 2);
+
+        Assert.True(readTask.IsFaulted);
+        await Assert.ThrowsAsync<ArgumentException>(async () => await readTask);
+    }
+
+    [Fact]
+    public async Task ReadAsync_CanceledByteArrayReadReturnsCanceledTask()
+    {
+        using QuicStream stream = CreateReadableStream([0x36], fin: false);
+        using CancellationTokenSource cancellation = new();
+        await cancellation.CancelAsync();
+
+        Task<int> readTask = stream.ReadAsync(new byte[1], 0, 1, cancellation.Token);
+
+        Assert.True(readTask.IsCanceled);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await readTask);
+    }
+
+    [Fact]
     public async Task ReadAsync_WaitsWhenNoDataIsAvailable()
     {
         using QuicStream stream = CreateReadableStream();
