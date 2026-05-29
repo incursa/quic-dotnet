@@ -507,4 +507,5 @@ internal readonly record struct QuicConnectionRuntimeScheduledTimerEntry(
 internal readonly record struct QuicConnectionRuntimeScheduledTimerRegistration(
     QuicConnectionRuntime Runtime,
     long DueTicks,
-    ulong Generation);
+    ulong Generation,
+    QuicConnectionTimerPriority Priority);

@@ -15,13 +15,22 @@ namespace Incursa.Quic;
 /// </remarks>
 internal sealed class QuicConnectionRuntimeDeadlineScheduler
 {
-    private readonly PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
+    private const int InitialTimerHeapCapacity = 256;
+    private const int StaleTimerHeapCompactionThreshold = 256;
+    private const int StaleTimerHeapCompactionFactor = 4;
+
+    private PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> timerHeap = new();
     private readonly Dictionary<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrations = [];
 
     /// <summary>
     /// Gets the number of currently active timer registrations.
     /// </summary>
     public int RegistrationCount => registrations.Count;
+
+    /// <summary>
+    /// Gets the number of scheduled heap entries, including stale entries waiting to be skipped or compacted.
+    /// </summary>
+    internal int ScheduledEntryCount => timerHeap.Count;
 
     /// <summary>
     /// Applies a runtime-emitted timer effect to the scheduler.
@@ -65,7 +74,8 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         QuicConnectionRuntimeScheduledTimerRegistration registration = new(
             runtime,
             effect.Priority.DueTicks,
-            effect.Generation);
+            effect.Generation,
+            effect.Priority);
 
         registrations[key] = registration;
 
@@ -77,7 +87,10 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
             effect.Generation,
             effect.Priority);
 
-        timerHeap.Enqueue(entry, effect.Priority);
+        if (!CompactStaleEntriesIfNeeded())
+        {
+            timerHeap.Enqueue(entry, effect.Priority);
+        }
     }
 
     /// <summary>
@@ -97,6 +110,7 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
         }
 
         registrations.Remove(key);
+        _ = CompactStaleEntriesIfNeeded();
     }
 
     /// <summary>
@@ -192,6 +206,45 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
 
         entry = default;
         return false;
+    }
+
+    private bool CompactStaleEntriesIfNeeded()
+    {
+        if (timerHeap.Count < StaleTimerHeapCompactionThreshold)
+        {
+            return false;
+        }
+
+        int activeRegistrationCount = registrations.Count;
+        long compactionLimit = (long)activeRegistrationCount * StaleTimerHeapCompactionFactor;
+        if (activeRegistrationCount > 0
+            && timerHeap.Count <= compactionLimit)
+        {
+            return false;
+        }
+
+        PriorityQueue<QuicConnectionRuntimeScheduledTimerEntry, QuicConnectionTimerPriority> compactedHeap =
+            activeRegistrationCount == 0
+                ? new()
+                : new(Math.Max(InitialTimerHeapCapacity, activeRegistrationCount));
+
+        foreach (KeyValuePair<QuicConnectionRuntimeScheduledTimerKey, QuicConnectionRuntimeScheduledTimerRegistration> registrationEntry in registrations)
+        {
+            QuicConnectionRuntimeScheduledTimerKey key = registrationEntry.Key;
+            QuicConnectionRuntimeScheduledTimerRegistration registration = registrationEntry.Value;
+            QuicConnectionRuntimeScheduledTimerEntry entry = new(
+                key.Handle,
+                registration.Runtime,
+                key.TimerKind,
+                registration.DueTicks,
+                registration.Generation,
+                registration.Priority);
+
+            compactedHeap.Enqueue(entry, registration.Priority);
+        }
+
+        timerHeap = compactedHeap;
+        return true;
     }
 
     private static TimeSpan StopwatchTicksToTimeSpan(long ticks)
