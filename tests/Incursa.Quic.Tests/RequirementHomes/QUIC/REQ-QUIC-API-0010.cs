@@ -87,6 +87,150 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task DelayedStreamWritesKeepTheirOwnedPayloadStableUntilTheQueuedSendFlushes()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 96,
+            localBidirectionalSendLimit: 96);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        byte[] originalPayload = [0x10, 0x20, 0x30, 0x40, 0x50];
+        byte[] mutatedPayload = originalPayload.ToArray();
+
+        await stream.WriteAsync(mutatedPayload, 0, mutatedPayload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        mutatedPayload[0] = 0xFF;
+        mutatedPayload[1] = 0xEE;
+
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+        QuicConnectionTransitionResult flushResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+        outboundEffects.AddRange(flushResult.Effects);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        Assert.True(TryFindStreamFrame(
+            openedPayload,
+            (ulong)stream.Id,
+            offset: 0,
+            streamDataLength: originalPayload.Length,
+            fin: false,
+            out QuicStreamFrame frame));
+        Assert.Equal((ulong)stream.Id, frame.StreamId.Value);
+        Assert.True(frame.StreamData.SequenceEqual(originalPayload));
+        Assert.False(frame.StreamData.SequenceEqual(mutatedPayload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [Requirement("REQ-QUIC-RFC9000-S13P3-0008")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task DelayedStreamWritesKeepTheirOwnedPayloadStableThroughLossAndRetransmission()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 96,
+            localBidirectionalSendLimit: 96);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        byte[] originalPayload = [0x61, 0x62, 0x63, 0x64, 0x65];
+        byte[] mutatedPayload = originalPayload.ToArray();
+
+        await stream.WriteAsync(mutatedPayload, 0, mutatedPayload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+
+        long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+        Assert.NotNull(dueTicks);
+        mutatedPayload[0] = 0xFF;
+        mutatedPayload[1] = 0xEE;
+
+        ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+        QuicConnectionTransitionResult flushResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                dueTicks.Value,
+                QuicConnectionTimerKind.ApplicationSendDelay,
+                generation),
+            nowTicks: dueTicks.Value);
+        outboundEffects.AddRange(flushResult.Effects);
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> originalPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, sendEffect.Datagram);
+
+        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        Assert.True(TryFindStreamFrame(
+            openedPayload,
+            (ulong)stream.Id,
+            offset: 0,
+            streamDataLength: originalPayload.Length,
+            fin: false,
+            out QuicStreamFrame originalFrame));
+        Assert.True(originalFrame.StreamData.SequenceEqual(originalPayload));
+
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            originalPacket.Key.PacketNumberSpace,
+            originalPacket.Key.PacketNumber,
+            handshakeConfirmed: true));
+        Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+
+        List<QuicConnectionEffect>? retransmissionEffects = [];
+        Assert.True(QuicS13AckPiggybackTestSupport.InvokeTryFlushPendingRetransmissions(
+            runtime,
+            QuicPacketNumberSpace.ApplicationData,
+            nowTicks: dueTicks.Value + 1,
+            probePacket: false,
+            ref retransmissionEffects));
+
+        QuicConnectionSendDatagramEffect retransmissionSend = Assert.Single(
+            retransmissionEffects!.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> retransmittedPacket =
+            QuicS13AckPiggybackTestSupport.FindTrackedPacket(runtime, retransmissionSend.Datagram);
+
+        Assert.NotEqual(originalPacket.Key.PacketNumber, retransmittedPacket.Key.PacketNumber);
+
+        byte[] retransmittedPlaintext = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, retransmissionSend);
+        Assert.True(TryFindStreamFrame(
+            retransmittedPlaintext,
+            (ulong)stream.Id,
+            offset: 0,
+            streamDataLength: originalPayload.Length,
+            fin: false,
+            out QuicStreamFrame retransmittedFrame));
+        Assert.True(retransmittedFrame.StreamData.SequenceEqual(originalPayload));
+        Assert.False(retransmittedFrame.StreamData.SequenceEqual(mutatedPayload));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -774,6 +918,17 @@ public sealed class REQ_QUIC_API_0010
             throw new TimeoutException(
                 $"Timed out waiting for peer bytes. Client={QuicLoopbackEstablishmentTestSupport.DescribeConnection(pair.ClientConnection)}; Server={QuicLoopbackEstablishmentTestSupport.DescribeConnection(pair.ServerConnection)}; ClientStream={DescribeStream(pair.ClientStream)}; ServerStream={DescribeStream(pair.ServerStream)}; ClientAppPackets={DescribeApplicationPackets(pair.ClientConnection, pair.ServerConnection)}",
                 timeout);
+        }
+    }
+
+    private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> sentPacket in runtime.SendRuntime.SentPackets.ToArray())
+        {
+            Assert.True(runtime.SendRuntime.TryAcknowledgePacket(
+                sentPacket.Key.PacketNumberSpace,
+                sentPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
         }
     }
 
