@@ -6,6 +6,19 @@ namespace Incursa.Quic.Tests;
 public sealed class QuicConnectionRuntimeShardReceiveBufferOwnershipTests
 {
     [Fact]
+    public async Task ShardConsumer_CompletesWhenRunCancellationIsRequested()
+    {
+        FakeMonotonicClock clock = new(0);
+        await using QuicConnectionRuntimeShard shard = new(0, clock);
+        using CancellationTokenSource cancellation = new();
+
+        Task consumer = shard.RunAsync(cancellationToken: cancellation.Token);
+
+        await cancellation.CancelAsync();
+        await consumer.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
     public async Task ShardConsumer_ReturnsOwnedPacketBufferAfterTransition()
     {
         FakeMonotonicClock clock = new(0);

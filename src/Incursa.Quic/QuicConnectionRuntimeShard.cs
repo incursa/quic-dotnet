@@ -128,6 +128,13 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         CancellationToken cancellationToken)
     {
         ChannelReader<QuicConnectionRuntimeShardWorkItem> reader = inbox.Reader;
+        CancellationTokenRegistration cancellationRegistration = cancellationToken.CanBeCanceled
+            ? cancellationToken.UnsafeRegister(static state =>
+            {
+                ChannelWriter<QuicConnectionRuntimeShardWorkItem> writer = (ChannelWriter<QuicConnectionRuntimeShardWorkItem>)state!;
+                writer.TryComplete();
+            }, inbox.Writer)
+            : default;
 
         try
         {
@@ -151,7 +158,7 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
 
                 if (!deadlineScheduler.TryGetNextWait(clock.Ticks, out TimeSpan wait))
                 {
-                    if (!await reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+                    if (!await reader.WaitToReadAsync().ConfigureAwait(false))
                     {
                         break;
                     }
@@ -164,8 +171,8 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                     continue;
                 }
 
-                Task<bool> waitToReadTask = reader.WaitToReadAsync(cancellationToken).AsTask();
-                Task delayTask = Task.Delay(wait, cancellationToken);
+                Task<bool> waitToReadTask = reader.WaitToReadAsync().AsTask();
+                Task delayTask = Task.Delay(wait);
                 Task completed = await Task.WhenAny(waitToReadTask, delayTask).ConfigureAwait(false);
                 if (completed == delayTask)
                 {
@@ -178,12 +185,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
                 }
             }
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            // The shard owner requested a stop; release any owned buffers that remain queued.
-        }
         finally
         {
+            await cancellationRegistration.DisposeAsync().ConfigureAwait(false);
             while (reader.TryRead(out QuicConnectionRuntimeShardWorkItem workItem))
             {
                 ReleaseWorkItemResources(workItem);

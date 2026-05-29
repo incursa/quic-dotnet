@@ -215,6 +215,11 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                     continue;
                 }
 
+                if (cancellationToken.IsCancellationRequested || Volatile.Read(ref disposed) != 0)
+                {
+                    break;
+                }
+
                 QuicMetrics.RecordDatagramReceived(QuicTlsRole.Client, receiveResult.ReceivedBytes);
                 IPEndPoint receivedFrom = (IPEndPoint)receiveResult.RemoteEndPoint;
                 IPEndPoint localEndPoint = QuicSocketPacketInformationControl.ResolveLocalEndPoint(
