@@ -277,6 +277,79 @@ internal static class QuicFrameCodec
     }
 
     /// <summary>
+    /// Consumes an ACK frame without materializing a parsed ACK frame object.
+    /// </summary>
+    internal static bool TryConsumeAckFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
+    {
+        bytesConsumed = default;
+
+        if (!QuicVariableLengthInteger.TryParse(packetPayload, out ulong frameTypeValue, out int index))
+        {
+            return false;
+        }
+
+        if (index != 1 || (frameTypeValue != AckFrameType && frameTypeValue != AckEcnFrameType))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out ulong largestAcknowledged)
+            || !TryParseVarint(packetPayload, ref index, out _)
+            || !TryParseVarint(packetPayload, ref index, out ulong ackRangeCount)
+            || !TryParseVarint(packetPayload, ref index, out ulong firstAckRange))
+        {
+            return false;
+        }
+
+        ulong maximumCompleteRangesInPayload = (ulong)(packetPayload.Length - index) / 2;
+        if (firstAckRange > largestAcknowledged || ackRangeCount > maximumCompleteRangesInPayload)
+        {
+            return false;
+        }
+
+        ulong previousSmallestAcknowledged = largestAcknowledged - firstAckRange;
+        for (ulong rangeIndex = 0; rangeIndex < ackRangeCount; rangeIndex++)
+        {
+            if (!TryParseVarint(packetPayload, ref index, out ulong gap)
+                || !TryParseVarint(packetPayload, ref index, out ulong ackRangeLength))
+            {
+                return false;
+            }
+
+            if (!TryComputeAckRange(previousSmallestAcknowledged, gap, ackRangeLength, out ulong smallestAcknowledged, out _))
+            {
+                return false;
+            }
+
+            previousSmallestAcknowledged = smallestAcknowledged;
+        }
+
+        if (frameTypeValue == AckEcnFrameType
+            && !TryConsumeAckEcnCounts(packetPayload, ref index))
+        {
+            return false;
+        }
+
+        bytesConsumed = index;
+        return true;
+    }
+
+    private static bool TryConsumeAckEcnCounts(ReadOnlySpan<byte> packetPayload, ref int index)
+    {
+        if (!TryParseVarint(packetPayload, ref index, out _))
+        {
+            return false;
+        }
+
+        if (!TryParseVarint(packetPayload, ref index, out _))
+        {
+            return false;
+        }
+
+        return TryParseVarint(packetPayload, ref index, out _);
+    }
+
+    /// <summary>
     /// Formats an ACK frame.
     /// </summary>
     internal static bool TryFormatAckFrame(QuicAckFrame frame, Span<byte> destination, out int bytesWritten)

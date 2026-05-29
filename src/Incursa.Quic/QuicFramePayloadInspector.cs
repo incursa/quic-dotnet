@@ -20,7 +20,7 @@ internal static class QuicFramePayloadInspector
                 continue;
             }
 
-            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            if (QuicFrameCodec.TryConsumeAckFrame(remaining, out int ackBytesConsumed))
             {
                 offset += ackBytesConsumed;
                 continue;
@@ -151,7 +151,7 @@ internal static class QuicFramePayloadInspector
     private static bool TryConsumeNonStreamDataFrame(ReadOnlySpan<byte> remaining, out int bytesConsumed)
     {
         if (QuicFrameCodec.TryParsePaddingFrame(remaining, out bytesConsumed)
-            || QuicFrameCodec.TryParseAckFrame(remaining, out _, out bytesConsumed)
+            || QuicFrameCodec.TryConsumeAckFrame(remaining, out bytesConsumed)
             || QuicFrameCodec.TryParsePingFrame(remaining, out bytesConsumed)
             || QuicFrameCodec.TryParseStopSendingFrame(remaining, out _, out bytesConsumed)
             || QuicFrameCodec.TryParseResetStreamFrame(remaining, out _, out bytesConsumed))

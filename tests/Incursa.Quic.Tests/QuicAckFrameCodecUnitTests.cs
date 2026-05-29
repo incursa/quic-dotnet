@@ -125,6 +125,42 @@ public sealed class QuicAckFrameCodecUnitTests
         Assert.True(streamData.AsSpan().SequenceEqual(streamFrame.StreamData));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TryConsumeAckFrame_ConsumesAckBytesWithoutMaterializingFrame(bool includeEcnCounts)
+    {
+        byte[] encoded = QuicFrameTestData.BuildAckFrame(CreateAckFrame(includeEcnCounts));
+
+        Assert.True(QuicFrameCodec.TryConsumeAckFrame(encoded, out int bytesConsumed));
+        Assert.Equal(encoded.Length, bytesConsumed);
+    }
+
+    [Fact]
+    public void TryConsumeAckFrame_RejectsUnsupportedAndMalformedInputsWithoutConsumingBytes()
+    {
+        byte[] pingFrame = [0x01];
+        byte[] truncatedAck = QuicFrameTestData.BuildAckFrame(CreateAckFrame(includeEcnCounts: true))[..^1];
+        byte[] impossibleRangeAck = QuicFrameTestData.BuildAckFrame(new QuicAckFrame
+        {
+            FrameType = 0x02,
+            LargestAcknowledged = 0x10,
+            AckDelay = 0x01,
+            FirstAckRange = 0x00,
+            AdditionalRanges =
+            [
+                new QuicAckRange(0x0F, 0x00, 0x00, 0x00),
+            ],
+        });
+
+        Assert.False(QuicFrameCodec.TryConsumeAckFrame(pingFrame, out int unsupportedConsumed));
+        Assert.Equal(0, unsupportedConsumed);
+        Assert.False(QuicFrameCodec.TryConsumeAckFrame(truncatedAck, out int truncatedConsumed));
+        Assert.Equal(0, truncatedConsumed);
+        Assert.False(QuicFrameCodec.TryConsumeAckFrame(impossibleRangeAck, out int impossibleRangeConsumed));
+        Assert.Equal(0, impossibleRangeConsumed);
+    }
+
     [Fact]
     public void TryParseAckFrame_UnsupportedFrameTypeStillFailsWithoutConsumingBytes()
     {
