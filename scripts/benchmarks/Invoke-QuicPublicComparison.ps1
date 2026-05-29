@@ -2,6 +2,7 @@
 Runs the public QUIC comparison surface:
 - loopback connection establishment
 - loopback bidirectional request/response stream transfer
+- steady-state bidirectional stream transfer on an established connection
 
 Use -Job Dry to validate the harness quickly or -Job Short for repeatable
 comparison measurements. This script runs the public comparison in-process so
@@ -23,7 +24,8 @@ param(
 
     [string[]]$BenchmarkFilter = @(
         "*QuicPublicApiLoopbackBenchmarks*",
-        "*QuicPublicApiStreamTransferBenchmarks*"
+        "*QuicPublicApiStreamTransferBenchmarks*",
+        "*QuicPublicApiSteadyStateStreamBenchmarks*"
     )
 )
 

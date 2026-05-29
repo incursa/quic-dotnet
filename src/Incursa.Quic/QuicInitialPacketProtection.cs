@@ -64,6 +64,11 @@ internal sealed class QuicInitialPacketProtection
     private const byte HkdfExpandCounterValue = 1;
 
     /// <summary>
+    /// The SHA-256 output length used by QUIC v1/v2 Initial HKDF derivation.
+    /// </summary>
+    private const int HkdfHashLength = 32;
+
+    /// <summary>
     /// The offset from the start of the HKDF label to the ASCII prefix bytes.
     /// </summary>
     private const int HkdfPrefixOffset = HkdfLengthFieldLength + HkdfLabelLengthFieldLength;
@@ -675,8 +680,7 @@ internal sealed class QuicInitialPacketProtection
 
     private static byte[] HkdfExtract(ReadOnlySpan<byte> salt, ReadOnlySpan<byte> inputKeyMaterial)
     {
-        using HMACSHA256 hmac = new(salt.ToArray());
-        return hmac.ComputeHash(inputKeyMaterial.ToArray());
+        return HMACSHA256.HashData(salt, inputKeyMaterial);
     }
 
     private static byte[] HkdfExpandLabel(ReadOnlySpan<byte> secret, ReadOnlySpan<byte> label, int length)
@@ -694,20 +698,22 @@ internal sealed class QuicInitialPacketProtection
         label.CopyTo(hkdfLabel[(HkdfPrefixOffset + HkdfLabelPrefix.Length)..]);
         hkdfLabel[^1] = 0;
 
-        byte[] expandInput = new byte[hkdfLabel.Length + HkdfExpandCounterLength];
+        Span<byte> expandInput = stackalloc byte[hkdfLabel.Length + HkdfExpandCounterLength];
         hkdfLabel.CopyTo(expandInput);
         expandInput[^1] = HkdfExpandCounterValue;
 
-        using HMACSHA256 hmac = new(secret.ToArray());
-        byte[] output = hmac.ComputeHash(expandInput);
-        if (output.Length == length)
+        byte[] output = new byte[length];
+        if (length == HkdfHashLength)
         {
+            HMACSHA256.HashData(secret, expandInput, output);
             return output;
         }
 
-        byte[] truncated = new byte[length];
-        output.AsSpan(..length).CopyTo(truncated);
-        return truncated;
+        Span<byte> fullOutput = stackalloc byte[HkdfHashLength];
+        HMACSHA256.HashData(secret, expandInput, fullOutput);
+        fullOutput[..length].CopyTo(output);
+        CryptographicOperations.ZeroMemory(fullOutput);
+        return output;
     }
 }
 

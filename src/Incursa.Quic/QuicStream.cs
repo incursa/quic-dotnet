@@ -24,7 +24,7 @@ public sealed class QuicStream : Stream
     private readonly bool canWrite;
     private readonly TaskCompletionSource<object?> readsClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly TaskCompletionSource<object?> writesClosed = new(TaskCreationOptions.RunContinuationsAsynchronously);
-    private readonly TaskCompletionSource<object?> writeAborted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private TaskCompletionSource<object?>? writeAborted;
     private readonly SemaphoreSlim readGate = new(0, int.MaxValue);
     private readonly SemaphoreSlim writeGate = new(1, 1);
     private readonly long? runtimeObserverId;
@@ -100,7 +100,7 @@ public sealed class QuicStream : Stream
             return Task.FromException(runtimeException);
         }
 
-        return writeAborted.Task.WaitAsync(cancellationToken);
+        return GetOrCreateWriteAbortedCompletion().Task.WaitAsync(cancellationToken);
     }
 
     /// <summary>
@@ -660,7 +660,7 @@ public sealed class QuicStream : Stream
                 break;
             case QuicStreamNotificationKind.WriteAborted:
                 writeTerminalException ??= notification.Exception;
-                writeAborted.TrySetException(notification.Exception!);
+                writeAborted?.TrySetException(notification.Exception!);
                 writesClosed.TrySetException(notification.Exception!);
                 runtime?.TryQueueStreamCapacityRelease(streamId);
                 break;
@@ -678,10 +678,11 @@ public sealed class QuicStream : Stream
                     writesClosed.TrySetException(notification.Exception!);
                 }
 
-                if (!writeAborted.Task.IsCompleted)
+                if (writeAborted is TaskCompletionSource<object?> writeAbortedCompletion
+                    && !writeAbortedCompletion.Task.IsCompleted)
                 {
                     writeTerminalException ??= notification.Exception;
-                    writeAborted.TrySetException(notification.Exception!);
+                    writeAbortedCompletion.TrySetException(notification.Exception!);
                 }
 
                 break;
@@ -714,6 +715,19 @@ public sealed class QuicStream : Stream
             "The peer aborted the stream.");
         readsClosed.TrySetException(exception);
         return true;
+    }
+
+    private TaskCompletionSource<object?> GetOrCreateWriteAbortedCompletion()
+    {
+        TaskCompletionSource<object?>? current = Volatile.Read(ref writeAborted);
+        if (current is not null)
+        {
+            return current;
+        }
+
+        TaskCompletionSource<object?> created = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?>? existing = Interlocked.CompareExchange(ref writeAborted, created, null);
+        return existing ?? created;
     }
 
     private static void ValidateErrorCode(long errorCode)

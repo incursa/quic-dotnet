@@ -1936,8 +1936,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             enableServerEarlyData: options.EnableEarlyData,
             serverResumptionTicketStore: serverResumptionTicketStore,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
-            maximumInboundDatagramQueueSize: options.MaxInboundDatagramQueueSize);
+            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options));
     }
+
+    private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)
+        => options.MaxDatagramFrameSize > 0 ? options.MaxInboundDatagramQueueSize : 0;
 
     private static uint[] BuildRuntimeSupportedVersions(uint initialVersion)
     {

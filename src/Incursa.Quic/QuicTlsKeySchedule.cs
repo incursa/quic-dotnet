@@ -3080,7 +3080,7 @@ internal sealed class QuicTlsKeySchedule
         ReadOnlySpan<byte> initialClientHelloBytes,
         ReadOnlySpan<byte> helloRetryRequestBytes)
     {
-        byte[] initialClientHelloHash = SHA256.HashData(initialClientHelloBytes.ToArray());
+        byte[] initialClientHelloHash = SHA256.HashData(initialClientHelloBytes);
         byte[] messageHashBytes = WrapHandshakeMessage(MessageHashHandshakeType, initialClientHelloHash);
 
         transcriptBytes.Clear();
@@ -3095,20 +3095,21 @@ internal sealed class QuicTlsKeySchedule
 
     private byte[] HashTranscriptWithAppended(ReadOnlySpan<byte> handshakeMessageBytes)
     {
-        return SHA256.HashData([.. transcriptBytes.WrittenSpan, .. handshakeMessageBytes]);
+        using IncrementalHash hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        hash.AppendData(transcriptBytes.WrittenSpan);
+        hash.AppendData(handshakeMessageBytes);
+        return hash.GetHashAndReset();
     }
 
     private static byte[] DeriveFinishedVerifyData(ReadOnlySpan<byte> trafficSecret, ReadOnlySpan<byte> transcriptHash)
     {
         byte[] finishedKey = HkdfExpandLabel(trafficSecret, FinishedLabel, [], HashLength);
-        using HMACSHA256 hmac = new(finishedKey);
-        return hmac.ComputeHash(transcriptHash.ToArray());
+        return HMACSHA256.HashData(finishedKey, transcriptHash);
     }
 
     private static byte[] HkdfExtract(ReadOnlySpan<byte> salt, ReadOnlySpan<byte> inputKeyMaterial)
     {
-        using HMACSHA256 hmac = new(salt.ToArray());
-        return hmac.ComputeHash(inputKeyMaterial.ToArray());
+        return HMACSHA256.HashData(salt, inputKeyMaterial);
     }
 
     private static byte[] HkdfExpandLabel(ReadOnlySpan<byte> secret, ReadOnlySpan<byte> label, ReadOnlySpan<byte> context, int length)
@@ -3139,20 +3140,22 @@ internal sealed class QuicTlsKeySchedule
             context.CopyTo(hkdfLabel[index..]);
         }
 
-        byte[] expandInput = new byte[hkdfLabel.Length + HkdfExpandCounterLength];
+        Span<byte> expandInput = stackalloc byte[hkdfLabel.Length + HkdfExpandCounterLength];
         hkdfLabel.CopyTo(expandInput);
         expandInput[^1] = HkdfExpandCounterValue;
 
-        using HMACSHA256 hmac = new(secret.ToArray());
-        byte[] output = hmac.ComputeHash(expandInput);
-        if (output.Length == length)
+        byte[] output = new byte[length];
+        if (length == HashLength)
         {
+            HMACSHA256.HashData(secret, expandInput, output);
             return output;
         }
 
-        byte[] truncated = new byte[length];
-        output.AsSpan(..length).CopyTo(truncated);
-        return truncated;
+        Span<byte> fullOutput = stackalloc byte[HashLength];
+        HMACSHA256.HashData(secret, expandInput, fullOutput);
+        fullOutput[..length].CopyTo(output);
+        CryptographicOperations.ZeroMemory(fullOutput);
+        return output;
     }
 
     private IReadOnlyList<QuicTlsStateUpdate> BuildFatalAlert(ushort alertDescription)

@@ -163,25 +163,17 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
     private async ValueTask<QuicConnection> AwaitConnectionAsync(CancellationToken cancellationToken)
     {
         TimeSpan handshakeTimeout = settings.Options.HandshakeTimeout;
-        CancellationTokenSource? handshakeTimeoutCancellation = null;
-        CancellationTokenSource? linkedCancellation = null;
 
         try
         {
-            handshakeTimeoutCancellation = CreateHandshakeTimeoutCancellation(handshakeTimeout);
-
-            if (handshakeTimeoutCancellation is not null)
+            if (IsHandshakeTimeoutEnabled(handshakeTimeout))
             {
-                linkedCancellation = CancellationTokenSource.CreateLinkedTokenSource(
-                    cancellationToken,
-                    handshakeTimeoutCancellation.Token);
-                return await establishedConnection.Task.WaitAsync(linkedCancellation.Token).ConfigureAwait(false);
+                return await establishedConnection.Task.WaitAsync(handshakeTimeout, cancellationToken).ConfigureAwait(false);
             }
 
             return await establishedConnection.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException exception)
-            when (!cancellationToken.IsCancellationRequested && handshakeTimeoutCancellation?.IsCancellationRequested == true)
+        catch (TimeoutException exception)
         {
             await DisposeAsync().ConfigureAwait(false);
             throw CreateHandshakeTimeoutException(handshakeTimeout, exception);
@@ -190,11 +182,6 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         {
             await DisposeAsync().ConfigureAwait(false);
             throw;
-        }
-        finally
-        {
-            linkedCancellation?.Dispose();
-            handshakeTimeoutCancellation?.Dispose();
         }
     }
 
@@ -396,8 +383,11 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
             allowClientPeerInitialReplacementBeforeTranscript: settings.AllowClientPeerInitialReplacementBeforeTranscript,
             selectedCipherSuite: settings.SelectedCipherSuite,
             tlsKeyLogSecretObserver: tlsKeyLogSecretObserver,
-            maximumInboundDatagramQueueSize: options.MaxInboundDatagramQueueSize);
+            maximumInboundDatagramQueueSize: GetEffectiveInboundDatagramQueueSize(options));
     }
+
+    private static int GetEffectiveInboundDatagramQueueSize(QuicConnectionOptions options)
+        => options.MaxDatagramFrameSize > 0 ? options.MaxInboundDatagramQueueSize : 0;
 
     private static QuicTransportParameters CreateLocalTransportParameters(
         QuicClientConnectionOptions options,
@@ -433,11 +423,11 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
         };
     }
 
-    private static CancellationTokenSource? CreateHandshakeTimeoutCancellation(TimeSpan handshakeTimeout)
+    private static bool IsHandshakeTimeoutEnabled(TimeSpan handshakeTimeout)
     {
         if (handshakeTimeout == Timeout.InfiniteTimeSpan || handshakeTimeout == TimeSpan.Zero)
         {
-            return null;
+            return false;
         }
 
         if (handshakeTimeout < TimeSpan.Zero)
@@ -447,9 +437,7 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
                 "HandshakeTimeout must be non-negative, zero, or Timeout.InfiniteTimeSpan.");
         }
 
-        CancellationTokenSource cancellation = new();
-        cancellation.CancelAfter(handshakeTimeout);
-        return cancellation;
+        return true;
     }
 
     private static QuicException CreateHandshakeTimeoutException(TimeSpan handshakeTimeout, Exception innerException)
