@@ -98,6 +98,91 @@ public class QuicByteBufferAllocationBenchmarks
         return bytesWritten ^ (completed ? 1 : 0) ^ destination[0] ^ destination[^1];
     }
 
+    /// <summary>
+    /// Measures receiving a duplicate STREAM payload that should not be buffered again.
+    /// </summary>
+    [Benchmark]
+    public int StreamReceive_DuplicatePayloadFrame()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        if (!QuicStreamParser.TryParseStreamFrame(singleStreamFrame, out QuicStreamFrame frame)
+            || !state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode)
+            || errorCode != default
+            || !state.TryReceiveStreamFrame(frame, out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        Span<byte> destination = readBuffer.AsSpan(0, frame.StreamDataLength);
+        if (!state.TryReadStreamData(
+                frame.StreamId.Value,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out _,
+                out _,
+                out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        return bytesWritten ^ (completed ? 1 : 0) ^ destination[0];
+    }
+
+    /// <summary>
+    /// Measures partial reads from one buffered STREAM segment.
+    /// </summary>
+    [Benchmark]
+    public int StreamRead_TwoPartialReads()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        if (!QuicStreamParser.TryParseStreamFrame(singleStreamFrame, out QuicStreamFrame frame)
+            || !state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        Span<byte> firstDestination = readBuffer.AsSpan(0, 2);
+        if (!state.TryReadStreamData(
+                frame.StreamId.Value,
+                firstDestination,
+                out int firstBytesWritten,
+                out bool firstCompleted,
+                out _,
+                out _,
+                out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        Span<byte> secondDestination = readBuffer.AsSpan(2, frame.StreamDataLength - firstBytesWritten);
+        if (!state.TryReadStreamData(
+                frame.StreamId.Value,
+                secondDestination,
+                out int secondBytesWritten,
+                out bool secondCompleted,
+                out _,
+                out _,
+                out errorCode)
+            || errorCode != default)
+        {
+            return -1;
+        }
+
+        return firstBytesWritten
+            ^ secondBytesWritten
+            ^ (firstCompleted ? 1 : 0)
+            ^ (secondCompleted ? 1 : 0)
+            ^ firstDestination[0]
+            ^ secondDestination[^1];
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState()
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(

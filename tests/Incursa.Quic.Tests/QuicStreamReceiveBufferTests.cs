@@ -99,6 +99,50 @@ public sealed class QuicStreamReceiveBufferTests
         Assert.True(((ReadOnlySpan<byte>)[0x11, 0x22, 0x33]).SequenceEqual(destination));
     }
 
+    [Fact]
+    public void TryReceiveStreamFrame_DuplicateAfterPartialReadDoesNotReplaceUnreadTail()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(streamId: 0, offset: 0, [0x11, 0x22, 0x33], fin: true), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] firstRead = new byte[2];
+        Assert.True(state.TryReadStreamData(0, firstRead, out int firstBytesWritten, out bool firstCompleted, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(2, firstBytesWritten);
+        Assert.False(firstCompleted);
+        Assert.True(((ReadOnlySpan<byte>)[0x11, 0x22]).SequenceEqual(firstRead));
+
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(streamId: 0, offset: 0, [0xAA, 0xBB, 0xCC], fin: true), out errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] secondRead = new byte[1];
+        Assert.True(state.TryReadStreamData(0, secondRead, out int secondBytesWritten, out bool secondCompleted, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(1, secondBytesWritten);
+        Assert.True(secondCompleted);
+        Assert.Equal(0x33, secondRead[0]);
+    }
+
+    [Fact]
+    public void TryReceiveStreamFrame_OverlappingFrameAddsOnlyMissingTail()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(streamId: 0, offset: 0, [0x11, 0x22, 0x33], fin: false), out QuicTransportErrorCode errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.True(state.TryReceiveStreamFrame(ParseStreamFrame(streamId: 0, offset: 1, [0xAA, 0xBB, 0x44, 0x55], fin: true), out errorCode));
+        Assert.Equal(default, errorCode);
+
+        byte[] destination = new byte[5];
+        Assert.True(state.TryReadStreamData(0, destination, out int bytesWritten, out bool completed, out _, out _, out errorCode));
+        Assert.Equal(default, errorCode);
+        Assert.Equal(5, bytesWritten);
+        Assert.True(completed);
+        Assert.True(((ReadOnlySpan<byte>)[0x11, 0x22, 0x33, 0x44, 0x55]).SequenceEqual(destination));
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState()
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(

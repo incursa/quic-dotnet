@@ -473,9 +473,9 @@ internal sealed class QuicConnectionStreamState
                 state.ReceiveFinalSize = proposedFinalSize.Value;
             }
 
-            if (frame.StreamDataLength > 0)
+            if (frame.StreamDataLength > 0 && additionalBytes > 0)
             {
-                InsertReadableBytes(state, frame.Offset, frame.StreamData.ToArray());
+                InsertReadableBytes(state, frame.Offset, frame.StreamData);
             }
 
             UpdateReceiveState(state);
@@ -715,29 +715,29 @@ internal sealed class QuicConnectionStreamState
                 if (entry.Offset < expectedOffset)
                 {
                     int skip = (int)(expectedOffset - entry.Offset);
-                    if (skip >= entry.Data.Length)
+                    if (skip >= entry.Length)
                     {
-                        state.BufferedReadableBytes -= entry.Data.Length;
+                        state.BufferedReadableBytes -= entry.Length;
                         state.BufferedSegments.RemoveAt(0);
                         continue;
                     }
 
-                    entry = new BufferedSegment(expectedOffset, entry.Data[skip..]);
+                    entry = entry.Slice(skip);
                 }
 
-                int bytesToCopy = Math.Min(entry.Data.Length, destination.Length - destinationIndex);
-                entry.Data.AsSpan(0, bytesToCopy).CopyTo(destination[destinationIndex..]);
+                int bytesToCopy = Math.Min(entry.Length, destination.Length - destinationIndex);
+                entry.DataSpan[..bytesToCopy].CopyTo(destination[destinationIndex..]);
                 destinationIndex += bytesToCopy;
                 expectedOffset += (ulong)bytesToCopy;
                 state.BufferedReadableBytes -= bytesToCopy;
 
-                if (bytesToCopy == entry.Data.Length)
+                if (bytesToCopy == entry.Length)
                 {
                     state.BufferedSegments.RemoveAt(0);
                 }
                 else
                 {
-                    state.BufferedSegments[0] = new BufferedSegment(entry.Offset + (ulong)bytesToCopy, entry.Data[bytesToCopy..]);
+                    state.BufferedSegments[0] = entry.Slice(bytesToCopy);
                     break;
                 }
             }
@@ -1225,7 +1225,7 @@ internal sealed class QuicConnectionStreamState
         return (streamIndex << StreamIdTypeBitCount) | initiatorBit | directionBit;
     }
 
-    private static void InsertReadableBytes(StreamState state, ulong offset, byte[] data)
+    private static void InsertReadableBytes(StreamState state, ulong offset, ReadOnlySpan<byte> data)
     {
         if (data.Length == 0)
         {
@@ -1306,12 +1306,9 @@ internal sealed class QuicConnectionStreamState
         state.BufferedSegments.AddRange(updated);
     }
 
-    private static BufferedSegment CreateBufferedSegment(ulong offset, byte[] data, int dataIndex, int length)
+    private static BufferedSegment CreateBufferedSegment(ulong offset, ReadOnlySpan<byte> data, int dataIndex, int length)
     {
-        byte[] segmentData = dataIndex == 0 && length == data.Length
-            ? data
-            : data.AsSpan(dataIndex, length).ToArray();
-
+        byte[] segmentData = data.Slice(dataIndex, length).ToArray();
         return new BufferedSegment(offset, segmentData);
     }
 
@@ -1358,9 +1355,25 @@ internal sealed class QuicConnectionStreamState
         public List<BufferedSegment> BufferedSegments { get; } = [];
     }
 
-    private readonly record struct BufferedSegment(ulong Offset, byte[] Data)
+    private readonly record struct BufferedSegment(ulong Offset, byte[] Data, int DataOffset, int Length)
     {
-        public ulong End => Offset + (ulong)Data.Length;
+        public BufferedSegment(ulong offset, byte[] data)
+            : this(offset, data, 0, data.Length)
+        {
+        }
+
+        public ulong End => Offset + (ulong)Length;
+
+        public ReadOnlySpan<byte> DataSpan => Data.AsSpan(DataOffset, Length);
+
+        public BufferedSegment Slice(int bytesConsumed)
+        {
+            return new BufferedSegment(
+                Offset + (ulong)bytesConsumed,
+                Data,
+                DataOffset + bytesConsumed,
+                Length - bytesConsumed);
+        }
     }
 }
 
