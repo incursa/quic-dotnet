@@ -203,7 +203,7 @@ internal sealed class QuicAckGenerationState
     /// </summary>
     internal bool TryBuildAckFrame(QuicPacketNumberSpace packetNumberSpace, ulong nowMicros, out QuicAckFrame frame)
     {
-        frame = new QuicAckFrame();
+        frame = null!;
 
         if (!TryGetSpaceState(packetNumberSpace, out SpaceState? state) || state.Receipts.Count == 0)
         {

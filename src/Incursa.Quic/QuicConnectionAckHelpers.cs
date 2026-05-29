@@ -149,10 +149,12 @@ internal static class QuicConnectionAckHelpers
         QuicSenderFlowController flowController,
         ulong nowMicros,
         out byte[] piggybackedPayload,
+        out int piggybackedPayloadLength,
         out QuicAckFrame ackFrame)
     {
         piggybackedPayload = [];
-        ackFrame = new QuicAckFrame();
+        piggybackedPayloadLength = 0;
+        ackFrame = null!;
 
         if (payload.IsEmpty
             || !flowController.ShouldIncludeAckFrameWithOutgoingPacket(
@@ -173,14 +175,15 @@ internal static class QuicConnectionAckHelpers
             return false;
         }
 
-        int piggybackedPayloadLength = checked(ackPayloadLength + payload.Length);
-        QuicBufferLease piggybackedPayloadLease = QuicBufferPool.RentLease(piggybackedPayloadLength);
+        int computedPiggybackedPayloadLength = checked(ackPayloadLength + payload.Length);
+        QuicBufferLease piggybackedPayloadLease = QuicBufferPool.RentLease(computedPiggybackedPayloadLength);
         try
         {
             Span<byte> buffer = piggybackedPayloadLease.Span;
             ackPayload.Slice(0, ackPayloadLength).CopyTo(buffer);
             payload.Span.CopyTo(buffer.Slice(ackPayloadLength));
-            piggybackedPayload = piggybackedPayloadLease.TransferOwnership(out _);
+            piggybackedPayloadLease.SetLength(computedPiggybackedPayloadLength);
+            piggybackedPayload = piggybackedPayloadLease.TransferOwnership(out piggybackedPayloadLength);
             return true;
         }
         finally
@@ -194,10 +197,12 @@ internal static class QuicConnectionAckHelpers
         QuicSenderFlowController flowController,
         ulong nowMicros,
         out byte[] ackFramePayload,
+        out int ackFramePayloadLength,
         out QuicAckFrame ackFrame)
     {
         ackFramePayload = [];
-        ackFrame = new QuicAckFrame();
+        ackFramePayloadLength = 0;
+        ackFrame = null!;
 
         if (!flowController.ShouldIncludeAckFrameWithOutgoingPacket(
                 packetNumberSpace,
@@ -217,6 +222,7 @@ internal static class QuicConnectionAckHelpers
             return false;
         }
 
+        ackFramePayloadLength = frameBytesWritten;
         ackFramePayload = new byte[frameBytesWritten];
         framePayloadBuffer.Slice(0, frameBytesWritten).CopyTo(ackFramePayload);
         return true;

@@ -1531,9 +1531,10 @@ internal sealed partial class QuicConnectionRuntime
                     sendRuntime.FlowController,
                     nowMicros,
                     out byte[] piggybackedPayload,
+                    out int piggybackedPayloadLength,
                     out QuicAckFrame includedAckFrame))
             {
-                packetPayload = piggybackedPayload;
+                packetPayload = piggybackedPayload.AsMemory(0, piggybackedPayloadLength);
                 piggybackedAckFrame = includedAckFrame;
                 piggybackedPayloadOwner = piggybackedPayload;
             }
@@ -1707,149 +1708,162 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         ulong nowMicros = GetElapsedMicros(lastTransitionTicks);
-        ReadOnlyMemory<byte> packetPayload = payload;
-        QuicAckFrame? piggybackedAckFrame = null;
-        if (includeAckFrame
-            && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
-                payload,
-                sendRuntime.FlowController,
-                nowMicros,
-                out byte[] piggybackedPayload,
-                out QuicAckFrame includedAckFrame))
-        {
-            packetPayload = piggybackedPayload;
-            piggybackedAckFrame = includedAckFrame;
-        }
-
-        if (!TryPreflightApplicationDataCongestionBudget(
-                packetPayload.Length,
-                ackOnlyPacket: false,
-                probePacket,
-                out exception))
-        {
-            return false;
-        }
-
-        if (!TryGetStoredSpinBitForPath(pathIdentity, out bool pathSpinBit))
-        {
-            exception = new InvalidOperationException("The requested path is not available for an application packet.");
-            return false;
-        }
-
-        QuicBufferLease protectedPacketLease = default;
-        if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
-            packetPayload.Span,
-            tlsState.OneRttProtectPacketProtectionMaterial!.Value,
-            tlsState.CurrentOneRttKeyPhaseBit,
-            pathSpinBit,
-            PeerSupportsGreasedQuicBit,
-            out ulong packetNumber,
-            out protectedPacketLease))
-        {
-            exception = new InvalidOperationException(protectFailureMessage);
-            return false;
-        }
-
-        byte[]? protectedPacketOwner = null;
+        byte[]? piggybackedPayloadOwner = null;
         try
         {
-            protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
-            protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+            ReadOnlyMemory<byte> packetPayload = payload;
+            QuicAckFrame? piggybackedAckFrame = null;
+            if (includeAckFrame
+                && QuicConnectionAckHelpers.TryBuildApplicationAckPiggybackPayload(
+                    payload,
+                    sendRuntime.FlowController,
+                    nowMicros,
+                    out byte[] piggybackedPayload,
+                    out int piggybackedPayloadLength,
+                    out QuicAckFrame includedAckFrame))
+            {
+                packetPayload = piggybackedPayload.AsMemory(0, piggybackedPayloadLength);
+                piggybackedAckFrame = includedAckFrame;
+                piggybackedPayloadOwner = piggybackedPayload;
+            }
+
+            if (!TryPreflightApplicationDataCongestionBudget(
+                    packetPayload.Length,
+                    ackOnlyPacket: false,
+                    probePacket,
+                    out exception))
+            {
+                return false;
+            }
+
+            if (!TryGetStoredSpinBitForPath(pathIdentity, out bool pathSpinBit))
+            {
+                exception = new InvalidOperationException("The requested path is not available for an application packet.");
+                return false;
+            }
+
+            QuicBufferLease protectedPacketLease = default;
+            if (!handshakeFlowCoordinator.TryBuildProtectedApplicationDataPacketLease(
+                packetPayload.Span,
+                tlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                tlsState.CurrentOneRttKeyPhaseBit,
+                pathSpinBit,
+                PeerSupportsGreasedQuicBit,
+                out ulong packetNumber,
+                out protectedPacketLease))
+            {
+                exception = new InvalidOperationException(protectFailureMessage);
+                return false;
+            }
+
+            byte[]? protectedPacketOwner = null;
+            try
+            {
+                protectedPacketOwner = protectedPacketLease.TransferOwnership(out int protectedPacketLength);
+                protectedPacket = protectedPacketOwner.AsMemory(0, protectedPacketLength);
+            }
+            finally
+            {
+                protectedPacketLease.Dispose();
+            }
+
+            if (!tlsState.TryRecordCurrentOneRttProtectionUse())
+            {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                exception = new InvalidOperationException(protectFailureMessage);
+                return false;
+            }
+
+            if (!sendRuntime.FlowController.CanSend(
+                    QuicPacketNumberSpace.ApplicationData,
+                    (ulong)protectedPacket.Length,
+                    isProbePacket: probePacket))
+            {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
+                return false;
+            }
+
+            if (enforcePathMaximumDatagramSize
+                && !maximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
+            {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                exception = new InvalidOperationException("The requested path cannot send an ordinary packet.");
+                return false;
+            }
+
+            if (activePath is not null
+                && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
+            {
+                QuicConnectionActivePathRecord currentPath = activePath.Value;
+                if (!currentPath.AmplificationState.TryConsumeSendBudget(
+                    protectedPacket.Length,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+                {
+                    QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                    exception = new InvalidOperationException(amplificationFailureMessage);
+                    return false;
+                }
+
+                activePath = currentPath with
+                {
+                    AmplificationState = updatedAmplificationState,
+                };
+            }
+            else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
+            {
+                if (!candidatePath.AmplificationState.TryConsumeSendBudget(
+                    protectedPacket.Length,
+                    out QuicConnectionPathAmplificationState updatedAmplificationState))
+                {
+                    QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                    exception = new InvalidOperationException(amplificationFailureMessage);
+                    return false;
+                }
+
+                candidatePath = candidatePath with
+                {
+                    AmplificationState = updatedAmplificationState,
+                };
+                candidatePaths[pathIdentity] = candidatePath;
+            }
+            else
+            {
+                QuicBufferPool.ReturnBytes(protectedPacketOwner);
+                exception = new InvalidOperationException(amplificationFailureMessage);
+                return false;
+            }
+
+            TrackApplicationPacket(
+                packetNumber,
+                protectedPacket,
+                retransmittable: retransmittable,
+                probePacket: probePacket,
+                streamId: streamId,
+                streamIds: streamIds,
+                plaintextPayload: payload,
+                plaintextPayloadOwner: plaintextPayloadOwner,
+                packetBytesOwner: protectedPacketOwner);
+            if (piggybackedAckFrame is not null)
+            {
+                MarkApplicationAckFrameSent(
+                    piggybackedAckFrame,
+                    packetNumber,
+                    sentAtMicros: nowMicros,
+                    ackOnlyPacket: false);
+            }
+
+            sendPathIdentity = pathIdentity;
+            exception = null;
+            return true;
         }
         finally
         {
-            protectedPacketLease.Dispose();
-        }
-
-        if (!tlsState.TryRecordCurrentOneRttProtectionUse())
-        {
-            QuicBufferPool.ReturnBytes(protectedPacketOwner);
-            exception = new InvalidOperationException(protectFailureMessage);
-            return false;
-        }
-
-        if (!sendRuntime.FlowController.CanSend(
-                QuicPacketNumberSpace.ApplicationData,
-                (ulong)protectedPacket.Length,
-                isProbePacket: probePacket))
-        {
-            QuicBufferPool.ReturnBytes(protectedPacketOwner);
-            exception = new InvalidOperationException(CongestionControllerExhaustedMessage);
-            return false;
-        }
-
-        if (enforcePathMaximumDatagramSize
-            && !maximumDatagramSizeState.CanSend((ulong)protectedPacket.Length))
-        {
-            QuicBufferPool.ReturnBytes(protectedPacketOwner);
-            exception = new InvalidOperationException("The requested path cannot send an ordinary packet.");
-            return false;
-        }
-
-        if (activePath is not null
-            && EqualityComparer<QuicConnectionPathIdentity>.Default.Equals(activePath.Value.Identity, pathIdentity))
-        {
-            QuicConnectionActivePathRecord currentPath = activePath.Value;
-            if (!currentPath.AmplificationState.TryConsumeSendBudget(
-                protectedPacket.Length,
-                out QuicConnectionPathAmplificationState updatedAmplificationState))
+            if (piggybackedPayloadOwner is not null)
             {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
-                exception = new InvalidOperationException(amplificationFailureMessage);
-                return false;
+                QuicBufferPool.ReturnBytes(piggybackedPayloadOwner);
             }
-
-            activePath = currentPath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
         }
-        else if (TryGetCandidatePath(pathIdentity, out QuicConnectionCandidatePathRecord candidatePath))
-        {
-            if (!candidatePath.AmplificationState.TryConsumeSendBudget(
-                protectedPacket.Length,
-                out QuicConnectionPathAmplificationState updatedAmplificationState))
-            {
-                QuicBufferPool.ReturnBytes(protectedPacketOwner);
-                exception = new InvalidOperationException(amplificationFailureMessage);
-                return false;
-            }
-
-            candidatePath = candidatePath with
-            {
-                AmplificationState = updatedAmplificationState,
-            };
-            candidatePaths[pathIdentity] = candidatePath;
-        }
-        else
-        {
-            QuicBufferPool.ReturnBytes(protectedPacketOwner);
-            exception = new InvalidOperationException(amplificationFailureMessage);
-            return false;
-        }
-
-        TrackApplicationPacket(
-            packetNumber,
-            protectedPacket,
-            retransmittable: retransmittable,
-            probePacket: probePacket,
-            streamId: streamId,
-            streamIds: streamIds,
-            plaintextPayload: payload,
-            plaintextPayloadOwner: plaintextPayloadOwner,
-            packetBytesOwner: protectedPacketOwner);
-        if (piggybackedAckFrame is not null)
-        {
-            MarkApplicationAckFrameSent(
-                piggybackedAckFrame,
-                packetNumber,
-                sentAtMicros: nowMicros,
-                ackOnlyPacket: false);
-        }
-
-        sendPathIdentity = pathIdentity;
-        exception = null;
-        return true;
     }
 
     private bool TryGetPathMaximumDatagramSizeState(
@@ -3035,6 +3049,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicPacketNumberSpace.Initial,
             nowMicros,
             out byte[] ackFramePayload,
+            out _,
             out piggybackedAckFrame);
 
         return handshakeFlowCoordinator.TryBuildProtectedInitialPacketForRetransmission(
@@ -3095,6 +3110,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicPacketNumberSpace.Handshake,
             nowMicros,
             out byte[] ackFramePayload,
+            out _,
             out piggybackedAckFrame);
 
         return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(
@@ -3449,6 +3465,7 @@ internal sealed partial class QuicConnectionRuntime
             QuicPacketNumberSpace.Handshake,
             nowMicros,
             out byte[] ackFramePayload,
+            out _,
             out piggybackedAckFrame);
 
         return handshakeFlowCoordinator.TryBuildProtectedHandshakePacketForRetransmission(

@@ -2733,16 +2733,19 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace packetNumberSpace,
         ulong nowMicros,
         out byte[] ackFramePayload,
+        out int ackFramePayloadLength,
         out QuicAckFrame ackFrame)
     {
         ackFramePayload = [];
-        ackFrame = new QuicAckFrame();
+        ackFramePayloadLength = 0;
+        ackFrame = null!;
 
         if (!QuicConnectionAckHelpers.TryBuildLongHeaderAckPiggybackFramePayload(
                 packetNumberSpace,
                 sendRuntime.FlowController,
                 nowMicros,
                 out ackFramePayload,
+                out ackFramePayloadLength,
                 out ackFrame))
         {
             return false;
@@ -3160,6 +3163,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
                 out byte[] ackFramePayload,
+                out _,
                 out QuicAckFrame piggybackedAckFrame);
             byte[] protectedPacket;
             ulong packetNumber;
@@ -3285,6 +3289,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
                 out byte[] ackFramePayload,
+                out _,
                 out QuicAckFrame piggybackedAckFrame);
             ReadOnlySpan<byte> destinationConnectionId = GetClientInitialPacketDestinationConnectionId();
             if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
@@ -3416,6 +3421,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicPacketNumberSpace.Initial,
                 nowMicros,
                 out byte[] ackFramePayload,
+                out _,
                 out QuicAckFrame piggybackedAckFrame);
             if (!handshakeFlowCoordinator.TryBuildProtectedInitialPacket(
                 cryptoChunk,
@@ -3508,6 +3514,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicPacketNumberSpace.Handshake,
                 nowMicros,
                 out byte[] ackFramePayload,
+                out _,
                 out QuicAckFrame piggybackedAckFrame);
 
             if (!handshakeFlowCoordinator.TryBuildProtectedHandshakePacket(

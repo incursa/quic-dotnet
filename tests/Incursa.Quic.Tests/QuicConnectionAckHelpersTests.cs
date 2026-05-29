@@ -90,11 +90,15 @@ public sealed class QuicConnectionAckHelpersTests
             flowController,
             nowMicros: 1_000,
             out byte[] piggybackedPayload,
+            out int piggybackedPayloadLength,
             out QuicAckFrame ackFrame));
 
-        Assert.True(QuicFrameCodec.TryParseAckFrame(piggybackedPayload, out QuicAckFrame parsedAckFrame, out int ackBytesConsumed));
+        Assert.True(QuicFrameCodec.TryParseAckFrame(
+            piggybackedPayload.AsSpan(0, piggybackedPayloadLength),
+            out QuicAckFrame parsedAckFrame,
+            out int ackBytesConsumed));
         Assert.Equal(ackFrame.LargestAcknowledged, parsedAckFrame.LargestAcknowledged);
         Assert.Equal(ackFrame.FirstAckRange, parsedAckFrame.FirstAckRange);
-        Assert.Equal(applicationPayload, piggybackedPayload[ackBytesConsumed..].ToArray());
+        Assert.Equal(applicationPayload, piggybackedPayload.AsSpan(ackBytesConsumed, piggybackedPayloadLength - ackBytesConsumed).ToArray());
     }
 }
