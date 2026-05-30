@@ -1,0 +1,41 @@
+{
+  "mode": "harness",
+  "commandName": "harness",
+  "count": 2000,
+  "incursaQuic": {
+    "pass1": {
+      "iterations": 2000,
+      "elapsedSeconds": 49.823,
+      "msPerOp": 24.911,
+      "managedBytesPerOp": 326548,
+      "workingSetBytesPerOp": 13572,
+      "privateBytesPerOp": 8593
+    },
+    "pass2": {
+      "iterations": 2000,
+      "elapsedSeconds": 49.325,
+      "msPerOp": 24.662,
+      "managedBytesPerOp": 325098,
+      "workingSetBytesPerOp": 2643,
+      "privateBytesPerOp": 2492
+    }
+  },
+  "systemNetQuic": {
+    "pass1": {
+      "iterations": 2000,
+      "elapsedSeconds": 39.214,
+      "msPerOp": 19.607,
+      "managedBytesPerOp": 91430,
+      "workingSetBytesPerOp": 2318190,
+      "privateBytesPerOp": 2493612
+    },
+    "pass2": {
+      "iterations": 2000,
+      "elapsedSeconds": 50.27,
+      "msPerOp": 25.135,
+      "managedBytesPerOp": 91184,
+      "workingSetBytesPerOp": 2319607,
+      "privateBytesPerOp": 2494984
+    }
+  }
+}

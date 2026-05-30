@@ -1,0 +1,28 @@
+
+=== Handshake Processing Allocation Profile ===
+Iterations per measurement: 100
+Measures TLS handshake sub-operations in isolation.
+
+
+  Sub-operation                                         Total (B)       B/op  % of ~220KB
+  --------------------------------------------------  -----------     ------  -----------
+  CRYPTO frame buffer (12 frames ├ù 200B avg)              537,600      5,376        2.4%
+  WrapHandshakeMessage (6 calls, ~2KB body)               425,008      4,250        1.9%
+  Transcript ArrayBufferWriter growth                     396,800      3,968        1.8%
+  HKDF ExpandLabel (14 calls, 16-32B each)                145,600      1,456        0.7%
+  Certificate body (1+3+certEntryLen)                     123,200      1,232        0.6%
+  PacketProtectionMaterial.TryCreate (4 calls)             60,000        600        0.3%
+  AesGcm construction (4 calls)                            45,344        453        0.2%
+  SHA256.HashData (7 calls x 32B)                          39,200        392        0.2%
+  CertificateVerify SignData (~72B)                         9,600         96        0.0%
+  Packet buffers (16 ├ù 1200B)                               2,520         25        0.0%
+  --------------------------------------------------  -----------     ------  -----------
+  TOTAL measured                                        1,784,872     17,848        8.1%
+
+  Reference: ~220,000 B/op ├ù 100 = 22,000,000 B total
+  Measured:     1,784,872 B total  (    17,848 B/op)
+  Remainder (full handshake - visible sub-ops): 202,151 B/op
+
+  Note: Sub-operations measured in isolation. Actual handshake involves async
+  message exchange, ordering, and shared-state effects not captured here.
+

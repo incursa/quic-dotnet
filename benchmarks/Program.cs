@@ -4,8 +4,9 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
-if (args is ["--harness", ..] or ["--leak", ..] or ["--help"] or ["--profile", ..] or ["--profile-connect", ..] or ["--profile-runtime", ..] or ["--profile-handshake", ..])
+if (args is ["--harness", ..] or ["--leak", ..] or ["--help", ..] or ["--profile", ..] or ["--profile-connect", ..] or ["--profile-runtime", ..] or ["--profile-handshake", ..])
 {
+    ExtractJsonPath(args);
     return Incursa.Quic.Benchmarks.QuicAllocationHarness.Run(
         args.Length > 0 && args[0] is "--harness" or "--leak" or "--help" or "--profile" or "--profile-connect" or "--profile-runtime" or "--profile-handshake" ? args : ["--help"]);
 }
@@ -29,4 +30,23 @@ static string[] UseShortArtifactsRoot(string[] args)
     updatedArgs[^2] = "--artifacts";
     updatedArgs[^1] = Path.Combine(Directory.GetCurrentDirectory(), ".artifacts", "bdn");
     return updatedArgs;
+}
+
+static void ExtractJsonPath(string[] args)
+{
+    for (int i = 0; i < args.Length; i++)
+    {
+        if (args[i] == "--json")
+        {
+            if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
+            {
+                Incursa.Quic.Benchmarks.QuicAllocationHarness.JsonOutputPath = args[i + 1];
+            }
+            else
+            {
+                Incursa.Quic.Benchmarks.QuicAllocationHarness.JsonOutputPath = string.Empty;
+            }
+            return;
+        }
+    }
 }

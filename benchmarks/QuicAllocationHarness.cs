@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.Json.Nodes;
 using System.Threading.Channels;
 using System.Net.Security;
 using System.Security.Cryptography;
@@ -37,38 +38,91 @@ internal static class QuicAllocationHarness
     private const int WarmupCount = 3;
     private const int PassCount = 2;
 
+    internal static string? JsonOutputPath { get; set; }
+
+    private readonly record struct PassResult(
+        int Iterations,
+        double ElapsedSeconds,
+        double MsPerOp,
+        long ManagedDelta,
+        long WsDelta,
+        long PrivDelta);
+
+    private readonly record struct LeakBatchResult(
+        long ManagedLive,
+        long WsLive,
+        long PrivLive,
+        long ManagedEnd,
+        long WsEnd,
+        long PrivEnd,
+        long RetainedPriv,
+        long RetainedWs,
+        long RetainedPrivPerConn,
+        long RetainedWsPerConn);
+
     internal static int Run(string[] args)
     {
+        // Strip --json flag and optional path
+        string? jsonOutput = null;
+        var cleanedArgs = new List<string>();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == "--json")
+            {
+                if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
+                {
+                    jsonOutput = args[i + 1];
+                    i++;
+                }
+            }
+            else
+            {
+                cleanedArgs.Add(args[i]);
+            }
+        }
+
+        if (jsonOutput is not null)
+        {
+            JsonOutputPath = jsonOutput.Length > 0 ? jsonOutput : null;
+        }
+
+        args = cleanedArgs.ToArray();
         if (args is ["--help"])
         {
             Console.WriteLine();
             Console.WriteLine("QUIC Allocation Measurement Harness");
             Console.WriteLine();
-            Console.WriteLine("  --harness N    Two-pass throughput + allocation measurement.");
-            Console.WriteLine("                 Reports managed B/op, working set B/op, private bytes B/op.");
-            Console.WriteLine("                 Runs both Incursa.Quic and System.Net.Quic.");
-            Console.WriteLine("                 Default N=2000.  Example: --harness 10000");
+            Console.WriteLine("  --harness N           Two-pass throughput + allocation measurement.");
+            Console.WriteLine("                        Reports managed B/op, working set B/op, private bytes B/op.");
+            Console.WriteLine("                        Runs both Incursa.Quic and System.Net.Quic.");
+            Console.WriteLine("                        Default N=2000.  Example: --harness 10000");
             Console.WriteLine();
-            Console.WriteLine("  --leak N       Live-then-dispose plateau test for native retention.");
-            Console.WriteLine("                 Creates N connections, captures memory, disposes, waits,");
-            Console.WriteLine("                 captures again.  Two batches distinguish warmup from leak.");
-            Console.WriteLine("                 Tests System.Net.Quic only.  Default N=1000.");
+            Console.WriteLine("  --leak N              Live-then-dispose plateau test for native retention.");
+            Console.WriteLine("                        Creates N connections, captures memory, disposes, waits,");
+            Console.WriteLine("                        captures again.  Two batches distinguish warmup from leak.");
+            Console.WriteLine("                        Tests System.Net.Quic only.  Default N=1000.");
             Console.WriteLine();
-            Console.WriteLine("  --profile N    Run allocation profiler per lifecycle phase.");
-            Console.WriteLine("                 Breaks connect/accept/dispose into listener, connect+accept,");
-            Console.WriteLine("                 and close+dispose buckets.  Default N=100.");
+            Console.WriteLine("  --profile N           Run allocation profiler per lifecycle phase.");
+            Console.WriteLine("                        Breaks connect/accept/dispose into listener, connect+accept,");
+            Console.WriteLine("                        and close+dispose buckets.  Default N=100.");
             Console.WriteLine();
-            Console.WriteLine("  --profile-runtime N");
-            Console.WriteLine("                 Run server runtime constructor micro-profile.");
-            Console.WriteLine("                 Breaks the server QuicConnectionRuntime constructor into");
-            Console.WriteLine("                 named sub-components to identify the 611 KB/op source.");
-            Console.WriteLine("                 Default N=200.");
+            Console.WriteLine("  --profile-connect N   Connect+accept sub-phase breakdown.");
+            Console.WriteLine("                        Measures client/server runtime construction, initial");
+            Console.WriteLine("                        packet protection, TLS key schedule, and remaining");
+            Console.WriteLine("                        handshake processing.  Default N=100.");
             Console.WriteLine();
-            Console.WriteLine("  --profile-handshake N");
-            Console.WriteLine("                 Measure TLS handshake sub-operations in isolation.");
-            Console.WriteLine("                 Reports allocation from CRYPTO frames, WrapHandshakeMessage,");
-            Console.WriteLine("                 transcript, HKDF, cert construction, AesGcm, and packet buffers.");
-            Console.WriteLine("                 Default N=200.");
+            Console.WriteLine("  --profile-runtime N   Run server runtime constructor micro-profile.");
+            Console.WriteLine("                        Breaks the server QuicConnectionRuntime constructor into");
+            Console.WriteLine("                        named sub-components.  Default N=200.");
+            Console.WriteLine();
+            Console.WriteLine("  --profile-handshake N Measure TLS handshake sub-operations in isolation.");
+            Console.WriteLine("                        Reports allocation from CRYPTO frames, WrapHandshakeMessage,");
+            Console.WriteLine("                        transcript, HKDF, cert construction, AesGcm, and packet buffers.");
+            Console.WriteLine("                        Default N=200.");
+            Console.WriteLine();
+            Console.WriteLine("  --json [path]         Write machine-readable JSON metrics to the specified file.");
+            Console.WriteLine("                        If no path is given, JSON output is suppressed.");
+            Console.WriteLine("                        Example: --harness 10000 --json harness.json");
             Console.WriteLine();
             return 0;
         }
@@ -122,6 +176,9 @@ internal static class QuicAllocationHarness
         SslServerAuthenticationOptions serverAuthOptions =
             QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
 
+        var incursaPasses = new List<PassResult>();
+        var systemNetPasses = new List<PassResult>();
+
         try
         {
             if (IncursaClientConnection.IsSupported && IncursaListener.IsSupported)
@@ -129,9 +186,9 @@ internal static class QuicAllocationHarness
                 Console.WriteLine("--- Incursa.Quic ---");
                 for (int pass = 1; pass <= PassCount; pass++)
                 {
-                    RunPass($"  pass {pass}/{PassCount}", count,
+                    incursaPasses.Add(RunPass($"  pass {pass}/{PassCount}", count,
                         () => RunIncursaConnectAcceptDisposeAsync(serverAuthOptions, clientAuthOptions)
-                            .GetAwaiter().GetResult());
+                            .GetAwaiter().GetResult()));
                 }
 
                 Console.WriteLine();
@@ -142,9 +199,9 @@ internal static class QuicAllocationHarness
                 Console.WriteLine("--- System.Net.Quic ---");
                 for (int pass = 1; pass <= PassCount; pass++)
                 {
-                    RunPass($"  pass {pass}/{PassCount}", count,
+                    systemNetPasses.Add(RunPass($"  pass {pass}/{PassCount}", count,
                         () => RunSystemNetConnectAcceptDisposeAsync(serverAuthOptions, clientAuthOptions)
-                            .GetAwaiter().GetResult());
+                            .GetAwaiter().GetResult()));
                 }
 
                 Console.WriteLine();
@@ -154,6 +211,38 @@ internal static class QuicAllocationHarness
         {
             trustAnchor.Dispose();
             serverCertificate.Dispose();
+        }
+
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "harness",
+                ["commandName"] = "harness",
+                ["count"] = count,
+            };
+
+            if (incursaPasses.Count > 0)
+            {
+                var incursa = new JsonObject();
+                for (int i = 0; i < incursaPasses.Count; i++)
+                {
+                    incursa[$"pass{i + 1}"] = PassResultToJson(incursaPasses[i]);
+                }
+                json["incursaQuic"] = incursa;
+            }
+
+            if (systemNetPasses.Count > 0)
+            {
+                var sysNet = new JsonObject();
+                for (int i = 0; i < systemNetPasses.Count; i++)
+                {
+                    sysNet[$"pass{i + 1}"] = PassResultToJson(systemNetPasses[i]);
+                }
+                json["systemNetQuic"] = sysNet;
+            }
+
+            WriteJson(json);
         }
 
         Console.WriteLine("=== End ===");
@@ -229,6 +318,33 @@ internal static class QuicAllocationHarness
 
         trustAnchor.Dispose();
         serverCertificate.Dispose();
+
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "profile",
+                ["commandName"] = "profile",
+                ["count"] = count,
+            };
+            var phases = new JsonArray();
+            foreach (var kv in phaseTotals.OrderByDescending(kv => kv.Value))
+            {
+                double pct = grandTotal > 0 ? (double)kv.Value / grandTotal * 100 : 0;
+                phases.Add(new JsonObject
+                {
+                    ["name"] = kv.Key,
+                    ["totalB"] = kv.Value,
+                    ["bPerOp"] = kv.Value / count,
+                    ["pctOfTotal"] = Math.Round(pct, 1),
+                });
+            }
+            json["phases"] = phases;
+            json["grandTotalB"] = grandTotal;
+            json["grandTotalBPerOp"] = grandTotal / count;
+            WriteJson(json);
+        }
+
         return 0;
     }
 
@@ -352,6 +468,41 @@ internal static class QuicAllocationHarness
 
         trustAnchor.Dispose();
         serverCertificate.Dispose();
+
+        if (JsonOutputPath is not null)
+        {
+            var subPhaseEntries = new (string Name, long Total)[]
+            {
+                ("client runtime construction", runtimeClient),
+                ("server runtime construction", runtimeServer),
+                ("initial packet protection", initialPacketProtection),
+                ("TLS key schedule + ClientHello", tlsKeySchedule),
+                ("remaining handshake processing", remainder),
+                ("TOTAL connect+accept", totalConnectAccept),
+            };
+            var json = new JsonObject
+            {
+                ["mode"] = "profileConnect",
+                ["commandName"] = "profile-connect",
+                ["count"] = count,
+            };
+            var phases = new JsonArray();
+            foreach (var (name, total) in subPhaseEntries)
+            {
+                double pct = totalConnectAccept > 0 ? (double)total / totalConnectAccept * 100 : 0;
+                phases.Add(new JsonObject
+                {
+                    ["name"] = name,
+                    ["totalB"] = total,
+                    ["bPerOp"] = total / count,
+                    ["pctOfCA"] = Math.Round(pct, 1),
+                });
+            }
+            json["subPhases"] = phases;
+            json["totalConnectAcceptB"] = totalConnectAccept;
+            WriteJson(json);
+        }
+
         return 0;
     }
 
@@ -620,6 +771,36 @@ internal static class QuicAllocationHarness
         Console.WriteLine("  independent measurements.");
         Console.WriteLine();
 
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "profileRuntime",
+                ["commandName"] = "profile-runtime",
+                ["count"] = count,
+                ["fullServerCtorTotalB"] = fullServerCtor,
+                ["fullServerCtorBPerOp"] = fullServerCtor / count,
+                ["measuredTotalB"] = measuredTotal,
+                ["measuredBPerOp"] = measuredTotal / count,
+                ["unattributedTotalB"] = remainder,
+                ["unattributedBPerOp"] = remainder / count,
+            };
+            var components = new JsonArray();
+            foreach (var kv in results.OrderByDescending(kv => kv.Value))
+            {
+                double pct = fullServerCtor > 0 ? (double)kv.Value / fullServerCtor * 100 : 0;
+                components.Add(new JsonObject
+                {
+                    ["name"] = kv.Key,
+                    ["totalB"] = kv.Value,
+                    ["bPerOp"] = kv.Value / count,
+                    ["pctOfCtor"] = Math.Round(pct, 1),
+                });
+            }
+            json["components"] = components;
+            WriteJson(json);
+        }
+
         return 0;
     }
 
@@ -793,6 +974,34 @@ internal static class QuicAllocationHarness
         Console.WriteLine("  message exchange, ordering, and shared-state effects not captured here.");
         Console.WriteLine();
 
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "profileHandshake",
+                ["commandName"] = "profile-handshake",
+                ["count"] = count,
+                ["referenceTotalB"] = referenceTotal,
+                ["referenceBPerOp"] = 220_000L,
+                ["measuredTotalB"] = measuredTotal,
+                ["measuredBPerOp"] = measuredTotal / count,
+            };
+            var subOps = new JsonArray();
+            foreach (var kv in results.OrderByDescending(kv => kv.Value))
+            {
+                double pct = (double)kv.Value / referenceTotal * 100;
+                subOps.Add(new JsonObject
+                {
+                    ["name"] = kv.Key,
+                    ["totalB"] = kv.Value,
+                    ["bPerOp"] = kv.Value / count,
+                    ["pctOfReference"] = Math.Round(pct, 1),
+                });
+            }
+            json["subOperations"] = subOps;
+            WriteJson(json);
+        }
+
         return 0;
     }
 
@@ -824,6 +1033,8 @@ internal static class QuicAllocationHarness
         SslServerAuthenticationOptions serverAuthOptions =
             QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
 
+        var batches = new List<LeakBatchResult>();
+
         try
         {
             Console.WriteLine("--- System.Net.Quic plateau test ---");
@@ -838,7 +1049,7 @@ internal static class QuicAllocationHarness
             {
                 Console.WriteLine();
                 Console.WriteLine($"Batch {batch}/2 — creating {count} connections...");
-                RunLeakBatch(count, serverAuthOptions, clientAuthOptions).GetAwaiter().GetResult();
+                batches.Add(RunLeakBatch(count, serverAuthOptions, clientAuthOptions).GetAwaiter().GetResult());
             }
         }
         finally
@@ -847,10 +1058,41 @@ internal static class QuicAllocationHarness
             serverCertificate.Dispose();
         }
 
+        if (JsonOutputPath is not null)
+        {
+            var json = new JsonObject
+            {
+                ["mode"] = "leak",
+                ["commandName"] = "leak",
+                ["count"] = count,
+            };
+            var jsonBatches = new JsonArray();
+            for (int i = 0; i < batches.Count; i++)
+            {
+                var b = batches[i];
+                jsonBatches.Add(new JsonObject
+                {
+                    ["batch"] = i + 1,
+                    ["managedLiveDelta"] = b.ManagedLive,
+                    ["wsLiveDelta"] = b.WsLive,
+                    ["privLiveDelta"] = b.PrivLive,
+                    ["managedEndDelta"] = b.ManagedEnd,
+                    ["wsEndDelta"] = b.WsEnd,
+                    ["privEndDelta"] = b.PrivEnd,
+                    ["retainedPrivFromBaseline"] = b.RetainedPriv,
+                    ["retainedWsFromBaseline"] = b.RetainedWs,
+                    ["retainedPrivPerConn"] = b.RetainedPrivPerConn,
+                    ["retainedWsPerConn"] = b.RetainedWsPerConn,
+                });
+            }
+            json["batches"] = jsonBatches;
+            WriteJson(json);
+        }
+
         return 0;
     }
 
-    private static async Task RunLeakBatch(
+    private static async Task<LeakBatchResult> RunLeakBatch(
         int count,
         SslServerAuthenticationOptions serverOptions,
         SslClientAuthenticationOptions clientOptions)
@@ -892,6 +1134,18 @@ internal static class QuicAllocationHarness
         Console.WriteLine($"    priv delta from live:     {privEnd - privLive,12:N0} B");
         Console.WriteLine($"    retained from baseline:   priv={privEnd - privStart,12:N0} B  ws={wsEnd - wsStart,12:N0} B");
         Console.WriteLine($"    retained/conn:            priv={(privEnd - privStart) / count,10:N0} B  ws={(wsEnd - wsStart) / count,10:N0} B");
+
+        return new LeakBatchResult(
+            ManagedLive: managedLive - managedStart,
+            WsLive: wsLive - wsStart,
+            PrivLive: privLive - privStart,
+            ManagedEnd: managedEnd - managedLive,
+            WsEnd: wsEnd - wsLive,
+            PrivEnd: privEnd - privLive,
+            RetainedPriv: privEnd - privStart,
+            RetainedWs: wsEnd - wsStart,
+            RetainedPrivPerConn: (privEnd - privStart) / count,
+            RetainedWsPerConn: (wsEnd - wsStart) / count);
     }
 
     private static void Snapshot(out long managed, out long workingSet, out long privateBytes)
@@ -903,7 +1157,7 @@ internal static class QuicAllocationHarness
         privateBytes = process.PrivateMemorySize64;
     }
 
-    private static void RunPass(string label, int count, Action operation)
+    private static PassResult RunPass(string label, int count, Action operation)
     {
         // Warmup — settle JIT and early allocations
         for (int i = 0; i < WarmupCount; i++)
@@ -948,6 +1202,8 @@ internal static class QuicAllocationHarness
             $"managed: {managedDelta / (double)count,10:N0} B/op  " +
             $"ws: {wsDelta / (double)count,10:N0} B/op  " +
             $"priv: {privDelta / (double)count,10:N0} B/op");
+
+        return new PassResult(count, elapsedSec, elapsedSec / count * 1000, managedDelta, wsDelta, privDelta);
     }
 
     private static async Task RunIncursaConnectAcceptDisposeAsync(
@@ -1025,5 +1281,26 @@ internal static class QuicAllocationHarness
         await clientConnection.CloseAsync(0, CancellationToken.None);
         await serverConnection.DisposeAsync().ConfigureAwait(false);
         await clientConnection.DisposeAsync().ConfigureAwait(false);
+    }
+
+    private static JsonObject PassResultToJson(PassResult r)
+    {
+        return new JsonObject
+        {
+            ["iterations"] = r.Iterations,
+            ["elapsedSeconds"] = Math.Round(r.ElapsedSeconds, 3),
+            ["msPerOp"] = Math.Round(r.MsPerOp, 3),
+            ["managedBytesPerOp"] = (long)(r.ManagedDelta / (double)r.Iterations),
+            ["workingSetBytesPerOp"] = (long)(r.WsDelta / (double)r.Iterations),
+            ["privateBytesPerOp"] = (long)(r.PrivDelta / (double)r.Iterations),
+        };
+    }
+
+    private static void WriteJson(JsonObject json)
+    {
+        if (JsonOutputPath is null || JsonOutputPath.Length == 0) return;
+        var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = true };
+        string jsonText = json.ToJsonString(options);
+        File.WriteAllText(JsonOutputPath, jsonText);
     }
 }

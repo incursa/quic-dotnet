@@ -1,0 +1,19 @@
+
+=== QUIC Allocation Harness ===
+Iterations per pass: 2,000
+Passes: 2
+
+--- Incursa.Quic ---
+    pass 1/2                   2,000 iters   49.823s    24.911 ms/op
+                              managed:    326,548 B/op  ws:     13,572 B/op  priv:      8,593 B/op
+    pass 2/2                   2,000 iters   49.325s    24.662 ms/op
+                              managed:    325,099 B/op  ws:      2,644 B/op  priv:      2,492 B/op
+
+--- System.Net.Quic ---
+    pass 1/2                   2,000 iters   39.214s    19.607 ms/op
+                              managed:     91,430 B/op  ws:  2,318,191 B/op  priv:  2,493,612 B/op
+    pass 2/2                   2,000 iters   50.270s    25.135 ms/op
+                              managed:     91,184 B/op  ws:  2,319,608 B/op  priv:  2,494,984 B/op
+
+=== End ===
+

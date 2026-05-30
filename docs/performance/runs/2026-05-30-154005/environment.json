@@ -1,0 +1,13 @@
+{
+  "timestampLocal": "2026-05-30T09:40:16.1061314-06:00",
+  "timestampUtc": "2026-05-30T15:40:16.1116014Z",
+  "machineName": "MCARAVEY-WS-01",
+  "osVersion": "Microsoft Windows NT 10.0.26200.0",
+  "processorCount": 32,
+  "dotnetSdkVersion": "10.0.204",
+  "gitBranch": "main",
+  "gitCommitSha": "2d49d3de03a0908149f83ff8e7043b0eab378fed",
+  "gitWorkingTreeClean": false,
+  "cpuModel": "AMD Ryzen 9 3950X 16-Core Processor",
+  "totalMemoryGB": 95.9
+}

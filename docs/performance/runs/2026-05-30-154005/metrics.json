@@ -1,0 +1,56 @@
+{
+  "harness": {
+    "mode": "harness",
+    "count": 2000,
+    "incursaQuic": {
+      "pass1": { "managedBytesPerOp": 326548, "workingSetBytesPerOp": 13572, "privateBytesPerOp": 8593, "msPerOp": 24.911 },
+      "pass2": { "managedBytesPerOp": 325098, "workingSetBytesPerOp": 2643, "privateBytesPerOp": 2492, "msPerOp": 24.662 }
+    },
+    "systemNetQuic": {
+      "pass1": { "managedBytesPerOp": 91430, "workingSetBytesPerOp": 2318190, "privateBytesPerOp": 2493612, "msPerOp": 19.607 },
+      "pass2": { "managedBytesPerOp": 91184, "workingSetBytesPerOp": 2319607, "privateBytesPerOp": 2494984, "msPerOp": 25.135 }
+    }
+  },
+  "leak": {
+    "mode": "leak",
+    "count": 200,
+    "batches": [
+      { "batch": 1, "retainedPrivPerConn": 2714787, "retainedWsPerConn": 2568171 },
+      { "batch": 2, "retainedPrivPerConn": 2531942, "retainedWsPerConn": 2368778 }
+    ]
+  },
+  "profile": {
+    "mode": "profile",
+    "count": 100,
+    "grandTotalBPerOp": 337621,
+    "phases": {
+      "connect+accept": { "bPerOp": 256780 },
+      "listener": { "bPerOp": 46928 },
+      "close+dispose": { "bPerOp": 33912 }
+    }
+  },
+  "profile-connect": {
+    "mode": "profileConnect",
+    "count": 100,
+    "totalConnectAcceptBPerOp": 256737,
+    "subPhases": {
+      "remaining handshake processing": { "bPerOp": 222538 },
+      "client runtime construction": { "bPerOp": 15312 },
+      "server runtime construction": { "bPerOp": 15296 },
+      "TLS key schedule + ClientHello": { "bPerOp": 2188 },
+      "initial packet protection": { "bPerOp": 1402 }
+    }
+  },
+  "profile-runtime": {
+    "mode": "profileRuntime",
+    "count": 100,
+    "fullServerCtorBPerOp": 15100,
+    "serverKeyScheduleBPerOp": 344
+  },
+  "profile-handshake": {
+    "mode": "profileHandshake",
+    "count": 100,
+    "measuredBPerOp": 17848,
+    "referenceBPerOp": 220000
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "mode": "profileConnect",
+  "commandName": "profile-connect",
+  "count": 100,
+  "subPhases": [
+    {
+      "name": "client runtime construction",
+      "totalB": 1531232,
+      "bPerOp": 15312,
+      "pctOfCA": 6
+    },
+    {
+      "name": "server runtime construction",
+      "totalB": 1529600,
+      "bPerOp": 15296,
+      "pctOfCA": 6
+    },
+    {
+      "name": "initial packet protection",
+      "totalB": 140224,
+      "bPerOp": 1402,
+      "pctOfCA": 0.5
+    },
+    {
+      "name": "TLS key schedule \u002B ClientHello",
+      "totalB": 218848,
+      "bPerOp": 2188,
+      "pctOfCA": 0.9
+    },
+    {
+      "name": "remaining handshake processing",
+      "totalB": 22253872,
+      "bPerOp": 222538,
+      "pctOfCA": 86.7
+    },
+    {
+      "name": "TOTAL connect\u002Baccept",
+      "totalB": 25673776,
+      "bPerOp": 256737,
+      "pctOfCA": 100
+    }
+  ],
+  "totalConnectAcceptB": 25673776
+}

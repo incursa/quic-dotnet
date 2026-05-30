@@ -1,0 +1,71 @@
+{
+  "mode": "profileHandshake",
+  "commandName": "profile-handshake",
+  "count": 100,
+  "referenceTotalB": 22000000,
+  "referenceBPerOp": 220000,
+  "measuredTotalB": 1784872,
+  "measuredBPerOp": 17848,
+  "subOperations": [
+    {
+      "name": "CRYPTO frame buffer (12 frames \u00D7 200B avg)",
+      "totalB": 537600,
+      "bPerOp": 5376,
+      "pctOfReference": 2.4
+    },
+    {
+      "name": "WrapHandshakeMessage (6 calls, ~2KB body)",
+      "totalB": 425008,
+      "bPerOp": 4250,
+      "pctOfReference": 1.9
+    },
+    {
+      "name": "Transcript ArrayBufferWriter growth",
+      "totalB": 396800,
+      "bPerOp": 3968,
+      "pctOfReference": 1.8
+    },
+    {
+      "name": "HKDF ExpandLabel (14 calls, 16-32B each)",
+      "totalB": 145600,
+      "bPerOp": 1456,
+      "pctOfReference": 0.7
+    },
+    {
+      "name": "Certificate body (1\u002B3\u002BcertEntryLen)",
+      "totalB": 123200,
+      "bPerOp": 1232,
+      "pctOfReference": 0.6
+    },
+    {
+      "name": "PacketProtectionMaterial.TryCreate (4 calls)",
+      "totalB": 60000,
+      "bPerOp": 600,
+      "pctOfReference": 0.3
+    },
+    {
+      "name": "AesGcm construction (4 calls)",
+      "totalB": 45344,
+      "bPerOp": 453,
+      "pctOfReference": 0.2
+    },
+    {
+      "name": "SHA256.HashData (7 calls x 32B)",
+      "totalB": 39200,
+      "bPerOp": 392,
+      "pctOfReference": 0.2
+    },
+    {
+      "name": "CertificateVerify SignData (~72B)",
+      "totalB": 9600,
+      "bPerOp": 96,
+      "pctOfReference": 0
+    },
+    {
+      "name": "Packet buffers (16 \u00D7 1200B)",
+      "totalB": 2520,
+      "bPerOp": 25,
+      "pctOfReference": 0
+    }
+  ]
+}

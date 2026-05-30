@@ -1,0 +1,24 @@
+
+=== QUIC Plateau / Retention Test ===
+Connections per batch: 200
+Tests System.Net.Quic ΓÇö memory growth after Close+Dispose
+
+--- System.Net.Quic plateau test ---
+
+Batch 1/2 ΓÇö creating 200 connections...
+  live:     managed=   8,538,688 B  ws= 522,493,952 B  priv= 550,514,688 B
+  after close+dispose+10s:
+    managed delta from live:    12,410,200 B
+    ws delta from live:         -8,859,648 B
+    priv delta from live:       -7,557,120 B
+    retained from baseline:   priv= 542,957,568 B  ws= 513,634,304 B
+    retained/conn:            priv= 2,714,787 B  ws= 2,568,171 B
+
+Batch 2/2 ΓÇö creating 200 connections...
+  live:     managed=   7,014,344 B  ws= 477,392,896 B  priv= 511,623,168 B
+  after close+dispose+10s:
+    managed delta from live:    11,175,232 B
+    ws delta from live:         -3,637,248 B
+    priv delta from live:       -5,234,688 B
+    retained from baseline:   priv= 506,388,480 B  ws= 473,755,648 B
+    retained/conn:            priv= 2,531,942 B  ws= 2,368,778 B

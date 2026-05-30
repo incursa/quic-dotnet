@@ -1,0 +1,16 @@
+
+=== QUIC Connect+Accept Phase Allocation Profile ===
+Iterations: 100
+Breaks connect+accept into measurable sub-phases via direct component construction.
+
+
+  Sub-phase                                   Total (B)       B/op   % of C+A
+  ----------------------------------------  -----------     ------  ---------
+  client runtime construction                 1,531,232     15,312      6.0%
+  server runtime construction                 1,529,600     15,296      6.0%
+  initial packet protection                     140,224      1,402      0.5%
+  TLS key schedule + ClientHello                218,848      2,188      0.9%
+  remaining handshake processing             22,253,872    222,538     86.7%
+  ----------------------------------------  -----------     ------  ---------
+  TOTAL connect+accept                       25,673,776    256,737    100.0%
+
