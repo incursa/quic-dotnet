@@ -994,12 +994,18 @@ internal static class InteropHarnessRunner
                     settings.Requests.Count,
                     index,
                     transferPlans.Count,
-                    responseReadTimeout).ConfigureAwait(false);
+                    responseReadTimeout,
+                    waitForPeerFinAfterExpectedBody: index + 1 < transferPlans.Count).ConfigureAwait(false);
                 await connection.CloseAsync(0).ConfigureAwait(false);
 
                 WriteLineAndFlush(
                     stdout,
                     $"interop harness: role=client, testcase=multiconnect, requestCount={settings.Requests.Count} completed managed multiconnect download to {transferPlan.DestinationPath} from {transferPlan.RequestUri.PathAndQuery}, bytes={bytesDownloaded}, connection {index + 1}/{transferPlans.Count}.");
+
+                if (index + 1 < transferPlans.Count)
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100)).ConfigureAwait(false);
+                }
             }
 
             return 0;
@@ -1927,7 +1933,8 @@ internal static class InteropHarnessRunner
         int totalRequestCount,
         TimeSpan responseReadTimeout = default,
         TimeSpan? sendCreditRetryTimeout = null,
-        Action<long>? bytesDownloadedObserver = null)
+        Action<long>? bytesDownloadedObserver = null,
+        bool waitForPeerFinAfterExpectedBody = false)
     {
         TimeSpan effectiveSendCreditRetryTimeout = sendCreditRetryTimeout ?? CongestionRetryTimeout;
 
@@ -1982,6 +1989,16 @@ internal static class InteropHarnessRunner
                     transferPlan.RequestUri.PathAndQuery,
                     responseReadTimeout,
                     bytesDownloadedObserver).ConfigureAwait(false);
+                if (waitForPeerFinAfterExpectedBody)
+                {
+                    await WaitForHttp09ResponseFinAsync(
+                        stream,
+                        testCase,
+                        requestIndex,
+                        totalRequestCount,
+                        transferPlan.RequestUri.PathAndQuery,
+                        responseReadTimeout).ConfigureAwait(false);
+                }
             }
             else
             {
@@ -2027,6 +2044,46 @@ internal static class InteropHarnessRunner
 
         File.Move(stagingPath, transferPlan.DestinationPath);
         return new FileInfo(transferPlan.DestinationPath).Length;
+    }
+
+    internal static async Task WaitForHttp09ResponseFinAsync(
+        Stream responseStream,
+        string testCase,
+        int requestIndex,
+        int totalRequestCount,
+        string requestPath,
+        TimeSpan responseReadTimeout = default)
+    {
+        ArgumentNullException.ThrowIfNull(responseStream);
+        ArgumentException.ThrowIfNullOrWhiteSpace(testCase);
+        ArgumentException.ThrowIfNullOrWhiteSpace(requestPath);
+
+        byte[] finProbeBuffer = new byte[1];
+        int bytesRead;
+        if (responseReadTimeout > TimeSpan.Zero && responseReadTimeout != Timeout.InfiniteTimeSpan)
+        {
+            using CancellationTokenSource responseTimeout = new(responseReadTimeout);
+            try
+            {
+                bytesRead = await responseStream.ReadAsync(finProbeBuffer, 0, finProbeBuffer.Length, responseTimeout.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException ex) when (responseTimeout.IsCancellationRequested)
+            {
+                throw new TimeoutException(
+                    $"Timed out waiting for {testCase} response stream FIN for {requestPath} after the expected body bytes were received.",
+                    ex);
+            }
+        }
+        else
+        {
+            bytesRead = await responseStream.ReadAsync(finProbeBuffer, 0, finProbeBuffer.Length).ConfigureAwait(false);
+        }
+
+        if (bytesRead != 0)
+        {
+            throw new InvalidOperationException(
+                $"The {testCase} response for {requestPath} returned {bytesRead} extra bytes after the expected body length on stream {requestIndex + 1}/{totalRequestCount}.");
+        }
     }
 
     internal static async Task<long> CopyHttp09ResponseBodyUntilEndAsync(

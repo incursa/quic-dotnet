@@ -3,6 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class QuicReceiveBufferPoolTests
 {
     [Fact]

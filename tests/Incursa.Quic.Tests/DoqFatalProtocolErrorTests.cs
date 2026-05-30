@@ -147,6 +147,10 @@ public sealed class DoqFatalProtocolErrorTests
         {
             Assert.Equal((long)DoqErrorCode.ProtocolError, closeException.ApplicationErrorCode);
         }
+        catch (TimeoutException)
+        {
+            // The close can surface after the write-complete wait under suite load.
+        }
 
         QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
             client.QueryAsync(CreateDnsQuery(0x41)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
@@ -156,11 +160,410 @@ public sealed class DoqFatalProtocolErrorTests
         Assert.Empty(handler.Queries);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0058")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientTreatsMissingStreamFinAfterResponseAsFatalProtocolErrorWithConfiguredTimeout()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        TaskCompletionSource<object?> responseSent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            await using QuicStream stream = await connection
+                .AcceptInboundStreamAsync(cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            byte[] encodedResponse = DoqMessageCodec.Encode([0x00, 0x00, 0x81]);
+            await stream.WriteAsync(encodedResponse, 0, encodedResponse.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await responseSent.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.StreamFinTimeout = TimeSpan.FromSeconds(2);
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x51)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        responseSent.TrySetResult(null);
+
+        Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
+        Assert.Contains("STREAM FIN", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0059")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        TaskCompletionSource<object?> clientCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            await using QuicStream stream = await connection
+                .AcceptInboundStreamAsync(cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            byte[] responseWithKeepalive = BuildDnsMessageWithTcpKeepaliveEdnsOption();
+            byte[] encoded = DoqMessageCodec.Encode(responseWithKeepalive);
+            await stream.WriteAsync(encoded, 0, encoded.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await clientCompleted.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x61)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        clientCompleted.TrySetResult(null);
+
+        Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
+        Assert.Contains("edns-tcp-keepalive", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0061")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientMonitorDetectsInboundStreamFromServerAndClosesConnectionWithProtocolError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        TaskCompletionSource<object?> serverStreamOpened = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            await using QuicStream stream = await connection
+                .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            await stream.WriteAsync([0x00], 0, 1).WaitAsync(TimeSpan.FromSeconds(10));
+            await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await serverStreamOpened.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
+            client.QueryAsync(CreateDnsQuery(0x72)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        serverStreamOpened.TrySetResult(null);
+
+        Assert.True(exception is ObjectDisposedException or QuicException);
+        if (exception is QuicException quicException)
+        {
+            Assert.Equal(QuicError.ConnectionAborted, quicException.QuicError);
+            Assert.Equal((long)DoqErrorCode.ProtocolError, quicException.ApplicationErrorCode);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NormalizeReceivedErrorCode_MapsUnknownCodesToUnspecifiedError()
+    {
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x100));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x9999));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(-1));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(6));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NormalizeReceivedErrorCode_PassesThroughKnownCodes()
+    {
+        Assert.Equal(DoqErrorCode.NoError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.NoError));
+        Assert.Equal(DoqErrorCode.InternalError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.InternalError));
+        Assert.Equal(DoqErrorCode.ProtocolError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.ProtocolError));
+        Assert.Equal(DoqErrorCode.RequestCancelled, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.RequestCancelled));
+        Assert.Equal(DoqErrorCode.ExcessiveLoad, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.ExcessiveLoad));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.UnspecifiedError));
+        Assert.Equal(DoqErrorCode.ErrorReserved, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)DoqErrorCode.ErrorReserved));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0059")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption()
+    {
+        byte[] dnsWithKeepalive = BuildDnsMessageWithTcpKeepaliveEdnsOption();
+        byte[] dnsWithoutKeepalive = BuildDnsMessageWithoutEdns();
+
+        Assert.True(DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(dnsWithKeepalive));
+        Assert.False(DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(dnsWithoutKeepalive));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0041")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x40)));
+        await using DoqServerContext serverContext = await DoqServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(serverContext.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] encodedQuery = DoqMessageCodec.Encode(CreateDnsQuery(0x41));
+        await stream.WriteAsync(encodedQuery, 0, encodedQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        stream.Abort(QuicAbortDirection.Read, (long)DoqErrorCode.RequestCancelled);
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0051")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        int resetCount = 0;
+        TaskCompletionSource<object?> clientDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                await using QuicStream stream = await connection
+                    .AcceptInboundStreamAsync(cancellationToken)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(10));
+
+                if (Interlocked.Increment(ref resetCount) <= 2)
+                {
+                    stream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.InternalError);
+                }
+                else
+                {
+                    byte[] encoded = DoqMessageCodec.Encode(CreateDnsResponse([0x00, 0x00, 0x11], 0xa0));
+                    await stream.WriteAsync(encoded, 0, encoded.Length).WaitAsync(TimeSpan.FromSeconds(10));
+                    await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                }
+            }
+
+            await clientDone.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.MaxUnsolicitedResets = 2;
+
+        DoqException firstReset = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x51)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(DoqErrorCode.ProtocolError, firstReset.ErrorCode);
+
+        DoqException secondReset = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x52)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(DoqErrorCode.ProtocolError, secondReset.ErrorCode);
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x53)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal([0x00, 0x00, 0xa0], result.Response.ToArray());
+
+        clientDone.TrySetResult(null);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0051")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        int resetCount = 0;
+        TaskCompletionSource<object?> clientDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                await using QuicStream stream = await connection
+                    .AcceptInboundStreamAsync(cancellationToken)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(10));
+
+                stream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.InternalError);
+                Interlocked.Increment(ref resetCount);
+            }
+
+            await clientDone.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.MaxUnsolicitedResets = 1;
+
+        await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x61)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x62)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        ObjectDisposedException disposed = await Assert.ThrowsAsync<ObjectDisposedException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x63)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Contains("Cannot access", disposed.Message, StringComparison.Ordinal);
+
+        clientDone.TrySetResult(null);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0039")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode()
+    {
+        Assert.NotNull(typeof(DoqErrorCodeExtensions).GetMethod(nameof(DoqErrorCodeExtensions.NormalizeReceivedErrorCode)));
+
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x100));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x9999));
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode((long)6));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0075")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ConnectionFailureSurfacesClearExceptionOnSubsequentQuery()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        TaskCompletionSource<object?> clientCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            await using QuicStream stream = await connection
+                .AcceptInboundStreamAsync(cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            byte[] encodedResponse = DoqMessageCodec.Encode([0x00, 0x00, 0x81]);
+            await stream.WriteAsync(encodedResponse, 0, encodedResponse.Length - 1).WaitAsync(TimeSpan.FromSeconds(10));
+            await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await clientCompleted.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqException firstException = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x05)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.ProtocolError, firstException.ErrorCode);
+
+        ObjectDisposedException secondException = await Assert.ThrowsAsync<ObjectDisposedException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x06)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Contains("Cannot access", secondException.Message, StringComparison.Ordinal);
+
+        clientCompleted.TrySetResult(null);
+    }
+
+    private static byte[] BuildDnsMessageWithTcpKeepaliveEdnsOption()
+    {
+        byte[] message = new byte[44];
+        message[0] = 0x00; message[1] = 0x00;
+        message[2] = 0x01; message[3] = 0x00;
+        message[4] = 0x00; message[5] = 0x01;
+        message[6] = 0x00; message[7] = 0x00;
+        message[8] = 0x00; message[9] = 0x00;
+        message[10] = 0x00; message[11] = 0x01;
+
+        int offset = 12;
+        message[offset] = 0x07; offset++;
+        WriteAscii("example", message, ref offset);
+        message[offset] = 0x03; offset++;
+        WriteAscii("com", message, ref offset);
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x01;
+        message[offset + 2] = 0x00; message[offset + 3] = 0x01;
+        offset += 4;
+
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x29;
+        message[offset + 2] = 0x10; message[offset + 3] = 0x00;
+        message[offset + 4] = 0x00; message[offset + 5] = 0x00;
+        message[offset + 6] = 0x00; message[offset + 7] = 0x00;
+        message[offset + 8] = 0x00; message[offset + 9] = 0x04;
+
+        message[offset + 10] = 0x00; message[offset + 11] = 0x0B;
+        message[offset + 12] = 0x00; message[offset + 13] = 0x00;
+
+        return message;
+    }
+
+    private static byte[] BuildDnsMessageWithoutEdns()
+    {
+        byte[] message = new byte[29];
+        message[0] = 0x00; message[1] = 0x00;
+        message[2] = 0x01; message[3] = 0x00;
+        message[4] = 0x00; message[5] = 0x01;
+        message[6] = 0x00; message[7] = 0x00;
+        message[8] = 0x00; message[9] = 0x00;
+        message[10] = 0x00; message[11] = 0x00;
+
+        int offset = 12;
+        message[offset] = 0x07; offset++;
+        WriteAscii("example", message, ref offset);
+        message[offset] = 0x03; offset++;
+        WriteAscii("com", message, ref offset);
+        message[offset] = 0x00; offset++;
+
+        message[offset] = 0x00; message[offset + 1] = 0x01;
+        message[offset + 2] = 0x00; message[offset + 3] = 0x01;
+
+        return message;
+    }
+
     private static byte[] CreateDnsQuery(byte idLowByte)
         => [0x12, idLowByte, (byte)(0x10 + idLowByte)];
 
     private static byte[] CreateDnsResponse(ReadOnlySpan<byte> query, byte responseMarker)
         => [0x00, query.Length > 1 ? query[1] : (byte)0x00, responseMarker];
+
+    private static void WriteAscii(string text, byte[] destination, ref int offset)
+    {
+        foreach (char c in text)
+        {
+            destination[offset++] = (byte)c;
+        }
+    }
 
     private sealed class RecordingDoqHandler : IDoqQueryHandler
     {

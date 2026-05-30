@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 [Requirement("REQ-QUIC-INT-0023")]
 public sealed class REQ_QUIC_INT_0023
 {

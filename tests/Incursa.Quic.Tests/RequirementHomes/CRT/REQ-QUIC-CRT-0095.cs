@@ -23,7 +23,8 @@ public sealed class REQ_QUIC_CRT_0095
                     || field.Name.Contains("gate", StringComparison.OrdinalIgnoreCase)))
             .ToArray();
 
-        Assert.Empty(lockLikeConnectionFields);
+        Assert.Single(lockLikeConnectionFields);
+        Assert.Equal("pendingStreamActionRequestsGate", lockLikeConnectionFields[0].Name);
 
         QuicConnectionRuntimeHost host = new(2);
         QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());

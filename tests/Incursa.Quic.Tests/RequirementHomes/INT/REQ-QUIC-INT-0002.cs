@@ -7,6 +7,7 @@ using Incursa.Quic.InteropHarness;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 [Requirement("REQ-QUIC-INT-0002")]
 public sealed class REQ_QUIC_INT_0002
 {

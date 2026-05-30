@@ -9,6 +9,7 @@ namespace Incursa.Quic.Tests;
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2-0002">Endpoints that have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery.</workbench-requirement>
 /// </workbench-requirements>
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 [Requirement("REQ-QUIC-RFC9000-S10P2-0002")]
 public sealed class REQ_QUIC_RFC9000_S10P2_0002
 {

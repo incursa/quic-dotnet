@@ -14,6 +14,7 @@ using System.Threading;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 [Requirement("REQ-QUIC-INT-0008")]
 public sealed class REQ_QUIC_INT_0008
 {

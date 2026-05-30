@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class InteropHarnessProcessFailureTests
 {
     [Fact]

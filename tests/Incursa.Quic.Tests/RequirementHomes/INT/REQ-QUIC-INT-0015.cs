@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -10,6 +11,7 @@ using Incursa.Qlog.Serialization.Json;
 
 namespace Incursa.Quic.Tests;
 
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 [Requirement("REQ-QUIC-INT-0015")]
 public sealed class REQ_QUIC_INT_0015
 {
@@ -59,8 +61,10 @@ public sealed class REQ_QUIC_INT_0015
             Assert.NotNull(serverResult);
             Assert.NotNull(clientResult);
 
-            Assert.True(serverResult!.ExitCode == 0, $"SERVER STDOUT:{Environment.NewLine}{serverResult.Stdout}{Environment.NewLine}SERVER STDERR:{Environment.NewLine}{serverResult.Stderr}");
-            Assert.True(clientResult!.ExitCode == 0, $"CLIENT STDOUT:{Environment.NewLine}{clientResult.Stdout}{Environment.NewLine}CLIENT STDERR:{Environment.NewLine}{clientResult.Stderr}");
+            Assert.True(
+                serverResult!.ExitCode == 0 && clientResult!.ExitCode == 0,
+                $"SERVER EXIT={serverResult!.ExitCode}{Environment.NewLine}SERVER STDOUT:{Environment.NewLine}{serverResult.Stdout}{Environment.NewLine}SERVER STDERR:{Environment.NewLine}{serverResult.Stderr}{Environment.NewLine}" +
+                $"CLIENT EXIT={clientResult!.ExitCode}{Environment.NewLine}CLIENT STDOUT:{Environment.NewLine}{clientResult.Stdout}{Environment.NewLine}CLIENT STDERR:{Environment.NewLine}{clientResult.Stderr}");
             Assert.Contains("testcase=multiconnect", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("testcase=multiconnect", clientResult.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("connectionCount=2", serverResult.Stdout, StringComparison.OrdinalIgnoreCase);
@@ -496,29 +500,17 @@ public sealed class REQ_QUIC_INT_0015
         string privateKeyPath,
         string? qlogDirectory)
     {
-        RecordingTextWriter serverStdout = new();
-        RecordingTextWriter serverStderr = new();
-        RecordingTextWriter clientStdout = new();
-        RecordingTextWriter clientStderr = new();
+        string harnessDll = typeof(InteropHarnessRunner).Assembly.Location;
 
-        Task<int> serverTask = StartHarnessRunAsync("server", testcase, serverRequest, qlogDirectory, certificatePath, privateKeyPath, serverStdout, serverStderr);
-        await WaitForTextAsync(serverTask, serverStdout, "listening on", TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+        await using HarnessProcess serverProcess = HarnessProcess.Start("server", testcase, serverRequest, harnessDll, qlogDirectory);
+        await serverProcess.WaitForStdoutContainsAsync("listening on", TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
-        Task<int> clientTask = StartHarnessRunAsync("client", testcase, clientRequest, qlogDirectory, certificatePath, privateKeyPath, clientStdout, clientStderr);
-        try
-        {
-            await WaitForPairCompletionAsync(serverTask, clientTask, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
-        }
-        catch (TimeoutException ex)
-        {
-            throw new TimeoutException(
-                $"{ex.Message}\nSERVER STDOUT:\n{serverStdout}\nSERVER STDERR:\n{serverStderr}\nCLIENT STDOUT:\n{clientStdout}\nCLIENT STDERR:\n{clientStderr}",
-                ex);
-        }
+        await using HarnessProcess clientProcess = HarnessProcess.Start("client", testcase, clientRequest, harnessDll, qlogDirectory);
+        await WaitForPairCompletionAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
 
         return (
-            new HarnessRunResult(await serverTask.ConfigureAwait(false), serverStdout.ToString(), serverStderr.ToString()),
-            new HarnessRunResult(await clientTask.ConfigureAwait(false), clientStdout.ToString(), clientStderr.ToString()));
+            new HarnessRunResult(serverProcess.Process.ExitCode, serverProcess.Stdout, serverProcess.Stderr),
+            new HarnessRunResult(clientProcess.Process.ExitCode, clientProcess.Stdout, clientProcess.Stderr));
     }
 
     private static async Task<(HarnessRunResult Server, HarnessRunResult Client)> RunHarnessPairWithoutListeningAsync(
@@ -563,6 +555,23 @@ public sealed class REQ_QUIC_INT_0015
         }
 
         throw new TimeoutException($"The local harness pair did not complete within {timeout}.");
+    }
+
+    private static async Task WaitForPairCompletionAsync(HarnessProcess serverProcess, HarnessProcess clientProcess, TimeSpan timeout)
+    {
+        Task completionTask = Task.WhenAll(
+            serverProcess.Process.WaitForExitAsync(),
+            clientProcess.Process.WaitForExitAsync());
+        Task completed = await Task.WhenAny(completionTask, Task.Delay(timeout)).ConfigureAwait(false);
+        if (completed == completionTask)
+        {
+            await completionTask.ConfigureAwait(false);
+            await Task.WhenAll(serverProcess.CompleteCaptureAsync(), clientProcess.CompleteCaptureAsync()).ConfigureAwait(false);
+            return;
+        }
+
+        throw new TimeoutException(
+            $"The local harness pair did not complete within {timeout}.\nSERVER STDOUT:\n{serverProcess.Stdout}\nSERVER STDERR:\n{serverProcess.Stderr}\nCLIENT STDOUT:\n{clientProcess.Stdout}\nCLIENT STDERR:\n{clientProcess.Stderr}");
     }
 
     private static async Task WaitForTextAsync(
@@ -663,6 +672,174 @@ public sealed class REQ_QUIC_INT_0015
             lock (gate)
             {
                 return builder.ToString();
+            }
+        }
+    }
+
+    private sealed class HarnessProcess : IAsyncDisposable
+    {
+        private readonly StringBuilder stdoutBuilder = new();
+        private readonly StringBuilder stderrBuilder = new();
+        private readonly object gate = new();
+        private readonly Task stdoutTask;
+        private readonly Task stderrTask;
+        private int disposed;
+
+        private HarnessProcess(Process process)
+        {
+            Process = process;
+            stdoutTask = ConsumeAsync(process.StandardOutput, line =>
+            {
+                lock (gate)
+                {
+                    stdoutBuilder.AppendLine(line);
+                }
+            });
+            stderrTask = ConsumeAsync(process.StandardError, line =>
+            {
+                lock (gate)
+                {
+                    stderrBuilder.AppendLine(line);
+                }
+            });
+        }
+
+        public Process Process { get; }
+
+        public string Stdout
+        {
+            get
+            {
+                lock (gate)
+                {
+                    return stdoutBuilder.ToString();
+                }
+            }
+        }
+
+        public string Stderr
+        {
+            get
+            {
+                lock (gate)
+                {
+                    return stderrBuilder.ToString();
+                }
+            }
+        }
+
+        public static HarnessProcess Start(string role, string testCase, string requests, string harnessDll, string? qlogDirectory = null)
+        {
+            ProcessStartInfo startInfo = new("dotnet")
+            {
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            };
+
+            startInfo.ArgumentList.Add(harnessDll);
+            startInfo.Environment["ROLE"] = role;
+            startInfo.Environment["TESTCASE"] = testCase;
+            startInfo.Environment["REQUESTS"] = requests;
+            if (qlogDirectory is not null)
+            {
+                startInfo.Environment["QLOGDIR"] = qlogDirectory;
+            }
+
+            Process process = Process.Start(startInfo) ?? throw new InvalidOperationException("Unable to start the interop harness process.");
+            return new HarnessProcess(process);
+        }
+
+        public async Task WaitForStdoutContainsAsync(string value, TimeSpan timeout)
+        {
+            DateTime deadline = DateTime.UtcNow + timeout;
+
+            while (DateTime.UtcNow < deadline)
+            {
+                if (Stdout.Contains(value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                if (Process.HasExited)
+                {
+                    break;
+                }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(50)).ConfigureAwait(false);
+            }
+
+            throw new TimeoutException(
+                $"The harness process did not write '{value}' within {timeout}.{Environment.NewLine}" +
+                $"STDOUT:{Environment.NewLine}{Stdout}{Environment.NewLine}" +
+                $"STDERR:{Environment.NewLine}{Stderr}");
+        }
+
+        public Task CompleteCaptureAsync()
+        {
+            return Task.WhenAll(stdoutTask, stderrTask);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (Interlocked.Exchange(ref disposed, 1) != 0)
+            {
+                return;
+            }
+
+            try
+            {
+                bool hasExited = false;
+                try
+                {
+                    hasExited = Process.HasExited;
+                }
+                catch (InvalidOperationException)
+                {
+                    return;
+                }
+
+                if (!hasExited)
+                {
+                    try
+                    {
+                        Process.Kill(entireProcessTree: true);
+                    }
+                    catch
+                    {
+                        // Best-effort cleanup only.
+                    }
+
+                    try
+                    {
+                        await Process.WaitForExitAsync().ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // Best-effort cleanup only.
+                    }
+                }
+
+                await Task.WhenAll(stdoutTask, stderrTask).ConfigureAwait(false);
+            }
+            finally
+            {
+                Process.Dispose();
+            }
+        }
+
+        private static async Task ConsumeAsync(StreamReader reader, Action<string> onLine)
+        {
+            while (true)
+            {
+                string? line = await reader.ReadLineAsync().ConfigureAwait(false);
+                if (line is null)
+                {
+                    return;
+                }
+
+                onLine(line);
             }
         }
     }

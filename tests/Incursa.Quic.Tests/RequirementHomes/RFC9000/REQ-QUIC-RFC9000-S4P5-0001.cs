@@ -193,8 +193,7 @@ public sealed class REQ_QUIC_RFC9000_S4P5_0001
             handshakeConfirmed: true));
         Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
         Assert.True(retransmission.PacketBytes.Span.SequenceEqual(finSendEffect.Datagram.Span));
-        Assert.NotNull(retransmission.StreamIds);
-        Assert.Equal([(ulong)stream.Id], retransmission.StreamIds);
+        Assert.Equal((ulong)stream.Id, retransmission.StreamId);
 
         StreamFrameView retransmittedFrame = ParseFirstStreamFrame(retransmission.PlaintextPayload);
         Assert.Equal(finFrame.StreamId, retransmittedFrame.StreamId);
