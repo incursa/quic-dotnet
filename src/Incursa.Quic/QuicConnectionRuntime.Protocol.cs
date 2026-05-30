@@ -1842,7 +1842,7 @@ internal sealed partial class QuicConnectionRuntime
             bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                 streamFrame.StreamId.Value,
                 out QuicConnectionStreamSnapshot previousStreamSnapshot);
-            if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
+            if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
             {
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
@@ -2137,7 +2137,7 @@ internal sealed partial class QuicConnectionRuntime
                 bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                     streamFrame.StreamId.Value,
                     out QuicConnectionStreamSnapshot previousStreamSnapshot);
-                if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode))
+                if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.ZeroRtt))
                 {
                     return TryHandleApplicationDataFrameError(
                         nowTicks,

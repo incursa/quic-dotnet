@@ -194,7 +194,7 @@ public sealed class REQ_QUIC_CRT_0143
     [Trait("Category", "Negative")]
     public void PublicSurfaceStillDoesNotExposeEarlyDataAdmissionOrAntiReplayPromises()
     {
-        string[] forbiddenFragments = ["ZeroRtt", "0Rtt", "EarlyData", "AntiReplay", "KeyUpdate"];
+        string[] forbiddenFragments = ["ZeroRtt", "0Rtt", "EarlyData", "AntiReplay", "KeyUpdate", "ApplicationDataEpoch"];
 
         string[] publicMembers = typeof(QuicConnection).Assembly
             .GetExportedTypes()

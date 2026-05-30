@@ -24,6 +24,8 @@ namespace Incursa.Quic;
 /// <param name="HasReceiveAbortErrorCode">Indicates whether <paramref name="ReceiveAbortErrorCode" /> is valid.</param>
 /// <param name="SendAbortErrorCode">The send-side application error code, when present.</param>
 /// <param name="HasSendAbortErrorCode">Indicates whether <paramref name="SendAbortErrorCode" /> is valid.</param>
+/// <param name="ReceivedZeroRttData">Indicates whether any received data on this stream arrived in 0-RTT protected packets.</param>
+/// <param name="ReceivedOneRttData">Indicates whether any received data on this stream arrived in 1-RTT protected packets.</param>
 internal readonly record struct QuicConnectionStreamSnapshot(
     ulong StreamId,
     QuicStreamType StreamType,
@@ -42,4 +44,6 @@ internal readonly record struct QuicConnectionStreamSnapshot(
     ulong ReceiveAbortErrorCode,
     bool HasReceiveAbortErrorCode,
     ulong SendAbortErrorCode,
-    bool HasSendAbortErrorCode);
+    bool HasSendAbortErrorCode,
+    bool ReceivedZeroRttData,
+    bool ReceivedOneRttData);

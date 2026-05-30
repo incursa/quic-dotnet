@@ -400,7 +400,7 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
-    public bool TryReceiveStreamFrame(QuicStreamFrame frame, out QuicTransportErrorCode errorCode)
+    public bool TryReceiveStreamFrame(QuicStreamFrame frame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch epoch = QuicApplicationDataEpoch.OneRtt)
     {
         lock (syncRoot)
         {
@@ -476,6 +476,18 @@ internal sealed class QuicConnectionStreamState
             if (frame.StreamDataLength > 0 && additionalBytes > 0)
             {
                 InsertReadableBytes(state, frame.Offset, frame.StreamData);
+            }
+
+            if (additionalBytes > 0)
+            {
+                if (epoch == QuicApplicationDataEpoch.ZeroRtt)
+                {
+                    state.ReceivedZeroRttData = true;
+                }
+                else
+                {
+                    state.ReceivedOneRttData = true;
+                }
             }
 
             UpdateReceiveState(state);
@@ -898,7 +910,9 @@ internal sealed class QuicConnectionStreamState
                 state.ReceiveAbortErrorCode,
                 state.HasReceiveAbortErrorCode,
                 state.SendAbortErrorCode,
-                state.HasSendAbortErrorCode);
+                state.HasSendAbortErrorCode,
+                state.ReceivedZeroRttData,
+                state.ReceivedOneRttData);
             return true;
         }
     }
@@ -1378,6 +1392,8 @@ internal sealed class QuicConnectionStreamState
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];
         public List<BufferedSegment>? BufferedSegmentScratch { get; set; }
+        public bool ReceivedZeroRttData { get; set; }
+        public bool ReceivedOneRttData { get; set; }
     }
 
     private readonly record struct BufferedSegment(ulong Offset, byte[] Data, int DataOffset, int Length, bool OwnsData)

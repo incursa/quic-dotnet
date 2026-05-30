@@ -153,6 +153,8 @@ public sealed class REQ_QUIC_CRT_0153
         Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal((ulong)streamPayload.Length, snapshot.UniqueBytesReceived);
         Assert.Equal(streamPayload.Length, snapshot.BufferedReadableBytes);
+        Assert.True(snapshot.ReceivedZeroRttData);
+        Assert.False(snapshot.ReceivedOneRttData);
     }
 
     [Fact]
@@ -206,6 +208,8 @@ public sealed class REQ_QUIC_CRT_0153
             Assert.True(result.StateChanged);
             Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot snapshot));
             Assert.Equal((ulong)streamPayload.Length, snapshot.UniqueBytesReceived);
+            Assert.True(snapshot.ReceivedZeroRttData);
+            Assert.False(snapshot.ReceivedOneRttData);
         }
     }
 

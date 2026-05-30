@@ -2,7 +2,6 @@
   <Folder Name="/src/">
     <Project Path="src/Incursa.Qpack/Incursa.Qpack.csproj" />
     <Project Path="src/Incursa.Quic/Incursa.Quic.csproj" />
-    <Project Path="src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj" />
     <Project Path="src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj" />
     <Project Path="src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj" />
     <Project Path="src/Incursa.Quic.InteropHarness/Incursa.Quic.InteropHarness.csproj" />

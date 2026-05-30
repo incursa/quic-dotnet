@@ -57,11 +57,32 @@ Relevant SpecTrace item: `REQ-QUIC-RFC9308-S15-0001`.
 The public API does not expose application 0-RTT. Internal resumption and early
 data prerequisites do not make arbitrary application data replay safe.
 
-If a future protocol enables 0-RTT, it needs a profile that defines exactly which
-operations are safe to replay, how unsafe operations are rejected, and how the
-client retries rejected early data over normal 1-RTT. Do not send
-non-idempotent operations, authorization-changing operations, or ordered
-operation sequences in 0-RTT unless that future profile explicitly allows them.
+### Current default: 0-RTT disabled
+
+Server early data is **disabled by default**. The internal admission gate
+(`QuicServerZeroRttAdmissionGate`) is closed until explicitly configured via
+`TryConfigureServerEarlyData(true)`. Even when the gate is opened, stream data
+received in 0-RTT is tracked internally through a `QuicApplicationDataEpoch`
+marker on each stream, but this marker is **not** exposed on the public
+`QuicStream` API. An application protocol cannot distinguish 0-RTT data from
+1-RTT data by reading the stream alone.
+
+### Application protocol enablement
+
+If a future protocol enables 0-RTT, it needs:
+
+1. An explicit opt-in at the application protocol layer (not just the transport
+   gate).
+2. A profile that defines exactly which operations are safe to replay, how
+   unsafe operations are rejected, and how the client retries rejected early
+   data over normal 1-RTT.
+3. A mechanism to reject or buffer early data until the handshake completes
+   when the operation is replay-sensitive.
+
+Do not send non-idempotent operations, authorization-changing operations, or
+ordered operation sequences in 0-RTT unless that future profile explicitly
+allows them and the transport layer can distinguish early data from confirmed
+1-RTT data at the application boundary.
 
 Relevant SpecTrace item: `REQ-QUIC-RFC9308-S3P1-0001`.
 
