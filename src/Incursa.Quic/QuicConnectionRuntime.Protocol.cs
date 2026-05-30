@@ -1872,7 +1872,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-            if (!streamPreviouslyKnown || IsPeerInitiatedInboundStreamId(streamFrame.StreamId.Value))
+            if (!streamPreviouslyKnown)
             {
                 TryQueueInboundStreamId(streamFrame.StreamId.Value);
             }
@@ -2168,7 +2168,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-                if (!streamPreviouslyKnown || IsPeerInitiatedInboundStreamId(streamFrame.StreamId.Value))
+                if (!streamPreviouslyKnown)
                 {
                     TryQueueInboundStreamId(streamFrame.StreamId.Value);
                 }

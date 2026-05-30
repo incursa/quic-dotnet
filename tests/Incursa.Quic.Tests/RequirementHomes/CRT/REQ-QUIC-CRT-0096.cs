@@ -29,13 +29,8 @@ public sealed class REQ_QUIC_CRT_0096
             [
                 "pendingDatagramSendRequests",
                 "pendingStreamOpenRequests",
-                "pendingStreamOpenTypes",
             ],
             concurrentFieldNames);
-
-        Assert.Equal(
-            typeof(HashSet<ulong>),
-            Assert.Single(runtimeFields, field => field.Name == "queuedInboundStreamIds").FieldType);
         Assert.Equal(
             typeof(QuicStreamObserverDirectory),
             Assert.Single(runtimeFields, field => field.Name == "streamObservers").FieldType);

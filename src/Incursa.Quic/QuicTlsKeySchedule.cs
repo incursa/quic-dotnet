@@ -406,57 +406,64 @@ internal sealed class QuicTlsKeySchedule
             return false;
         }
 
-        byte[] transportParametersEncoded = new byte[512];
-        if (!QuicTransportParametersCodec.TryFormatTransportParameters(
-            localTransportParameters,
-            QuicTransportParameterRole.Client,
-            transportParametersEncoded,
-            out int transportParametersEncodedBytes))
+        byte[] transportParametersEncoded = ArrayPool<byte>.Shared.Rent(512);
+        try
         {
-            return false;
-        }
+            if (!QuicTransportParametersCodec.TryFormatTransportParameters(
+                localTransportParameters,
+                QuicTransportParameterRole.Client,
+                transportParametersEncoded,
+                out int transportParametersEncodedBytes))
+            {
+                return false;
+            }
 
-        if (!TryCreateClientHelloServerNameBytes(targetHost, out byte[] serverNameBytes))
-        {
-            return false;
-        }
+            if (!TryCreateClientHelloServerNameBytes(targetHost, out byte[] serverNameBytes))
+            {
+                return false;
+            }
 
-        int serverNameExtensionLength = GetClientHelloServerNameExtensionLength(serverNameBytes);
-        int supportedVersionsExtensionLength = 2 + 2 + 1 + 2;
-        int applicationProtocolsExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(applicationProtocols);
-        int signatureAlgorithmsExtensionLength = 2 + 2 + 2 + 2;
-        int supportedGroupsExtensionLength = 2 + 2 + 2 + 2;
-        int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
-        int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
-        int baseExtensionsLength = serverNameExtensionLength
-            + supportedVersionsExtensionLength
-            + applicationProtocolsExtensionLength
-            + signatureAlgorithmsExtensionLength
-            + supportedGroupsExtensionLength
-            + keyShareExtensionLength
-            + transportParametersExtensionLength;
+            int serverNameExtensionLength = GetClientHelloServerNameExtensionLength(serverNameBytes);
+            int supportedVersionsExtensionLength = 2 + 2 + 1 + 2;
+            int applicationProtocolsExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(applicationProtocols);
+            int signatureAlgorithmsExtensionLength = 2 + 2 + 2 + 2;
+            int supportedGroupsExtensionLength = 2 + 2 + 2 + 2;
+            int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
+            int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
+            int baseExtensionsLength = serverNameExtensionLength
+                + supportedVersionsExtensionLength
+                + applicationProtocolsExtensionLength
+                + signatureAlgorithmsExtensionLength
+                + supportedGroupsExtensionLength
+                + keyShareExtensionLength
+                + transportParametersExtensionLength;
 
-        DiscardPendingResumptionPsk();
+            DiscardPendingResumptionPsk();
 
-        if (CanAttemptResumption(detachedResumptionTicketSnapshot)
-            && TryCreateResumptionClientHello(
+            if (CanAttemptResumption(detachedResumptionTicketSnapshot)
+                && TryCreateResumptionClientHello(
+                    transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
+                    serverNameBytes,
+                    baseExtensionsLength,
+                    detachedResumptionTicketSnapshot!,
+                    nowTicks,
+                    out clientHelloBytes))
+            {
+                resumptionAttemptPending = true;
+                return true;
+            }
+
+            resumptionAttemptPending = false;
+            return TryCreateInitialClientHello(
                 transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
                 serverNameBytes,
                 baseExtensionsLength,
-                detachedResumptionTicketSnapshot!,
-                nowTicks,
-                out clientHelloBytes))
-        {
-            resumptionAttemptPending = true;
-            return true;
+                out clientHelloBytes);
         }
-
-        resumptionAttemptPending = false;
-        return TryCreateInitialClientHello(
-            transportParametersEncoded.AsSpan(0, transportParametersEncodedBytes),
-            serverNameBytes,
-            baseExtensionsLength,
-            out clientHelloBytes);
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(transportParametersEncoded);
+        }
     }
 
     /// <summary>
@@ -1953,11 +1960,19 @@ internal sealed class QuicTlsKeySchedule
         out byte[] clientHelloBytes)
     {
         int extensionsLength = baseExtensionsLength;
-        byte[] body = new byte[43 + extensionsLength];
-        WriteClientHelloPrefix(body, extensionsLength, out int index);
-        WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded, serverNameBytes);
-        clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body);
-        return true;
+        int bodyLength = 43 + extensionsLength;
+        byte[] body = ArrayPool<byte>.Shared.Rent(bodyLength);
+        try
+        {
+            WriteClientHelloPrefix(body, extensionsLength, out int index);
+            WriteClientHelloBaseExtensions(body, ref index, transportParametersEncoded, serverNameBytes);
+            clientHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ClientHello, body.AsSpan(0, bodyLength));
+            return true;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(body);
+        }
     }
 
     private bool TryCreateResumptionClientHello(
@@ -2295,10 +2310,12 @@ internal sealed class QuicTlsKeySchedule
             return false;
         }
 
-        byte[] serverRandomInput = new byte[selectedLocalKeyShare.Length + clientHelloBytes.Length];
+        int serverRandomInputLength = selectedLocalKeyShare.Length + clientHelloBytes.Length;
+        byte[] serverRandomInput = ArrayPool<byte>.Shared.Rent(serverRandomInputLength);
         selectedLocalKeyShare.CopyTo(serverRandomInput);
         clientHelloBytes.CopyTo(serverRandomInput.AsSpan(selectedLocalKeyShare.Length));
-        byte[] serverRandom = SHA256.HashData(serverRandomInput);
+        byte[] serverRandom = SHA256.HashData(serverRandomInput.AsSpan(0, serverRandomInputLength));
+        ArrayPool<byte>.Shared.Return(serverRandomInput);
         int sessionIdLength = sessionId.Length;
         int keyShareExtensionLength = UInt16Length + UInt16Length + selectedLocalKeyShare.Length;
         int preSharedKeyExtensionLength = selectPreSharedKey
@@ -2308,64 +2325,70 @@ internal sealed class QuicTlsKeySchedule
             (UInt16Length + UInt16Length + UInt16Length)
             + (UInt16Length + UInt16Length + keyShareExtensionLength)
             + preSharedKeyExtensionLength;
-        byte[] body = new byte[
-            UInt16Length
+        int bodyLength = UInt16Length
             + TlsRandomLength
             + 1
             + sessionIdLength
             + UInt16Length
             + 1
             + UInt16Length
-            + extensionsLength];
-
-        int index = 0;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
-        index += UInt16Length;
-        serverRandom.CopyTo(body, index);
-        index += TlsRandomLength;
-
-        body[index++] = checked((byte)sessionIdLength);
-        if (sessionIdLength > 0)
+            + extensionsLength;
+        byte[] body = ArrayPool<byte>.Shared.Rent(bodyLength);
+        try
         {
-            sessionId.CopyTo(body, index);
-            index += sessionIdLength;
-        }
+            int index = 0;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), TlsLegacyVersion);
+            index += UInt16Length;
+            serverRandom.CopyTo(body, index);
+            index += TlsRandomLength;
 
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
-        index += UInt16Length;
-        body[index++] = NullCompressionMethod;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
-        index += UInt16Length;
+            body[index++] = checked((byte)sessionIdLength);
+            if (sessionIdLength > 0)
+            {
+                sessionId.CopyTo(body, index);
+                index += sessionIdLength;
+            }
 
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), UInt16Length);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
-        index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), (ushort)profile.CipherSuite);
+            index += UInt16Length;
+            body[index++] = NullCompressionMethod;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)extensionsLength));
+            index += UInt16Length;
 
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)keyShareExtensionLength));
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), selectedNamedGroupValue);
-        index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)selectedLocalKeyShare.Length));
-        index += UInt16Length;
-        selectedLocalKeyShare.CopyTo(body.AsSpan(index));
-        index += selectedLocalKeyShare.Length;
-
-        if (selectPreSharedKey)
-        {
-            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PreSharedKeyExtensionType);
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), SupportedVersionsExtensionType);
             index += UInt16Length;
             BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), UInt16Length);
             index += UInt16Length;
-            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), 0);
-        }
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Tls13Version);
+            index += UInt16Length;
 
-        serverHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body);
-        return true;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)keyShareExtensionLength));
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), selectedNamedGroupValue);
+            index += UInt16Length;
+            BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)selectedLocalKeyShare.Length));
+            index += UInt16Length;
+            selectedLocalKeyShare.CopyTo(body.AsSpan(index));
+            index += selectedLocalKeyShare.Length;
+
+            if (selectPreSharedKey)
+            {
+                BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), PreSharedKeyExtensionType);
+                index += UInt16Length;
+                BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), UInt16Length);
+                index += UInt16Length;
+                BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), 0);
+            }
+
+            serverHelloBytes = WrapHandshakeMessage(QuicTlsHandshakeMessageType.ServerHello, body.AsSpan(0, bodyLength));
+            return true;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(body);
+        }
     }
 
     private static bool TryCreateNewSessionTicket(

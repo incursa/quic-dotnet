@@ -4,7 +4,13 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
+if (args is ["--harness", ..])
+{
+    return Incursa.Quic.Benchmarks.QuicAllocationHarness.Run(args);
+}
+
 BenchmarkSwitcher.FromAssembly(Assembly.GetExecutingAssembly()).Run(UseShortArtifactsRoot(args));
+return 0;
 
 static string[] UseShortArtifactsRoot(string[] args)
 {

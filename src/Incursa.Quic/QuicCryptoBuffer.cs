@@ -33,7 +33,7 @@ internal enum QuicCryptoBufferResult
     /// Local implementation floor chosen to keep the CRYPTO buffer comfortably above small handshake bursts.
     /// </summary>
     private const int MinimumCapacity = 4096;
-    private readonly List<Entry> entries = [];
+    private readonly List<Entry> entries = new(8);
     private int bufferedBytes;
     private ulong nextReadOffset;
     private bool discardFutureFrames;

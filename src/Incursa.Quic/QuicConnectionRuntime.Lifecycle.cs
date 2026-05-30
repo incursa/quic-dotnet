@@ -18,6 +18,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool preserveTerminalEndTicks)
     {
+        Debug.WriteLine($"[QUIC] {nameof(EnterTerminalPhase)} phase={phase}->{nextPhase} origin={origin} reason='{closeMetadata.ReasonPhrase}'");
         phase = nextPhase;
         lifecycleTimerState.UpdateTerminalEndTicks(nowTicks, currentProbeTimeoutMicros, preserveTerminalEndTicks);
 

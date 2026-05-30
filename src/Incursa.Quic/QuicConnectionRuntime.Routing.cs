@@ -1695,6 +1695,7 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionCloseMetadata closeMetadata,
         ref QuicConnectionEffectAccumulator effects)
     {
+        System.Diagnostics.Debug.WriteLine($"[QUIC] {nameof(DiscardConnection)} phase={phase}->Discarded origin={origin} reason='{closeMetadata.ReasonPhrase}'");
         phase = QuicConnectionPhase.Discarded;
         idleTimeoutState = null;
         lifecycleTimerState.ClearTerminalEndTicks();

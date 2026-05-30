@@ -167,25 +167,26 @@ internal sealed partial class QuicConnectionRuntime
         bool bidirectional,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (pendingStreamOpenTypes.IsEmpty)
+        if (pendingStreamOpenRequests.IsEmpty)
         {
             return false;
         }
 
         bool stateChanged = false;
-        KeyValuePair<long, QuicStreamType>[] pendingRequests = pendingStreamOpenTypes.ToArray();
+        KeyValuePair<long, StreamOpenRequestCompletionSource>[] pendingRequests = pendingStreamOpenRequests.ToArray();
         Array.Sort(pendingRequests, static (left, right) => left.Key.CompareTo(right.Key));
 
-        foreach (KeyValuePair<long, QuicStreamType> pendingRequest in pendingRequests)
+        foreach (KeyValuePair<long, StreamOpenRequestCompletionSource> pendingRequest in pendingRequests)
         {
-            if ((pendingRequest.Value == QuicStreamType.Bidirectional) != bidirectional)
+            QuicStreamType streamType = pendingRequest.Value.StreamType;
+            if ((streamType == QuicStreamType.Bidirectional) != bidirectional)
             {
                 continue;
             }
 
             if (!TryProcessPendingStreamOpenRequest(
                 pendingRequest.Key,
-                pendingRequest.Value,
+                streamType,
                 ref effects,
                 out bool stillPending))
             {
@@ -212,8 +213,7 @@ internal sealed partial class QuicConnectionRuntime
         stillPending = false;
 
         if (!pendingStreamOpenRequests.TryGetValue(requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? completion)
-            || !pendingStreamOpenTypes.TryGetValue(requestId, out QuicStreamType trackedStreamType)
-            || trackedStreamType != streamType)
+            || completion.StreamType != streamType)
         {
             return false;
         }
@@ -1335,7 +1335,8 @@ internal sealed partial class QuicConnectionRuntime
 
         if (phase != QuicConnectionPhase.Active || activePath is null)
         {
-            exception = new InvalidOperationException("The connection is not established.");
+            exception = new InvalidOperationException(
+                $"The connection is not established. Phase={phase} ActivePath={(activePath is null ? "null" : "set")}");
             return false;
         }
 
@@ -4455,25 +4456,12 @@ internal sealed partial class QuicConnectionRuntime
 
     private void TryQueueInboundStreamId(ulong streamId)
     {
-        if (!queuedInboundStreamIds.Add(streamId))
-        {
-            return;
-        }
-
         if (ApplicationReceiveDebugEnabled)
         {
             Console.Error.WriteLine($"app-rx queue-inbound-stream role={tlsState.Role} stream={streamId}.");
         }
 
         _ = inboundStreamIds.Writer.TryWrite(streamId);
-    }
-
-    private bool IsPeerInitiatedInboundStreamId(ulong streamId)
-    {
-        QuicStreamId parsedStreamId = new(streamId);
-        return tlsState.Role == QuicTlsRole.Server
-            ? parsedStreamId.IsClientInitiated
-            : parsedStreamId.IsServerInitiated;
     }
 
     private bool TryQueueInboundDatagram(ReadOnlyMemory<byte> datagram, out ReadOnlyMemory<byte> queuedDatagram)
@@ -4552,14 +4540,7 @@ internal sealed partial class QuicConnectionRuntime
 
     private bool TryRemovePendingStreamOpenRequest(long requestId, out QuicConnectionRuntime.StreamOpenRequestCompletionSource? completion)
     {
-        if (!pendingStreamOpenRequests.TryRemove(requestId, out completion))
-        {
-            pendingStreamOpenTypes.TryRemove(requestId, out _);
-            return false;
-        }
-
-        pendingStreamOpenTypes.TryRemove(requestId, out _);
-        return true;
+        return pendingStreamOpenRequests.TryRemove(requestId, out completion);
     }
 
     private void CompletePendingStreamActionRequests(Exception completionException)

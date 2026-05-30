@@ -58,19 +58,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly Channel<ReadOnlyMemory<byte>>? inboundDatagrams;
     private readonly Channel<QuicConnectionEvent> inbox;
     private readonly ConcurrentDictionary<long, StreamOpenRequestCompletionSource> pendingStreamOpenRequests = new();
-    private readonly ConcurrentDictionary<long, QuicStreamType> pendingStreamOpenTypes = new();
     private readonly Dictionary<long, StreamActionRequestCompletionSource> pendingStreamActionRequests = new();
     private readonly ConcurrentDictionary<long, DatagramSendRequestCompletionSource> pendingDatagramSendRequests = new();
-    private readonly ConcurrentQueue<StreamOpenRequestCompletionSource> streamOpenRequestCompletionSourcePool = new();
-    private readonly ConcurrentQueue<StreamActionRequestCompletionSource> streamActionRequestCompletionSourcePool = new();
-    private readonly ConcurrentQueue<DatagramSendRequestCompletionSource> datagramSendRequestCompletionSourcePool = new();
+    private readonly ConcurrentQueue<object> completionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
-    private readonly HashSet<ulong> queuedInboundStreamIds = [];
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
-    private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = [];
+    private readonly List<BufferedEstablishmentHandshakePacket> bufferedEstablishmentHandshakePackets = new(MaximumBufferedEstablishmentHandshakePackets);
     private readonly QuicConnectionPeerConnectionIdState peerConnectionIdState = new();
     private readonly long timeOriginTicks;
     private readonly QuicHandshakeFlowCoordinator handshakeFlowCoordinator;
@@ -264,8 +260,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         internal ValueTask<ulong> Task => new(this, source.Version);
 
-        internal void Prepare()
+        internal QuicStreamType StreamType { get; set; }
+
+        internal void Prepare(QuicStreamType streamType)
         {
+            StreamType = streamType;
             source.Reset();
         }
 
@@ -374,52 +373,55 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         }
     }
 
-    private StreamOpenRequestCompletionSource RentStreamOpenRequestCompletionSource()
+    private StreamOpenRequestCompletionSource RentStreamOpenRequestCompletionSource(QuicStreamType streamType)
     {
-        if (!streamOpenRequestCompletionSourcePool.TryDequeue(out StreamOpenRequestCompletionSource? completionSource))
+        if (!completionSourcePool.TryDequeue(out object? completionSource)
+            || completionSource is not StreamOpenRequestCompletionSource typedSource)
         {
-            completionSource = new StreamOpenRequestCompletionSource(this);
+            typedSource = new StreamOpenRequestCompletionSource(this);
         }
 
-        completionSource.Prepare();
-        return completionSource;
+        typedSource.Prepare(streamType);
+        return typedSource;
     }
 
     private void ReturnStreamOpenRequestCompletionSource(StreamOpenRequestCompletionSource completionSource)
     {
-        streamOpenRequestCompletionSourcePool.Enqueue(completionSource);
+        completionSourcePool.Enqueue(completionSource);
     }
 
     private StreamActionRequestCompletionSource RentStreamActionRequestCompletionSource()
     {
-        if (!streamActionRequestCompletionSourcePool.TryDequeue(out StreamActionRequestCompletionSource? completionSource))
+        if (!completionSourcePool.TryDequeue(out object? completionSource)
+            || completionSource is not StreamActionRequestCompletionSource typedSource)
         {
-            completionSource = new StreamActionRequestCompletionSource(this);
+            typedSource = new StreamActionRequestCompletionSource(this);
         }
 
-        completionSource.Prepare();
-        return completionSource;
+        typedSource.Prepare();
+        return typedSource;
     }
 
     private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
     {
-        streamActionRequestCompletionSourcePool.Enqueue(completionSource);
+        completionSourcePool.Enqueue(completionSource);
     }
 
     private DatagramSendRequestCompletionSource RentDatagramSendRequestCompletionSource()
     {
-        if (!datagramSendRequestCompletionSourcePool.TryDequeue(out DatagramSendRequestCompletionSource? completionSource))
+        if (!completionSourcePool.TryDequeue(out object? completionSource)
+            || completionSource is not DatagramSendRequestCompletionSource typedSource)
         {
-            completionSource = new DatagramSendRequestCompletionSource(this);
+            typedSource = new DatagramSendRequestCompletionSource(this);
         }
 
-        completionSource.Prepare();
-        return completionSource;
+        typedSource.Prepare();
+        return typedSource;
     }
 
     private void ReturnDatagramSendRequestCompletionSource(DatagramSendRequestCompletionSource completionSource)
     {
-        datagramSendRequestCompletionSourcePool.Enqueue(completionSource);
+        completionSourcePool.Enqueue(completionSource);
     }
 
     private bool TryAddPendingStreamActionRequest(long requestId, StreamActionRequestCompletionSource completionSource)
@@ -1102,7 +1104,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (phase != QuicConnectionPhase.Active)
         {
-            throw new InvalidOperationException("The connection is not established.");
+            throw new InvalidOperationException(
+                $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
         try
@@ -1147,7 +1150,11 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (phase != QuicConnectionPhase.Active || activePath is null)
         {
-            throw new InvalidOperationException("The connection is not established.");
+            Debug.Fail(
+                $"{nameof(OpenOutboundStreamAsync)} guard failed",
+                $"Phase={phase} ActivePath={(activePath is null ? "null" : "set")} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")} Disposed={disposed}");
+            throw new InvalidOperationException(
+                $"The connection is not established. Phase={phase} ActivePath={(activePath is null ? "null" : "set")} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
         if (streamType is not QuicStreamType.Unidirectional and not QuicStreamType.Bidirectional)
@@ -1164,12 +1171,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         cancellationToken.ThrowIfCancellationRequested();
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
-        StreamOpenRequestCompletionSource completion = RentStreamOpenRequestCompletionSource();
-        if (!pendingStreamOpenRequests.TryAdd(requestId, completion)
-            || !pendingStreamOpenTypes.TryAdd(requestId, streamType))
+        StreamOpenRequestCompletionSource completion = RentStreamOpenRequestCompletionSource(streamType);
+        if (!pendingStreamOpenRequests.TryAdd(requestId, completion))
         {
             pendingStreamOpenRequests.TryRemove(requestId, out _);
-            pendingStreamOpenTypes.TryRemove(requestId, out _);
             ReturnStreamOpenRequestCompletionSource(completion);
             throw new InvalidOperationException("The connection runtime could not queue the stream open request.");
         }
@@ -1354,7 +1359,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (phase != QuicConnectionPhase.Active)
         {
-            throw new InvalidOperationException("The connection is not established.");
+            throw new InvalidOperationException(
+                $"The connection is not established. Phase={phase} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
 
         if (tlsState.LocalTransportParameters?.MaxDatagramFrameSize is not > 0)
