@@ -6,6 +6,7 @@
 xychart-beta
   title "Managed Allocation Before/After P4 (KB/op)"
   x-axis ["Before P4", "After P4"]
+  y-axis "KB/op" 0 --> 950
   bar [922, 325]
 ```
 
@@ -15,6 +16,7 @@ xychart-beta
 xychart-beta
   title "Server Constructor Before/After P4 (KB/op)"
   x-axis ["Before P4", "After P4"]
+  y-axis "KB/op" 0 --> 650
   bar [611, 15]
 ```
 
@@ -24,6 +26,7 @@ xychart-beta
 xychart-beta
   title "Managed Allocation (KB/op) - Pass 2"
   x-axis ["Incursa.Quic", "System.Net.Quic"]
+  y-axis "KB/op" 0 --> 350
   bar [325, 91]
 ```
 
@@ -33,6 +36,7 @@ xychart-beta
 xychart-beta
   title "Private Bytes per Operation (MB/op) - Pass 2"
   x-axis ["Incursa.Quic", "System.Net.Quic"]
+  y-axis "MB/op" 0 --> 3
   bar [0.002, 2.495]
 ```
 
@@ -40,6 +44,7 @@ xychart-beta
 xychart-beta
   title "Working Set per Operation (MB/op) - Pass 2"
   x-axis ["Incursa.Quic", "System.Net.Quic"]
+  y-axis "MB/op" 0 --> 3
   bar [0.003, 2.320]
 ```
 
@@ -61,6 +66,7 @@ pie showData
 xychart-beta
   title "Server Constructor Components (KB/op)"
   x-axis ["collections", "TLS bridge driver", "channels", "TLS bridge state", "RecoveryController", "field-init", "StreamRegistry", "PeerConnIdState"]
+  y-axis "KB/op" 0 --> 5
   bar [4.2, 3.0, 2.5, 2.3, 0.7, 0.5, 0.5, 0.5]
 ```
 
@@ -72,4 +78,3 @@ pie showData
   "connect+accept" : 256780
   "listener" : 46928
   "close+dispose" : 33912
-```

@@ -22,6 +22,10 @@
 
 ---
 
+> **Evidence status**: Performance evidence complete. Functional test verification is pending due to a known test project build issue (missing `Incursa.Quic.Dns` project reference). This report validates performance measurements only.
+
+---
+
 ## Executive Summary
 
 This report captures the current allocation and throughput profile of **Incursa.Quic**, a fully managed QUIC transport implementation, and compares it against **System.Net.Quic** (a managed wrapper over native MsQuic).
@@ -87,7 +91,7 @@ Note: The standard 10,000-iteration harness was reduced to 2,000 to keep total m
 |---|---|
 | Benchmark project build | **Passed** (0 warnings, 0 errors) |
 | Test suite | **Skipped** (pre-existing build issue: missing `Incursa.Quic.Dns` project) |
-| All harness modes executed | **6/6 completed** |
+| All six measurement modes executed | **All completed** |
 | JSON outputs produced | **6/6 present** |
 | No harness crashes or hangs | **Confirmed** |
 
@@ -128,7 +132,7 @@ dotnet run -c Release --no-build --project benchmarks/Incursa.Quic.Benchmarks.cs
 4. Incursa.Quic WS/private cleanup: **~2.5 KB/op residual** -- effectively flat after cleanup
 5. Connect+accept phase: **256.8 KB/op** -- within regression budget (<= 275 KB/op)
 
-No benchmark failures or skipped measurements occurred. All 6 harness modes completed successfully.
+No benchmark failures or skipped measurements occurred. All six measurement modes completed successfully.
 
 ---
 
@@ -166,6 +170,30 @@ Batch 2 retained is lower than batch 1, confirming the native allocator behavior
 Managed allocation metrics alone are not a fair memory comparison between these two implementations. System.Net.Quic delegates QUIC/TLS state to native MsQuic (a C library), whose allocations are invisible to managed GC metrics (`GC.GetTotalAllocatedBytes`). The working set and private bytes deltas reveal the native memory cost.
 
 Both implementations have established connections and successfully completed the handshake and teardown in all iterations. Neither implementation exhibited crashes, hangs, or protocol errors during measurement.
+
+```mermaid
+---
+config:
+  theme: default
+---
+xychart-beta
+  title "Managed Allocation (KB/op) - Pass 2"
+  x-axis ["Incursa.Quic", "System.Net.Quic"]
+  y-axis "KB/op" 0 --> 350
+  bar [325, 91]
+```
+
+```mermaid
+---
+config:
+  theme: default
+---
+xychart-beta
+  title "Private Bytes per Operation (MB/op) - Pass 2"
+  x-axis ["Incursa.Quic", "System.Net.Quic"]
+  y-axis "MB/op" 0 --> 3
+  bar [0.002, 2.495]
+```
 
 ---
 
@@ -212,7 +240,7 @@ System.Net.Quic native allocator behavior is a known characteristic of the MsQui
 | close+dispose | 33,912 | 10.0% |
 | **TOTAL** | **337,621** | **100%** |
 
-The connect+accept phase dominates the allocation profile at 76.1% of total managed allocation per operation. This phase includes listener creation, TLS handshake, connection runtime object graph construction, and stream state initialization. The listener phase (13.9%) includes certificate loading and listener setup. The close+dispose phase (10.0%) covers connection teardown and resource cleanup.
+The connect+accept phase dominates the allocation profile at 76.1% of total managed allocation per operation. This phase includes connection establishment, TLS handshake, runtime construction, packet processing, and stream state initialization. The listener phase (13.9%) includes certificate loading and listener setup. The close+dispose phase (10.0%) covers connection teardown and resource cleanup.
 
 ---
 
@@ -300,6 +328,30 @@ The P4 optimization changed `QuicTlsKeySchedule` so that server-side key generat
 
 The P4 optimization eliminated the single largest allocation hotspot in the codebase. The remaining ~325 KB/op managed allocation is distributed across hundreds of structurally necessary allocations in the connection runtime, handshake pipeline, and packet processing infrastructure.
 
+```mermaid
+---
+config:
+  theme: default
+---
+xychart-beta
+  title "Managed Allocation Before vs After P4 (KB/op)"
+  x-axis ["Before P4 (historical)", "After P4 (this run)"]
+  y-axis "KB/op" 0 --> 950
+  bar [922, 325]
+```
+
+```mermaid
+---
+config:
+  theme: default
+---
+xychart-beta
+  title "Server Constructor Before vs After P4 (KB/op)"
+  x-axis ["Before P4 (historical)", "After P4 (this run)"]
+  y-axis "KB/op" 0 --> 650
+  bar [611, 15]
+```
+
 ---
 
 ## Regression Budgets
@@ -368,5 +420,5 @@ All current metrics are **within** their respective regression budgets.
 | [raw/profile-runtime.json](raw/profile-runtime.json) | Server constructor machine-readable metrics |
 | [raw/profile-handshake.txt](raw/profile-handshake.txt) | Handshake sub-operation profile console output |
 | [raw/profile-handshake.json](raw/profile-handshake.json) | Handshake sub-operation machine-readable metrics |
-| [environment.json](../environment.json) | Environment metadata |
+| [environment.json](environment.json) | Environment metadata |
 | [charts/charts.md](charts/charts.md) | Performance charts (Mermaid) |
