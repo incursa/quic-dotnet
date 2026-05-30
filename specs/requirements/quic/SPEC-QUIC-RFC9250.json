@@ -4,7 +4,7 @@
   "title": "QUIC RFC 9250 Requirements",
   "domain": "quic",
   "capability": "quic-rfc9250",
-  "status": "draft",
+  "status": "stable",
   "owner": "protocol-team",
   "purpose": "Capture QUIC RFC 9250 requirements.",
   "related_artifacts": [
@@ -19,7 +19,61 @@
     "VER-QUIC-RFC9250-0003",
     "ARC-QUIC-RFC9250-0004",
     "WI-QUIC-RFC9250-0004",
-    "VER-QUIC-RFC9250-0004"
+    "VER-QUIC-RFC9250-0004",
+    "ARC-QUIC-RFC9250-0005",
+    "WI-QUIC-RFC9250-0005",
+    "VER-QUIC-RFC9250-0005",
+    "ARC-QUIC-RFC9250-0006",
+    "WI-QUIC-RFC9250-0006",
+    "VER-QUIC-RFC9250-0006",
+    "ARC-QUIC-RFC9250-0007",
+    "WI-QUIC-RFC9250-0007",
+    "VER-QUIC-RFC9250-0007",
+    "ARC-QUIC-RFC9250-0008",
+    "WI-QUIC-RFC9250-0008",
+    "VER-QUIC-RFC9250-0008",
+    "ARC-QUIC-RFC9250-0009",
+    "WI-QUIC-RFC9250-0009",
+    "VER-QUIC-RFC9250-0009",
+    "ARC-QUIC-RFC9250-0010",
+    "WI-QUIC-RFC9250-0010",
+    "VER-QUIC-RFC9250-0010",
+    "ARC-QUIC-RFC9250-0011",
+    "WI-QUIC-RFC9250-0011",
+    "VER-QUIC-RFC9250-0011",
+    "ARC-QUIC-RFC9250-0012",
+    "WI-QUIC-RFC9250-0012",
+    "VER-QUIC-RFC9250-0012",
+    "ARC-QUIC-RFC9250-0013",
+    "WI-QUIC-RFC9250-0013",
+    "VER-QUIC-RFC9250-0013",
+    "ARC-QUIC-RFC9250-0014",
+    "WI-QUIC-RFC9250-0014",
+    "VER-QUIC-RFC9250-0014",
+    "ARC-QUIC-RFC9250-0015",
+    "WI-QUIC-RFC9250-0015",
+    "VER-QUIC-RFC9250-0015",
+    "ARC-QUIC-RFC9250-0016",
+    "WI-QUIC-RFC9250-0016",
+    "VER-QUIC-RFC9250-0016",
+    "ARC-QUIC-RFC9250-0017",
+    "WI-QUIC-RFC9250-0017",
+    "VER-QUIC-RFC9250-0017",
+    "ARC-QUIC-RFC9250-0018",
+    "WI-QUIC-RFC9250-0018",
+    "VER-QUIC-RFC9250-0018",
+    "ARC-QUIC-RFC9250-0019",
+    "WI-QUIC-RFC9250-0019",
+    "VER-QUIC-RFC9250-0019",
+    "ARC-QUIC-RFC9250-0020",
+    "WI-QUIC-RFC9250-0020",
+    "VER-QUIC-RFC9250-0020",
+    "ARC-QUIC-RFC9250-0021",
+    "WI-QUIC-RFC9250-0021",
+    "VER-QUIC-RFC9250-0021",
+    "ARC-QUIC-RFC9250-0022",
+    "WI-QUIC-RFC9250-0022",
+    "VER-QUIC-RFC9250-0022"
   ],
   "requirements": [
     {
@@ -36,6 +90,15 @@
         "upstream_refs": [
           "RFC 9250 section 3 RFC9250-S3-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       }
     },
@@ -79,6 +142,15 @@
         "upstream_refs": [
           "RFC 9250 section 3.1 RFC9250-S3P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -622,6 +694,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.2.1 RFC9250-S4P2P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0012"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0012"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0012"
         ]
       }
     },
@@ -639,6 +720,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.2.1 RFC9250-S4P2P1-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.2.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0012"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0012"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0012"
         ]
       }
     },
@@ -1018,6 +1108,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0010"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0010"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0010"
         ]
       }
     },
@@ -1061,6 +1160,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.3.1 RFC9250-S4P3P1-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0010"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0010"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0010"
         ]
       }
     },
@@ -1212,13 +1320,13 @@
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
         ],
         "satisfied_by": [
-          "ARC-QUIC-RFC9250-0006"
+          "ARC-QUIC-RFC9250-0013"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9250-0006"
+          "WI-QUIC-RFC9250-0013"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9250-0006"
+          "VER-QUIC-RFC9250-0013"
         ]
       }
     },
@@ -1314,6 +1422,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.2 RFC9250-S4P3P2-B2-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0010"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0010"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0010"
         ]
       }
     },
@@ -1487,6 +1604,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0008"
         ]
       }
     },
@@ -1504,6 +1630,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0008"
         ]
       }
     },
@@ -1547,6 +1682,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.3 RFC9250-S4P3P3-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0008"
         ]
       }
     },
@@ -1616,6 +1760,15 @@
         "upstream_refs": [
           "RFC 9250 4.3.4 RFC9250-S4P3P4-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0008"
         ]
       }
     },
@@ -1633,6 +1786,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1650,6 +1812,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B5-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1667,6 +1838,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1684,6 +1864,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1701,6 +1890,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1718,6 +1916,15 @@
         "upstream_refs": [
           "RFC 9250 4.4 RFC9250-S4P4-B6-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1735,6 +1942,15 @@
         "upstream_refs": [
           "RFC9250 section 4.4 RFC9250-S4P4-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1752,6 +1968,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.4 RFC9250-S4P4-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1769,6 +1994,15 @@
         "upstream_refs": [
           "RFC 9250 section 4.4 RFC9250-S4P4-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1786,6 +2020,15 @@
         "upstream_refs": [
           "RFC9250 section 4.4 RFC9250-S4P4-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1803,6 +2046,15 @@
         "upstream_refs": [
           "RFC9250 section 4.4 RFC9250-S4P4-B8-P8-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0011"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0011"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0011"
         ]
       }
     },
@@ -1822,6 +2074,15 @@
           "RFC9000",
           "RFC9001",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
       },
       "notes": [
@@ -1842,6 +2103,15 @@
         "upstream_refs": [
           "RFC9250 section 4.5 RFC9250-S4P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
       },
       "notes": [
@@ -1862,16 +2132,25 @@
         "upstream_refs": [
           "RFC9250 section 4.5 RFC9250-S4P5-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
       },
       "notes": [
-        "Trimmed the trailing consequence because the 0-RTT prohibition is already covered by the preceding source unit."
+        "Trimmed for canonical requirement wording while preserving the referenced normative source."
       ]
     },
     {
       "id": "REQ-QUIC-RFC9250-0079",
-      "title": "Session resumption support",
-      "statement": "A server MAY support session resumption, with or without 0-RTT.",
+      "title": "Allow clients to use session resumption and 0-RTT when supported",
+      "statement": "A client MAY take advantage of the session resumption and 0-RTT mechanisms supported by QUIC transport [RFC9000] and QUIC TLS [RFC9001] if the server supports them.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1880,19 +2159,75 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9250 section 4.5 RFC9250-S4P5-B3-P3-S1",
-          "RFC9001 section 4.6.1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
-          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4.6.1"
+          "RFC 9250 section 4.5",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
-      },
-      "notes": [
-        "Trimmed the RFC9001 mechanism citation into upstream_refs."
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9250-0080",
-      "title": "Reject immediate 0-RTT processing",
+      "title": "Consider session-resumption privacy before enabling 0-RTT",
+      "statement": "Clients SHOULD consider potential privacy issues associated with session resumption before deciding to use this mechanism and specifically evaluate the trade-offs presented in the various sections of this document.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.5",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0081",
+      "title": "Allow session resumption with or without 0-RTT",
+      "statement": "Servers MAY support session resumption, and MAY do that with or without supporting 0-RTT, using the mechanisms described in Section 4.6.1 of [RFC9001].",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 section 4.5",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0082",
+      "title": "Do not immediately process non-replayable 0-RTT transactions",
       "statement": "Servers supporting 0-RTT MUST NOT immediately process non-replayable transactions received in 0-RTT data.",
       "coverage": {
         "positive": "required",
@@ -1902,64 +2237,24 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9250 section 4.5 RFC9250-S4P5-B3-P3-S2",
+          "RFC 9250 section 4.5",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
-      },
-      "notes": [
-        "Standalone prohibition; the following list items carry the concrete follow-up behaviors."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0081",
-      "title": "Queue non-replayable transactions",
-      "statement": "A server MUST queue the offending transaction and only process it after the QUIC handshake has completed.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC9250 section 4.5 RFC9250-S4P5-B4-P4-S1",
-          "RFC9001 section 4.1.1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
-          "https://www.rfc-editor.org/rfc/rfc9001.html#section-4.1.1"
-        ]
-      },
-      "notes": [
-        "Trimmed the RFC9001 handshake citation into upstream_refs."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0082",
-      "title": "Refuse too-early transactions",
-      "statement": "A server MUST reply to the offending transaction with response code REFUSED and an Extended DNS Error Code (EDE) \"Too Early\".",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC9250 section 4.5 RFC9250-S4P5-B5-P5-S1",
-          "RFC6891",
-          "RFC8914",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5",
-          "https://www.rfc-editor.org/rfc/rfc6891.html",
-          "https://www.rfc-editor.org/rfc/rfc8914.html"
-        ]
-      },
-      "notes": [
-        "Trimmed the RFC6891 and RFC8914 citations into upstream_refs."
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9250-0083",
-      "title": "Close on protocol error",
-      "statement": "A server MUST close the connection with the error code DOQ_PROTOCOL_ERROR.",
+      "title": "Handle non-replayable 0-RTT transactions by queue, refusal, or close",
+      "statement": "Servers supporting 0-RTT MUST adopt one of the following behaviors: queue the offending transaction and only process it after the QUIC handshake has been completed, reply to the offending transaction with a response code REFUSED and an EDE \"Too Early\", or close the connection with the error code DOQ_PROTOCOL_ERROR.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1968,18 +2263,24 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9250 section 4.5 RFC9250-S4P5-B6-P6-S1",
+          "RFC 9250 section 4.5",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0013"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0013"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0013"
         ]
-      },
-      "notes": [
-        "Standalone failure-handling requirement."
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9250-0084",
-      "title": "Ignore EDNS(0) UDP message size parameter",
-      "statement": "DoQ implementations MUST ignore the EDNS(0) UDP message size parameter.",
+      "title": "Ignore EDNS(0) UDP payload size",
+      "statement": "The Extension Mechanisms for DNS (EDNS(0)) [RFC6891] allow peers to specify the UDP message size. This parameter is ignored by DoQ.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1988,18 +2289,24 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 4.6 RFC9250-S4P6-B2-P2-S2",
+          "RFC 9250 section 4.6",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.6"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0009"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0009"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0009"
         ]
-      },
-      "notes": [
-        "Single testable DoQ invariant; wording trimmed to the normative core."
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9250-0085",
-      "title": "Assume 65535-byte maximum message size",
-      "statement": "DoQ implementations MUST always assume that the maximum message size is 65535 bytes.",
+      "title": "Enforce the 65535-byte DoQ message maximum",
+      "statement": "DoQ implementations always assume that the maximum message size is 65535 bytes.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2008,268 +2315,24 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 4.6 RFC9250-S4P6-B2-P2-S3",
+          "RFC 9250 section 4.6",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.6"
-        ]
-      },
-      "notes": [
-        "Single testable DoQ invariant; no wording repair needed beyond canonicalization."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0086",
-      "title": "Use a Strict usage profile for DoQ stubs",
-      "statement": "DoQ stubs SHOULD use a Strict usage profile.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.1 RFC9250-S5P1-B1-P1-S3",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0009"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0009"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0009"
         ]
       }
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0087",
-      "title": "Allow fallback after DoQ connection failure",
-      "statement": "If DoQ connection establishment fails, clients MAY fall back to DoT and cleartext according to their usage profile.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.2 RFC9250-S5P2-B1-P1-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
-        ]
-      },
-      "notes": [
-        "Trimmed wording to the smallest independently testable invariant; preserved the usage-profile condition."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0088",
-      "title": "Remember servers that do not support DoQ",
-      "statement": "DNS clients SHOULD remember server IP addresses that do not support DoQ.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.2 RFC9250-S5P2-B2-P2-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
-        ]
-      },
-      "notes": [
-        "Directly testable advisory behavior; no additional cleanup needed."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0089",
-      "title": "Treat connection failures as DoQ support indicators",
-      "statement": "Timeouts, connection refusals, and QUIC handshake failures MUST be treated as indicators that a server does not support DoQ.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
-        ]
-      },
-      "notes": [
-        "Already a single independently testable invariant; kept the failure conditions explicit."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0090",
-      "title": "Back off DoQ queries to unsupported servers",
-      "statement": "Clients SHOULD NOT attempt DoQ queries to a server that does not support DoQ for a reasonable period.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S2",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
-        ]
-      },
-      "notes": [
-        "Trimmed the illustrative example while preserving the backed-off retry invariant."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0091",
-      "title": "Allow more aggressive retrying for key-pinned clients",
-      "statement": "DNS clients following an out-of-band key-pinned usage profile MAY be more aggressive about retrying after DoQ connection failures.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S3",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
-        ]
-      },
-      "notes": [
-        "Retained as advisory latitude for a specific usage profile; no further reduction needed."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0092",
-      "title": "Limit worst-case amplification to 3x",
-      "statement": "DoQ implementations MUST limit the worst-case amplification to a factor of 3.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.3 RFC9250-S5P3-B1-P1-S2",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
-        ]
-      }
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0093",
-      "title": "Consider Retry Packets for address validation",
-      "statement": "DoQ implementations SHOULD consider configuring servers to use the Address Validation using Retry Packets procedure defined in Section 8.1.2 of RFC 9000.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.3 RFC9250-S5P3-B2-P2-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
-        ]
-      }
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0094",
-      "title": "Implement future-connections validation after Retry Packets",
-      "statement": "DoQ implementations that configure Address Validation using Retry Packets SHOULD implement the Address Validation for Future Connections procedure defined in Section 8.1.3 of RFC 9000.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.3 RFC9250-S5P3-B3-P3-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
-        ]
-      }
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0095",
-      "title": "Protect against traffic analysis with padding",
-      "statement": "Implementations MUST protect against the traffic analysis attacks described in Section 7.5 by injecting padding.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 5.4 RFC9250-S5P4-B1-P1-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4"
-        ]
-      },
-      "notes": [
-        "Trimmed to the standalone normative clause; no change in obligation."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0096",
-      "title": "Use QUIC padding policy APIs when available",
-      "statement": "If the implementation of QUIC exposes APIs to set a padding policy, DoQ SHOULD use those APIs to align packet lengths to a small set of fixed sizes.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 section 5.4 RFC9250-S5P4-B3-P3-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4"
-        ]
-      },
-      "notes": [
-        "Trimmed wording only; same conditional recommendation."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0097",
-      "title": "Pad DNS queries and responses without packet-level padding",
-      "statement": "If packet-level padding is unavailable or unused, DoQ MUST ensure all DNS queries and responses are padded to a small set of fixed sizes using EDNS(0) padding as specified in [RFC7830].",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 section 5.4 RFC9250-S5P4-B4-P4-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4",
-          "https://www.rfc-editor.org/rfc/rfc7830.html"
-        ]
-      },
-      "notes": [
-        "Trimmed wording only; same fallback padding obligation."
-      ]
-    },
-    {
-      "id": "REQ-QUIC-RFC9250-0098",
-      "title": "Follow RFC8467 padding size recommendations",
-      "statement": "In the absence of a standard policy for padding sizes, implementations SHOULD follow RFC8467 recommendations.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9250 section 5.4 RFC9250-S5P4-B6-P6-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.4",
-          "https://www.rfc-editor.org/rfc/rfc8467.html"
-        ]
-      },
-      "notes": [
-        "Trimmed wording only; same recommendation."
-      ]
     },
     {
       "id": "REQ-QUIC-RFC9250-0099",
-      "title": "Support connection reuse over persistent QUIC connections",
-      "statement": "DoQ clients and servers SHOULD support connection reuse by sending multiple queries and responses over a single persistent QUIC connection.",
+      "title": "Support connection reuse",
+      "statement": "Both clients and servers SHOULD support connection reuse by sending multiple queries and responses over a single persistent QUIC connection.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2278,7 +2341,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B1-P1-S2",
+          "RFC 9250 section 5.5.1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
         ],
         "satisfied_by": [
@@ -2294,7 +2357,7 @@
     },
     {
       "id": "REQ-QUIC-RFC9250-0100",
-      "title": "Send queries concurrently on QUIC streams",
+      "title": "Send queries concurrently",
       "statement": "DNS clients SHOULD send their queries concurrently over the QUIC streams on a QUIC connection.",
       "coverage": {
         "positive": "required",
@@ -2304,7 +2367,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B2-P2-S1",
+          "RFC 9250 section 5.5.1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
         ],
         "satisfied_by": [
@@ -2320,7 +2383,7 @@
     },
     {
       "id": "REQ-QUIC-RFC9250-0101",
-      "title": "Do not wait for replies before sending the next query",
+      "title": "Do not wait for an outstanding reply before sending the next query",
       "statement": "When a DNS client sends multiple queries to a server over a QUIC connection, it SHOULD NOT wait for an outstanding reply before sending the next query.",
       "coverage": {
         "positive": "required",
@@ -2330,7 +2393,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 section 5.5.1 RFC9250-S5P5P1-B2-P2-S2",
+          "RFC 9250 section 5.5.1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.1"
         ],
         "satisfied_by": [
@@ -2346,8 +2409,8 @@
     },
     {
       "id": "REQ-QUIC-RFC9250-0102",
-      "title": "Use QUIC idle timeout for long-lived connections",
-      "statement": "Clients that want to maintain long-duration DoQ connections SHOULD use the idle timeout mechanisms in RFC9000 Section 10.1.",
+      "title": "Use QUIC idle timeout mechanisms for long-duration connections",
+      "statement": "Clients that want to maintain long duration DoQ connections SHOULD use the idle timeout mechanisms defined in Section 10.1 of [RFC9000], the QUIC transport specification.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2356,14 +2419,19 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9250 section 5.5.2 RFC9250-S5P5P2-B6-P6-S1",
-          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.2",
-          "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.1"
+          "RFC 9250 section 5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
-      },
-      "notes": [
-        "Trimmed for canonical requirement wording while preserving the referenced normative source."
-      ]
+      }
     },
     {
       "id": "REQ-QUIC-RFC9250-0103",
@@ -2380,6 +2448,15 @@
           "RFC 9250 section 5.5.2 RFC9250-S5P5P2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.2",
           "https://www.rfc-editor.org/rfc/rfc7828.html"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0008"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0008"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0008"
         ]
       },
       "notes": [
@@ -2400,6 +2477,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       }
     },
@@ -2417,6 +2503,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P3-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       }
     },
@@ -2434,6 +2529,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P3-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       }
     },
@@ -2451,6 +2555,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P3-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       },
       "notes": [
@@ -2471,6 +2584,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P3-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       }
     },
@@ -2488,6 +2610,15 @@
         "upstream_refs": [
           "RFC9250-S5P5P4-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.5.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0014"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0014"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0014"
         ]
       },
       "notes": [
@@ -2508,6 +2639,15 @@
         "upstream_refs": [
           "RFC9250-S5P6-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.6"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0020"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0020"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0020"
         ]
       }
     },
@@ -2525,6 +2665,15 @@
         "upstream_refs": [
           "RFC9250-S5P7-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0019"
         ]
       }
     },
@@ -2542,6 +2691,15 @@
         "upstream_refs": [
           "RFC9250-S5P7-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0019"
         ]
       }
     },
@@ -2559,6 +2717,15 @@
         "upstream_refs": [
           "RFC 9250 5.7 RFC9250-S5P7-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0019"
         ]
       }
     },
@@ -2576,6 +2743,15 @@
         "upstream_refs": [
           "RFC 9250 5.7 RFC9250-S5P7-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0019"
         ]
       }
     },
@@ -2593,6 +2769,15 @@
         "upstream_refs": [
           "RFC 9250 5.7 RFC9250-S5P7-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.7"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0019"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0019"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0019"
         ]
       }
     },
@@ -2610,6 +2795,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2627,6 +2821,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2644,6 +2847,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2661,6 +2873,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2678,6 +2899,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2695,6 +2925,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2712,6 +2951,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2729,6 +2977,15 @@
         "upstream_refs": [
           "RFC 9250 5.8 RFC9250-S5P8-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.8"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0021"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0021"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0021"
         ]
       }
     },
@@ -2746,6 +3003,15 @@
         "upstream_refs": [
           "RFC 9250 7.1 RFC9250-S7P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-7.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0015"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0015"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0015"
         ]
       }
     },
@@ -2763,6 +3029,15 @@
         "upstream_refs": [
           "RFC9250-S7P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-7.5"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0018"
         ]
       }
     },
@@ -2780,6 +3055,15 @@
         "upstream_refs": [
           "RFC9250-S8P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       }
     },
@@ -2797,6 +3081,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -2817,6 +3110,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -2837,6 +3139,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -2857,6 +3168,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -2877,6 +3197,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B13-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -2897,6 +3226,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B14-P14-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       }
     },
@@ -2914,6 +3252,15 @@
         "upstream_refs": [
           "RFC 9250 8.4 RFC9250-S8P4-B17-P17-S1",
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-8.4"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0022"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0022"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0022"
         ]
       },
       "notes": [
@@ -3116,8 +3463,353 @@
         "upstream_refs": [
           "RFC 9250 Appendix A RFC9250-SA-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9250.html#appendix-A"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0015"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0015"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0015"
         ]
       }
-    }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0086",
+      "title": "Use a Strict usage profile for DoQ stubs",
+      "statement": "DoQ stubs SHOULD use a Strict usage profile.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.1 RFC9250-S5P1-B1-P1-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0087",
+      "title": "Opportunistic usage profile fallback",
+      "statement": "An implementation using the Opportunistic usage profile SHOULD fall back to DoT or cleartext DNS if the DoQ connection attempt fails.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B1-P1-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0088",
+      "title": "Back off after DoQ failure",
+      "statement": "Implementations using the Opportunistic profile SHOULD back off from DoQ for at least the timeout value after the failure.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B3-P3-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0089",
+      "title": "Key-pinned endpoints retry DoQ aggressively",
+      "statement": "Key-pinned endpoints SHOULD retry DoQ more aggressively after a failure.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B4-P4-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0090",
+      "title": "DoQ failure cache",
+      "statement": "An implementation using the Opportunistic profile SHOULD record DoQ failures in a cache and avoid repeated attempts.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B5-P5-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0091",
+      "title": "Configurable backoff timeout",
+      "statement": "The backoff timeout MUST be configurable.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B5-P5-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0092",
+      "title": "Be conservative when falling back to cleartext",
+      "statement": "Implementations SHOULD be conservative when falling back to cleartext DNS.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.2 RFC9250-S5P2-B5-P5-S3",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.2"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0016"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0016"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0016"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0093",
+      "title": "Enforce amplification limit",
+      "statement": "Servers supporting 0-RTT MUST enforce the 3x anti-amplification limit specified in RFC 9000.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.3 RFC9250-S5P3-B2-P2-S1",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0017"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0017"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0017"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0094",
+      "title": "Use QUIC Retry and address validation",
+      "statement": "Servers SHOULD use QUIC Retry and address validation to protect against amplification attacks.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.3 RFC9250-S5P3-B2-P2-S2",
+          "https://www.rfc-editor.org/rfc/rfc9250.html#section-5.3"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0017"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0017"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0017"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0095",
+      "title": "Add EDNS(0) padding to DoQ messages",
+      "statement": "Implementations SHOULD add EDNS(0) padding to DoQ messages to mitigate traffic analysis.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.4 RFC9250-S5P4-B1-P1-S1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0018"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0096",
+      "title": "Padding policy aligned with RFC 7830/8467",
+      "statement": "The padding policy SHOULD follow the recommendations in RFC 7830 and RFC 8467.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.4 RFC9250-S5P4-B5-P5-S1",
+          "RFC7830",
+          "RFC8467"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0018"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0097",
+      "title": "Padding boundary and fuzz tests",
+      "statement": "Padding implementations MUST include boundary and fuzz tests.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.4 RFC9250-S5P4-B7-P7-S1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0018"
+        ]
+      }
+    },
+    {
+      "id": "REQ-QUIC-RFC9250-0098",
+      "title": "Padding overhead benchmark",
+      "statement": "Padding implementations SHOULD include benchmark coverage for padding overhead.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9250 5.4 RFC9250-S5P4-B8-P8-S1"
+        ],
+        "satisfied_by": [
+          "ARC-QUIC-RFC9250-0018"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9250-0018"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9250-0018"
+        ]
+      }
+    },
   ]
 }

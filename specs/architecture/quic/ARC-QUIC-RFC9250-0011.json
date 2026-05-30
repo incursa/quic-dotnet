@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0011",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Connection Management Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define DoQ client connection lifecycle behavior: idle timeout negotiation, connection reuse safety checks, explicit clean close with DOQ_NO_ERROR, and in-progress transaction abandonment on connection failure.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0011",
+    "VER-QUIC-RFC9250-0011"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0065",
+    "REQ-QUIC-RFC9250-0066",
+    "REQ-QUIC-RFC9250-0067",
+    "REQ-QUIC-RFC9250-0068",
+    "REQ-QUIC-RFC9250-0069",
+    "REQ-QUIC-RFC9250-0070",
+    "REQ-QUIC-RFC9250-0071",
+    "REQ-QUIC-RFC9250-0072",
+    "REQ-QUIC-RFC9250-0073",
+    "REQ-QUIC-RFC9250-0074",
+    "REQ-QUIC-RFC9250-0075"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "design_summary": "The DoqClient connection management slice adds: (1) DoqDefaults.SuggestedIdleTimeout constant and EnsureIdleTimeout helper for negotiating the QUIC idle timeout. (2) DoqClient tracks the last activity timestamp and effective idle timeout; before each query it checks whether idle time is safely below the timeout margin, throwing a clear exception if the connection is too close to expiry. (3) DisposeAsync sends an explicit CONNECTION_CLOSE with DOQ_NO_ERROR before disposing the QUIC connection when there are outstanding queries. (4) An active query counter tracks in-progress transactions; on connection failure all in-progress queries are abandoned and subsequent callers receive a clear ConnectionFailed exception.",
+  "data_and_state_considerations": "The client adds three fields: a ValueStopwatch or timestamp for idle tracking, an atomic active-query counter, and a failure-indication flag.",
+  "edge_cases_and_constraints": [
+    "The idle timeout check uses a configurable margin; zero margin disables the reuse safety check.",
+    "The DOQ_NO_ERROR close in DisposeAsync is best-effort and may fail if the connection is already closed.",
+    "In-progress query tracking uses a simple counter; connection failure sets a flag checked by subsequent calls."
+  ],
+  "risks": [
+    "Clock skew between client and server can affect idle timeout calculations.",
+    "The connection reuse check is advisory (SHOULD level); callers can bypass it by setting IdleTimeoutMargin to zero."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "All changes are confined to DoqDefaults and DoqClient. No changes to DoqServer, DoqStream, or DoqMessageCodec are required."
+    }
+  ]
+}

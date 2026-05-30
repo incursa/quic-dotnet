@@ -2,7 +2,7 @@
 
 This harness runs `h3spec` against the local Incursa HTTP/3 file server and converts stdout/stderr into JSON and Markdown triage artifacts.
 
-The harness is advisory. It identifies RFC 9114 and RFC 9204 failures and creates TODO rows, but it does not promote HTTP/3 or QPACK support by itself.
+The harness is advisory. It identifies RFC 9114 and RFC 9204 failures and records follow-up rows, but it does not promote HTTP/3 or QPACK support by itself.
 
 ## Scripts
 
@@ -74,4 +74,4 @@ The parser maps h3spec case suffixes:
 - `[Transport x.y]` to RFC 9000 for context only.
 - `[TLS x.y]` to RFC 9001 for context only.
 
-Only RFC 9114 and RFC 9204 failures are converted into HTTP/3/QPACK TODO rows.
+Only RFC 9114 and RFC 9204 failures are converted into HTTP/3/QPACK follow-up rows.

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0017",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Amplification and Retry Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0017",
+    "VER-QUIC-RFC9250-0017"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0093",
+    "REQ-QUIC-RFC9250-0094"
+  ],
+  "summary": "Add amplification limit enforcement and retry/address-validation policy options to the DoQ server.",
+  "planned_changes": "- Add DoqServerOptions.EnforceAmplificationLimit (default true).\n- Add DoqServerOptions.UseRetryPackets (default true).\n- Add DoqServerOptions.UseAddressValidationForFutureConnections (default true).\n- Add 3x response-size enforcement in DoqServer.HandleQueryStreamAsync.\n- Add focused tests for option defaults and amplification enforcement.\n- Document transport limitations for retry/address-validation pass-through.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0017"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0017"
+  ],
+  "out_of_scope": [
+    "Transport-layer retry integration (internal to QUIC layer).",
+    "General response sizing beyond amplification enforcement."
+  ],
+  "completion_notes": "Both REQs are now traced and verified. Amplification enforcement and retry/address-validation options are implemented."
+}

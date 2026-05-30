@@ -1785,7 +1785,7 @@ Status summary across architecture, work-item, and verification JSON artifacts:
 The implementation is beyond scaffolding. The solution contains:
 
 - [`src/Incursa.Quic`](../src/Incursa.Quic): packable managed QUIC library.
-- [`src/Incursa.Quic.Qlog`](../src/Incursa.Quic.Qlog): qlog adapter package.
+- [`src/Incursa.Quic.Qlog`](../src/Incursa.Quic.Qlog): diagnostics-to-qlog adapter package (`Incursa.Quic.Diagnostics.Qlog`).
 - [`src/Incursa.Quic.InteropHarness`](../src/Incursa.Quic.InteropHarness): local interop-runner companion process.
 - [`tests/Incursa.Quic.Tests`](../tests/Incursa.Quic.Tests): requirement-home and integration proof corpus.
 - [`benchmarks/Incursa.Quic.Benchmarks`](../benchmarks): BenchmarkDotNet suites.

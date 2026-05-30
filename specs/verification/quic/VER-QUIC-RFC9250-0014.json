@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0014",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Connection Reuse and Resumption Tickets Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0014",
+    "WI-QUIC-RFC9250-0014"
+  ],
+  "verification_method": "Focused unit tests for idle-timeout reuse gating, ticket tracking, connectivity-change detection, address validation policy, and server option defaults.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0102",
+    "REQ-QUIC-RFC9250-0104",
+    "REQ-QUIC-RFC9250-0105",
+    "REQ-QUIC-RFC9250-0106",
+    "REQ-QUIC-RFC9250-0107",
+    "REQ-QUIC-RFC9250-0108",
+    "REQ-QUIC-RFC9250-0109"
+  ],
+  "scope": "This verification covers client-side idle-timeout reuse gating, ticket single-use, connectivity-change detection, address validation token policy, and server-side resumption ticket lifetime and anti-replay options. REQ-0103 (edns-tcp-keepalive) is verified by slice 0008.",
+  "preconditions": [
+    "Slices 0001 through 0013 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0014, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "All 8 REQs are now traced and verified. Policy-layer idle-timeout reuse gating, ticket single-use, connectivity-change detection, address validation gating, ticket lifetime, and anti-replay are implemented."
+}

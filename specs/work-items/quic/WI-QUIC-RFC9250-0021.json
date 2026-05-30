@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0021",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Flow Control Verification Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0021",
+    "VER-QUIC-RFC9250-0021"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0116",
+    "REQ-QUIC-RFC9250-0117",
+    "REQ-QUIC-RFC9250-0118",
+    "REQ-QUIC-RFC9250-0119",
+    "REQ-QUIC-RFC9250-0120",
+    "REQ-QUIC-RFC9250-0121",
+    "REQ-QUIC-RFC9250-0122",
+    "REQ-QUIC-RFC9250-0123"
+  ],
+  "summary": "Document how RFC 9250 flow control maps to the shared QUIC transport runtime and add focused contract tests that prove the transport enforces aggregate connection limits, per-stream limits, stream-creation limits, handshake transport parameters, and 0-RTT remembered limits.",
+  "planned_changes": "- Update the RFC 9250 SPEC trace links for REQ-0116 through REQ-0123.\n- Add ARC-QUIC-RFC9250-0021 to document the transport mapping.\n- Add verification-oriented contract tests under `tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0021.cs`.\n- Prove aggregate connection receive limits, per-stream receive limits, stream-creation limits, transport-parameter round-tripping, runtime handshake commit enforcement, and 0-RTT remembered-limit behavior through the shared QUIC runtime.\n- Do not add a custom DoQ flow-control layer.\n- Do not add DoQ-specific defaults unless a transport gap is discovered during verification.",
+  "verification_plan": "Run the focused flow-control requirement-home tests, core SpecTrace JSON validation, and diff hygiene checks after the SPEC trace links are updated.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0021"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0021"
+  ],
+  "out_of_scope": [
+    "A custom DoQ credit-accounting layer.",
+    "Changing shared QUIC transport semantics for other protocols.",
+    "Transport behavior beyond RFC 9250 section 5.8."
+  ],
+  "completion_notes": "The transport layer already owns the flow-control behavior. This slice only adds trace alignment and proof coverage, including the runtime commit path that applies peer transport parameters into bookkeeping limits."
+}

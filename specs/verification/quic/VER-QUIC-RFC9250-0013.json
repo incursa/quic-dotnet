@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0013",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 0-RTT Replay Protection Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0013",
+    "WI-QUIC-RFC9250-0013"
+  ],
+  "verification_method": "Focused unit tests for opcode classification, client-side 0-RTT gating, server-side queue behavior, and existing test regression checks.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0076",
+    "REQ-QUIC-RFC9250-0077",
+    "REQ-QUIC-RFC9250-0078",
+    "REQ-QUIC-RFC9250-0079",
+    "REQ-QUIC-RFC9250-0080",
+    "REQ-QUIC-RFC9250-0081",
+    "REQ-QUIC-RFC9250-0082",
+    "REQ-QUIC-RFC9250-0083"
+  ],
+  "scope": "This verification covers DNS opcode classification, client-side 0-RTT gating, and server-side 0-RTT queue and limit enforcement.",
+  "preconditions": [
+    "Slices 0001 through 0012 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFoundationTests|FullyQualifiedName~DoqStreamLifecycleTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0013, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "src/Incursa.Quic.Dns/DoqQueryContext.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "status_summary": "The DoQ adapter now classifies DNS opcodes for replayability, gates 0-RTT on the client side, and manages 0-RTT query queues on the server side. All 8 REQs are traced and verified."
+}

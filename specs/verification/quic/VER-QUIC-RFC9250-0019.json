@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0019",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Zone Transfer Concurrency Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0019",
+    "VER-QUIC-RFC9250-0019"
+  ],
+  "verification_method": "Focused integration tests verifying concurrent zone transfer requests and interleaved responses on the existing adapter architecture.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0111",
+    "REQ-QUIC-RFC9250-0112",
+    "REQ-QUIC-RFC9250-0113",
+    "REQ-QUIC-RFC9250-0114",
+    "REQ-QUIC-RFC9250-0115"
+  ],
+  "scope": "This verification covers concurrent zone transfer request support, shared connection for AXFR/IXFR, parallel queued sending, and interleaved responses.",
+  "preconditions": [
+    "Slices 0001 through 0018 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0019, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "status_summary": "All 5 REQs are now traced and verified. The existing adapter architecture supports zone transfer concurrency; no code changes were required."
+}

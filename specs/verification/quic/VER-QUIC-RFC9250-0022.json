@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0022",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Section 3 Residue and IANA Registry Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0022",
+    "WI-QUIC-RFC9250-0022"
+  ],
+  "verification_method": "Focused loopback tests, requirement-home trace assertions, and SpecTrace JSON validation for the remaining RFC 9250 section 3 residue and section 8 registry-governance slice.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0001",
+    "REQ-QUIC-RFC9250-0003",
+    "REQ-QUIC-RFC9250-0126",
+    "REQ-QUIC-RFC9250-0127",
+    "REQ-QUIC-RFC9250-0128",
+    "REQ-QUIC-RFC9250-0129",
+    "REQ-QUIC-RFC9250-0130",
+    "REQ-QUIC-RFC9250-0131",
+    "REQ-QUIC-RFC9250-0132",
+    "REQ-QUIC-RFC9250-0133"
+  ],
+  "scope": "This verification covers the large-response DoQ stream proof, the ALPN byte-sequence proof, the TLS transport mapping trace, the registry values, the unknown/reserved normalization behavior, and the registry-governance documentation for RFC 9250 sections 3 and 8. It does not add a custom DoQ datagram or PMTU layer.",
+  "preconditions": [
+    "Slices 0001 through 0021 exist and pass.",
+    "The managed QUIC loopback transport is available for stream-path verification.",
+    "The DoQ adapter remains stream-based and transport-backed."
+  ],
+  "procedure": [
+    "Run `dotnet restore tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`.",
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9250_0022|FullyQualifiedName~DoqStreamLifecycleTests|FullyQualifiedName~DoqFoundationTests|FullyQualifiedName~DoqFatalProtocolErrorTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ stream, ALPN, and registry-governance tests pass; the trace artifacts validate cleanly; and the slice remains documentation-first without any custom transport layer.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0022.cs"
+  ],
+  "status_summary": "The large-response DoQ stream proof, ALPN byte-sequence proof, and registry-governance trace checks passed."
+}

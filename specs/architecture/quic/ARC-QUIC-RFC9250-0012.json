@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0012",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Forwarding Gateway Helpers Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define public helper methods on DoqMessage for zeroing and generating DNS Message IDs when forwarding DNS messages between DoQ and other transports.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0012",
+    "VER-QUIC-RFC9250-0012"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0024",
+    "REQ-QUIC-RFC9250-0025"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqMessage.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "Two static helper methods on DoqMessage: NormalizeToDoq zeroes the two-octet DNS Message ID when forwarding a message into DoQ; GenerateMessageId writes a caller-supplied 16-bit identifier into the Message ID field when forwarding a message out of DoQ. Both methods copy the input span to a new byte array and validate minimum length.",
+  "data_and_state_considerations": "No new adapter state is required. Both methods are pure functions with no side effects.",
+  "edge_cases_and_constraints": [
+    "Both methods reject payloads shorter than 2 bytes.",
+    "NormalizeToDoq always writes 0x0000 as the Message ID.",
+    "GenerateMessageId accepts any ushort (0-65535) including 0, though 0 is not meaningful for outbound forwarding.",
+    "The caller is responsible for choosing unique message IDs when forwarding."
+  ],
+  "risks": [
+    "These are utility methods only; they do not enforce gateway-level semantics."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "These helpers are pure static methods on the DoqMessage struct. No changes to the codec, stream, or client/server adapters are required."
+    }
+  ]
+}

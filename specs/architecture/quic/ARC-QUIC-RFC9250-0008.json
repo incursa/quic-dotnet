@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Extended Protocol Errors Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the DoQ adapter behavior for EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0008",
+    "VER-QUIC-RFC9250-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0058",
+    "REQ-QUIC-RFC9250-0059",
+    "REQ-QUIC-RFC9250-0061",
+    "REQ-QUIC-RFC9250-0064"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
+  ],
+  "design_summary": "This slice adds four independent protocol-error enforcement mechanisms to the DoQ adapter. (1) The DoqMessageCodec gains an EDNS(0) tcp-keepalive option scanner that is invoked by DoqStream.ReadSingleMessageUntilFinAsync to reject messages containing the forbidden option with DOQ_PROTOCOL_ERROR. (2) The DoqClient starts a lightweight inbound stream monitor that treats any inbound (server-initiated) bidirectional stream as a fatal protocol error, closing the connection. (3) A configurable StreamFinTimeout property on DoqClient is applied to the read-until-FIN operation in QueryAsync; if the response payload arrives but STREAM FIN does not land within the timeout, the client closes the connection with DOQ_PROTOCOL_ERROR. (4) DoqErrorCode receives a static NormalizeReceivedErrorCode helper that maps undefined or unexpected-context application error codes to UnspecifiedError.",
+  "data_and_state_considerations": "No new adapter state is required. The inbound stream monitor uses a fire-and-forget task pattern consistent with the existing server connection-handling model. The EDNS scanner is a pure function on byte slices. The FIN timeout is implemented via WaitAsync wrapping the ReadSingleMessageUntilFinAsync ValueTask.",
+  "edge_cases_and_constraints": [
+    "The EDNS scanner must handle truncated DNS messages gracefully and return false for any non-tcp-keepalive EDNS option.",
+    "The FIN timeout must not interfere with the existing cancellation token path; both cancellation and timeout trigger DOQ_PROTOCOL_ERROR close.",
+    "The inbound stream monitor is started unconditionally for all DoqClient instances and gracefully shuts down on disposal.",
+    "Error code normalization handles any long value and maps both truly-unknown codes and unexpected-context codes to UnspecifiedError."
+  ],
+  "risks": [
+    "The EDNS scanner is a simple byte-level parser and does not validate the overall DNS message structure beyond what is needed to locate EDNS options in the additional section.",
+    "The FIN timeout is a pure wall-clock WaitAsync; it does not distinguish between network latency and a truly missing FIN.",
+    "Server-initiated bidirectional stream detection is a defensive measure on the client; the server adapter remains unchanged and cannot open outbound streams by design."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "All four behaviors are implemented within the existing DoQ adapter files. No changes to the QUIC transport layer, codec architecture, or stream management patterns are required."
+    },
+    {
+      "heading": "EDNS tcp-keepalive Option Code",
+      "content": "The EDNS(0) tcp-keepalive option code is 11 (0x000B). The scanner walks the DNS message additional section looking for an OPT pseudo-RR (type 41) and then scans its RDATA for the option code 0x000B."
+    }
+  ]
+}

@@ -26,4 +26,11 @@ public sealed class DoqQueryContext
     /// Gets the DNS query payload without the DoQ length prefix.
     /// </summary>
     public ReadOnlyMemory<byte> Query { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the query arrived via QUIC 0-RTT.
+    /// Defaults to <c>false</c>. The transport layer does not currently expose
+    /// 0-RTT state; this property is a placeholder for future integration.
+    /// </summary>
+    public bool IsZeroRtt { get; set; }
 }

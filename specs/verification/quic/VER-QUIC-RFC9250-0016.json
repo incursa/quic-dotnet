@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0016",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Usage Profiles and Fallback Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0016",
+    "WI-QUIC-RFC9250-0016"
+  ],
+  "verification_method": "Focused unit tests for cache behavior, profile enforcement, backoff timing, and key-pinned override.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0086",
+    "REQ-QUIC-RFC9250-0087",
+    "REQ-QUIC-RFC9250-0088",
+    "REQ-QUIC-RFC9250-0089",
+    "REQ-QUIC-RFC9250-0090",
+    "REQ-QUIC-RFC9250-0091",
+    "REQ-QUIC-RFC9250-0092"
+  ],
+  "scope": "This verification covers the DoqFallbackCache, DoqClientProfile, and profile-aware behavior in DoqClient.",
+  "preconditions": [
+    "Slices 0001 through 0015 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0016, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqFallbackCache.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "All 7 REQs are now traced and verified. Profile behavior, fallback cache, backoff enforcement, and key-pinned override are implemented."
+}

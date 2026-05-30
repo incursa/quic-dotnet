@@ -1,0 +1,30 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0020",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Response Ordering Verification Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0020",
+    "VER-QUIC-RFC9250-0020"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0110"
+  ],
+  "key_components": [
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "design_summary": "The existing adapter architecture dispatches each stream independently in DoqServer.HandleQueryStreamAsync, ensuring that a slow zone transfer on one stream does not block another stream's response. This slice adds a verification test proving out-of-order response delivery.",
+  "data_and_state_considerations": "No new adapter state or code changes required.",
+  "edge_cases_and_constraints": [],
+  "risks": [],
+  "supplemental_sections": [
+    {
+      "heading": "Existing Architecture",
+      "content": "DoqServer spawns concurrent tasks per stream via HandleQueryStreamAsync. DoqClient.QueryAsync completes per-stream, so the second query's response is available as soon as the second server task runs and completes."
+    }
+  ]
+}

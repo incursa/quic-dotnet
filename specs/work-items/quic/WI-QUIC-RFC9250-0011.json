@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0011",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Connection Management Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0011",
+    "VER-QUIC-RFC9250-0011"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0065",
+    "REQ-QUIC-RFC9250-0066",
+    "REQ-QUIC-RFC9250-0067",
+    "REQ-QUIC-RFC9250-0068",
+    "REQ-QUIC-RFC9250-0069",
+    "REQ-QUIC-RFC9250-0070",
+    "REQ-QUIC-RFC9250-0071",
+    "REQ-QUIC-RFC9250-0072",
+    "REQ-QUIC-RFC9250-0073",
+    "REQ-QUIC-RFC9250-0074",
+    "REQ-QUIC-RFC9250-0075"
+  ],
+  "summary": "Add DoQ client-side connection management: idle timeout helpers, connection reuse safety check, explicit DOQ_NO_ERROR close, and in-progress transaction tracking.",
+  "planned_changes": "- Add SuggestedIdleTimeout constant and EnsureIdleTimeout helper to DoqDefaults.\n- Add IdleTimeoutMargin property, last-activity tracking, active query counter, and connection-failure flag to DoqClient.\n- Add reuse-safety check in QueryAsync that throws if idle time is too close to the effective timeout.\n- Add DOQ_NO_ERROR explicit close in DisposeAsync when outstanding queries exist.\n- Surface ConnectionFailed exception for in-progress queries when the connection fails.\n- Add focused tests: connection reuse when healthy, rejection when too close to idle timeout, DOQ_NO_ERROR close, and abandoned query surface.",
+  "verification_plan": "Run DoQ stream lifecycle tests, DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0011"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0011"
+  ],
+  "out_of_scope": [
+    "Usage profiles or fallback to TCP/TLS (slice 0016).",
+    "Session resumption tickets or 0-RTT (slices 0013, 0014).",
+    "Server-side connection lifecycle policy."
+  ],
+  "completion_notes": "All 11 REQs are now traced and verified. The DoQ client manages connection lifecycle, idle timeout, and in-progress query abandonment."
+}

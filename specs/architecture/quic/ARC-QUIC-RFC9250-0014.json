@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0014",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Connection Reuse and Resumption Tickets Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define DoQ client and server policies for connection reuse, single-use resumption tickets, connectivity-change detection, address validation token gating, resumption ticket lifetime, and anti-replay mechanisms.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0014",
+    "VER-QUIC-RFC9250-0014"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0102",
+    "REQ-QUIC-RFC9250-0103",
+    "REQ-QUIC-RFC9250-0104",
+    "REQ-QUIC-RFC9250-0105",
+    "REQ-QUIC-RFC9250-0106",
+    "REQ-QUIC-RFC9250-0107",
+    "REQ-QUIC-RFC9250-0108",
+    "REQ-QUIC-RFC9250-0109"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
+  ],
+  "design_summary": "Policy-layer additions: (1) DoqClient uses IdleTimeoutMargin with the advertised QUIC idle timeout to avoid reusing a connection too close to close time. (2) DoqClient tracks ticket usage via IsTicketUsed and rejects second use. (3) DoqClient stores PriorConnectivityId and ConnectivityId; a mismatch causes QueryAsync to throw so callers open fresh connections. (4) DoqClient.UseAddressValidationWithResumptionOnly defaults to true. (5) DoqServerOptions adds ResumptionTicketLifetime (default 6 hours) and EnableAntiReplay (default true). REQ-0103 (edns-tcp-keepalive prohibition) is cross-referenced to slice 0008. The transport layer does not expose local addresses or ticket internals; the client properties are policy knobs the caller populates.",
+  "data_and_state_considerations": "The client adds a ticket-used boolean, two connectivity identity strings, and an address-validation policy flag. The server adds two configuration properties.",
+  "edge_cases_and_constraints": [
+    "ConnectivityId is caller-managed; the client cannot detect network changes independently.",
+    "Ticket single-use tracking is per-instance; a new DoqClient is required for each ticket.",
+    "ResumptionTicketLifetime is an advisory server-side option; actual ticket lifetime depends on the TLS layer.",
+    "EnableAntiReplay is a policy toggle; the transport layer must implement the actual mechanism."
+  ],
+  "risks": [
+    "The transport layer's session ticket store and TLS anti-replay state are not directly accessible from the DoQ adapter."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Transport Abstraction",
+      "content": "Resumption ticket single-use and connectivity-change detection are enforced at the DoQ adapter policy layer. Transport-level enforcement (tls ticket store, local address tracking) is managed by the caller or future transport extensions."
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0012",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Forwarding Gateway Helpers Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0012",
+    "WI-QUIC-RFC9250-0012"
+  ],
+  "verification_method": "Focused unit tests for NormalizeToDoq and GenerateMessageId helper methods.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0024",
+    "REQ-QUIC-RFC9250-0025"
+  ],
+  "scope": "This verification covers the DoqMessage.MessageId helper methods for DNS message forwarding between DoQ and other transports.",
+  "preconditions": [
+    "The DoQ foundation slice (0001) exists and passes."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFoundationTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ foundation tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0012, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqMessage.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "Both forwarding gateway helper methods are implemented and verified. REQs 0024 and 0025 are now traced and verified."
+}

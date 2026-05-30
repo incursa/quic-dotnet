@@ -7,9 +7,10 @@
     <IsPackable>true</IsPackable>
     <IsTrimmable>true</IsTrimmable>
     <IsAotCompatible>true</IsAotCompatible>
-    <Description>QUIC diagnostics adapter for Incursa.Quic.</Description>
+    <PackageId>Incursa.Quic.Diagnostics.Qlog</PackageId>
+    <Description>QUIC diagnostics-to-qlog adapter for Incursa.Quic.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>quic;qlog;diagnostics</PackageTags>
+    <PackageTags>quic;qlog;diagnostics;adapter</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

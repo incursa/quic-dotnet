@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0011",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Connection Management Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0011",
+    "WI-QUIC-RFC9250-0011"
+  ],
+  "verification_method": "Focused loopback integration tests and unit tests for idle timeout helpers, connection reuse, explicit close, and in-progress query tracking.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0065",
+    "REQ-QUIC-RFC9250-0066",
+    "REQ-QUIC-RFC9250-0067",
+    "REQ-QUIC-RFC9250-0068",
+    "REQ-QUIC-RFC9250-0069",
+    "REQ-QUIC-RFC9250-0070",
+    "REQ-QUIC-RFC9250-0071",
+    "REQ-QUIC-RFC9250-0072",
+    "REQ-QUIC-RFC9250-0073",
+    "REQ-QUIC-RFC9250-0074",
+    "REQ-QUIC-RFC9250-0075"
+  ],
+  "scope": "This verification covers the DoqClient connection lifecycle: idle timeout negotiation, reuse safety checking, explicit DOQ_NO_ERROR close, in-progress query tracking, and connection failure abandonment.",
+  "preconditions": [
+    "Slices 0001 through 0010 exist and pass.",
+    "Managed QUIC loopback support is available for integration tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0011, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "status_summary": "The DoQ client now manages connection lifecycle with idle timeout negotiation, reuse safety checks, explicit DOQ_NO_ERROR close, and in-progress query tracking. All 11 REQs are traced and verified."
+}

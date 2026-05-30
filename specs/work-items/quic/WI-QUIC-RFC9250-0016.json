@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0016",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Usage Profiles and Fallback Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0016",
+    "VER-QUIC-RFC9250-0016"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0086",
+    "REQ-QUIC-RFC9250-0087",
+    "REQ-QUIC-RFC9250-0088",
+    "REQ-QUIC-RFC9250-0089",
+    "REQ-QUIC-RFC9250-0090",
+    "REQ-QUIC-RFC9250-0091",
+    "REQ-QUIC-RFC9250-0092"
+  ],
+  "summary": "Add DoqClientProfile enum, DoqFallbackCache class, and profile/fallback integration in DoqClient.",
+  "planned_changes": "- Add DoqClientProfile enum: Strict (no fallback) and Opportunistic (backoff).\n- Add DoqFallbackCache class with RecordFailure, GetRemainingBackoff, IsBackedOff.\n- Add Profile, FallbackCache, and KeyPinnedEndpoints properties to DoqClient.\n- Add backoff check in QueryAsync for Opportunistic profile.\n- Record failures in fallback cache on QuicException in QueryAsync.\n- Add focused tests for Strict profile, Opportunistic backoff, backoff expiry, and key-pinned override.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0016"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0016"
+  ],
+  "out_of_scope": [
+    "DoT or cleartext DNS client implementation.",
+    "Padding, amplification, or resumption.",
+    "Automatic cache expiration (caller-managed)."
+  ],
+  "completion_notes": "All 7 REQs are now traced and verified. Profile and fallback behavior is implemented with tests."
+}

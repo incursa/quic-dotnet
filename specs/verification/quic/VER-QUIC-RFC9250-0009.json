@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0009",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 EDNS(0) and DNS Message Size Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0009",
+    "WI-QUIC-RFC9250-0009"
+  ],
+  "verification_method": "Focused unit tests, boundary-value tests, and fuzz-style property tests on DoqMessageCodec for message-size enforcement and EDNS(0) UDP payload size field ignoring.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0084",
+    "REQ-QUIC-RFC9250-0085"
+  ],
+  "scope": "This verification covers the codec's message-size admission logic, including boundary values at 65534, 65535, and 65536 bytes, and malformed/overflowing length prefixes. It does not cover DNS padding or stream-level behavior.",
+  "preconditions": [
+    "The DoQ foundation slice (0001) exists and passes.",
+    "DoqMessageCodec is stable and unit-testable without QUIC transport."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFoundationTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ foundation tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0009, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "The DoqMessageCodec now explicitly enforces the 65535-byte maximum message size and ignores the EDNS(0) UDP payload size field. Both REQ-0084 and REQ-0085 are traced and verified with boundary and fuzz tests."
+}

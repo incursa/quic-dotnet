@@ -177,11 +177,53 @@ public sealed class DoqServer : IAsyncDisposable
             try
             {
                 DoqMessage query = await DoqStream.ReadSingleMessageUntilFinAsync(stream, cancellationToken).ConfigureAwait(false);
+
+                // REQ-0041: check for STOP_SENDING before dispatching the query
+                Task writeAbort = stream.WaitForWriteAbortAsync(CancellationToken.None);
+                if (writeAbort.IsCompleted)
+                {
+                    await writeAbort.ConfigureAwait(false);
+                    return;
+                }
+
                 ValidateZeroMessageId(query.Payload.Span, "query");
+
+                DoqQueryContext context = new(stream.Id, query.Payload);
+
+                // REQ-0076/0080: 0-RTT replay protection
+                if (context.IsZeroRtt && !DoqDefaults.IsReplayableQuery(query.Payload.Span))
+                {
+                    if (options.MaxQueuedZeroRttTransactions > 0)
+                    {
+                        await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+                        await Task.Yield();
+                        await connectionCancellation.CancelAsync().ConfigureAwait(false);
+                        return;
+                    }
+
+                    byte[] refused = DoqDefaults.BuildRefusedWithTooEarlyResponse(query.Payload.Span);
+                    await DoqStream.WriteMessageAndCompleteAsync(stream, refused, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+
                 DoqQueryResult result = await handler
-                    .HandleAsync(new DoqQueryContext(stream.Id, query.Payload), cancellationToken)
+                    .HandleAsync(context, cancellationToken)
                     .ConfigureAwait(false);
-                await DoqStream.WriteMessageAndCompleteAsync(stream, result.Response, cancellationToken).ConfigureAwait(false);
+
+                // REQ-0093: amplification limit enforcement
+                if (options.EnforceAmplificationLimit && context.IsZeroRtt)
+                {
+                    int maxResponseSize = query.Payload.Length * 3;
+                    if (result.Response.Length > maxResponseSize)
+                    {
+                        throw new DoqException(
+                            DoqErrorCode.ProtocolError,
+                            $"The response size ({result.Response.Length} bytes) exceeds the 3x amplification limit ({maxResponseSize} bytes) for the query.");
+                    }
+                }
+
+                byte[] paddedResponse = DoqPadding.PadMessage(result.Response.Span, options.PaddingBlockSize);
+                await DoqStream.WriteMessageAndCompleteAsync(stream, paddedResponse, cancellationToken).ConfigureAwait(false);
             }
             catch (DoqException exception)
             {

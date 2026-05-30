@@ -1,11 +1,11 @@
-# Incursa.Quic.Qlog
+# Incursa.Quic.Diagnostics.Qlog
 
-`Incursa.Quic.Qlog` is the qlog capture adapter package for `Incursa.Quic`.
+`Incursa.Quic.Diagnostics.Qlog` is the qlog capture adapter package for `Incursa.Quic`. It stays in this repository to map transport diagnostics into the separate `Incursa.Qlog` model repository.
 
 ## Install
 
 ```bash
-dotnet add package Incursa.Quic.Qlog
+dotnet add package Incursa.Quic.Diagnostics.Qlog
 ```
 
 ## What It Provides

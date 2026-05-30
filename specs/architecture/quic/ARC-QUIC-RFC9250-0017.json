@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0017",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Amplification and Retry Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0017",
+    "VER-QUIC-RFC9250-0017"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0093",
+    "REQ-QUIC-RFC9250-0094"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "Adds three options to DoqServerOptions: EnforceAmplificationLimit (default true), UseRetryPackets (default true), and UseAddressValidationForFutureConnections (default true). Amplification enforcement checks the 3x response-to-query ratio in HandleQueryStreamAsync when IsZeroRtt is true. Retry and address-validation options surface the policy intent; the underlying QUIC transport manages these internally.",
+  "data_and_state_considerations": "No new adapter state. Options are configuration-only.",
+  "edge_cases_and_constraints": [
+    "Amplification enforcement only applies when IsZeroRtt is true (server-side 0-RTT placeholder).",
+    "The QUIC transport does not expose retry/address-validation configuration via public API; these options document policy intent.",
+    "Setting EnforceAmplificationLimit to false disables the 3x check."
+  ],
+  "risks": [
+    "Retry and address-validation options are advisory; actual enforcement is in the transport layer."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Transport Limitation",
+      "content": "The QUIC transport layer manages Retry and address validation internally and does not expose toggles via the public listener options API. The DoqServerOptions properties serve as policy documentation and may be wired in a future transport integration slice."
+    }
+  ]
+}

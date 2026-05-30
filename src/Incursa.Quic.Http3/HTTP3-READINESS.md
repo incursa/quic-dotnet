@@ -1,6 +1,6 @@
-# HTTP/3 Readiness Note
+# HTTP/3 Scope Note
 
-This package is ready for product work on the proven HTTP/3 floor, but it is not honest to call the full interop matrix "all green" yet.
+This package covers the proven HTTP/3 floor used by `Incursa.Quic.Http3`.
 
 ## Proven Floors
 
@@ -14,24 +14,21 @@ This package is ready for product work on the proven HTTP/3 floor, but it is not
 - `incursa-client__incursa-server` is green across the configured external scenarios.
 - `aioquic-client__incursa-server` is green for the static GET-style rows that aioquic executes reliably.
 - `incursa-client__aioquic-server` is green for the static GET-style rows that aioquic executes reliably.
-- `curl__incursa-server` remains skipped until the curl image is set to an HTTP/3-capable build.
-- `quiche-client__incursa-server` and `ngtcp2-client__incursa-server` remain skipped until the exact command and server wiring are pinned and kept deterministic.
+- `curl__incursa-server` is skipped because the curl image is not built with HTTP/3 support.
+- `quiche-client__incursa-server` and `ngtcp2-client__incursa-server` are skipped because the command shape and server wiring are not pinned to a deterministic scenario.
 - Some advanced rows remain skipped where the peer wrapper does not expose a stable, deterministic behavior surface for the scenario.
 - `aioquic-client__incursa-server` large-body rows are intentionally skipped because aioquic 1.3.0 drops the response delivery path on those cases.
 
-## What Is Still Not Proven
+## Scope Limits
 
-- The full external peer matrix is not green.
-- The RFC 9114 / RFC 9204 floor is proven, but the broader HTTP/3 and QPACK planning gaps that remain in [REQUIREMENT-GAPS.md](../../specs/requirements/quic/REQUIREMENT-GAPS.md) are intentionally deferred:
-  - future HTTP/3 adapter features beyond the proven floor
-  - future QPACK HTTP/3 integration-side state capture/restore work
-  - server push, trailers, CONNECT, HTTP Datagrams, MASQUE, and other out-of-slice features
+- The package covers the HTTP/3 frame layer, stream mapping, SETTINGS exchange, header validation, malformed-sequence handling, and the minimal client/server request-response floor.
+- The package does not include server push, trailers, CONNECT, HTTP Datagrams, MASQUE, or other out-of-scope features.
+- The associated QPACK package covers the compression floor used by this package; the separate qlog repository owns the qlog model packages.
 
-## What This Means
+## Usage Note
 
-- Yes, it is reasonable to start building real HTTP/3-facing samples and product code on top of this floor.
-- No, it is not reasonable to describe the entire RFC 9114 / RFC 9204 interop story as complete.
-- Treat the remaining work as interop expansion, peer coverage, and future-RFC feature work, not as a blocker to beginning useful application work.
+- Use this package for the supported HTTP/3 floor and the current peer coverage described above.
+- Treat the skipped rows as coverage gaps, not as package features.
 
 ## Good First Sample Applications
 

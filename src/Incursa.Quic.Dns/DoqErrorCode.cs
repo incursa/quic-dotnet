@@ -43,3 +43,29 @@ public enum DoqErrorCode : long
     /// </summary>
     ErrorReserved = 0xd098ea5e,
 }
+
+/// <summary>
+/// Provides DoQ error code utilities.
+/// </summary>
+public static class DoqErrorCodeExtensions
+{
+    /// <summary>
+    /// Normalizes a received application error code for DoQ protocol handling.
+    /// Unknown codes and codes used in unexpected contexts are mapped to <see cref="DoqErrorCode.UnspecifiedError"/>.
+    /// </summary>
+    /// <remarks>
+    /// Per RFC 9250 Section 8.4, a DoQ client MAY use a more specific error code registered
+    /// according to the IANA registry. The receiver MUST treat such registered codes as
+    /// equivalent to the corresponding standard code (<see cref="DoqErrorCode.UnspecifiedError"/>
+    /// for unrecognized values). This helper performs the normalization.
+    /// </remarks>
+    public static DoqErrorCode NormalizeReceivedErrorCode(long applicationErrorCode)
+    {
+        if (!Enum.IsDefined(typeof(DoqErrorCode), applicationErrorCode))
+        {
+            return DoqErrorCode.UnspecifiedError;
+        }
+
+        return (DoqErrorCode)applicationErrorCode;
+    }
+}

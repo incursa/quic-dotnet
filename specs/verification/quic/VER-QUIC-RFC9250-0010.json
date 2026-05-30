@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0010",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Unknown/Reserved Error Code Handling Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0010",
+    "WI-QUIC-RFC9250-0010"
+  ],
+  "verification_method": "Focused loopback integration tests and unit tests for STOP_SENDING dispatch prevention, unsolicited RESET_STREAM tolerance, and registered error code documentation.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0039",
+    "REQ-QUIC-RFC9250-0041",
+    "REQ-QUIC-RFC9250-0051"
+  ],
+  "scope": "This verification covers server-side STOP_SENDING dispatch prevention, client-side unsolicited RESET_STREAM counting with configurable threshold, and registered error code pathway documentation.",
+  "preconditions": [
+    "Slices 0001 through 0007 exist and pass.",
+    "Managed QUIC loopback support is available for integration tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0010, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
+  ],
+  "status_summary": "The DoQ adapter now proves STOP_SENDING dispatch prevention on the server, configurable unsolicited RESET_STREAM tolerance on the client, and registers the error code pathway. All three REQs are traced and verified."
+}

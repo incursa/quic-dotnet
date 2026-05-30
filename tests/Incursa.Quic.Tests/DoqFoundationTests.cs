@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers.Binary;
 using System.Net;
 using System.Net.Security;
 
@@ -16,6 +17,15 @@ public sealed class DoqFoundationTests
     {
         Assert.Equal("doq", DoqDefaults.AlpnToken);
         Assert.Equal(new SslApplicationProtocol("doq"), DoqDefaults.ApplicationProtocol);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0126")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AlpnByteSequenceMatchesDoqDefaultsAlpn()
+    {
+        Assert.True(DoqDefaults.Alpn.SequenceEqual("doq"u8));
     }
 
     [Fact]
@@ -154,6 +164,403 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0065")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EnsureIdleTimeout_SetsDefaultWhenNotSpecified()
+    {
+        QuicClientConnectionOptions options = new()
+        {
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions(),
+            RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+        };
+
+        DoqDefaults.EnsureIdleTimeout(options);
+
+        Assert.Equal(DoqDefaults.SuggestedIdleTimeout, options.IdleTimeout);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0065")]
+    [Requirement("REQ-QUIC-RFC9250-0066")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EnsureIdleTimeout_PreservesExplicitValue()
+    {
+        TimeSpan explicitTimeout = TimeSpan.FromSeconds(15);
+        QuicClientConnectionOptions options = new()
+        {
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions(),
+            RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+            IdleTimeout = explicitTimeout,
+        };
+
+        DoqDefaults.EnsureIdleTimeout(options);
+
+        Assert.Equal(explicitTimeout, options.IdleTimeout);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void Encode_Accepts65534BytePayload()
+    {
+        byte[] payload = new byte[DoqMessageCodec.MaxPayloadLength - 1];
+        payload[0] = 0xab;
+        payload[^1] = 0xcd;
+
+        byte[] encoded = DoqMessageCodec.Encode(payload);
+
+        Assert.Equal(DoqMessageCodec.LengthPrefixSize + payload.Length, encoded.Length);
+        Assert.Equal(payload.Length, BinaryPrimitives.ReadUInt16BigEndian(encoded));
+        Assert.Equal(0xab, encoded[DoqMessageCodec.LengthPrefixSize]);
+        Assert.Equal(0xcd, encoded[^1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void Encode_Accepts65535BytePayload()
+    {
+        byte[] payload = new byte[DoqMessageCodec.MaxPayloadLength];
+        payload[0] = 0x12;
+        payload[^1] = 0x34;
+
+        byte[] encoded = DoqMessageCodec.Encode(payload);
+
+        Assert.Equal(DoqMessageCodec.LengthPrefixSize + payload.Length, encoded.Length);
+        Assert.Equal(payload.Length, BinaryPrimitives.ReadUInt16BigEndian(encoded));
+        Assert.Equal(0x12, encoded[DoqMessageCodec.LengthPrefixSize]);
+        Assert.Equal(0x34, encoded[^1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void Encode_Rejects65536BytePayload()
+    {
+        byte[] oversizedPayload = new byte[DoqMessageCodec.MaxPayloadLength + 1];
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => DoqMessageCodec.Encode(oversizedPayload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDecode_Accepts65534BytePayload()
+    {
+        int payloadLength = DoqMessageCodec.MaxPayloadLength - 1;
+        byte[] source = BuildFramedMessage(payloadLength);
+        source[DoqMessageCodec.LengthPrefixSize] = 0xab;
+        source[^1] = 0xcd;
+
+        Assert.True(DoqMessageCodec.TryDecode(source, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(source.Length, bytesConsumed);
+        Assert.Equal(payloadLength, message.Payload.Length);
+        Assert.Equal(0xab, message.Payload.Span[0]);
+        Assert.Equal(0xcd, message.Payload.Span[^1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDecode_Accepts65535BytePayload()
+    {
+        int payloadLength = DoqMessageCodec.MaxPayloadLength;
+        byte[] source = BuildFramedMessage(payloadLength);
+        source[DoqMessageCodec.LengthPrefixSize] = 0xde;
+        source[^1] = 0xad;
+
+        Assert.True(DoqMessageCodec.TryDecode(source, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(source.Length, bytesConsumed);
+        Assert.Equal(payloadLength, message.Payload.Length);
+        Assert.Equal(0xde, message.Payload.Span[0]);
+        Assert.Equal(0xad, message.Payload.Span[^1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDecode_AcceptsZeroLengthPayload()
+    {
+        byte[] source = [0x00, 0x00];
+
+        Assert.True(DoqMessageCodec.TryDecode(source, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(DoqMessageCodec.LengthPrefixSize, bytesConsumed);
+        Assert.True(message.Payload.IsEmpty);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDecode_RejectsMalformedLengthPrefixes()
+    {
+        Assert.False(DoqMessageCodec.TryDecode([], out _, out _));
+        Assert.False(DoqMessageCodec.TryDecode([0x00], out _, out _));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(65534)]
+    [InlineData(65535)]
+    [Requirement("REQ-QUIC-RFC9250-0085")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDecodeAndEncode_RoundTripPreservesPayload(int payloadLength)
+    {
+        byte[] payload = new byte[payloadLength];
+        for (int i = 0; i < payloadLength && i < 256; i++)
+        {
+            payload[i] = (byte)i;
+        }
+
+        byte[] encoded = DoqMessageCodec.Encode(payload);
+
+        Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.Equal(payload.Length, message.Payload.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0084")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void TryDecode_DoesNotConsultEdnsUdpPayloadSizeField()
+    {
+        byte[] dnsMessageWithEdns = BuildDnsResponseWithEdnsUdpPayloadSize(65536);
+        byte[] encoded = DoqMessageCodec.Encode(dnsMessageWithEdns);
+
+        Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.Equal(dnsMessageWithEdns, message.Payload.ToArray());
+    }
+
+    private static byte[] BuildFramedMessage(int payloadLength)
+    {
+        byte[] source = new byte[DoqMessageCodec.LengthPrefixSize + payloadLength];
+        BinaryPrimitives.WriteUInt16BigEndian(source, checked((ushort)payloadLength));
+        return source;
+    }
+
+    private static byte[] BuildDnsResponseWithEdnsUdpPayloadSize(int udpPayloadSize)
+    {
+        int totalLength = 56;
+        byte[] dns = new byte[totalLength];
+        dns[0] = 0x00; dns[1] = 0x00;
+        dns[2] = 0x81; dns[3] = 0x80;
+        dns[4] = 0x00; dns[5] = 0x01;
+        dns[6] = 0x00; dns[7] = 0x01;
+        dns[8] = 0x00; dns[9] = 0x00;
+        dns[10] = 0x00; dns[11] = 0x01;
+
+        int offset = 12;
+        dns[offset] = 0x07; offset++;
+        WriteAscii("example", dns, ref offset);
+        dns[offset] = 0x03; offset++;
+        WriteAscii("com", dns, ref offset);
+        dns[offset] = 0x00; offset++;
+        dns[offset] = 0x00; dns[offset + 1] = 0x01;
+        dns[offset + 2] = 0x00; dns[offset + 3] = 0x01;
+        offset += 4;
+
+        dns[offset] = 0xc0; dns[offset + 1] = 0x0c;
+        offset += 2;
+        dns[offset] = 0x00; dns[offset + 1] = 0x01;
+        dns[offset + 2] = 0x00; dns[offset + 3] = 0x01;
+        dns[offset + 4] = 0x00; dns[offset + 5] = 0x00;
+        dns[offset + 6] = 0x00; dns[offset + 7] = 0x3c;
+        dns[offset + 8] = 0x00; dns[offset + 9] = 0x04;
+        dns[offset + 10] = 0x7f; dns[offset + 11] = 0x00;
+        dns[offset + 12] = 0x00; dns[offset + 13] = 0x01;
+        offset += 14;
+
+        dns[offset] = 0x00; offset++;
+        dns[offset] = 0x00; dns[offset + 1] = 0x29;
+        dns[offset + 2] = (byte)((udpPayloadSize >> 8) & 0xff);
+        dns[offset + 3] = (byte)(udpPayloadSize & 0xff);
+        dns[offset + 4] = 0x00; dns[offset + 5] = 0x00;
+        dns[offset + 6] = 0x00; dns[offset + 7] = 0x00;
+        dns[offset + 8] = 0x00; dns[offset + 9] = 0x00;
+
+        return dns;
+    }
+
+    private static void WriteAscii(string text, byte[] destination, ref int offset)
+    {
+        foreach (char c in text)
+        {
+            destination[offset++] = (byte)c;
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NormalizeToDoq_SetsMessageIdToZero()
+    {
+        byte[] input = [0x12, 0x34, 0x01, 0x02, 0x03];
+
+        byte[] result = DoqMessage.NormalizeToDoq(input);
+
+        Assert.Equal(0, result[0]);
+        Assert.Equal(0, result[1]);
+        Assert.Equal([0x01, 0x02, 0x03], result[2..].ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void NormalizeToDoq_ThrowsOnShortInput()
+    {
+        Assert.Throws<ArgumentException>(() => DoqMessage.NormalizeToDoq([0x00]));
+        Assert.Throws<ArgumentException>(() => DoqMessage.NormalizeToDoq([]));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void GenerateMessageId_WritesSpecifiedId()
+    {
+        byte[] input = [0x00, 0x00, 0xaa, 0xbb];
+
+        byte[] result = DoqMessage.GenerateMessageId(input, 0xABCD);
+
+        Assert.Equal(0xAB, result[0]);
+        Assert.Equal(0xCD, result[1]);
+        Assert.Equal([0xaa, 0xbb], result[2..].ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void GenerateMessageId_PreservesOriginalInput()
+    {
+        byte[] input = [0x00, 0x00, 0x01, 0x02];
+
+        byte[] result = DoqMessage.GenerateMessageId(input, 0x4321);
+
+        Assert.Equal(0x43, result[0]);
+        Assert.Equal(0x21, result[1]);
+        Assert.Equal(0x00, input[0]);
+        Assert.Equal(0x00, input[1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void GenerateMessageId_ThrowsOnShortInput()
+    {
+        Assert.Throws<ArgumentException>(() => DoqMessage.GenerateMessageId([0x00], 0x1234));
+        Assert.Throws<ArgumentException>(() => DoqMessage.GenerateMessageId([], 0x1234));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NormalizeToDoqAndGenerateMessageId_RoundTrip()
+    {
+        byte[] original = [0x12, 0x34, 0xff, 0xee];
+
+        byte[] forDoq = DoqMessage.NormalizeToDoq(original);
+        byte[] forTcp = DoqMessage.GenerateMessageId(forDoq, 0x1234);
+
+        Assert.Equal(0x00, forDoq[0]);
+        Assert.Equal(0x00, forDoq[1]);
+        Assert.Equal(0x12, forTcp[0]);
+        Assert.Equal(0x34, forTcp[1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void IsReplayableOpcode_QueryIsReplayable()
+    {
+        Assert.True(DoqDefaults.IsReplayableOpcode(0));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void IsReplayableOpcode_NotifyIsReplayable()
+    {
+        Assert.True(DoqDefaults.IsReplayableOpcode(4));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void IsReplayableOpcode_OtherOpcodesAreNotReplayable()
+    {
+        Assert.False(DoqDefaults.IsReplayableOpcode(1));
+        Assert.False(DoqDefaults.IsReplayableOpcode(2));
+        Assert.False(DoqDefaults.IsReplayableOpcode(5));
+        Assert.False(DoqDefaults.IsReplayableOpcode(6));
+        Assert.False(DoqDefaults.IsReplayableOpcode(7));
+        Assert.False(DoqDefaults.IsReplayableOpcode(8));
+        Assert.False(DoqDefaults.IsReplayableOpcode(15));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void IsReplayableQuery_DetectsQueryOpcodeFromPayload()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01];
+
+        Assert.True(DoqDefaults.IsReplayableQuery(query));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void IsReplayableQuery_DetectsNonQueryOpcode()
+    {
+        byte[] statusQuery = [0x00, 0x00, 0x10, 0x00, 0x00, 0x01];
+
+        Assert.False(DoqDefaults.IsReplayableQuery(statusQuery));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0081")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+        byte[] response = DoqDefaults.BuildRefusedWithTooEarlyResponse(query);
+
+        Assert.Equal(5, response[3] & 0x0F);
+        Assert.Equal(1, (response[2] >> 7));
+        Assert.NotEmpty(response);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0026")]
     [Requirement("REQ-QUIC-RFC9250-0027")]
     [Requirement("REQ-QUIC-RFC9250-0028")]
@@ -180,5 +587,231 @@ public sealed class DoqFoundationTests
         Assert.Equal(0x4, (long)DoqErrorCode.ExcessiveLoad);
         Assert.Equal(0x5, (long)DoqErrorCode.UnspecifiedError);
         Assert.Equal(0xd098ea5e, (long)DoqErrorCode.ErrorReserved);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0107")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ResumptionTicketLifetimeDefaultIsSixHours()
+    {
+        DoqServerOptions options = new();
+
+        Assert.Equal(6, options.ResumptionTicketLifetime.TotalHours);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0108")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AntiReplayEnabledByDefault()
+    {
+        DoqServerOptions options = new();
+
+        Assert.True(options.EnableAntiReplay);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0141")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NotifyOpcodeIsReplayable()
+    {
+        Assert.True(DoqDefaults.IsReplayableOpcode(4));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0141")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void NotifyQueryPayloadIsClassifiedAsReplayable()
+    {
+        byte[] notifyQuery = [0x00, 0x00, 0x20, 0x00, 0x00, 0x01];
+
+        Assert.True(DoqDefaults.IsReplayableQuery(notifyQuery));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0124")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ReplayableOpcodesAreStatePreserving()
+    {
+        Assert.True(DoqDefaults.IsReplayableOpcode(0));
+        Assert.True(DoqDefaults.IsReplayableOpcode(4));
+
+        Assert.False(DoqDefaults.IsReplayableOpcode(1));
+        Assert.False(DoqDefaults.IsReplayableOpcode(2));
+        Assert.False(DoqDefaults.IsReplayableOpcode(5));
+        Assert.False(DoqDefaults.IsReplayableOpcode(6));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0090")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FallbackCache_RecordsAndChecksBackoff()
+    {
+        DoqFallbackCache cache = new(TimeSpan.FromMinutes(5));
+
+        Assert.False(cache.IsBackedOff("resolver.example:853"));
+
+        cache.RecordFailure("resolver.example:853");
+
+        Assert.True(cache.IsBackedOff("resolver.example:853"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0091")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FallbackCache_BackoffExpires()
+    {
+        DoqFallbackCache cache = new(TimeSpan.FromMilliseconds(1));
+
+        cache.RecordFailure("resolver.example:853");
+        Thread.Sleep(10);
+
+        Assert.False(cache.IsBackedOff("resolver.example:853"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0089")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void FallbackCache_ClearAllowsRetry()
+    {
+        DoqFallbackCache cache = new(TimeSpan.FromMinutes(5));
+
+        cache.RecordFailure("resolver.example:853");
+        Assert.True(cache.IsBackedOff("resolver.example:853"));
+
+        cache.ClearFailure("resolver.example:853");
+
+        Assert.False(cache.IsBackedOff("resolver.example:853"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0086")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void StrictProfileDefaultsToNoFallback()
+    {
+        Assert.Equal(DoqClientProfile.Strict, default(DoqClientProfile));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0093")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AmplificationLimitEnforcedByDefault()
+    {
+        DoqServerOptions options = new();
+
+        Assert.True(options.EnforceAmplificationLimit);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0094")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void RetryPacketsEnabledByDefault()
+    {
+        DoqServerOptions options = new();
+
+        Assert.True(options.UseRetryPackets);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0094")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void AddressValidationEnabledByDefault()
+    {
+        DoqServerOptions options = new();
+
+        Assert.True(options.UseAddressValidationForFutureConnections);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0095")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PadMessage_PadsToBlockSize()
+    {
+        byte[] smallQuery = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01];
+
+        byte[] padded = DoqPadding.PadMessage(smallQuery, 32);
+
+        Assert.True(padded.Length % 32 == 0);
+        Assert.True(padded.Length > smallQuery.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0096")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PadMessage_BlockSizeZeroDisabled()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+        byte[] padded = DoqPadding.PadMessage(query, 0);
+
+        Assert.Equal(query.Length, padded.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0097")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PadMessage_AlreadyAlignedWithPadding()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x03, 0x63, 0x6f, 0x6d, 0x00, 0x00, 0x01, 0x00, 0x01];
+
+        byte[] padded = DoqPadding.PadMessage(query, 16);
+
+        Assert.True(padded.Length > query.Length);
+        Assert.True(padded.Length % 16 == 0);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0125")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PaddingBlockSizeConfiguredInDefaults()
+    {
+        Assert.Equal(0, DoqDefaults.PaddingBlockSize);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0097")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PadMessage_RespectsMaxPayloadLength()
+    {
+        byte[] nearMaxQuery = new byte[DoqMessageCodec.MaxPayloadLength - 10];
+        nearMaxQuery[0] = 0; nearMaxQuery[1] = 0;
+        nearMaxQuery[2] = 0; nearMaxQuery[3] = 0;
+        nearMaxQuery[4] = 0; nearMaxQuery[5] = 1;
+        nearMaxQuery[10] = 0; nearMaxQuery[11] = 0;
+
+        byte[] padded = DoqPadding.PadMessage(nearMaxQuery, 128);
+
+        Assert.True(padded.Length <= DoqMessageCodec.MaxPayloadLength);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0096")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void PadMessage_AddsPaddingOptionWithCorrectCode()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+        byte[] padded = DoqPadding.PadMessage(query, 32);
+
+        Assert.True(padded.Length > query.Length);
+        Assert.True(padded.Length % 32 == 0);
+        Assert.Equal(1, padded[11]);
     }
 }

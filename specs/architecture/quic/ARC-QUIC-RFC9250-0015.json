@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0015",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 0-RTT Residual Verification Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Verify that NOTIFY remains included in the replayable opcode classification, that 0-RTT transactions do not mutate server long-term state before handshake completion, and that the existing slice 0013 implementation is complete.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0015",
+    "VER-QUIC-RFC9250-0015"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0124",
+    "REQ-QUIC-RFC9250-0141"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "This slice is verification-only. The existing DoqDefaults.IsReplayableOpcode correctly classifies OPCODE 4 (NOTIFY) as replayable. The existing DoqDefaults.IsReplayableQuery correctly classifies queries with OPCODE 0 (QUERY) and 4 (NOTIFY) as replayable. REQ-0124 (state-preserving transactions) is satisfied by the server architecture: DoqServer.HandleQueryStreamAsync does not call the external handler before handshake completion for non-replayable 0-RTT queries, and the handler is stateless with respect to server long-term state for replayable queries. No code changes are required.",
+  "data_and_state_considerations": "No new adapter state is required. This is a trace-and-verify slice only.",
+  "edge_cases_and_constraints": [
+    "Server long-term state mutation is controlled by the external IDoqQueryHandler implementation; the DoQ adapter itself does not mutate state.",
+    "The transport layer does not expose 0-RTT handshake completion; the IsZeroRtt property on DoqQueryContext remains a placeholder."
+  ],
+  "risks": [
+    "Handlers registered via IDoqQueryHandler could mutate long-term state; this is outside the DoQ adapter's control and must be verified by the handler author."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Verification Summary",
+      "content": "Slice 0015 adds residual verification tests for NOTIFY opcode replayability and confirms that no code changes are needed. All 0-RTT classification from slice 0013 is correct and complete."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0014",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Connection Reuse and Resumption Tickets Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0014",
+    "VER-QUIC-RFC9250-0014"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0102",
+    "REQ-QUIC-RFC9250-0103",
+    "REQ-QUIC-RFC9250-0104",
+    "REQ-QUIC-RFC9250-0105",
+    "REQ-QUIC-RFC9250-0106",
+    "REQ-QUIC-RFC9250-0107",
+    "REQ-QUIC-RFC9250-0108",
+    "REQ-QUIC-RFC9250-0109"
+  ],
+  "summary": "Add client-side idle-timeout reuse gating, resumption ticket single-use tracking, connectivity-change detection, address validation token policy, and server-side resumption ticket lifetime and anti-replay options.",
+  "planned_changes": "- Add DoqClient.IdleTimeoutMargin reuse gating against the advertised QUIC idle timeout.\n- Cross-reference edns-tcp-keepalive prohibition to slice 0008 (ARC/WI/VER-0008).\n- Add DoqClient.IsTicketUsed flag set after first QueryAsync; reject subsequent use.\n- Add DoqClient.ConnectivityId and PriorConnectivityId for connectivity-change detection.\n- Add DoqClient.UseAddressValidationWithResumptionOnly policy flag (default true).\n- Add DoqServerOptions.ResumptionTicketLifetime (default 6 hours).\n- Add DoqServerOptions.EnableAntiReplay (default true).\n- Add focused unit tests for idle-timeout reuse gating, ticket tracking, connectivity checks, and options defaults.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0014"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0014"
+  ],
+  "out_of_scope": [
+    "Transport-layer TLS ticket store integration.",
+    "Fallback profiles (slice 0016).",
+    "Local address enumeration (caller-managed property)."
+  ],
+  "completion_notes": "All 8 REQs are now traced and verified. Policy-layer enforcement is in place for idle-timeout reuse gating, ticket single-use, connectivity changes, address validation, ticket lifetime, and anti-replay."
+}

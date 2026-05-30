@@ -75,6 +75,13 @@ internal sealed class QuicTlsKeySchedule
     private const ushort KeyShareEntryFixedLength = UInt16Length + UInt16Length;
     private const byte PskKeyExchangeModesVectorLength = 1;
     private const byte PskDheKeMode = 0x01;
+    // CONTEXT:
+    // SEE: RFC 8446, Section 4.4.3.
+    // TLS 1.3 signs 64 bytes of 0x20, then the role-specific context string,
+    // then a NUL separator, then the transcript hash. Keep the DER ECDSA
+    // signature format here because it matches the peer's on-wire signature
+    // encoding.
+    // END CONTEXT:
     private const int CertificateVerifyContextPrefixLength = 64;
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
@@ -416,6 +423,12 @@ internal sealed class QuicTlsKeySchedule
         return true;
     }
 
+    // CONTEXT:
+    // SEE: RFC 9001, 0-RTT resumption flow.
+    // Early data is only meaningful when the server can also issue and later
+    // validate resumption tickets, so the ticket path and early-data flag stay
+    // coupled here.
+    // END CONTEXT:
     internal bool TryConfigureServerEarlyData(bool enabled)
     {
         if (role != QuicTlsRole.Server)
@@ -555,6 +568,12 @@ internal sealed class QuicTlsKeySchedule
         AppendTranscriptMessage(handshakeMessageBytes);
     }
 
+    // CONTEXT:
+    // SEE: TLS 1.3 HelloRetryRequest retry flow.
+    // Cache only the first local handshake message so the client can replay
+    // the exact transcript prefix after a retry without retaining the
+    // abandoned peer attempt.
+    // END CONTEXT:
     internal bool TryResetClientPeerHandshakeAttempt()
     {
         if (role != QuicTlsRole.Client
@@ -3173,6 +3192,12 @@ internal sealed class QuicTlsKeySchedule
         return Array.Empty<QuicTlsStateUpdate>();
     }
 
+    // CONTEXT:
+    // SEE: RFC 8446, Section 4.1.4.
+    // This rewrite replaces the initial ClientHello with the special
+    // message_hash handshake node before appending the fixed HelloRetryRequest
+    // random so the retry transcript hashes exactly as the peer expects.
+    // END CONTEXT:
     private void ReplaceTranscriptWithHelloRetryRequestPrefix(
         ReadOnlySpan<byte> initialClientHelloBytes,
         ReadOnlySpan<byte> helloRetryRequestBytes)
@@ -3489,6 +3514,12 @@ internal sealed class QuicTlsKeySchedule
 
     private static byte[] DeriveDeterministicClientHelloRandom(ReadOnlySpan<byte> localPrivateKey)
     {
+        // CONTEXT:
+        // SEE: Deterministic test vectors for ClientHello generation.
+        // Prefixing the private key with a stable label keeps the random value
+        // reproducible for tests without colliding with TLS HKDF labels or
+        // depending on ambient RNG output.
+        // END CONTEXT:
         byte[] seedMaterial = GC.AllocateUninitializedArray<byte>(
             DeterministicClientHelloRandomLabel.Length + localPrivateKey.Length);
         DeterministicClientHelloRandomLabel.CopyTo(seedMaterial, 0);

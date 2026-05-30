@@ -15,9 +15,15 @@ internal static class DoqStream
         ArgumentNullException.ThrowIfNull(stream);
         byte[] readBuffer = new byte[InitialBufferSize];
         byte[] pending = [];
+        Task writeAbortTask = stream.WaitForWriteAbortAsync(cancellationToken);
 
         while (true)
         {
+            if (writeAbortTask.IsCompleted)
+            {
+                await writeAbortTask.ConfigureAwait(false);
+            }
+
             if (DoqMessageCodec.TryDecode(pending, out DoqMessage message, out int bytesConsumed))
             {
                 if (bytesConsumed != pending.Length)
@@ -27,10 +33,24 @@ internal static class DoqStream
                         "The DoQ stream contained trailing bytes after the DNS message.");
                 }
 
+                if (DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(message.Payload.Span))
+                {
+                    throw new DoqException(
+                        DoqErrorCode.ProtocolError,
+                        "The DoQ message contains the forbidden edns-tcp-keepalive EDNS(0) option.");
+                }
+
                 return message;
             }
 
-            int bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken).ConfigureAwait(false);
+            Task<int> readTask = stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken);
+            Task completed = await Task.WhenAny(readTask, writeAbortTask).ConfigureAwait(false);
+            if (completed == writeAbortTask)
+            {
+                await writeAbortTask.ConfigureAwait(false);
+            }
+
+            int bytesRead = await readTask.ConfigureAwait(false);
             if (bytesRead == 0)
             {
                 throw new DoqException(
@@ -70,7 +90,20 @@ internal static class DoqStream
 
             if (bytesRead == 0)
             {
-                return DecodeExactlyOneMessage(pending);
+                DoqMessage message = DecodeExactlyOneMessage(pending);
+                if (writeAbortTask.IsCompleted)
+                {
+                    await writeAbortTask.ConfigureAwait(false);
+                }
+
+                if (DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(message.Payload.Span))
+                {
+                    throw new DoqException(
+                        DoqErrorCode.ProtocolError,
+                        "The DoQ message contains the forbidden edns-tcp-keepalive EDNS(0) option.");
+                }
+
+                return message;
             }
 
             pending = Append(pending, readBuffer.AsSpan(0, bytesRead));

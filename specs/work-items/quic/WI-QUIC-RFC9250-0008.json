@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Extended Protocol Errors Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0008",
+    "VER-QUIC-RFC9250-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0058",
+    "REQ-QUIC-RFC9250-0059",
+    "REQ-QUIC-RFC9250-0061",
+    "REQ-QUIC-RFC9250-0064"
+  ],
+  "summary": "Implement four extended protocol error enforcement mechanisms: EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout, and unknown/unexpected-context error code normalization.",
+  "planned_changes": "- Add EDNS(0) tcp-keepalive option scanner to DoqMessageCodec and wire it into DoqStream.ReadSingleMessageUntilFinAsync to reject messages containing the forbidden option.\n- Add StreamFinTimeout property to DoqClient and apply it in QueryAsync via WaitAsync on the read-until-FIN operation.\n- Add inbound stream monitor to DoqClient that treats any server-initiated bidirectional stream as a fatal protocol error.\n- Add NormalizeReceivedErrorCode helper to DoqErrorCode to map unknown and unexpected-context error codes to UnspecifiedError.\n- Add focused tests: EDNS keepalive rejection, server-initiated bidirectional stream rejection, FIN timeout enforcement, and error code normalization.",
+  "verification_plan": "Run the DoQ fatal protocol-error tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0008"
+  ],
+  "out_of_scope": [
+    "DoQ server-side outbound stream prevention (satisfied by construction in the existing adapter).",
+    "Padding, AXFR/IXFR, 0-RTT, Retry/address validation, gateway rewriting.",
+    "Context-sensitive error code mapping beyond the basic known-code vs unknown-code classification.",
+    "EDNS option code probing beyond tcp-keepalive (option 11)."
+  ],
+  "completion_notes": "All four extended protocol error mechanisms are implemented with focused tests. The DoQ adapter now validates EDNS(0) tcp-keepalive, monitors for server-initiated streams, enforces a configurable FIN timeout, and normalizes unknown error codes to UnspecifiedError."
+}

@@ -1,76 +1,75 @@
 # Incursa.Quic
 
 [![CI](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml/badge.svg)](https://github.com/incursa/quic-dotnet/actions/workflows/ci.yml)
-[![Quality](https://github.com/incursa/quic-dotnet/actions/workflows/library-fast-quality.yml/badge.svg)](https://github.com/incursa/quic-dotnet/actions/workflows/library-fast-quality.yml)
 [![License](https://img.shields.io/github/license/incursa/quic-dotnet)](LICENSE)
 
-`Incursa.Quic` is a trace-first .NET QUIC repository. It combines a managed QUIC surface for consumers with canonical requirements, verification artifacts, fuzzing, and benchmarks so protocol work stays reviewable and reproducible.
+`Incursa.Quic` is the managed QUIC library set in this repository. The NuGet release surface here is the core transport package plus sibling packages for DNS over QUIC, a diagnostics-to-qlog adapter, standalone QPACK, and HTTP/3. The separate qlog repository owns the `Incursa.Qlog.*` model and vocabulary packages; this repo’s qlog package is `Incursa.Quic.Diagnostics.Qlog`, a transport-specific adapter that maps Incursa.Quic diagnostics into that model layer.
 
 ## Packages
 
-- [`Incursa.Quic`](src/Incursa.Quic/README.md): consumer-facing `QuicConnection`, `QuicListener`, `QuicStream`, option types, and error vocabulary.
-- [`Incursa.Quic.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog capture support layered on top of `Incursa.Quic`.
+- [`Incursa.Quic`](src/Incursa.Quic/README.md): core QUIC transport primitives, connection management, stream handling, and public client/listener entry points
+- [`Incursa.Quic.Dns`](src/Incursa.Quic.Dns/README.md): DNS over QUIC built on the managed transport
+- [`Incursa.Quic.Diagnostics.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog capture adapter for transport diagnostics
+- [`Incursa.Qpack`](src/Incursa.Qpack/README.md): standalone QPACK encoder and decoder package
+- [`Incursa.Quic.Http3`](src/Incursa.Quic.Http3/README.md): HTTP/3 layer over `Incursa.Quic`
 
-## Repository Scope
+## Scope
 
-- Managed QUIC connection, listener, and stream APIs.
-- qlog capture support for connection and listener flows.
-- Canonical requirements, architecture, work items, and verification artifacts under [`specs/`](specs/README.md).
-- xUnit coverage, SharpFuzz harnesses, and BenchmarkDotNet suites for wire-facing and hot-path code.
+- Managed QUIC transport, streams, connection options, errors, and listener/client entry points
+- DNS over QUIC on top of the transport package
+- qlog capture and diagnostics mapping support code that bridges to the separate qlog model repository
+- Standalone QPACK for HTTP/3 header compression
+- HTTP/3 request, control-stream, SETTINGS, GOAWAY, and request/response floor behavior
+- repository requirements, architecture, work-item, and verification artifacts under `specs/`
 
-## Requirements
-
-- .NET SDK `10.0.201+` (managed by [`global.json`](global.json))
-- PowerShell `7+` for the repo scripts
-- Python if you want to install and run `pre-commit`
-
-## Quickstart
+## Install
 
 ```bash
-dotnet tool restore
-pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core
-dotnet tool run workbench -- --format json validate --profile core
+dotnet add package Incursa.Quic
+dotnet add package Incursa.Quic.Dns
+dotnet add package Incursa.Quic.Diagnostics.Qlog
+dotnet add package Incursa.Qpack
+dotnet add package Incursa.Quic.Http3
+```
+
+## Build
+
+```bash
 dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release
-dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
-dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ```
 
-## Repository At A Glance
+## Release
 
-- [`src/Incursa.Quic`](src/Incursa.Quic/README.md): packable core QUIC library.
-- [`src/Incursa.Quic.Qlog`](src/Incursa.Quic.Qlog/README.md): qlog adapter package.
-- [`src/Incursa.Quic.InteropHarness`](src/Incursa.Quic.InteropHarness/README.md): local interop-runner companion process.
-- [`tests/Incursa.Quic.Tests`](tests/Incursa.Quic.Tests/README.md): requirement-linked unit and integration tests.
-- [`samples`](samples/README.md): runnable HTTP/3 sample apps, including the browser-facing ObjectStore demo and TechEmpower-shaped plaintext/JSON endpoints.
-- [`benchmarks`](benchmarks/README.md): permanent performance suites.
-- [`fuzz`](fuzz/README.md): fuzz harnesses for wire-facing code.
-- [`docs`](docs/README.md): build, packaging, testing, and contributor guides.
-- [`specs`](specs/README.md): canonical traceability artifacts.
+- Tag a release commit as `vX.Y.Z` and push it.
+- [`.github/workflows/publish-nuget-packages.yml`](.github/workflows/publish-nuget-packages.yml) runs on version tags, validates public API versioning, packs the public packages, and pushes them to nuget.org.
+- The same workflow can also be run manually with an explicit `version` input when you need a non-tagged publish rehearsal.
 
-## Development Model
+## Start Here
 
-1. Start with [`docs/requirements-workflow.md`](docs/requirements-workflow.md).
-2. Check [`specs/requirements/quic/REQUIREMENT-GAPS.md`](specs/requirements/quic/REQUIREMENT-GAPS.md) and the owning `SPEC-...` artifact before implementing protocol behavior.
-3. Update requirements, architecture, work items, and verification artifacts before relying on code or tests as the source of truth.
-4. Prove wire-facing work with positive tests, negative tests, fuzzing, and benchmarks.
+- Core package guide: [`src/Incursa.Quic/README.md`](src/Incursa.Quic/README.md)
+- DNS over QUIC package guide: [`src/Incursa.Quic.Dns/README.md`](src/Incursa.Quic.Dns/README.md)
+- qlog diagnostics adapter guide: [`src/Incursa.Quic.Qlog/README.md`](src/Incursa.Quic.Qlog/README.md)
+- QPACK package guide: [`src/Incursa.Qpack/README.md`](src/Incursa.Qpack/README.md)
+- HTTP/3 package guide: [`src/Incursa.Quic.Http3/README.md`](src/Incursa.Quic.Http3/README.md)
+- Requirements workflow: [`docs/requirements-workflow.md`](docs/requirements-workflow.md)
 
-## Documentation
+## Repository Layout
 
-- [Quickstart](docs/quickstart.md)
-- [Current repository status](docs/current-status.md)
-- [Packaging](docs/packaging.md)
-- [Requirements workflow](docs/requirements-workflow.md)
-- [SpecTrace prep](docs/spec-trace-prep.md)
-- [Testing docs](docs/testing/README.md)
-- [HTTP/3 sample app](docs/samples/http3-sample-app.md)
-- [HTTP/3 benchmarking notes](docs/samples/http3-benchmarking.md)
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contributor workflow and validation expectations.
+- `src/Incursa.Quic`: core QUIC transport package
+- `src/Incursa.Quic.Dns`: DNS over QUIC package
+- `src/Incursa.Quic.Qlog`: qlog adapter package for diagnostics capture (`Incursa.Quic.Diagnostics.Qlog`)
+- `src/Incursa.Qpack`: standalone QPACK package
+- `src/Incursa.Quic.Http3`: HTTP/3 package and readiness note
+- `src/Incursa.Quic.InteropHarness`: support assembly for interop runner scenarios
+- `tests/Incursa.Quic.Tests`: requirement-homed tests and release guardrails
+- `benchmarks`: performance suites
+- `specs/requirements/quic`: canonical QUIC requirement artifacts
+- `specs/architecture/quic`: architecture artifacts
+- `specs/work-items/quic`: implementation planning artifacts
+- `specs/verification/quic`: verification artifacts
 
 ## License
 
-This repository is licensed under the Apache License, Version 2.0. See [`LICENSE`](LICENSE) and [`NOTICE.md`](NOTICE.md).
+Apache 2.0. See [`LICENSE`](LICENSE).

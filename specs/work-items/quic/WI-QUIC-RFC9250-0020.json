@@ -1,0 +1,30 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0020",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Response Ordering Verification Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0020",
+    "VER-QUIC-RFC9250-0020"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0110"
+  ],
+  "summary": "Add verification test confirming the server sends responses per-stream without connection-level ordering.",
+  "planned_changes": "- Update SPEC trace link for REQ-0110.\n- Add a test where the first handler is delayed and the second responds immediately; assert the second response is received first.\n- Document that no code changes are required.",
+  "verification_plan": "Run DoQ stream lifecycle tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0020"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0020"
+  ],
+  "out_of_scope": [
+    "Changes to stream scheduling."
+  ],
+  "completion_notes": "Verification-only slice. No code changes were required. Out-of-order response delivery is proven."
+}

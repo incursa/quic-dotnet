@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0015",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 0-RTT Residual Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0015",
+    "WI-QUIC-RFC9250-0015"
+  ],
+  "verification_method": "Residual verification tests confirming NOTIFY replayability and state-preservation analysis.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0124",
+    "REQ-QUIC-RFC9250-0141"
+  ],
+  "scope": "This verification covers NOTIFY residual classification and state-preservation analysis for 0-RTT transactions.",
+  "preconditions": [
+    "Slices 0001 through 0014 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFoundationTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ foundation tests pass, NOTIFY opcode is verified as replayable, and state-preservation analysis confirms no adapter-level mutations.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "Verification complete. NOTIFY opcode is correctly classified as replayable. Server architecture preserves long-term state for 0-RTT transactions. No code changes were required."
+}

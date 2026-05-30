@@ -14,6 +14,8 @@ dotnet pack src/Incursa.Quic/Incursa.Quic.csproj -c Release
 dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj -c Release
 ```
 
+- `src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj` packs as `Incursa.Quic.Diagnostics.Qlog`.
+
 ## Package Contents
 
 - Package readmes come from the project-local `README.md` files.

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0008",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Extended Protocol Errors Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0008",
+    "WI-QUIC-RFC9250-0008"
+  ],
+  "verification_method": "Focused raw loopback tests, unit tests, SpecTrace JSON validation, and diff hygiene for extended protocol error enforcement.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0058",
+    "REQ-QUIC-RFC9250-0059",
+    "REQ-QUIC-RFC9250-0061",
+    "REQ-QUIC-RFC9250-0064"
+  ],
+  "scope": "This verification covers EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization within the DoQ adapter.",
+  "preconditions": [
+    "The DoQ foundation and earlier slices (0001-0007) exist and pass.",
+    "Managed QUIC loopback support is available for raw server stream synthesis tests."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~DoqFatalProtocolErrorTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused DoQ fatal-error tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0008, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
+  ],
+  "status_summary": "The DoQ adapter now proves EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization. All four REQs are traced and verified."
+}

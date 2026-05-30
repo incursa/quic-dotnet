@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0020",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Response Ordering Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0020",
+    "VER-QUIC-RFC9250-0020"
+  ],
+  "verification_method": "Focused integration test where a delayed first handler proves out-of-order response delivery.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0110"
+  ],
+  "scope": "This verification covers per-stream response dispatch preventing head-of-line blocking.",
+  "preconditions": [
+    "Slices 0001 through 0019 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, out-of-order response test confirms the second response arrives first.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "status_summary": "Verification complete. Out-of-order response delivery is proven. No code changes were required."
+}

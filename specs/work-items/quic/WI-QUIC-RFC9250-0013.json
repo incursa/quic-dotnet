@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0013",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 0-RTT Replay Protection Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0013",
+    "VER-QUIC-RFC9250-0013"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0076",
+    "REQ-QUIC-RFC9250-0077",
+    "REQ-QUIC-RFC9250-0078",
+    "REQ-QUIC-RFC9250-0079",
+    "REQ-QUIC-RFC9250-0080",
+    "REQ-QUIC-RFC9250-0081",
+    "REQ-QUIC-RFC9250-0082",
+    "REQ-QUIC-RFC9250-0083"
+  ],
+  "summary": "Add DNS opcode replayability classification, client 0-RTT gating, and server 0-RTT transaction queue with limit.",
+  "planned_changes": "- Add DoqDefaults.IsReplayableOpcode static method classifying OPCODE 0 (QUERY) and 4 (NOTIFY) as replayable.\n- Add DoqClient.AllowZeroRtt property; catch non-replayable opcodes in QueryAsync when AllowZeroRtt is true.\n- Add DoqQueryContext.IsZeroRtt property for server-side 0-RTT signal (default false, transport placeholder).\n- Add DoqServerOptions.MaxQueuedZeroRttTransactions for server-side queue limit.\n- Add server 0-RTT handling pathway that queues non-replayable 0-RTT queries and responds REFUSED+EDE Too Early.\n- Add focused unit and integration tests.",
+  "verification_plan": "Run DoQ foundation tests, stream lifecycle tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0013"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0013"
+  ],
+  "out_of_scope": [
+    "Resumption ticket lifecycle (slice 0014).",
+    "Residual/security documentation (slice 0015).",
+    "Wire-level transport 0-RTT state exposure (future slice)."
+  ],
+  "completion_notes": "All 8 REQs are now traced and verified. Opcode classification, client gating, and server queue handling are implemented."
+}

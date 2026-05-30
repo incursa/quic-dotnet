@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0021",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Flow Control Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0021",
+    "WI-QUIC-RFC9250-0021"
+  ],
+  "verification_method": "Focused contract tests over `QuicConnectionStreamState`, `QuicConnectionRuntime.Protocol.cs`, `QuicTransportParametersCodec`, and `QuicZeroRttTransportParameterPolicy`.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0116",
+    "REQ-QUIC-RFC9250-0117",
+    "REQ-QUIC-RFC9250-0118",
+    "REQ-QUIC-RFC9250-0119",
+    "REQ-QUIC-RFC9250-0120",
+    "REQ-QUIC-RFC9250-0121",
+    "REQ-QUIC-RFC9250-0122",
+    "REQ-QUIC-RFC9250-0123"
+  ],
+  "scope": "This verification covers aggregate connection receive limits, per-stream receive limits, stream-creation limits, runtime handshake commit enforcement, transport-parameter round-tripping, and 0-RTT remembered flow-control limits. It does not add a custom DoQ flow-control layer.",
+  "preconditions": [
+    "Slices 0001 through 0020 exist and pass.",
+    "The test assembly can access the shared QUIC transport internals used by the existing requirement-home suite."
+  ],
+  "procedure": [
+    "Run `dotnet restore tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`.",
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~REQ_QUIC_RFC9250_0021\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused flow-control contract tests pass, transport parameters round-trip the flow-control values, the runtime commit path applies those limits into bookkeeping, 0-RTT remembered limits are preserved, and the SpecTrace artifacts validate cleanly.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0021.cs",
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs"
+  ],
+  "status_summary": "The shared QUIC transport runtime owns DoQ flow control. Contract tests prove connection, stream, stream-creation, handshake commit, and 0-RTT behavior without introducing a custom DoQ flow-control layer."
+}

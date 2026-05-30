@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0022",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Section 3 Residue and IANA Registry Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Map RFC 9250 section 3 residue and section 8 registry governance to the shared QUIC transport runtime and DoQ documentation surfaces without introducing a custom DoQ datagram or flow-control layer.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0022",
+    "VER-QUIC-RFC9250-0022"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0001",
+    "REQ-QUIC-RFC9250-0003",
+    "REQ-QUIC-RFC9250-0126",
+    "REQ-QUIC-RFC9250-0127",
+    "REQ-QUIC-RFC9250-0128",
+    "REQ-QUIC-RFC9250-0129",
+    "REQ-QUIC-RFC9250-0130",
+    "REQ-QUIC-RFC9250-0131",
+    "REQ-QUIC-RFC9250-0132",
+    "REQ-QUIC-RFC9250-0133"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqStream.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0022.cs"
+  ],
+  "design_summary": "DoQ stays stream-based. Queries and responses are carried on QUIC bidirectional streams, so large DNS responses flow through the stream transport and its flow-control and fragmentation behavior instead of a DoQ-layer PMTU or datagram path. QUIC/TLS negotiation remains owned by the transport bridge through client and listener authentication options, while DoQ contributes only the ALPN token and endpoint helpers. The IANA error-code registry is represented by the `DoqErrorCode` enum and its normalization helper; registered values map to stable enum members, and unknown or reserved values collapse to `UnspecifiedError` rather than being promoted as known codes.",
+  "data_and_state_considerations": "The DoQ stream path only needs DNS payload bytes and the QUIC stream handles segmentation. The large-response proof uses a payload larger than a typical path MTU to show that packet size is not a DoQ-layer limit. TLS state and ALPN negotiation remain transport-owned. Registry policy remains immutable documentation; runtime logic only needs a deterministic mapping for received application error codes.",
+  "edge_cases_and_constraints": [
+    "The DoQ layer must continue to avoid any UDP datagram or PMTU-specific buffering logic.",
+    "The ALPN byte sequence must stay exactly 0x64 0x6F 0x71 for DoQ peers.",
+    "Unknown, reserved, or out-of-range error codes are normalized to `UnspecifiedError` and must not be surfaced as registered DoQ codes.",
+    "IANA policy buckets documented by RFC 9250 section 8.4 are descriptive governance, not runtime configuration."
+  ],
+  "risks": [
+    "If the transport host stops flowing TLS options through the connection setup bridge, the DoQ slice would need a transport-level fix instead of an adapter fix.",
+    "If future registry values require new enum members, the normalization helper and the documentation trace need to be refreshed together."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Section 3 Residue",
+      "content": "RFC 9250 section 3 leaves no separate DoQ PMTU layer to implement. DNS responses are carried on QUIC bidirectional streams, so the large-response proof exercises the transport stream path instead of any UDP datagram payload ceiling. The relevant design seam is the stream adapter in `DoqClient`, `DoqServer`, and `DoqStreamLifecycleTests`, not a packetizer in the DoQ layer."
+    },
+    {
+      "heading": "Section 8 Registry Governance",
+      "content": "The DNS-over-QUIC Error Codes registry is documented as a 62-bit space. Permanent registrations in the 0x00-0x3f range use Standards Action or IESG Approval. Permanent registrations above 0x3f use Specification Required. Provisional registrations above 0x3f use Expert Review. Specification and description flexibility for provisional entries are documentation rules, not runtime behavior. The runtime helper treats unknown and reserved codes as `UnspecifiedError` so a peer cannot accidentally turn an unregistered value into a known DoQ code."
+    }
+  ]
+}

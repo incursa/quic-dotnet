@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0022",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Section 3 Residue and IANA Registry Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0022",
+    "VER-QUIC-RFC9250-0022"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0001",
+    "REQ-QUIC-RFC9250-0003",
+    "REQ-QUIC-RFC9250-0126",
+    "REQ-QUIC-RFC9250-0127",
+    "REQ-QUIC-RFC9250-0128",
+    "REQ-QUIC-RFC9250-0129",
+    "REQ-QUIC-RFC9250-0130",
+    "REQ-QUIC-RFC9250-0131",
+    "REQ-QUIC-RFC9250-0132",
+    "REQ-QUIC-RFC9250-0133"
+  ],
+  "summary": "Document the remaining RFC 9250 section 3 residue and section 8 registry governance, add the ALPN byte-sequence proof, and keep the verification slice stream/TLS-backed instead of adding any custom DoQ transport layer.",
+  "planned_changes": "- Update the RFC 9250 SPEC trace links for REQ-0001, REQ-0003, and REQ-0126 through REQ-0133.\n- Add ARC-QUIC-RFC9250-0022 to document the stream/TLS mapping and IANA registry policy buckets.\n- Add verification-oriented requirement-home assertions under `tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0022.cs`.\n- Add or update focused tests proving large DNS responses flow through the DoQ stream path, DoQ ALPN bytes stay `doq`, and registry unknown/reserved values normalize to `UnspecifiedError`.\n- Do not add a custom DoQ datagram, PMTU, or flow-control layer.\n- Do not change the shared transport semantics beyond the small `DoqDefaults.Alpn` alias needed for verification.",
+  "verification_plan": "Run restore/build/test for the RFC 9250 DoQ test project, validate the SpecTrace JSON artifacts, and check diff hygiene once the trace links and proof tests are in place.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0022"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0022"
+  ],
+  "out_of_scope": [
+    "A custom DoQ datagram or PMTU layer.",
+    "Transport-level TLS changes unrelated to the existing QUIC bridge.",
+    "Adding new registry values or changing IANA policy."
+  ],
+  "completion_notes": "The shared QUIC transport already owns the stream and TLS behavior; this slice only closes the RFC 9250 section 3 residue and registry-governance trace and proof surfaces."
+}

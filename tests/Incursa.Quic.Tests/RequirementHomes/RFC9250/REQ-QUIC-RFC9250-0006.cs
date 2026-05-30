@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9250_0006
         string tests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
 
         Assert.Contains("ValidateZeroMessageId(response.Payload.Span, \"response\")", client, StringComparison.Ordinal);
-        Assert.Contains("DoqStream.WriteMessageAndCompleteAsync(stream, result.Response, cancellationToken)", server, StringComparison.Ordinal);
+        Assert.Contains("DoqStream.WriteMessageAndCompleteAsync(stream, paddedResponse, cancellationToken)", server, StringComparison.Ordinal);
         Assert.Contains("QueryAsync_PropagatesServfailResponseCodeFromHandler", tests, StringComparison.Ordinal);
         Assert.Contains("CreateDnsServfailResponse", tests, StringComparison.Ordinal);
     }

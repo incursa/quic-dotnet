@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0017",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Amplification and Retry Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0017",
+    "VER-QUIC-RFC9250-0017"
+  ],
+  "verification_method": "Focused unit tests for option defaults and amplification enforcement behavior.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0093",
+    "REQ-QUIC-RFC9250-0094"
+  ],
+  "scope": "This verification covers the DoqServerOptions defaults and the amplification enforcement path in the server handler.",
+  "preconditions": [
+    "Slices 0001 through 0016 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0017, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "Both REQs are now traced and verified. Amplification limit enforcement and retry/address-validation options are implemented with default values and unit tests."
+}

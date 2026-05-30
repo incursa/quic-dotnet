@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0010",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Unknown/Reserved Error Code Handling Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define DoQ adapter behavior for STOP_SENDING server-side dispatch prevention, unsolicited RESET_STREAM client-side tolerance, and registered error code pathway documentation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0010",
+    "VER-QUIC-RFC9250-0010"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0039",
+    "REQ-QUIC-RFC9250-0041",
+    "REQ-QUIC-RFC9250-0051"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqErrorCode.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
+  ],
+  "design_summary": "Three independent enhancements: (1) DoqServer.HandleQueryStreamAsync now checks for STOP_SENDING after reading the query but before dispatching to the DNS handler, preventing processing when the client has cancelled. (2) DoqClient adds a configurable MaxUnsolicitedResets property that tolerates a set number of unsolicited RESET_STREAM frames from the server before closing the connection. (3) DoqErrorCode documents the registered-specific-code pathway per RFC 9250 section 8.4, supported by the existing NormalizeReceivedErrorCode helper.",
+  "data_and_state_considerations": "The server adds no new state. The client adds an atomic reset counter and a configurable threshold.",
+  "edge_cases_and_constraints": [
+    "MaxUnsolicitedResets of 0 (default) preserves backward-compatible immediate connection close on any RESET_STREAM.",
+    "The STOP_SENDING check is a lightweight task-completed probe that completes synchronously when no abort is pending.",
+    "The registered-specific-code pathway is documented but not enforced; the existing NormalizeReceivedErrorCode continues to map unknown codes."
+  ],
+  "risks": [
+    "STOP_SENDING received exactly between the read completing and the dispatch check is a narrow race that is addressed by the post-read probe.",
+    "Unsolicited RESET_STREAM counting is shared across all queries on the same connection; a high rate of resets across different queries can exhaust the budget."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "All changes are confined to the DoQ adapter layer. No QUIC transport modifications are required. The STOP_SENDING dispatch check uses the existing WriteAbortTask pattern; the RESET_STREAM tolerance uses a simple atomic counter."
+    }
+  ]
+}

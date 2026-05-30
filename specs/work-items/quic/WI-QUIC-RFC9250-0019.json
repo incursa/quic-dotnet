@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0019",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Zone Transfer Concurrency Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0019",
+    "VER-QUIC-RFC9250-0019"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0111",
+    "REQ-QUIC-RFC9250-0112",
+    "REQ-QUIC-RFC9250-0113",
+    "REQ-QUIC-RFC9250-0114",
+    "REQ-QUIC-RFC9250-0115"
+  ],
+  "summary": "Add verification tests confirming concurrent zone transfer requests and interleaved responses on the existing DoQ adapter architecture.",
+  "planned_changes": "- Update SPEC trace links for REQs 0111-0115.\n- Add verification test for concurrent IXFR/AXFR requests on one connection.\n- Add verification test for interleaved responses from multiple streams.\n- Document that the existing architecture meets all 5 REQs without code changes.",
+  "verification_plan": "Run DoQ stream lifecycle tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0019"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0019"
+  ],
+  "out_of_scope": [
+    "Zone transfer data streaming protocol.",
+    "Response ordering guarantees (slice 0020).",
+    "Changes to stream scheduling."
+  ],
+  "completion_notes": "All 5 REQs are now traced and verified. No code changes were required; the existing architecture supports zone transfer concurrency."
+}

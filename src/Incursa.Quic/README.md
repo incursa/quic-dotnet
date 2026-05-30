@@ -1,6 +1,6 @@
 # Incursa.Quic
 
-`Incursa.Quic` is the packable QUIC library in this repository.
+`Incursa.Quic` is the packable core QUIC library in this repository.
 
 ## Install
 
@@ -24,8 +24,4 @@ dotnet add package Incursa.Quic
 
 Use `QuicConnection.IsSupported` and `QuicListener.IsSupported` to check whether the managed runtime-backed QUIC surface is available on the current machine.
 
-## Repository Docs
-
-- [`../../README.md`](../../README.md)
-- [`../../docs/quickstart.md`](../../docs/quickstart.md)
-- [`../../docs/requirements-workflow.md`](../../docs/requirements-workflow.md)
+Repository details and scope notes live at https://github.com/incursa/quic-dotnet.

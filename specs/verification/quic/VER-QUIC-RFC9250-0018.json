@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9250-0018",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS over QUIC RFC 9250 Padding and Traffic Analysis Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0018",
+    "VER-QUIC-RFC9250-0018"
+  ],
+  "verification_method": "Focused unit tests for padding boundaries, padding-only payload, oversized padding, max-message-size interaction, and disabled padding.",
+  "verifies": [
+    "REQ-QUIC-RFC9250-0095",
+    "REQ-QUIC-RFC9250-0096",
+    "REQ-QUIC-RFC9250-0097",
+    "REQ-QUIC-RFC9250-0098",
+    "REQ-QUIC-RFC9250-0125"
+  ],
+  "scope": "This verification covers the DoqPadding implementation, DoqDefaults padding policy, and integration in DoqClient and DoqServer.",
+  "preconditions": [
+    "Slices 0001 through 0017 exist and pass."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0018, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DoqPadding.cs",
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "status_summary": "All 5 REQs are now traced and verified. Padding is implemented, configured, and integrated with tests."
+}

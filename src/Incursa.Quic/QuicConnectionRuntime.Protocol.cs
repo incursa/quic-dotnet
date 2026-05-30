@@ -1838,7 +1838,7 @@ internal sealed partial class QuicConnectionRuntime
                 Console.Error.WriteLine(
                     $"app-rx stream role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} offset={streamFrame.Offset} length={streamFrame.StreamDataLength} fin={streamFrame.IsFin}.");
             }
-            bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+            _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                 streamFrame.StreamId.Value,
                 out QuicConnectionStreamSnapshot previousStreamSnapshot);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
@@ -1871,7 +1871,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-            if (!streamPreviouslyKnown)
+            if (streamRegistry.Bookkeeping.TryMarkPeerAcceptQueued(streamFrame.StreamId.Value))
             {
                 TryQueueInboundStreamId(streamFrame.StreamId.Value);
             }
@@ -2133,7 +2133,7 @@ internal sealed partial class QuicConnectionRuntime
                     return false;
                 }
 
-                bool streamPreviouslyKnown = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                     streamFrame.StreamId.Value,
                     out QuicConnectionStreamSnapshot previousStreamSnapshot);
                 if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.ZeroRtt))
@@ -2167,7 +2167,7 @@ internal sealed partial class QuicConnectionRuntime
                         new QuicStreamNotification(QuicStreamNotificationKind.DataAvailable, null));
                 }
 
-                if (!streamPreviouslyKnown)
+                if (streamRegistry.Bookkeeping.TryMarkPeerAcceptQueued(streamFrame.StreamId.Value))
                 {
                     TryQueueInboundStreamId(streamFrame.StreamId.Value);
                 }

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0016",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Usage Profiles and Fallback Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0016",
+    "VER-QUIC-RFC9250-0016"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0086",
+    "REQ-QUIC-RFC9250-0087",
+    "REQ-QUIC-RFC9250-0088",
+    "REQ-QUIC-RFC9250-0089",
+    "REQ-QUIC-RFC9250-0090",
+    "REQ-QUIC-RFC9250-0091",
+    "REQ-QUIC-RFC9250-0092"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqFallbackCache.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "Adds DoqClientProfile enum (Strict/Opportunistic), DoqFallbackCache class for in-memory failure tracking, and profile-aware behavior to DoqClient. Strict profile fails hard on DoQ errors. Opportunistic profile records failures in the cache, backs off for a configurable period, and supports key-pinned endpoints with shortened backoff.",
+  "data_and_state_considerations": "DoqFallbackCache uses a ConcurrentDictionary for thread-safe failure tracking. The cache is shared across DoqClient instances.",
+  "edge_cases_and_constraints": [
+    "Attached clients (via Attach) do not have an endpoint string; fallback checks are skipped.",
+    "Key-pinned endpoints shorten backoff to 1 minute instead of the configured period.",
+    "The backoff is advisory; callers can clear the cache to force retries."
+  ],
+  "risks": [
+    "Fallback to DoT/cleartext is delegated to the caller; the adapter signals failure clearly.",
+    "The cache does not expire entries automatically; callers should manage lifecycle."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Fallback Abstraction",
+      "content": "No DoT or cleartext DNS client is included in this adapter. The Opportunistic profile surfaces a clear DoqException when backed off, allowing the caller to fall back to an alternative transport. A future slice may integrate a transport abstraction."
+    }
+  ]
+}

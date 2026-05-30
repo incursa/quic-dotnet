@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0018",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Padding and Traffic Analysis Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0018",
+    "VER-QUIC-RFC9250-0018"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0095",
+    "REQ-QUIC-RFC9250-0096",
+    "REQ-QUIC-RFC9250-0097",
+    "REQ-QUIC-RFC9250-0098",
+    "REQ-QUIC-RFC9250-0125"
+  ],
+  "summary": "Add EDNS(0) padding injection via DoqPadding class, integrate in DoqClient and DoqServer, configure via DoqDefaults and DoqServerOptions.",
+  "planned_changes": "- Add DoqPadding static class with PadMessage method for EDNS(0) padding injection.\n- Add DoqDefaults.PaddingBlockSize (default 128).\n- Add DoqServerOptions.PaddingBlockSize (defaults to DoqDefaults.PaddingBlockSize).\n- Integrate padding in DoqClient.QueryAsync before DoQ encoding.\n- Integrate padding in DoqServer.HandleQueryStreamAsync before DoQ encoding.\n- Add focused tests: padding boundaries, padding-only payload, oversized padding, max-message-size interaction, disabled padding.\n- Link REQ-0125 (traffic analysis mitigation) to the padding implementation.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0018"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0018"
+  ],
+  "out_of_scope": [
+    "Changes to unrelated EDNS behavior.",
+    "Full DNS parsing beyond what is needed for padding insertion."
+  ],
+  "completion_notes": "All 5 REQs are now traced and verified. Padding is implemented and integrated."
+}

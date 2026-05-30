@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0015",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 0-RTT Residual Verification Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0015",
+    "VER-QUIC-RFC9250-0015"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0124",
+    "REQ-QUIC-RFC9250-0141"
+  ],
+  "summary": "Add residual verification tests confirming NOTIFY remains in the replayable opcode classification and document state-preservation analysis.",
+  "planned_changes": "- Update SPEC trace links for REQs 0124 and 0141.\n- Add verification tests confirming NOTIFY (opcode 4) is classified as replayable.\n- Add verification tests confirming QUERY (opcode 0) is classified as replayable.\n- Document that the existing implementation satisfies both REQs without code changes.\n- Close the trace loop with ARC, WI, and VER artifacts.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0015"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0015"
+  ],
+  "out_of_scope": [
+    "New 0-RTT functionality beyond verification.",
+    "Changes to opcode classification.",
+    "Transport-layer 0-RTT handshake detection."
+  ],
+  "completion_notes": "Verification-only slice. No code changes were required. NOTIFY opcode classification is correct and state-preservation is assured by the adapter architecture."
+}

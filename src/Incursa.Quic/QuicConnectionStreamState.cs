@@ -249,6 +249,23 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    public bool TryMarkPeerAcceptQueued(ulong streamIdValue)
+    {
+        lock (syncRoot)
+        {
+            if (!streams.TryGetValue(streamIdValue, out StreamState? state)
+                || !IsPeerInitiated(new QuicStreamId(streamIdValue))
+                || !state.HasReceivePart
+                || state.PeerAcceptQueued)
+            {
+                return false;
+            }
+
+            state.PeerAcceptQueued = true;
+            return true;
+        }
+    }
+
     public bool TryApplyPeerTransportParameterSendLimits(
         ulong localBidirectionalLimit,
         ulong peerBidirectionalLimit,
@@ -1388,6 +1405,7 @@ internal sealed class QuicConnectionStreamState
         public bool HasSendAbortErrorCode { get; set; }
         public bool LocalStopSendingFrameSent { get; set; }
         public bool PeerCapacityReleaseReported { get; set; }
+        public bool PeerAcceptQueued { get; set; }
         public QuicByteRangeSet SentRanges { get; } = new();
         public QuicByteRangeSet ReceivedRanges { get; } = new();
         public List<BufferedSegment> BufferedSegments { get; } = [];

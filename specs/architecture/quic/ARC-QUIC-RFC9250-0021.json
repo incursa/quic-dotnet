@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0021",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Flow Control Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Map RFC 9250 section 5.8 flow control requirements to the shared QUIC transport runtime and remembered-parameter policy without adding a custom DoQ flow-control layer.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0021",
+    "VER-QUIC-RFC9250-0021"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0116",
+    "REQ-QUIC-RFC9250-0117",
+    "REQ-QUIC-RFC9250-0118",
+    "REQ-QUIC-RFC9250-0119",
+    "REQ-QUIC-RFC9250-0120",
+    "REQ-QUIC-RFC9250-0121",
+    "REQ-QUIC-RFC9250-0122",
+    "REQ-QUIC-RFC9250-0123"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicConnectionStreamState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
+    "src/Incursa.Quic/QuicConnectionOptions.cs",
+    "src/Incursa.Quic/QuicServerConnectionOptions.cs",
+    "src/Incursa.Quic/QuicClientConnectionHost.cs",
+    "src/Incursa.Quic/QuicListenerHost.cs",
+    "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0021.cs"
+  ],
+  "design_summary": "DoQ relies on the shared QUIC transport runtime for all flow-control behavior. Connection-wide receive limits map to `InitialMaxData` and the runtime's connection receive window, per-stream receive limits map to the `InitialMaxStreamData*` transport parameters and per-stream receive limits in `QuicConnectionStreamState`, stream creation limits map to `InitialMaxStreamsBidi` and `InitialMaxStreamsUni`, and 0-RTT reuse is governed by remembered transport parameters. The runtime's handshake commit path applies the peer transport-parameter values into the stream registry bookkeeping. The adapter stays thin and does not add its own credit accounting or backpressure layer.",
+  "data_and_state_considerations": "All limit tracking stays inside `QuicConnectionStreamState`, `QuicConnectionRuntime.Protocol.cs`, the transport parameter codec, and the zero-RTT remembered-parameter policy. DoQ only forwards option values into the transport runtime and relies on the runtime to surface `DATA_BLOCKED`, `STREAM_DATA_BLOCKED`, `STREAMS_BLOCKED`, `FLOW_CONTROL_ERROR`, and `STREAM_LIMIT_ERROR` outcomes where appropriate.",
+  "edge_cases_and_constraints": [
+    "Client-initiated bidirectional query streams must be permitted by the server-side peer stream limit before DoQ traffic can flow.",
+    "Locally initiated bidirectional responses are governed by the client's own receive window for that stream, not by the peer-initiated stream limit.",
+    "0-RTT acceptance must compare remembered initial flow-control limits against the current server limits and reject any reduction in the required values."
+  ],
+  "risks": [
+    "If callers leave the server-side stream limits at a base `QuicConnectionOptions` default, DoQ will not be able to accept queries.",
+    "Changing the transport runtime's flow-control semantics would affect all protocols that share the QUIC layer, not just DoQ."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Flow-Control Mapping",
+      "content": "Aggregate connection receive limits come from `InitialMaxData` and the runtime's `ConnectionReceiveLimit`. Per-stream receive limits come from `InitialMaxStreamDataBidiLocal`, `InitialMaxStreamDataBidiRemote`, and `InitialMaxStreamDataUni`, which the runtime stores as the receive limit for the corresponding stream direction. Stream creation limits come from `InitialMaxStreamsBidi` and `InitialMaxStreamsUni`, which gate `TryOpenLocalStream` and peer-initiated stream admission. The handshake commit path in `QuicConnectionRuntime.Protocol.cs` applies the received transport parameters into the bookkeeping limits that enforce these ceilings. 0-RTT uses remembered transport parameters so the first connection's flow-control floor continues to control resumed early data."
+    }
+  ]
+}

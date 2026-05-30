@@ -20,7 +20,7 @@ This template records h3spec failures against the local Incursa HTTP/3 server. G
 
 ## Failing Cases
 
-| h3spec case | RFC section | Internal requirement/gap | Follow-up TODO |
+| h3spec case | RFC section | Internal requirement/gap | Follow-up item |
 | --- | --- | --- | --- |
 | not run | not run | not run | not run |
 
@@ -28,5 +28,5 @@ This template records h3spec failures against the local Incursa HTTP/3 server. G
 
 - RFC 9114 failures map to `http3-adapter-boundary` until a narrower HTTP/3 protocol requirement exists.
 - RFC 9204 failures map to `qpack-stream-state-boundary` until a narrower QPACK protocol requirement exists.
-- Transport or TLS failures are recorded for context, but they do not become HTTP/3/QPACK TODO items.
+- Transport or TLS failures are recorded for context, but they do not become HTTP/3/QPACK follow-up items.
 - A green h3spec run is evidence for the h3spec harness only unless protocol-owned requirements and focused tests also support the claim.

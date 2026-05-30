@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0018",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Padding and Traffic Analysis Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0018",
+    "VER-QUIC-RFC9250-0018"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0095",
+    "REQ-QUIC-RFC9250-0096",
+    "REQ-QUIC-RFC9250-0097",
+    "REQ-QUIC-RFC9250-0098",
+    "REQ-QUIC-RFC9250-0125"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqPadding.cs",
+    "src/Incursa.Quic.Dns/DoqDefaults.cs",
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "src/Incursa.Quic.Dns/DoqServerOptions.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "Adds DoqPadding static class for EDNS(0) padding injection, configurable via DoqDefaults.PaddingBlockSize (default 128) and DoqServerOptions.PaddingBlockSize. DoqClient pads outbound queries before DoQ encoding. DoqServer pads responses before DoQ encoding. Padding respects the 65535-byte MaxPayloadLength. Configuration follows RFC 8467 recommendations for encrypted transports.",
+  "data_and_state_considerations": "Padding is computed per-message and is stateless.",
+  "edge_cases_and_constraints": [
+    "Padding block size of 0 or 1 disables padding.",
+    "Padding never exceeds MaxPayloadLength (65535).",
+    "Existing EDNS(0) OPT records receive padding additions; otherwise a new OPT record is created.",
+    "Padding-only payloads are handled correctly (DNS message with only padding options)."
+  ],
+  "risks": [
+    "Padding increases message size and may increase latency; callers can disable by setting block size to 0.",
+    "The EDNS(0) OPT record parser is minimal and handles only the last OPT record for padding append."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Padding Algorithm",
+      "content": "The message is padded to the next multiple of the block size by adding an EDNS(0) padding option (code 12) with N zero bytes. If an OPT record already exists, the padding option is added to its RDATA. Otherwise, a new OPT record is appended to the additional section. If the padded message would exceed MaxPayloadLength, the padding is truncated or skipped."
+    }
+  ]
+}

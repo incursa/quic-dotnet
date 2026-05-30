@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Unknown/Reserved Error Code Handling Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0010",
+    "VER-QUIC-RFC9250-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0039",
+    "REQ-QUIC-RFC9250-0041",
+    "REQ-QUIC-RFC9250-0051"
+  ],
+  "summary": "Add server-side STOP_SENDING dispatch prevention, client-side unsolicited RESET_STREAM tolerance, and registered error code pathway documentation.",
+  "planned_changes": "- Add STOP_SENDING check in DoqServer.HandleQueryStreamAsync after reading query but before handler dispatch.\n- Add MaxUnsolicitedResets property and atomic counter to DoqClient; count peer RESET_STREAM events and close connection only when threshold exceeded.\n- Add doc comment to DoqErrorCode noting the registered-specific-code MAY pathway.\n- Add focused tests: STOP_SENDING before dispatch, unsolicited RESET_STREAM below and beyond limit, and registered code documentation.",
+  "verification_plan": "Run DoQ stream lifecycle tests, DoQ fatal protocol error tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0010"
+  ],
+  "out_of_scope": [
+    "General connection lifecycle reuse policy (slice 0011).",
+    "Broad reset accounting beyond unsolicited RESET_STREAM behavior on the client.",
+    "DNS padding, EDNS(0) handling, internal error code rewriting."
+  ],
+  "completion_notes": "All three REQs are now traced and verified. The DoQ server stops processing on STOP_SENDING, the client tolerates configurable unsolicited resets, and the registered error code pathway is documented."
+}

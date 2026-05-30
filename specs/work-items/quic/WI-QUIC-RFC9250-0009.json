@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 EDNS(0) and DNS Message Size Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0009",
+    "VER-QUIC-RFC9250-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0084",
+    "REQ-QUIC-RFC9250-0085"
+  ],
+  "summary": "Enforce the DoQ 65535-byte maximum message size in the codec layer and verify the EDNS(0) UDP payload size field is ignored for message-size admission.",
+  "planned_changes": "- Add explicit payload-length validation in DoqMessageCodec.TryDecode that rejects values exceeding MaxPayloadLength.\n- Add boundary tests for 65534-, 65535-, and 65536-byte payloads, plus fuzz-style tests for malformed length prefixes and overflow attempts.\n- Verify existing Encode already rejects oversized payloads.\n- Confirm the codec never consults the EDNS(0) UDP payload size field (this is guaranteed by design; the codec operates only on the 2-octet length prefix).",
+  "verification_plan": "Run the DoQ foundation tests (including new boundary/fuzz tests), core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0009"
+  ],
+  "out_of_scope": [
+    "EDNS(0) tcp-keepalive option handling (slice 0008).",
+    "DNS padding (slice 0018).",
+    "DNS message body parsing beyond the length prefix."
+  ],
+  "completion_notes": "The DoqMessageCodec now explicitly enforces the 65535-byte maximum message size with boundary and fuzz tests. The EDNS(0) UDP payload size field is structurally ignored."
+}

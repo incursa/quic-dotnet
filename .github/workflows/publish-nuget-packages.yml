@@ -14,6 +14,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     concurrency:
       group: publish-packages-${{ github.ref }}
       cancel-in-progress: false
@@ -29,8 +31,39 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Validate NuGet credentials
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:NUGET_API_KEY)) {
+            throw "NUGET_API_KEY secret is required to publish packages."
+          }
+
+      - name: Resolve package version
+        id: version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          MANUAL_VERSION: ${{ inputs.version }}
+        run: |
+          if (-not [string]::IsNullOrWhiteSpace($env:MANUAL_VERSION)) {
+            $version = $env:MANUAL_VERSION.Trim().TrimStart("v")
+          }
+          elseif ($env:RELEASE_TAG.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
+            $version = $env:RELEASE_TAG.Substring(1)
+          }
+          else {
+            throw "A version is required when the workflow is not triggered by a version tag."
+          }
+
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8NoBOM
+
       - name: Restore
         run: dotnet restore Incursa.Quic.slnx
+
+      - name: Build
+        run: dotnet build Incursa.Quic.slnx --no-restore --configuration Release -p:Version=${{ steps.version.outputs.version }} -p:ContinuousIntegrationBuild=true
 
       - name: Validate release/version policy
         shell: pwsh
@@ -39,7 +72,7 @@ jobs:
           MANUAL_VERSION: ${{ inputs.version }}
         run: |
           $tag = if ($env:MANUAL_VERSION) {
-            "v$($env:MANUAL_VERSION.TrimStart('v'))"
+            "v$($env:MANUAL_VERSION.Trim().TrimStart('v'))"
           } else {
             $env:RELEASE_TAG
           }
@@ -48,24 +81,15 @@ jobs:
           }
           & "$env:GITHUB_WORKSPACE/scripts/release/validate-public-api-versioning.ps1" -Tag $tag
 
-      - name: Build
-        run: dotnet build Incursa.Quic.slnx --no-restore --configuration Release -p:ContinuousIntegrationBuild=true
-
-      - name: Pack package
+      - name: Pack packages
         shell: pwsh
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
-          MANUAL_VERSION: ${{ inputs.version }}
         run: |
-          if ($env:MANUAL_VERSION) {
-            $version = $env:MANUAL_VERSION.TrimStart("v")
-          }
-          else {
-            $version = $env:RELEASE_TAG.TrimStart("v")
-          }
-
           New-Item -ItemType Directory -Force artifacts/packages | Out-Null
-          dotnet pack src/Incursa.Quic/Incursa.Quic.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=$version /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.Quic/Incursa.Quic.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.Quic.Qlog/Incursa.Quic.Qlog.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.Qpack/Incursa.Qpack.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
+          dotnet pack src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj --configuration Release --no-build --output artifacts/packages --include-symbols --include-source /p:Version=${{ steps.version.outputs.version }} /p:ContinuousIntegrationBuild=true
 
       - name: Push to NuGet
         run: |

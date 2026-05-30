@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9250-0012",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS over QUIC RFC 9250 Forwarding Gateway Helpers Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "ARC-QUIC-RFC9250-0012",
+    "VER-QUIC-RFC9250-0012"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9250-0024",
+    "REQ-QUIC-RFC9250-0025"
+  ],
+  "summary": "Add public static helper methods NormalizeToDoq and GenerateMessageId to DoqMessage for use by gateway implementations.",
+  "planned_changes": "- Add DoqMessage.NormalizeToDoq(ReadOnlySpan<byte>) that returns a new byte array with the DNS Message ID set to 0.\n- Add DoqMessage.GenerateMessageId(ReadOnlySpan<byte>, ushort) that returns a new byte array with the specified Message ID.\n- Add focused unit tests for both methods including boundary cases.\n- Link the requirement-home, architecture, and verification trace artifacts for REQ-0024 and REQ-0025.",
+  "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9250-0012"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9250-0012"
+  ],
+  "out_of_scope": [
+    "Full gateway implementation.",
+    "Message ID collision detection or uniqueness tracking.",
+    "Changes to DoqClient query execution."
+  ],
+  "completion_notes": "Both forwarding gateway helper methods are implemented and tested. REQs 0024 and 0025 are now traced and verified."
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0019",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 Zone Transfer Concurrency Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0019",
+    "VER-QUIC-RFC9250-0019"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0111",
+    "REQ-QUIC-RFC9250-0112",
+    "REQ-QUIC-RFC9250-0113",
+    "REQ-QUIC-RFC9250-0114",
+    "REQ-QUIC-RFC9250-0115"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqClient.cs",
+    "src/Incursa.Quic.Dns/DoqServer.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+  ],
+  "design_summary": "The existing DoQ adapter architecture already supports concurrent zone transfer requests. DoqClient.QueryAsync opens a new stream per call without blocking other calls, enabling parallel IXFR/AXFR requests. DoqServer.HandleQueryStreamAsync dispatches each stream independently as a Task, allowing interleaved responses. QUIC's stream multiplexing provides head-of-line blocking freedom. This slice adds verification tests confirming zone transfer concurrency.",
+  "data_and_state_considerations": "No new adapter state. All concurrency is handled by the existing stream-per-query architecture and QUIC transport.",
+  "edge_cases_and_constraints": [
+    "The adapter does not define zone-transfer-specific semantics beyond standard query/response.",
+    "Concurrency is bounded by MaxInboundBidirectionalStreams and QUIC flow control."
+  ],
+  "risks": [
+    "Large zone transfers may exhaust stream flow control windows; this is managed by the QUIC transport.",
+    "The adapter treats AXFR/IXFR as regular DNS queries; no special streaming protocol is implemented."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Existing Architecture",
+      "content": "Slice 0002 established the client-initiated bidirectional stream-per-query model. Slice 0003 established server-side concurrent stream handling with resource limits. Both are sufficient for zone transfer concurrency without architectural changes."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9250-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS over QUIC RFC 9250 EDNS(0) and DNS Message Size Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the DoQ codec behavior for ignoring the EDNS(0) UDP payload size field and enforcing the 65535-byte maximum message size via the 2-octet length prefix.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9250",
+    "WI-QUIC-RFC9250-0009",
+    "VER-QUIC-RFC9250-0009"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9250-0084",
+    "REQ-QUIC-RFC9250-0085"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DoqMessageCodec.cs",
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+  ],
+  "design_summary": "The DoqMessageCodec already implements a 2-octet length prefix whose maximum representable value is ushort.MaxValue (65535). The EDNS(0) UDP payload size field is never read or consulted by the codec; it is present in the OPT pseudo-RR but semantically irrelevant for message-size admission. A new explicit validation in TryDecode confirms the decoded payload length does not exceed MaxPayloadLength (65535). Encode already rejects payloads larger than 65535. Boundary and property-style fuzz tests confirm correct behavior at the limit values and with malformed inputs.",
+  "data_and_state_considerations": "No new adapter state is required. The codec remains a stateless static helper class.",
+  "edge_cases_and_constraints": [
+    "The length prefix is exactly 2 octets; value 0 is a valid payload length.",
+    "TryDecode must accept payload lengths 0 through 65535 inclusive.",
+    "TryDecode must not attempt to consult or validate EDNS(0) OPT record fields during message-size admission.",
+    "Encode must reject payloads whose length exceeds MaxPayloadLength."
+  ],
+  "risks": [
+    "The 65535-byte bound is absolute; the implementation does not support the larger message sizes that EDNS(0) UDP payload size fields could theoretically advertise over TCP transports."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "All changes are confined to DoqMessageCodec. The EDNS(0) UDP payload size field is structurally present in DNS OPT records but never evaluated for message-size decisions. No parsing of the DNS body beyond the 2-octet length prefix is required for message-size admission."
+    },
+    {
+      "heading": "Rationale",
+      "content": "RFC 9250 section 4.6 specifies that DoQ uses a fixed 65535-byte maximum DNS message size, overriding any EDNS(0) UDP payload size advertisement. The 2-octet length prefix natively enforces this bound because the prefix can represent values 0-65535 only."
+    }
+  ]
+}
