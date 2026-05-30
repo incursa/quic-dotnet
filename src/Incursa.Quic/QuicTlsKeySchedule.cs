@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -3181,6 +3182,37 @@ internal sealed class QuicTlsKeySchedule
         return output;
     }
 
+    /// <summary>
+    /// Discards completed-handshake material that is no longer needed
+    /// after the peer Finished message has been verified and 1-RTT keys
+    /// have been derived. Idempotent.
+    /// </summary>
+    internal void TryDiscardCompletedHandshakeMaterial()
+    {
+        if (clientHandshakeTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(clientHandshakeTrafficSecret);
+            clientHandshakeTrafficSecret = null;
+        }
+
+        if (serverHandshakeTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(serverHandshakeTrafficSecret);
+            serverHandshakeTrafficSecret = null;
+        }
+
+        if (transcriptBytes.WrittenCount > 0)
+        {
+            CryptographicOperations.ZeroMemory(
+                MemoryMarshal.CreateSpan(
+                    ref MemoryMarshal.GetReference(transcriptBytes.WrittenSpan),
+                    transcriptBytes.WrittenCount));
+            transcriptBytes.Clear();
+        }
+
+        peerLeafCertificateDer = null;
+    }
+
     private IReadOnlyList<QuicTlsStateUpdate> BuildFatalAlert(ushort alertDescription)
     {
         isTerminal = true;
@@ -3206,6 +3238,27 @@ internal sealed class QuicTlsKeySchedule
             CryptographicOperations.ZeroMemory(serverApplicationTrafficSecret);
             serverApplicationTrafficSecret = null;
         }
+        if (clientHandshakeTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(clientHandshakeTrafficSecret);
+            clientHandshakeTrafficSecret = null;
+        }
+
+        if (serverHandshakeTrafficSecret is not null)
+        {
+            CryptographicOperations.ZeroMemory(serverHandshakeTrafficSecret);
+            serverHandshakeTrafficSecret = null;
+        }
+
+        if (transcriptBytes.WrittenCount > 0)
+        {
+            CryptographicOperations.ZeroMemory(
+                MemoryMarshal.CreateSpan(
+                    ref MemoryMarshal.GetReference(transcriptBytes.WrittenSpan),
+                    transcriptBytes.WrittenCount));
+            transcriptBytes.Clear();
+        }
+
         peerLeafCertificateDer = null;
         peerCertificateVerifyVerified = false;
         return [new QuicTlsStateUpdate(QuicTlsUpdateKind.FatalAlert, AlertDescription: alertDescription)];

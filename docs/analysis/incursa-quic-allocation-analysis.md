@@ -131,3 +131,73 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --l
 - Do not reuse buffers across concurrent operations without explicit ownership.
 - Prefer `stackalloc` only for small, bounded buffers.
 - Key material (AEAD keys, HKDF intermediates) must be cleared or never shared.
+
+---
+
+## Server Runtime Constructor Micro-Profile
+
+Added 2026-05-29. Uses `--profile-runtime N` mode that creates each `QuicConnectionRuntime` sub-component independently and measures allocation via `GC.GetTotalAllocatedBytes`.
+
+### Command
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --profile-runtime 200
+```
+
+### Results (200 iterations)
+
+```text
+Component                                        B/op   % of server ctor
+QuicTlsKeySchedule (server)                     596,611           97.6%
+QuicTlsTransportBridgeDriver (server)           599,188           98.0%
+collections (dicts, queues, lists)                4,208            0.7%
+channels (inbox + stream ids)                     2,480            0.4%
+QuicTransportTlsBridgeState                       2,272            0.4%
+QuicRecoveryController                              656            0.1%
+field-init state objects                            512            0.1%
+QuicConnectionStreamRegistry                        472            0.1%
+QuicConnectionPeerConnectionIdState                 472            0.1%
+QuicConnectionPathState                             416            0.1%
+QuicConnectionIssuedConnectionIdState               280            0.0%
+QuicConnectionLifecycleTimerState                   232            0.0%
+QuicAddressValidationTokenProtector                 144            0.0%
+QuicStreamObserverDirectory                         136            0.0%
+QuicApplicationSendQueue                             64            0.0%
+QuicHandshakeFlowCoordinator                         64            0.0%
+QuicConnectionApplicationAckState                    32            0.0%
+QuicConnectionVersionProfile                         32            0.0%
+QuicConnectionDiagnosticsState                        0            0.0%
+
+Full server runtime constructor:        611,284 B/op
+QuicTlsKeySchedule (server) alone:      596,611 B/op  (97.6%)
+```
+
+### Key Finding
+
+The `QuicTlsKeySchedule` server constructor is responsible for **597 KB/op — 97.6% of the full server runtime construction**. Everything else combined is ~15 KB.
+
+The server key schedule constructor creates:
+1. `ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256)` — P-256 key pair
+2. `ExportUncompressedPoint(localKeyPair.ExportParameters(true))` — exports public key material
+3. `QuicTlsX25519.TryCreateKeyPair(...)` — X25519 key pair (server only)
+4. `NormalizeApplicationProtocols(...)` — ALPN list copy
+
+The 597 KB vs the client variant's ~2 KB is driven by the .NET crypto stack's internal allocations for `ECDiffieHellman.Create()` and `ExportParameters(true)` — not by visible managed byte arrays in the constructor code itself.
+
+### Scope Classification
+
+| Component | Current Scope | Recommended Scope | Est. Allocation | Classification |
+|-----------|---------------|-------------------|-----------------|----------------|
+| QuicTlsKeySchedule crypto keys | Per-connection | Listener/config | 597 KB/op | SHOULD MOVE TO LISTENER |
+| Handshake processing | Per-connection | Per-connection | 220 KB/op | Acceptable secondary |
+| All other runtime state | Per-connection | Per-connection | ~15 KB/op | Negligible |
+
+The `QuicTlsKeySchedule`'s crypto key pairs (P-256 for ECDHE, X25519) are ephemeral and could be created once at listener initialization and shared across connections. The key schedule itself has mutable transcript state, so it cannot be fully shared, but the crypto key pair creation can be cached.
+
+### Revised Priority
+
+| Priority | Target | Allocation | Action |
+|----------|--------|------------|--------|
+| **P0** | QuicTlsKeySchedule crypto keys | **597 KB/op** | Move key pair creation to listener scope or cache per-process |
+| **P1** | Handshake processing | 220 KB/op | Packet buffers, CRYPTO copies, HKDF temps (secondary) |
+| **P2** | All other runtime state | ~15 KB/op | Negligible — not worth targeting

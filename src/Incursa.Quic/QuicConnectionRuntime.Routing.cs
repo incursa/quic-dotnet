@@ -110,7 +110,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (!tlsState.CanReceiveApplicationData)
+        if (!tlsState.OneRttReceiveAuthorized)
         {
             return false;
         }

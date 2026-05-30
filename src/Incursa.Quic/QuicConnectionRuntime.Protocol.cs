@@ -1140,7 +1140,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if ((phase != QuicConnectionPhase.Active && phase != QuicConnectionPhase.Establishing)
             || activePath is null
-            || !tlsState.CanReceiveApplicationData)
+            || !tlsState.OneRttReceiveAuthorized)
         {
             return false;
         }

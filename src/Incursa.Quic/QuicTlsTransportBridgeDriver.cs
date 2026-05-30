@@ -922,6 +922,11 @@ internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
             }
         }
 
+        if (step.HandshakeMessageType == QuicTlsHandshakeMessageType.Finished)
+        {
+            keySchedule.TryDiscardCompletedHandshakeMaterial();
+        }
+
         return publishedUpdates.ToBatch();
     }
 

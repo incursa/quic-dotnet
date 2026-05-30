@@ -176,17 +176,21 @@ internal sealed class QuicTransportTlsBridgeState
     public bool IsTerminal => FatalAlertCode.HasValue;
 
     /// <summary>
-    /// Gets whether the bridge state is ready to send 1-RTT application data:
-    /// not terminal, 1-RTT keys available, and 1-RTT protect material exists.
+    /// Gets whether the bridge state owns the cryptographic material needed
+    /// to send 1-RTT application data: not terminal, 1-RTT keys available,
+    /// and 1-RTT protect material exists. Runtime phase/path checks are
+    /// applied separately by the connection runtime.
     /// </summary>
-    internal bool CanSendApplicationData =>
+    internal bool OneRttSendAuthorized =>
         !IsTerminal && OneRttKeysAvailable && OneRttProtectPacketProtectionMaterial.HasValue;
 
     /// <summary>
-    /// Gets whether the bridge state is ready to receive 1-RTT application data:
-    /// not terminal, 1-RTT keys available, and 1-RTT open material exists.
+    /// Gets whether the bridge state owns the cryptographic material needed
+    /// to receive 1-RTT application data: not terminal, 1-RTT keys available,
+    /// and 1-RTT open material exists. Runtime phase/path checks are
+    /// applied separately by the connection runtime.
     /// </summary>
-    internal bool CanReceiveApplicationData =>
+    internal bool OneRttReceiveAuthorized =>
         !IsTerminal && OneRttKeysAvailable && OneRttOpenPacketProtectionMaterial.HasValue;
 
     /// <summary>

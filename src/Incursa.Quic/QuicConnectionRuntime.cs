@@ -1150,9 +1150,6 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (phase != QuicConnectionPhase.Active || activePath is null)
         {
-            Debug.Fail(
-                $"{nameof(OpenOutboundStreamAsync)} guard failed",
-                $"Phase={phase} ActivePath={(activePath is null ? "null" : "set")} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")} Disposed={disposed}");
             throw new InvalidOperationException(
                 $"The connection is not established. Phase={phase} ActivePath={(activePath is null ? "null" : "set")} TerminalState={(terminalState.HasValue ? terminalState.Value.ToString() : "null")}");
         }
@@ -1162,7 +1159,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw new ArgumentOutOfRangeException(nameof(streamType));
         }
 
-        if (!tlsState.CanSendApplicationData)
+        if (!tlsState.OneRttSendAuthorized)
         {
             throw new InvalidOperationException("The connection is not ready to open application streams.");
         }

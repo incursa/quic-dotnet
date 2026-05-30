@@ -50,14 +50,14 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
     }
 
     [Fact]
-    public void CanSendApplicationData_ReturnsFalseWhenNoKeysOrMaterial()
+    public void OneRttSendAuthorized_ReturnsFalseWhenNoKeysOrMaterial()
     {
         QuicTransportTlsBridgeState state = new();
-        Assert.False(state.CanSendApplicationData);
+        Assert.False(state.OneRttSendAuthorized);
     }
 
     [Fact]
-    public void CanSendApplicationData_ReturnsTrueWhenFullyReady()
+    public void OneRttSendAuthorized_ReturnsTrueWhenFullyReady()
     {
         QuicTransportTlsBridgeState state = new();
         state.SetPeerFinishedVerifiedForTests(true);
@@ -68,11 +68,11 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
             PacketProtectionMaterial: material)));
-        Assert.True(state.CanSendApplicationData);
+        Assert.True(state.OneRttSendAuthorized);
     }
 
     [Fact]
-    public void CanSendApplicationData_ReturnsFalseWhenTerminal()
+    public void OneRttSendAuthorized_ReturnsFalseWhenTerminal()
     {
         QuicTransportTlsBridgeState state = new();
         state.SetPeerFinishedVerifiedForTests(true);
@@ -87,11 +87,11 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
             QuicTlsUpdateKind.FatalAlert,
             AlertDescription: 0x0032)));
         Assert.True(state.IsTerminal);
-        Assert.False(state.CanSendApplicationData);
+        Assert.False(state.OneRttSendAuthorized);
     }
 
     [Fact]
-    public void CanSendApplicationData_ReturnsFalseBeforePeerFinishedVerified()
+    public void OneRttSendAuthorized_ReturnsFalseBeforePeerFinishedVerified()
     {
         QuicTransportTlsBridgeState state = new();
         Assert.False(state.TryApply(new QuicTlsStateUpdate(
@@ -101,18 +101,18 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
         Assert.False(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.OneRttProtectPacketProtectionMaterialAvailable,
             PacketProtectionMaterial: material)));
-        Assert.False(state.CanSendApplicationData);
+        Assert.False(state.OneRttSendAuthorized);
     }
 
     [Fact]
-    public void CanReceiveApplicationData_ReturnsFalseWhenNoKeysOrMaterial()
+    public void OneRttReceiveAuthorized_ReturnsFalseWhenNoKeysOrMaterial()
     {
         QuicTransportTlsBridgeState state = new();
-        Assert.False(state.CanReceiveApplicationData);
+        Assert.False(state.OneRttReceiveAuthorized);
     }
 
     [Fact]
-    public void CanReceiveApplicationData_ReturnsTrueWhenFullyReady()
+    public void OneRttReceiveAuthorized_ReturnsTrueWhenFullyReady()
     {
         QuicTransportTlsBridgeState state = new();
         state.SetPeerFinishedVerifiedForTests(true);
@@ -123,11 +123,11 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
             PacketProtectionMaterial: material)));
-        Assert.True(state.CanReceiveApplicationData);
+        Assert.True(state.OneRttReceiveAuthorized);
     }
 
     [Fact]
-    public void CanReceiveApplicationData_ReturnsFalseWhenTerminal()
+    public void OneRttReceiveAuthorized_ReturnsFalseWhenTerminal()
     {
         QuicTransportTlsBridgeState state = new();
         state.SetPeerFinishedVerifiedForTests(true);
@@ -142,11 +142,11 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
             QuicTlsUpdateKind.FatalAlert,
             AlertDescription: 0x0032)));
         Assert.True(state.IsTerminal);
-        Assert.False(state.CanReceiveApplicationData);
+        Assert.False(state.OneRttReceiveAuthorized);
     }
 
     [Fact]
-    public void CanReceiveApplicationData_ReturnsFalseBeforePeerFinishedVerified()
+    public void OneRttReceiveAuthorized_ReturnsFalseBeforePeerFinishedVerified()
     {
         QuicTransportTlsBridgeState state = new();
         Assert.False(state.TryApply(new QuicTlsStateUpdate(
@@ -156,11 +156,11 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
         Assert.False(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.OneRttOpenPacketProtectionMaterialAvailable,
             PacketProtectionMaterial: material)));
-        Assert.False(state.CanReceiveApplicationData);
+        Assert.False(state.OneRttReceiveAuthorized);
     }
 
     [Fact]
-    public void CanSendApplicationData_ZeroRttMaterialDoesNotEnableSend()
+    public void OneRttSendAuthorized_ZeroRttMaterialDoesNotEnableSend()
     {
         QuicTransportTlsBridgeState state = new();
 
@@ -176,7 +176,128 @@ public sealed class QuicTransportTlsBridgeStateUnitTests
         Assert.True(state.TryApply(new QuicTlsStateUpdate(
             QuicTlsUpdateKind.PacketProtectionMaterialAvailable,
             PacketProtectionMaterial: zeroRttMaterial)));
-        Assert.False(state.CanSendApplicationData);
-        Assert.False(state.CanReceiveApplicationData);
+        Assert.False(state.OneRttSendAuthorized);
+        Assert.False(state.OneRttReceiveAuthorized);
+    }
+
+    [Fact]
+    public void TryDiscardCompletedHandshakeMaterial_IsIdempotentOnFreshSchedule()
+    {
+        QuicTlsKeySchedule schedule = new();
+        schedule.TryDiscardCompletedHandshakeMaterial();
+        Assert.False(schedule.HandshakeSecretsDerived);
+        Assert.False(schedule.PeerFinishedVerified);
+    }
+
+    [Fact]
+    public void TryDiscardCompletedHandshakeMaterial_ClearsHandshakeTrafficSecrets()
+    {
+        byte[] localHandshakePrivateKey = CreateScalar(0x11);
+        QuicTransportParameters localTransportParameters = CreateBootstrapLocalTransportParameters();
+        QuicTlsKeySchedule schedule = new(localHandshakePrivateKey);
+
+        Assert.True(schedule.TryCreateClientHello(localTransportParameters, out byte[] clientHello));
+        schedule.AppendLocalHandshakeMessage(clientHello);
+
+        byte[] serverHello = CreateServerHelloBytes();
+        IReadOnlyList<QuicTlsStateUpdate> serverHelloUpdates = schedule.ProcessTranscriptStep(
+            new QuicTlsTranscriptStep(
+                QuicTlsTranscriptStepKind.Progressed,
+                TranscriptPhase: QuicTlsTranscriptPhase.AwaitingPeerHandshakeMessage,
+                HandshakeMessageType: QuicTlsHandshakeMessageType.ServerHello,
+                HandshakeMessageLength: (uint)(serverHello.Length - 4),
+                SelectedCipherSuite: QuicTlsCipherSuite.TlsAes128GcmSha256,
+                TranscriptHashAlgorithm: QuicTlsTranscriptHashAlgorithm.Sha256,
+                NamedGroup: QuicTlsNamedGroup.Secp256r1,
+                KeyShare: CreateServerKeyShare(),
+                HandshakeMessageBytes: serverHello));
+        Assert.NotEmpty(serverHelloUpdates);
+        Assert.True(schedule.HandshakeSecretsDerived);
+
+        Assert.True(schedule.TryGetExpectedPeerFinishedVerifyData(out _));
+
+        schedule.TryDiscardCompletedHandshakeMaterial();
+
+        Assert.False(schedule.TryGetExpectedPeerFinishedVerifyData(out _));
+        Assert.True(schedule.TryCopyHandshakeTranscriptBytes(Span<byte>.Empty, out int bytesWritten));
+        Assert.Equal(0, bytesWritten);
+        Assert.False(schedule.TryGetPeerLeafCertificateSha256Fingerprint(out _));
+    }
+
+    private static byte[] CreateScalar(byte value)
+    {
+        byte[] scalar = new byte[32];
+        scalar[^1] = value;
+        return scalar;
+    }
+
+    private static QuicTransportParameters CreateBootstrapLocalTransportParameters()
+    {
+        return new QuicTransportParameters
+        {
+            MaxIdleTimeout = 15,
+            InitialSourceConnectionId = [0x01, 0x02, 0x03],
+        };
+    }
+
+    private static byte[] CreateServerHelloBytes()
+    {
+        byte[] serverRandom = System.Security.Cryptography.SHA256.HashData("incursa.quic.server-random"u8);
+        byte[] sessionId = [0x01, 0x02];
+        byte[] keyShare = CreateServerKeyShare();
+        int bodyLength = 2 + 32 + 1 + sessionId.Length + 2 + 1 + 2
+            + (2 + 2 + 2)          // supported_versions
+            + (2 + 2 + 2 + 2 + keyShare.Length); // key_share
+        byte[] body = new byte[bodyLength];
+        int index = 0;
+
+        body[index++] = 0x03; body[index++] = 0x03; // legacy_version
+        serverRandom.CopyTo(body.AsSpan(index)); index += 32;
+        body[index++] = (byte)sessionId.Length;
+        sessionId.CopyTo(body.AsSpan(index)); index += sessionId.Length;
+        body[index++] = 0x13; body[index++] = 0x01; // cipher suite
+        body[index++] = 0x00; // compression
+
+        int extensionsLength = bodyLength - index - 2;
+        body[index++] = (byte)(extensionsLength >> 8); body[index++] = (byte)extensionsLength;
+
+        // supported_versions
+        body[index++] = 0x00; body[index++] = 0x2B;
+        body[index++] = 0x00; body[index++] = 0x02;
+        body[index++] = 0x03; body[index++] = 0x04;
+
+        // key_share
+        body[index++] = 0x00; body[index++] = 0x33;
+        body[index++] = 0x00; body[index++] = (byte)(2 + 2 + keyShare.Length);
+        body[index++] = 0x00; body[index++] = 0x1D; // secp256r1
+        body[index++] = 0x00; body[index++] = (byte)keyShare.Length;
+        keyShare.CopyTo(body.AsSpan(index)); index += keyShare.Length;
+
+        byte[] message = new byte[4 + bodyLength];
+        message[0] = (byte)QuicTlsHandshakeMessageType.ServerHello;
+        message[1] = (byte)(bodyLength >> 16);
+        message[2] = (byte)(bodyLength >> 8);
+        message[3] = (byte)bodyLength;
+        body.CopyTo(message.AsSpan(4));
+        return message;
+    }
+
+    private static byte[] CreateServerKeyShare()
+    {
+        using System.Security.Cryptography.ECDiffieHellman serverKeyPair =
+            System.Security.Cryptography.ECDiffieHellman.Create(
+                System.Security.Cryptography.ECCurve.NamedCurves.nistP256);
+        serverKeyPair.ImportParameters(new System.Security.Cryptography.ECParameters
+        {
+            Curve = System.Security.Cryptography.ECCurve.NamedCurves.nistP256,
+            D = CreateScalar(0x02),
+        });
+
+        System.Security.Cryptography.ECParameters parameters = serverKeyPair.ExportParameters(true);
+        byte[] keyShare = new byte[1 + (2 * 32)];
+        keyShare[0] = 0x04;
+        parameters.Q.X!.CopyTo(keyShare, 1);
+        parameters.Q.Y!.CopyTo(keyShare, 33);
+        return keyShare;
     }
 }

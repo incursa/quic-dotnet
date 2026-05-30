@@ -3,10 +3,12 @@
 
 #pragma warning disable CA1416
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading.Channels;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using IncursaClientConnection = global::Incursa.Quic.QuicConnection;
@@ -50,9 +52,15 @@ internal static class QuicAllocationHarness
             Console.WriteLine("                 captures again.  Two batches distinguish warmup from leak.");
             Console.WriteLine("                 Tests System.Net.Quic only.  Default N=1000.");
             Console.WriteLine();
-            Console.WriteLine("  --profile N    Run allocation profiler with EventListener.");
-            Console.WriteLine("                 Reports top allocated types by size during Incursa.Quic");
-            Console.WriteLine("                 connection establishment.  Default N=50.");
+            Console.WriteLine("  --profile N    Run allocation profiler per lifecycle phase.");
+            Console.WriteLine("                 Breaks connect/accept/dispose into listener, connect+accept,");
+            Console.WriteLine("                 and close+dispose buckets.  Default N=100.");
+            Console.WriteLine();
+            Console.WriteLine("  --profile-runtime N");
+            Console.WriteLine("                 Run server runtime constructor micro-profile.");
+            Console.WriteLine("                 Breaks the server QuicConnectionRuntime constructor into");
+            Console.WriteLine("                 named sub-components to identify the 611 KB/op source.");
+            Console.WriteLine("                 Default N=200.");
             Console.WriteLine();
             return 0;
         }
@@ -71,6 +79,11 @@ internal static class QuicAllocationHarness
         if (args is ["--profile", ..])
         {
             return RunAllocationProfile(count);
+        }
+
+        if (args is ["--profile-runtime", ..])
+        {
+            return RunServerConstructorProfile(count);
         }
 
         return RunAllocationHarness(count);
@@ -237,6 +250,218 @@ internal static class QuicAllocationHarness
         clientConnection.DisposeAsync().GetAwaiter().GetResult();
         listener.DisposeAsync().GetAwaiter().GetResult();
         phaseTotals["close+dispose"] += snap() - before;
+    }
+
+    private static int RunServerConstructorProfile(int count)
+    {
+        Console.WriteLine();
+        Console.WriteLine("=== Server Runtime Constructor Micro-Profile ===");
+        Console.WriteLine($"Iterations: {count:N0}");
+        Console.WriteLine("Measures each QuicConnectionRuntime sub-component in isolation.");
+        Console.WriteLine();
+
+        static long Snap() => GC.GetTotalAllocatedBytes(precise: true);
+
+        // Server auth options for TLS components
+        X509Certificate2 serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        var serverAuthOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
+
+        // --- Warmup ---
+        var dummyWS = new Dictionary<string, long>();
+        for (int i = 0; i < 3; i++)
+        {
+            MeasureComponent("", dummyWS, Snap);
+        }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        // --- Full server constructor ---
+        long fullServerCtor = 0;
+        {
+            var options = new QuicConnectionStreamStateOptions(
+                IsServer: true, InitialConnectionReceiveLimit: 16 * 1024 * 1024,
+                InitialConnectionSendLimit: 0,
+                InitialIncomingBidirectionalStreamLimit: 4096, InitialIncomingUnidirectionalStreamLimit: 4096,
+                InitialPeerBidirectionalStreamLimit: 0, InitialPeerUnidirectionalStreamLimit: 0,
+                InitialLocalBidirectionalReceiveLimit: 64 * 1024, InitialPeerBidirectionalReceiveLimit: 64 * 1024,
+                InitialPeerUnidirectionalReceiveLimit: 64 * 1024,
+                InitialLocalBidirectionalSendLimit: 64 * 1024, InitialLocalUnidirectionalSendLimit: 64 * 1024,
+                InitialPeerBidirectionalSendLimit: 0);
+            var bookkeeping = new QuicConnectionStreamState(options);
+            for (int i = 0; i < count; i++)
+            {
+                long before = Snap();
+                var rt = new QuicConnectionRuntime(bookkeeping, tlsRole: QuicTlsRole.Server);
+                fullServerCtor += Snap() - before;
+            }
+        }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        // --- Component measurements ---
+        var results = new Dictionary<string, long>();
+
+        void Measure(string label, Action construct)
+        {
+            long total = 0;
+            for (int i = 0; i < count; i++)
+            {
+                long before = Snap();
+                construct();
+                total += Snap() - before;
+            }
+            results[label] = total;
+        }
+
+        // Collections + field initializers
+        Measure("collections (dicts, queues, lists)", () =>
+        {
+            var a = new ConcurrentDictionary<long, object>();
+            var b = new Dictionary<long, object>();
+            var c = new ConcurrentDictionary<long, object>();
+            var d = new ConcurrentQueue<object>();
+            var e = new Dictionary<string, object>(StringComparer.Ordinal);
+            var f = new List<object>();
+        });
+
+        // Channels
+        Measure("channels (inbox + stream ids)", () =>
+        {
+            var ch1 = Channel.CreateUnbounded<object>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = false });
+            var ch2 = Channel.CreateUnbounded<ulong>(new UnboundedChannelOptions { SingleReader = false, SingleWriter = false });
+        });
+
+        // QuicRecoveryController
+        Measure("QuicRecoveryController", () => { var x = new QuicRecoveryController(); _ = x; });
+
+        // QuicConnectionStreamRegistry
+        Measure("QuicConnectionStreamRegistry", () =>
+        {
+            var opts = new QuicConnectionStreamStateOptions(
+                IsServer: true, InitialConnectionReceiveLimit: 16 * 1024 * 1024,
+                InitialConnectionSendLimit: 0,
+                InitialIncomingBidirectionalStreamLimit: 4096, InitialIncomingUnidirectionalStreamLimit: 4096,
+                InitialPeerBidirectionalStreamLimit: 0, InitialPeerUnidirectionalStreamLimit: 0,
+                InitialLocalBidirectionalReceiveLimit: 64 * 1024, InitialPeerBidirectionalReceiveLimit: 64 * 1024,
+                InitialPeerUnidirectionalReceiveLimit: 64 * 1024,
+                InitialLocalBidirectionalSendLimit: 64 * 1024, InitialLocalUnidirectionalSendLimit: 64 * 1024,
+                InitialPeerBidirectionalSendLimit: 0);
+            var bk = new QuicConnectionStreamState(opts);
+            new QuicConnectionStreamRegistry(bk);
+        });
+
+        // QuicApplicationSendQueue
+        Measure("QuicApplicationSendQueue", () => new QuicApplicationSendQueue());
+
+        // QuicStreamObserverDirectory
+        Measure("QuicStreamObserverDirectory", () => new QuicStreamObserverDirectory());
+
+        // QuicConnectionIssuedConnectionIdState
+        Measure("QuicConnectionIssuedConnectionIdState", () => new QuicConnectionIssuedConnectionIdState());
+
+        // QuicConnectionPeerConnectionIdState
+        Measure("QuicConnectionPeerConnectionIdState", () => new QuicConnectionPeerConnectionIdState());
+
+        // QuicConnectionApplicationAckState
+        Measure("QuicConnectionApplicationAckState", () => new QuicConnectionApplicationAckState());
+
+        // QuicConnectionLifecycleTimerState
+        Measure("QuicConnectionLifecycleTimerState", () => new QuicConnectionLifecycleTimerState());
+
+        // QuicConnectionVersionProfile
+        Measure("QuicConnectionVersionProfile", () => new QuicConnectionVersionProfile(new uint[] { QuicVersionNegotiation.Version1 }));
+
+        // QuicConnectionDiagnosticsState
+        Measure("QuicConnectionDiagnosticsState", () => new QuicConnectionDiagnosticsState(null));
+
+        // QuicConnectionPathState
+        Measure("QuicConnectionPathState", () => new QuicConnectionPathState(8));
+
+        // QuicAddressValidationTokenProtector
+        Measure("QuicAddressValidationTokenProtector", () =>
+        {
+            var p = QuicAddressValidationTokenProtector.CreateEphemeral();
+            _ = p;
+        });
+
+        // QuicHandshakeFlowCoordinator
+        Measure("QuicHandshakeFlowCoordinator", () => new QuicHandshakeFlowCoordinator());
+
+        // QuicTransportTlsBridgeState
+        Measure("QuicTransportTlsBridgeState", () => new QuicTransportTlsBridgeState(QuicTlsRole.Server));
+
+        // QuicTlsKeySchedule (server)
+        Measure("QuicTlsKeySchedule (server)", () =>
+        {
+            new QuicTlsKeySchedule(
+                QuicTlsRole.Server,
+                applicationProtocols: serverAuthOptions.ApplicationProtocols);
+        });
+
+        // QuicTlsTransportBridgeDriver (server, including bridge state + key schedule)
+        Measure("QuicTlsTransportBridgeDriver (server)", () =>
+        {
+            new QuicTlsTransportBridgeDriver(
+                QuicTlsRole.Server,
+                bridgeState: null,
+                enableServerResumptionTickets: false,
+                enableServerEarlyData: false,
+                serverResumptionTicketStore: null,
+                emitKeyLogSecrets: false,
+                transportVersion: QuicVersionNegotiation.Version1);
+        });
+
+        // QuicConnectionRuntime field init (collections created before constructor body)
+        Measure("field-init state objects (sendQueue+observers+issuedIds+ack)", () =>
+        {
+            new QuicApplicationSendQueue();
+            new QuicStreamObserverDirectory();
+            new QuicConnectionIssuedConnectionIdState();
+            new QuicConnectionApplicationAckState();
+        });
+
+        trustAnchor.Dispose();
+        serverCertificate.Dispose();
+
+        // --- Output ---
+        long measuredTotal = results.Values.Sum();
+
+        Console.WriteLine();
+        Console.WriteLine($"  {"Component",-45} {"Total (B)",12} {"B/op",10} {"% of server ctor",16}");
+        Console.WriteLine($"  {"---------------------------------------------",-45} {"-----------",12} {"------",10} {"----------------",16}");
+
+        foreach (var kv in results.OrderByDescending(kv => kv.Value))
+        {
+            double pct = fullServerCtor > 0 ? (double)kv.Value / fullServerCtor * 100 : 0;
+            Console.WriteLine($"  {kv.Key,-45} {kv.Value,12:N0} {kv.Value / count,10:N0} {pct,14:F1}%");
+        }
+
+        Console.WriteLine($"  {"---------------------------------------------",-45} {"-----------",12} {"------",10} {"----------------",16}");
+        Console.WriteLine($"  {"TOTAL measured",-45} {measuredTotal,12:N0} {measuredTotal / count,10:N0} {(fullServerCtor > 0 ? (double)measuredTotal / fullServerCtor * 100 : 0),14:F1}%");
+        Console.WriteLine();
+
+        // Full constructor reference
+        Console.WriteLine($"  Full server runtime constructor: {fullServerCtor,12:N0} B total  {fullServerCtor / count,10:N0} B/op");
+        long remainder = fullServerCtor - measuredTotal;
+        Console.WriteLine($"  Measured components total:       {measuredTotal,12:N0} B total  {measuredTotal / count,10:N0} B/op");
+        Console.WriteLine($"  Unattributed remainder:          {remainder,12:N0} B total  {remainder / count,10:N0} B/op  ({(fullServerCtor > 0 ? (double)remainder / fullServerCtor * 100 : 0):F1}%)");
+        Console.WriteLine();
+        Console.WriteLine("  Note: Components are measured in isolation. The full constructor may include");
+        Console.WriteLine("  ordering, dependency, lazy-init, and side-effect costs not captured by summing");
+        Console.WriteLine("  independent measurements.");
+        Console.WriteLine();
+
+        return 0;
+    }
+
+    private static void MeasureComponent(string label, Dictionary<string, long> results, Func<long> snap)
+    {
+        // No-op warmup placeholder
     }
 
     private static int RunLeakTest(int count)
