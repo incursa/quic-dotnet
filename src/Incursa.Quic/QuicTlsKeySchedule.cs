@@ -113,18 +113,111 @@ internal sealed class QuicTlsKeySchedule
     private static readonly QuicAeadUsageLimits PacketProtectionUsageLimits = CreatePacketProtectionUsageLimits();
 
     private readonly QuicTlsRole role;
-    private readonly ECDiffieHellman localKeyPair;
-    private readonly byte[]? localX25519PrivateKey;
+    private ECDiffieHellman? _localKeyPair;
+    private byte[]? _localX25519PrivateKey;
+    private byte[]? _localX25519KeyShare;
     private QuicTlsCipherSuiteProfile profile;
     private readonly ArrayBufferWriter<byte> transcriptBytes = new();
-    private readonly byte[] localKeyShare;
-    private readonly byte[]? localX25519KeyShare;
+    private byte[]? _LocalKeyShareBytes;
     private readonly QuicServerResumptionTicketStore? serverResumptionTicketStore;
     private readonly byte[]? deterministicClientHelloRandom;
     private readonly bool emitKeyLogSecrets;
+    private readonly ReadOnlyMemory<byte>? deterministicLocalPrivateKey;
     private uint transportVersion;
     private byte[][] applicationProtocols;
     private byte[]? localHandshakeTranscriptPrefix;
+
+    private ECDiffieHellman LocalKeyPair
+    {
+        get
+        {
+            if (_localKeyPair is not null)
+            {
+                return _localKeyPair;
+            }
+
+#pragma warning disable S2372
+            var kp = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+            if (deterministicLocalPrivateKey is { IsEmpty: false } privKey)
+            {
+                try
+                {
+                    kp.ImportParameters(new ECParameters
+                    {
+                        Curve = ECCurve.NamedCurves.nistP256,
+                        D = privKey.ToArray(),
+                    });
+                }
+                catch (CryptographicException ex)
+                {
+                    throw new ArgumentException("The local private key must be a valid P-256 scalar.", innerException: ex);
+                }
+            }
+#pragma warning restore S2372
+
+            _localKeyPair = kp;
+            return kp;
+        }
+    }
+
+    internal byte[] LocalKeyShareBytes
+        => _LocalKeyShareBytes ??= ExportUncompressedPoint(LocalKeyPair.ExportParameters(false));
+
+    internal bool HasX25519KeyShare
+    {
+        get
+        {
+            if (role != QuicTlsRole.Server)
+            {
+                return false;
+            }
+
+            EnsureX25519KeyPair();
+            return _localX25519KeyShare is not null;
+        }
+    }
+
+    internal byte[]? LocalX25519KeyShareBytes
+    {
+        get
+        {
+            if (role != QuicTlsRole.Server)
+            {
+                return null;
+            }
+
+            EnsureX25519KeyPair();
+            return _localX25519KeyShare;
+        }
+    }
+
+    internal byte[]? LocalX25519PrivateKeyBytes
+    {
+        get
+        {
+            if (role != QuicTlsRole.Server)
+            {
+                return null;
+            }
+
+            EnsureX25519KeyPair();
+            return _localX25519PrivateKey;
+        }
+    }
+
+    private void EnsureX25519KeyPair()
+    {
+        if (_localX25519PrivateKey is not null)
+        {
+            return;
+        }
+
+        if (QuicTlsX25519.TryCreateKeyPair(out byte[] x25519PrivateKey, out byte[] x25519KeyShare))
+        {
+            _localX25519PrivateKey = x25519PrivateKey;
+            _localX25519KeyShare = x25519KeyShare;
+        }
+    }
 
     private byte[]? handshakeSecret;
     private byte[]? clientHandshakeTrafficSecret;
@@ -217,31 +310,10 @@ internal sealed class QuicTlsKeySchedule
             throw new InvalidOperationException("The supported TLS 1.3 profile is unavailable.");
         }
 
-        localKeyPair = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
+        deterministicLocalPrivateKey = localPrivateKey.IsEmpty ? null : localPrivateKey;
         if (!localPrivateKey.IsEmpty)
         {
-            try
-            {
-                localKeyPair.ImportParameters(new ECParameters
-                {
-                    Curve = ECCurve.NamedCurves.nistP256,
-                    D = localPrivateKey.ToArray(),
-                });
-            }
-            catch (CryptographicException ex)
-            {
-                throw new ArgumentException("The local private key must be a valid P-256 scalar.", nameof(localPrivateKey), ex);
-            }
-
             deterministicClientHelloRandom = DeriveDeterministicClientHelloRandom(localPrivateKey.Span);
-        }
-
-        localKeyShare = ExportUncompressedPoint(localKeyPair.ExportParameters(true));
-        if (role == QuicTlsRole.Server
-            && QuicTlsX25519.TryCreateKeyPair(out byte[] x25519PrivateKey, out byte[] x25519KeyShare))
-        {
-            localX25519PrivateKey = x25519PrivateKey;
-            localX25519KeyShare = x25519KeyShare;
         }
 
         this.applicationProtocols = NormalizeApplicationProtocols(applicationProtocols);
@@ -274,7 +346,7 @@ internal sealed class QuicTlsKeySchedule
     /// <summary>
     /// Gets the public local ephemeral key share associated with the current role's key pair.
     /// </summary>
-    public ReadOnlyMemory<byte> LocalKeyShare => localKeyShare;
+    public ReadOnlyMemory<byte> LocalKeyShare => LocalKeyShareBytes;
 
     /// <summary>
     /// Gets the derived resumption master secret, if the handshake has reached the point where it is available.
@@ -429,7 +501,7 @@ internal sealed class QuicTlsKeySchedule
             int applicationProtocolsExtensionLength = GetApplicationLayerProtocolNegotiationExtensionLength(applicationProtocols);
             int signatureAlgorithmsExtensionLength = 2 + 2 + 2 + 2;
             int supportedGroupsExtensionLength = 2 + 2 + 2 + 2;
-            int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + localKeyShare.Length;
+            int keyShareExtensionLength = 2 + 2 + 2 + 2 + 2 + LocalKeyShareBytes.Length;
             int transportParametersExtensionLength = 2 + 2 + transportParametersEncodedBytes;
             int baseExtensionsLength = serverNameExtensionLength
                 + supportedVersionsExtensionLength
@@ -1413,13 +1485,14 @@ internal sealed class QuicTlsKeySchedule
                     },
                 });
 
-                sharedSecret = localKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
+                sharedSecret = LocalKeyPair.DeriveRawSecretAgreement(peer.PublicKey);
                 return !IsAllZero(sharedSecret);
             }
 
             if (namedGroup == QuicTlsNamedGroup.X25519)
             {
-                if (localX25519PrivateKey is null
+                byte[]? x25519Priv = LocalX25519PrivateKeyBytes;
+                if (x25519Priv is null
                     || peerKeyShareBytes.Length != X25519KeyShareLength)
                 {
                     return false;
@@ -1427,7 +1500,7 @@ internal sealed class QuicTlsKeySchedule
 
                 sharedSecret = new byte[X25519KeyShareLength];
                 return QuicTlsX25519.TryDeriveSharedSecret(
-                    localX25519PrivateKey,
+                    x25519Priv,
                     peerKeyShareBytes,
                     sharedSecret);
             }
@@ -2294,7 +2367,7 @@ internal sealed class QuicTlsKeySchedule
         ushort selectedNamedGroupValue = selectedNamedGroup switch
         {
             QuicTlsNamedGroup.Secp256r1 => Secp256r1NamedGroup,
-            QuicTlsNamedGroup.X25519 when localX25519KeyShare is not null => X25519NamedGroup,
+            QuicTlsNamedGroup.X25519 when HasX25519KeyShare => X25519NamedGroup,
             _ => 0,
         };
         if (selectedNamedGroupValue == 0)
@@ -2303,8 +2376,8 @@ internal sealed class QuicTlsKeySchedule
         }
 
         selectedLocalKeyShare = selectedNamedGroup == QuicTlsNamedGroup.Secp256r1
-            ? localKeyShare
-            : localX25519KeyShare!;
+            ? LocalKeyShareBytes
+            : LocalX25519KeyShareBytes!;
 
         if (!TryParseClientHelloSessionId(clientHelloBytes, out byte[] sessionId))
         {
@@ -3463,16 +3536,16 @@ internal sealed class QuicTlsKeySchedule
 
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), KeyShareExtensionType);
         index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + KeyShareEntryFixedLength + localKeyShare.Length)));
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(UInt16Length + KeyShareEntryFixedLength + LocalKeyShareBytes.Length)));
         index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(KeyShareEntryFixedLength + localKeyShare.Length)));
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)(KeyShareEntryFixedLength + LocalKeyShareBytes.Length)));
         index += UInt16Length;
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), Secp256r1NamedGroup);
         index += UInt16Length;
-        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)localKeyShare.Length));
+        BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), checked((ushort)LocalKeyShareBytes.Length));
         index += UInt16Length;
-        localKeyShare.CopyTo(body, index);
-        index += localKeyShare.Length;
+        LocalKeyShareBytes.CopyTo(body, index);
+        index += LocalKeyShareBytes.Length;
 
         BinaryPrimitives.WriteUInt16BigEndian(body.AsSpan(index, UInt16Length), QuicTransportParametersCodec.QuicTransportParametersExtensionType);
         index += UInt16Length;

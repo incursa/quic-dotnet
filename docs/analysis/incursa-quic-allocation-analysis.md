@@ -186,18 +186,36 @@ The 597 KB vs the client variant's ~2 KB is driven by the .NET crypto stack's in
 
 ### Scope Classification
 
-| Component | Current Scope | Recommended Scope | Est. Allocation | Classification |
-|-----------|---------------|-------------------|-----------------|----------------|
-| QuicTlsKeySchedule crypto keys | Per-connection | Listener/config | 597 KB/op | SHOULD MOVE TO LISTENER |
-| Handshake processing | Per-connection | Per-connection | 220 KB/op | Acceptable secondary |
-| All other runtime state | Per-connection | Per-connection | ~15 KB/op | Negligible |
+**Important**: ECDHE/X25519 private keys are TLS 1.3 ephemeral key shares. RFC 8446 requires fresh key shares per handshake for forward secrecy. They must **not** be reused across connections.
 
-The `QuicTlsKeySchedule`'s crypto key pairs (P-256 for ECDHE, X25519) are ephemeral and could be created once at listener initialization and shared across connections. The key schedule itself has mutable transcript state, so it cannot be fully shared, but the crypto key pair creation can be cached.
+| Component | Current Scope | Safe Target Scope | Notes |
+|-----------|---------------|-------------------|-------|
+| ECDHE/X25519 private keys | Per-connection | Per-connection or single-use pregen pool | Do NOT reuse across connections — breaks forward secrecy |
+| ALPN normalization / supported groups / cipher suites | Per-connection | Listener/server config | Safe to cache if immutable |
+| Certificate chain bytes / encoded transport param templates | Per-connection | Listener/server config | Safe to move to listener scope |
+| Public key-share encoding | Per-connection | Per-key-share | Can be precomputed with single-use key |
+| `ExportParameters(true)` result | Per-connection | Avoid entirely if possible | Exports private key material to managed memory |
+| Transcript / traffic secrets | Per-connection | Per-connection | Must not be shared |
+
+### Safe Optimization Targets
+
+Based on the 597 KB/op finding, the safe targets in priority order:
+
+1. **Lazy-generate only the selected key-share group.** If the server creates both P-256 and X25519 keys before knowing which group the client supports, that is likely the primary allocation waste. TLS 1.3 servers send exactly one selected key share in `ServerHello`, matching one of the client's offered groups.
+
+2. **Do not call `ExportParameters(true)` unless absolutely required.** That exports private key material into managed objects. If the code only needs the public point for the `ServerHello` key share, try `ExportParameters(false)`. If it needs to compute the shared secret, keep the private key inside the crypto object and use the platform ECDH derive API.
+
+3. **Consider a single-use key-share pre-generation pool.** A listener can pre-generate fresh key shares in the background and hand each one to exactly one connection. This moves the allocation/latency cost out of the accept path without reusing keys.
+
+4. **Move immutable TLS config to listener scope.** ALPN normalization, supported group lists, certificate chain bytes, and encoded transport parameter templates are all safe to cache at the listener level.
 
 ### Revised Priority
 
 | Priority | Target | Allocation | Action |
 |----------|--------|------------|--------|
-| **P0** | QuicTlsKeySchedule crypto keys | **597 KB/op** | Move key pair creation to listener scope or cache per-process |
-| **P1** | Handshake processing | 220 KB/op | Packet buffers, CRYPTO copies, HKDF temps (secondary) |
-| **P2** | All other runtime state | ~15 KB/op | Negligible — not worth targeting
+| **P4** | Safe server key schedule allocation reduction | **597 KB/op** | Prove whether both P-256 and X25519 are created; generate only the selected group; avoid `ExportParameters(true)`; consider single-use key-share pool |
+| **P2** | Handshake processing | 220 KB/op | Packet buffers, CRYPTO copies, HKDF temps (secondary) |
+| **P3** | Immutable config to listener scope | Negligible per-op | Move ALPN, supported groups, cert chain, transport param templates to listener |
+| **—** | All other runtime state | ~15 KB/op | Negligible — not worth targeting |
+
+**Key principle**: Do not cache ephemeral private keys. Cache immutable config, lazily generate only the selected key share, and consider a single-use pre-generated key-share pool if accept-path latency/allocation remains a concern.
