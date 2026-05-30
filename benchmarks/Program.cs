@@ -4,10 +4,10 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
-if (args is ["--harness", ..] or ["--leak", ..] or ["--help"] or ["--profile", ..] or ["--profile-connect", ..] or ["--profile-runtime", ..])
+if (args is ["--harness", ..] or ["--leak", ..] or ["--help"] or ["--profile", ..] or ["--profile-connect", ..] or ["--profile-runtime", ..] or ["--profile-handshake", ..])
 {
     return Incursa.Quic.Benchmarks.QuicAllocationHarness.Run(
-        args.Length > 0 && args[0] is "--harness" or "--leak" or "--help" or "--profile" or "--profile-connect" or "--profile-runtime" ? args : ["--help"]);
+        args.Length > 0 && args[0] is "--harness" or "--leak" or "--help" or "--profile" or "--profile-connect" or "--profile-runtime" or "--profile-handshake" ? args : ["--help"]);
 }
 
 BenchmarkSwitcher.FromAssembly(Assembly.GetExecutingAssembly()).Run(UseShortArtifactsRoot(args));

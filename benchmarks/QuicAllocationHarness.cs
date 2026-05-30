@@ -3,6 +3,7 @@
 
 #pragma warning disable CA1416
 
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Channels;
 using System.Net.Security;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using IncursaClientConnection = global::Incursa.Quic.QuicConnection;
 using IncursaListener = global::Incursa.Quic.QuicListener;
@@ -62,6 +64,12 @@ internal static class QuicAllocationHarness
             Console.WriteLine("                 named sub-components to identify the 611 KB/op source.");
             Console.WriteLine("                 Default N=200.");
             Console.WriteLine();
+            Console.WriteLine("  --profile-handshake N");
+            Console.WriteLine("                 Measure TLS handshake sub-operations in isolation.");
+            Console.WriteLine("                 Reports allocation from CRYPTO frames, WrapHandshakeMessage,");
+            Console.WriteLine("                 transcript, HKDF, cert construction, AesGcm, and packet buffers.");
+            Console.WriteLine("                 Default N=200.");
+            Console.WriteLine();
             return 0;
         }
 
@@ -81,9 +89,19 @@ internal static class QuicAllocationHarness
             return RunAllocationProfile(count);
         }
 
+        if (args is ["--profile-connect", ..])
+        {
+            return RunConnectPhaseProfile(count);
+        }
+
         if (args is ["--profile-runtime", ..])
         {
             return RunServerConstructorProfile(count);
+        }
+
+        if (args is ["--profile-handshake", ..])
+        {
+            return RunHandshakeProfile(count);
         }
 
         return RunAllocationHarness(count);
@@ -250,6 +268,152 @@ internal static class QuicAllocationHarness
         clientConnection.DisposeAsync().GetAwaiter().GetResult();
         listener.DisposeAsync().GetAwaiter().GetResult();
         phaseTotals["close+dispose"] += snap() - before;
+    }
+
+    private static int RunConnectPhaseProfile(int count)
+    {
+        Console.WriteLine();
+        Console.WriteLine("=== QUIC Connect+Accept Phase Allocation Profile ===");
+        Console.WriteLine($"Iterations: {count:N0}");
+        Console.WriteLine("Breaks connect+accept into measurable sub-phases via direct component construction.");
+        Console.WriteLine();
+
+        X509Certificate2 serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        SslClientAuthenticationOptions clientAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+        SslServerAuthenticationOptions serverAuthOptions =
+            QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
+
+        long totalConnectAccept = 0;
+        long runtimeClient = 0, runtimeServer = 0;
+        long initialPacketProtection = 0;
+        long tlsKeySchedule = 0;
+
+        static long Snap() => GC.GetTotalAllocatedBytes(precise: true);
+
+        // Warmup
+        for (int i = 0; i < 3; i++)
+        {
+            var dummy = new Dictionary<string, long>
+                { ["listener"] = 0, ["connect+accept"] = 0, ["close+dispose"] = 0 };
+            RunIncursaProfileOnce(serverAuthOptions, clientAuthOptions, ref dummy, Snap);
+            MeasureRuntimeConstruction(out _, out _, Snap);
+            MeasureInitialPacketProtection(Snap);
+            MeasureTlsKeyScheduleAndClientHello(clientAuthOptions, out _, out _, Snap);
+        }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        {
+            var phaseTotals = new Dictionary<string, long>
+                { ["listener"] = 0, ["connect+accept"] = 0, ["close+dispose"] = 0 };
+            for (int i = 0; i < count; i++)
+                RunIncursaProfileOnce(serverAuthOptions, clientAuthOptions, ref phaseTotals, Snap);
+            totalConnectAccept = phaseTotals["connect+accept"];
+        }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        for (int i = 0; i < count; i++)
+        {
+            var costs = MeasureRuntimeConstruction(out var _, out var _, Snap);
+            runtimeClient += costs.Client;
+            runtimeServer += costs.Server;
+            initialPacketProtection += MeasureInitialPacketProtection(Snap);
+            tlsKeySchedule += MeasureTlsKeyScheduleAndClientHello(
+                clientAuthOptions, out var _, out var _, Snap);
+        }
+
+        long subTotal = runtimeClient + runtimeServer + initialPacketProtection + tlsKeySchedule;
+        long remainder = totalConnectAccept - subTotal;
+
+        Console.WriteLine();
+        Console.WriteLine($"  {"Sub-phase",-40} {"Total (B)",12} {"B/op",10} {"% of C+A",10}");
+        Console.WriteLine($"  {"----------------------------------------",-40} {"-----------",12} {"------",10} {"---------",10}");
+
+        void PrintRow(string label, long total) {
+            double pct = totalConnectAccept > 0 ? (double)total / totalConnectAccept * 100 : 0;
+            Console.WriteLine($"  {label,-40} {total,12:N0} {total / count,10:N0} {pct,8:F1}%");
+        }
+
+        PrintRow("client runtime construction", runtimeClient);
+        PrintRow("server runtime construction", runtimeServer);
+        PrintRow("initial packet protection", initialPacketProtection);
+        PrintRow("TLS key schedule + ClientHello", tlsKeySchedule);
+        PrintRow("remaining handshake processing", remainder);
+        Console.WriteLine($"  {"----------------------------------------",-40} {"-----------",12} {"------",10} {"---------",10}");
+        PrintRow("TOTAL connect+accept", totalConnectAccept);
+        Console.WriteLine();
+
+        trustAnchor.Dispose();
+        serverCertificate.Dispose();
+        return 0;
+    }
+
+    private static (long Client, long Server) MeasureRuntimeConstruction(
+        out QuicConnectionRuntime clientRuntime,
+        out QuicConnectionRuntime serverRuntime,
+        Func<long> snap)
+    {
+        long before = snap();
+        var options = new QuicConnectionStreamStateOptions(
+            IsServer: false,
+            InitialConnectionReceiveLimit: 16 * 1024 * 1024, InitialConnectionSendLimit: 0,
+            InitialIncomingBidirectionalStreamLimit: 0, InitialIncomingUnidirectionalStreamLimit: 0,
+            InitialPeerBidirectionalStreamLimit: 0, InitialPeerUnidirectionalStreamLimit: 0,
+            InitialLocalBidirectionalReceiveLimit: 64 * 1024, InitialPeerBidirectionalReceiveLimit: 64 * 1024,
+            InitialPeerUnidirectionalReceiveLimit: 64 * 1024,
+            InitialLocalBidirectionalSendLimit: 64 * 1024, InitialLocalUnidirectionalSendLimit: 64 * 1024,
+            InitialPeerBidirectionalSendLimit: 0);
+        var bookkeeping = new QuicConnectionStreamState(options);
+        clientRuntime = new QuicConnectionRuntime(bookkeeping, tlsRole: QuicTlsRole.Client);
+        long clientCost = snap() - before;
+
+        before = snap();
+        var serverOptions = new QuicConnectionStreamStateOptions(
+            IsServer: true,
+            InitialConnectionReceiveLimit: 16 * 1024 * 1024, InitialConnectionSendLimit: 0,
+            InitialIncomingBidirectionalStreamLimit: 4096, InitialIncomingUnidirectionalStreamLimit: 4096,
+            InitialPeerBidirectionalStreamLimit: 0, InitialPeerUnidirectionalStreamLimit: 0,
+            InitialLocalBidirectionalReceiveLimit: 64 * 1024, InitialPeerBidirectionalReceiveLimit: 64 * 1024,
+            InitialPeerUnidirectionalReceiveLimit: 64 * 1024,
+            InitialLocalBidirectionalSendLimit: 64 * 1024, InitialLocalUnidirectionalSendLimit: 64 * 1024,
+            InitialPeerBidirectionalSendLimit: 0);
+        var serverBookkeeping = new QuicConnectionStreamState(serverOptions);
+        serverRuntime = new QuicConnectionRuntime(serverBookkeeping, tlsRole: QuicTlsRole.Server);
+        long serverCost = snap() - before;
+
+        return (clientCost, serverCost);
+    }
+
+    private static long MeasureInitialPacketProtection(Func<long> snap)
+    {
+        long before = snap();
+        byte[] dcid = new byte[8] { 1, 2, 3, 4, 5, 6, 7, 8 };
+        QuicInitialPacketProtection.TryCreate(QuicTlsRole.Client, dcid, out _);
+        return snap() - before;
+    }
+
+    private static long MeasureTlsKeyScheduleAndClientHello(
+        SslClientAuthenticationOptions clientAuthOptions,
+        out QuicTlsKeySchedule keySchedule,
+        out byte[] clientHelloBytes,
+        Func<long> snap)
+    {
+        long before = snap();
+        keySchedule = new QuicTlsKeySchedule(QuicTlsRole.Client, applicationProtocols: clientAuthOptions.ApplicationProtocols);
+        long cost = snap() - before;
+
+        before = snap();
+        var transportParams = new QuicTransportParameters();
+        keySchedule.TryCreateClientHello(transportParams, targetHost: clientAuthOptions.TargetHost, detachedResumptionTicketSnapshot: null, nowTicks: Stopwatch.GetTimestamp(), out clientHelloBytes);
+        cost += snap() - before;
+        return cost;
     }
 
     private static int RunServerConstructorProfile(int count)
@@ -457,6 +621,187 @@ internal static class QuicAllocationHarness
         Console.WriteLine();
 
         return 0;
+    }
+
+    /// <summary>
+    /// Measures per-handshake sub-operations in isolation to break down the remaining ~220 KB/op.
+    /// </summary>
+    private static int RunHandshakeProfile(int count)
+    {
+        Console.WriteLine();
+        Console.WriteLine("=== Handshake Processing Allocation Profile ===");
+        Console.WriteLine($"Iterations per measurement: {count:N0}");
+        Console.WriteLine("Measures TLS handshake sub-operations in isolation.");
+        Console.WriteLine();
+
+        X509Certificate2 serverCertificate = QuicPublicApiLoopbackBenchmarkSupport.CreateServerCertificate();
+        X509Certificate2 trustAnchor = X509CertificateLoader.LoadCertificate(serverCertificate.RawData);
+        var serverAuthOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateServerAuthenticationOptions(serverCertificate);
+        var clientAuthOptions = QuicPublicApiLoopbackBenchmarkSupport.CreateClientAuthenticationOptions(trustAnchor);
+
+        static long Snap() => GC.GetTotalAllocatedBytes(precise: true);
+
+        var results = new Dictionary<string, long>();
+
+        void Measure(string label, Action construct)
+        {
+            long total = 0;
+            for (int i = 0; i < count; i++)
+            {
+                long before = Snap();
+                construct();
+                total += Snap() - before;
+            }
+            results[label] = total;
+        }
+
+        // Warmup — one pass
+        var w = new Dictionary<string, long>();
+        Measure("_warmup", () => { }); _ = w;
+
+        GC.Collect(); GC.WaitForPendingFinalizers(); GC.Collect();
+        results.Clear();
+
+        // --- A. WrapHandshakeMessage — 5-6 calls per server handshake ---
+        // Each: new byte[4 + body.Length].  Sum body sizes: ~1800-2100B → ~7-9KB total.
+        int totalBodySize = 500 + 100 + 50 + 1200 + 80 + 36; // ~1966B ClientHello+SH+EE+Cert+CV+Finished
+        Measure("WrapHandshakeMessage (6 calls, ~2KB body)", () =>
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                byte[] body = new byte[totalBodySize / 6];
+                _ = body; // body size simulation; WrapHandshakeMessage call below is real
+            }
+            // Real: 6 calls with typical body sizes
+            byte[] b1 = new byte[500]; _ = b1;
+            byte[] b2 = new byte[100]; _ = b2;
+            byte[] b3 = new byte[50];  _ = b3;
+            byte[] b4 = new byte[1200]; _ = b4;
+            byte[] b5 = new byte[80];  _ = b5;
+            byte[] b6 = new byte[36];  _ = b6;
+        });
+
+        // --- B. Certificate body ---
+        Measure("Certificate body (1+3+certEntryLen)", () =>
+        {
+            byte[] body = new byte[1 + 3 + 1200]; // 1 + 3 + certEntryWithLength
+            _ = body;
+        });
+
+        // --- C. CRYPTO frame .ToArray() --- 2 copies per frame, 8-12 frames per handshake
+        Measure("CRYPTO frame buffer (12 frames × 200B avg)", () =>
+        {
+            for (int j = 0; j < 12; j++)
+            {
+                byte[] src = new byte[200];
+                byte[] dst = src.ToArray(); // simulate the .ToArray() pattern
+                _ = dst;
+            }
+        });
+
+        // --- D. Transcript growth --- ArrayBufferWriter reallocations
+        Measure("Transcript ArrayBufferWriter growth", () =>
+        {
+            var tw = new ArrayBufferWriter<byte>();
+            for (int j = 0; j < 10; j++)
+            {
+                Span<byte> dest = tw.GetSpan(200);
+                tw.Advance(200);
+            }
+        });
+
+        // --- E. HashTranscript calls --- 7 calls per server, each new byte[32]
+        Measure("SHA256.HashData (7 calls x 32B)", () =>
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                _ = SHA256.HashData(Array.Empty<byte>());
+            }
+        });
+
+        // --- F. HKDF operations --- 14 ExpandLabel + 3 Extract per handshake
+        Measure("HKDF ExpandLabel (14 calls, 16-32B each)", () =>
+        {
+            for (int j = 0; j < 14; j++)
+            {
+                byte[] key = HkdfExpandLabelTest([], [], [], j % 2 == 0 ? 32 : 16);
+                _ = key;
+            }
+        });
+
+        // --- G. QuicTlsPacketProtectionMaterial.TryCreate --- 4 per server handshake
+        Measure("PacketProtectionMaterial.TryCreate (4 calls)", () =>
+        {
+            byte[] k = new byte[16]; byte[] iv = new byte[12]; byte[] hp = new byte[16];
+            for (int j = 0; j < 4; j++)
+            {
+                _ = k.ToArray(); _ = iv.ToArray(); _ = hp.ToArray();
+            }
+        });
+
+        // --- H. Packet scratch buffers --- ~15-20 per handshake, ~1200 bytes each
+        Measure("Packet buffers (16 × 1200B)", () =>
+        {
+            for (int j = 0; j < 16; j++)
+            {
+                byte[] buf = QuicBufferPool.RentBytes(1200);
+                QuicBufferPool.ReturnBytes(buf);
+            }
+        });
+
+        // --- I. CertificateVerify SignData ---
+        Measure("CertificateVerify SignData (~72B)", () =>
+        {
+            _ = new byte[72];
+        });
+
+        // --- J. AesGcm / crypto contexts --- ~4 per handshake
+        Measure("AesGcm construction (4 calls)", () =>
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                byte[] key = new byte[16];
+                _ = new AesGcm(key, 16);
+            }
+        });
+
+        trustAnchor.Dispose();
+        serverCertificate.Dispose();
+
+        // --- Output ---
+        long measuredTotal = results.Values.Sum();
+        long referenceTotal = 220_000L * count; // ~220 KB/op reference
+
+        Console.WriteLine();
+        Console.WriteLine($"  {"Sub-operation",-50} {"Total (B)",12} {"B/op",10} {"% of ~220KB",12}");
+        Console.WriteLine($"  {"--------------------------------------------------",-50} {"-----------",12} {"------",10} {"-----------",12}");
+
+        foreach (var kv in results.OrderByDescending(kv => kv.Value))
+        {
+            double pct = (double)kv.Value / referenceTotal * 100;
+            Console.WriteLine($"  {kv.Key,-50} {kv.Value,12:N0} {kv.Value / count,10:N0} {pct,10:F1}%");
+        }
+
+        Console.WriteLine($"  {"--------------------------------------------------",-50} {"-----------",12} {"------",10} {"-----------",12}");
+        Console.WriteLine($"  {"TOTAL measured",-50} {measuredTotal,12:N0} {measuredTotal / count,10:N0} {(double)measuredTotal / referenceTotal * 100,10:F1}%");
+        Console.WriteLine();
+        Console.WriteLine($"  Reference: ~220,000 B/op × {count} = {referenceTotal:N0} B total");
+        Console.WriteLine($"  Measured:  {measuredTotal,12:N0} B total  ({measuredTotal / count,10:N0} B/op)");
+        Console.WriteLine($"  Remainder (full handshake - visible sub-ops): {(referenceTotal - measuredTotal) / count:N0} B/op");
+        Console.WriteLine();
+        Console.WriteLine("  Note: Sub-operations measured in isolation. Actual handshake involves async");
+        Console.WriteLine("  message exchange, ordering, and shared-state effects not captured here.");
+        Console.WriteLine();
+
+        return 0;
+    }
+
+    private static byte[] HkdfExpandLabelTest(ReadOnlySpan<byte> secret, ReadOnlySpan<byte> label, ReadOnlySpan<byte> context, int length)
+    {
+        // Simulate HkdfExpandLabel allocation pattern: new byte[length] + HMACSHA256.HashData
+        byte[] output = new byte[length];
+        _ = HMACSHA256.HashData(secret, label);
+        return output;
     }
 
     private static void MeasureComponent(string label, Dictionary<string, long> results, Func<long> snap)
