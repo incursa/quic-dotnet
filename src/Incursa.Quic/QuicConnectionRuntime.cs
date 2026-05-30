@@ -1162,8 +1162,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             throw new ArgumentOutOfRangeException(nameof(streamType));
         }
 
-        if (!tlsState.OneRttKeysAvailable
-            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        if (!tlsState.CanSendApplicationData)
         {
             throw new InvalidOperationException("The connection is not ready to open application streams.");
         }

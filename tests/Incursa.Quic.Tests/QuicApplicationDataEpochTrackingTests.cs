@@ -68,6 +68,21 @@ public sealed class QuicApplicationDataEpochTrackingTests
         Assert.True(snapshot.ReceivedOneRttData);
     }
 
+    [Fact]
+    public void ZeroRttFinOnlyFrameDoesNotSetReceivedZeroRttData()
+    {
+        QuicConnectionStreamState state = CreateServerReceiveState();
+
+        Assert.True(state.TryReceiveStreamFrame(
+            ParseStreamFrame(streamId: 0, offset: 0, [], fin: true),
+            out _,
+            QuicApplicationDataEpoch.ZeroRtt));
+
+        Assert.True(state.TryGetStreamSnapshot(0, out QuicConnectionStreamSnapshot snapshot));
+        Assert.False(snapshot.ReceivedZeroRttData);
+        Assert.False(snapshot.ReceivedOneRttData);
+    }
+
     private static QuicConnectionStreamState CreateServerReceiveState()
     {
         return new QuicConnectionStreamState(new QuicConnectionStreamStateOptions(

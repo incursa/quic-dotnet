@@ -110,8 +110,7 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (!tlsState.OneRttKeysAvailable
-            || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
+        if (!tlsState.CanReceiveApplicationData)
         {
             return false;
         }
@@ -129,7 +128,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (!handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetReceivedEvent.Datagram.Span,
-                    tlsState.OneRttOpenPacketProtectionMaterial.Value,
+                    tlsState.OneRttOpenPacketProtectionMaterial!.Value,
                     GetExpectedReceivedPacketNumber(QuicPacketNumberSpace.ApplicationData),
                     CanReceiveGreasedQuicBitPackets,
                     out openedPacket,

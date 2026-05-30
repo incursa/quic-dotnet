@@ -1340,8 +1340,7 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
-        if (!tlsState.OneRttKeysAvailable
-            || !tlsState.OneRttProtectPacketProtectionMaterial.HasValue)
+        if (!tlsState.CanSendApplicationData)
         {
             exception = new InvalidOperationException("The connection is not ready to send application stream data.");
             return false;

@@ -4,9 +4,10 @@
 using System.Reflection;
 using BenchmarkDotNet.Running;
 
-if (args is ["--harness", ..] or ["--leak", ..] or ["--help"])
+if (args is ["--harness", ..] or ["--leak", ..] or ["--help"] or ["--profile", ..])
 {
-    return Incursa.Quic.Benchmarks.QuicAllocationHarness.Run(args == ["--help"] ? ["--help"] : args);
+    return Incursa.Quic.Benchmarks.QuicAllocationHarness.Run(
+        args.Length > 0 && args[0] is "--harness" or "--leak" or "--help" or "--profile" ? args : ["--help"]);
 }
 
 BenchmarkSwitcher.FromAssembly(Assembly.GetExecutingAssembly()).Run(UseShortArtifactsRoot(args));

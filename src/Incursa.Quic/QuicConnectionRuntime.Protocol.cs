@@ -1140,8 +1140,7 @@ internal sealed partial class QuicConnectionRuntime
 
         if ((phase != QuicConnectionPhase.Active && phase != QuicConnectionPhase.Establishing)
             || activePath is null
-            || !tlsState.OneRttKeysAvailable
-            || !tlsState.OneRttOpenPacketProtectionMaterial.HasValue)
+            || !tlsState.CanReceiveApplicationData)
         {
             return false;
         }
@@ -1163,7 +1162,7 @@ internal sealed partial class QuicConnectionRuntime
         {
             if (handshakeFlowCoordinator.TryOpenProtectedApplicationDataPacketLease(
                     packetReceivedEvent.Datagram.Span,
-                    tlsState.OneRttOpenPacketProtectionMaterial.Value,
+                    tlsState.OneRttOpenPacketProtectionMaterial!.Value,
                     expectedApplicationPacketNumber,
                     CanReceiveGreasedQuicBitPackets,
                     out openedPacket,

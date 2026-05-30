@@ -391,6 +391,68 @@ With all P2-P5 fixes, this could drop to **~800-1,000 B per connection**.
 
 ---
 
+---
+
+## Allocation Comparison: Incursa.Quic vs System.Net.Quic
+
+Added 2026-05-29 after harness enhancement.  Full details in `docs/analysis/incursa-quic-allocation-analysis.md`.
+
+### Key Finding
+
+Managed allocation is not directly comparable between implementations because System.Net.Quic delegates expensive QUIC/TLS state to native MsQuic (C library), whose allocations are invisible to managed GC metrics (`GC.GetTotalAllocatedBytes`, BenchmarkDotNet `Allocated` column).
+
+### Measurement Tool
+
+A non-BDN harness was added at `benchmarks/QuicAllocationHarness.cs` that reports managed allocation, working set, and private bytes per operation.
+
+```powershell
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --harness 10000
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --leak 1000
+```
+
+### Results (10,000-iteration harness)
+
+| Metric | Incursa.Quic | System.Net.Quic |
+|--------|-------------|-----------------|
+| **Managed allocated/op** | ~922 KB | ~84 KB |
+| **Working set Δ/op** (pass 2) | ~0 B | ~2.3 MB |
+| **Private bytes Δ/op** (pass 2) | ~0 B | ~2.5 MB |
+| **Throughput** | ~29 ms/op | ~22 ms/op |
+
+Incursa.Quic allocates 922 KB/op managed, but working set and private bytes are flat across passes — all allocation is ephemeral Gen0 garbage that is fully reclaimed.
+
+System.Net.Quic allocates only 84 KB/op managed, but native MsQuic retains ~2.5 MB/op in private bytes after `CloseAsync`/`DisposeAsync`. The plateau test confirms this is native allocator high-water behavior (not a leak — batch 2 retained is slightly less, not additive).
+
+### Conclusion
+
+| Implementation | Cost type | Real concern |
+|---|---|---|
+| **Incursa.Quic** | ~922 KB/op managed churn, fully reclaimed | GC throughput (Gen0 collections), ~30% time gap |
+| **System.Net.Quic** | ~84 KB/op managed, ~2.5 MB/op native high-water | Process memory footprint, invisible to managed metrics |
+
+The optimization target for Incursa.Quic is **reducing Gen0 churn**, not fixing a memory leak. The 922 KB/op is spread across hundreds of small allocations (TLS handshake body builders, packet buffers, HKDF intermediates, crypto contexts, runtime construction). No single source dominates.
+
+### Changes Applied (2026-05-29)
+
+| Change | Files | Status |
+|--------|-------|--------|
+| Tier 2 per-connection allocation fixes | `QuicConnectionRuntime.cs`, `QuicCryptoBuffer.cs` | Applied |
+| P0 phase transition diagnostics | `QuicConnectionRuntime.cs`, `QuicConnectionRuntime.Lifecycle.cs`, `QuicConnectionRuntime.Routing.cs` | Applied |
+| P1 lazy TCS + lazy writeGate in QuicStream | `QuicStream.cs` | Applied |
+| P2 investigation — stream path avoids .ToArray() | `QuicCryptoBuffer.cs` reverted, no change needed | Investigated, no action |
+| P4 ArrayPool for TLS scratch buffers | `QuicTlsKeySchedule.cs` (lines 409, 1956, 2298, 2326) | Applied |
+| Allocation harness | `benchmarks/QuicAllocationHarness.cs`, `benchmarks/Program.cs` | Applied |
+| Analysis document | `docs/analysis/incursa-quic-allocation-analysis.md` | Created |
+
+### Remaining Opportunities
+
+The following areas were investigated but not changed because the allocations escape via `out` parameters (buffers cannot be pooled at the allocation site) or the estimated savings are negligible (~1% of 922 KB):
+
+- Packet scratch buffers in `QuicHandshakeFlowCoordinator` — 8 `new byte[...]` sites, all escape via `out`
+- CRYPTO frame `Entry` struct range-slice allocations in `QuicCryptoBuffer` — complex refactoring for ~1% savings
+- HKDF temporary arrays — 23 call sites, mixed ownership patterns, ~1-2 KB total
+- Runtime object graph construction — structural, requires major refactoring
+
 ## Benchmark Infrastructure Issue
 
 The "NA" results in BenchmarkDotNet are caused by duplicate `.csproj` files in the search path due to `.artifacts/` directories containing staged copies. This is a build infrastructure issue, not a code issue, but it prevents all benchmarks (including the successful ones) from running.
