@@ -6,6 +6,9 @@ using System.Net.Security;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The client options bag keeps transport and TLS inputs together because the managed
+// client setup path consumes them as one configuration snapshot, not as independently mutable knobs.
+// SEE: QuicClientConnectionHost
 /// <summary>
 /// Client-side connection options consumed by <see cref="QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken)"/>.
 /// </summary>

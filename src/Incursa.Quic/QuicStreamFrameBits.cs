@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: These STREAM frame bit values are the shared wire contract used by parsing, framing,
+// and legality checks, so the bit positions should not be renumbered.
+// SEE: QuicStreamParser and QuicPacketFrameLegality
 /// <summary>
 /// STREAM frame type values and type-specific flag bits from the RFC 9000 frame registry.
 /// </summary>

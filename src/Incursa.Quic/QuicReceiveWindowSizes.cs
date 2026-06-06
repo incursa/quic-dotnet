@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: These defaults bound the initial memory footprint for connection and stream receive
+// windows before applications override them, so the constructor preserves the conservative baseline.
+// SEE: QuicConnectionOptions
 /// <summary>
 /// Receive-window settings for a connection and its streams.
 /// </summary>
@@ -42,4 +45,3 @@ public sealed class QuicReceiveWindowSizes
     /// </summary>
     public int UnidirectionalStream { get; set; }
 }
-

@@ -187,7 +187,11 @@ internal sealed class QuicConnectionRuntimeHost : IAsyncDisposable, IDisposable
             return;
         }
 
-        // Close the shard inboxes first so the single-reader loops observe shutdown and exit cleanly.
+        // CONTEXT: Shutdown closes the shard inboxes before clearing route state so each single-reader
+        // loop observes completion and exits naturally. Waiting on the fan-out task afterward preserves
+        // one disposal path even if the caller never awaited RunAsync.
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeHost.cs#RunAsync
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeHost.cs#DisposeAsync
         foreach (QuicConnectionRuntimeShard shard in shards)
         {
             await shard.DisposeAsync().ConfigureAwait(false);

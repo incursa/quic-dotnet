@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The flag values are stable because callers combine them bitwise to request read, write,
+// or dual-side aborts; the numeric layout is part of the public surface.
+// SEE: QuicStream.Abort
 /// <summary>
 /// Specifies which side of a stream should be aborted.
 /// </summary>
@@ -24,4 +27,3 @@ public enum QuicAbortDirection
     /// </summary>
     Both = Read | Write,
 }
-

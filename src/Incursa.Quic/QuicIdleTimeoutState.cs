@@ -3,6 +3,10 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The effective idle timeout is floored to 3x PTO so the connection cannot idle out
+// faster than probe recovery can make progress, and the timer only restarts on the first
+// ack-eliciting send after a peer packet to avoid stretching the deadline repeatedly in a burst.
+// SEE: QuicRecoveryTiming.TryComputeProbeTimeoutMicros:
 /// <summary>
 /// Provides helpers for RFC 9000 idle-timeout behavior that can be expressed without a connection state machine.
 /// </summary>

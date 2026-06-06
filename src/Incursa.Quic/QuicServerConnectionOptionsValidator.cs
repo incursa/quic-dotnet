@@ -50,6 +50,10 @@ internal static class QuicServerConnectionOptionsValidator
             throw new NotSupportedException("Server certificate selection callbacks are not supported by this slice.");
         }
 
+        // CONTEXT: The callback-driven client-certificate path is the only server path that supports
+        // the chain-policy and revocation settings used by this slice. The non-callback path rejects
+        // those knobs instead of leaving them ambiguous.
+        // SEE: code:src/Incursa.Quic/QuicServerConnectionOptionsValidator.cs#Capture
         if (authenticationOptions.ClientCertificateRequired)
         {
             if (authenticationOptions.RemoteCertificateValidationCallback is null)

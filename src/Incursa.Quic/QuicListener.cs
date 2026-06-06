@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The listener owns the host shell, so startup failure must dispose the host immediately
+// to avoid leaking sockets or background work.
+// SEE: QuicListenerHost
 /// <summary>
 /// Consumer-facing listener facade over the internal runtime shell.
 /// </summary>

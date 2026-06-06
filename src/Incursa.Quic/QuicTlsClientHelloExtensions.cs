@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 namespace Incursa.Quic;
 
+// CONTEXT: This parser intentionally handles only the QUIC-relevant ClientHello extensions and
+// keeps the wire lengths explicit because the transcript depends on exact byte-for-byte layout.
+// SEE: TryParseClientHelloKeyShare and TryParseApplicationLayerProtocolNegotiationExtension
 internal static class QuicTlsClientHelloExtensions
 {
     private const int HandshakeHeaderLength = 4;

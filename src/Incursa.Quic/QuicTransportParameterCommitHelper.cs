@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Transport-parameter commit events are built here so the runtime can translate wire
+// values into monotonic runtime state changes without spreading the conversion rules around.
+// SEE: QuicTransportParameterTimeUnits
 internal static class QuicTransportParameterCommitHelper
 {
     internal static QuicConnectionTransportParametersCommittedEvent CreateLocalTransportParametersCommittedEvent(

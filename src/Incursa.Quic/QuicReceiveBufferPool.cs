@@ -5,6 +5,13 @@ namespace Incursa.Quic;
 
 internal sealed class QuicReceiveBufferPool : IDisposable
 {
+    // CONTEXT: receive buffers use a bounded ring fast path with ArrayPool fallback
+    // SEE: code:src/Incursa.Quic/QuicReceiveBufferPool.cs#Rent
+    // SEE: code:src/Incursa.Quic/QuicReceiveBufferPool.cs#Return
+    // The ring keeps the common receive path allocation-free while the
+    // fallback preserves progress when the ring is exhausted. The default ring
+    // size is intentionally environment-tunable for diagnostics without
+    // changing the ownership model.
     internal const int DefaultRingSize = 128;
     internal const string RingSizeEnvironmentVariable = "INCURSA_QUIC_RECEIVE_BUFFER_RING_SIZE";
 

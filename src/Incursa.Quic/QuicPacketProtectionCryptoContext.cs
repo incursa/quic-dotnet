@@ -8,6 +8,10 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: This context keeps algorithm-specific AEAD/header-protection primitives separate and
+// disposable because the packet-protection hot path needs direct access to the chosen cipher
+// without rebuilding crypto objects per packet.
+// SEE: QuicTlsPacketProtectionMaterial
 /// <summary>
 /// Caches the reusable cryptographic primitives for a single packet-protection key set.
 /// </summary>

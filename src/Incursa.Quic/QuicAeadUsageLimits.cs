@@ -138,6 +138,13 @@ internal static class QuicAeadLimitPolicy
             : QuicAeadLimitDecision.StopUsingConnection;
     }
 
+    // CONTEXT: AEAD receive exhaustion falls back to stateless reset
+    // SEE: code:src/Incursa.Quic/QuicAeadUsageLimits.cs#EvaluateProtectionUse
+    // SEE: code:src/Incursa.Quic/QuicAeadUsageLimits.cs#QuicAeadLimitDecision
+    // Once integrity limits are exhausted, a received packet can no longer be
+    // opened safely, so the endpoint can only answer with a stateless reset.
+    // That path is intentionally different from the send-side policy, which may
+    // still ask for a key update before the next protected packet.
     internal static QuicAeadLimitDecision EvaluateReceivedPacketResponse(
         QuicAeadKeyLifecycle keyLifecycle,
         bool connectionStoppedForAeadLimit)

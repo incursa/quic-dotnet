@@ -5,6 +5,10 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: This material type snapshots packet-protection inputs by value so the runtime can pass
+// the key set across state transitions without aliasing caller-owned spans; creation is guarded by
+// TryCreate because the struct also owns a crypto context.
+// SEE: TryCreate and QuicPacketProtectionCryptoContext
 /// <summary>
 /// Describes TLS-derived packet-protection material for a non-Initial encryption level.
 /// </summary>

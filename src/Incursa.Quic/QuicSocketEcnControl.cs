@@ -5,6 +5,9 @@ using System.Net.Sockets;
 
 namespace Incursa.Quic;
 
+// CONTEXT: ECN socket marking is best-effort and platform-specific, so the helper maps the QUIC
+// marking to the native TypeOfService bits and falls back across IP families.
+// SEE: QuicEcnMarking
 /// <summary>
 /// Applies best-effort ECN markings to runtime-owned UDP sockets.
 /// </summary>

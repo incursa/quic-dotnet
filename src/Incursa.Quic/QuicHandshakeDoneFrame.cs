@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: HANDSHAKE_DONE is a single fixed wire literal, so the frame type value stays as an
+// explicit constant rather than being derived from a generic frame registry.
+// SEE: QuicFrameCodec
 /// <summary>
 /// A parsed or constructed HANDSHAKE_DONE frame.
 /// </summary>
@@ -18,4 +21,3 @@ internal readonly struct QuicHandshakeDoneFrame
     /// </summary>
     internal byte FrameType => FrameTypeValue;
 }
-

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The token is opaque server-issued retry state, so it is carried as a borrowed span
+// instead of being copied into a heap-owned buffer during parse.
+// SEE: QuicListenerHost
 /// <summary>
 /// A parsed or constructed NEW_TOKEN frame.
 /// </summary>
@@ -23,4 +26,3 @@ internal readonly ref struct QuicNewTokenFrame
     /// </summary>
     internal ReadOnlySpan<byte> Token => token;
 }
-

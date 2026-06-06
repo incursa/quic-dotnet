@@ -17,6 +17,14 @@ internal readonly record struct PendingApplicationSendRequest(
 /// </summary>
 internal sealed class QuicApplicationSendQueue
 {
+    // CONTEXT: distinct stream-id selection hot path
+    // SEE: code:src/Incursa.Quic/QuicApplicationSendQueue.cs#BuildDistinctStreamIds
+    // SEE: code:src/Incursa.Quic/QuicApplicationSendQueue.cs#GetDistinctStreamIdSetCapacity
+    // SEE: code:src/Incursa.Quic/QuicApplicationSendQueue.cs#MixStreamIdHash
+    // This path intentionally switches from a linear scan to a pooled
+    // open-addressed set only after small batches stop being cheaper. The
+    // threshold and hash constants are tuned for the send hot path and should
+    // not be replaced with a general-purpose collection without re-benchmarking.
     private const int LinearDistinctStreamIdThreshold = 16;
     private const int PooledDistinctStreamIdSetMinimumCapacity = 32;
     private const int StreamIdHashShift = 33;
@@ -151,6 +159,28 @@ internal sealed class QuicApplicationSendQueue
         }
 
         return removedAny;
+    }
+
+    public bool TryRemoveQueuedWrite(long sequence, bool returnPayloads = false)
+    {
+        for (int index = 0; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest pendingWrite = pendingRequests[index];
+            if (pendingWrite.Sequence != sequence)
+            {
+                continue;
+            }
+
+            if (returnPayloads)
+            {
+                QuicBufferPool.ReturnBytes(pendingWrite.StreamPayload);
+            }
+
+            pendingRequests.RemoveAt(index);
+            return true;
+        }
+
+        return false;
     }
 
     public bool TryRemoveQueuedWrites(ReadOnlySpan<PendingApplicationSendRequest> selectedWrites)

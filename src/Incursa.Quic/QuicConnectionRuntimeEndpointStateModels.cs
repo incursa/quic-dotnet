@@ -68,6 +68,13 @@ internal readonly record struct QuicConnectionIdKey(
     uint Part2,
     byte Length)
 {
+    // CONTEXT: connection IDs are packed into a fixed-size key for allocation-free lookups
+    // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEndpointStateModels.cs#QuicConnectionIdKey.TryCreate
+    // SEE: code:src/Incursa.Quic/QuicConnectionIssuedConnectionIdState.cs#IsActiveIssuedConnectionId
+    // The runtime needs a stable dictionary key for variable-length CIDs, so
+    // the bytes are packed into two ulongs and one uint rather than stored as
+    // arrays. Keep the little-endian packing and maximum length because route
+    // and reset lookups depend on this fixed-size shape.
     private const int ULongByteLength = sizeof(ulong);
     private const int UIntByteLength = sizeof(uint);
     private const int DoubleULongByteLength = ULongByteLength * 2;

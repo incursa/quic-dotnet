@@ -65,6 +65,11 @@ internal sealed class QuicConnectionPathState
         return RecentlyValidatedPaths.TryGetValue(pathIdentity, out validatedPath);
     }
 
+    // CONTEXT: Recently validated paths are capped and evicted by oldest activity so the cache keeps
+    // the most useful reuse candidates instead of growing unbounded or dropping the just-validated path
+    // that was just inserted.
+    // SEE: code:src/Incursa.Quic/QuicConnectionPathState.cs#TryGetRecentlyValidatedPath
+    // SEE: code:src/Incursa.Quic/QuicConnectionPathState.cs#HasValidatedPath
     internal void AppendRecentlyValidatedPath(
         QuicConnectionPathIdentity pathIdentity,
         long nowTicks,

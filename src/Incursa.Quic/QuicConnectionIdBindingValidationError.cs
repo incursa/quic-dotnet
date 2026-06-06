@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 namespace Incursa.Quic;
-
 /// <summary>
 /// Describes why a peer transport-parameter connection-ID binding check failed.
 /// </summary>
@@ -48,4 +47,3 @@ internal enum QuicConnectionIdBindingValidationError
     /// </summary>
     UnexpectedRetrySourceConnectionId = 7,
 }
-

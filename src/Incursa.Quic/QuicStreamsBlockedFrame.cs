@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This notification keeps the blocked stream-count limit separate from MAX_STREAMS so the
+// runtime can surface the limit that was actually exhausted rather than the latest grant.
+// SEE: QuicMaxStreamsFrame
 /// <summary>
 /// A parsed or constructed STREAMS_BLOCKED frame.
 /// </summary>
@@ -27,4 +30,3 @@ internal readonly struct QuicStreamsBlockedFrame
     /// </summary>
     internal ulong MaximumStreams { get; }
 }
-

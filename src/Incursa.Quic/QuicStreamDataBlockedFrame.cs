@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The stream-scoped blocked notification reports the exact stream limit that stalled
+// progress, which is different from the MAX_STREAM_DATA credit grant.
+// SEE: QuicMaxStreamDataFrame
 /// <summary>
 /// A parsed or constructed STREAM_DATA_BLOCKED frame.
 /// </summary>
@@ -27,4 +30,3 @@ internal readonly struct QuicStreamDataBlockedFrame
     /// </summary>
     internal ulong MaximumStreamData { get; }
 }
-

@@ -9,6 +9,9 @@ using System.Collections.Generic;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The transcript owner keeps separate partial and post-handshake buffers because a client
+// can reset a handshake attempt without conflating new handshake bytes with post-handshake parsing.
+// SEE: TryResetClientPeerHandshakeAttempt and AppendPostHandshakeCryptoBytes
 /// <summary>
 /// Owns the Handshake transcript progression boundary behind the transport-facing TLS bridge.
 /// </summary>

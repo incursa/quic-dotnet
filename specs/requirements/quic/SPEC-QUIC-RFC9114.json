@@ -347,6 +347,55 @@
         "This requirement covers the end-to-end HTTP/3 floor that the repo already exercises in loopback tests.",
         "It proves the protocol layer can carry request/response traffic, static routes, error responses, and clean completion without relying on ASP.NET hosting."
       ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S9-0002",
+      "title": "Complete large HTTP/3 bodies without premature EOF",
+      "statement": "The HTTP/3 client and server MUST preserve exact DATA payload accounting and transport stream completion for large response and upload bodies, including 64KB and 1MB payloads, so a response or request body is not reported complete until the declared Content-Length is satisfied and the underlying HTTP/3 stream completion semantics remain correct.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0003"
+        ],
+        "related": [
+          "REQ-QUIC-RFC9114-S4-0002",
+          "REQ-QUIC-RFC9114-S8-0001",
+          "REQ-QUIC-RFC9114-S9-0001",
+          "REQ-QUIC-API-0010"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§4.1, 4.3, 6.1-6.2.2, 9",
+          "https://www.rfc-editor.org/rfc/rfc9114.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Client.cs",
+          "src/Incursa.Quic.Http3/Http3Server.cs",
+          "src/Incursa.Quic.Http3/Http3FrameReader.cs",
+          "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
+          "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+          "src/Incursa.Quic/QuicApplicationSendQueue.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::RepeatedLargeResponses_CompleteWithExactBodyAndFin",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
+          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide"
+        ]
+      },
+      "notes": [
+        "This requirement owns the recovery slice for ProtocolLab large-body rows that failed with premature response EOF under managed HTTP/3 load.",
+        "Completing a client response solely because Content-Length bytes arrived is not sufficient proof when the transport stream tail or FIN path is still incorrect."
+      ]
     }
   ]
 }

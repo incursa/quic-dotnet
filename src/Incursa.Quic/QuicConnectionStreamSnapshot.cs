@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This snapshot is a positional record because callers need a compact, immutable view of
+// stream state for diagnostics and bookkeeping without retaining live mutable stream internals.
+// SEE: QuicConnectionStreamState
 /// <summary>
 /// Captures the observable bookkeeping state for a stream at a single point in time.
 /// </summary>

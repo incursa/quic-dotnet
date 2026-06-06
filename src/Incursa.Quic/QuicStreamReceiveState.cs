@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The receive-state values are ordered to match the stream-state machine transitions used
+// by the bookkeeping layer, so the numeric sequence is intentional.
+// SEE: QuicConnectionStreamState
 internal enum QuicStreamReceiveState
 {
     None = 0,

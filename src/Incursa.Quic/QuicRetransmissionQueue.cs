@@ -51,6 +51,14 @@ internal sealed class QuicRetransmissionQueue
         pendingRetransmissions.Enqueue(retransmission);
     }
 
+    // CONTEXT: retransmission scans preserve queue order
+    // SEE: code:src/Incursa.Quic/QuicRetransmissionQueue.cs#TryDiscardPacketNumberSpace
+    // SEE: code:src/Incursa.Quic/QuicRetransmissionQueue.cs#TryDiscardPacketProtectionLevel
+    // SEE: code:src/Incursa.Quic/QuicRetransmissionQueue.cs#TrySuppressResetStreamRetransmissionForStream
+    // The queue is walked by dequeue/re-enqueue so unmatched plans keep their
+    // original FIFO order while matched plans release resources immediately.
+    // Do not replace this with a filtering copy unless the ordering and
+    // lifetime behavior are revalidated.
     public bool TryRemovePendingRetransmission(QuicConnectionSentPacketKey key)
     {
         int pendingCount = pendingRetransmissions.Count;

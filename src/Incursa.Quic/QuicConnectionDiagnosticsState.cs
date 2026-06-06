@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The state is a readonly struct so the runtime can cache sink resolution and the
+// enabled flag once per connection, avoiding repeated null/IsEnabled checks on the hot path.
+// SEE: QuicDiagnostics.ResolveConnectionSink
 internal readonly struct QuicConnectionDiagnosticsState
 {
     internal QuicConnectionDiagnosticsState(IQuicDiagnosticsSink? diagnosticsSink = null)

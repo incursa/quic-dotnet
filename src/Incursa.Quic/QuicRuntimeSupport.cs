@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Runtime support is probed once and cached because the result depends on process-level
+// platform capabilities rather than connection-local state.
+// SEE: EvaluateIsSupported
 /// <summary>
 /// Probes the current process for the runtime capabilities required by Incursa QUIC support.
 /// </summary>

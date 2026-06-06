@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Connection-wide credit updates stay in their own type because the MAX_DATA wire shape
+// is distinct from the corresponding BLOCKED notification and the parser/writer rely on that split.
+// SEE: QuicDataBlockedFrame
 /// <summary>
 /// A parsed or constructed MAX_DATA frame.
 /// </summary>
@@ -21,4 +24,3 @@ internal readonly struct QuicMaxDataFrame
     /// </summary>
     internal ulong MaximumData { get; }
 }
-

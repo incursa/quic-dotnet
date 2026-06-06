@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The two values mirror the single high bit in the first packet byte so parser branching
+// stays aligned with the wire layout instead of introducing an extra translation layer.
+// SEE: QuicLongHeaderPacket
 /// <summary>
 /// Identifies the version-independent QUIC packet header form.
 /// </summary>
@@ -18,4 +21,3 @@ internal enum QuicHeaderForm
     /// </summary>
     Long = 1,
 }
-

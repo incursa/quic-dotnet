@@ -21,6 +21,12 @@ internal sealed class QuicAckGenerationState
     /// </summary>
     private const byte AckEcnFrameType = 0x03;
 
+    // CONTEXT: ACK generation keeps common cases on the stack
+    // SEE: code:src/Incursa.Quic/QuicAckGenerationState.cs#TryBuildAckFrame
+    // SEE: code:src/Incursa.Quic/QuicAckGenerationState.cs#TryRetireAcknowledgedAckRanges
+    // The 32-entry stack thresholds keep the common ACK and ACK-retirement
+    // paths allocation-free. Larger histories fall back to ArrayPool only when
+    // the retained ACK set is genuinely bigger than the hot-path shape.
     private const int StackPacketRangeCapacity = 32;
     private const int StackAckFramePacketNumberCapacity = 32;
 

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Version information is stored as a small mutable snapshot because the transport
+// captures the negotiated version and offered alternatives as a single transport-parameter value.
+// SEE: QuicVersionNegotiation
 /// <summary>
 /// Authenticated QUIC version information exchanged in transport parameters.
 /// </summary>

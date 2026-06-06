@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The field ordering and required-field tables encode the registry policy once so the
+// runtime can validate IANA-style records without duplicating the RFC 8126 rules at each call site.
+// SEE: RFC8126 Section 4.5
 internal enum QuicIanaRegistrationFieldKind
 {
     Value,
@@ -30,6 +33,9 @@ internal readonly record struct QuicIanaRegistrationFieldDefinition(
 
 internal static class QuicIanaRegistrationPolicy
 {
+    // CONTEXT: Expert-review is the only provisional policy modeled here because the registry
+    // tables below are intentionally scoped to the QUIC registration flow used in this library.
+    // SEE: ProvisionalReviewPolicy
     public const string Rfc8126ExpertReviewReference = "RFC8126 Section 4.5";
 
     private static readonly QuicIanaRegistrationFieldDefinition[] registryFields =

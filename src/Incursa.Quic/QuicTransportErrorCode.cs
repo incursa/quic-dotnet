@@ -5,6 +5,9 @@ using System.ComponentModel;
 
 namespace Incursa.Quic;
 
+// CONTEXT: These explicit values are the wire-visible CONNECTION_CLOSE transport error codes, so
+// they must stay stable even though the enum also carries user-facing descriptions.
+// SEE: QuicConnectionCloseFrame:
 /// <summary>
 /// Identifies the defined QUIC transport error codes that may be carried in a CONNECTION_CLOSE frame of type 0x1c.
 /// </summary>
@@ -112,4 +115,3 @@ internal enum QuicTransportErrorCode : ulong
     [Description("The endpoint has no viable path to its peer.")]
     NoViablePath = 0x10,
 }
-

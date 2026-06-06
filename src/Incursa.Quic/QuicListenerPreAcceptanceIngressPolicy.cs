@@ -32,6 +32,12 @@ internal static class QuicListenerPreAcceptanceIngressPolicy
         return true;
     }
 
+    // CONTEXT: pre-acceptance classification order follows the wire-protocol gates
+    // SEE: code:src/Incursa.Quic/QuicListenerPreAcceptanceIngressPolicy.cs#TrySliceFirstPacketForAdmission
+    // Version negotiation happens before packet-type routing, and Initial vs.
+    // Zero-RTT are split only after the transport version is known. Keep this
+    // order because the later branches assume unsupported versions and
+    // malformed datagrams have already been rejected.
     public static QuicListenerPreAcceptanceDatagramAction ClassifyUnroutedDatagram(
         ReadOnlySpan<byte> datagram,
         ReadOnlySpan<uint> supportedVersions,

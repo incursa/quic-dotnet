@@ -8,6 +8,13 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicOneRttKeyUpdateLifecycle
 {
+    // CONTEXT: 1-RTT key-update lifecycle keeps old and next material separate
+    // SEE: code:src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs#TryRetainOldPacketProtectionMaterial
+    // SEE: code:src/Incursa.Quic/QuicOneRttKeyUpdateLifecycle.cs#TryRetainNextOpenPacketProtectionMaterial
+    // Old open/protect material stays available until the discard timer fires,
+    // while the next open material is retained independently so the runtime can
+    // validate the upcoming key phase before committing it. The 3x PTO cooldown
+    // keeps repeated updates from thrashing on transient loss.
     private const ulong ThreePtoMultiplier = 3;
 
     private QuicTlsPacketProtectionMaterial? retainedOldOpenPacketProtectionMaterial;

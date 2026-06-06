@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The lease owns a pooled buffer until disposal or transfer, so the explicit ownership
+// handoff keeps callers from double-returning the array pool buffer.
+// SEE: QuicBufferPool and TransferOwnership
 internal struct QuicBufferLease : IDisposable
 {
     private byte[]? buffer;

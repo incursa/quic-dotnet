@@ -93,6 +93,12 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects,
         List<ReadOnlyMemory<byte>> closeDatagrams)
     {
+        // CONTEXT: The close path intentionally emits whichever protection level the peer may still be
+        // able to decrypt, then falls back to the least-protected payload if no protected datagram can
+        // be built. That keeps CONNECTION_CLOSE observable during teardown instead of assuming a single
+        // key phase.
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs#TryFormatOneRttConnectionCloseDatagram
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs#TryFormatInitialConnectionCloseDatagram
         if (HandshakeConfirmed)
         {
             if (TryFormatOneRttConnectionCloseDatagram(closeMetadata, ref effects, out ReadOnlyMemory<byte> oneRttCloseDatagram))

@@ -65,6 +65,10 @@ internal sealed class QuicConnectionLifecycleState
     /// <summary>
     /// Detects a potential Stateless Reset and enters the draining state when the trailing token matches.
     /// </summary>
+    // CONTEXT: Draining is a terminal receive-side state that only begins after a real stateless
+    // reset token match; once entered, later packets are intentionally ignored instead of being
+    // reclassified.
+    // SEE: QuicStatelessReset and TryEnterDrainingState
     internal bool TryHandlePotentialStatelessReset(ReadOnlySpan<byte> datagram, ReadOnlySpan<byte> candidateTokens)
     {
         if (isDraining
@@ -77,4 +81,3 @@ internal sealed class QuicConnectionLifecycleState
         return TryEnterDrainingState();
     }
 }
-

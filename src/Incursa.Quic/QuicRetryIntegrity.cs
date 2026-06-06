@@ -47,6 +47,11 @@ internal static class QuicRetryIntegrity
 
     private static readonly AesGcm RetryIntegrityAead = new(RetryIntegrityKeyBytes, RetryIntegrityTagLength);
     private static readonly AesGcm RetryIntegrityV2Aead = new(RetryIntegrityV2KeyBytes, RetryIntegrityTagLength);
+    // CONTEXT: The Retry AEAD objects are shared to avoid allocating a fresh AesGcm per packet, but
+    // the instances themselves are not thread-safe, so the gate intentionally serializes use instead of
+    // "simplifying" to unsynchronized shared state.
+    // SEE: code:src/Incursa.Quic/QuicRetryIntegrity.cs#TryGenerateRetryIntegrityTag
+    // SEE: code:src/Incursa.Quic/QuicRetryIntegrity.cs#TryValidateRetryPacketIntegrity
     private static readonly object RetryIntegrityAeadGate = new();
 
     /// <summary>

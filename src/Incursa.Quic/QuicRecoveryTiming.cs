@@ -129,6 +129,9 @@ internal static class QuicRecoveryTiming
     /// <summary>
     /// Computes the PTO delay for a packet number space using RFC 9002's base formula.
     /// </summary>
+    // CONTEXT: Initial and Handshake PTOs intentionally ignore max_ack_delay until the peer has
+    // confirmed the handshake; only Application Data PTO includes that peer-advertised delay.
+    // SEE: ResetProbeTimeoutBackoffCount
     internal static bool TryComputeProbeTimeoutMicros(
         QuicPacketNumberSpace packetNumberSpace,
         ulong smoothedRttMicros,

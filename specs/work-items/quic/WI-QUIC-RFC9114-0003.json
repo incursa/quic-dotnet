@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9114-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 RFC 9114 Large Body Completion Recovery Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0003",
+    "VER-QUIC-RFC9114-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9114-S9-0002"
+  ],
+  "summary": "Recover managed HTTP/3 large response and upload correctness before using ProtocolLab large-body rows as performance evidence.",
+  "planned_changes": "- Add focused repeated 64KB and 1MB HTTP/3 response tests that assert exact body length and clean completion.\n- Keep negative content-length and malformed body framing failures visible.\n- Fix the smallest verified HTTP/3 response-tail or QUIC final stream write defect.\n- Preserve ProtocolLab failed and invalid rows; do not change harness semantics to improve Incursa results.\n- Record before/after local benchmark and focused test evidence in the verification artifact.",
+  "verification_plan": "Run focused HTTP/3 minimal server/client tests, the REQ-QUIC-API-0010 EOF guardrail tests, SpecTrace JSON validation, and diff hygiene. After correctness is green, rerun the documented ProtocolLab h3-local-v1-comparison rows and focused HTTP/3 allocation benchmarks as diagnostic evidence.",
+  "verification_links": [
+    "VER-QUIC-RFC9114-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9114-0003"
+  ],
+  "out_of_scope": [
+    "Raw QUIC multiplex and duplex throughput tuning.",
+    "ProtocolLab harness semantics changes.",
+    "ASP.NET hosting integration."
+  ],
+  "completion_notes": "The transport retry path now retries only owned blocked writes and empty FIN completions, so caller-owned data-carrying writes cannot be replaced by premature empty STREAM/FIN frames before their original stream-action event is processed. Focused HTTP/3 tests now include repeated 64KB and 1MB response completion checks plus the existing large-upload and API EOF guardrails."
+}

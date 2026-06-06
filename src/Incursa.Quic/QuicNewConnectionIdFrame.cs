@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This stays a ref struct because the connection ID and reset token are borrowed from
+// packet bytes during parse, and the retirement fields must remain in wire order for CID handling.
+// SEE: QuicConnectionPeerConnectionIdState
 /// <summary>
 /// A parsed or constructed NEW_CONNECTION_ID frame.
 /// </summary>
@@ -48,4 +51,3 @@ internal readonly ref struct QuicNewConnectionIdFrame
     /// </summary>
     internal ReadOnlySpan<byte> StatelessResetToken => statelessResetToken;
 }
-

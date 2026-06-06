@@ -35,6 +35,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int DefaultCloseFrameOverheadBytes = 32;
     private const int PreferredAddressIPv4BytesLength = sizeof(uint);
     private const int PreferredAddressIPv6BytesLength = 16;
+    // CONTEXT: preferred-address CID sequence slot
+    // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#TryRegisterPreferredAddressConnectionId
+    // SEE: code:src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs#TryAcceptPreferredAddressConnectionId
+    // Sequence 1 is reserved for the preferred-address CID path so the runtime
+    // can validate the same transport-parameter slot consistently across
+    // retries and path transitions. Keep this value stable because the same
+    // sequence is used for duplicate checks and route registration.
     private const ulong PreferredAddressConnectionIdSequence = 1;
     private const ulong ApplicationSendDelayMicros = 1_000UL;
     private const ulong DefaultMaxAckDelayMicros = QuicMaxAckDelayPolicy.DefaultMaxAckDelayMicros;
@@ -185,6 +192,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     {
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<bool> source;
+        private byte[]? ownedStreamData;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -199,7 +207,66 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         internal void Prepare()
         {
+            ReleaseOwnedStreamData();
+            ActionKind = default;
+            StreamId = default;
+            StreamDataLength = 0;
             source.Reset();
+        }
+
+        internal QuicConnectionStreamActionKind ActionKind { get; private set; }
+
+        internal ulong StreamId { get; private set; }
+
+        internal int StreamDataLength { get; private set; }
+
+        internal void ConfigureWrite(
+            QuicConnectionStreamActionKind actionKind,
+            ulong streamId,
+            int streamDataLength)
+        {
+            ActionKind = actionKind;
+            StreamId = streamId;
+            StreamDataLength = streamDataLength;
+        }
+
+        internal bool HasOwnedStreamData => ownedStreamData is not null;
+
+        internal ReadOnlySpan<byte> GetOwnedStreamDataSpan()
+            => ownedStreamData is null
+                ? ReadOnlySpan<byte>.Empty
+                : ownedStreamData.AsSpan(0, StreamDataLength);
+
+        internal ReadOnlyMemory<byte> GetOwnedStreamDataMemory()
+            => ownedStreamData is null
+                ? ReadOnlyMemory<byte>.Empty
+                : new ReadOnlyMemory<byte>(ownedStreamData, 0, StreamDataLength);
+
+        internal void EnsureOwnedStreamData(ReadOnlySpan<byte> streamData)
+        {
+            if (streamData.IsEmpty)
+            {
+                StreamDataLength = 0;
+                return;
+            }
+
+            if (ownedStreamData is null || ownedStreamData.Length < streamData.Length)
+            {
+                ReleaseOwnedStreamData();
+                ownedStreamData = QuicBufferPool.RentBytes(streamData.Length);
+            }
+
+            streamData.CopyTo(ownedStreamData);
+            StreamDataLength = streamData.Length;
+        }
+
+        internal void ReleaseOwnedStreamData()
+        {
+            byte[]? ownedData = Interlocked.Exchange(ref ownedStreamData, null);
+            if (ownedData is not null)
+            {
+                QuicBufferPool.ReturnBytes(ownedData);
+            }
         }
 
         internal void TrySetResult()
@@ -404,6 +471,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
     private void ReturnStreamActionRequestCompletionSource(StreamActionRequestCompletionSource completionSource)
     {
+        completionSource.ReleaseOwnedStreamData();
         completionSourcePool.Enqueue(completionSource);
     }
 
@@ -1250,8 +1318,15 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
+        LogApplicationSend(
+            $"app-tx api-write role={tlsState.Role} stream={streamId} length={buffer.Length} fin={finishWrites}.");
+
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        completion.ConfigureWrite(
+            finishWrites ? QuicConnectionStreamActionKind.Finish : QuicConnectionStreamActionKind.Write,
+            streamId,
+            buffer.Length);
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
             ReturnStreamActionRequestCompletionSource(completion);
@@ -1408,6 +1483,10 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         long requestId = Interlocked.Increment(ref nextStreamActionRequestId);
         StreamActionRequestCompletionSource completion = RentStreamActionRequestCompletionSource();
+        completion.ConfigureWrite(
+            QuicConnectionStreamActionKind.Finish,
+            streamId,
+            streamDataLength: 0);
         if (!TryAddPendingStreamActionRequest(requestId, completion))
         {
             ReturnStreamActionRequestCompletionSource(completion);

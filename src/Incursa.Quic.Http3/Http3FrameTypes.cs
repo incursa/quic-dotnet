@@ -5,6 +5,10 @@ namespace Incursa.Quic.Http3;
 
 internal static class Http3FrameTypes
 {
+    // CONTEXT: HTTP/3 reserves these frame types so unknown-frame handling can distinguish explicit
+    // reservations and GREASE values from ordinary extension frames.
+    // SEE: spec:REQ-QUIC-RFC9114-S4-0002
+    // SEE: code:src/Incursa.Quic.Http3/Http3Frame.cs#IsReserved
     private const ulong ReservedGreaseTypeOffset = 0x21;
     private const ulong ReservedGreaseTypeModulus = 0x1F;
     private const ulong ReservedPriorityFrameType = 0x02;

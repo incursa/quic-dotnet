@@ -3,6 +3,10 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This helper stays numeric because ingress has to validate weakly protected handshake
+// payloads before frame objects exist; the explicit wire codes let it discard or process without
+// allocations or extra parsing passes.
+// SEE: QuicFrameCodec and QuicVariableLengthInteger
 /// <summary>
 /// Pure frame legality and payload-validation helpers used by the protocol ingress path.
 /// </summary>

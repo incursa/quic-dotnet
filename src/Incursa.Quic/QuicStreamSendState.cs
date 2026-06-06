@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The send-state values are ordered to mirror the stream send lifecycle and final-state
+// checks, so the explicit numbering is part of the bookkeeping contract.
+// SEE: QuicConnectionStreamState
 internal enum QuicStreamSendState
 {
     None = 0,

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: These numeric values are stable public surface because callers observe them after
+// terminal failures; changing the mapping would break behavior and compatibility.
+// SEE: QuicException
 /// <summary>
 /// Classifies the terminal QUIC error state surfaced to consumers.
 /// </summary>
@@ -21,4 +24,3 @@ public enum QuicError
     TransportError = 14,
     CallbackError = 15,
 }
-

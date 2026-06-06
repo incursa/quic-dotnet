@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: These labels match the TLS key-log format used by debugger tooling, and the payload is
+// copied out of caller spans so later logging does not depend on borrowed memory.
+// SEE: QuicTlsTransport
 internal readonly record struct QuicTlsKeyLogSecret
 {
     public const string ClientHandshakeTrafficSecretLabel = "CLIENT_HANDSHAKE_TRAFFIC_SECRET";

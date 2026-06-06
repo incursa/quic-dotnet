@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The numeric ordering matches the protocol packet-number spaces and is reused by ACK
+// generation and recovery bookkeeping, so these values should stay stable.
+// SEE: QuicCongestionControlState and QuicRecoveryTiming
 /// <summary>
 /// Identifies the QUIC packet number space for ACK generation and scheduling.
 /// </summary>
@@ -23,4 +26,3 @@ internal enum QuicPacketNumberSpace
     /// </summary>
     ApplicationData = 2,
 }
-

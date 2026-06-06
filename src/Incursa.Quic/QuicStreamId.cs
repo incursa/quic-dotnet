@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The low-order bits are the RFC 9000 stream-ID encoding, so these masks must stay
+// aligned with the wire layout that determines initiator and direction.
+// SEE: QuicStreamType
 /// <summary>
 /// A parsed QUIC stream identifier.
 /// </summary>
@@ -55,4 +58,3 @@ internal readonly struct QuicStreamId
     /// </summary>
     internal bool IsUnidirectional => !IsBidirectional;
 }
-

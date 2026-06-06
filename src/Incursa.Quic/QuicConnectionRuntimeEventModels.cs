@@ -59,6 +59,11 @@ internal enum QuicConnectionStreamActionKind
 
 internal abstract record QuicConnectionEvent(QuicConnectionEventKind Kind, long ObservedAtTicks);
 
+// CONTEXT: Packet-received events may own a pooled datagram buffer or just reference a borrowed slice.
+// The release method stays separate so the shard can dispose pooled storage after processing without
+// forcing every event to copy its datagram up front.
+// SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs#QuicConnectionPacketReceivedEvent
+// SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEventModels.cs#WithBorrowedDatagramSlice
 internal sealed record QuicConnectionPacketReceivedEvent(
     long ObservedAtTicks,
     QuicConnectionPathIdentity PathIdentity,

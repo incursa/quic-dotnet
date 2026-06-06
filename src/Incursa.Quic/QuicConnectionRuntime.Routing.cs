@@ -234,8 +234,10 @@ internal sealed partial class QuicConnectionRuntime
                 case QuicConnectionPhase.Establishing:
                     stateChanged |= TryHandleInitialPacketReceived(packetEvent, nowTicks, ref effects);
                     stateChanged |= TryHandleHandshakePacketReceived(packetEvent, nowTicks, ref effects);
-                    // The peer can legally send protected 1-RTT packets before the runtime flips to the
-                    // fully active phase, so the establishing path cannot blanket-drop short-header ingress.
+                    // CONTEXT: The establishing phase can still receive protected 1-RTT packets before the
+                    // runtime flips fully active, so this path must not gate short-header ingress on phase alone.
+                    // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#TryHandleApplicationPacketReceived
+                    // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#HandlePeerHandshakeTranscriptCompleted
                     stateChanged |= TryHandleApplicationPacketReceived(packetEvent, nowTicks, ref effects);
                     break;
 

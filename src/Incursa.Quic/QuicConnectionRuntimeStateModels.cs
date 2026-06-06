@@ -326,6 +326,11 @@ internal readonly record struct QuicConnectionTimerSchedule(
     long? DueTicks,
     ulong Generation);
 
+// CONTEXT: Timer ordering must stay deterministic for equal due ticks, so the sequence
+// tie-breaker preserves insertion order across re-arms instead of letting the heap reshuffle
+// same-deadline timers.
+// SEE: code:src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs#CreatePriority
+// SEE: code:src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs#AdvancePrioritySequence
 internal readonly record struct QuicConnectionTimerPriority(long DueTicks, ulong Sequence)
     : IComparable<QuicConnectionTimerPriority>
 {

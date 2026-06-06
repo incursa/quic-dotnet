@@ -228,6 +228,12 @@ internal sealed class QuicConnectionSendRuntime
         QuicPacketNumberSpace packetNumberSpace,
         bool discardAckGenerationState = true)
     {
+        // CONTEXT: Discarding a packet number space has to purge sent packets, retransmission plans,
+        // and the flow-controller state together so no stale recovery bookkeeping survives across the
+        // space boundary. The scan-and-remove shape is deliberate because the sent-packet store is keyed
+        // by packet number space rather than partitioned into separate tables.
+        // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TrackSentPacket
+        // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardPacketProtectionLevel
         bool updated = flowController.TryDiscardPacketNumberSpace(packetNumberSpace, discardAckGenerationState);
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;
@@ -300,6 +306,12 @@ internal sealed class QuicConnectionSendRuntime
     /// </summary>
     internal bool TryDiscardPacketProtectionLevel(QuicTlsEncryptionLevel packetProtectionLevel)
     {
+        // CONTEXT: Packet-protection-level discard is broader than packet-number-space discard because
+        // the runtime can retire an entire TLS encryption level even when some packet numbers are still
+        // represented in other recovery tables. Keeping the purge split across these axes prevents stale
+        // recovery state from surviving a handshake or key-discard transition.
+        // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardPacketNumberSpace
+        // SEE: code:src/Incursa.Quic/QuicConnectionSendRuntime.cs#TryDiscardOneRttKeyPhase
         bool updated = flowController.TryDiscardPacketProtectionLevel(packetProtectionLevel);
 
         List<QuicConnectionSentPacketKey>? removedKeys = null;

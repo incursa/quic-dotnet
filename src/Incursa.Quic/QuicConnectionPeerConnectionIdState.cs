@@ -49,6 +49,12 @@ internal sealed class QuicConnectionPeerConnectionIdState
     /// </summary>
     internal int PendingRetiredConnectionIdCount => retiredSequenceNumbersReportedToRuntime.Count;
 
+    // CONTEXT: retired CID backlog cap
+    // SEE: code:src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs#CanReportRetiredSequenceNumbers
+    // The 2x multiplier keeps the retirement backlog proportional to the peer's
+    // advertised active CID budget. Small limits still make progress, while
+    // large limits do not turn retired-sequence bookkeeping into an unbounded
+    // queue.
     internal static ulong GetPendingRetiredConnectionIdLimit(ulong activeConnectionIdLimit)
     {
         return activeConnectionIdLimit > ulong.MaxValue / PendingRetiredConnectionIdLimitMultiplier

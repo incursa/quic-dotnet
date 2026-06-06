@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: ECN counters are carried as an ACK-side snapshot, so this value type stays tiny and
+// ordered to match the wire fields used during per-space validation.
+// SEE: QuicEcnValidationState
 /// <summary>
 /// Parsed ECN counters carried by ACK frame type 0x03.
 /// </summary>
@@ -33,4 +36,3 @@ internal readonly struct QuicEcnCounts
     /// </summary>
     internal ulong EcnCeCount { get; }
 }
-

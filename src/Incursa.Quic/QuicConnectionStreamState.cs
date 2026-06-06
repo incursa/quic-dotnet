@@ -63,6 +63,11 @@ internal sealed class QuicConnectionStreamState
     public ulong IncomingBidirectionalStreamLimit => incomingBidirectionalStreamLimit;
     public ulong IncomingUnidirectionalStreamLimit => incomingUnidirectionalStreamLimit;
 
+    // CONTEXT: Local stream reservation stays split from commit so callers can check whether the next
+    // stream ID is available and surface STREAMS_BLOCKED without consuming quota until a stream is
+    // actually opened.
+    // SEE: code:src/Incursa.Quic/QuicConnectionStreamState.cs#TryOpenLocalStream
+    // SEE: code:src/Incursa.Quic/QuicConnectionStreamState.cs#TryPeekLocalStream
     public bool TryPeekLocalStream(bool bidirectional, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame)
     {
         lock (syncRoot)
@@ -161,6 +166,12 @@ internal sealed class QuicConnectionStreamState
         }
     }
 
+    // CONTEXT: Peer-initiated capacity is released only after the stream is fully closed so the
+    // connection does not advertise extra incoming credit while data or reset state is still pending.
+    // The peek/commit split lets callers decide whether to emit MAX_STREAMS without incrementing the
+    // limit twice for the same stream.
+    // SEE: code:src/Incursa.Quic/QuicConnectionStreamState.cs#TryPeekPeerStreamCapacityRelease
+    // SEE: code:src/Incursa.Quic/QuicConnectionStreamState.cs#TryCommitPeerStreamCapacityRelease
     public bool TryPeekPeerStreamCapacityRelease(ulong streamIdValue, out QuicMaxStreamsFrame frame)
     {
         lock (syncRoot)

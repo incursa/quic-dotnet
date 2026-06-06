@@ -316,6 +316,9 @@ internal interface IQuicDiagnosticsSink
 /// </summary>
 internal static class QuicDiagnostics
 {
+    // CONTEXT: A datagram is only coalesced once the parser split out at least two packets, so the
+    // threshold stays at 2 and should not be relaxed to treat single-packet datagrams as coalesced.
+    // SEE: CoalescedDatagramReceived
     private const int MinimumCoalescedPacketCount = 2;
 
     /// <summary>

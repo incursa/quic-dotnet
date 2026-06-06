@@ -5,6 +5,10 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Handshake protection reuses the Initial sample geometry and mask length because both
+// packet types depend on the same header-protection sample window; those offsets should stay in
+// lockstep with the Initial helper.
+// SEE: QuicInitialPacketProtection
 /// <summary>
 /// Provides Handshake packet protection using TLS-derived packet-protection material.
 /// </summary>

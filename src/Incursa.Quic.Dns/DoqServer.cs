@@ -210,6 +210,12 @@ public sealed class DoqServer : IAsyncDisposable
                     .HandleAsync(context, cancellationToken)
                     .ConfigureAwait(false);
 
+                if (writeAbort.IsCompleted)
+                {
+                    await writeAbort.ConfigureAwait(false);
+                    return;
+                }
+
                 // REQ-0093: amplification limit enforcement
                 if (options.EnforceAmplificationLimit && context.IsZeroRtt)
                 {

@@ -73,6 +73,63 @@ Choose the suite explicitly:
 load shape. `Comparison` keeps ProtocolLab's full comparison behavior and is
 intentionally slower.
 
+## Codex Performance Work
+
+When asking Codex to improve QUIC performance with ProtocolLab evidence, point
+it at this file and ask it to use the source-reference loop above. The default
+close-loop target should be:
+
+```text
+suite: quic-transport-v1-comparison
+implementation: incursa-raw-quic-adapter-v1
+scenario: quic.transport.multiplex.100x64kb
+```
+
+Use `-UseProjectReferences` so ProtocolLab consumes the current quic-dotnet
+working tree directly. Use `-NoRestore` after the first successful source-mode
+restore. Do not use `-UploadAfterRun` for local performance iteration.
+
+ProtocolLab-owned scenario and suite files live in the sibling ProtocolLab
+checkout, not in this repo. For the standard shared Windows checkout, that is:
+
+```text
+C:\shared\src\incursa\protocol-lab
+```
+
+If that path is not valid, pass `-ProtocolLabRoot <path>` to
+`Invoke-ProtocolLabLocalQuicBenchmark.ps1` or set `PROTOCOL_LAB_ROOT` before
+using the xUnit bridge.
+
+To inspect or add a raw QUIC scenario, use these ProtocolLab files first:
+
+```text
+docs\scenarios\authoring-guide.md
+docs\scenarios\catalog.md
+docs\runner\raw-quic-foundation.md
+scenarios\quic\transport\*.yaml
+suites\quic-transport-v1-comparison.yaml
+tests\Incursa.ProtocolLab.Tests\SuiteDefinitionTests.cs
+```
+
+For a new benchmarkable raw QUIC scenario:
+
+1. Add the scenario YAML under `scenarios\quic\transport\` with a stable
+   `quic.transport.*` ID.
+2. Add that scenario ID to `suites\quic-transport-v1-comparison.yaml`.
+3. Update ProtocolLab docs/catalog entries when the scenario should be
+   discoverable by humans.
+4. Extend ProtocolLab tests that lock the suite contents, especially
+   `SuiteDefinitionTests`.
+5. If the scenario needs new protocol behavior, update the ProtocolLab raw QUIC
+   adapter/load validation path before treating benchmark numbers as evidence.
+6. Run the focused source-reference command from this quic-dotnet repo with the
+   new `-Scenario <id>`.
+
+Keep performance tasks scoped: preserve ProtocolLab benchmark semantics unless
+the task explicitly asks to change the benchmark harness itself. For quic-dotnet
+runtime changes, prefer focused unit/behavior tests first, then run the smallest
+ProtocolLab source-reference scenario that exercises the changed path.
+
 ## xUnit Opt-In Bridge
 
 Normal `dotnet test` skips ProtocolLab performance benchmarks. To run the

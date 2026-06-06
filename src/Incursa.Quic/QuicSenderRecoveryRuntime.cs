@@ -14,6 +14,9 @@ internal readonly record struct QuicSenderPacketRecord(
 /// <summary>
 /// Owns packet-sent tracking and recovery timing for a connection.
 /// </summary>
+// CONTEXT: The runtime keeps a per-packet-number-space ordered retention map because loss
+// detection and retransmission planning need stable packet lookup/removal independent of timing.
+// SEE: QuicRecoveryController:
 internal sealed class QuicSenderRecoveryRuntime
 {
     private readonly Dictionary<QuicPacketNumberSpace, SortedList<ulong, QuicSenderPacketRecord>> sentPacketsBySpace = [];

@@ -30,14 +30,12 @@ internal static class QuicTransportParametersCodec
     /// </summary>
     internal const bool QuicTransportParametersEncryptedExtensions = true;
 
-    // RFC 9000 transport-parameter IDs handled by this codec.
-    // 0x00 original_destination_connection_id, 0x01 max_idle_timeout, 0x02 stateless_reset_token,
-    // 0x03 max_udp_payload_size, 0x04 initial_max_data, 0x05 initial_max_stream_data_bidi_local,
-    // 0x06 initial_max_stream_data_bidi_remote, 0x07 initial_max_stream_data_uni,
-    // 0x08 initial_max_streams_bidi, 0x09 initial_max_streams_uni, 0x0B max_ack_delay,
-    // 0x0C disable_active_migration, 0x0D preferred_address, 0x0E active_connection_id_limit,
-    // 0x0F initial_source_connection_id, 0x10 retry_source_connection_id, 0x11 version_information,
-    // 0x20 max_datagram_frame_size, 0x2AB2 grease_quic_bit.
+    // CONTEXT: Transport-parameter IDs are wire-visible, so this parser/formatter cluster must stay
+    // aligned with the validation rules for invalid values, server-only fields, and Version Information.
+    // SEE: spec:REQ-QUIC-RFC9000-0326
+    // SEE: spec:REQ-QUIC-RFC9000-0334
+    // SEE: spec:REQ-QUIC-RFC9000-1162
+    // SEE: spec:REQ-QUIC-RFC9368-S3-0001
     private const ulong OriginalDestinationConnectionIdId = 0x00;
     private const ulong MaxIdleTimeoutId = 0x01;
     private const ulong StatelessResetTokenId = 0x02;

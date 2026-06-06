@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Long-packet type bits are the wire values used by the RFC 9000 long-header packet
+// type field, so the constants stay aligned with the parsed packet enums.
+// SEE: QuicLongHeaderPacket
 /// <summary>
 /// Logical QUIC long-header packet types.
 /// </summary>

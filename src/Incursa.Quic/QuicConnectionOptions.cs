@@ -10,6 +10,9 @@ namespace Incursa.Quic;
 /// </summary>
 public abstract class QuicConnectionOptions
 {
+    // CONTEXT: These defaults are conservative baseline values that bound initial memory and queue
+    // growth before the application overrides them.
+    // SEE: QuicReceiveWindowSizes
     private const int DefaultConnectionReceiveWindow = 16 * 1024 * 1024;
     private const int DefaultStreamReceiveWindow = 64 * 1024;
     private const int DefaultMaxInboundDatagramQueueSize = 1024;

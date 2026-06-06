@@ -7,6 +7,10 @@ using System.Runtime.InteropServices;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The packet-info sender keeps the Linux cmsghdr and pktinfo offsets explicit because the
+// send path is ABI-driven; modeling them as managed structs would add complexity without reducing
+// the platform-specific marshalling work.
+// SEE: TrySendTo and CreatePacketInformationControlMessage
 /// <summary>
 /// Sends UDP datagrams with Linux packet-info source-address selection.
 /// </summary>

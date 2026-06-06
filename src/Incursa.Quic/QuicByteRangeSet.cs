@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The stored ranges are kept normalized and coalesced so coverage math can rely on an
+// ordered, non-overlapping shape; touching ranges stay merged to keep the representation compact.
+// SEE: MeasureAdditionalCoverage and CoversPrefix
 /// <summary>
 /// Maintains a normalized, non-overlapping set of half-open byte ranges and tracks the total
 /// amount of unique coverage across all stored ranges.

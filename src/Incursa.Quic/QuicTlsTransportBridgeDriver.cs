@@ -17,6 +17,12 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTlsTransportBridgeDriver : IQuicTlsTransportBridge
 {
+    // CONTEXT: handshake ingress drain chunking
+    // SEE: code:src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs#DrainBufferedCryptoIntoTranscript
+    // The transcript drain uses a fixed 512-byte stack buffer so handshake
+    // ingress can be copied in bounded chunks without heap allocation. The size
+    // is a throughput/stack-footprint tradeoff and should not be "simplified"
+    // into a larger pooled buffer without rechecking the hot path.
     private const int HandshakeIngressDrainChunkBytes = 512;
     private const int Sha256FingerprintLength = 32;
     private const ushort PeerCertificatePolicyMismatchAlertDescription = 0x0031;

@@ -8,6 +8,12 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicAddressValidation
 {
+    // CONTEXT: the 64-bit entropy floor is a structural validation gate, not a handshake proof
+    // SEE: code:src/Incursa.Quic/QuicAddressValidation.cs#CanConsiderPeerAddressValidated
+    // Endpoint-chosen connection IDs shorter than 8 bytes are treated as too
+    // weak to stand in for address validation. Keep the floor because several
+    // call sites use it as the minimum structural signal before transport
+    // state advances.
     /// <summary>
     /// RFC 9000's address-validation helper requires at least 64 bits of connection-ID entropy.
     /// </summary>
@@ -93,4 +99,3 @@ internal static class QuicAddressValidation
         return true;
     }
 }
-

@@ -13,6 +13,15 @@ namespace Incursa.Quic.Http3;
 /// </summary>
 public sealed class Http3Server : IAsyncDisposable
 {
+    // CONTEXT: Response write chunking
+    // SEE: spec:REQ-QUIC-RFC9114-S4-0002
+    // SEE: spec:REQ-QUIC-RFC9114-S9-0001
+    // SEE: code:src/Incursa.Quic.Http3/Http3FrameWriter.cs#WriteFrame
+    // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#WriteFinalFrameBytesAsync
+    // ResponseDataFrameChunkSize caps HTTP/3 DATA payloads, while
+    // ResponseWriteChunkSize only caps each QUIC write call. Keeping them
+    // separate preserves frame boundaries and keeps the final-frame path able
+    // to use WriteFinalAsync on the last chunk.
     private const int ResponseWriteChunkSize = 1024;
     private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
@@ -38,6 +47,13 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly Http3Settings localSettings;
     private readonly int readBufferSize;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
+    // CONTEXT: Server shutdown ownership
+    // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
+    // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
+    // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#DisposeAsync
+    // The server keeps connection tasks so DisposeAsync can stop accepting new
+    // connections and then await in-flight handlers instead of converting
+    // normal shutdown into a failure.
     private readonly List<Task> connectionTasks = [];
     private int disposed;
 
@@ -215,6 +231,13 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
+    // CONTEXT: HTTP/3 startup order
+    // SEE: spec:REQ-QUIC-RFC9114-S6-0001
+    // SEE: spec:REQ-QUIC-RFC9114-S7-0001
+    // SEE: code:src/Incursa.Quic.Http3/Http3Client.cs#OpenRequiredUnidirectionalStreamsAsync
+    // The control stream and SETTINGS go out before the QPACK encoder/decoder
+    // streams because peers require the control stream to exist first and the
+    // client/server startup code mirrors this order.
     private async ValueTask<QuicStream> OpenRequiredUnidirectionalStreamsAsync(QuicConnection connection, CancellationToken cancellationToken)
     {
         QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional, cancellationToken).ConfigureAwait(false);
@@ -581,6 +604,13 @@ public sealed class Http3Server : IAsyncDisposable
         Http3FrameReader frameReader = new();
         Http3RequestMessageValidator validator = new();
         ArrayBufferWriter<byte>? body = null;
+        // CONTEXT: Request read buffering
+        // SEE: spec:REQ-QUIC-RFC9114-S4-0002
+        // SEE: code:src/Incursa.Quic.Http3/Http3FrameReader.cs#Read
+        // SEE: code:src/Incursa.Quic.Http3/Http3RequestMessageValidator.cs#ReceiveData
+        // A pooled buffer is used here because frame parsing spans multiple
+        // awaited reads and the frame reader may hold partial bytes until it
+        // can complete a frame.
         byte[] buffer = ArrayPool<byte>.Shared.Rent(readBufferSize);
 
         try

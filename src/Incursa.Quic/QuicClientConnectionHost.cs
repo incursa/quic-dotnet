@@ -15,6 +15,10 @@ internal sealed class QuicClientConnectionHost : IAsyncDisposable
 {
     private const int RouteConnectionIdLength = 8;
     private const ulong MinimumActiveConnectionIdLimit = 2;
+    // CONTEXT: These replay-validation outcome codes are stable because they are recorded in
+    // transition history and diagnostics; 0 means success, 1 is missing header/fields, and 2 is
+    // token mismatch.
+    // SEE: RetryBootstrapReplayPacketValidationFailureCode
     private const int ReplayPacketValidationFailureMissingFieldsOrHeader = 1;
     private const int ReplayPacketValidationFailureTokenMismatch = 2;
 

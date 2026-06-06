@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: ECN validation is tracked per packet number space because ACK ECN counters are scoped
+// that way; once validation fails, ECN stays disabled until a later successful validation attempt.
+// SEE: TryValidateAcknowledgedEcnCounts
 /// <summary>
 /// Tracks the ECN send and validation state for a path.
 /// </summary>
@@ -153,4 +156,3 @@ internal sealed class QuicEcnValidationState
         internal ulong ReportedEcnCeCount { get; set; }
     }
 }
-

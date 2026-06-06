@@ -5,6 +5,9 @@ using System.Net.Sockets;
 
 namespace Incursa.Quic;
 
+// CONTEXT: IPv4 fragmentation control is best-effort and only meaningful on AF_INET sockets, so
+// the helper returns false for unsupported families instead of trying to normalize the socket.
+// SEE: TryEnableDontFragmentIfPossible
 /// <summary>
 /// Applies best-effort IPv4 fragmentation controls to runtime-owned UDP sockets.
 /// </summary>

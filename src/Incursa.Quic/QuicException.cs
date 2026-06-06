@@ -5,6 +5,10 @@ using System.IO;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The public exception surface intentionally exposes only the QUIC error classification
+// and application code; transport codes stay internal so lower-level details do not leak into the
+// consumer contract.
+// SEE: QuicError
 /// <summary>
 /// Exception raised for QUIC terminal-state failures.
 /// </summary>
@@ -51,4 +55,3 @@ public sealed class QuicException : IOException
     /// </summary>
     public long? TransportErrorCode { get; }
 }
-

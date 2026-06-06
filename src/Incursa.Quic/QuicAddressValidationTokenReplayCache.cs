@@ -6,6 +6,11 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Consumed validation tokens are indexed by a SHA-256 fingerprint so replay checks do
+// not retain raw token bytes, and pruning on consume keeps the cache bounded without a separate
+// timer.
+// SEE: code:src/Incursa.Quic/QuicAddressValidationTokenReplayCache.cs#TryConsume
+// SEE: code:src/Incursa.Quic/QuicAddressValidationTokenProtector.cs#ValidateNewToken
 internal sealed class QuicAddressValidationTokenReplayCache
 {
     private readonly ConcurrentDictionary<string, long> consumedTokenExpirations = new();

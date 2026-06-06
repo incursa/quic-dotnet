@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The epoch marker is internal because the runtime needs to remember whether received
+// application data arrived before or after handshake completion, but the public API must not.
+// SEE: QuicStream and QuicConnectionRuntime
 /// <summary>
 /// Identifies the QUIC encryption epoch in which application stream data was received.
 /// </summary>

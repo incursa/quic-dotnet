@@ -6,6 +6,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The routine is intentionally self-contained so the repo can derive X25519 key pairs and
+// shared secrets without introducing a platform-specific ECDH dependency.
+// SEE: QuicTlsTransport
 internal static class QuicTlsX25519
 {
     internal const int KeyLength = 32;

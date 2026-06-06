@@ -51,6 +51,11 @@ internal static class QuicClientConnectionOptionsValidator
 
         if (capturedCertificatePolicySnapshot is not null)
         {
+            // CONTEXT: The exact-pinning client floor does not use hostname validation, callback-driven
+            // chain validation, or revocation checks, so those knobs are rejected together instead of
+            // being silently ignored.
+            // SEE: code:src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs#Capture
+            // SEE: code:src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs#CapturePeerCertificatePolicySnapshot
             if (!string.IsNullOrEmpty(authenticationOptions.TargetHost))
             {
                 throw new NotSupportedException("ClientAuthenticationOptions.TargetHost is not supported when PeerCertificatePolicy is supplied because the exact-pinning path does not use hostname validation.");
@@ -189,6 +194,9 @@ internal static class QuicClientConnectionOptionsValidator
             return null;
         }
 
+        // CONTEXT: The managed client slice only supports the single cipher suite it can actually
+        // negotiate and protect with, so a policy is accepted only when it pins that exact suite.
+        // SEE: code:src/Incursa.Quic/QuicClientConnectionOptionsValidator.cs#Capture
         List<TlsCipherSuite> allowedCipherSuites = [];
         foreach (TlsCipherSuite allowedCipherSuite in source.AllowedCipherSuites)
         {

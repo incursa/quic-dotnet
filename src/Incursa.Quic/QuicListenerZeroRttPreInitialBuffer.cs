@@ -11,6 +11,13 @@ internal readonly record struct QuicListenerBufferedZeroRttDatagram(
 
 internal sealed class QuicListenerZeroRttPreInitialBuffer
 {
+    // CONTEXT: pre-Initial 0-RTT buffering stays per DCID and bounded
+    // SEE: code:src/Incursa.Quic/QuicListenerZeroRttPreInitialBuffer.cs#TryBuffer
+    // SEE: code:src/Incursa.Quic/QuicListenerZeroRttPreInitialBuffer.cs#Drain
+    // The listener parks at most a small number of 0-RTT datagrams per
+    // destination connection ID until the matching Initial arrives. The
+    // datagrams are copied to owned storage because the receive buffer is
+    // transient and the buffered packets may outlive the ingress loop.
     private readonly int maximumDatagramsPerConnection;
     private readonly ConcurrentDictionary<QuicConnectionIdKey, ConnectionBuffer> buffersByDestinationConnectionId = new();
 

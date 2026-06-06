@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The byte values mirror the low-order stream-ID bits so direction and initiator checks
+// stay wire-aligned instead of introducing an extra translation layer.
+// SEE: QuicStreamId
 /// <summary>
 /// Identifies the direction of a QUIC stream.
 /// </summary>
@@ -18,4 +21,3 @@ public enum QuicStreamType : byte
     /// </summary>
     Bidirectional = 1,
 }
-

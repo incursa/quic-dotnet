@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The frame preserves the wire order of stream ID then application error code so
+// STOP_SENDING handling stays symmetrical with the parser and writer.
+// SEE: QuicResetStreamFrame
 /// <summary>
 /// A parsed or constructed STOP_SENDING frame.
 /// </summary>
@@ -27,4 +30,3 @@ internal readonly struct QuicStopSendingFrame
     /// </summary>
     internal ulong ApplicationProtocolErrorCode { get; }
 }
-

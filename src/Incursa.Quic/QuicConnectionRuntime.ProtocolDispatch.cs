@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace Incursa.Quic;
 
+// CONTEXT: TLS state updates are applied in arrival order, and the loop can stop once a fatal
+// alert is observed because later updates are no longer actionable after the connection is doomed.
+// SEE: QuicTlsTransport
 internal sealed partial class QuicConnectionRuntime
 {
     private bool ApplyTlsStateUpdates(

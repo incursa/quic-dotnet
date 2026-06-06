@@ -11,6 +11,9 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicListenerOptions
 {
+    // CONTEXT: A zero backlog means "use the library default" rather than "accept nothing", so the
+    // validation step normalizes the option before the listener host consumes it.
+    // SEE: Validate
     private const int DefaultListenBacklog = 512;
 
     /// <summary>

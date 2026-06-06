@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The snapshot copies certificate-policy inputs so the client exact-match floor evaluates
+// against immutable bytes, not caller-owned buffers that might change after configuration.
+// SEE: QuicPeerCertificatePolicy
 /// <summary>
 /// Captures the client-certificate policy inputs that can be reused across QUIC connection setup.
 /// </summary>

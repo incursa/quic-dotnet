@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The path-validation response is also a fixed 8-byte opaque token, so the frame keeps
+// the payload as a borrowed span to avoid copying during validation.
+// SEE: QuicConnectionRuntime
 /// <summary>
 /// A parsed or constructed PATH_RESPONSE frame.
 /// </summary>
@@ -23,4 +26,3 @@ internal readonly ref struct QuicPathResponseFrame
     /// </summary>
     internal ReadOnlySpan<byte> Data => data;
 }
-

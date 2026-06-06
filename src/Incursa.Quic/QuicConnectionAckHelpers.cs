@@ -142,6 +142,12 @@ internal sealed class QuicConnectionApplicationAckState
 
 internal static class QuicConnectionAckHelpers
 {
+    // CONTEXT: ACK payload assembly keeps a stack fast path
+    // SEE: code:src/Incursa.Quic/QuicConnectionAckHelpers.cs#TryBuildLongHeaderAckPiggybackFramePayload
+    // SEE: code:src/Incursa.Quic/QuicConnectionAckHelpers.cs#TryBuildOutboundAckPayloadLease
+    // The 512-byte scratch buffer covers the common ACK payload sizes so the
+    // piggyback path can format without first renting from the pool. Keep the
+    // stack allocation unless the hot path is re-benchmarked.
     private const int MinimumAckPayloadBufferLength = 512;
 
     internal static bool TryBuildApplicationAckPiggybackPayload(

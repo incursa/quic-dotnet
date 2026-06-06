@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The parser keeps both the encoded gap values and the decoded packet-number bounds so
+// later ACK processing can preserve the wire math without recomputing it.
+// SEE: QuicAckFrame
 /// <summary>
 /// A parsed ACK Range entry after the first ACK Range.
 /// </summary>
@@ -39,4 +42,3 @@ internal readonly struct QuicAckRange
     /// </summary>
     internal ulong LargestAcknowledged { get; }
 }
-

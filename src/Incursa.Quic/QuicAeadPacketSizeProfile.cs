@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The profile buckets line up with the RFC 9001 Appendix B limit cases, so the numeric
+// values are intentionally stable and are not just arbitrary labels.
+// SEE: QuicAeadUsageLimitCalculator
 /// <summary>
 /// Describes the packet-size regimes used by the RFC 9001 Appendix B AEAD limit guidance.
 /// </summary>
@@ -23,4 +26,3 @@ internal enum QuicAeadPacketSizeProfile
     /// </summary>
     Unrestricted = 2,
 }
-

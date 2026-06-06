@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: STREAM parsing has to preserve the exact varint field order on the wire because the
+// length field, if present, changes how much payload belongs to the frame.
+// SEE: QuicStreamFrame and QuicVariableLengthInteger
 /// <summary>
 /// Parses QUIC stream identifiers and STREAM frames from byte spans.
 /// </summary>
@@ -116,4 +119,3 @@ internal static class QuicStreamParser
         return true;
     }
 }
-

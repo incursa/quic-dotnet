@@ -32,6 +32,9 @@ internal enum QuicCryptoBufferResult
     /// <summary>
     /// Local implementation floor chosen to keep the CRYPTO buffer comfortably above small handshake bursts.
     /// </summary>
+    // CONTEXT: This floor keeps the CRYPTO buffer comfortably above the small handshake bursts
+    // that arrive before transcript advancement, so it avoids repeated early growth on the hot path.
+    // SEE: QuicHandshakeFlowCoordinator
     private const int MinimumCapacity = 4096;
     private readonly List<Entry> entries = new(8);
     private int bufferedBytes;

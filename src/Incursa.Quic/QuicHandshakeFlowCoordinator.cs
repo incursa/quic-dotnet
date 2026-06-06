@@ -5,6 +5,9 @@ using System.Buffers.Binary;
 
 namespace Incursa.Quic;
 
+// CONTEXT: These minimum handshake payload lengths are the smallest long-header layouts that still
+// leave room for the header-protection sample; the open/parse path depends on these exact byte offsets.
+// SEE: QuicInitialPacketProtection
 /// <summary>
 /// Owns the narrow Handshake packet assembly and open/parse glue used by the connection runtime.
 /// </summary>

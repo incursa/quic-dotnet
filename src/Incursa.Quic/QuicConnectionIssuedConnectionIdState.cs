@@ -62,6 +62,13 @@ internal sealed class QuicConnectionIssuedConnectionIdState
         byte[] statelessResetToken,
         ulong peerActiveConnectionIdLimit)
     {
+        // CONTEXT: issued CID bytes must stay unique
+        // SEE: code:src/Incursa.Quic/QuicConnectionIssuedConnectionIdState.cs#IsActiveIssuedConnectionId
+        // SEE: code:src/Incursa.Quic/QuicConnectionIssuedConnectionIdState.cs#TryRetireIssuedConnectionId
+        // The same connection-ID bytes cannot be registered under two different
+        // sequence numbers because the runtime uses the bytes as the reverse
+        // lookup key for routing and stateless-reset ownership. That uniqueness
+        // check has to happen before the new token is inserted.
         if (statelessResetTokensByConnectionId.ContainsKey(connectionId)
             || !HasRoomForAdditionalPeerIssuedConnectionId(peerActiveConnectionIdLimit))
         {

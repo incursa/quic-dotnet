@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The conversion rounds idle timeout up to whole milliseconds on the transport-parameter
+// side, then back to runtime microseconds, so the two representations keep a conservative floor.
+// SEE: IdleTimeoutToMaxIdleTimeoutMilliseconds and MaxIdleTimeoutMillisecondsToRuntimeMicros
 internal static class QuicTransportParameterTimeUnits
 {
     private const ulong MicrosecondsPerMillisecond = 1_000UL;

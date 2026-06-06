@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The stream ID, application error code, and final size stay in wire order because
+// RESET_STREAM teardown depends on the peer seeing the original final size.
+// SEE: QuicStream
 /// <summary>
 /// A parsed or constructed RESET_STREAM frame.
 /// </summary>
@@ -33,4 +36,3 @@ internal readonly struct QuicResetStreamFrame
     /// </summary>
     internal ulong FinalSize { get; }
 }
-

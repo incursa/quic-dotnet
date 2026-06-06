@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Preferred address is stored as raw address/port/token bytes because it mirrors the wire
+// transport parameter and needs to preserve byte-for-byte values for retransmission and validation.
+// SEE: QuicTransportParameters
 /// <summary>
 /// A parsed preferred_address transport parameter value.
 /// </summary>
@@ -38,4 +41,3 @@ internal sealed class QuicPreferredAddress
     /// </summary>
     internal byte[] StatelessResetToken { get; set; } = [];
 }
-

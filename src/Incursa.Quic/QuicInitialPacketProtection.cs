@@ -83,6 +83,9 @@ internal sealed class QuicInitialPacketProtection
     /// </summary>
     public const int HeaderProtectionSampleLength = 16;
 
+    // CONTEXT: These salts and HKDF labels are protocol-fixed byte strings, so they stay
+    // pre-encoded as arrays instead of being recomputed as strings on the handshake hot path.
+    // SEE: RFC 9001 Section 5.2 and RFC 9369 Section 7
     /// <summary>
     /// The Initial salt from RFC 9001 Section 5.2.
     /// </summary>

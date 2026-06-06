@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9114-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 RFC 9114 Large Body Completion Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the bounded recovery slice for large HTTP/3 response and upload bodies that must preserve exact DATA accounting and clean stream completion under managed load.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "WI-QUIC-RFC9114-0003",
+    "VER-QUIC-RFC9114-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9114-S9-0002"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/Http3FrameReader.cs",
+    "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs"
+  ],
+  "design_summary": "The recovery boundary stays in the HTTP/3 frame/body path and the QUIC stream final-write path. HTTP/3 must emit and consume all DATA bytes declared by Content-Length while the transport preserves queued stream write ownership and promotes the final queued write to FIN without losing payload bytes. The client may use Content-Length as an accounting check, but it must not hide premature EOF or a missing stream completion defect.",
+  "data_and_state_considerations": "The HTTP/3 response path owns declared body length, emitted DATA frame payloads, and final response completion. The QUIC runtime owns pending application-send payload buffers, delayed small writes, queued write promotion to final writes, fragmentation, and flow-control-blocked retry ownership. The slice must keep payload buffers owned until they are protected, queued, or retried and must not reuse caller-provided memory after a pending write remains asynchronous.",
+  "edge_cases_and_constraints": [
+    "Repeated 64KB and 1MB responses must complete with exact body length and no premature EOF.",
+    "Large uploads must deliver the exact request body to the handler and preserve content-length validation.",
+    "Queued non-final writes followed by an empty finish must carry FIN on the correct stream and offset.",
+    "Flow-control-blocked writes must retain owned bytes until credit allows retry.",
+    "Malformed or truncated request/body framing must still fail closed rather than being masked by large-body success paths."
+  ],
+  "risks": [
+    "Changing ProtocolLab or client completion semantics could hide the invalid benchmark row instead of fixing transport completion.",
+    "Throughput tuning before this slice is green would optimize invalid evidence.",
+    "Broad HTTP/3 rewrites could obscure the specific queued-write or response-tail defect."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Benchmark Boundary",
+      "content": "ProtocolLab local benchmark rows are diagnostic input for this slice. They are not publishable performance claims until the focused correctness tests and verification artifact pass."
+    }
+  ]
+}

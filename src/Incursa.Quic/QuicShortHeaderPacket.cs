@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Short-header packets keep the post-byte payload as an opaque remainder because the
+// caller must interpret the packet number and protected payload together.
+// SEE: QuicPacketHeaderBits
 /// <summary>
 /// A parsed short-header-form packet view with an opaque remainder.
 /// </summary>
@@ -57,4 +60,3 @@ internal readonly ref struct QuicShortHeaderPacket
     /// </summary>
     internal ReadOnlySpan<byte> Remainder => remainder;
 }
-

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Packet-number expansion uses the RFC 9000 half-window rule, so the arithmetic here
+// must stay aligned with the expected-packet window rather than being simplified to a nearest fit.
+// SEE: ExpandTruncatedPacketNumber
 internal static class QuicPacketNumberEncoding
 {
     private const int BitsPerByte = 8;

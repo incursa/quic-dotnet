@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The token copies both the token bytes and remote endpoint so validation is based on a
+// stable snapshot, and the one-time consume gate prevents replay of the same token object.
+// SEE: TryConsume
 internal enum QuicAddressValidationTokenSource
 {
     NewToken,

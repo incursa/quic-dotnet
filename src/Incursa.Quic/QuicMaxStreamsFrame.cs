@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Bidirectional and unidirectional stream-count limits stay separate because MAX_STREAMS
+// carries the grant while STREAMS_BLOCKED reports the limit that was actually hit.
+// SEE: QuicStreamsBlockedFrame
 /// <summary>
 /// A parsed or constructed MAX_STREAMS frame.
 /// </summary>
@@ -27,4 +30,3 @@ internal readonly struct QuicMaxStreamsFrame
     /// </summary>
     internal ulong MaximumStreams { get; }
 }
-

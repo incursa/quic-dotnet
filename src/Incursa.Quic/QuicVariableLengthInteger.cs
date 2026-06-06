@@ -5,6 +5,9 @@ using System.Buffers.Binary;
 
 namespace Incursa.Quic;
 
+// CONTEXT: QUIC varints are shortest-encoding and prefix-sensitive, so the prefix table and
+// length masks stay explicit rather than being derived at call sites.
+// SEE: TryParse and TryFormat
 /// <summary>
 /// Parses and formats QUIC variable-length integers.
 /// </summary>

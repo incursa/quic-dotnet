@@ -231,6 +231,91 @@ public sealed class REQ_QUIC_API_0010
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task FlowControlBlockedStreamWriteResumesAfterPeerRaisesStreamCredit()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionReceiveLimit: 4096,
+            connectionSendLimit: 4096,
+            localBidirectionalSendLimit: 64,
+            localBidirectionalReceiveLimit: 2048);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        Assert.Equal(0L, stream.Id);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.True(runtime.TlsState.OneRttOpenPacketProtectionMaterial.HasValue);
+        Assert.True(runtime.TlsState.OneRttProtectPacketProtectionMaterial.HasValue);
+
+        byte[] payload = Enumerable.Range(0, 128).Select(static index => (byte)(index % 251)).ToArray();
+        Task writeTask = stream.WriteAsync(payload, 0, payload.Length);
+        await Task.Delay(150);
+        Assert.False(writeTask.IsCompleted, "The write should still be waiting for peer stream credit.");
+
+        QuicHandshakeFlowCoordinator peerCoordinator = new(runtime.CurrentHandshakeSourceConnectionId);
+        byte[] maxStreamDataPayload = QuicFrameTestData.BuildMaxStreamDataFrame(
+            new QuicMaxStreamDataFrame((ulong)stream.Id, (ulong)payload.Length));
+        Assert.True(peerCoordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+            maxStreamDataPayload,
+            minimumPacketNumberExclusive: 5,
+            runtime.TlsState.OneRttOpenPacketProtectionMaterial.Value,
+            keyPhase: false,
+            out ulong peerPacketNumber,
+            out byte[] peerPacket));
+        Assert.Equal(6UL, peerPacketNumber);
+
+        QuicConnectionTransitionResult peerResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath.Value.Identity,
+                peerPacket),
+            nowTicks: 10);
+        Assert.True(peerResult.StateChanged, DescribeStream(stream));
+
+        QuicConnectionSendDatagramEffect matchedSendEffect = Assert.Single(
+            peerResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+            effect => PacketContainsStreamFrame(
+                effect.Datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                runtime.CurrentPeerDestinationConnectionId.Span,
+                (ulong)stream.Id,
+                offset: 0,
+                streamDataLength: payload.Length,
+                fin: false));
+
+        QuicHandshakeFlowCoordinator outgoingCoordinator = new(runtime.CurrentPeerDestinationConnectionId);
+        Assert.True(outgoingCoordinator.TryOpenProtectedApplicationDataPacket(
+            matchedSendEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength,
+            out _));
+
+        Assert.True(TryFindStreamFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            (ulong)stream.Id,
+            offset: 0,
+            streamDataLength: payload.Length,
+            fin: false,
+            out QuicStreamFrame frame));
+        Assert.True(frame.StreamData.SequenceEqual(payload));
+
+        await writeTask.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0003")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

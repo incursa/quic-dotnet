@@ -10,6 +10,12 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicConnectionLifecycleTimerState
 {
+    // CONTEXT: terminal lifetime spans three PTOs
+    // SEE: code:src/Incursa.Quic/QuicConnectionLifecycleTimerState.cs#ComputeTerminalEndTicks
+    // The close/drain lifetime is intentionally tied to three probe timeouts
+    // so terminal packets stay live long enough for recovery, but the
+    // connection still expires deterministically instead of waiting on an
+    // arbitrary wall-clock delay.
     private const ulong TerminalLifetimePtoMultiplier = 3;
     private const ulong MicrosecondsPerSecond = 1_000_000UL;
 
@@ -37,6 +43,11 @@ internal sealed class QuicConnectionLifecycleTimerState
             : Array.Empty<QuicConnectionEffect>();
     }
 
+    // CONTEXT: timer generations invalidate stale callbacks
+    // SEE: code:src/Incursa.Quic/QuicConnectionLifecycleTimerState.cs#TryConsumeTimerExpiration
+    // Every arm/cancel bumps the generation so late expirations from the
+    // previous schedule are ignored. The priority sequence advance keeps equal
+    // due times ordered without mutating existing queue entries.
     internal bool TrySetTimerDeadline(
         QuicConnectionTimerKind timerKind,
         long? dueTicks,

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The managed client policy floor is exact-match only, so the policy stores immutable
+// byte snapshots of the peer leaf certificate and explicit trust material.
+// SEE: QuicClientCertificatePolicySnapshot
 /// <summary>
 /// Exact peer-certificate inputs for the narrow managed client certificate-policy floor.
 /// </summary>

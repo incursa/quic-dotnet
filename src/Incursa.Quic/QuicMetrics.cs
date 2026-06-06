@@ -11,6 +11,9 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicMetrics
 {
+    // CONTEXT: The meter name and tag keys are externally visible metrics-contract surface, so
+    // they must stay stable once emitted rather than being treated as local implementation detail.
+    // SEE: RecordConnectionStarted and RecordStreamOpened
     internal const string MeterName = "Incursa.Quic";
     internal const string ClientRole = "client";
     internal const string ServerRole = "server";

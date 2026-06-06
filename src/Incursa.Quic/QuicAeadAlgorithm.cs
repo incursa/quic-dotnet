@@ -29,6 +29,9 @@ internal enum QuicAeadAlgorithm
     Chacha20Poly1305 = 3,
 }
 
+// CONTEXT: The metadata helper groups algorithms by key-size family so packet-protection material
+// can be derived with a small switch instead of a per-call lookup table.
+// SEE: QuicTlsPacketProtectionMaterial
 /// <summary>
 /// Provides algorithm metadata for packet-protection material binding.
 /// </summary>

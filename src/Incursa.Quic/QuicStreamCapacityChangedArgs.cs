@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The bidirectional and unidirectional deltas are kept separate because stream credit is
+// tracked independently and callers usually only need the newly available class.
+// SEE: QuicListener
 /// <summary>
 /// Arguments passed to <see cref="QuicConnectionOptions.StreamCapacityCallback"/>.
 /// </summary>

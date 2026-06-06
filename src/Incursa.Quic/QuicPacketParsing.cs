@@ -142,6 +142,11 @@ internal static class QuicPacketParsing
                 destinationConnectionIdLength,
                 sourceConnectionIdLength,
                 versionSpecificData),
+            // CONTEXT: Handshake packets reuse the same length-and-packet-number field validation as
+            // 0-RTT packets because the wire layout is the same once the packet type is known; only the
+            // packet semantics differ.
+            // SEE: code:src/Incursa.Quic/QuicPacketParsing.cs#TryValidateZeroRttPacketFields
+            // SEE: code:src/Incursa.Quic/QuicPacketParsing.cs#TryValidateLengthAndPacketNumberFields
             QuicLongPacketType.Handshake => TryValidateZeroRttPacketFields(
                 headerControlBits,
                 destinationConnectionIdLength,

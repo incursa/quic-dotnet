@@ -17,6 +17,12 @@ internal static class QuicBufferPool
         return ArrayPool<byte>.Shared.Rent(minimumLength);
     }
 
+    // CONTEXT: array-pool returns are opt-in cleared to preserve hot-path throughput
+    // SEE: code:src/Incursa.Quic/QuicBufferPool.cs#ReturnBytes
+    // Most pooled buffers are immediately overwritten, so clearing on every
+    // return would add unnecessary cost. Callers pass clearArray:true when a
+    // buffer has carried secret material or other sensitive state that must
+    // not linger in the pool.
     internal static QuicBufferLease RentLease(int minimumLength)
     {
         return new QuicBufferLease(RentBytes(minimumLength), minimumLength);

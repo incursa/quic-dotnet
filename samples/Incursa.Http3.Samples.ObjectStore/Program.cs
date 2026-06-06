@@ -256,13 +256,14 @@ public static class BrowserLaunchInstructions
 
     private static string WindowsProgramFilesPath(string programFilesDirectory, params string[] segments)
     {
-        string path = Path.Combine("C:" + Path.DirectorySeparatorChar, programFilesDirectory);
+        StringBuilder path = new($"C:\\{programFilesDirectory}");
         foreach (string segment in segments)
         {
-            path = Path.Combine(path, segment);
+            path.Append('\\');
+            path.Append(segment);
         }
 
-        return path;
+        return path.ToString();
     }
 
     private static string? ComputeSubjectPublicKeyInfoSha256(X509Certificate2 certificate)

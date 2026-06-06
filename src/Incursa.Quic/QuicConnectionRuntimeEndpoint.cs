@@ -50,6 +50,13 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
 
     public QuicConnectionRuntimeHost Host => host;
 
+    // CONTEXT: The endpoint keeps routing, CID ownership, and retained stateless-reset bindings in
+    // separate maps because packet routing, CID retirement, and late reset handling each use a different
+    // key shape. The split is intentional so unregistering a handle can still preserve a retained
+    // stateless-reset route when requested.
+    // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs#TryRegisterConnectionId
+    // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs#TryRetireConnectionId
+    // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs#RetainStatelessResetRoute
     internal ConcurrentDictionary<QuicConnectionHandle, ConcurrentDictionary<QuicConnectionIdKey, byte>> RouteIdsByHandle => routeIdsByHandle;
 
     internal ConcurrentDictionary<byte, ConcurrentDictionary<QuicConnectionIdKey, QuicConnectionHandle>> RoutesByLength => routesByLength;

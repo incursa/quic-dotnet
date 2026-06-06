@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This view stays a ref struct because the reason phrase is a borrowed span, and the
+// transport/application close types are fixed RFC 9000 wire literals.
+// SEE: QuicFrameCodec
 /// <summary>
 /// A parsed or constructed CONNECTION_CLOSE frame.
 /// </summary>
@@ -92,4 +95,3 @@ internal readonly ref struct QuicConnectionCloseFrame
     /// </summary>
     internal ReadOnlySpan<byte> ReasonPhrase => reasonPhrase;
 }
-

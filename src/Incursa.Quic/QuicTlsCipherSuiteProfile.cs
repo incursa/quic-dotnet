@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The supported cipher-suite profile is a closed, versioned mapping from TLS suite to
+// named group and packet-protection algorithm; the description string is part of that fixed subset.
+// SEE: TryGet
 /// <summary>
 /// Describes the narrow managed TLS 1.3 cipher-suite profile supported by the client-role key schedule slice.
 /// </summary>

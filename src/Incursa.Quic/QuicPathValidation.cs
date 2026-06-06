@@ -23,6 +23,12 @@ internal static class QuicPathValidation
     /// <summary>
     /// Fills an 8-byte PATH_CHALLENGE payload using fresh entropy and a monotonic nonce so successive calls differ.
     /// </summary>
+    // CONTEXT: PATH_CHALLENGE mixes entropy with a monotonic counter
+    // SEE: code:src/Incursa.Quic/QuicPathValidation.cs#TryGeneratePathChallengeData
+    // The random fill provides unpredictability, then the counter overwrites
+    // the leading 4 bytes so back-to-back challenges still differ even if the
+    // RNG is deterministic in tests. Keep the write order because the counter
+    // is intentionally layered onto the random payload.
     internal static bool TryGeneratePathChallengeData(Span<byte> destination, out int bytesWritten)
     {
         bytesWritten = default;

@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This frame stays a ref struct because the parsed stream data is a borrowed span over
+// the packet payload; copying it would add churn to the ingress hot path.
+// SEE: QuicStreamParser
 /// <summary>
 /// A parsed STREAM frame view.
 /// </summary>
@@ -95,4 +98,3 @@ internal readonly ref struct QuicStreamFrame
     /// </summary>
     internal int ConsumedLength => consumedLength;
 }
-

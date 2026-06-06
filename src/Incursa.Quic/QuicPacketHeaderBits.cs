@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: These bit masks are shared wire-layout constants for parsing, formatting, and
+// header-protection updates; keeping them centralized avoids drift between packet types.
+// SEE: QuicLongHeaderPacket and QuicShortHeaderPacket
 /// <summary>
 /// Bit masks for the first byte of QUIC packets, based on the RFC 9000 header layouts.
 /// </summary>

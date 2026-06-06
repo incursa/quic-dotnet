@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The sequence number is the only payload because CID retirement is ordered solely by
+// sequence, and the frame exists to drive retire-prior-to processing.
+// SEE: QuicConnectionPeerConnectionIdState
 /// <summary>
 /// A parsed or constructed RETIRE_CONNECTION_ID frame.
 /// </summary>
@@ -21,4 +24,3 @@ internal readonly struct QuicRetireConnectionIdFrame
     /// </summary>
     internal ulong SequenceNumber { get; }
 }
-

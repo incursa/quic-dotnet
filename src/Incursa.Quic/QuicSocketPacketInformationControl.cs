@@ -6,6 +6,10 @@ using System.Net.Sockets;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Packet-information enablement is best-effort because different socket families and
+// platforms expose different ancillary-data APIs; the runtime falls back to the peer endpoint when
+// local packet info is unavailable.
+// SEE: ResolveLocalEndPoint
 /// <summary>
 /// Applies best-effort packet information controls to runtime-owned UDP sockets.
 /// </summary>

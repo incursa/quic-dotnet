@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: Stream notifications use a stable discriminant plus optional exception because the
+// callback surface needs to distinguish lifecycle events from faulted completions.
+// SEE: QuicStream
 internal enum QuicStreamNotificationKind
 {
     ReadAborted = 0,

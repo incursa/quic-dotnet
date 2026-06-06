@@ -169,6 +169,9 @@ internal readonly record struct QuicTlsStateUpdate(
 /// <summary>
 /// A small allocation-free batch of TLS state updates.
 /// </summary>
+// CONTEXT: The batch stays inline for the common case because TLS updates usually arrive in tiny
+// clusters; the overflow array is only for rarer bursts that exceed four items.
+// SEE: QuicTlsStateUpdateBatch
 internal readonly struct QuicTlsStateUpdateBatch : IReadOnlyList<QuicTlsStateUpdate>
 {
     private const int FirstIndex = 0;

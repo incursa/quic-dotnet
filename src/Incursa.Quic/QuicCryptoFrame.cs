@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: CRYPTO frames are represented as a ref struct because they borrow packet payload bytes
+// during handshake parsing and should not be copied into heap-backed wrappers.
+// SEE: QuicTlsTranscriptProgress
 /// <summary>
 /// A parsed or constructed CRYPTO frame.
 /// </summary>
@@ -30,4 +33,3 @@ internal readonly ref struct QuicCryptoFrame
     /// </summary>
     internal ReadOnlySpan<byte> CryptoData => cryptoData;
 }
-

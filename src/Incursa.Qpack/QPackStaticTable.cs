@@ -8,6 +8,11 @@ namespace Incursa.Qpack;
 /// </summary>
 public static class QPackStaticTable
 {
+    // CONTEXT: RFC 9204 static-table order is wire-visible because encoder and decoder lookups use
+    // the published zero-based indices, so this array must stay in the exact table order.
+    // SEE: spec:REQ-QUIC-RFC9204-S2-0001
+    // SEE: code:src/Incursa.Qpack/QPackEncoder.cs#EncodeFieldSection
+    // SEE: code:src/Incursa.Qpack/QPackDecoder.cs#DecodeFieldSection
     private static readonly QPackFieldLine[] Entries =
     [
         new(":authority", ""),

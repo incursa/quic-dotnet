@@ -5,6 +5,9 @@ using System.Diagnostics;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Stopwatch is the concrete clock because QUIC timeout math needs a monotonic source
+// with stable frequency conversion, and the interface keeps tests deterministic.
+// SEE: IMonotonicClock
 /// <summary>
 /// Provides monotonic time measurements using <see cref="Stopwatch"/>.
 /// </summary>

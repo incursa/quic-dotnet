@@ -1290,6 +1290,13 @@ internal sealed class QuicTransportTlsBridgeState
         return true;
     }
 
+    // CONTEXT: client handshake-attempt reset
+    // SEE: code:src/Incursa.Quic/QuicTransportTlsBridgeState.cs#TryStorePostHandshakeTicket
+    // SEE: code:src/Incursa.Quic/QuicTransportTlsBridgeState.cs#ResetOneRttAeadKeyLifecycles
+    // The client retry path only rewinds while no committed peer state, keys,
+    // or tickets remain. Once any of those have been observed, they must stay
+    // tied to the abandoned attempt so the next handshake cannot inherit stale
+    // TLS state.
     internal bool TryResetClientPeerHandshakeAttempt()
     {
         if (role != QuicTlsRole.Client)

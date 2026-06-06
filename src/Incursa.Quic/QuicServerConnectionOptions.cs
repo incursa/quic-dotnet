@@ -5,6 +5,9 @@ using System.Net.Security;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The server options bag has its own defaults because listener-driven setup only learns
+// server stream limits after the callback runs, so those values must be initialized here.
+// SEE: QuicListenerOptions
 /// <summary>
 /// Server-side connection options selected by <see cref="QuicListenerOptions.ConnectionOptionsCallback"/>.
 /// </summary>

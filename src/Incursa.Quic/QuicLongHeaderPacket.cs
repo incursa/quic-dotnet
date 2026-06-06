@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This packet view stays a ref struct because it borrows slices of the datagram; making
+// it heap-allocatable would force extra copies and obscure the wire-layout assumptions.
+// SEE: QuicVersionNegotiationPacket
 /// <summary>
 /// A parsed long-header-form packet view.
 /// </summary>

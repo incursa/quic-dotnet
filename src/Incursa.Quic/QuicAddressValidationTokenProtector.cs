@@ -16,6 +16,13 @@ internal enum QuicAddressValidationTokenValidationResult
     Replayed = 4,
 }
 
+// CONTEXT: The token protector owns the fixed on-wire envelope for address-validation tokens,
+// including the magic/version prefix, nonce, timestamps, and trailing tag. Keep the offsets and
+// lengths stable because token source detection, integrity validation, and replay handling all
+// depend on this layout lining up.
+// SEE: code:src/Incursa.Quic/QuicAddressValidationTokenProtector.cs#IssueNewToken
+// SEE: code:src/Incursa.Quic/QuicAddressValidationTokenProtector.cs#ValidateNewToken
+// SEE: code:src/Incursa.Quic/QuicAddressValidationTokenReplayCache.cs#TryConsume
 internal sealed class QuicAddressValidationTokenProtector
 {
     internal const int SecretLength = 32;

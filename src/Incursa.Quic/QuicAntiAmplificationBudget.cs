@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The budget is saturating and counts only uniquely attributable datagrams because
+// amplification protection must not wrap or double-count ambiguous ingress.
+// SEE: QuicConnectionRuntime
 /// <summary>
 /// Tracks the RFC 9000 anti-amplification budget for an unvalidated peer address.
 /// </summary>
@@ -115,4 +118,3 @@ internal sealed class QuicAntiAmplificationBudget
         return value * multiplier;
     }
 }
-

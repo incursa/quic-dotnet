@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The DATAGRAM frame keeps the raw payload as an owned memory slice because the wire
+// format may or may not include an explicit Length field, and the payload is application-owned.
+// SEE: HasLength
 /// <summary>
 /// Represents an RFC 9221 DATAGRAM frame.
 /// </summary>

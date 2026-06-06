@@ -41,10 +41,12 @@ internal sealed partial class QuicConnectionRuntime
                 phase = QuicConnectionPhase.Active;
             }
 
-            // The supported client floor still uses transcript completion as the currently
-            // available bootstrap-path validation proof point so the active path does not
-            // remain stuck in bootstrap-only state once the peer handshake flight is proven.
-            // Recovery-level handshake confirmation remains a separate client-side signal.
+            // CONTEXT: The supported client floor still treats transcript completion as the current
+            // bootstrap-path validation proof point so the active path does not remain stuck in a
+            // bootstrap-only state once the peer handshake flight is proven. Recovery-level handshake
+            // confirmation remains a separate client-side signal.
+            // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs#HandleHandshakeBootstrapRequested
+            // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Paths.cs#TryMarkActivePathValidated
             if (QuicAddressValidation.PeerCompletedAddressValidation(
                     isServer: tlsState.Role == QuicTlsRole.Server,
                     handshakeAckReceived: false,
@@ -1931,10 +1933,13 @@ internal sealed partial class QuicConnectionRuntime
             stateChanged = true;
         }
 
-        if ((processedApplicationAckFrame || applicationSendCreditUpdated)
-            && TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects))
+        if (processedApplicationAckFrame || applicationSendCreditUpdated)
         {
-            stateChanged = true;
+            stateChanged |= TryRetryPendingStreamWriteRequests(nowTicks, ref effects);
+            if (TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects))
+            {
+                stateChanged = true;
+            }
         }
 
         RecordIncomingPacket(

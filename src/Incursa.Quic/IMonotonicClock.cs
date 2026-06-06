@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The clock is abstracted so timeout and pacing code can be driven by a deterministic
+// test double instead of coupling directly to Stopwatch.
+// SEE: MonotonicClock
 /// <summary>
 /// Provides monotonic time measurements for durations and timeouts.
 /// </summary>

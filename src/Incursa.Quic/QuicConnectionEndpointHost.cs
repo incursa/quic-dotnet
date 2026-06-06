@@ -7,6 +7,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The host owns the real socket boundary, and it may reopen the socket bound to the
+// local endpoint so later ingress is not pinned to the original connected peer after migration.
+// SEE: TryUpdateSocketBinding:
 /// <summary>
 /// Bridges one runtime-owned connection endpoint through a real UDP socket.
 /// </summary>

@@ -10,6 +10,7 @@ This directory holds the repository's supported automation entry points.
 - [`release/`](release/README.md): versioning and release-policy checks.
 - [`parallel-codex/`](parallel-codex/quic-parallel-lanes.json): manifest and lane prompts for launching multiple Codex workers in isolated git worktrees.
 - [`compliance/`](compliance/update-notice.ps1): dependency notice updates.
+- [`perf/`](perf/README.md): local performance helpers, including the ProtocolLab source-reference benchmark loop and optional R2 upload path.
 - [`setup-git-hooks.ps1`](setup-git-hooks.ps1): Git hook configuration.
 
 ## Parallel Codex lanes

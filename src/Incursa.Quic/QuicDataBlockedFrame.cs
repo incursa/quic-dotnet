@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: This blocked-notification type stays separate from MAX_DATA because it reports where
+// progress stalled, not a new credit grant, and that distinction matters to flow-control logic.
+// SEE: QuicMaxDataFrame
 /// <summary>
 /// A parsed or constructed DATA_BLOCKED frame.
 /// </summary>
@@ -21,4 +24,3 @@ internal readonly struct QuicDataBlockedFrame
     /// </summary>
     internal ulong MaximumData { get; }
 }
-

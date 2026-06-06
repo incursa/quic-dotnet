@@ -46,6 +46,12 @@ internal sealed class QuicDplpmtudState
         ulong packetNumber,
         ulong probeSizeBytes)
     {
+        // CONTEXT: DPLPMTUD tracks only probes that can raise the MTU ceiling
+        // SEE: code:src/Incursa.Quic/QuicDplpmtudState.cs#TryTrackProbe
+        // Probes that do not exceed the current candidate packet size are
+        // ignored so the per-path outstanding map only contains packets that
+        // might discover a larger ceiling. Duplicate packet numbers are also
+        // ignored to keep the path state bounded.
         PathState path = GetOrCreatePathState(pathIdentity);
         if (probeSizeBytes <= path.MaximumPacketSizeBytes
             || path.OutstandingProbeSizes.ContainsKey(packetNumber))

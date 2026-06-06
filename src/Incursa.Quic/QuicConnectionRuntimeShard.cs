@@ -140,6 +140,11 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
         {
             while (true)
             {
+                // CONTEXT: The shard loop drains timer expirations before and after inbox reads because
+                // both timer completion and connection work share this single-reader path; that keeps
+                // due timers from waiting on a separate wake-up when the shard is already active.
+                // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeShard.cs#ConsumeInboxAsync
+                // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs#EnqueueDueEntries
                 // Drain any timer expirations into the inbox before and after reading so deadlines do not wait for
                 // a separate wake-up when the shard is already active.
                 deadlineScheduler.EnqueueDueEntries(clock.Ticks, inbox.Writer);

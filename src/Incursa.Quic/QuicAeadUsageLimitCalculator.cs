@@ -104,6 +104,11 @@ internal static class QuicAeadUsageLimitCalculator
     {
         limits = default;
 
+        // CONTEXT: CCM packet-size profiles must match
+        // SEE: code:src/Incursa.Quic/QuicAeadUsageLimitCalculator.cs#TryGetCcmUsageLimits
+        // CCM limits here are modeled only for a single packet-size profile on
+        // both directions. Keeping the profiles aligned avoids inventing an
+        // asymmetric CCM policy that Appendix B does not cover here.
         if (confidentialityPacketSizeProfile != integrityPacketSizeProfile)
         {
             return false;

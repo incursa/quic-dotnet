@@ -5,6 +5,9 @@ using System.Security.Cryptography;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The secret update owns the pending traffic-secret bytes until the update is committed
+// or disposed, and disposal zeroes any unconsumed material so failed updates do not leak keying.
+// SEE: TryTakeApplicationTrafficSecrets
 /// <summary>
 /// Carries a pending 1-RTT traffic-secret successor until the matching key-update commit succeeds.
 /// </summary>

@@ -141,6 +141,11 @@ internal static class QuicZeroRttTransportParameterPolicy
             return null;
         }
 
+        // CONTEXT: The remembered 0-RTT view intentionally keeps only parameters that can survive across
+        // tickets. If nothing remains, return null instead of an all-default snapshot so callers can
+        // distinguish "no remembered state" from "remembered but empty".
+        // SEE: code:src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs#EvaluateServerZeroRttAcceptance
+        // SEE: code:src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs#QuicDetachedResumptionTicketSnapshot
         QuicTransportParameters remembered = new()
         {
             MaxIdleTimeout = peerTransportParameters.MaxIdleTimeout,

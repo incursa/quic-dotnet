@@ -115,6 +115,10 @@ internal static class QuicVersionNegotiation
         ReadOnlySpan<uint> serverSupportedVersions,
         out uint selectedVersion)
     {
+        // CONTEXT: Server-supported ordering is authoritative here: the first compatible version in
+        // the server list wins, and the original client version is only kept when no compatible
+        // alternative exists.
+        // SEE: TryMoveVersionToFront
         selectedVersion = default;
 
         if (clientAvailableVersions.IsEmpty || serverSupportedVersions.IsEmpty)

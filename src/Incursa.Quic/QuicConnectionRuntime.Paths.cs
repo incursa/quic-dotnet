@@ -41,6 +41,10 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        // CONTEXT: Recently validated paths reuse the saved amplification and PMTU state so a return
+        // to the same path identity does not restart path validation from a cold start.
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Paths.cs#TryGetRecentlyValidatedPath
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntime.Paths.cs#TryMarkActivePathValidated
         bool trustedReuse = TryGetRecentlyValidatedPath(pathIdentity, out QuicConnectionValidatedPathRecord recentlyValidatedPath);
         QuicConnectionPathMaximumDatagramSizeState maximumDatagramSizeState = trustedReuse
             ? recentlyValidatedPath.MaximumDatagramSizeState

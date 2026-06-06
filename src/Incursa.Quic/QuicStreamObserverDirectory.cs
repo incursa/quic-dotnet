@@ -19,6 +19,12 @@ internal sealed class QuicStreamObserverDirectory
         }
     }
 
+    // CONTEXT: observer sets are removed only if the same instance is still empty
+    // SEE: code:src/Incursa.Quic/QuicStreamObserverDirectory.cs#TryRemoveIfEmpty
+    // The directory re-checks reference identity under the lock because a
+    // stream can detach the old set while another thread has already attached a
+    // replacement for the same stream ID. Removing by key alone would race and
+    // drop the newer set.
     internal QuicStreamObserverSet GetOrAdd(ulong streamId)
     {
         lock (sync)

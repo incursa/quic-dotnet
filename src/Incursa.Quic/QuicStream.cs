@@ -12,6 +12,9 @@ namespace Incursa.Quic;
 /// A QUIC stream provides ordered, reliable bytes for the application protocol. Message framing, request mapping,
 /// cancellation meaning, and priority policy are application-layer responsibilities.
 /// </remarks>
+// CONTEXT: Read and write closure stay separate so half-closed and aborted states do not collapse
+// into a single terminal flag, and the write gate serializes finalization against concurrent writes.
+// SEE: CompleteWritesAsync and Abort
 public sealed class QuicStream : Stream
 {
     private const long MaximumErrorCodeValue = (1L << 62) - 1;

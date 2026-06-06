@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The phase enum is intentionally explicit because the runtime and diagnostics need a
+// stable lifecycle label that distinguishes closing from draining and discarded.
+// SEE: QuicConnectionLifecycleState
 /// <summary>
 /// Identifies the explicit lifecycle phase of a connection runtime.
 /// </summary>

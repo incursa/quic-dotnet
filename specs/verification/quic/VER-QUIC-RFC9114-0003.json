@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9114-0003",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 RFC 9114 Large Body Completion Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "ARC-QUIC-RFC9114-0003",
+    "WI-QUIC-RFC9114-0003"
+  ],
+  "verification_method": "Focused HTTP/3 loopback tests, QUIC public EOF guardrail tests, SpecTrace JSON validation, diff hygiene, and local ProtocolLab reruns after correctness is green.",
+  "verifies": [
+    "REQ-QUIC-RFC9114-S9-0002"
+  ],
+  "scope": "This verification covers large HTTP/3 response and upload body completion over the managed Incursa QUIC transport. It does not verify raw QUIC multiplex/duplex throughput or external benchmark publication readiness.",
+  "preconditions": [
+    "The benchmark harness must continue reporting failures and invalid rows honestly.",
+    "Content-Length accounting must not be treated as a substitute for correct stream-tail behavior."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~Http3MinimalServerTests|FullyQualifiedName~REQ_QUIC_API_0010\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `git diff --check`.",
+    "After focused correctness is green, rerun ProtocolLab `h3-local-v1-comparison` rows for `http.payload.bytes.64kb`, `http.payload.bytes.1mb`, and one upload row with counters enabled."
+  ],
+  "expected_result": "Repeated 64KB and 1MB HTTP/3 responses complete with exact body length and stream completion, large uploads deliver exact bodies to handlers, malformed or incomplete framing still fails closed, SpecTrace validation passes, and ProtocolLab diagnostic reruns no longer show premature response EOF for the fixed rows.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
+    "src/Incursa.Quic/QuicApplicationSendQueue.cs",
+    ".artifacts/bdn/results/Incursa.Quic.Benchmarks.Http3AllocationPathBenchmarks-report-github.md"
+  ],
+  "status_summary": "Focused repo verification passed for repeated 64KB and 1MB HTTP/3 responses, the existing 1MB upload delivery test, and the REQ-QUIC-API-0010 EOF guardrails. The Http3AllocationPathBenchmarks Dry BDN smoke run completed and wrote reports under .artifacts/bdn/results. ProtocolLab local reruns remain the next diagnostic step before publishing large-body performance claims."
+}

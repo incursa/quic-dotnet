@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The initial stream-state limits are captured as a positional record so the runtime can
+// pass one immutable bundle through setup without re-reading option objects during initialization.
+// SEE: QuicConnectionStreamState
 /// <summary>
 /// Supplies the initial flow-control and stream-limit settings used to initialize connection stream state.
 /// </summary>

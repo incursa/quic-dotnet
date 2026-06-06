@@ -5,6 +5,9 @@ using System.Buffers;
 
 namespace Incursa.Quic;
 
+// CONTEXT: Additional ACK ranges can be pooled and owned or copied into a non-owning view, so the
+// frame type keeps explicit ownership state to avoid returning borrowed arrays to ArrayPool twice.
+// SEE: SetOwnedAdditionalRanges and AdditionalRanges
 /// <summary>
 /// A parsed or constructed ACK frame view.
 /// </summary>

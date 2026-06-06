@@ -210,6 +210,12 @@ internal sealed class QuicConnectionRuntimeDeadlineScheduler
 
     private bool CompactStaleEntriesIfNeeded()
     {
+        // CONTEXT: Stale heap entries are an expected byproduct of timer re-arms and cancellations, so
+        // the scheduler only pays the rebuild cost once the heap has drifted far enough from the active
+        // registration set. That keeps the common path cheap without simplifying away the stale-entry
+        // validation logic.
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs#TryPeekNextValidEntry
+        // SEE: code:src/Incursa.Quic/QuicConnectionRuntimeDeadlineScheduler.cs#Arm
         if (timerHeap.Count < StaleTimerHeapCompactionThreshold)
         {
             return false;

@@ -298,6 +298,11 @@ internal static class QuicFrameCodec
     /// <summary>
     /// Consumes an ACK frame without materializing a parsed ACK frame object.
     /// </summary>
+    // CONTEXT: This zero-allocation path mirrors the full ACK parser so the runtime can inspect ACK
+    // bytes in hot paths without allocating range objects. The range math still has to stay in lockstep
+    // with TryParseAckFrame because both rely on the same wire encoding.
+    // SEE: code:src/Incursa.Quic/QuicFrameCodec.cs#TryParseAckFrame
+    // SEE: code:src/Incursa.Quic/QuicFrameCodec.cs#TryFormatAckFrame
     internal static bool TryConsumeAckFrame(ReadOnlySpan<byte> packetPayload, out int bytesConsumed)
     {
         bytesConsumed = default;

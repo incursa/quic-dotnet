@@ -28,6 +28,35 @@ public sealed class Http3MinimalServerTests
         Assert.True(response.StreamCompleted);
     }
 
+    [Theory]
+    [InlineData(65_536, 12)]
+    [InlineData(1_048_576, 4)]
+    public async Task RepeatedLargeResponses_CompleteWithExactBodyAndFin(int responseSize, int requestCount)
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(responseSize);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGet("/large", body));
+
+        for (int requestIndex = 0; requestIndex < requestCount; requestIndex++)
+        {
+            Http3Response response = await context.GetAsync($"/large?request={requestIndex}");
+
+            Assert.Equal(200, response.StatusCode);
+            QPackFieldLine contentLength = Assert.Single(
+                response.Headers,
+                static header => header.Name == "content-length");
+            Assert.Equal(responseSize.ToString(), contentLength.Value);
+            Assert.Equal(body.Length, response.Body.Length);
+            Assert.Equal(body, response.Body);
+            Assert.True(response.StreamCompleted);
+        }
+    }
+
     [Fact]
     public async Task DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess()
     {
@@ -218,7 +247,19 @@ public sealed class Http3MinimalServerTests
 
         CaptureBodyHandler handler = new();
         RecordingHttp3DiagnosticsSink diagnostics = new();
-        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            handler,
+            diagnostics,
+            static options =>
+            {
+                options.InitialReceiveWindowSizes = new QuicReceiveWindowSizes
+                {
+                    Connection = 16 * 1024 * 1024,
+                    LocallyInitiatedBidirectionalStream = 16 * 1024 * 1024,
+                    RemotelyInitiatedBidirectionalStream = 16 * 1024 * 1024,
+                    UnidirectionalStream = 16 * 1024 * 1024,
+                };
+            });
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await OpenClientUnidirectionalStreamsAsync(connection);
 
@@ -338,12 +379,8 @@ public sealed class Http3MinimalServerTests
         await OpenClientUnidirectionalStreamsAsync(connection);
 
         await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-        await WritePostRequestAsync(
-            requestStream,
-            "/upload",
-            body,
-            includeContentLength: true,
-            coalesceHeadersAndData: true);
+        byte[][] bodyChunks = body.Chunk(16 * 1024).Select(static chunk => chunk.ToArray()).ToArray();
+        await WritePostRequestDataFramesAsync(requestStream, "/upload", bodyChunks);
 
         Http3Response response = await ReadResponseAsync(requestStream);
 
@@ -356,6 +393,34 @@ public sealed class Http3MinimalServerTests
             diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
                 && diagnostic.FrameType == Http3FrameType.Data
                 && diagnostic.PayloadLength == body.Length);
+    }
+
+    [Fact]
+    public async Task PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] body = CreateDeterministicBytes(1024 * 1024);
+        CaptureBodyHandler handler = new();
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[][] bodyChunks = body.Chunk(16 * 1024).Select(static chunk => chunk.ToArray()).ToArray();
+        await WritePostRequestDataFramesAsync(requestStream, "/upload", bodyChunks);
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.True(
+            response.StatusCode == 200,
+            string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
+        Assert.Equal(body.Length, handler.Body.Length);
+        Assert.Equal(body, handler.Body);
     }
 
     [Fact]
@@ -737,6 +802,17 @@ public sealed class Http3MinimalServerTests
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
     }
 
+    private static byte[] CreateDeterministicBytes(int size)
+    {
+        byte[] bytes = new byte[size];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = (byte)(index % 251);
+        }
+
+        return bytes;
+    }
+
     private static async Task WritePostRequestDataFramesAsync(
         QuicStream requestStream,
         string path,
@@ -916,11 +992,13 @@ public sealed class Http3MinimalServerTests
 
         internal static async ValueTask<TestServerContext> StartAsync(
             IHttp3RequestHandler handler,
-            IHttp3DiagnosticsSink? diagnosticsSink = null)
+            IHttp3DiagnosticsSink? diagnosticsSink = null,
+            Action<QuicServerConnectionOptions>? configureServerOptions = null)
         {
             X509Certificate2 certificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
             QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(certificate);
+            configureServerOptions?.Invoke(serverOptions);
             QuicListenerOptions listenerOptions = new()
             {
                 ListenEndPoint = listenEndPoint,

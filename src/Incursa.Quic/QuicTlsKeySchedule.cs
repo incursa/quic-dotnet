@@ -75,19 +75,27 @@ internal sealed class QuicTlsKeySchedule
     private const ushort KeyShareEntryFixedLength = UInt16Length + UInt16Length;
     private const byte PskKeyExchangeModesVectorLength = 1;
     private const byte PskDheKeMode = 0x01;
-    // CONTEXT:
-    // SEE: RFC 8446, Section 4.4.3.
+    // CONTEXT: TLS 1.3 CertificateVerify layout
+    // SEE: spec:REQ-QUIC-RFC9001-S8-0002
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#TryVerifyCertificateVerifySignature
     // TLS 1.3 signs 64 bytes of 0x20, then the role-specific context string,
     // then a NUL separator, then the transcript hash. Keep the DER ECDSA
     // signature format here because it matches the peer's on-wire signature
     // encoding.
-    // END CONTEXT:
     private const int CertificateVerifyContextPrefixLength = 64;
     private const int EcdsaP256KeySizeBits = 256;
     private const byte CertificateVerifySignedDataPrefixByte = 0x20;
     private const DSASignatureFormat CertificateVerifySignatureFormat = DSASignatureFormat.Rfc3279DerSequence;
     private const byte MessageHashHandshakeType = 0xFE;
 
+    // CONTEXT: TLS 1.3 label families
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#HkdfExpandLabel
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#GetPacketProtectionKeyLabel
+    // These byte literals are protocol-fixed HKDF and packet-protection labels.
+    // Keep the v1/v2 QUIC labels separate because the negotiated transport
+    // version selects a different label family, and keep the deterministic
+    // ClientHello seed label separate so tests can reproduce ClientHello.random
+    // without colliding with TLS labels.
     private static readonly byte[] HkdfLabelPrefix = Encoding.ASCII.GetBytes("tls13 ");
     private static readonly byte[] DerivedLabel = Encoding.ASCII.GetBytes("derived");
     private static readonly byte[] ClientHandshakeTrafficLabel = Encoding.ASCII.GetBytes("c hs traffic");
@@ -423,12 +431,12 @@ internal sealed class QuicTlsKeySchedule
         return true;
     }
 
-    // CONTEXT:
-    // SEE: RFC 9001, 0-RTT resumption flow.
+    // CONTEXT: Server early data coupling
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#TryConfigureServerResumptionTicketIssuance
+    // SEE: code:src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs#CreateRememberedTransportParametersForClientZeroRtt
     // Early data is only meaningful when the server can also issue and later
-    // validate resumption tickets, so the ticket path and early-data flag stay
-    // coupled here.
-    // END CONTEXT:
+    // validate resumption tickets, so the flag stays coupled to the ticket path
+    // and is forced off when ticket issuance is disabled.
     internal bool TryConfigureServerEarlyData(bool enabled)
     {
         if (role != QuicTlsRole.Server)
@@ -568,12 +576,12 @@ internal sealed class QuicTlsKeySchedule
         AppendTranscriptMessage(handshakeMessageBytes);
     }
 
-    // CONTEXT:
-    // SEE: TLS 1.3 HelloRetryRequest retry flow.
-    // Cache only the first local handshake message so the client can replay
-    // the exact transcript prefix after a retry without retaining the
-    // abandoned peer attempt.
-    // END CONTEXT:
+    // CONTEXT: Client retry transcript replay
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#AppendLocalHandshakeMessage
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#ReplaceTranscriptWithHelloRetryRequestPrefix
+    // Cache only the first local handshake message so the client can replay the
+    // exact transcript prefix after a retry without retaining the abandoned
+    // peer attempt.
     internal bool TryResetClientPeerHandshakeAttempt()
     {
         if (role != QuicTlsRole.Client
@@ -3192,12 +3200,12 @@ internal sealed class QuicTlsKeySchedule
         return Array.Empty<QuicTlsStateUpdate>();
     }
 
-    // CONTEXT:
-    // SEE: RFC 8446, Section 4.1.4.
-    // This rewrite replaces the initial ClientHello with the special
+    // CONTEXT: HelloRetryRequest transcript rewrite
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#TryResetClientPeerHandshakeAttempt
+    // SEE: code:src/Incursa.Quic/QuicTlsKeySchedule.cs#ProcessClientHello
+    // This rewrite replaces the initial ClientHello with the TLS 1.3
     // message_hash handshake node before appending the fixed HelloRetryRequest
     // random so the retry transcript hashes exactly as the peer expects.
-    // END CONTEXT:
     private void ReplaceTranscriptWithHelloRetryRequestPrefix(
         ReadOnlySpan<byte> initialClientHelloBytes,
         ReadOnlySpan<byte> helloRetryRequestBytes)
@@ -3514,12 +3522,6 @@ internal sealed class QuicTlsKeySchedule
 
     private static byte[] DeriveDeterministicClientHelloRandom(ReadOnlySpan<byte> localPrivateKey)
     {
-        // CONTEXT:
-        // SEE: Deterministic test vectors for ClientHello generation.
-        // Prefixing the private key with a stable label keeps the random value
-        // reproducible for tests without colliding with TLS HKDF labels or
-        // depending on ambient RNG output.
-        // END CONTEXT:
         byte[] seedMaterial = GC.AllocateUninitializedArray<byte>(
             DeterministicClientHelloRandomLabel.Length + localPrivateKey.Length);
         DeterministicClientHelloRandomLabel.CopyTo(seedMaterial, 0);

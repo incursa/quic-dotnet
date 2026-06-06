@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The inspector preserves the common one-stream case without allocating a collection; it
+// only materializes a list after a second distinct stream ID appears in the payload.
+// SEE: GetStreamDataStreamIds
 /// <summary>
 /// Inspects packet payloads for frame presence without owning send bookkeeping.
 /// </summary>

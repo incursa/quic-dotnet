@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The snapshot copies caller-provided buffers so ticket material cannot change after the
+// fact; early-data eligibility depends on the captured metadata staying immutable.
+// SEE: QuicZeroRttTransportParameterPolicy
 /// <summary>
 /// Captures detached resumption ticket material and the metadata needed to resume a connection later.
 /// </summary>

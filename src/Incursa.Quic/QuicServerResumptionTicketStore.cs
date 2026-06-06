@@ -133,6 +133,11 @@ internal sealed class QuicServerResumptionTicketStore
         out QuicServerResumptionTicketRecord ticket)
     {
         ticket = null!;
+        // CONTEXT: Early-data ticket consumption is destructive on purpose so the same live ticket
+        // cannot be admitted twice. Callers that only need a lookup use TryGetLiveTicket instead of
+        // this path.
+        // SEE: code:src/Incursa.Quic/QuicServerResumptionTicketStore.cs#TryGetLiveTicket
+        // SEE: code:src/Incursa.Quic/QuicServerZeroRttAdmissionGate.cs#TryAdmit
         if (ticketBytes.IsEmpty)
         {
             return false;

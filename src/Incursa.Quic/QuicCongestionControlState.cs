@@ -11,6 +11,9 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicCongestionControlState
 {
+    // CONTEXT: The three packet-number spaces are stored in fixed slots so send/ACK updates stay
+    // allocation-free on the recovery hot path; the layout is immutable and should not become a map.
+    // SEE: EcnCeCounters and the packet-number-space index constants
     /// <summary>
     /// The recommended persistent congestion threshold from RFC 9002.
     /// </summary>

@@ -6,6 +6,10 @@ using System.Numerics;
 
 namespace Incursa.Quic;
 
+// CONTEXT: The block function is spelled out with fixed indices and constants because QUIC header
+// protection needs a tiny, allocation-free implementation; collapsing this into a more generic
+// helper would add overhead to a hot path.
+// SEE: QuicPacketProtectionCryptoContext
 /// <summary>
 /// Provides the narrow ChaCha20 block-function helper used for QUIC header protection.
 /// </summary>

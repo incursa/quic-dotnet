@@ -8,6 +8,10 @@ namespace Incursa.Quic;
 /// </summary>
 internal sealed class QuicTransportParameters
 {
+    // CONTEXT: 65527 is the largest UDP payload that fits in the 16-bit UDP length field once the
+    // transport omits the IPv4/IPv6 header overhead; it is the default when the peer does not
+    // advertise a smaller limit.
+    // SEE: RFC 9000 max_udp_payload_size
     /// <summary>
     /// Gets the default max_udp_payload_size value when the transport parameter is absent.
     /// </summary>

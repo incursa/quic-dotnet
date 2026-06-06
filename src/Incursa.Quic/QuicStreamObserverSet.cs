@@ -5,6 +5,13 @@ namespace Incursa.Quic;
 
 internal sealed class QuicStreamObserverSet
 {
+    // CONTEXT: observer storage is optimized for the one-observer case
+    // SEE: code:src/Incursa.Quic/QuicStreamObserverSet.cs#TryAdd
+    // SEE: code:src/Incursa.Quic/QuicStreamObserverSet.cs#TryRemove
+    // Most streams never have many observers, so the set keeps a dedicated
+    // single-observer fast path and only allocates an array after the second
+    // registration. Keep the upgrade/downgrade behavior because it avoids
+    // arrays and keeps notifications cheap on the hot path.
     private static readonly ObserverEntry[] EmptyObservers = [];
 
     private readonly object sync = new();

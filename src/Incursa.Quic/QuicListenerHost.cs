@@ -1136,9 +1136,11 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             }
 
             uint selectedVersion = initialVersion;
-            // A fragmented Initial ClientHello can reach admission before the full ClientHello bytes
-            // needed for transport-parameter parsing are available. In that case we keep the packet
-            // admitted and let the replayed Initial datagram progress the runtime transcript.
+            // CONTEXT: A fragmented Initial ClientHello can reach admission before the full ClientHello bytes
+            // needed for transport-parameter parsing are available. Keeping the packet admitted lets the
+            // replayed Initial datagram continue the transcript instead of dropping a valid handshake path.
+            // SEE: code:src/Incursa.Quic/QuicTlsClientHelloExtensions.cs#TryReadClientHelloTransportParameters
+            // SEE: code:src/Incursa.Quic/QuicListenerHost.cs#TryAdmitIncomingInitialConnectionAsync
             if (QuicTlsClientHelloExtensions.TryExtractOffsetZeroInitialCryptoFrameData(
                 openedPacket.Span.Slice(payloadOffset, payloadLength),
                 out ReadOnlySpan<byte> initialCryptoFrameData)

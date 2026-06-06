@@ -8,6 +8,11 @@ namespace Incursa.Quic;
 /// <summary>
 /// Owns the connection-scoped stream registry shell while layering over the existing stream bookkeeping helper.
 /// </summary>
+// CONTEXT: The registry is intentionally separate from the lower-level bookkeeping so the runtime can
+// keep connection-owned stream records, last-activity timestamps, and observer-facing state without
+// entangling them with the protocol limits that live in QuicConnectionStreamState.
+// SEE: code:src/Incursa.Quic/QuicConnectionStreamRegistry.cs#TryTrackStream
+// SEE: code:src/Incursa.Quic/QuicConnectionStreamRegistry.cs#TryUpdateLastActivity
 internal sealed class QuicConnectionStreamRegistry
 {
     private readonly QuicConnectionStreamState bookkeeping;

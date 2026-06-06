@@ -188,6 +188,12 @@ internal static class QuicPacketParser
     /// <summary>
     /// Computes the length of the leading QUIC packet inside a UDP datagram so coalesced packets can be split.
     /// </summary>
+    // CONTEXT: Coalesced datagrams are split by decoding only the leading packet length, so this path
+    // keeps the long-header parse just deep enough to validate the length-bearing fields without fully
+    // decoding packet payloads. Short-header packets consume the whole datagram because they do not
+    // carry a length field.
+    // SEE: code:src/Incursa.Quic/QuicPacketParser.cs#TryParseLongHeader
+    // SEE: code:src/Incursa.Quic/QuicPacketParser.cs#TryGetPacketNumberSpace
     internal static bool TryGetPacketLength(ReadOnlySpan<byte> datagram, out int packetLength)
     {
         return TryGetPacketLength(datagram, allowClearedFixedBit: false, out packetLength);

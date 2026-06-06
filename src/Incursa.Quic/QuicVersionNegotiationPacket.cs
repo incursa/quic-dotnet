@@ -5,6 +5,9 @@ using System.Buffers.Binary;
 
 namespace Incursa.Quic;
 
+// CONTEXT: This packet view is a ref struct because it borrows spans over the datagram, and the
+// supported-version entries must be read directly from the wire without copying.
+// SEE: QuicVersionNegotiation.TrySelectCompatibleVersion:
 /// <summary>
 /// A parsed Version Negotiation packet view.
 /// </summary>
@@ -116,4 +119,3 @@ internal readonly ref struct QuicVersionNegotiationPacket
         return BinaryPrimitives.ReadUInt32BigEndian(supportedVersionBytes.Slice(index * SupportedVersionLength, SupportedVersionLength));
     }
 }
-

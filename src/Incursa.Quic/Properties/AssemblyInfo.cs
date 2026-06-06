@@ -3,6 +3,8 @@
 
 using System.Runtime.CompilerServices;
 
+// CONTEXT: The visibility list stays centralized here so test, benchmark, fuzz, and sibling
+// project access remains explicit instead of being scattered through the source tree.
 [assembly: InternalsVisibleTo("Incursa.Quic.Tests")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Dns")]
 [assembly: InternalsVisibleTo("Incursa.Quic.Benchmarks")]

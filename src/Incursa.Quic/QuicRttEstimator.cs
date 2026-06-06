@@ -3,6 +3,10 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The estimator keeps separate latest, minimum, smoothed, and variance values because
+// PTO and loss calculations consume them independently; the RFC 9002 weights here are fixed,
+// not tunable knobs.
+// SEE: TryUpdateFromAck
 /// <summary>
 /// Tracks RTT estimates for a single QUIC path.
 /// </summary>
@@ -194,4 +198,3 @@ internal sealed class QuicRttEstimator
         return value >= amount ? value - amount : 0;
     }
 }
-

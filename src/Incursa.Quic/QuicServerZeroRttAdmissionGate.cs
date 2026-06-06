@@ -45,6 +45,10 @@ internal sealed class QuicServerZeroRttAdmissionGate
         out QuicServerResumptionTicketRecord ticket)
     {
         ticket = null!;
+        // CONTEXT: Admission is ordered binder validation -> transport-parameter acceptance -> live ticket
+        // consumption so replay/unknown-ticket failures stay distinct from remembered-state mismatches.
+        // SEE: code:src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs#EvaluateServerZeroRttAcceptance
+        // SEE: code:src/Incursa.Quic/QuicServerResumptionTicketStore.cs#TryConsumeLiveTicketForEarlyData
         if (!pskBinderValidated)
         {
             return QuicServerZeroRttAdmissionDecision.Reject(QuicServerZeroRttAdmissionFailure.PskNotValidated);

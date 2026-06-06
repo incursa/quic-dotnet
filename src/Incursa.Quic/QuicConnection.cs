@@ -10,6 +10,9 @@ namespace Incursa.Quic;
 /// </summary>
 public sealed class QuicConnection : IAsyncDisposable
 {
+    // CONTEXT: QUIC error codes are encoded as 62-bit varints, so this clamp preserves the
+    // protocol maximum instead of accepting the full signed-long range.
+    // SEE: QuicVariableLengthInteger.MaxValue
     private const long MaximumErrorCodeValue = (1L << 62) - 1;
 
     private readonly QuicConnectionRuntime runtime;

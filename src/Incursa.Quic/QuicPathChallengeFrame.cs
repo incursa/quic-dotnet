@@ -3,6 +3,9 @@
 
 namespace Incursa.Quic;
 
+// CONTEXT: The path-validation challenge is a fixed 8-byte opaque token, so the frame keeps the
+// payload as a borrowed span to avoid copying during probes.
+// SEE: QuicConnectionRuntime
 /// <summary>
 /// A parsed or constructed PATH_CHALLENGE frame.
 /// </summary>
@@ -23,4 +26,3 @@ internal readonly ref struct QuicPathChallengeFrame
     /// </summary>
     internal ReadOnlySpan<byte> Data => data;
 }
-
