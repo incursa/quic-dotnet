@@ -257,7 +257,7 @@ public sealed class REQ_QUIC_API_0010
         QuicConnectionSendDatagramEffect[] sendEffects = outboundEffects
             .OfType<QuicConnectionSendDatagramEffect>()
             .ToArray();
-        Assert.Equal(4, sendEffects.Length);
+        Assert.Equal(QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams, sendEffects.Length);
 
         byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffects[0]);
         Assert.True(TryFindAnyStreamFrame(openedPayload, (ulong)stream.Id, out QuicStreamFrame frame));

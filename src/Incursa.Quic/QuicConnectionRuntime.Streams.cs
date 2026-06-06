@@ -942,35 +942,37 @@ internal sealed partial class QuicConnectionRuntime
         byte[]? combinedPayloadOwner = null;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
         int maximumQueuedApplicationPayloadBytes = GetMaximumQueuedApplicationPayloadBytes();
+        QuicQueuedApplicationSendBudget schedulerBudget =
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maximumQueuedApplicationPayloadBytes);
         bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
 
         try
         {
             if (hasOnlyQueuedWrite)
             {
-                if (!QuicStreamParser.TryParseStreamFrame(
-                        onlyQueuedWrite.StreamPayload.AsSpan(0, onlyQueuedWrite.StreamPayloadLength),
-                        out QuicStreamFrame onlyQueuedWriteFrame))
+                QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+                    onlyQueuedWrite,
+                    schedulerBudget,
+                    out exception);
+                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
                 {
-                    exception = new InvalidOperationException("The connection runtime could not parse the queued stream write packet.");
                     return false;
                 }
 
-                if (!QuicStreamPayloadSizer.TryGetFragmentDataLength(
-                        onlyQueuedWriteFrame,
-                        maximumQueuedApplicationPayloadBytes,
-                        out int onlyQueuedWriteFragmentDataLength))
+                if (sendPlan.Kind == QuicApplicationSendPlanKind.Fragment)
                 {
-                    exception = new InvalidOperationException("The connection runtime could not split the queued stream write packet.");
-                    return false;
-                }
+                    if (!QuicStreamParser.TryParseStreamFrame(
+                            onlyQueuedWrite.StreamPayload.AsSpan(0, onlyQueuedWrite.StreamPayloadLength),
+                            out QuicStreamFrame onlyQueuedWriteFrame))
+                    {
+                        exception = new InvalidOperationException("The connection runtime could not parse the queued stream write packet.");
+                        return false;
+                    }
 
-                if (onlyQueuedWriteFragmentDataLength < onlyQueuedWriteFrame.StreamDataLength)
-                {
                     if (TryFlushFragmentedQueuedApplicationSend(
                             onlyQueuedWrite,
                             onlyQueuedWriteFrame,
-                            onlyQueuedWriteFragmentDataLength,
+                            sendPlan.FragmentDataLength,
                             nowTicks,
                             ref effects,
                             out exception))
@@ -1002,12 +1004,18 @@ internal sealed partial class QuicConnectionRuntime
                 ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites =
                     queuedWrites.AsSpan(0, queuedWriteCount);
 
-                int batchCount = QuicApplicationSendQueue.SelectQueuedApplicationSendBatchCount(
+                QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                     sortedQueuedWrites,
-                    maximumQueuedApplicationPayloadBytes);
-                selectedWrites = sortedQueuedWrites[..batchCount];
+                    schedulerBudget,
+                    out exception);
+                if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
+                {
+                    return false;
+                }
 
-                if (selectedWrites.Length > 0)
+                selectedWrites = sortedQueuedWrites[..sendPlan.SelectedWriteCount];
+
+                if (sendPlan.Kind == QuicApplicationSendPlanKind.Fragment)
                 {
                     if (!QuicStreamParser.TryParseStreamFrame(
                             selectedWrites[0].StreamPayload.AsSpan(0, selectedWrites[0].StreamPayloadLength),
@@ -1017,34 +1025,23 @@ internal sealed partial class QuicConnectionRuntime
                         return false;
                     }
 
-                    if (!QuicStreamPayloadSizer.TryGetFragmentDataLength(
+                    if (TryFlushFragmentedQueuedApplicationSend(
+                            selectedWrites[0],
                             firstSelectedWriteFrame,
-                            maximumQueuedApplicationPayloadBytes,
-                            out int firstSelectedWriteFragmentDataLength))
+                            sendPlan.FragmentDataLength,
+                            nowTicks,
+                            ref effects,
+                            out exception))
                     {
-                        exception = new InvalidOperationException("The connection runtime could not split the queued stream write packet.");
-                        return false;
+                        LogApplicationSend(
+                            $"app-tx flush-fragment-sent role={tlsState.Role} stream={selectedWrites[0].StreamId} queue={applicationSendQueue.Count}.");
+                        exception = null;
+                        return true;
                     }
 
-                    if (firstSelectedWriteFragmentDataLength < firstSelectedWriteFrame.StreamDataLength)
+                    if (IsTransientApplicationSendPathBlocked(exception))
                     {
-                        if (TryFlushFragmentedQueuedApplicationSend(
-                                selectedWrites[0],
-                                firstSelectedWriteFrame,
-                                firstSelectedWriteFragmentDataLength,
-                                nowTicks,
-                                ref effects,
-                                out exception))
-                        {
-                            LogApplicationSend(
-                                $"app-tx flush-fragment-sent role={tlsState.Role} stream={selectedWrites[0].StreamId} queue={applicationSendQueue.Count}.");
-                            exception = null;
-                            return true;
-                        }
-
-                        if (IsTransientApplicationSendPathBlocked(exception))
-                        {
-                            pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                        pendingApplicationSendDelayDueTicks = SaturatingAdd(
                             nowTicks,
                             ConvertMicrosToTicks(ApplicationSendDelayMicros));
                         AppendLifecycleTimerEffects(ref effects);
@@ -1053,7 +1050,6 @@ internal sealed partial class QuicConnectionRuntime
                     }
 
                     return false;
-                }
                 }
 
                 int combinedPayloadLength = 0;
@@ -1088,18 +1084,18 @@ internal sealed partial class QuicConnectionRuntime
                 out ReadOnlyMemory<byte> protectedPacket,
                 out exception))
             {
-            if (IsTransientApplicationSendPathBlocked(exception))
-            {
-                pendingApplicationSendDelayDueTicks = SaturatingAdd(
-                    nowTicks,
-                    ConvertMicrosToTicks(ApplicationSendDelayMicros));
-                AppendLifecycleTimerEffects(ref effects);
-                LogApplicationSend(
-                    $"app-tx flush-blocked role={tlsState.Role} queue={applicationSendQueue.Count} reason={exception?.Message}.");
-            }
+                if (IsTransientApplicationSendPathBlocked(exception))
+                {
+                    pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                        nowTicks,
+                        ConvertMicrosToTicks(ApplicationSendDelayMicros));
+                    AppendLifecycleTimerEffects(ref effects);
+                    LogApplicationSend(
+                        $"app-tx flush-blocked role={tlsState.Role} queue={applicationSendQueue.Count} reason={exception?.Message}.");
+                }
 
-            return false;
-        }
+                return false;
+            }
 
             if (hasOnlyQueuedWrite)
             {
@@ -1198,14 +1194,16 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        if (sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData))
+        QuicQueuedApplicationSendBudget sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
+            CaptureQueuedApplicationSendPolicySnapshot());
+        if (!sendBudget.CanSendQueuedApplicationData)
         {
             return false;
         }
 
         bool stateChanged = false;
         for (int flushCount = 0;
-            applicationSendQueue.Count > 0 && flushCount < MaximumQueuedApplicationFlushesPerTransition;
+            applicationSendQueue.Count > 0 && flushCount < sendBudget.MaxDatagrams;
             flushCount++)
         {
             if (!FlushPendingApplicationSends(nowTicks, ref effects))
@@ -1221,6 +1219,44 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return stateChanged;
+    }
+
+    private QuicSendPolicySnapshot CaptureQueuedApplicationSendPolicySnapshot()
+    {
+        QuicConnectionPathRecoverySnapshot recoverySnapshot = sendRuntime.CapturePathRecoverySnapshot();
+        if (activePath is not { } currentPath)
+        {
+            return new QuicSendPolicySnapshot(
+                HasActivePath: false,
+                CanSendOrdinaryPackets: false,
+                MaximumDatagramSizeBytes: 0,
+                MaximumApplicationPayloadBytes: GetMaximumQueuedApplicationPayloadBytes(),
+                CongestionWindowBytes: recoverySnapshot.CongestionWindowBytes,
+                BytesInFlightBytes: recoverySnapshot.BytesInFlightBytes,
+                PendingRetransmissionCount: sendRuntime.PendingRetransmissionCount,
+                HasApplicationDataRetransmission: sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData),
+                AntiAmplificationAvailableBytes: 0,
+                IsAddressValidated: false,
+                HandshakeConfirmed: HandshakeConfirmed,
+                HasOneRttProtection: tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
+                QueuedApplicationSendCount: applicationSendQueue.Count);
+        }
+
+        return new QuicSendPolicySnapshot(
+            HasActivePath: true,
+            CanSendOrdinaryPackets: CanSendOrdinaryPackets
+                && currentPath.MaximumDatagramSizeState.CanSendOrdinaryPackets,
+            MaximumDatagramSizeBytes: currentPath.MaximumDatagramSizeState.MaximumDatagramSizeBytes,
+            MaximumApplicationPayloadBytes: GetMaximumQueuedApplicationPayloadBytes(),
+            CongestionWindowBytes: recoverySnapshot.CongestionWindowBytes,
+            BytesInFlightBytes: recoverySnapshot.BytesInFlightBytes,
+            PendingRetransmissionCount: sendRuntime.PendingRetransmissionCount,
+            HasApplicationDataRetransmission: sendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData),
+            AntiAmplificationAvailableBytes: currentPath.AmplificationState.RemainingSendBudget,
+            IsAddressValidated: currentPath.AmplificationState.IsAddressValidated,
+            HandshakeConfirmed: HandshakeConfirmed,
+            HasOneRttProtection: tlsState.OneRttProtectPacketProtectionMaterial.HasValue,
+            QueuedApplicationSendCount: applicationSendQueue.Count);
     }
 
     private static bool IsTransientCongestionExhaustion(Exception? exception)

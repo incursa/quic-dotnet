@@ -56,6 +56,10 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0011.cs",
+    "src/Incursa.Quic/QuicSendPolicy.cs",
+    "src/Incursa.Quic/QuicApplicationSendScheduler.cs",
+    "tests/Incursa.Quic.Tests/QuicSendPolicyTests.cs",
+    "tests/Incursa.Quic.Tests/QuicApplicationSendSchedulerTests.cs",
     "src/Incursa.Quic/PublicAPI.Shipped.txt",
     "docs/design/quic-public-api.md",
     "specs/requirements/quic/SPEC-QUIC-API.json",
@@ -68,6 +72,10 @@
     {
       "heading": "Evidence Notes",
       "content": "The current proof includes build output and focused requirement-home tests for `REQ-QUIC-API-0001`, `REQ-QUIC-API-0002`, `REQ-QUIC-API-0003`, `REQ-QUIC-API-0004`, `REQ-QUIC-API-0005`, `REQ-QUIC-API-0006`, `REQ-QUIC-API-0007`, `REQ-QUIC-API-0008`, `REQ-QUIC-API-0009`, `REQ-QUIC-API-0010`, and `REQ-QUIC-API-0011`, including the supported positive loopback establishment, stream-entry, supported write/completion plus reset/stop-sending abort pair, supported combined `Abort(Both, ...)` composition, shared support-marker checks, the pending client-connect handshake-timeout completion path, stream-capacity callback tests covering the initial delta, later growth, real close-driven release, and direct proof that the TLS, handshake, packet-protection, runtime, host, endpoint, and validator seams remain internal. Broader TLS/auth parity and broader stream-management follow-ons remain out of scope."
+    },
+    {
+      "heading": "Send Policy Pilot Verification Note",
+      "content": "The send-policy pilot is a structural extraction for queued application-data send scheduling. `QuicSendPolicy` computes the queued application-send budget, `QuicApplicationSendScheduler` selects queued work without mutating runtime state or touching packet protection, and `QuicConnectionRuntime` remains the executor for packet protection, accounting, effects, and queue mutation. This slice preserves the current measured four-datagram post-recovery burst cap and does not claim full byte/packet pacing. Focused verification on 2026-06-06 passed `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~QuicSendPolicyTests|FullyQualifiedName~QuicApplicationSendSchedulerTests|FullyQualifiedName~REQ_QUIC_API_0010\"` with 27/27 tests and the adjacent retransmission/liveness filter with 65/65 tests. ProtocolLab source-reference smoke evidence wrote `codex-send-policy-multiplex-20260606-quic-transport-v1-comparison` at 38.727 requests/s, p95 11.541 ms, timeoutRequests 0, bytesReceived 2555904, and `codex-send-policy-duplex-20260606-quic-transport-v1-comparison` at 65.305 requests/s, p95 230.673 ms, timeoutRequests 0, bytesReceived 5242880. These are single-run local non-publishable samples and should be treated as behavior-preservation evidence rather than stable performance thresholds."
     },
     {
       "heading": "Reference Behavioral Evidence",
