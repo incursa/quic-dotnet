@@ -1204,7 +1204,9 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         bool stateChanged = false;
-        while (applicationSendQueue.Count > 0)
+        for (int flushCount = 0;
+            applicationSendQueue.Count > 0 && flushCount < MaximumQueuedApplicationFlushesPerTransition;
+            flushCount++)
         {
             if (!FlushPendingApplicationSends(nowTicks, ref effects))
             {

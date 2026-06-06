@@ -234,6 +234,39 @@ public sealed class REQ_QUIC_API_0010
     [Requirement("REQ-QUIC-API-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public async Task OversizedQueuedStreamWriteFlushesOneFragmentPerLocalTransition()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 65_536,
+            localBidirectionalSendLimit: 65_536);
+        List<QuicConnectionEffect> outboundEffects = [];
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        await using QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        AcknowledgeTrackedPackets(runtime);
+        outboundEffects.Clear();
+
+        byte[] payload = Enumerable.Range(0, 4096).Select(static index => (byte)(index % 251)).ToArray();
+        await stream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+
+        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        Assert.True(TryFindAnyStreamFrame(openedPayload, (ulong)stream.Id, out QuicStreamFrame frame));
+        Assert.Equal(0UL, frame.Offset);
+        Assert.InRange(frame.StreamDataLength, 1, payload.Length - 1);
+        Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-API-0010")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task FlowControlBlockedStreamWriteResumesAfterPeerRaisesStreamCredit()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
@@ -1330,6 +1363,40 @@ public sealed class REQ_QUIC_API_0010
                 && streamFrame.Offset == offset
                 && streamFrame.StreamDataLength == streamDataLength
                 && streamFrame.IsFin == fin)
+            {
+                matchingFrame = streamFrame;
+                return true;
+            }
+
+            payloadOffset += streamFrame.ConsumedLength;
+        }
+
+        return false;
+    }
+
+    private static bool TryFindAnyStreamFrame(
+        ReadOnlySpan<byte> payload,
+        ulong streamId,
+        out QuicStreamFrame matchingFrame)
+    {
+        matchingFrame = default;
+        int payloadOffset = 0;
+
+        while (payloadOffset < payload.Length)
+        {
+            ReadOnlySpan<byte> remaining = payload[payloadOffset..];
+            if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed))
+            {
+                payloadOffset += paddingBytesConsumed;
+                continue;
+            }
+
+            if (!QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                return false;
+            }
+
+            if (streamFrame.StreamId.Value == streamId)
             {
                 matchingFrame = streamFrame;
                 return true;

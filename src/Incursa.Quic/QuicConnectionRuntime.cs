@@ -57,6 +57,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
     private const int MaximumStreamWriteChunkBytes = 16 * 1024;
+    private const int MaximumQueuedApplicationFlushesPerTransition = 1;
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
