@@ -234,7 +234,7 @@ public sealed class REQ_QUIC_API_0010
     [Requirement("REQ-QUIC-API-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task OversizedQueuedStreamWriteFlushesOneFragmentPerLocalTransition()
+    public async Task OversizedQueuedStreamWriteFlushesBoundedFragmentsPerLocalTransition()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
             connectionSendLimit: 65_536,
@@ -251,12 +251,15 @@ public sealed class REQ_QUIC_API_0010
         AcknowledgeTrackedPackets(runtime);
         outboundEffects.Clear();
 
-        byte[] payload = Enumerable.Range(0, 4096).Select(static index => (byte)(index % 251)).ToArray();
+        byte[] payload = Enumerable.Range(0, 8192).Select(static index => (byte)(index % 251)).ToArray();
         await stream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(5));
 
-        QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
-            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
-        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        QuicConnectionSendDatagramEffect[] sendEffects = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        Assert.Equal(4, sendEffects.Length);
+
+        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffects[0]);
         Assert.True(TryFindAnyStreamFrame(openedPayload, (ulong)stream.Id, out QuicStreamFrame frame));
         Assert.Equal(0UL, frame.Offset);
         Assert.InRange(frame.StreamDataLength, 1, payload.Length - 1);
