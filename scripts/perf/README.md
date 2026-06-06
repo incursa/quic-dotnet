@@ -3,6 +3,82 @@
 This folder contains local performance and ProtocolLab integration helpers for
 `quic-dotnet` development.
 
+## QUIC Local Performance Lanes
+
+Use `Invoke-QuicPerformanceLane.ps1` when you want one repeatable local command
+that combines the repo's BenchmarkDotNet developer-feedback suites with the
+ProtocolLab source-reference validation path.
+
+The lanes are intentionally different from controlled infrastructure runs:
+
+- `Smoke` is a quick developer check. It runs matching BenchmarkDotNet suites
+  with `Dry` and, when the selected surface maps to ProtocolLab, runs one
+  source-reference ProtocolLab repetition with one second of warmup and one
+  second of measurement.
+- `Confidence` is report-only repeated local evidence. It runs matching
+  BenchmarkDotNet suites with `Short` and, when the selected surface maps to
+  ProtocolLab, runs nine ProtocolLab repetitions with five seconds of warmup
+  and fifteen seconds of measurement. It does not enforce thresholds.
+- Controlled runner evidence is the future hosted lane for well-known compute
+  nodes. It should consume the same lane and surface vocabulary, but it is not
+  implemented by this local wrapper.
+
+Example smoke run for the current raw QUIC multiplex focus:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Smoke `
+  -Surface RawQuicMultiplex
+```
+
+After the first restore/build, add `-NoRestore` and `-NoBuild` for faster
+BenchmarkDotNet iteration:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Smoke `
+  -Surface RawQuicMultiplex `
+  -NoRestore `
+  -NoBuild
+```
+
+`-NoRestore` is currently not forwarded to the ProtocolLab source-reference
+leg by this lane wrapper. The direct ProtocolLab `--no-restore` path can retain
+stale package assets beside project references and fail with duplicate
+`Incursa.*` assembly references. Until that ProtocolLab harness issue is fixed,
+the wrapper keeps restore enabled for ProtocolLab while still avoiding package
+pack/publish/upload behavior.
+
+Example confidence run:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerformanceLane.ps1 `
+  -Lane Confidence `
+  -Surface RawQuicMultiplex
+```
+
+The wrapper writes a report under:
+
+```text
+.artifacts/perf-lanes/{runIdPrefix}/summary.md
+```
+
+Supported surfaces:
+
+- `RawQuicMultiplex`: ProtocolLab `quic.transport.multiplex.100x64kb` plus
+  send/scheduler/parsing BDN suites.
+- `RawQuicDuplex`: ProtocolLab `quic.transport.duplex-streams` plus the same
+  send/scheduler/parsing suites and stream-state BDN coverage.
+- `RawQuicSendCore`: BDN-only send/congestion core by default; pass
+  `-Scenario <id>` when a specific ProtocolLab raw QUIC scenario should also
+  run.
+- `PublicApiStream`: BDN public stream-transfer comparison only. ProtocolLab is
+  skipped by default because this is not a one-to-one public facade workload.
+
+The wrapper always uses ProtocolLab source/project references when ProtocolLab
+runs. It never packs NuGet packages, publishes packages, uploads R2 bundles, or
+changes ProtocolLab benchmark semantics.
+
 ## ProtocolLab Local QUIC Benchmark Loop
 
 Use `Invoke-ProtocolLabLocalQuicBenchmark.ps1` when you want ProtocolLab to run
@@ -34,8 +110,11 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabL
   -StreamsPerConnection 1
 ```
 
-After the first source-mode restore, add `-NoRestore` to avoid restore work in
-the close loop:
+The direct helper exposes `-NoRestore` for source-mode iteration, but current
+ProtocolLab project-reference wiring can retain stale package assets beside
+project references and fail with duplicate `Incursa.*` assembly references.
+Use restore-enabled source-reference runs unless you have just verified the
+direct no-restore path in the ProtocolLab checkout:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 `
@@ -86,8 +165,9 @@ scenario: quic.transport.multiplex.100x64kb
 ```
 
 Use `-UseProjectReferences` so ProtocolLab consumes the current quic-dotnet
-working tree directly. Use `-NoRestore` after the first successful source-mode
-restore. Do not use `-UploadAfterRun` for local performance iteration.
+working tree directly. Keep restore enabled when using the lane wrapper's
+ProtocolLab leg until the ProtocolLab no-restore project-reference issue is
+fixed. Do not use `-UploadAfterRun` for local performance iteration.
 
 ProtocolLab-owned scenario and suite files live in the sibling ProtocolLab
 checkout, not in this repo. For the standard shared Windows checkout, that is:

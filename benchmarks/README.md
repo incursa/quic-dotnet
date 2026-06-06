@@ -24,6 +24,28 @@ Run them through the launcher:
 baseline measurement for the current Incursa-only internal suites. It is not a
 public `System.Net.Quic` or direct MSQUIC comparison.
 
+## Performance Lane Surface Mapping
+
+`scripts/perf/Invoke-QuicPerformanceLane.ps1` uses the permanent BenchmarkDotNet
+suites as local developer-feedback companions to ProtocolLab source-reference
+runs:
+
+- `RawQuicMultiplex` runs `QuicApplicationSendPriorityBenchmarks`,
+  `QuicApplicationSendQueueSortingBenchmarks`,
+  `QuicApplicationSendBatchPayloadBenchmarks`, and
+  `QuicStreamParsingBenchmarks`.
+- `RawQuicDuplex` runs the same send/parsing suites plus
+  `QuicConnectionStreamStateBenchmarks`.
+- `RawQuicSendCore` runs send-priority, queue-sorting, batch-payload,
+  distinct-stream-id, congestion-control, and congestion-discard suites without
+  a ProtocolLab run unless the caller supplies a raw QUIC scenario.
+- `PublicApiStream` runs `QuicPublicApiStreamTransferBenchmarks` through the
+  public comparison launcher and does not claim equivalence with ProtocolLab
+  raw QUIC or HTTP/3 scenarios.
+
+The `Smoke` lane uses BDN `Dry`. The `Confidence` lane uses BDN `Short` and is
+report-only until stable baselines and thresholds are established.
+
 ## Public Comparison
 
 The benchmark project also carries a bounded public-facade comparison suite:

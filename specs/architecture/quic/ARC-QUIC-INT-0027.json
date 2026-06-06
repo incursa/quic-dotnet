@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0027",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC Local Performance Lane Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define repo-local smoke and confidence performance lanes that combine BenchmarkDotNet developer feedback with ProtocolLab source-reference validation without changing benchmark semantics.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0027",
+    "VER-QUIC-INT-0027"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0026"
+  ],
+  "key_components": [
+    "scripts/perf/Invoke-QuicPerformanceLane.ps1",
+    "scripts/perf/Invoke-ProtocolLabLocalQuicBenchmark.ps1",
+    "scripts/benchmarks/Invoke-QuicBaseline.ps1",
+    "scripts/benchmarks/Invoke-QuicPublicComparison.ps1",
+    "benchmarks/README.md",
+    "scripts/perf/README.md"
+  ],
+  "design_summary": "The local performance lane wrapper owns profile selection, surface mapping, command provenance, and summary generation. BenchmarkDotNet remains the repo-local comparative feedback path, while ProtocolLab remains the end-to-end validation path through the existing source-reference helper. Smoke lanes use BDN Dry plus the smallest ProtocolLab source-reference run for mapped surfaces. Confidence lanes use BDN Short plus repeated ProtocolLab source-reference runs for mapped surfaces and stay report-only until stable thresholds exist. The wrapper never packs NuGet packages, publishes packages, uploads R2 bundles, or modifies ProtocolLab benchmark semantics.",
+  "edge_cases_and_constraints": [
+    "Raw QUIC multiplex and duplex surfaces map to explicit ProtocolLab scenarios; raw send core is BDN-only unless the caller supplies a scenario.",
+    "Public API stream-transfer comparisons stay BDN-only by default because ProtocolLab raw QUIC and HTTP/3 scenarios are not one-to-one public facade workloads.",
+    "Confidence lane output is evidence only and must not fail on hard performance thresholds in this slice.",
+    "The local wrapper records commands and artifact paths so controlled-runner orchestration can reuse the same lane and surface vocabulary later."
+  ],
+  "risks": [
+    "Developers can still overinterpret local confidence results as publishable benchmark claims, so the generated summary and docs must keep report-only wording visible.",
+    "Adding another local entry point can fragment workflow usage unless it delegates to the existing benchmark and ProtocolLab helpers instead of reimplementing them.",
+    "ProtocolLab source-reference runs remain subject to local machine noise; controlled compute nodes remain the future source for stronger evidence."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Deterministic Scenario Driver Follow-Up",
+      "content": "A later `QuicRuntimeScenarioDriver` test-harness slice should drive `QuicConnectionRuntime` with a test-controlled `FakeMonotonicClock`, explicit timer expirations, queued sends, ACK/loss events, and packet delivery without sockets. That future driver should prove exact scheduling and effect sequences before ProtocolLab validation, but it is intentionally out of scope for this performance-lane wrapper."
+    }
+  ]
+}

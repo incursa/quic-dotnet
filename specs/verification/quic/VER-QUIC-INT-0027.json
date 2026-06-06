@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-INT-0027",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC Local Performance Lane Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "verification_method": "PowerShell parser checks, lane dry run, BenchmarkDotNet Dry smoke, ProtocolLab source-reference smoke, optional report-only confidence evidence, SpecTrace JSON validation, and diff hygiene.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0027",
+    "WI-QUIC-INT-0027"
+  ],
+  "verifies": [
+    "REQ-QUIC-INT-0026"
+  ],
+  "scope": "This artifact verifies the local performance lane wrapper and documentation only. It does not verify runtime protocol behavior, publishable benchmark claims, controlled compute scheduling, or deterministic runtime scenario driving.",
+  "procedure": [
+    "Run PowerShell parser checks for `scripts/perf/Invoke-QuicPerformanceLane.ps1` and any changed PowerShell dependencies.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/perf/Invoke-QuicPerformanceLane.ps1 -Lane Smoke -Surface RawQuicMultiplex -DryRun`.",
+    "Run the Smoke RawQuicMultiplex lane to exercise BenchmarkDotNet Dry and ProtocolLab source-reference smoke behavior.",
+    "Run the Confidence RawQuicMultiplex lane once if local time permits; treat the output as report-only evidence.",
+    "Validate touched SpecTrace JSON artifacts.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The parser checks pass, the dry run records the expected commands and artifacts without executing them, the actual Smoke lane completes through BDN Dry and ProtocolLab source-reference smoke, Confidence remains report-only when run, touched SpecTrace JSON parses, and diff hygiene passes.",
+  "evidence": [
+    "scripts/perf/Invoke-QuicPerformanceLane.ps1",
+    "scripts/perf/README.md",
+    "benchmarks/README.md",
+    "PowerShell parser check passed for scripts/perf/Invoke-QuicPerformanceLane.ps1.",
+    "Smoke RawQuicMultiplex dry run wrote .artifacts/perf-lanes/codex-lane-dryrun-20260606/summary.md with BenchmarkDotNet Dry and ProtocolLab source-reference commands.",
+    "Smoke RawQuicMultiplex completed BenchmarkDotNet Dry slices for QuicApplicationSendPriorityBenchmarks, QuicApplicationSendQueueSortingBenchmarks, QuicApplicationSendBatchPayloadBenchmarks, and QuicStreamParsingBenchmarks under .artifacts/perf-lanes/codex-lane-smoke-20260606/bdn.",
+    "Smoke RawQuicMultiplex completed ProtocolLab run codex-lane-smoke-20260606-quic-transport-v1-comparison with validation passed and benchmark succeeded.",
+    "Confidence RawQuicMultiplex completed BenchmarkDotNet Short slices for QuicApplicationSendPriorityBenchmarks, QuicApplicationSendQueueSortingBenchmarks, QuicApplicationSendBatchPayloadBenchmarks, and QuicStreamParsingBenchmarks under .artifacts/perf-lanes/codex-lane-confidence-20260606/bdn.",
+    "Confidence RawQuicMultiplex with -NoRestore exposed stale project-reference restore state in ProtocolLab as CS1704 duplicate Incursa.Quic, Incursa.Quic.Http3, and Incursa.Qpack references; rerunning the ProtocolLab confidence segment with restore enabled refreshed the source-reference graph.",
+    "Confidence ProtocolLab source-reference segment completed run codex-lane-confidence-pl-20260606-quic-transport-v1-comparison with 9/9 validations passed, 9/9 benchmark attempts succeeded, 0 failed requests, and 0 timeout requests; aggregate results are at C:/shared/src/incursa/protocol-lab/.artifacts/runs/codex-lane-confidence-pl-20260606-quic-transport-v1-comparison/aggregate-results.json.",
+    "Final Smoke RawQuicMultiplex run codex-lane-smoke-final-20260606 completed after the wrapper stopped forwarding -NoRestore to ProtocolLab source-reference runs; BDN still used -NoRestore, ProtocolLab restored project references, and ProtocolLab run codex-lane-smoke-final-20260606-quic-transport-v1-comparison passed validation and benchmark.",
+    "Confidence aggregate retained local-lab comparability warnings, including unstable requests/s across repetitions, so the lane remains report-only with no regression threshold."
+  ],
+  "status_summary": "Passed for the local performance lane wrapper and documentation. Smoke is suitable as a quick developer check. Confidence records repeated local evidence but remains report-only and noisy until controlled-runner and deterministic scenario slices are implemented. ProtocolLab source-reference NoRestore is intentionally not forwarded by the lane wrapper until the ProtocolLab duplicate-reference no-restore harness issue is fixed."
+}

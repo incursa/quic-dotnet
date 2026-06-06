@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0027",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC Local Performance Lane Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Add a quic-dotnet-first local performance lane wrapper that formalizes smoke and confidence runs over existing BenchmarkDotNet and ProtocolLab source-reference helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0027",
+    "VER-QUIC-INT-0027"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0027"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0027"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0026"
+  ],
+  "planned_changes": "- Add `scripts/perf/Invoke-QuicPerformanceLane.ps1` with `Smoke` and `Confidence` lanes over raw QUIC multiplex, raw QUIC duplex, raw QUIC send core, and public API stream surfaces.\n- Delegate BenchmarkDotNet execution to the existing benchmark launchers and delegate ProtocolLab execution to the existing source-reference helper.\n- Write `.artifacts/perf-lanes/{runIdPrefix}/summary.md` with git state, exact commands, BDN artifact paths, ProtocolLab run IDs, and threshold-free confidence wording.\n- Update the performance and benchmark documentation so developers can choose the right local lane.\n- Record the deterministic `QuicRuntimeScenarioDriver` concept as the next slice without implementing it here.",
+  "out_of_scope": [
+    "ProtocolLab scenario, suite, validation, or benchmark semantics changes.",
+    "NuGet package packing, package publishing, or R2 upload.",
+    "Hard performance thresholds.",
+    "Controlled-runner scheduling implementation.",
+    "Deterministic runtime scenario-driver implementation."
+  ],
+  "verification_plan": "Run PowerShell parser checks for changed scripts, dry-run the Smoke RawQuicMultiplex lane, run a BenchmarkDotNet Dry smoke through the lane, run the actual Smoke RawQuicMultiplex lane, optionally run the report-only Confidence RawQuicMultiplex lane as evidence, validate touched SpecTrace JSON, and run `git diff --check`."
+}
