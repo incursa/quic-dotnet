@@ -85,6 +85,109 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_DeliversProtocolLabSizedFinalEchoBeforeEof()
+    {
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+
+        byte[] payload = new byte[65_536];
+        Random.Shared.NextBytes(payload);
+
+        Task serverTask = Task.Run(async () =>
+        {
+            await using QuicStream serverStream = await pair.ServerConnection.AcceptInboundStreamAsync()
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            byte[] received = await ReadExactlyUntilEofAsync(serverStream, payload.Length)
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            Assert.True(payload.AsSpan().SequenceEqual(received));
+
+            await serverStream.WriteFinalAsync(received, 0, received.Length, CancellationToken.None)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+        });
+
+        await using QuicStream clientStream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        await clientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        byte[] echoed = await ReadExactlyUntilEofAsync(clientStream, payload.Length)
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.True(payload.AsSpan().SequenceEqual(echoed));
+        Assert.Equal(0, await clientStream.ReadAsync(new byte[1], 0, 1).WaitAsync(TimeSpan.FromSeconds(10)));
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Theory]
+    [InlineData(16)]
+    [InlineData(100)]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_DeliversConcurrentProtocolLabSizedEchoesBeforeEof(int streamCount)
+    {
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+
+        byte[] payload = new byte[65_536];
+        Random.Shared.NextBytes(payload);
+
+        Task serverTask = Task.Run(async () =>
+        {
+            List<Task> streamTasks = new(streamCount);
+            for (int i = 0; i < streamCount; i++)
+            {
+                QuicStream serverStream = await pair.ServerConnection.AcceptInboundStreamAsync()
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(30));
+
+                streamTasks.Add(Task.Run(async () =>
+                {
+                    await using (serverStream)
+                    {
+                        byte[] received = await ReadExactlyUntilEofAsync(serverStream, payload.Length)
+                            .WaitAsync(TimeSpan.FromSeconds(30));
+
+                        Assert.True(payload.AsSpan().SequenceEqual(received));
+
+                        await serverStream.WriteAsync(received, 0, received.Length).WaitAsync(TimeSpan.FromSeconds(30));
+                        await serverStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+                    }
+                }));
+            }
+
+            await Task.WhenAll(streamTasks).WaitAsync(TimeSpan.FromSeconds(30));
+        });
+
+        Task[] clientTasks = Enumerable.Range(0, streamCount)
+            .Select(_ => Task.Run(async () =>
+            {
+                await using QuicStream clientStream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(30));
+
+                await clientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(30));
+                await clientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+
+                byte[] echoed = await ReadExactlyUntilEofAsync(clientStream, payload.Length)
+                    .WaitAsync(TimeSpan.FromSeconds(30));
+
+                Assert.True(payload.AsSpan().SequenceEqual(echoed));
+            }))
+            .ToArray();
+
+        await Task.WhenAll(clientTasks).WaitAsync(TimeSpan.FromSeconds(30));
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(30));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ReadAsync_RejectsAStreamWithoutReadableSides()
@@ -157,7 +260,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
         byte[] buffer = new byte[expectedLength];
         int totalRead = 0;
 
-        while (true)
+        while (totalRead < buffer.Length)
         {
             int bytesRead = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead);
             if (bytesRead == 0)
@@ -166,13 +269,10 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             }
 
             totalRead += bytesRead;
-            if (totalRead > buffer.Length)
-            {
-                throw new InvalidOperationException("The stream delivered more bytes than expected.");
-            }
         }
 
         Assert.Equal(expectedLength, totalRead);
+        Assert.Equal(0, await stream.ReadAsync(new byte[1], 0, 1));
         return buffer;
     }
 }

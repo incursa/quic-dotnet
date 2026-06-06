@@ -1319,12 +1319,13 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             return;
         }
 
-        if (!finishWrites && buffer.Length > MaximumStreamWriteChunkBytes)
+        if (buffer.Length > MaximumStreamWriteChunkBytes)
         {
             while (!buffer.IsEmpty)
             {
                 int chunkLength = Math.Min(buffer.Length, MaximumStreamWriteChunkBytes);
-                await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishWrites: false, cancellationToken).ConfigureAwait(false);
+                bool finishChunk = finishWrites && chunkLength == buffer.Length;
+                await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishChunk, cancellationToken).ConfigureAwait(false);
                 buffer = buffer[chunkLength..];
             }
 
