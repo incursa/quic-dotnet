@@ -953,6 +953,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                     onlyQueuedWrite,
                     schedulerBudget,
+                    out QuicStreamFrame onlyQueuedWriteFrame,
                     out exception);
                 if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
                 {
@@ -961,14 +962,6 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (sendPlan.Kind == QuicApplicationSendPlanKind.Fragment)
                 {
-                    if (!QuicStreamParser.TryParseStreamFrame(
-                            onlyQueuedWrite.StreamPayload.AsSpan(0, onlyQueuedWrite.StreamPayloadLength),
-                            out QuicStreamFrame onlyQueuedWriteFrame))
-                    {
-                        exception = new InvalidOperationException("The connection runtime could not parse the queued stream write packet.");
-                        return false;
-                    }
-
                     if (TryFlushFragmentedQueuedApplicationSend(
                             onlyQueuedWrite,
                             onlyQueuedWriteFrame,
@@ -1007,6 +1000,7 @@ internal sealed partial class QuicConnectionRuntime
                 QuicApplicationSendPlan sendPlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
                     sortedQueuedWrites,
                     schedulerBudget,
+                    out QuicStreamFrame firstSelectedWriteFrame,
                     out exception);
                 if (sendPlan.Kind == QuicApplicationSendPlanKind.None)
                 {
@@ -1017,14 +1011,6 @@ internal sealed partial class QuicConnectionRuntime
 
                 if (sendPlan.Kind == QuicApplicationSendPlanKind.Fragment)
                 {
-                    if (!QuicStreamParser.TryParseStreamFrame(
-                            selectedWrites[0].StreamPayload.AsSpan(0, selectedWrites[0].StreamPayloadLength),
-                            out QuicStreamFrame firstSelectedWriteFrame))
-                    {
-                        exception = new InvalidOperationException("The connection runtime could not parse the queued stream write packet.");
-                        return false;
-                    }
-
                     if (TryFlushFragmentedQueuedApplicationSend(
                             selectedWrites[0],
                             firstSelectedWriteFrame,

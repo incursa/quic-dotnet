@@ -35,11 +35,26 @@ internal static class QuicApplicationSendScheduler
         PendingApplicationSendRequest queuedWrite,
         QuicQueuedApplicationSendBudget budget,
         out Exception? exception)
+    {
+        QuicStreamFrame firstStreamFrame;
+        return SelectQueuedApplicationSendPlan(
+            queuedWrite,
+            budget,
+            out firstStreamFrame,
+            out exception);
+    }
+
+    internal static QuicApplicationSendPlan SelectQueuedApplicationSendPlan(
+        PendingApplicationSendRequest queuedWrite,
+        QuicQueuedApplicationSendBudget budget,
+        out QuicStreamFrame firstStreamFrame,
+        out Exception? exception)
         => SelectQueuedApplicationSendPlanCore(
             queuedWrite,
             sortedQueuedWrites: default,
             queuedWriteCount: 1,
             budget,
+            out firstStreamFrame,
             out exception);
 
     internal static QuicApplicationSendPlan SelectQueuedApplicationSendPlan(
@@ -47,9 +62,24 @@ internal static class QuicApplicationSendScheduler
         QuicQueuedApplicationSendBudget budget,
         out Exception? exception)
     {
+        QuicStreamFrame firstStreamFrame;
+        return SelectQueuedApplicationSendPlan(
+            sortedQueuedWrites,
+            budget,
+            out firstStreamFrame,
+            out exception);
+    }
+
+    internal static QuicApplicationSendPlan SelectQueuedApplicationSendPlan(
+        ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites,
+        QuicQueuedApplicationSendBudget budget,
+        out QuicStreamFrame firstStreamFrame,
+        out Exception? exception)
+    {
         if (sortedQueuedWrites.IsEmpty)
         {
             exception = null;
+            firstStreamFrame = default;
             return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.NoQueuedApplicationData);
         }
 
@@ -58,6 +88,7 @@ internal static class QuicApplicationSendScheduler
             sortedQueuedWrites,
             sortedQueuedWrites.Length,
             budget,
+            out firstStreamFrame,
             out exception);
     }
 
@@ -66,9 +97,11 @@ internal static class QuicApplicationSendScheduler
         ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites,
         int queuedWriteCount,
         QuicQueuedApplicationSendBudget budget,
+        out QuicStreamFrame firstStreamFrame,
         out Exception? exception)
     {
         exception = null;
+        firstStreamFrame = default;
 
         if (queuedWriteCount <= 0)
         {
@@ -82,7 +115,7 @@ internal static class QuicApplicationSendScheduler
 
         if (!QuicStreamParser.TryParseStreamFrame(
             firstQueuedWrite.StreamPayload.AsSpan(0, firstQueuedWrite.StreamPayloadLength),
-            out QuicStreamFrame firstStreamFrame))
+            out firstStreamFrame))
         {
             exception = new InvalidOperationException("Queued application stream payload is not a valid STREAM frame.");
             return QuicApplicationSendPlan.None(QuicSendPolicyBlockedReason.InvalidQueuedApplicationSend);

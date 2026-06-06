@@ -61,6 +61,24 @@ public sealed class QuicApplicationSendSchedulerTests
     }
 
     [Fact]
+    public void SelectQueuedApplicationSendPlan_ReturnsParsedFirstStreamFrameView()
+    {
+        PendingApplicationSendRequest queuedWrite = CreateQueuedWrite(sequence: 0, streamId: 4, dataLength: 96);
+
+        QuicApplicationSendPlan plan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+            queuedWrite,
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maxPayloadBytes: 40),
+            out QuicStreamFrame firstStreamFrame,
+            out Exception? exception);
+
+        Assert.Null(exception);
+        Assert.Equal(QuicApplicationSendPlanKind.Fragment, plan.Kind);
+        Assert.Equal(4UL, firstStreamFrame.StreamId.Value);
+        Assert.Equal(96, firstStreamFrame.StreamDataLength);
+        Assert.Equal(firstStreamFrame.StreamId.Value, plan.FirstStreamId);
+    }
+
+    [Fact]
     public void SelectQueuedApplicationSendPlan_PreservesPriorityAndSequenceOrderProvidedByQueue()
     {
         QuicApplicationSendQueue queue = new();

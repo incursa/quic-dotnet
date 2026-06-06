@@ -44,6 +44,7 @@ public sealed class QuicSendPolicyTests
     {
         QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
             CreateSnapshot(
+                queuedApplicationSendCount: 1,
                 maximumApplicationPayloadBytes: 8_000,
                 congestionWindowBytes: 12_000,
                 bytesInFlightBytes: 9_600));
@@ -55,20 +56,20 @@ public sealed class QuicSendPolicyTests
     }
 
     [Fact]
-    public void ComputeQueuedApplicationSendBudget_PreservesMeasuredBurstLimit()
+    public void ComputeQueuedApplicationSendBudget_PreservesMeasuredBurstLimitForSingleQueuedWrite()
     {
         QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
-            CreateSnapshot(queuedApplicationSendCount: 32, congestionWindowBytes: 128_000));
+            CreateSnapshot(queuedApplicationSendCount: 1, congestionWindowBytes: 128_000));
 
         Assert.True(budget.CanSendQueuedApplicationData);
         Assert.Equal(QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams, budget.MaxDatagrams);
     }
 
     [Fact]
-    public void ComputeQueuedApplicationSendBudget_TreatsSingleOversizedQueuedWriteAsBurstCandidate()
+    public void ComputeQueuedApplicationSendBudget_DoesNotTreatQueuedWriteCountAsDatagramCount()
     {
         QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
-            CreateSnapshot(queuedApplicationSendCount: 1, congestionWindowBytes: 128_000));
+            CreateSnapshot(queuedApplicationSendCount: 16, congestionWindowBytes: 128_000));
 
         Assert.True(budget.CanSendQueuedApplicationData);
         Assert.Equal(QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams, budget.MaxDatagrams);
