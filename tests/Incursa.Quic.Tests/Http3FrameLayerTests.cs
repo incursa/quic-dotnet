@@ -207,6 +207,20 @@ public sealed class Http3FrameLayerTests
         Assert.Single(headers, header => header.Name == ":status");
     }
 
+    [Fact]
+    public void ServerResponseBuilder_PreservesManyCustomResponseHeaderBytes()
+    {
+        QPackFieldLine[] responseHeaders = Enumerable.Range(0, 50)
+            .Select(index => new QPackFieldLine($"x-bench-{index:00}", new string((char)('a' + (index % 26)), 32)))
+            .ToArray();
+        Http3ServerResponse response = new(200, ReadOnlyMemory<byte>.Empty, responseHeaders);
+
+        IReadOnlyList<QPackFieldLine> headers = Http3Server.BuildResponseHeaders(response);
+        byte[] encodedFieldSection = Http3Server.EncodeResponseFieldSection(headers);
+
+        Assert.Equal(headers, QPackDecoder.DecodeFieldSection(encodedFieldSection));
+    }
+
     [Theory]
     [InlineData("text/plain", "Hello, World!")]
     [InlineData("application/json", """{"message":"Hello, World!"}""")]

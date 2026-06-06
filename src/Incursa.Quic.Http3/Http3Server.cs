@@ -41,6 +41,8 @@ public sealed class Http3Server : IAsyncDisposable
     private const byte QPackIntegerContinuationFlag = 0x80;
     private const int QPackIntegerContinuationShift = 7;
     private static readonly Encoding HeaderTextEncoding = Encoding.Latin1;
+    private static readonly Dictionary<QPackFieldLine, int> StaticFieldLineIndexes = BuildStaticFieldLineIndexes();
+    private static readonly Dictionary<string, int> StaticNameIndexes = BuildStaticNameIndexes();
 
     private readonly QuicListener listener;
     private readonly IHttp3RequestHandler handler;
@@ -1049,29 +1051,7 @@ public sealed class Http3Server : IAsyncDisposable
 
         foreach (QPackFieldLine header in headers)
         {
-            if (header.Name == ":status")
-            {
-                WriteLiteralWithStaticNameReference(encoded, ref offset, StatusStaticNameIndex, header.Value);
-                continue;
-            }
-
-            int staticFieldIndex = FindStaticFieldLineIndex(header);
-            if (staticFieldIndex >= 0)
-            {
-                WriteInteger(encoded, ref offset, checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix);
-                continue;
-            }
-
-            int staticNameIndex = FindStaticNameIndex(header.Name);
-            if (staticNameIndex >= 0)
-            {
-                WriteLiteralWithStaticNameReference(encoded, ref offset, staticNameIndex, header.Value);
-                continue;
-            }
-
-            WriteInteger(encoded, ref offset, checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix);
-            WriteRawString(encoded, ref offset, header.Name);
-            WriteStringLiteral(encoded, ref offset, header.Value);
+            WriteResponseHeader(encoded, ref offset, header);
         }
 
         return encoded;
@@ -1083,38 +1063,67 @@ public sealed class Http3Server : IAsyncDisposable
             + GetIntegerEncodedLength(0, FieldSectionBasePrefixBits);
         foreach (QPackFieldLine header in headers)
         {
-            if (header.Name == ":status")
-            {
-                int valueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
-                length = checked(length + GetLiteralWithStaticNameReferenceLength(StatusStaticNameIndex, valueByteCount));
-                continue;
-            }
-
-            int staticFieldIndex = FindStaticFieldLineIndex(header);
-            if (staticFieldIndex >= 0)
-            {
-                length = checked(length + GetIntegerEncodedLength(checked((ulong)staticFieldIndex), IndexedFieldPrefixBits));
-                continue;
-            }
-
-            int staticNameIndex = FindStaticNameIndex(header.Name);
-            if (staticNameIndex >= 0)
-            {
-                int staticNameValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
-                length = checked(length + GetLiteralWithStaticNameReferenceLength(staticNameIndex, staticNameValueByteCount));
-                continue;
-            }
-
-            int nameByteCount = HeaderTextEncoding.GetByteCount(header.Name);
-            int literalValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
-            length = checked(length
-                + GetIntegerEncodedLength(checked((ulong)nameByteCount), LiteralNamePrefixBits - 1)
-                + nameByteCount
-                + GetIntegerEncodedLength(checked((ulong)literalValueByteCount), StringLiteralPrefixBits - 1)
-                + literalValueByteCount);
+            length = checked(length + GetResponseHeaderLength(header));
         }
 
         return length;
+    }
+
+    private static int GetResponseHeaderLength(QPackFieldLine header)
+    {
+        if (header.Name == ":status")
+        {
+            int valueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
+            return GetLiteralWithStaticNameReferenceLength(StatusStaticNameIndex, valueByteCount);
+        }
+
+        int staticFieldIndex = FindStaticFieldLineIndex(header);
+        if (staticFieldIndex >= 0)
+        {
+            return GetIntegerEncodedLength(checked((ulong)staticFieldIndex), IndexedFieldPrefixBits);
+        }
+
+        int staticNameIndex = FindStaticNameIndex(header.Name);
+        if (staticNameIndex >= 0)
+        {
+            int staticNameValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
+            return GetLiteralWithStaticNameReferenceLength(staticNameIndex, staticNameValueByteCount);
+        }
+
+        int nameByteCount = HeaderTextEncoding.GetByteCount(header.Name);
+        int literalValueByteCount = HeaderTextEncoding.GetByteCount(header.Value);
+        return checked(
+            GetIntegerEncodedLength(checked((ulong)nameByteCount), LiteralNamePrefixBits - 1)
+            + nameByteCount
+            + GetIntegerEncodedLength(checked((ulong)literalValueByteCount), StringLiteralPrefixBits - 1)
+            + literalValueByteCount);
+    }
+
+    private static void WriteResponseHeader(byte[] encoded, ref int offset, QPackFieldLine header)
+    {
+        if (header.Name == ":status")
+        {
+            WriteLiteralWithStaticNameReference(encoded, ref offset, StatusStaticNameIndex, header.Value);
+            return;
+        }
+
+        int staticFieldIndex = FindStaticFieldLineIndex(header);
+        if (staticFieldIndex >= 0)
+        {
+            WriteInteger(encoded, ref offset, checked((ulong)staticFieldIndex), IndexedFieldPrefixBits, StaticIndexedFieldPrefix);
+            return;
+        }
+
+        int staticNameIndex = FindStaticNameIndex(header.Name);
+        if (staticNameIndex >= 0)
+        {
+            WriteLiteralWithStaticNameReference(encoded, ref offset, staticNameIndex, header.Value);
+            return;
+        }
+
+        WriteInteger(encoded, ref offset, checked((ulong)HeaderTextEncoding.GetByteCount(header.Name)), LiteralNamePrefixBits - 1, LiteralWithLiteralNamePrefix);
+        WriteRawString(encoded, ref offset, header.Name);
+        WriteStringLiteral(encoded, ref offset, header.Value);
     }
 
     private static int GetLiteralWithStaticNameReferenceLength(int staticNameIndex, int valueByteCount)
@@ -1382,31 +1391,46 @@ public sealed class Http3Server : IAsyncDisposable
 
     private static int FindStaticFieldLineIndex(QPackFieldLine fieldLine)
     {
-        for (int index = 0; index < QPackStaticTable.Count; index++)
-        {
-            if (QPackStaticTable.TryGet(index, out QPackFieldLine candidate)
-                && StringComparer.Ordinal.Equals(candidate.Name, fieldLine.Name)
-                && StringComparer.Ordinal.Equals(candidate.Value, fieldLine.Value))
-            {
-                return index;
-            }
-        }
-
-        return -1;
+        return StaticFieldLineIndexes.TryGetValue(fieldLine, out int index)
+            ? index
+            : -1;
     }
 
     private static int FindStaticNameIndex(string name)
     {
+        return StaticNameIndexes.TryGetValue(name, out int index)
+            ? index
+            : -1;
+    }
+
+    private static Dictionary<QPackFieldLine, int> BuildStaticFieldLineIndexes()
+    {
+        Dictionary<QPackFieldLine, int> indexes = new(QPackStaticTable.Count);
         for (int index = 0; index < QPackStaticTable.Count; index++)
         {
             if (QPackStaticTable.TryGet(index, out QPackFieldLine candidate)
-                && StringComparer.Ordinal.Equals(candidate.Name, name))
+                && !indexes.ContainsKey(candidate))
             {
-                return index;
+                indexes.Add(candidate, index);
             }
         }
 
-        return -1;
+        return indexes;
+    }
+
+    private static Dictionary<string, int> BuildStaticNameIndexes()
+    {
+        Dictionary<string, int> indexes = new(QPackStaticTable.Count, StringComparer.Ordinal);
+        for (int index = 0; index < QPackStaticTable.Count; index++)
+        {
+            if (QPackStaticTable.TryGet(index, out QPackFieldLine candidate)
+                && !indexes.ContainsKey(candidate.Name))
+            {
+                indexes.Add(candidate.Name, index);
+            }
+        }
+
+        return indexes;
     }
 
     private static Http3ServerResponse CreateBadRequestResponse()
