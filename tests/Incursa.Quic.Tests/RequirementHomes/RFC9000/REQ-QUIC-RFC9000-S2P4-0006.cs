@@ -45,6 +45,46 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReadAsync_DeliversProtocolLabSizedEchoBeforeEof()
+    {
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+
+        byte[] payload = new byte[65_536];
+        Random.Shared.NextBytes(payload);
+
+        Task serverTask = Task.Run(async () =>
+        {
+            await using QuicStream serverStream = await pair.ServerConnection.AcceptInboundStreamAsync()
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            byte[] received = await ReadExactlyUntilEofAsync(serverStream, payload.Length)
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            Assert.True(payload.AsSpan().SequenceEqual(received));
+
+            await serverStream.WriteAsync(received, 0, received.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await serverStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        });
+
+        await using QuicStream clientStream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        await clientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await clientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        byte[] echoed = await ReadExactlyUntilEofAsync(clientStream, payload.Length)
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.True(payload.AsSpan().SequenceEqual(echoed));
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ReadAsync_RejectsAStreamWithoutReadableSides()
@@ -110,5 +150,29 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             await ClientConnection.DisposeAsync();
             await Listener.DisposeAsync();
         }
+    }
+
+    private static async Task<byte[]> ReadExactlyUntilEofAsync(QuicStream stream, int expectedLength)
+    {
+        byte[] buffer = new byte[expectedLength];
+        int totalRead = 0;
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            totalRead += bytesRead;
+            if (totalRead > buffer.Length)
+            {
+                throw new InvalidOperationException("The stream delivered more bytes than expected.");
+            }
+        }
+
+        Assert.Equal(expectedLength, totalRead);
+        return buffer;
     }
 }

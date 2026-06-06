@@ -1292,6 +1292,8 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        stateChanged |= TryCompleteServerHandshakeFromOpenedOneRttPacket(nowTicks, ref effects);
+
         if (keyPhase
             && !tlsState.KeyUpdateInstalled
             && tlsState.CurrentOneRttKeyPhase == 0)
@@ -1985,6 +1987,27 @@ internal sealed partial class QuicConnectionRuntime
                 openedPacket.Dispose();
             }
         }
+    }
+
+    private bool TryCompleteServerHandshakeFromOpenedOneRttPacket(
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects)
+    {
+        if (tlsState.Role != QuicTlsRole.Server
+            || peerHandshakeTranscriptCompleted
+            || phase != QuicConnectionPhase.Establishing
+            || !tlsState.OneRttReceiveAuthorized)
+        {
+            return false;
+        }
+
+        // Opening a protected 1-RTT packet proves the peer has completed the TLS flight far enough for
+        // application data. Promote through the same path as an explicit TLS transcript-complete event so
+        // listener acceptance, HANDSHAKE_DONE emission, key discard, and path validation remain coupled.
+        return HandlePeerHandshakeTranscriptCompleted(
+            new QuicConnectionPeerHandshakeTranscriptCompletedEvent(nowTicks),
+            nowTicks,
+            ref effects);
     }
 
     private bool TryHandleZeroRttApplicationPacketReceived(

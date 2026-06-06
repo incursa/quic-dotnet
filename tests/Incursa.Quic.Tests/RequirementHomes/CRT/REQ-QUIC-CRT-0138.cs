@@ -149,6 +149,24 @@ public sealed class REQ_QUIC_CRT_0138
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void ListenerAcceptDecisionUsesRuntimeStateWhenTransitionSnapshotIsStale()
+    {
+        using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+        QuicConnectionTransitionResult staleTransition = new(
+            Sequence: 1,
+            ObservedAtTicks: 1,
+            EventKind: QuicConnectionEventKind.PacketReceived,
+            PreviousPhase: QuicConnectionPhase.Establishing,
+            CurrentPhase: QuicConnectionPhase.Establishing,
+            StateChanged: false,
+            Effects: []);
+
+        Assert.True(QuicListenerHost.ShouldQueueAcceptedConnection(staleTransition, runtime));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task ListenerCaptureUsesTheConcreteDestinationAddressForWildcardBinds()
     {
         if (!Socket.OSSupportsIPv6)

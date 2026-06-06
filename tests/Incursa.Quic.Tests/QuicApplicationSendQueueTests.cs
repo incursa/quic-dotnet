@@ -208,6 +208,44 @@ public sealed class QuicApplicationSendQueueTests
         Assert.Equal(streamData.Length, fragmentDataLength);
     }
 
+    [Fact]
+    public void TryGetFragmentDataLength_SplitsProtocolLab64KbQueuedStreamPayload()
+    {
+        byte[] streamData = Enumerable.Range(0, 65_536).Select(value => (byte)value).ToArray();
+        byte[] queuedPayload = new byte[streamData.Length + 32];
+
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask),
+            streamId: 7,
+            offset: 0,
+            streamData,
+            queuedPayload,
+            out int queuedPayloadLength));
+        Assert.True(QuicStreamParser.TryParseStreamFrame(
+            queuedPayload.AsSpan(0, queuedPayloadLength),
+            out QuicStreamFrame queuedFrame));
+
+        const int MaximumPayloadBytes = 1_150;
+        Assert.True(QuicStreamPayloadSizer.TryGetFragmentDataLength(
+            queuedFrame,
+            MaximumPayloadBytes,
+            out int fragmentDataLength));
+
+        Assert.InRange(fragmentDataLength, 1, streamData.Length - 1);
+
+        byte[] fragmentPayload = new byte[MaximumPayloadBytes + 16];
+        Assert.True(QuicFrameCodec.TryFormatStreamFrame(
+            (byte)(QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask),
+            streamId: 7,
+            offset: 0,
+            streamData.AsSpan(0, fragmentDataLength),
+            fragmentPayload,
+            out int fragmentPayloadLength));
+
+        Assert.True(fragmentPayloadLength <= MaximumPayloadBytes);
+        Assert.Equal(streamData.Length, fragmentDataLength + queuedFrame.StreamData[fragmentDataLength..].Length);
+    }
+
     private static PendingApplicationSendRequest[] CopySortedQueuedWrites(QuicApplicationSendQueue queue)
     {
         PendingApplicationSendRequest[] rentedWrites = queue.RentSortedQueuedWrites(out int queuedWriteCount);

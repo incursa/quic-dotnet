@@ -580,6 +580,24 @@ internal sealed partial class QuicConnectionRuntime
             return true;
         }
 
+        int maximumApplicationPayloadBytes = GetMaximumQueuedApplicationPayloadBytes();
+        if (streamPayloadLength > maximumApplicationPayloadBytes)
+        {
+            LogApplicationSend(
+                $"app-tx branch=oversized-queue role={tlsState.Role} stream={streamId} payloadLength={streamPayloadLength} budget={maximumApplicationPayloadBytes} queue={applicationSendQueue.Count}.");
+            QueuePendingApplicationSend(
+                streamId,
+                streamPriority,
+                streamPayload,
+                streamPayloadLength,
+                nowTicks,
+                tryFlushPendingApplicationSendsAfterEnqueue: true,
+                ref effects);
+            pendingStreamActionRequests.Remove(requestId);
+            completion.TrySetResult();
+            return true;
+        }
+
         if (!finishWrites
             && committedStreamDataLength > 0
             && (activePath?.AmplificationState.IsAddressValidated ?? false)

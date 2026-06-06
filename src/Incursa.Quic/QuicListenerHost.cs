@@ -740,12 +740,22 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             return;
         }
 
-        if (transition.CurrentPhase == QuicConnectionPhase.Active
-            && state.Runtime.PeerHandshakeTranscriptCompleted
+        if (ShouldQueueAcceptedConnection(transition, state.Runtime)
             && state.TryMarkAccepted())
         {
             _ = QueueAcceptedConnectionAsync(state.Connection);
         }
+    }
+
+    internal static bool ShouldQueueAcceptedConnection(
+        QuicConnectionTransitionResult transition,
+        QuicConnectionRuntime runtime)
+    {
+        ArgumentNullException.ThrowIfNull(runtime);
+
+        return (transition.CurrentPhase == QuicConnectionPhase.Active
+                || runtime.Phase == QuicConnectionPhase.Active)
+            && runtime.PeerHandshakeTranscriptCompleted;
     }
 
     private void ObserveEffect(QuicConnectionHandle handle, int shardIndex, QuicConnectionEffect effect)

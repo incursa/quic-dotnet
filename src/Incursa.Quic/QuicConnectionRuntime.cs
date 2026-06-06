@@ -56,6 +56,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private const byte OutboundStreamControlFrameType = QuicStreamFrameBits.StreamFrameTypeMinimum | QuicStreamFrameBits.LengthBitMask;
     private const int ApplicationMinimumProtectedPayloadLength =
         QuicInitialPacketProtection.HeaderProtectionSampleOffset + QuicInitialPacketProtection.HeaderProtectionSampleLength;
+    private const int MaximumStreamWriteChunkBytes = 16 * 1024;
 
     private readonly IMonotonicClock clock;
     private readonly QuicConnectionSendRuntime sendRuntime;
@@ -1315,6 +1316,18 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         if (buffer.IsEmpty && !finishWrites)
         {
+            return;
+        }
+
+        if (!finishWrites && buffer.Length > MaximumStreamWriteChunkBytes)
+        {
+            while (!buffer.IsEmpty)
+            {
+                int chunkLength = Math.Min(buffer.Length, MaximumStreamWriteChunkBytes);
+                await WriteStreamAsyncCore(streamId, buffer[..chunkLength], finishWrites: false, cancellationToken).ConfigureAwait(false);
+                buffer = buffer[chunkLength..];
+            }
+
             return;
         }
 
