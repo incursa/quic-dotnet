@@ -220,7 +220,6 @@ $protocolLabRunRoot = Join-Path (Join-Path $resolvedProtocolLabRoot ".artifacts\
 $protocolLabAggregatePath = Join-Path $protocolLabRunRoot "aggregate-results.json"
 $protocolLabSummaryPath = Join-Path $protocolLabRunRoot "summary.md"
 $commands = New-Object System.Collections.Generic.List[object]
-$protocolLabNoRestoreSuppressed = $false
 
 New-Item -ItemType Directory -Force -Path $runRoot | Out-Null
 
@@ -315,8 +314,7 @@ if ($shouldRunProtocolLab) {
     )
 
     if ($NoRestore) {
-        $protocolLabNoRestoreSuppressed = $true
-        Write-Warning "ProtocolLab source-reference restore remains enabled because its current --no-restore path can retain stale package assets alongside project references."
+        $protocolLabArgs += "-NoRestore"
     }
 
     $protocolLabProcessArgs = @(
@@ -404,7 +402,6 @@ else {
     Add-SummaryLine $summary "- Warmup seconds: ``$warmupSeconds``"
     Add-SummaryLine $summary "- Repetitions: ``$repetitions``"
     Add-SummaryLine $summary "- NoRestore requested: ``$NoRestore``"
-    Add-SummaryLine $summary "- ProtocolLab NoRestore suppressed: ``$protocolLabNoRestoreSuppressed``"
     Add-SummaryLine $summary "- Run ID: ``$protocolLabRunId``"
     Add-SummaryLine $summary "- Run root: ``$protocolLabRunRoot``"
     Add-SummaryLine $summary "- Aggregate results: ``$protocolLabAggregatePath``"

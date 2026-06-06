@@ -42,13 +42,6 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-QuicPerforma
   -NoBuild
 ```
 
-`-NoRestore` is currently not forwarded to the ProtocolLab source-reference
-leg by this lane wrapper. The direct ProtocolLab `--no-restore` path can retain
-stale package assets beside project references and fail with duplicate
-`Incursa.*` assembly references. Until that ProtocolLab harness issue is fixed,
-the wrapper keeps restore enabled for ProtocolLab while still avoiding package
-pack/publish/upload behavior.
-
 Example confidence run:
 
 ```powershell
@@ -110,11 +103,8 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabL
   -StreamsPerConnection 1
 ```
 
-The direct helper exposes `-NoRestore` for source-mode iteration, but current
-ProtocolLab project-reference wiring can retain stale package assets beside
-project references and fail with duplicate `Incursa.*` assembly references.
-Use restore-enabled source-reference runs unless you have just verified the
-direct no-restore path in the ProtocolLab checkout:
+After the first source-mode restore, add `-NoRestore` to avoid restore work in
+the close loop:
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 `
@@ -165,9 +155,8 @@ scenario: quic.transport.multiplex.100x64kb
 ```
 
 Use `-UseProjectReferences` so ProtocolLab consumes the current quic-dotnet
-working tree directly. Keep restore enabled when using the lane wrapper's
-ProtocolLab leg until the ProtocolLab no-restore project-reference issue is
-fixed. Do not use `-UploadAfterRun` for local performance iteration.
+working tree directly. Use `-NoRestore` after the first successful source-mode
+restore. Do not use `-UploadAfterRun` for local performance iteration.
 
 ProtocolLab-owned scenario and suite files live in the sibling ProtocolLab
 checkout, not in this repo. For the standard shared Windows checkout, that is:
