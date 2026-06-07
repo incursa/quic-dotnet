@@ -924,6 +924,19 @@ internal sealed partial class QuicConnectionRuntime
         bool probePacket,
         ref QuicConnectionEffectAccumulator effects,
         out Exception? exception)
+        => FlushPendingApplicationSends(
+            nowTicks,
+            probePacket,
+            QuicQueuedApplicationSendBudget.AllowSingleDatagram(GetMaximumQueuedApplicationPayloadBytes()),
+            ref effects,
+            out exception);
+
+    private bool FlushPendingApplicationSends(
+        long nowTicks,
+        bool probePacket,
+        QuicQueuedApplicationSendBudget schedulerBudget,
+        ref QuicConnectionEffectAccumulator effects,
+        out Exception? exception)
     {
         if (applicationSendQueue.Count == 0)
         {
@@ -941,9 +954,6 @@ internal sealed partial class QuicConnectionRuntime
         PendingApplicationSendRequest[]? queuedWrites = null;
         byte[]? combinedPayloadOwner = null;
         ReadOnlySpan<PendingApplicationSendRequest> selectedWrites = default;
-        int maximumQueuedApplicationPayloadBytes = GetMaximumQueuedApplicationPayloadBytes();
-        QuicQueuedApplicationSendBudget schedulerBudget =
-            QuicQueuedApplicationSendBudget.AllowSingleDatagram(maximumQueuedApplicationPayloadBytes);
         bool hasOnlyQueuedWrite = applicationSendQueue.TryGetOnlyQueuedWrite(out onlyQueuedWrite);
 
         try
@@ -1180,19 +1190,22 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
     {
-        QuicQueuedApplicationSendBudget sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
-            CaptureQueuedApplicationSendPolicySnapshot());
-        if (!sendBudget.CanSendQueuedApplicationData)
-        {
-            return false;
-        }
-
         bool stateChanged = false;
-        for (int flushCount = 0;
-            applicationSendQueue.Count > 0 && flushCount < sendBudget.MaxDatagrams;
-            flushCount++)
+        for (int flushCount = 0; applicationSendQueue.Count > 0; flushCount++)
         {
-            if (!FlushPendingApplicationSends(nowTicks, ref effects))
+            QuicQueuedApplicationSendBudget sendBudget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
+                CaptureQueuedApplicationSendPolicySnapshot());
+            if (!sendBudget.CanSendQueuedApplicationData || flushCount >= sendBudget.MaxDatagrams)
+            {
+                break;
+            }
+
+            if (!FlushPendingApplicationSends(
+                    nowTicks,
+                    probePacket: false,
+                    sendBudget,
+                    ref effects,
+                    out _))
             {
                 break;
             }

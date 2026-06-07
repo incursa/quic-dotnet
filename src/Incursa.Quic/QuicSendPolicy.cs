@@ -125,11 +125,9 @@ internal static class QuicSendPolicy
             sendAvailableBytes = Math.Min(sendAvailableBytes, snapshot.AntiAmplificationAvailableBytes);
         }
 
-        ulong datagramsByCongestionWindow = snapshot.CongestionWindowBytes / snapshot.MaximumDatagramSizeBytes;
-        ulong datagramsBySendEnvelope = snapshot.IsAddressValidated
-            ? ulong.MaxValue
-            : snapshot.AntiAmplificationAvailableBytes / snapshot.MaximumDatagramSizeBytes;
-        ulong datagramsBySendBudget = Math.Min(datagramsByCongestionWindow, datagramsBySendEnvelope);
+        ulong datagramsBySendBudget = CountDatagramsAllowedByAvailableBytes(
+            sendAvailableBytes,
+            snapshot.MaximumDatagramSizeBytes);
         if (datagramsBySendBudget == 0)
         {
             return QuicQueuedApplicationSendBudget.Blocked(
@@ -146,5 +144,21 @@ internal static class QuicSendPolicy
             Math.Min(sendAvailableBytes, (ulong)int.MaxValue));
 
         return QuicQueuedApplicationSendBudget.Allowed((int)maxDatagrams, maxPayloadBytes);
+    }
+
+    private static ulong CountDatagramsAllowedByAvailableBytes(
+        ulong availableBytes,
+        ulong maximumDatagramSizeBytes)
+    {
+        if (availableBytes == 0)
+        {
+            return 0;
+        }
+
+        ulong fullDatagrams = availableBytes / maximumDatagramSizeBytes;
+        ulong remainderBytes = availableBytes % maximumDatagramSizeBytes;
+        return remainderBytes > 0
+            ? fullDatagrams + 1
+            : fullDatagrams;
     }
 }

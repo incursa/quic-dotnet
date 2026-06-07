@@ -50,7 +50,7 @@ public sealed class QuicSendPolicyTests
                 bytesInFlightBytes: 9_600));
 
         Assert.True(budget.CanSendQueuedApplicationData);
-        Assert.Equal(QuicSendPolicy.MeasuredQueuedApplicationSendBurstDatagrams, budget.MaxDatagrams);
+        Assert.Equal(2, budget.MaxDatagrams);
         Assert.Equal(2_400, budget.MaxPayloadBytes);
         Assert.Equal(QuicSendPolicyBlockedReason.None, budget.BlockedReason);
     }
@@ -83,6 +83,20 @@ public sealed class QuicSendPolicyTests
 
         Assert.True(budget.CanSendQueuedApplicationData);
         Assert.Equal(2, budget.MaxDatagrams);
+    }
+
+    [Fact]
+    public void ComputeQueuedApplicationSendBudget_LimitsDatagramsByAvailableCongestionWindow()
+    {
+        QuicQueuedApplicationSendBudget budget = QuicSendPolicy.ComputeQueuedApplicationSendBudget(
+            CreateSnapshot(
+                queuedApplicationSendCount: 8,
+                congestionWindowBytes: 14_720,
+                bytesInFlightBytes: 13_520));
+
+        Assert.True(budget.CanSendQueuedApplicationData);
+        Assert.Equal(1, budget.MaxDatagrams);
+        Assert.Equal(1_150, budget.MaxPayloadBytes);
     }
 
     [Fact]

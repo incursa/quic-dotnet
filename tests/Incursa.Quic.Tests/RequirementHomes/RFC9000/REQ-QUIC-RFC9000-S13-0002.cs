@@ -551,6 +551,59 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ReceivingAckFlushesQueuedApplicationSendsOnlyWithinAvailableCongestionBudget()
+    {
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 64 * 1024,
+            localBidirectionalSendLimit: 64 * 1024);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        outboundEffects.Clear();
+        Assert.True(runtime.SendRuntime.TryDiscardPacketNumberSpace(
+            QuicPacketNumberSpace.ApplicationData,
+            discardAckGenerationState: false));
+
+        ulong acknowledgedFillerPacketNumber = FillCongestionWindowWithTrackedPackets(runtime);
+        Assert.False(runtime.SendRuntime.FlowController.CongestionControlState.CanSend(1));
+
+        byte[] firstPayload = Enumerable.Repeat((byte)0xD1, 1024).ToArray();
+        byte[] secondPayload = Enumerable.Repeat((byte)0xD2, 1024).ToArray();
+        byte[] thirdPayload = Enumerable.Repeat((byte)0xD3, 1024).ToArray();
+        await stream.WriteAsync(firstPayload, 0, firstPayload.Length);
+        await stream.WriteAsync(secondPayload, 0, secondPayload.Length);
+        await stream.WriteAsync(thirdPayload, 0, thirdPayload.Length);
+
+        Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+
+        QuicConnectionTransitionResult ackResult = QuicS13AckPiggybackTestSupport.ReceiveOneRttAckOnly(
+            runtime,
+            observedAtTicks: 10,
+            packetNumber: 1,
+            largestAcknowledged: acknowledgedFillerPacketNumber);
+
+        QuicConnectionSendDatagramEffect queuedSendEffect = Assert.Single(
+            ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, queuedSendEffect);
+        ReadOnlySpan<byte> remainingPayload = SkipPadding(openedPayload);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(remainingPayload, out QuicStreamFrame frame));
+        Assert.Equal((ulong)stream.Id, frame.StreamId.Value);
+        Assert.Equal(0UL, frame.Offset);
+        Assert.False(frame.StreamData.IsEmpty);
+        Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ReceivingAckWithoutQueuedApplicationSendDoesNotEmitApplicationData()
@@ -580,6 +633,27 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
 
         Assert.Empty(ackResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+    }
+
+    private static ulong FillCongestionWindowWithTrackedPackets(QuicConnectionRuntime runtime)
+    {
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        ulong packetBytes = runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes;
+        ulong packetNumber = 100;
+        ulong acknowledgedPacketNumber = packetNumber;
+
+        while (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+        {
+            ulong remainingBytes = congestion.CongestionWindowBytes - congestion.BytesInFlightBytes;
+            ulong payloadBytes = Math.Min(packetBytes, remainingBytes);
+            runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber++,
+                payloadBytes,
+                SentAtMicros: 1));
+        }
+
+        return acknowledgedPacketNumber;
     }
 
     [Fact]
