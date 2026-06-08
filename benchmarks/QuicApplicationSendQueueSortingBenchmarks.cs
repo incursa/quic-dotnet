@@ -54,4 +54,15 @@ public class QuicApplicationSendQueueSortingBenchmarks
             QuicApplicationSendQueue.ReturnRentedQueuedWrites(queuedWrites);
         }
     }
+
+    /// <summary>
+    /// Measures the fragmented-head fast path that only needs the next queued write.
+    /// </summary>
+    [Benchmark]
+    public long GetNextQueuedWriteByPriorityThenSequence()
+    {
+        return queue.TryGetNextQueuedWrite(out PendingApplicationSendRequest queuedWrite)
+            ? queuedWrite.Sequence + (long)queuedWrite.StreamId
+            : 0;
+    }
 }

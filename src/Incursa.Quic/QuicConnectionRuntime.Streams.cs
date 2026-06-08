@@ -1003,6 +1003,51 @@ internal sealed partial class QuicConnectionRuntime
             }
             else
             {
+                if (!applicationSendQueue.TryGetNextQueuedWrite(out PendingApplicationSendRequest nextQueuedWrite))
+                {
+                    exception = null;
+                    return false;
+                }
+
+                QuicApplicationSendPlan nextWritePlan = QuicApplicationSendScheduler.SelectQueuedApplicationSendPlan(
+                    nextQueuedWrite,
+                    schedulerBudget,
+                    out QuicStreamFrame nextQueuedWriteFrame,
+                    out exception);
+                if (nextWritePlan.Kind == QuicApplicationSendPlanKind.None)
+                {
+                    return false;
+                }
+
+                if (nextWritePlan.Kind == QuicApplicationSendPlanKind.Fragment)
+                {
+                    if (TryFlushFragmentedQueuedApplicationSend(
+                            nextQueuedWrite,
+                            nextQueuedWriteFrame,
+                            nextWritePlan.FragmentDataLength,
+                            nowTicks,
+                            ref effects,
+                            out exception))
+                    {
+                        LogApplicationSend(
+                            $"app-tx flush-fragment-sent role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count}.");
+                        exception = null;
+                        return true;
+                    }
+
+                    if (IsTransientApplicationSendPathBlocked(exception))
+                    {
+                        pendingApplicationSendDelayDueTicks = SaturatingAdd(
+                            nowTicks,
+                            ConvertMicrosToTicks(ApplicationSendDelayMicros));
+                        AppendLifecycleTimerEffects(ref effects);
+                        LogApplicationSend(
+                            $"app-tx flush-fragment-blocked role={tlsState.Role} stream={nextQueuedWrite.StreamId} queue={applicationSendQueue.Count} reason={exception?.Message}.");
+                    }
+
+                    return false;
+                }
+
                 queuedWrites = applicationSendQueue.RentSortedQueuedWrites(out int queuedWriteCount);
                 ReadOnlySpan<PendingApplicationSendRequest> sortedQueuedWrites =
                     queuedWrites.AsSpan(0, queuedWriteCount);

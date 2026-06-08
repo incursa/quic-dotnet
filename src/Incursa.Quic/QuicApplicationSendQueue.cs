@@ -85,6 +85,27 @@ internal sealed class QuicApplicationSendQueue
         return false;
     }
 
+    internal bool TryGetNextQueuedWrite(out PendingApplicationSendRequest queuedWrite)
+    {
+        if (pendingRequests.Count == 0)
+        {
+            queuedWrite = default;
+            return false;
+        }
+
+        queuedWrite = pendingRequests[0];
+        for (int index = 1; index < pendingRequests.Count; index++)
+        {
+            PendingApplicationSendRequest candidate = pendingRequests[index];
+            if (ComparePendingApplicationSendRequests(candidate, queuedWrite) < 0)
+            {
+                queuedWrite = candidate;
+            }
+        }
+
+        return true;
+    }
+
     public bool TryReplaceQueuedWritePayload(long sequence, byte[] streamPayload, int streamPayloadLength)
     {
         for (int index = 0; index < pendingRequests.Count; index++)

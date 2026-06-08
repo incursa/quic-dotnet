@@ -37,6 +37,46 @@ public sealed class QuicApplicationSendQueueTests
     }
 
     [Fact]
+    public void TryGetNextQueuedWrite_ReturnsHighestPriorityWriteWithoutRemovingIt()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.Enqueue(4, priority: 0, [0x10], 1);
+        queue.Enqueue(8, priority: 5, [0x20], 1);
+        queue.Enqueue(12, priority: 5, [0x30], 1);
+        queue.Enqueue(16, priority: 1, [0x40], 1);
+
+        Assert.True(queue.TryGetNextQueuedWrite(out PendingApplicationSendRequest queuedWrite));
+
+        Assert.Equal(8UL, queuedWrite.StreamId);
+        Assert.Equal(5, queuedWrite.Priority);
+        Assert.Equal(1L, queuedWrite.Sequence);
+        Assert.Equal(4, queue.Count);
+    }
+
+    [Fact]
+    public void TryGetNextQueuedWrite_PreservesFifoForEqualPriorityWrites()
+    {
+        QuicApplicationSendQueue queue = new();
+        queue.Enqueue(4, priority: 3, [0x10], 1);
+        queue.Enqueue(8, priority: 3, [0x20], 1);
+        queue.Enqueue(12, priority: 3, [0x30], 1);
+
+        Assert.True(queue.TryGetNextQueuedWrite(out PendingApplicationSendRequest queuedWrite));
+
+        Assert.Equal(4UL, queuedWrite.StreamId);
+        Assert.Equal(0L, queuedWrite.Sequence);
+    }
+
+    [Fact]
+    public void TryGetNextQueuedWrite_ReturnsFalseForEmptyQueue()
+    {
+        QuicApplicationSendQueue queue = new();
+
+        Assert.False(queue.TryGetNextQueuedWrite(out PendingApplicationSendRequest queuedWrite));
+        Assert.Equal(default, queuedWrite);
+    }
+
+    [Fact]
     public void SelectQueuedApplicationSendBatchCount_AlwaysIncludesTheFirstQueuedWrite()
     {
         PendingApplicationSendRequest[] queuedWrites =
