@@ -163,6 +163,23 @@ function Resolve-ProjectPathOrThrow {
     throw "$Description was not found under the quic-dotnet root: $Path"
 }
 
+function Test-NoRestoreRuntimeAssetFailure {
+    param(
+        [string] $LogText,
+        [string] $RuntimeIdentifier
+    )
+
+    if ([string]::IsNullOrWhiteSpace($LogText)) {
+        return $false
+    }
+
+    $normalizedLog = $LogText.ToLowerInvariant()
+    $normalizedRuntime = $RuntimeIdentifier.ToLowerInvariant()
+
+    return $normalizedLog.Contains("netsdk1047") -or
+        ($normalizedLog.Contains("project.assets.json") -and $normalizedLog.Contains($normalizedRuntime))
+}
+
 function Invoke-DotNetPublish {
     param(
         [Parameter(Mandatory = $true)]
@@ -199,7 +216,12 @@ function Invoke-DotNetPublish {
 
     $publishLog = & dotnet @publishArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
+        $publishText = ($publishLog | Out-String)
         $publishLog | Write-Error
+        if ($NoRestore -and (Test-NoRestoreRuntimeAssetFailure -LogText $publishText -RuntimeIdentifier $RuntimeIdentifier)) {
+            throw "dotnet publish failed for runtime identifier '$RuntimeIdentifier' because restore assets are missing for that RID. Rerun the package build once without -NoRestore, then use -NoRestore again after restore succeeds."
+        }
+
         throw "dotnet publish failed for runtime identifier '$RuntimeIdentifier'."
     }
 }

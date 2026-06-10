@@ -111,6 +111,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("UseProtocolLabContracts", builderScript);
         Assert.Contains("under the quic-dotnet root", builderScript);
         Assert.Contains("Assert-PathUnderRoot", builderScript);
+        Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
+        Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
 
