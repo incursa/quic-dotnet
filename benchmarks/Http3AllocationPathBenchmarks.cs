@@ -30,6 +30,9 @@ public class Http3AllocationPathBenchmarks
     private byte[] plaintextRequestFieldSection = [];
     private byte[] jsonRequestFieldSection = [];
     private byte[] postRequestFieldSection = [];
+    private byte[] plaintextResponseFieldSection = [];
+    private byte[] jsonResponseFieldSection = [];
+    private byte[] largeDataFramePayload = [];
     private byte[] plaintextHeadersFrame = [];
     private byte[] jsonHeadersFrame = [];
     private byte[] plaintextDataFrame = [];
@@ -82,9 +85,12 @@ public class Http3AllocationPathBenchmarks
         plaintextRequestFieldSection = QPackEncoder.EncodeFieldSection(plaintextRequestHeaders);
         jsonRequestFieldSection = QPackEncoder.EncodeFieldSection(jsonRequestHeaders);
         postRequestFieldSection = QPackEncoder.EncodeFieldSection(postRequestHeaders);
+        plaintextResponseFieldSection = QPackEncoder.EncodeFieldSection(plaintextResponseHeaders);
+        jsonResponseFieldSection = QPackEncoder.EncodeFieldSection(jsonResponseHeaders);
+        largeDataFramePayload = CreateDeterministicBytes(16 * 1024);
 
-        plaintextHeadersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(plaintextResponseHeaders));
-        jsonHeadersFrame = Http3FrameWriter.WriteHeaders(QPackEncoder.EncodeFieldSection(jsonResponseHeaders));
+        plaintextHeadersFrame = Http3FrameWriter.WriteHeaders(plaintextResponseFieldSection);
+        jsonHeadersFrame = Http3FrameWriter.WriteHeaders(jsonResponseFieldSection);
         plaintextDataFrame = Http3FrameWriter.WriteData(PlaintextBody);
         jsonDataFrame = Http3FrameWriter.WriteData(JsonBody);
         plaintextRequestHeadersFrame = Http3FrameWriter.WriteHeaders(plaintextRequestFieldSection);
@@ -94,6 +100,36 @@ public class Http3AllocationPathBenchmarks
         postRequestHeadersAndDataFrames = Concat(postRequestHeadersFrame, smallRequestDataFrame);
         plaintextResponseFrames = BufferResponseFrames(plaintextHeadersFrame, PlaintextBody);
         jsonResponseFrames = BufferResponseFrames(jsonHeadersFrame, JsonBody);
+    }
+
+    /// <summary>
+    /// Measures the standalone response HEADERS frame writer for the plaintext response shape.
+    /// </summary>
+    [Benchmark]
+    public int FrameWriter_WritePlaintextResponseHeaders()
+    {
+        byte[] frame = Http3FrameWriter.WriteHeaders(plaintextResponseFieldSection);
+        return frame.Length;
+    }
+
+    /// <summary>
+    /// Measures the standalone DATA frame writer for the plaintext response body shape.
+    /// </summary>
+    [Benchmark]
+    public int FrameWriter_WritePlaintextResponseData()
+    {
+        byte[] frame = Http3FrameWriter.WriteData(PlaintextBody);
+        return frame.Length;
+    }
+
+    /// <summary>
+    /// Measures the standalone DATA frame writer for a full server DATA chunk.
+    /// </summary>
+    [Benchmark]
+    public int FrameWriter_WriteLargeDataFrame16Kb()
+    {
+        byte[] frame = Http3FrameWriter.WriteData(largeDataFramePayload);
+        return frame.Length;
     }
 
     /// <summary>
@@ -698,6 +734,17 @@ public class Http3AllocationPathBenchmarks
         first.CopyTo(combined, 0);
         second.CopyTo(combined, first.Length);
         return combined;
+    }
+
+    private static byte[] CreateDeterministicBytes(int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = (byte)(index % 251);
+        }
+
+        return bytes;
     }
 
     private static int ReadRequestLikeServer(byte[] requestBytes, int? splitOffset)

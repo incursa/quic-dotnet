@@ -100,9 +100,12 @@ public static class Http3FrameWriter
     /// </summary>
     public static byte[] WriteFrame(ulong frameType, ReadOnlySpan<byte> payload)
     {
-        ArrayBufferWriter<byte> writer = new();
-        WriteFrame(writer, frameType, payload);
-        return writer.WrittenSpan.ToArray();
+        byte[] frame = new byte[GetFrameLength(frameType, payload.Length)];
+        int offset = 0;
+        offset += WriteVariableLengthInteger(frame.AsSpan(offset), frameType);
+        offset += WriteVariableLengthInteger(frame.AsSpan(offset), checked((ulong)payload.Length));
+        payload.CopyTo(frame.AsSpan(offset));
+        return frame;
     }
 
     /// <summary>
@@ -139,11 +142,16 @@ public static class Http3FrameWriter
     private static void WriteVariableLengthInteger(IBufferWriter<byte> writer, ulong value)
     {
         Span<byte> destination = writer.GetSpan(Http3VariableLengthInteger.MaxEncodedLength);
+        writer.Advance(WriteVariableLengthInteger(destination, value));
+    }
+
+    private static int WriteVariableLengthInteger(Span<byte> destination, ulong value)
+    {
         if (!Http3VariableLengthInteger.TryFormat(value, destination, out int bytesWritten))
         {
             throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 }

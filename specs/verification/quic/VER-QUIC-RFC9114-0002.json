@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9114-0002",
     "WI-QUIC-RFC9114-0002"
   ],
-  "verification_method": "Focused requirement-home tests, HTTP/3 frame and stream tests, SETTINGS and header-validation tests, minimal client/server loopback tests, SpecTrace JSON validation, and diff hygiene for the HTTP/3 positive floor.",
+  "verification_method": "Focused requirement-home tests, HTTP/3 frame and stream tests, SETTINGS and header-validation tests, minimal client/server loopback tests, BenchmarkDotNet frame-writer before/after evidence, local ProtocolLab source-root selection attempt, SpecTrace JSON validation, and diff hygiene for the HTTP/3 positive floor.",
   "verifies": [
     "REQ-QUIC-RFC9114-S4-0002",
     "REQ-QUIC-RFC9114-S6-0001",
@@ -27,6 +27,8 @@
   "procedure": [
     "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Http3FrameLayerTests|FullyQualifiedName~Http3StreamDispatcherTests|FullyQualifiedName~Http3SettingsHandlingTests|FullyQualifiedName~Http3HeaderValidationTests|FullyQualifiedName~Http3MinimalClientTests|FullyQualifiedName~Http3MinimalServerTests|FullyQualifiedName~REQ_QUIC_RFC9114_0002|FullyQualifiedName~REQ_QUIC_RFC9114_S4_0001\"`.",
+    "For standalone frame-writer changes, run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Short --filter \"*FrameWriter_Write*\" --artifacts .artifacts/perf/<run>/bdn-before --inProcess` before the implementation change and rerun with `--artifacts .artifacts/perf/<run>/bdn-after` after the implementation change.",
+    "Attempt local ProtocolLab validation through the source-root loop when the active ProtocolLab inventory still contains a QUIC.NET HTTP/3 implementation cell; otherwise record the inventory-selection blocker instead of creating ad hoc package-template state.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `git diff --check`."
   ],
@@ -39,6 +41,9 @@
     "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
+    "benchmarks/Http3AllocationPathBenchmarks.cs",
+    ".artifacts/perf/codex-h3-frame-writer-exact/bdn-before/results/Incursa.Quic.Benchmarks.Http3AllocationPathBenchmarks-report-github.md",
+    ".artifacts/perf/codex-h3-frame-writer-exact/bdn-after/results/Incursa.Quic.Benchmarks.Http3AllocationPathBenchmarks-report-github.md",
     "src/Incursa.Quic.Http3/Http3FrameReader.cs",
     "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
     "src/Incursa.Quic.Http3/Http3StreamDispatcher.cs",
@@ -47,5 +52,15 @@
     "src/Incursa.Quic.Http3/Http3Client.cs",
     "src/Incursa.Quic.Http3/Http3Server.cs"
   ],
-  "status_summary": "The managed HTTP/3 positive floor is trace-owned by canonical RFC 9114 artifacts and is covered by focused frame, stream, SETTINGS, header-validation, and loopback client/server tests. External peer promotion remains a separate interop concern."
+  "status_summary": "The managed HTTP/3 positive floor is trace-owned by canonical RFC 9114 artifacts and is covered by focused frame, stream, SETTINGS, header-validation, and loopback client/server tests. External peer promotion remains a separate interop concern.",
+  "supplemental_sections": [
+    {
+      "heading": "Standalone Frame Writer Evidence",
+      "content": "On 2026-06-09, the standalone HTTP/3 frame writer was tightened to allocate the exact encoded frame length for `Http3FrameWriter.WriteFrame(ulong, ReadOnlySpan<byte>)`. Focused `Http3FrameLayerTests` passed 38/38, and the adjacent HTTP/3 positive-floor filter for frame layer, minimal client/server, and `REQ_QUIC_RFC9114_0002` passed 70/70. BenchmarkDotNet Short before/after evidence for the added `FrameWriter_Write*` benchmarks showed `FrameWriter_WritePlaintextResponseHeaders` moving from 290.8 ns and 392 B to 30.57 ns and 80 B, `FrameWriter_WritePlaintextResponseData` from 293.8 ns and 352 B to 14.92 ns and 40 B, and `FrameWriter_WriteLargeDataFrame16Kb` from 42639.1 ns and 81920 B to 1174.73 ns and 16416 B. These are local microbenchmark samples and should not be treated as published end-to-end throughput claims."
+    },
+    {
+      "heading": "ProtocolLab Local Loop Note",
+      "content": "The repo-local source-root ProtocolLab loop was attempted on 2026-06-09 with `scripts/perf/Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -Suite h3-local-v1-comparison -WorkflowProfile Quick -Scenarios http.core.plaintext,http.core.json -NoRestore`, but the current ProtocolLab script surface rejected the wrapper-emitted `-IncursaQuicSourceRoot` parameter before running benchmarks. A direct ProtocolLab CLI run with `-p:IncursaQuicSourceRoot=C:\\shared\\src\\incursa\\quic-dotnet` and `--implementations incursa-http3` then reported `No run cells were selected`; both checked local ProtocolLab inventories contain only kestrel/caddy/nginx/quic-go HTTP/3 implementation manifests after the quic-dotnet package-handoff removal. No package-template files or package uploads were used for this bounded slice."
+    }
+  ]
 }

@@ -23,6 +23,22 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    public void FrameWriter_DataFrameUsesExactLengthForLargePayload()
+    {
+        byte[] payload = Enumerable.Range(0, 16 * 1024)
+            .Select(static value => (byte)(value % 251))
+            .ToArray();
+
+        byte[] encoded = Http3FrameWriter.WriteData(payload);
+
+        Assert.Equal(
+            Http3FrameWriter.GetFrameLength((ulong)Http3FrameType.Data, payload.Length),
+            encoded.Length);
+        Http3DataFrame frame = Assert.IsType<Http3DataFrame>(ReadSingle(encoded));
+        Assert.Equal(payload, frame.Data.ToArray());
+    }
+
+    [Fact]
     public void FrameWriter_And_Reader_RoundTripHeadersFrame()
     {
         byte[] encoded = Http3FrameWriter.WriteHeaders([0x00, 0x00, 0xC1]);
