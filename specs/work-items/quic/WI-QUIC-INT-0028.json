@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-INT-0028",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "ProtocolLab Package Producer Boundary Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "summary": "Harden the quic-dotnet ProtocolLab package producer so HTTP/3 and raw QUIC packages stay lane-separated and raw QUIC never falls back to managed HTTP/3 helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "ARC-QUIC-INT-0028",
+    "VER-QUIC-INT-0028"
+  ],
+  "design_links": [
+    "ARC-QUIC-INT-0028"
+  ],
+  "verification_links": [
+    "VER-QUIC-INT-0028"
+  ],
+  "addresses": [
+    "REQ-QUIC-INT-0033"
+  ],
+  "planned_changes": "- Keep package v2 templates aligned with `providedImplementations` metadata and package-local manifests.\n- Keep `quic-dotnet-dev` HTTP/3-only and `quic-dotnet-raw-dev` raw-QUIC-only.\n- Guard raw package generation so adapter/server project paths resolve under the quic-dotnet repository root.\n- Guard raw run submission so H3 protocol/scenario/capability selections fail before packaging, upload, or controller submission.\n- Update operator docs for the enforced package boundary.\n- Run focused template tests and package dry-runs for the H3 and raw package targets when locally supported.",
+  "out_of_scope": [
+    "Broadening raw QUIC scenarios beyond `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`.",
+    "Routing raw QUIC validation through managed HTTP/3 helpers.",
+    "Depending on public ProtocolLab concrete production adapter projects for quic-dotnet implementation source.",
+    "Claiming rack-lab performance provenance without a controller job, package SHA-256, run ID, and outcome artifact."
+  ],
+  "verification_plan": "Run `ProtocolLabPackageTemplateTests`, run H3 and raw package generation dry-runs when the sibling ProtocolLab package builder is locally available, inspect produced package IDs, versions, manifests, and SHA-256 values, validate touched SpecTrace JSON, and run diff hygiene checks."
+}

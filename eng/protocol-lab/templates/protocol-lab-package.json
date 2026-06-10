@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "quic-dotnet-dev",
+  "packageVersion": "__PACKAGE_VERSION__",
+  "kind": "implementation",
+  "displayName": "QUIC.NET development HTTP/3 sample",
+  "entryManifests": [
+    "implementations/quic-dotnet-dev.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "quic-dotnet-dev",
+      "displayName": "QUIC.NET development HTTP/3 sample",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http.core.plaintext",
+        "http.core.json"
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "bash",
+        "path": "scripts/run-linux.sh",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "scripts/run-windows.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": true,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": true
+  }
+}

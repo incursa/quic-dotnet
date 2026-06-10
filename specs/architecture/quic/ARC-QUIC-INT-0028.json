@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-INT-0028",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "ProtocolLab Package Producer Boundary Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the quic-dotnet-owned ProtocolLab package producer boundary for HTTP/3 and raw QUIC lab execution.",
+  "related_artifacts": [
+    "SPEC-QUIC-INT",
+    "WI-QUIC-INT-0028",
+    "VER-QUIC-INT-0028"
+  ],
+  "satisfies": [
+    "REQ-QUIC-INT-0033"
+  ],
+  "key_components": [
+    "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
+    "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+    "eng/protocol-lab/templates/protocol-lab-package.json",
+    "eng/protocol-lab/templates/implementations/quic-dotnet-dev.yaml",
+    "eng/protocol-lab/templates/raw-quic/protocol-lab-package.json",
+    "eng/protocol-lab/templates/raw-quic/implementations/quic-dotnet-raw-dev.yaml",
+    "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic",
+    "eng/protocol-lab/servers/IncursaRawQuicServer",
+    "docs/protocol-lab/lab-package.md",
+    "docs/protocol-lab/rack-lab-controller.md",
+    "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs"
+  ],
+  "design_summary": "The package producer exposes two explicit targets. `Http3` stages the TechEmpower-shaped HTTP/3 sample as package ID `quic-dotnet-dev` and advertises only `h3` plus HTTP application scenarios. `RawQuic` stages the repo-local raw QUIC adapter and raw QUIC server as package ID `quic-dotnet-raw-dev` and advertises only protocol `quic`, workload family `quic.transport`, and the two enabled transport scenarios. The package builder copies package v2 templates, publishes target payloads, constrains implementation project paths to the quic-dotnet root, and calls the public ProtocolLab package builder only as neutral package tooling. The run helper validates the requested suite, protocol, scenarios, and capabilities before package generation or controller interaction so raw QUIC cannot silently route through managed HTTP/3 helpers.",
+  "edge_cases_and_constraints": [
+    "Raw QUIC support is intentionally limited to `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams` until a later requirement expands the package declaration.",
+    "The public ProtocolLab checkout remains acceptable for package tooling, schemas, submission helpers, component-package tooling, and shared contract/model projects; concrete quic-dotnet adapter or server implementation projects must resolve under this repository.",
+    "The raw package is framework-dependent and expects worker-provided `dotnet`, `pwsh`, and `libmsquic` rather than carrying duplicate self-contained runtime trees.",
+    "Scenario-pack and test-executor component packages are supplied separately from the quic-dotnet implementation package."
+  ],
+  "risks": [
+    "ProtocolLab package v2 contract drift could invalidate template terminology unless the template tests stay aligned with the public package contract.",
+    "Caller overrides could accidentally cross H3 and raw lanes unless the run helper keeps target-specific validation ahead of upload and submission.",
+    "Dry-run package generation proves archive shape and manifest metadata but does not prove rack-lab execution quality or publishable benchmark provenance."
+  ]
+}

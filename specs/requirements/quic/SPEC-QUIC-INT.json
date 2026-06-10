@@ -80,14 +80,17 @@
     "VER-QUIC-INT-0024",
     "ARC-QUIC-INT-0025",
     "ARC-QUIC-INT-0026",
+    "ARC-QUIC-INT-0028",
     "WI-QUIC-INT-0025",
     "WI-QUIC-INT-0026",
+    "WI-QUIC-INT-0028",
     "VER-QUIC-INT-0025",
-    "VER-QUIC-INT-0026"
+    "VER-QUIC-INT-0026",
+    "VER-QUIC-INT-0028"
   ],
   "purpose": "Define the interop-runner-facing companion harness contract that hosts Incursa.Quic without moving protocol/runtime ownership out of the main library.",
-  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios and the generated inventory/evidence reports, the documented non-HTTP/3 testcase inventory/profile, the bounded QUIC interop-runner `http3` endpoint adapter, the advisory external HTTP/3 peer harness, the advisory h3spec HTTP/3 server conformance pipeline, and CI participation.",
-  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness owns process-facing adapter concerns, including runner environment parsing, mounted path mapping, role dispatch, process exit behavior, endpoint-host composition, local preflight planning, optional hosted corroboration, and inventory publication. Supported server-role dispatch paths derive responses from observed HTTP/0.9 request targets rather than relying on server-side `REQUESTS` values except for the bounded HTTP/3 runner cell, where the HTTP/3 layer decodes request HEADERS and maps the request path to `/www`. The `versionnegotiation` cell uses a reserved unsupported client version so the server can elicit Version Negotiation on the documented root request target without a transfer-path dependency. Long-running supported paths avoid initiating application close before the peer closes or a bounded timeout expires. Library-owned protocol behavior remains traced through the CRT, RFC, HTTP/3, and QPACK requirement families; this INT specification owns only the harness adapter, inventory, artifact, and runner-facing contracts. The non-HTTP/3 inventory/profile requirement records the required classification model and artifact-retention contract without turning current execution status into normative requirement text. The `http3` runner cell is now a bounded adapter slice; broader HTTP/3, QPACK dynamic table, server push, trailers, CONNECT, HTTP Datagrams, MASQUE, and ASP.NET hosting behavior remain outside this INT specification.",
+  "scope": "This slice covers the harness project shape, runner environment parsing, mounted path mapping, endpoint-host shell plumbing, handshake testcase dispatch, reserved-version versionnegotiation dispatch, the smaller post-handshake-stream child-process contract, the narrow retry child-process contract, the sequential multiconnect child-process contract, unsupported testcase exit behavior, the ordered transfer-owned child-process completion contract, qlog snapshot hooks, the repo-local execution-report helper, the repo-local preflight planner and localhost smoke lane, split client/server local execution modes, Docker packaging, manual hosted interop-runner corroboration, advisory hosted supported-subset matrix planning, the manual major peer matrix for currently executable non-HTTP/3 scenarios and the generated inventory/evidence reports, the documented non-HTTP/3 testcase inventory/profile, the bounded QUIC interop-runner `http3` endpoint adapter, the advisory external HTTP/3 peer harness, the advisory h3spec HTTP/3 server conformance pipeline, the ProtocolLab package producer boundary, and CI participation.",
+  "context": "Incursa.Quic remains the owner of reusable transport/runtime behavior. The interop harness owns process-facing adapter concerns, including runner environment parsing, mounted path mapping, role dispatch, process exit behavior, endpoint-host composition, local preflight planning, optional hosted corroboration, and inventory publication. Supported server-role dispatch paths derive responses from observed HTTP/0.9 request targets rather than relying on server-side `REQUESTS` values except for the bounded HTTP/3 runner cell, where the HTTP/3 layer decodes request HEADERS and maps the request path to `/www`. The `versionnegotiation` cell uses a reserved unsupported client version so the server can elicit Version Negotiation on the documented root request target without a transfer-path dependency. Long-running supported paths avoid initiating application close before the peer closes or a bounded timeout expires. Library-owned protocol behavior remains traced through the CRT, RFC, HTTP/3, and QPACK requirement families; this INT specification owns only the harness adapter, inventory, artifact, package-producer, and runner-facing contracts. The non-HTTP/3 inventory/profile requirement records the required classification model and artifact-retention contract without turning current execution status into normative requirement text. The `http3` runner cell is now a bounded adapter slice; broader HTTP/3, QPACK dynamic table, server push, trailers, CONNECT, HTTP Datagrams, MASQUE, and ASP.NET hosting behavior remain outside this INT specification. The ProtocolLab package producer uses public ProtocolLab tooling and contract/model surfaces as an external package contract seam while keeping concrete quic-dotnet adapter and server implementation source local to this repository.",
   "open_questions": [
     "When a real TLS provider is selected, what is the practical path for optional SSLKEYLOGFILE support without leaking provider-specific details into the harness?"
   ],
@@ -1217,6 +1220,56 @@
         "The h3spec executable shape is `h3spec [options] <host> <port>`; this harness keeps the executable configurable so local and CI environments can provide a native binary or wrapper.",
         "The first CI path runs plan-only by default on pull requests and installs h3spec only for explicitly dispatched live runs.",
         "Failures discovered by h3spec should become protocol-owned RFC 9114 or RFC 9204 follow-up work before they are promoted as implementation support claims."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-INT-0033",
+      "title": "Keep ProtocolLab package targets lane-separated",
+      "statement": "The repository MUST produce ProtocolLab package v2 implementation archives through repo-owned templates and helper scripts such that `quic-dotnet-dev` advertises only HTTP/3 protocol and HTTP application scenarios, `quic-dotnet-raw-dev` advertises only protocol `quic`, workload family `quic.transport`, and scenarios `quic.transport.multiplex.100x64kb` and `quic.transport.duplex-streams`, raw package generation resolves adapter and server implementation projects only under the quic-dotnet repository root while using the public ProtocolLab checkout only for neutral package tooling, schema validation, component-package tooling, and shared contract/model projects, and raw run submission rejects HTTP/3 suite, protocol, scenario, or capability selections before packaging, upload, or controller submission instead of falling back to managed HTTP/3 helpers.",
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-INT-0028"
+        ],
+        "implemented_by": [
+          "WI-QUIC-INT-0028"
+        ],
+        "verified_by": [
+          "VER-QUIC-INT-0028"
+        ],
+        "related": [
+          "REQ-QUIC-INT-0026",
+          "REQ-QUIC-INT-0030",
+          "REQ-QUIC-INT-0031"
+        ],
+        "x_code_refs": [
+          "eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1",
+          "eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1",
+          "eng/protocol-lab/templates/protocol-lab-package.json",
+          "eng/protocol-lab/templates/implementations/quic-dotnet-dev.yaml",
+          "eng/protocol-lab/templates/raw-quic/protocol-lab-package.json",
+          "eng/protocol-lab/templates/raw-quic/implementations/quic-dotnet-raw-dev.yaml",
+          "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj",
+          "eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj",
+          "docs/protocol-lab/lab-package.md",
+          "docs/protocol-lab/rack-lab-controller.md",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs",
+          "specs/architecture/quic/ARC-QUIC-INT-0028.json",
+          "specs/work-items/quic/WI-QUIC-INT-0028.json",
+          "specs/verification/quic/VER-QUIC-INT-0028.json"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Raw_quic_package_template_advertises_transport_contract",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Http3_package_template_stays_http3_only",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Raw_quic_package_builder_uses_quic_dotnet_owned_projects",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Raw_quic_adapter_project_uses_public_contracts_not_public_adapters",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Run_helper_submits_raw_quic_component_package_references",
+          "tests/Incursa.Quic.Tests/ProtocolLabPackageTemplateTests.cs::Run_helper_rejects_raw_quic_h3_fallback_arguments"
+        ]
+      },
+      "notes": [
+        "The raw package target is an implementation package producer only; public ProtocolLab scenario-pack and test-executor component packages remain separate package inputs.",
+        "This requirement does not broaden raw QUIC validation beyond the two named transport scenarios and does not change HTTP/3 or QPACK protocol support claims.",
+        "Package dry-runs prove archive shape and metadata. Rack-lab jobs remain separate performance evidence and must record package identity, SHA-256, job ID, run ID, and outcome in verification artifacts when used for claims."
       ]
     }
   ]

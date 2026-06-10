@@ -1,0 +1,59 @@
+id: quic-dotnet-raw-dev
+name: QUIC.NET Development Raw QUIC
+description: Package-carried ProtocolLab raw QUIC adapter and Incursa raw QUIC server built from the developer working tree.
+image: ""
+targetKind: process
+targetContract: adapter-v1
+executable: pwsh
+project: ""
+workingDirectory: .
+dockerfile: ""
+buildContext: ""
+containerName: ""
+dockerNetwork: ""
+dockerNetworkMode: published-port
+dockerBaseUrl: http://127.0.0.1:53591
+baseUrl: http://127.0.0.1:53591
+adapterControlPlaneBaseUrl: http://127.0.0.1:53591
+certificateMode: none
+roles:
+  - server
+supportedProtocols:
+  - quic
+supportedWorkloadFamilies:
+  - quic.transport
+supportedScenarios:
+  - quic.transport.multiplex.100x64kb
+  - quic.transport.duplex-streams
+ports:
+  - name: control-plane
+    containerPort: 53591
+    hostPort: 53591
+    protocol: tcp
+environment:
+  ASPNETCORE_URLS: http://127.0.0.1:53591
+dockerEnvironment: {}
+commandArguments:
+  - -NoLogo
+  - -NoProfile
+  - -File
+  - scripts/run-current-platform.ps1
+readinessCheck:
+  type: http
+  url: /protocol-lab/adapter/v1/health
+  timeoutSeconds: 10
+shutdownBehavior: process-exit
+capabilities:
+  - quicTransport
+  - quicStreams
+  - quicMultiplexing
+  - quicDuplex
+artifactExports:
+  - server.stdout.txt
+  - server.stderr.txt
+  - server.command.txt
+  - session.json
+  - endpoint.json
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Trusted lab package execution only. This raw QUIC target is framework-dependent and carries Linux x64 and Windows x64 entrypoint payloads; it launches the ProtocolLab adapter control plane and a prebuilt package-local IncursaRawQuicServer child process for QUIC transport scenarios.

@@ -1,0 +1,55 @@
+id: quic-dotnet-dev
+name: QUIC.NET Development HTTP/3
+description: Package-carried Incursa QUIC.NET HTTP/3 sample built from the developer working tree.
+image: ""
+targetKind: process
+executable: pwsh
+project: ""
+workingDirectory: .
+dockerfile: ""
+buildContext: ""
+containerName: ""
+dockerNetwork: ""
+dockerNetworkMode: published-port
+dockerBaseUrl: https://127.0.0.1:5444
+dockerProtocolBaseUrls:
+  h3: https://127.0.0.1:5444
+baseUrl: https://127.0.0.1:5444
+protocolBaseUrls:
+  h3: https://127.0.0.1:5444
+certificateMode: loopback-self-signed-certificate
+roles:
+  - server
+supportedProtocols:
+  - h3
+supportedWorkloadFamilies:
+  - http.application
+ports:
+  - name: https-h3
+    containerPort: 5444
+    hostPort: 5444
+    protocol: udp
+environment:
+  PROTOCOL_LAB_H3_PORT: "5444"
+dockerEnvironment:
+  PROTOCOL_LAB_H3_PORT: "5444"
+commandArguments:
+  - -NoLogo
+  - -NoProfile
+  - -File
+  - scripts/run-current-platform.ps1
+readinessCheck:
+  type: processStarted
+  url: ""
+  timeoutSeconds: 30
+  startupDelayMilliseconds: 2000
+shutdownBehavior: process-exit
+capabilities:
+  - httpPlaintext
+  - httpJson
+artifactExports:
+  - server.stdout.txt
+  - server.stderr.txt
+qlogSupport: false
+sslKeyLogSupport: false
+notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports plaintext/json HTTP application scenarios.

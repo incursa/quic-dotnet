@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "protocol-lab-package-v2",
+  "packageId": "quic-dotnet-raw-dev",
+  "packageVersion": "__PACKAGE_VERSION__",
+  "kind": "implementation",
+  "displayName": "QUIC.NET development raw QUIC adapter",
+  "entryManifests": [
+    "implementations/quic-dotnet-raw-dev.yaml"
+  ],
+  "providedImplementations": [
+    {
+      "implementationId": "quic-dotnet-raw-dev",
+      "displayName": "QUIC.NET development raw QUIC adapter",
+      "protocols": [
+        "quic"
+      ],
+      "scenarios": [
+        "quic.transport.multiplex.100x64kb",
+        "quic.transport.duplex-streams"
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "os": "linux",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "scripts/run-current-platform.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    },
+    {
+      "os": "windows",
+      "arch": "x64",
+      "entrypoint": {
+        "kind": "pwsh",
+        "path": "scripts/run-current-platform.ps1",
+        "arguments": [],
+        "workingDirectory": "."
+      }
+    }
+  ],
+  "dependencies": {
+    "requiresDotNet": true,
+    "requiresDocker": false,
+    "requiresPwsh": true,
+    "requiresBash": false,
+    "requiredCapabilities": [
+      {
+        "name": "libmsquic",
+        "value": "true"
+      }
+    ]
+  }
+}

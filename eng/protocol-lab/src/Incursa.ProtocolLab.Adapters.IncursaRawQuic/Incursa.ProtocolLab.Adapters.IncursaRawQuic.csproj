@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Incursa.ProtocolLab.Adapters.IncursaRawQuic</AssemblyName>
+    <RootNamespace>Incursa.ProtocolLab.Adapters.IncursaRawQuic</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;S108;S6966;SA0001;SA1000;SA1101;SA1117;SA1118;SA1124;SA1137;SA1200;SA1201;SA1202;SA1204;SA1309;SA1402;SA1500;SA1501;SA1503;SA1512;SA1513;SA1515;SA1516;SA1600;SA1601;SA1633</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ProtocolLabRoot)' == ''">
+    <ProtocolLabRoot>..\..\..\..\..\protocol-lab</ProtocolLabRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="SonarAnalyzer.CSharp" />
+    <PackageReference Remove="StyleCop.Analyzers" />
+    <ProjectReference Include="$(ProtocolLabRoot)\src\Incursa.ProtocolLab.Adapter.Contracts\Incursa.ProtocolLab.Adapter.Contracts.csproj" />
+    <ProjectReference Include="$(ProtocolLabRoot)\src\Incursa.ProtocolLab.Model\Incursa.ProtocolLab.Model.csproj" />
+    <ProjectReference Include="..\..\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>
