@@ -69,11 +69,12 @@ function Get-PackageTargetConfig {
                 ImplementationId = "quic-dotnet-dev"
                 SuiteId = "h3-local-v1"
                 ScenarioIds = @("http.core.plaintext")
-                SupportedScenarioIds = @("http.core.plaintext", "http.core.json")
+                SupportedSuiteIds = @("h3-local-v1", "h3-large-body-v1")
+                SupportedScenarioIds = @("http.core.plaintext", "http.core.json", "http.payload.bytes.64kb", "http.payload.bytes.1mb")
                 Protocol = "h3"
                 TestExecutorId = "managed-httpclient-h3-load"
                 RequiredCapabilities = @()
-                SupportedCapabilities = @("httpPlaintext", "httpJson")
+                SupportedCapabilities = @("httpPlaintext", "httpJson", "httpBytes")
             }
         }
         "RawQuic" {
@@ -82,6 +83,7 @@ function Get-PackageTargetConfig {
                 ImplementationId = "quic-dotnet-raw-dev"
                 SuiteId = "quic-transport-v1-comparison"
                 ScenarioIds = @("quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
+                SupportedSuiteIds = @("quic-transport-v1-comparison")
                 SupportedScenarioIds = @("quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
                 Protocol = "quic"
                 TestExecutorId = "quic-go-raw-load"
@@ -122,8 +124,14 @@ function Assert-RunSelection {
         throw "$Target package target only supports protocol '$($TargetConfig.Protocol)'. It must not route through the managed H3 helper or another ProtocolLab lane."
     }
 
-    if (-not [string]::Equals($SuiteId, $TargetConfig.SuiteId, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "$Target package target only supports suite '$($TargetConfig.SuiteId)'."
+    $supportedSuiteIds = if ($TargetConfig.PSObject.Properties.Name -contains "SupportedSuiteIds") {
+        @($TargetConfig.SupportedSuiteIds)
+    }
+    else {
+        @($TargetConfig.SuiteId)
+    }
+    if ($supportedSuiteIds -notcontains $SuiteId) {
+        throw "$Target package target only supports suite(s): $($supportedSuiteIds -join ', ')."
     }
 
     if (-not [string]::Equals($TestExecutorId, $TargetConfig.TestExecutorId, [StringComparison]::OrdinalIgnoreCase)) {
@@ -189,6 +197,11 @@ if ($PackageTarget -eq "RawQuic" -and -not (Test-Path -LiteralPath $rawComponent
     throw "ProtocolLab raw QUIC component package builder was not found: $rawComponentPackageBuilder"
 }
 
+$h3ComponentPackageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabH3ComponentPackages.ps1"
+if ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and -not (Test-Path -LiteralPath $h3ComponentPackageBuilder -PathType Leaf)) {
+    throw "ProtocolLab H3 component package builder was not found: $h3ComponentPackageBuilder"
+}
+
 $packageResultJson = & pwsh -NoLogo -NoProfile -File (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
     -PackageTarget $PackageTarget `
     -ProtocolLabRoot $protocolLabRootFullPath `
@@ -225,6 +238,37 @@ if ($PackageTarget -eq "RawQuic") {
     }
 
     $componentPackageResultJson = & pwsh @componentArgs
+    if ($LASTEXITCODE -ne 0) {
+        throw "H3 component package creation failed."
+    }
+
+    $componentPackageResult = $componentPackageResultJson | ConvertFrom-Json
+    $componentPackageReferences = @($componentPackageResult.packageReferences)
+    $componentPackagePaths = @(
+        [string]$componentPackageResult.testExecutorPackage.path,
+        [string]$componentPackageResult.scenarioPackage.path
+    )
+}
+elseif ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase)) {
+    $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
+    $componentArgs = @(
+        "-NoLogo",
+        "-NoProfile",
+        "-File",
+        $h3ComponentPackageBuilder,
+        "-PackageVersion",
+        $packageResult.packageVersion,
+        "-OutputRoot",
+        $componentOutputRoot,
+        "-SuiteId",
+        $SuiteId,
+        "-ScenarioId",
+        ($ScenarioId -join ",")
+    ) + @(
+        "-Force"
+    )
+
+    $componentPackageResultJson = & pwsh @componentArgs
     $componentPackageResult = $componentPackageResultJson | ConvertFrom-Json
     $componentPackageReferences = @($componentPackageResult.packageReferences)
     $componentPackagePaths = @(
@@ -234,52 +278,38 @@ if ($PackageTarget -eq "RawQuic") {
 }
 
 $artifactPath = Join-Path $resultRoot "latest.zip"
-$submitArgs = @(
-    "-NoLogo",
-    "-NoProfile",
-    "-File",
-    $submitScript,
-    "-ControllerUri",
-    $ControllerUri,
-    "-PackagePath",
-    $packageResult.path,
-    "-ImplementationId",
-    $targetConfig.ImplementationId,
-    "-TestExecutorId",
-    $TestExecutorId,
-    "-SuiteId",
-    $SuiteId,
-    "-ScenarioId"
-) + $ScenarioId + @(
-    "-Protocol",
-    $Protocol,
-    "-LoadProfileId",
-    $LoadProfileId,
-    "-TimeoutSeconds",
-    $TimeoutSeconds,
-    "-ArtifactOutputPath",
-    $artifactPath
-)
+$submitParameters = @{
+    ControllerUri = $ControllerUri
+    PackagePath = $packageResult.path
+    ImplementationId = $targetConfig.ImplementationId
+    TestExecutorId = $TestExecutorId
+    SuiteId = $SuiteId
+    ScenarioId = $ScenarioId
+    Protocol = $Protocol
+    LoadProfileId = $LoadProfileId
+    TimeoutSeconds = $TimeoutSeconds
+    ArtifactOutputPath = $artifactPath
+}
 
 $allPackageReferences = @($PackageReference)
 if ($componentPackagePaths.Count -gt 0) {
-    $submitArgs += @("-AdditionalPackagePath") + $componentPackagePaths
+    $submitParameters.Add("AdditionalPackagePath", $componentPackagePaths)
 }
 
 if ($allPackageReferences.Count -gt 0) {
-    $submitArgs += @("-PackageReference") + $allPackageReferences
+    $submitParameters.Add("PackageReference", $allPackageReferences)
 }
 
 $requiredCapabilities = @($RequiredCapability)
 if ($requiredCapabilities.Count -gt 0) {
-    $submitArgs += @("-RequiredCapability") + $requiredCapabilities
+    $submitParameters.Add("RequiredCapability", $requiredCapabilities)
 }
 
 if ($NoWait) {
-    $submitArgs += "-NoWait"
+    $submitParameters.Add("NoWait", $true)
 }
 
-$jobResultJson = & pwsh @submitArgs
+$jobResultJson = & $submitScript @submitParameters
 $jobResult = $jobResultJson | ConvertFrom-Json
 $jobResultPath = Join-Path $resultRoot "$($jobResult.jobId).json"
 $jobResultJson | Set-Content -LiteralPath $jobResultPath

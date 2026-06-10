@@ -15,6 +15,8 @@ var alpn = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ALP
 var certSubject = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CERT_SUBJECT") ?? "CN=Incursa-RawQuic-Local";
 var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION") ?? "bidirectional";
 var echoResponses = !string.Equals(payloadDirection, "client-to-server", StringComparison.OrdinalIgnoreCase);
+const int RawQuicConcurrentBidirectionalStreamLimit = 256;
+const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
 
 var certificate = GenerateSelfSignedCertificate(certSubject);
 var alpnProtocol = new SslApplicationProtocol(alpn);
@@ -36,6 +38,14 @@ var listenerOptions = new QuicListenerOptions
         {
             DefaultStreamErrorCode = 0,
             DefaultCloseErrorCode = 0,
+            MaxInboundBidirectionalStreams = RawQuicConcurrentBidirectionalStreamLimit,
+            InitialReceiveWindowSizes = new QuicReceiveWindowSizes
+            {
+                Connection = RawQuicReceiveWindowBytes,
+                LocallyInitiatedBidirectionalStream = RawQuicReceiveWindowBytes,
+                RemotelyInitiatedBidirectionalStream = RawQuicReceiveWindowBytes,
+                UnidirectionalStream = RawQuicReceiveWindowBytes,
+            },
             ServerAuthenticationOptions = new SslServerAuthenticationOptions
             {
                 ServerCertificate = certificate,

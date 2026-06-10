@@ -24,6 +24,11 @@ supportedProtocols:
   - h3
 supportedWorkloadFamilies:
   - http.application
+supportedScenarios:
+  - http.core.plaintext
+  - http.core.json
+  - http.payload.bytes.64kb
+  - http.payload.bytes.1mb
 ports:
   - name: https-h3
     containerPort: 5444
@@ -47,9 +52,10 @@ shutdownBehavior: process-exit
 capabilities:
   - httpPlaintext
   - httpJson
+  - httpBytes
 artifactExports:
   - server.stdout.txt
   - server.stderr.txt
 qlogSupport: false
 sslKeyLogSupport: false
-notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports plaintext/json HTTP application scenarios.
+notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports core plus deterministic large-body HTTP application scenarios.

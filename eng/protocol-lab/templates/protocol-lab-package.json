@@ -16,7 +16,9 @@
       ],
       "scenarios": [
         "http.core.plaintext",
-        "http.core.json"
+        "http.core.json",
+        "http.payload.bytes.64kb",
+        "http.payload.bytes.1mb"
       ]
     }
   ],
