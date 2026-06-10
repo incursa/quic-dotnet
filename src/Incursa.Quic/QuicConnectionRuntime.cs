@@ -193,6 +193,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         private readonly QuicConnectionRuntime owner;
         private ManualResetValueTaskSourceCore<bool> source;
         private byte[]? ownedStreamData;
+        private int completed;
 
         internal StreamActionRequestCompletionSource(QuicConnectionRuntime owner)
         {
@@ -211,6 +212,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
             ActionKind = default;
             StreamId = default;
             StreamDataLength = 0;
+            completed = 0;
             source.Reset();
         }
 
@@ -271,16 +273,31 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         internal void TrySetResult()
         {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
             source.SetResult(true);
         }
 
         internal void TrySetException(Exception exception)
         {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
             source.SetException(exception);
         }
 
         internal void TrySetCanceled(CancellationToken cancellationToken)
         {
+            if (Interlocked.Exchange(ref completed, 1) != 0)
+            {
+                return;
+            }
+
             source.SetException(new OperationCanceledException(cancellationToken));
         }
 

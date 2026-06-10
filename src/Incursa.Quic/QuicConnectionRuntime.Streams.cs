@@ -647,8 +647,14 @@ internal sealed partial class QuicConnectionRuntime
                     streamPayloadLength,
                     nowTicks,
                     tryFlushPendingApplicationSendsAfterEnqueue: true,
-                    ref effects);
+                    ref effects,
+                    out Exception? queuedFlushException);
                 pendingStreamActionRequests.Remove(requestId);
+                if (queuedFlushException is not null && !IsTransientApplicationSendPathBlocked(queuedFlushException))
+                {
+                    return false;
+                }
+
                 completion.TrySetResult();
                 return true;
             }
@@ -845,7 +851,27 @@ internal sealed partial class QuicConnectionRuntime
         long nowTicks,
         bool tryFlushPendingApplicationSendsAfterEnqueue,
         ref QuicConnectionEffectAccumulator effects)
+        => QueuePendingApplicationSend(
+            streamId,
+            priority,
+            streamPayload,
+            streamPayloadLength,
+            nowTicks,
+            tryFlushPendingApplicationSendsAfterEnqueue,
+            ref effects,
+            out _);
+
+    private void QueuePendingApplicationSend(
+        ulong streamId,
+        int priority,
+        byte[] streamPayload,
+        int streamPayloadLength,
+        long nowTicks,
+        bool tryFlushPendingApplicationSendsAfterEnqueue,
+        ref QuicConnectionEffectAccumulator effects,
+        out Exception? flushException)
     {
+        flushException = null;
         applicationSendQueue.Enqueue(streamId, priority, streamPayload, streamPayloadLength);
 
         if (applicationSendQueue.Count == 1)
@@ -861,7 +887,7 @@ internal sealed partial class QuicConnectionRuntime
         AppendLifecycleTimerEffects(ref effects);
         if (tryFlushPendingApplicationSendsAfterEnqueue)
         {
-            _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
+            _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects, out flushException);
         }
     }
 
@@ -1234,7 +1260,14 @@ internal sealed partial class QuicConnectionRuntime
     private bool TryFlushPendingApplicationSendsAfterRecoveryProgress(
         long nowTicks,
         ref QuicConnectionEffectAccumulator effects)
+        => TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects, out _);
+
+    private bool TryFlushPendingApplicationSendsAfterRecoveryProgress(
+        long nowTicks,
+        ref QuicConnectionEffectAccumulator effects,
+        out Exception? exception)
     {
+        exception = null;
         bool stateChanged = false;
         for (int flushCount = 0; applicationSendQueue.Count > 0; flushCount++)
         {
@@ -1250,8 +1283,9 @@ internal sealed partial class QuicConnectionRuntime
                     probePacket: false,
                     sendBudget,
                     ref effects,
-                    out _))
+                    out Exception? flushException))
             {
+                exception = flushException;
                 break;
             }
 
