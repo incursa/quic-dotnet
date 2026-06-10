@@ -48,6 +48,7 @@
     "Frame parsing must tolerate partial buffers and reject truncated or overrun frames deterministically.",
     "Unknown and reserved frame types must remain representable as unknown frames when the stream permits them.",
     "Only one control stream may exist per endpoint, and SETTINGS must be the first frame on that stream.",
+    "PUSH_PROMISE on a request stream must be rejected when it is client-sent or when the client has not explicitly enabled server push.",
     "Request and response header validation must reject pseudo-header order violations, uppercase field names, and connection-specific fields.",
     "The minimal client/server floor must use QPACK for headers while keeping the HTTP/3 package independent from ASP.NET hosting."
   ],

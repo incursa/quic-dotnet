@@ -28,5 +28,5 @@
     "ProtocolLab harness semantics changes.",
     "ASP.NET hosting integration."
   ],
-  "completion_notes": "The transport retry path now retries only owned blocked writes and empty FIN completions, so caller-owned data-carrying writes cannot be replaced by premature empty STREAM/FIN frames before their original stream-action event is processed. Focused HTTP/3 tests now include repeated 64KB and 1MB response completion checks plus the existing large-upload and API EOF guardrails."
+  "completion_notes": "The transport retry path now retries only owned blocked writes and empty FIN completions, so caller-owned data-carrying writes cannot be replaced by premature empty STREAM/FIN frames before their original stream-action event is processed. The HTTP/3 client no longer reports response completion merely because exact Content-Length bytes arrived; response completion still requires stream FIN. Focused HTTP/3 tests now include repeated 64KB and 1MB response DATA accounting, large-upload delivery, content-length mismatch failure, delayed response-FIN completion, and API EOF guardrails."
 }

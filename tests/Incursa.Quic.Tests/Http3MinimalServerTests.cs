@@ -44,16 +44,27 @@ public sealed class Http3MinimalServerTests
 
         for (int requestIndex = 0; requestIndex < requestCount; requestIndex++)
         {
-            Http3Response response = await context.GetAsync($"/large?request={requestIndex}");
+            RecordingHttp3DiagnosticsSink diagnostics = new();
+            Http3Response response = await context.GetAsync($"/large?request={requestIndex}", diagnosticsSink: diagnostics);
 
             Assert.Equal(200, response.StatusCode);
             QPackFieldLine contentLength = Assert.Single(
                 response.Headers,
                 static header => header.Name == "content-length");
             Assert.Equal(responseSize.ToString(), contentLength.Value);
+            Assert.Equal(
+                responseSize,
+                diagnostics.Events
+                    .Where(static diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                        && diagnostic.FrameType == Http3FrameType.Data)
+                    .Sum(static diagnostic => diagnostic.PayloadLength));
             Assert.Equal(body.Length, response.Body.Length);
             Assert.Equal(body, response.Body);
             Assert.True(response.StreamCompleted);
+            Assert.Contains(
+                diagnostics.Events,
+                diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted
+                    && diagnostic.PayloadLength == responseSize);
         }
     }
 
@@ -421,6 +432,13 @@ public sealed class Http3MinimalServerTests
             string.Join(" | ", diagnostics.Events.Select(static diagnostic => $"{diagnostic.Kind}:{diagnostic.ErrorCode}:{diagnostic.Message}")));
         Assert.Equal(body.Length, handler.Body.Length);
         Assert.Equal(body, handler.Body);
+        Assert.True(response.StreamCompleted);
+        Assert.Equal(
+            body.Length,
+            diagnostics.Events
+                .Where(static diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                    && diagnostic.FrameType == Http3FrameType.Data)
+                .Sum(static diagnostic => diagnostic.PayloadLength));
     }
 
     [Fact]
@@ -432,7 +450,8 @@ public sealed class Http3MinimalServerTests
         }
 
         RecordingHttp3DiagnosticsSink diagnostics = new();
-        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler(), diagnostics);
+        CaptureBodyHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, diagnostics);
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         await OpenClientUnidirectionalStreamsAsync(connection);
 
@@ -448,6 +467,8 @@ public sealed class Http3MinimalServerTests
         Http3Response response = await ReadResponseAsync(requestStream);
 
         Assert.Equal(400, response.StatusCode);
+        Assert.True(response.StreamCompleted);
+        Assert.Empty(handler.Body);
         Assert.Contains(
             diagnostics.Events,
             diagnostic => diagnostic.Kind == Http3DiagnosticKind.Error
@@ -1027,7 +1048,10 @@ public sealed class Http3MinimalServerTests
             return options;
         }
 
-        internal async ValueTask<Http3Response> GetAsync(string path, bool completeOnContentLength = false)
+        internal async ValueTask<Http3Response> GetAsync(
+            string path,
+            bool completeOnContentLength = false,
+            IHttp3DiagnosticsSink? diagnosticsSink = null)
         {
             return await Http3Client.GetAsync(
                 CreateClientOptions(),
@@ -1035,6 +1059,7 @@ public sealed class Http3MinimalServerTests
                 new Http3ClientOptions
                 {
                     CompleteResponseOnContentLength = completeOnContentLength,
+                    DiagnosticsSink = diagnosticsSink,
                 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         }
 

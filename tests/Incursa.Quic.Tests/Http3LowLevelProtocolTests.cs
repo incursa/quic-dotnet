@@ -67,6 +67,16 @@ public sealed class Http3LowLevelProtocolTests
             "Duplicate control streams",
             Http3ErrorCode.StreamCreationError,
             client => client.OpenDuplicateControlStreams());
+
+        yield return Case(
+            "Client-sent PUSH_PROMISE",
+            Http3ErrorCode.FrameUnexpected,
+            client => client.SendClientPushPromiseOnRequestStream());
+
+        yield return Case(
+            "Unadvertised PUSH_PROMISE",
+            Http3ErrorCode.IdError,
+            client => client.ReceiveUnadvertisedPushPromiseFromServer());
     }
 
     [Theory]
@@ -203,6 +213,19 @@ public sealed class Http3LowLevelProtocolTests
             RegisterClientControlStream();
             serverDispatcher.RegisterUnidirectionalStream(SecondClientControlStreamId);
             serverDispatcher.ReceiveUnidirectionalStreamTypeBytes(SecondClientControlStreamId, [(byte)Http3StreamType.Control]);
+        }
+
+        internal void SendClientPushPromiseOnRequestStream()
+        {
+            RegisterRequestStream();
+            ReceiveRequestFrame(Http3FrameWriter.WritePushPromise(0, [0x00]));
+        }
+
+        internal void ReceiveUnadvertisedPushPromiseFromServer()
+        {
+            Http3StreamDispatcher clientDispatcher = new(Http3EndpointRole.Client);
+            clientDispatcher.RegisterBidirectionalStream(RequestStreamId);
+            clientDispatcher.ReceiveFrame(RequestStreamId, ReadSingleFrame(Http3FrameWriter.WritePushPromise(0, [0x00])));
         }
 
         private void RegisterRequestStream()

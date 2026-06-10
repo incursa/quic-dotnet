@@ -18,6 +18,8 @@ Case identifiers used by the automated custom client:
 - `Invalid content-length`
 - `Server-initiated bidirectional stream`
 - `Duplicate control streams`
+- `Client-sent PUSH_PROMISE`
+- `Unadvertised PUSH_PROMISE`
 
 ## h3i Examples
 
@@ -73,6 +75,8 @@ The repo-local custom tests cover the same expected outcomes without depending o
 | Send invalid content-length | RFC 9114 Section 4.1.2 | `H3_MESSAGE_ERROR` | `LowLevelMalformedSequencesProduceExpectedOutcomes` |
 | Open a server-initiated bidirectional stream | RFC 9114 Section 6.1 | `H3_STREAM_CREATION_ERROR` | `LowLevelMalformedSequencesProduceExpectedOutcomes` |
 | Open duplicate control streams | RFC 9114 Section 6.2.1 | `H3_STREAM_CREATION_ERROR` | `LowLevelMalformedSequencesProduceExpectedOutcomes` |
+| Send client-to-server PUSH_PROMISE | RFC 9114 Section 7.2.5 | `H3_FRAME_UNEXPECTED` | `LowLevelMalformedSequencesProduceExpectedOutcomes` |
+| Receive PUSH_PROMISE before client MAX_PUSH_ID opt-in | RFC 9114 Sections 4.6, 7.2.5, 7.2.7 | `H3_ID_ERROR` | `LowLevelMalformedSequencesProduceExpectedOutcomes` |
 
 ## Follow-Up
 

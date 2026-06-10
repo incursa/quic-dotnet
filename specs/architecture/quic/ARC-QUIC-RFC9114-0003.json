@@ -17,6 +17,7 @@
   ],
   "key_components": [
     "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3ClientOptions.cs",
     "src/Incursa.Quic.Http3/Http3Server.cs",
     "src/Incursa.Quic.Http3/Http3FrameReader.cs",
     "src/Incursa.Quic.Http3/Http3FrameWriter.cs",
@@ -25,10 +26,11 @@
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs"
   ],
-  "design_summary": "The recovery boundary stays in the HTTP/3 frame/body path and the QUIC stream final-write path. HTTP/3 must emit and consume all DATA bytes declared by Content-Length while the transport preserves queued stream write ownership and promotes the final queued write to FIN without losing payload bytes. The client may use Content-Length as an accounting check, but it must not hide premature EOF or a missing stream completion defect.",
+  "design_summary": "The recovery boundary stays in the HTTP/3 frame/body path and the QUIC stream final-write path. HTTP/3 must emit and consume all DATA bytes declared by Content-Length while the transport preserves queued stream write ownership and promotes the final queued write to FIN without losing payload bytes. The client may use Content-Length as an accounting check, but it still waits for stream FIN and must not hide premature EOF or a missing stream completion defect.",
   "data_and_state_considerations": "The HTTP/3 response path owns declared body length, emitted DATA frame payloads, and final response completion. The QUIC runtime owns pending application-send payload buffers, delayed small writes, queued write promotion to final writes, fragmentation, and flow-control-blocked retry ownership. The slice must keep payload buffers owned until they are protected, queued, or retried and must not reuse caller-provided memory after a pending write remains asynchronous.",
   "edge_cases_and_constraints": [
     "Repeated 64KB and 1MB responses must complete with exact body length and no premature EOF.",
+    "A response that has received exactly the declared Content-Length but has not observed stream FIN must not be reported complete.",
     "Large uploads must deliver the exact request body to the handler and preserve content-length validation.",
     "Queued non-final writes followed by an empty finish must carry FIN on the correct stream and offset.",
     "Flow-control-blocked writes must retain owned bytes until credit allows retry.",

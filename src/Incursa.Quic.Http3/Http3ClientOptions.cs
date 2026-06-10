@@ -26,7 +26,9 @@ public sealed class Http3ClientOptions
     public int ReadBufferSize { get; set; } = DefaultReadBufferSize;
 
     /// <summary>
-    /// Gets or sets whether a response with a validated Content-Length can complete before stream FIN is observed.
+    /// Gets or sets a compatibility flag for callers that previously requested
+    /// Content-Length-based response completion. Responses still wait for
+    /// stream FIN before completion is reported.
     /// </summary>
     public bool CompleteResponseOnContentLength { get; set; }
 

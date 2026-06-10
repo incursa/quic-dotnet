@@ -62,6 +62,80 @@ public sealed class Http3MinimalClientTests
     }
 
     [Fact]
+    public async Task GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
+        };
+
+        byte[] responseBody = "client must wait for stream fin"u8.ToArray();
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        TaskCompletionSource<object?> responsePayloadSent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> responseFinAllowed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task serverTask = RunDelayedResponseFinServerAsync(
+            listener,
+            responseBody,
+            responsePayloadSent,
+            responseFinAllowed.Task);
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate);
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+
+        await using Http3Client client = await Http3Client.ConnectAsync(
+            clientOptions,
+            new Http3ClientOptions
+            {
+                CompleteResponseOnContentLength = true,
+                DiagnosticsSink = diagnostics,
+            }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<Http3Response> responseTask = client.GetAsync(
+            new Uri($"https://localhost:{listenEndPoint.Port}/delayed-fin")).AsTask();
+
+        await responsePayloadSent.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        await WaitForDiagnosticAsync(
+            diagnostics,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                && diagnostic.FrameType == Http3FrameType.Data
+                && diagnostic.PayloadLength == responseBody.Length);
+
+        Task firstCompleted = await Task.WhenAny(responseTask, Task.Delay(TimeSpan.FromMilliseconds(500)));
+        Assert.NotSame(responseTask, firstCompleted);
+        Assert.DoesNotContain(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted);
+
+        responseFinAllowed.TrySetResult(null);
+        Http3Response response = await responseTask.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.True(response.StreamCompleted);
+        Assert.Equal(responseBody, response.Body);
+        Assert.Contains(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted
+                && diagnostic.PayloadLength == responseBody.Length);
+
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
     public void ConnectAsync_RejectsClientOptionsWithoutH3Alpn()
     {
         QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
@@ -122,6 +196,71 @@ public sealed class Http3MinimalClientTests
         }
     }
 
+    private static async Task RunDelayedResponseFinServerAsync(
+        QuicListener listener,
+        byte[] responseBody,
+        TaskCompletionSource<object?> responsePayloadSent,
+        Task responseFinAllowed)
+    {
+        await using QuicConnection connection = await listener.AcceptConnectionAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicStream? requestStream = null;
+        List<QuicStream> unidirectionalStreams = [];
+
+        try
+        {
+            while (requestStream is null || unidirectionalStreams.Count < 3)
+            {
+                QuicStream stream = await connection.AcceptInboundStreamAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                if (stream.Type == QuicStreamType.Bidirectional)
+                {
+                    requestStream = stream;
+                }
+                else
+                {
+                    unidirectionalStreams.Add(stream);
+                    await ObserveUnidirectionalStreamPreambleAsync(stream);
+                }
+            }
+
+            Assert.NotNull(requestStream);
+            QPackFieldLine[] requestHeaders = await ReadRequestHeadersAsync(requestStream);
+            Assert.Contains(requestHeaders, header => header.Name == ":path" && header.Value == "/delayed-fin");
+
+            byte[] responseHeaders = QPackEncoder.EncodeFieldSection(
+            [
+                new QPackFieldLine(":status", "200"),
+                new QPackFieldLine("content-type", "application/octet-stream"),
+                new QPackFieldLine("content-length", responseBody.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+            ]);
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(responseHeaders);
+            byte[] dataFrame = Http3FrameWriter.WriteData(responseBody);
+
+            await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            responsePayloadSent.TrySetResult(null);
+
+            await responseFinAllowed.WaitAsync(TimeSpan.FromSeconds(10));
+            await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        catch (Exception exception)
+        {
+            responsePayloadSent.TrySetException(exception);
+            throw;
+        }
+        finally
+        {
+            if (requestStream is not null)
+            {
+                await requestStream.DisposeAsync();
+            }
+
+            foreach (QuicStream stream in unidirectionalStreams)
+            {
+                await stream.DisposeAsync();
+            }
+        }
+    }
+
     private static async Task ObserveUnidirectionalStreamPreambleAsync(QuicStream stream)
     {
         byte[] buffer = new byte[512];
@@ -164,6 +303,26 @@ public sealed class Http3MinimalClientTests
 
     private static async Task RespondAsync(QuicStream requestStream)
     {
+        QPackFieldLine[] requestHeaders = await ReadRequestHeadersAsync(requestStream);
+        Assert.Contains(requestHeaders, header => header.Name == ":method" && header.Value == "GET");
+        Assert.Contains(requestHeaders, header => header.Name == ":path" && header.Value == "/resource?q=1");
+        Assert.Contains(requestHeaders, header => header.Name == ":authority" && header.Value.StartsWith("localhost:", StringComparison.Ordinal));
+
+        byte[] responseHeaders = QPackEncoder.EncodeFieldSection(
+        [
+            new QPackFieldLine(":status", "200"),
+            new QPackFieldLine("content-type", "text/plain"),
+        ]);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(responseHeaders);
+        byte[] dataFrame = Http3FrameWriter.WriteData("hello over h3"u8);
+
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task<QPackFieldLine[]> ReadRequestHeadersAsync(QuicStream requestStream)
+    {
         Http3FrameReader reader = new();
         byte[] buffer = new byte[1024];
         QPackFieldLine[]? requestHeaders = null;
@@ -188,21 +347,7 @@ public sealed class Http3MinimalClientTests
         }
 
         Assert.NotNull(requestHeaders);
-        Assert.Contains(requestHeaders, header => header.Name == ":method" && header.Value == "GET");
-        Assert.Contains(requestHeaders, header => header.Name == ":path" && header.Value == "/resource?q=1");
-        Assert.Contains(requestHeaders, header => header.Name == ":authority" && header.Value.StartsWith("localhost:", StringComparison.Ordinal));
-
-        byte[] responseHeaders = QPackEncoder.EncodeFieldSection(
-        [
-            new QPackFieldLine(":status", "200"),
-            new QPackFieldLine("content-type", "text/plain"),
-        ]);
-        byte[] headersFrame = Http3FrameWriter.WriteHeaders(responseHeaders);
-        byte[] dataFrame = Http3FrameWriter.WriteData("hello over h3"u8);
-
-        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
-        await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
-        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        return requestHeaders;
     }
 
     private static QPackFieldLine[]? CaptureRequestHeaders(Http3Frame frame, QPackFieldLine[]? current)
@@ -214,5 +359,49 @@ public sealed class Http3MinimalClientTests
 
         Assert.Null(current);
         return QPackDecoder.DecodeFieldSection(headersFrame.EncodedFieldSection);
+    }
+
+    private static async Task WaitForDiagnosticAsync(
+        RecordingHttp3DiagnosticsSink diagnostics,
+        Predicate<Http3DiagnosticEvent> predicate)
+    {
+        using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+        while (!timeout.IsCancellationRequested)
+        {
+            if (diagnostics.Events.Any(diagnostic => predicate(diagnostic)))
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(25), timeout.Token);
+        }
+
+        Assert.Fail("The expected HTTP/3 diagnostic event was not observed.");
+    }
+
+    private sealed class RecordingHttp3DiagnosticsSink : IHttp3DiagnosticsSink
+    {
+        private readonly List<Http3DiagnosticEvent> events = [];
+
+        public bool IsEnabled => true;
+
+        internal Http3DiagnosticEvent[] Events
+        {
+            get
+            {
+                lock (events)
+                {
+                    return [.. events];
+                }
+            }
+        }
+
+        public void Emit(Http3DiagnosticEvent diagnosticEvent)
+        {
+            lock (events)
+            {
+                events.Add(diagnosticEvent);
+            }
+        }
     }
 }

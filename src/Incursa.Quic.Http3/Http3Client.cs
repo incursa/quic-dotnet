@@ -18,7 +18,6 @@ public sealed class Http3Client : IAsyncDisposable
     private readonly Http3Settings localSettings;
     private readonly string? userAgent;
     private readonly int readBufferSize;
-    private readonly bool completeResponseOnContentLength;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private QuicStream? controlStream;
     private QuicStream? qpackEncoderStream;
@@ -34,7 +33,6 @@ public sealed class Http3Client : IAsyncDisposable
         readBufferSize = options.ReadBufferSize > 0
             ? options.ReadBufferSize
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
-        completeResponseOnContentLength = options.CompleteResponseOnContentLength;
         diagnosticsSink = options.DiagnosticsSink;
         Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionStarted)
         {
@@ -338,11 +336,7 @@ public sealed class Http3Client : IAsyncDisposable
                 ProcessResponseFrame(frame, validator, body, requestStream.Id);
             }
 
-            if (completeResponseOnContentLength &&
-                TryCompleteOnContentLength(validator, body.WrittenCount))
-            {
-                break;
-            }
+            ValidateContentLengthNotExceeded(validator, body.WrittenCount);
         }
 
         IReadOnlyList<QPackFieldLine>? headers = validator.FinalResponseHeaders;
@@ -372,19 +366,19 @@ public sealed class Http3Client : IAsyncDisposable
         return new Http3Response(statusCode, headers, bodyBytes, streamCompleted);
     }
 
-    private static bool TryCompleteOnContentLength(
+    private static void ValidateContentLengthNotExceeded(
         Http3ResponseSequenceValidator validator,
         int receivedBodyLength)
     {
         IReadOnlyList<QPackFieldLine>? headers = validator.FinalResponseHeaders;
         if (headers is null)
         {
-            return false;
+            return;
         }
 
         if (!TryGetContentLength(headers, out ulong contentLength))
         {
-            return false;
+            return;
         }
 
         ulong receivedLength = checked((ulong)receivedBodyLength);
@@ -392,8 +386,6 @@ public sealed class Http3Client : IAsyncDisposable
         {
             throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 response body exceeded Content-Length.");
         }
-
-        return receivedLength == contentLength;
     }
 
     private static bool TryGetContentLength(IReadOnlyList<QPackFieldLine> headers, out ulong contentLength)

@@ -89,6 +89,30 @@ public sealed class Http3QPackErrorHandlingMatrixTests
     }
 
     [Fact]
+    public void RequestStream_ClientSentPushPromise_ThrowsFrameUnexpected()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterBidirectionalStream(0);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00]))));
+
+        Assert.Equal(Http3ErrorCode.FrameUnexpected, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void RequestStream_UnadvertisedPushPromise_ThrowsIdError()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+        dispatcher.RegisterBidirectionalStream(0);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00]))));
+
+        Assert.Equal(Http3ErrorCode.IdError, exception.ErrorCode);
+    }
+
+    [Fact]
     public void QPackFieldSection_InvalidStaticIndex_ThrowsDecompressionFailed()
     {
         byte[] encoded = [0x00, 0x00, .. QPackInteger.Encode(99, 6, 0xC0)];

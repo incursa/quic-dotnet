@@ -20,6 +20,8 @@ public sealed class REQ_QUIC_RFC9114_S4_0001
         "Invalid content-length",
         "Server-initiated bidirectional stream",
         "Duplicate control streams",
+        "Client-sent PUSH_PROMISE",
+        "Unadvertised PUSH_PROMISE",
     ];
 
     [Fact]

@@ -84,7 +84,7 @@
         ]
       },
       "notes": [
-        "Case identifiers are `DATA before HEADERS`, `Two SETTINGS frames`, `SETTINGS on request stream`, `HEADERS on control stream`, `Invalid frame length`, `Unknown frame type`, `Reserved frame type`, `Malformed pseudo-header order`, `Uppercase header field name`, `Invalid content-length`, `Server-initiated bidirectional stream`, and `Duplicate control streams`.",
+        "Case identifiers are `DATA before HEADERS`, `Two SETTINGS frames`, `SETTINGS on request stream`, `HEADERS on control stream`, `Invalid frame length`, `Unknown frame type`, `Reserved frame type`, `Malformed pseudo-header order`, `Uppercase header field name`, `Invalid content-length`, `Server-initiated bidirectional stream`, `Duplicate control streams`, `Client-sent PUSH_PROMISE`, and `Unadvertised PUSH_PROMISE`.",
         "Unknown and reserved frame types are expected to be ignored by this layer when permitted on the stream.",
         "This requirement verifies layer-local HTTP/3 error classification and does not by itself prove transport-level CONNECTION_CLOSE packet emission.",
         "h3i live examples remain documentation for future wire-level reproduction because h3i command/library packaging can drift."
@@ -180,13 +180,15 @@
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RequiresSettingsAsFirstFrame",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_RejectsControlFrames",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_ServerEndpointRejectsClientPushPromise",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::QPackStreams_RegisterButRejectHttp3Frames",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::PushStream_IsRejectedWhileServerPushIsDisabled"
         ]
       },
       "notes": [
         "This requirement owns the stream taxonomy used by the HTTP/3 package, including control, QPACK encoder, QPACK decoder, request, push, reserved, and unknown stream types.",
-        "It also covers the one-control-stream rule and the frame-type whitelist for each stream kind."
+        "It also covers the one-control-stream rule, the frame-type whitelist for each stream kind, and the default rejection of PUSH_PROMISE when it is client-sent or when server push has not been explicitly enabled."
       ]
     },
     {
@@ -387,14 +389,18 @@
           "src/Incursa.Quic/QuicApplicationSendQueue.cs"
         ],
         "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::RepeatedLargeResponses_CompleteWithExactBodyAndFin",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide"
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithIncompleteContentLength_Returns400",
+          "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs::Http3LargeBodyCompletionTestsCoverDataAccountingAndFin"
         ]
       },
       "notes": [
         "This requirement owns the recovery slice for ProtocolLab large-body rows that failed with premature response EOF under managed HTTP/3 load.",
-        "Completing a client response solely because Content-Length bytes arrived is not sufficient proof when the transport stream tail or FIN path is still incorrect."
+        "Completing a client response solely because Content-Length bytes arrived is not sufficient proof when the transport stream tail or FIN path is still incorrect.",
+        "`Http3ClientOptions.CompleteResponseOnContentLength` is retained as a compatibility flag, but the client must still observe stream FIN before reporting response completion."
       ]
     }
   ]

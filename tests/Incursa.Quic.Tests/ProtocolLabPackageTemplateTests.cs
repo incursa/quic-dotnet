@@ -15,6 +15,14 @@ public sealed class ProtocolLabPackageTemplateTests
         "quic.transport.duplex-streams",
     ];
 
+    private static readonly string[] Http3ScenarioIds =
+    [
+        "http.core.plaintext",
+        "http.core.json",
+        "http.payload.bytes.64kb",
+        "http.payload.bytes.1mb",
+    ];
+
     [Fact]
     public void Raw_quic_package_template_advertises_transport_contract()
     {
@@ -32,6 +40,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("h3", ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.DoesNotContain("http.core.plaintext", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("http.payload.bytes.64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("http.payload.bytes.1mb", ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.False(packageRoot.TryGetProperty("supportedProtocols", out _));
         Assert.False(packageRoot.TryGetProperty("supportedWorkloadFamilies", out _));
         Assert.False(packageRoot.TryGetProperty("supportedScenarios", out _));
@@ -62,6 +72,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.DoesNotContain("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
         Assert.DoesNotContain("http.core.", implementationYaml);
+        Assert.DoesNotContain("http.payload.bytes.", implementationYaml);
         Assert.DoesNotContain("managed-httpclient-h3-load", implementationYaml);
         Assert.Contains("quicTransport", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicStreams", ReadYamlList(implementationYaml, "capabilities"));
@@ -84,15 +95,19 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal("quic-dotnet-dev", packageDocument.RootElement.GetProperty("packageId").GetString());
         var providedImplementation = Assert.Single(packageDocument.RootElement.GetProperty("providedImplementations").EnumerateArray());
         Assert.Equal("quic-dotnet-dev", providedImplementation.GetProperty("implementationId").GetString());
-        Assert.Contains("h3", ReadJsonStringArray(providedImplementation, "protocols"));
-        Assert.Contains("http.core.plaintext", ReadJsonStringArray(providedImplementation, "scenarios"));
-        Assert.Contains("http.core.json", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.Equal(["h3"], ReadJsonStringArray(providedImplementation, "protocols"));
+        Assert.Equal(Http3ScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("quic.transport.multiplex.100x64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("quic.transport.duplex-streams", ReadJsonStringArray(providedImplementation, "scenarios"));
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-dev", implementationYaml);
         Assert.Contains("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
+        Assert.Equal(Http3ScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("httpPlaintext", ReadYamlList(implementationYaml, "capabilities"));
+        Assert.Contains("httpJson", ReadYamlList(implementationYaml, "capabilities"));
+        Assert.Contains("httpBytes", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("type: processStarted", implementationYaml);
         Assert.Contains("startupDelayMilliseconds: 2000", implementationYaml);
         Assert.DoesNotContain("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
@@ -170,13 +185,18 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);
+        Assert.Contains("New-ProtocolLabH3ComponentPackages.ps1", helperScript);
+        Assert.Contains("h3-large-body-v1", helperScript);
+        Assert.Contains("http.payload.bytes.64kb", helperScript);
+        Assert.Contains("http.payload.bytes.1mb", helperScript);
+        Assert.Contains("($ScenarioId -join \",\")", helperScript);
         Assert.Contains("SourceBackedTestExecutor", helperScript);
         Assert.Contains("packageReferences", helperScript);
         Assert.Contains("$componentPackageReferences = @($componentPackageResult.packageReferences)", helperScript);
         Assert.Contains("$componentPackagePaths = @(", helperScript);
-        Assert.Contains("@(\"-AdditionalPackagePath\") + $componentPackagePaths", helperScript);
+        Assert.Contains("$submitParameters.Add(\"AdditionalPackagePath\", $componentPackagePaths)", helperScript);
         Assert.Contains("$allPackageReferences = @($PackageReference)", helperScript);
-        Assert.Contains("@(\"-PackageReference\") + $allPackageReferences", helperScript);
+        Assert.Contains("$submitParameters.Add(\"PackageReference\", $allPackageReferences)", helperScript);
         Assert.Contains("componentPackages = $componentPackageResult", helperScript);
     }
 
@@ -234,6 +254,41 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.NotEqual(0, result.ExitCode);
         Assert.Contains("only supports test executor 'quic-go-raw-load'", result.Output);
         Assert.DoesNotContain("Submit-ProtocolLabPackageRun.ps1", result.Output);
+    }
+
+    [Theory]
+    [InlineData("h3-large-body-v1", "http.payload.stream.100x16kb", "scenario(s) are not declared by the package template")]
+    [InlineData("h3-large-body-v1", "quic.transport.multiplex.100x64kb", "scenario(s) are not declared by the package template")]
+    [InlineData("quic-transport-v1-comparison", "http.payload.bytes.64kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
+    public void Run_helper_rejects_http3_undeclared_package_arguments(string suiteId, string scenarioId, string expectedError)
+    {
+        var repoRoot = FindRepoRoot();
+        var protocolLabRoot = Path.GetFullPath(Path.Combine(repoRoot, "..", "protocol-lab"));
+        var helperScript = Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1");
+        var result = RunPowerShell(
+            "-NoLogo",
+            "-NoProfile",
+            "-File",
+            helperScript,
+            "-ControllerUri",
+            "http://127.0.0.1:1",
+            "-PackageTarget",
+            "Http3",
+            "-ProtocolLabRoot",
+            protocolLabRoot,
+            "-SuiteId",
+            suiteId,
+            "-ScenarioId",
+            scenarioId,
+            "-Protocol",
+            "h3",
+            "-TestExecutorId",
+            "managed-httpclient-h3-load");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains(expectedError, result.Output);
+        Assert.DoesNotContain("Submit-ProtocolLabPackageRun.ps1", result.Output);
+        Assert.DoesNotContain("New-QuicDotNetProtocolLabPackage.ps1", result.Output);
     }
 
     [Fact]

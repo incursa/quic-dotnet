@@ -8,6 +8,7 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9114-S7-0001")]
 [Requirement("REQ-QUIC-RFC9114-S8-0001")]
 [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+[Requirement("REQ-QUIC-RFC9114-S9-0002")]
 public sealed class REQ_QUIC_RFC9114_0002
 {
     [Fact]
@@ -95,6 +96,8 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("ControlStream_RequiresSettingsAsFirstFrame", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RequestStream_RejectsControlFrames", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RequestStream_ServerEndpointRejectsClientPushPromise", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("QPackStreams_RegisterButRejectHttp3Frames", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("PushStream_IsRejectedWhileServerPushIsDisabled", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("stream classification", spec, StringComparison.OrdinalIgnoreCase);
@@ -152,6 +155,39 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("PeerControlStream_BundledSettingsFrame_IsObserved", serverTests, StringComparison.Ordinal);
         Assert.Contains("AbruptStreamReset_DoesNotStopLaterRequest", serverTests, StringComparison.Ordinal);
         Assert.Contains("request-response floor", spec, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void Http3LargeBodyCompletionTestsCoverDataAccountingAndFin()
+    {
+        string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-RFC9114.json");
+        string architecture = ReadRepositoryFile("specs/architecture/quic/ARC-QUIC-RFC9114-0003.json");
+        string workItem = ReadRepositoryFile("specs/work-items/quic/WI-QUIC-RFC9114-0003.json");
+        string verification = ReadRepositoryFile("specs/verification/quic/VER-QUIC-RFC9114-0003.json");
+        string clientTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs");
+        string serverTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs");
+        string apiTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs");
+
+        Assert.Contains("REQ-QUIC-RFC9114-S9-0002", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S4-0002", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S8-0001", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S9-0001", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-API-0010", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S9-0002", architecture, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S9-0002", workItem, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9114-S9-0002", verification, StringComparison.Ordinal);
+        Assert.Contains("GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting", clientTests, StringComparison.Ordinal);
+        Assert.Contains("CompleteResponseOnContentLength = true", clientTests, StringComparison.Ordinal);
+        Assert.Contains("RepeatedLargeResponses_CompleteWithExactBodyAndFin", serverTests, StringComparison.Ordinal);
+        Assert.Contains("PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler", serverTests, StringComparison.Ordinal);
+        Assert.Contains("PostDataRequest_WithIncompleteContentLength_Returns400", serverTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReceived", serverTests, StringComparison.Ordinal);
+        Assert.Contains("PayloadLength", serverTests, StringComparison.Ordinal);
+        Assert.Contains("AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide", apiTests, StringComparison.Ordinal);
+        Assert.Contains("Content-Length", verification, StringComparison.Ordinal);
+        Assert.Contains("stream FIN", verification, StringComparison.Ordinal);
     }
 
     private static string ReadRepositoryFile(string relativePath)

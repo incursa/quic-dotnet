@@ -224,11 +224,25 @@ public sealed class Http3StreamDispatcher
             && (streamType - ReservedStreamTypeOffset) % ReservedStreamTypeModulus == 0;
     }
 
-    private static void ValidateRequestStreamFrame(Http3Frame frame)
+    private void ValidateRequestStreamFrame(Http3Frame frame)
     {
+        if (frame is Http3PushPromiseFrame)
+        {
+            if (LocalRole == Http3EndpointRole.Server)
+            {
+                throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "HTTP/3 clients must not send PUSH_PROMISE frames.");
+            }
+
+            if (!ServerPushEnabled)
+            {
+                throw new Http3Exception(Http3ErrorCode.IdError, "HTTP/3 PUSH_PROMISE requires client opt-in with MAX_PUSH_ID.");
+            }
+
+            return;
+        }
+
         if (frame is not Http3DataFrame
             and not Http3HeadersFrame
-            and not Http3PushPromiseFrame
             and not Http3UnknownFrame)
         {
             throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The HTTP/3 frame is not allowed on a request stream.");

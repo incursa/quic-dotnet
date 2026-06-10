@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Security.Cryptography;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using Incursa.Http3.Samples.ObjectStore;
@@ -142,6 +143,22 @@ public sealed class Http3SampleApplicationTests
     }
 
     [Theory]
+    [InlineData("/bytes/65536", 64 * 1024)]
+    [InlineData("/bytes/1048576", 1024 * 1024)]
+    public async Task TechEmpowerBytesRoutes_ReturnDeterministicPayloads(string path, int expectedLength)
+    {
+        TechEmpowerHandler handler = new();
+
+        Http3ServerResponse response = await handler.HandleAsync(CreateRequest("GET", path));
+
+        Assert.Equal(200, response.StatusCode);
+        Assert.Equal(expectedLength, response.Body.Length);
+        Assert.Contains(response.Headers, header => header.Name == "content-type" && header.Value == "application/octet-stream");
+        Assert.Contains(response.Headers, header => header.Name == "content-length" && header.Value == expectedLength.ToString(CultureInfo.InvariantCulture));
+        Assert.Equal(CreateDeterministicBytes(expectedLength), response.Body.ToArray());
+    }
+
+    [Theory]
     [InlineData("/db")]
     [InlineData("/queries?queries=10")]
     [InlineData("/fortunes")]
@@ -177,5 +194,16 @@ public sealed class Http3SampleApplicationTests
         }
 
         return new Http3Request(method, "https", "localhost", path, headers, body);
+    }
+
+    private static byte[] CreateDeterministicBytes(int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = (byte)(index % 251);
+        }
+
+        return bytes;
     }
 }

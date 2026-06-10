@@ -24,6 +24,7 @@
     "Unknown frame types are expected to be ignored by the HTTP/3 layer when permitted on the stream.",
     "Reserved frame types are treated as unknown/grease and are expected to be ignored rather than rejected.",
     "Malformed request sequencing and header validation failures map to the RFC 9114 application error codes exposed by the HTTP/3 layer.",
+    "PUSH_PROMISE sent by a client maps to H3_FRAME_UNEXPECTED, while a server PUSH_PROMISE received before client MAX_PUSH_ID opt-in maps to H3_ID_ERROR.",
     "The first slice does not require a live h3i installation or QUIC network scheduling."
   ],
   "risks": [

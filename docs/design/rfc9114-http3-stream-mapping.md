@@ -11,11 +11,11 @@ This slice adds transport-agnostic HTTP/3 stream mapping and stream-type validat
 - RFC 9114 Section 6.2.1 SETTINGS-first enforcement on the control stream.
 - RFC 9114 Sections 6.2.2 and 6.2.3 push-stream and reserved-stream-type classification. Push streams remain disabled by default.
 - RFC 9114 Section 7 frame placement validation for request, control, push, QPACK, unknown, and reserved stream kinds.
+- RFC 9114 Sections 4.6, 7.2.5, and 7.2.7 request-stream `PUSH_PROMISE` rejection when it is client-sent or when the client has not opted into push with `MAX_PUSH_ID`.
 
 ## Deferred
 
 - Full HTTP request and response sequencing.
-- Direction-sensitive request-stream frame validation, such as client-to-server versus server-to-client PUSH_PROMISE rules.
 - Push-stream Push ID payload parsing beyond stream-type classification.
 - HTTP/3 lifecycle integration with the managed QUIC runtime.
 - Extension negotiation for server-initiated bidirectional streams beyond an explicit dispatcher option.

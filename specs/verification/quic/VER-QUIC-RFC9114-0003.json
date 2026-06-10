@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9114-0003",
     "WI-QUIC-RFC9114-0003"
   ],
-  "verification_method": "Focused HTTP/3 loopback tests, QUIC public EOF guardrail tests, SpecTrace JSON validation, diff hygiene, and local ProtocolLab reruns after correctness is green.",
+  "verification_method": "Focused HTTP/3 loopback tests, QUIC public EOF guardrail tests, touched SpecTrace JSON validation, diff hygiene, and package-backed ProtocolLab H3 proof if the package inventory can select the large-body cells.",
   "verifies": [
     "REQ-QUIC-RFC9114-S9-0002"
   ],
@@ -21,20 +21,25 @@
     "Content-Length accounting must not be treated as a substitute for correct stream-tail behavior."
   ],
   "procedure": [
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter \"FullyQualifiedName~Http3MinimalServerTests|FullyQualifiedName~REQ_QUIC_API_0010\"`.",
-    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~Http3FrameLayerTests|FullyQualifiedName~Http3HeaderValidationTests|FullyQualifiedName~Http3MinimalClientTests|FullyQualifiedName~Http3MinimalServerTests\"`.",
+    "Run focused requirement-home tests for `REQ-QUIC-RFC9114-S4-0002`, `REQ-QUIC-RFC9114-S8-0001`, `REQ-QUIC-RFC9114-S9-0001`, `REQ-QUIC-RFC9114-S9-0002`, and `REQ-QUIC-API-0010`.",
+    "Validate the touched SpecTrace JSON artifacts directly when the broader core profile is blocked by unrelated RFC9250 debt.",
     "Run `git diff --check`.",
-    "After focused correctness is green, rerun ProtocolLab `h3-local-v1-comparison` rows for `http.payload.bytes.64kb`, `http.payload.bytes.1mb`, and one upload row with counters enabled."
+    "If the local package inventory can select the H3 large-body cells, run a package-backed ProtocolLab proof for `http.payload.bytes.64kb`, `http.payload.bytes.1mb`, and one upload row with counters enabled."
   ],
-  "expected_result": "Repeated 64KB and 1MB HTTP/3 responses complete with exact body length and stream completion, large uploads deliver exact bodies to handlers, malformed or incomplete framing still fails closed, SpecTrace validation passes, and ProtocolLab diagnostic reruns no longer show premature response EOF for the fixed rows.",
+  "expected_result": "Repeated 64KB and 1MB HTTP/3 responses complete with exact Content-Length, exact DATA frame payload accounting, and stream completion; a response with exact Content-Length bytes but no stream FIN remains incomplete; large uploads deliver exact bodies to handlers; malformed or incomplete framing still fails closed; touched SpecTrace JSON validates; and any ProtocolLab proof is reported only as lab evidence.",
   "evidence": [
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
     "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3ClientOptions.cs",
     "src/Incursa.Quic.Http3/Http3Server.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicApplicationSendQueue.cs",
     ".artifacts/bdn/results/Incursa.Quic.Benchmarks.Http3AllocationPathBenchmarks-report-github.md"
   ],
-  "status_summary": "Focused repo verification passed for repeated 64KB and 1MB HTTP/3 responses, the existing 1MB upload delivery test, and the REQ-QUIC-API-0010 EOF guardrails. The Http3AllocationPathBenchmarks Dry BDN smoke run completed and wrote reports under .artifacts/bdn/results. ProtocolLab local reruns remain the next diagnostic step before publishing large-body performance claims."
+  "status_summary": "Focused repo verification covers repeated 64KB and 1MB HTTP/3 responses with exact Content-Length, DATA accounting, and stream completion, the 1MB upload delivery path, Content-Length mismatch failure, the delayed response-FIN client regression, and the REQ-QUIC-API-0010 EOF guardrails. On 2026-06-10, package-backed H3 ProtocolLab proof was not run because the `Http3` package target rejected `http.payload.bytes.64kb` and `http.payload.bytes.1mb` before packaging; those scenario IDs are not declared by the current `quic-dotnet-dev` package template. This is a package-inventory selection blocker, not lab evidence or a public benchmark claim."
 }

@@ -155,6 +155,7 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
     private const int StatusNotFound = 404;
     private const int StatusMethodNotAllowed = 405;
     private const int StatusNotImplemented = 501;
+    private const int DeterministicByteModulo = 251;
 
     private static readonly HashSet<string> PlaceholderRoutes = new(StringComparer.Ordinal)
     {
@@ -187,6 +188,16 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
         if (path == "/json")
         {
             return Payload(TechEmpowerPayloads.Json, "application/json");
+        }
+
+        if (path == "/bytes/65536")
+        {
+            return Payload(TechEmpowerPayloads.Bytes64Kb, "application/octet-stream");
+        }
+
+        if (path == "/bytes/1048576")
+        {
+            return Payload(TechEmpowerPayloads.Bytes1Mb, "application/octet-stream");
         }
 
         if (PlaceholderRoutes.Contains(path))
@@ -228,6 +239,17 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
         int queryIndex = requestTarget.IndexOf('?', StringComparison.Ordinal);
         return queryIndex < 0 ? requestTarget : requestTarget[..queryIndex];
     }
+
+    internal static byte[] CreateDeterministicBytes(int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = (byte)(index % DeterministicByteModulo);
+        }
+
+        return bytes;
+    }
 }
 
 public static class TechEmpowerPayloads
@@ -236,7 +258,15 @@ public static class TechEmpowerPayloads
 
     private static readonly byte[] JsonBytes = """{"message":"Hello, World!"}"""u8.ToArray();
 
+    private static readonly byte[] Bytes64KbBytes = TechEmpowerHandler.CreateDeterministicBytes(64 * 1024);
+
+    private static readonly byte[] Bytes1MbBytes = TechEmpowerHandler.CreateDeterministicBytes(1024 * 1024);
+
     public static ReadOnlyMemory<byte> Plaintext => PlaintextBytes;
 
     public static ReadOnlyMemory<byte> Json => JsonBytes;
+
+    public static ReadOnlyMemory<byte> Bytes64Kb => Bytes64KbBytes;
+
+    public static ReadOnlyMemory<byte> Bytes1Mb => Bytes1MbBytes;
 }

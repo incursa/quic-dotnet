@@ -174,13 +174,45 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
-    public void RequestStream_AcceptsDataHeadersAndPushPromiseFrames()
+    public void RequestStream_AcceptsDataAndHeadersFrames()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
         dispatcher.RegisterBidirectionalStream(0);
 
         dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WriteHeaders([0x00])));
         dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WriteData([0x01])));
+    }
+
+    [Fact]
+    public void RequestStream_ServerEndpointRejectsClientPushPromise()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
+        dispatcher.RegisterBidirectionalStream(0);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00]))));
+
+        Assert.Equal(Http3ErrorCode.FrameUnexpected, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+        dispatcher.RegisterBidirectionalStream(0);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00]))));
+
+        Assert.Equal(Http3ErrorCode.IdError, exception.ErrorCode);
+    }
+
+    [Fact]
+    public void RequestStream_ClientEndpointAcceptsPushPromiseWhenPushIsEnabled()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client, enableServerPush: true);
+        dispatcher.RegisterBidirectionalStream(0);
+
         dispatcher.ReceiveFrame(0, ReadFrame(Http3FrameWriter.WritePushPromise(0, [0x00])));
     }
 
