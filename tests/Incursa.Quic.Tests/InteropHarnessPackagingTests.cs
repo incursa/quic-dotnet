@@ -77,6 +77,9 @@ public sealed class InteropHarnessPackagingTests
         Assert.Contains("tr_server = self._server_trace()._get_packets(", helper, StringComparison.Ordinal);
         Assert.DoesNotContain("tr_server = self._client_trace()._get_packets(", helper, StringComparison.Ordinal);
         Assert.Contains("is_new_path = cur not in paths", helper, StringComparison.Ordinal);
+        Assert.Contains("if not isinstance(event, dict):", helper, StringComparison.Ordinal);
+        Assert.Contains("if not isinstance(data, dict):", helper, StringComparison.Ordinal);
+        Assert.Contains("if not isinstance(frame, dict):", helper, StringComparison.Ordinal);
     }
 
     [Fact]

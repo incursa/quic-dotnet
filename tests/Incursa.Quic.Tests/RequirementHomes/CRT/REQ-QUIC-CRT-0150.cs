@@ -13,7 +13,7 @@ public sealed class REQ_QUIC_CRT_0150
     private const int UInt16Length = 2;
     private const int UInt24Length = 3;
     private const byte NewSessionTicketHandshakeType = 0x04;
-    private const uint ExpectedTicketLifetimeSeconds = 600;
+    private const uint ExpectedTicketLifetimeSeconds = 6 * 60 * 60;
     private const int ExpectedTicketNonceLength = 8;
     private const int ExpectedTicketBytesLength = 32;
 

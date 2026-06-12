@@ -15,6 +15,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0008">Pending accept, connect, and open-stream operations honor cancellation, still-pending client connect operations also honor HandshakeTimeout, listener or client-host disposal unblocks pending work with terminal outcomes instead of pretending handshake completion, and stream-capacity callbacks do not revive a disposed connection facade.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0008")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0008
 {
     [Fact]

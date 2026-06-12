@@ -15,6 +15,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0009">The library MUST surface the initial peer stream-capacity delta through QuicConnectionOptions.StreamCapacityCallback on the supported loopback establishment path, and it MUST surface later real peer stream-capacity growth plus the supported close-driven reclaim increment through the same callback on the supported active loopback path. It MUST remain silent when the supported boundary is never reached and it MUST not emit synthetic deltas.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0009")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0009
 {
     [Fact]
@@ -821,6 +822,10 @@ public sealed class REQ_QUIC_API_0009
             serverStream = await acceptStreamTask.WaitAsync(TimeSpan.FromSeconds(5));
 
             serverStream.Abort(QuicAbortDirection.Read, 17);
+            QuicException writeAbort = await Assert.ThrowsAsync<QuicException>(
+                () => clientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5)));
+            Assert.Equal(QuicError.StreamAborted, writeAbort.QuicError);
+            Assert.Equal(17, writeAbort.ApplicationErrorCode);
 
             await Task.Delay(300);
             Assert.Equal(1, callbackCount);

@@ -6,6 +6,9 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3HeaderValidationTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ValidateRequestHeaders_CommonGet_Passes()
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(CommonRequestHeaders());
@@ -285,6 +288,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void ValidateRequestHeaders_HostWithoutAuthority_PassesForHttpScheme()
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(
@@ -299,6 +305,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void ValidateRequestHeaders_ConnectWithAuthority_Passes()
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(
@@ -312,6 +321,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     [MemberData(nameof(MalformedRequestHeaders))]
     public void ValidateRequestHeaders_MalformedConditions_ThrowMessageError(QPackFieldLine[] headers)
     {
@@ -321,6 +333,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ValidateResponseHeaders_CommonFinalResponse_Passes()
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateResponseHeaders(CommonResponseHeaders());
@@ -329,6 +344,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     [MemberData(nameof(MalformedResponseHeaders))]
     public void ValidateResponseHeaders_MalformedConditions_ThrowMessageError(QPackFieldLine[] headers)
     {
@@ -338,6 +356,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ValidateRequestHeaders_ContentLengthMustMatchDataLength()
     {
         QPackFieldLine[] headers =
@@ -354,6 +375,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ValidateResponseHeaders_ContentLengthMustMatchDataLength()
     {
         QPackFieldLine[] headers =
@@ -370,6 +394,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void ValidateTrailers_RegularFieldsPassButPseudoHeadersFail()
     {
         Http3HeaderValidator.ValidateTrailers([new QPackFieldLine("etag", "\"abc\"")], Http3MessageType.Response);
@@ -381,6 +408,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RequestSequence_DataBeforeHeaders_IsFrameUnexpected()
     {
         Http3RequestMessageValidator validator = new();
@@ -391,6 +421,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void RequestSequence_ContentLengthValidatedAtCompletion()
     {
         Http3RequestMessageValidator validator = new();
@@ -405,6 +438,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void RequestSequence_TrailersPassWhenSupported()
     {
         Http3RequestMessageValidator validator = new();
@@ -416,6 +452,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void ResponseSequence_InformationalThenFinal_Passes()
     {
         Http3ResponseSequenceValidator validator = new();
@@ -433,6 +472,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ResponseSequence_DataBeforeFinalResponse_IsFrameUnexpected()
     {
         Http3ResponseSequenceValidator validator = new();
@@ -443,6 +485,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ResponseSequence_SecondFinalResponseWithoutTrailerSupport_IsFrameUnexpected()
     {
         Http3ResponseSequenceValidator validator = new();
@@ -454,6 +499,9 @@ public sealed class Http3HeaderValidationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void ResponseSequence_TrailersPassWhenSupported()
     {
         Http3ResponseSequenceValidator validator = new();

@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-API-0012")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0012
 {
     [Fact]

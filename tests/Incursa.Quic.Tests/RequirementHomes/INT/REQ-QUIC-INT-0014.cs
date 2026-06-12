@@ -215,8 +215,12 @@ public sealed class REQ_QUIC_INT_0014
                 PrivateKeyPath,
                 qlogDirectory);
 
-            Assert.Equal(0, server.ExitCode);
-            Assert.Equal(0, client.ExitCode);
+            Assert.True(
+                server.ExitCode == 0,
+                $"Expected retry server exit code 0, got {server.ExitCode}.\nSERVER STDOUT:\n{server.Stdout}\nSERVER STDERR:\n{server.Stderr}\nCLIENT EXIT CODE: {client.ExitCode}\nCLIENT STDOUT:\n{client.Stdout}\nCLIENT STDERR:\n{client.Stderr}");
+            Assert.True(
+                client.ExitCode == 0,
+                $"Expected retry client exit code 0, got {client.ExitCode}.\nSERVER EXIT CODE: {server.ExitCode}\nSERVER STDOUT:\n{server.Stdout}\nSERVER STDERR:\n{server.Stderr}\nCLIENT STDOUT:\n{client.Stdout}\nCLIENT STDERR:\n{client.Stderr}");
             Assert.Contains("issued exactly one Retry", server.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("observed exactly one Retry transition", client.Stdout, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("completed managed retry response", server.Stdout, StringComparison.OrdinalIgnoreCase);

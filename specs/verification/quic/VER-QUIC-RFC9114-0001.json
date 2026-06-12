@@ -35,5 +35,5 @@
     "tests/Incursa.Quic.Tests/Http3LowLevelProtocolTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-S4-0001.cs"
   ],
-  "status_summary": "Passed for deterministic low-level RFC 9114 malformed sequence classification and documentation, including client-sent and unadvertised PUSH_PROMISE handling. The proof is layer-local and does not claim live h3i wire behavior or complete RFC 9114/RFC 9204 support."
+  "status_summary": "Passed for deterministic low-level RFC 9114 malformed sequence classification and documentation, including client-sent and unadvertised PUSH_PROMISE handling. The nonfatal unknown/reserved frame proof is explicitly classified as edge coverage for the permitted ignore boundary. The proof is layer-local and does not claim live h3i wire behavior, server push support, or complete RFC 9114/RFC 9204 support."
 }

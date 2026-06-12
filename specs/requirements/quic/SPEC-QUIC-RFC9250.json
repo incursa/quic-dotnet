@@ -1,12 +1,15 @@
 {
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "SPEC-QUIC-RFC9250",
   "artifact_type": "specification",
   "title": "QUIC RFC 9250 Requirements",
   "domain": "quic",
   "capability": "quic-rfc9250",
-  "status": "stable",
+  "status": "verified",
   "owner": "protocol-team",
   "purpose": "Capture QUIC RFC 9250 requirements.",
+  "scope": "This specification covers DNS over QUIC adapter requirements, including ALPN, default port behavior, DNS message framing, query and response stream lifecycle, protocol errors, connection lifecycle, 0-RTT and replay policy, flow-control mapping, response ordering, and registry governance.",
+  "context": "DNS over QUIC behavior is layered above the shared QUIC transport runtime. The DoQ adapter owns DNS message and stream semantics while shared QUIC transport requirements continue to own packet protection, stream limits, flow control, TLS, and transport-parameter mechanics.",
   "related_artifacts": [
     "ARC-QUIC-RFC9250-0001",
     "ARC-QUIC-RFC9250-0002",
@@ -99,6 +102,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::LargeDnsResponsesFlowThroughTheDoqStreamPath",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu"
         ]
       }
     },
@@ -125,6 +132,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::SequentialQueryResponseTransactionsUseSeparateStreams",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError"
         ]
       }
     },
@@ -151,6 +162,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsCarryTlsAuthenticationOptionsForDoqSetup",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsRejectMissingTlsAuthenticationOptionsForDoqSetup"
         ]
       },
       "notes": [
@@ -180,6 +195,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ApplicationProtocolUsesDoqAlpn",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsRejectExplicitNonDoqAlpn",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified"
         ]
       },
       "notes": [
@@ -209,6 +230,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersUseDefaultDoqPort",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ListenerOptionsAllowExplicitAlternateDoqPort"
         ]
       }
     },
@@ -235,6 +261,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersUseDefaultDoqPort",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsAllowExplicitAlternateDoqPort"
         ]
       }
     },
@@ -261,6 +292,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersAllowDoqPortsOtherThanUdp53",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersRejectUdpPort53"
         ]
       }
     },
@@ -287,6 +322,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::SequentialQueryResponseTransactionsUseSeparateStreams",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError"
         ]
       }
     },
@@ -313,6 +352,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsyncSendsSelectedStreamQueryAndFin",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin"
         ]
       }
     },
@@ -339,6 +382,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::MessageCodecEncodesTwoOctetLengthPrefix",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::MessageCodecDecodesOneMessageAndReportsConsumedBytes",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::MessageCodecReportsPartialFramesAsIncomplete",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent"
         ]
       }
     },
@@ -365,6 +414,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -391,6 +444,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -417,6 +474,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsyncSendsSelectedStreamQueryAndFin",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin"
         ]
       }
     },
@@ -443,6 +504,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsync_UsesOneBidirectionalStreamAndReturnsSameStreamResponse",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin"
         ]
       }
     },
@@ -469,6 +534,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerWritesResponseOnTheSameQueryStream",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRejectsIncompleteDoqQueryFrame"
         ]
       }
     },
@@ -495,6 +564,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerWritesResponseOnTheSameQueryStream",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRejectsIncompleteDoqQueryFrame"
         ]
       }
     },
@@ -521,6 +594,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -547,6 +624,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin"
         ]
       }
     },
@@ -573,6 +654,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad"
         ]
       }
     },
@@ -599,6 +683,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad"
         ]
       }
     },
@@ -625,6 +712,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DanglingStreamLimitClosesConnectionWithExcessiveLoad"
         ]
       }
     },
@@ -651,6 +741,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ClientSendsZeroDnsMessageIdOnDoqQueryStream",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ClientNormalizesNonZeroDnsMessageIdBeforeSendingDoqQuery"
         ]
       }
     },
@@ -677,6 +771,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesWithZeroMessageIdsAreCorrelatedByTheirStreams",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesWithSameNonZeroMessageIdAreCorrelatedByTheirStreams"
         ]
       }
     },
@@ -703,6 +801,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0012"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_WritesSpecifiedId",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_PreservesOriginalInput",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_ThrowsOnShortInput",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoqAndGenerateMessageId_RoundTrip"
         ]
       }
     },
@@ -729,6 +833,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0012"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoq_SetsMessageIdToZero",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoq_ThrowsOnShortInput",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoqAndGenerateMessageId_RoundTrip"
         ]
       }
     },
@@ -755,6 +864,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::NoErrorCodeValueAndNormalizationMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::SpecificErrorCodesDoNotNormalizeAsNoError"
         ]
       },
       "notes": [
@@ -784,6 +897,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ClientConnectionCloseWithoutErrorUsesNoError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ProtocolFailureCloseDoesNotUseNoError"
         ]
       },
       "notes": [
@@ -813,6 +930,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::InternalErrorCodeValueAndUsageMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ProtocolErrorCodeDoesNotNormalizeAsInternalError"
         ]
       },
       "notes": [
@@ -842,6 +963,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ProtocolErrorCodeValueAndUsageMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::NoErrorCodeDoesNotNormalizeAsProtocolError"
         ]
       },
       "notes": [
@@ -871,6 +996,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::RequestCancelledCodeValueAndUsageMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ProtocolErrorCodeDoesNotNormalizeAsRequestCancelled"
         ]
       },
       "notes": [
@@ -900,6 +1029,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ExcessiveLoadCodeValueAndUsageMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ProtocolErrorCodeDoesNotNormalizeAsExcessiveLoad"
         ]
       },
       "notes": [
@@ -929,6 +1062,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::UnknownErrorCodeNormalizesToUnspecifiedError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::SpecificRegisteredCodesDoNotNormalizeAsUnspecifiedError"
         ]
       },
       "notes": [
@@ -958,6 +1095,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::ReservedTestErrorCodeValueAndNormalizationMatchRegistry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::UnknownErrorCodeDoesNotNormalizeAsReservedTestError"
         ]
       },
       "notes": [
@@ -987,6 +1128,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled"
         ]
       }
     },
@@ -1013,6 +1157,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled"
         ]
       }
     },
@@ -1039,6 +1186,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled"
         ]
       }
     },
@@ -1065,6 +1215,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue"
         ]
       }
     },
@@ -1091,6 +1244,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ClientCancellationUsesStopSendingWithRequestCancelled"
         ]
       }
     },
@@ -1117,6 +1273,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0010"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode"
         ]
       }
     },
@@ -1143,6 +1302,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue"
         ]
       }
     },
@@ -1169,6 +1331,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0010"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ServerChecksStopSendingBeforeDispatchingQuery"
         ]
       }
     },
@@ -1195,6 +1360,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad"
         ]
       }
     },
@@ -1221,6 +1389,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad"
         ]
       }
     },
@@ -1247,6 +1418,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad"
         ]
       }
     },
@@ -1273,6 +1447,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites"
         ]
       }
     },
@@ -1301,6 +1478,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites"
         ]
       }
     },
@@ -1320,13 +1500,18 @@
           "https://www.rfc-editor.org/rfc/rfc9250.html#section-4.3.2"
         ],
         "satisfied_by": [
-          "ARC-QUIC-RFC9250-0013"
+          "ARC-QUIC-RFC9250-0006"
         ],
         "implemented_by": [
-          "WI-QUIC-RFC9250-0013"
+          "WI-QUIC-RFC9250-0006"
         ],
         "verified_by": [
-          "VER-QUIC-RFC9250-0013"
+          "VER-QUIC-RFC9250-0006"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsync_PropagatesServfailResponseCodeFromHandler",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailResponseCodeAndTestsAreTraceLinked"
         ]
       }
     },
@@ -1353,6 +1538,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction"
         ]
       }
     },
@@ -1379,6 +1567,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction"
         ]
       }
     },
@@ -1405,6 +1596,9 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0003"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction"
         ]
       }
     },
@@ -1431,6 +1625,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0010"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded"
         ]
       }
     },
@@ -1457,6 +1655,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0004"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::NonZeroMessageIdIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ZeroMessageIdIsAcceptedByNormalQueryResponseFlow"
         ]
       }
     },
@@ -1483,6 +1685,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0004"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::IncompleteLengthPrefixedMessageIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::CompleteLengthPrefixedMessageDecodes"
         ]
       }
     },
@@ -1509,6 +1715,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0005"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::EarlyServerResponseFinIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::CompleteServerResponseFinIsAccepted"
         ]
       }
     },
@@ -1535,6 +1745,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0004"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::MultipleQueriesOnOneStreamAreFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::SingleQueryOnOneStreamIsAccepted"
         ]
       }
     },
@@ -1561,6 +1775,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0005"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ExtraServerResponseOnOneStreamIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::SingleServerResponseOnOneStreamIsAccepted"
         ]
       }
     },
@@ -1587,6 +1805,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0007"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientTreatsPeerStopSendingAsFatalProtocolErrorAndClosesConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked"
         ]
       }
     },
@@ -1613,6 +1836,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0008"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::MissingStreamFinAfterResponseIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ResponseWithStreamFinIsAccepted"
         ]
       }
     },
@@ -1639,6 +1866,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0008"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::EdnsTcpKeepaliveOptionIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::MessagesWithoutEdnsTcpKeepaliveAreAcceptedByDetector"
         ]
       }
     },
@@ -1665,6 +1896,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0005"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::InboundUnidirectionalStreamIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ClientInitiatedBidirectionalStreamIsAccepted"
         ]
       }
     },
@@ -1691,6 +1926,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0008"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ServerInitiatedBidirectionalStreamIsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::ClientOpenedBidirectionalStreamRemainsNormalPath"
         ]
       }
     },
@@ -1717,6 +1956,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0005"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::FatalProtocolErrorsCloseConnectionWithProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::NonProtocolCloseDoesNotUseProtocolError"
         ]
       }
     },
@@ -1743,6 +1986,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0005"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::FatalProtocolErrorsCloseConnectionWithProtocolError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0052-ProtocolErrors.cs::NonProtocolCloseDoesNotUseProtocolError"
         ]
       }
     },
@@ -1769,6 +2016,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0008"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::UnknownOrUnexpectedErrorCodesNormalizeToUnspecifiedError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::RegisteredContextualErrorCodesDoNotNormalizeAsUnspecifiedError"
         ]
       }
     },
@@ -1795,6 +2046,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs::DoqClientOptionsAdvertiseDefaultIdleTimeoutWhenUnset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs::DoqClientOptionsDoNotLeaveIdleTimeoutDisabled"
         ]
       }
     },
@@ -1821,6 +2076,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs::EffectiveIdleTimeoutUsesMinimumAdvertisedValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs::EffectiveIdleTimeoutDoesNotUseLargerAdvertisedValue"
         ]
       }
     },
@@ -1847,6 +2106,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ReusesExistingHealthyConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DoesNotReuseConnectionTooCloseToIdleTimeout"
         ]
       }
     },
@@ -1873,6 +2136,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ReusesExistingHealthyConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DoesNotReuseConnectionTooCloseToIdleTimeout"
         ]
       }
     },
@@ -1899,6 +2166,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ReusesExistingHealthyConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DoesNotReuseConnectionTooCloseToIdleTimeout"
         ]
       }
     },
@@ -1925,6 +2196,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpensReplacementConnectionWhenIdleTimeIsNotLowEnough",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DoesNotReuseConnectionTooCloseToIdleTimeout"
         ]
       }
     },
@@ -1951,6 +2226,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DiscardsConnectionBeforeIdleTimeoutExpires",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout"
         ]
       }
     },
@@ -1977,6 +2256,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0072.cs::OutstandingQueryCloseTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0072.cs::OwnedClientDisposalClosesOutstandingQueryConnection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0072.cs::IdleClientDisposalDoesNotUseOutstandingQueryClosePath",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose"
         ]
       }
     },
@@ -2003,6 +2289,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0073.cs::OutstandingQueryNoErrorCloseTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0073.cs::OutstandingQueryCloseUsesDoqNoError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0073.cs::IdleClientDisposalDoesNotEmitDoqNoErrorClose",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose"
         ]
       }
     },
@@ -2029,6 +2322,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncCompletesWithoutThrowing",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose"
         ]
       }
     },
@@ -2055,6 +2352,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0011"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ConnectionFailureAbandonsInProgressQuery",
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ConnectionFailureSurfacesClearExceptionOnSubsequentQuery"
         ]
       }
     },
@@ -2083,6 +2384,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::SessionResumptionAndZeroRttTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::ClientPolicyAllowsOptInZeroRttForReplayableQueries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::ClientPolicyDoesNotUseZeroRttOrTicketsUnconditionally",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsZeroRttForReplayableQueryOpcode",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream"
         ]
       },
       "notes": [
@@ -2112,6 +2420,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsZeroRttForReplayableQueryOpcode",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream"
         ]
       },
       "notes": [
@@ -2141,6 +2453,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::IsReplayableOpcode_QueryIsReplayable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::IsReplayableOpcode_NotifyIsReplayable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::IsReplayableOpcode_OtherOpcodesAreNotReplayable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::IsReplayableQuery_DetectsQueryOpcodeFromPayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::IsReplayableQuery_DetectsNonQueryOpcode"
         ]
       },
       "notes": [
@@ -2170,6 +2489,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsZeroRttForReplayableQueryOpcode",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream"
         ]
       }
     },
@@ -2196,13 +2519,21 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0080.cs::SessionResumptionPrivacyTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0080.cs::ClientPolicyRequiresExplicitZeroRttOptInAndPrivacyGuards",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0080.cs::ClientPolicyRejectsRiskyResumptionAndZeroRttCases",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryWhenResumptionTicketIsAlreadyUsed",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange"
         ]
       }
     },
     {
       "id": "REQ-QUIC-RFC9250-0081",
       "title": "Allow session resumption with or without 0-RTT",
-      "statement": "Servers MAY support session resumption, and MAY do that with or without supporting 0-RTT, using the mechanisms described in Section 4.6.1 of [RFC9001].",
+      "statement": "Servers MAY support session resumption with or without 0-RTT using the mechanisms described in Section 4.6.1 of [RFC9001].",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2222,6 +2553,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ServerResumptionPolicyDoesNotRequireZeroRttQueueing"
         ]
       }
     },
@@ -2248,6 +2583,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0082.cs::ServerZeroRttNonReplayableTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0082.cs::ServerRefusesNonReplayableZeroRttBeforeHandlerDispatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0082.cs::ServerProcessesNonReplayableTransactionsWhenZeroRttSignalIsAbsent",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent"
         ]
       }
     },
@@ -2274,13 +2616,20 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0013"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0083.cs::ServerZeroRttRefusalTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0083.cs::ServerUsesRefusedTooEarlyForNonReplayableZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0083.cs::ServerDoesNotApplyTooEarlyBehaviorWithoutZeroRttSignal",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent"
         ]
       }
     },
     {
       "id": "REQ-QUIC-RFC9250-0084",
       "title": "Ignore EDNS(0) UDP payload size",
-      "statement": "The Extension Mechanisms for DNS (EDNS(0)) [RFC6891] allow peers to specify the UDP message size. This parameter is ignored by DoQ.",
+      "statement": "DoQ implementations MUST ignore the EDNS(0) UDP payload size when determining DoQ message size.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2300,13 +2649,17 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0009"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_DoesNotConsultEdnsUdpPayloadSizeField",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize"
         ]
       }
     },
     {
       "id": "REQ-QUIC-RFC9250-0085",
       "title": "Enforce the 65535-byte DoQ message maximum",
-      "statement": "DoQ implementations always assume that the maximum message size is 65535 bytes.",
+      "statement": "DoQ implementations MUST enforce a maximum DNS message size of 65535 bytes.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2326,6 +2679,16 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0009"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::Encode_Accepts65534BytePayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::Encode_Accepts65535BytePayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::Encode_Rejects65536BytePayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_Accepts65534BytePayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_Accepts65535BytePayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_AcceptsZeroLengthPayload",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecode_RejectsMalformedLengthPrefixes",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::TryDecodeAndEncode_RoundTripPreservesPayload"
         ]
       }
     },
@@ -2352,6 +2715,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -2378,6 +2745,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -2404,6 +2775,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0002"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream"
         ]
       }
     },
@@ -2430,6 +2805,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ReusesExistingHealthyConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::DoesNotReuseConnectionTooCloseToIdleTimeout"
         ]
       }
     },
@@ -2457,6 +2836,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0008"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError",
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption",
+          "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption"
         ]
       },
       "notes": [
@@ -2486,6 +2870,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenResumptionTicketIsNotMarkedUsed",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryWhenResumptionTicketIsAlreadyUsed"
         ]
       }
     },
@@ -2512,6 +2900,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange"
         ]
       }
     },
@@ -2538,6 +2930,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs::DoqAddressValidationTokenPolicyTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs::DoqAddressValidationTokenPolicyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault"
         ]
       }
     },
@@ -2564,6 +2962,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ResumptionTicketLifetimeDefaultIsSixHours",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ResumptionTicketLifetimeRejectsNonPositiveValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::EnabledServerEarlyDataAdvertisesNewSessionTicketExtensionAndStoresRememberedParameters"
         ]
       },
       "notes": [
@@ -2593,6 +2996,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::AntiReplayEnabledByDefault",
+          "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::DisabledServerEarlyDataAndReplayKeepZeroRttOpenMaterialAndEncryptedExtensionsClosed"
         ]
       }
     },
@@ -2619,6 +3026,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0014"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange"
         ]
       },
       "notes": [
@@ -2648,6 +3061,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0020"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OutOfOrderResponseDelivery",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::LaterStreamResponseDoesNotWaitForBlockedEarlierStream"
         ]
       }
     },
@@ -2674,6 +3091,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0019"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr"
         ]
       }
     },
@@ -2700,6 +3121,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0019"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr"
         ]
       }
     },
@@ -2726,6 +3151,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0019"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ConcurrentZoneTransfersAreSupportedOnOneConnection",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer"
         ]
       }
     },
@@ -2752,6 +3181,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0019"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueuedZoneTransfersSentWithoutWaiting",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer"
         ]
       }
     },
@@ -2778,6 +3211,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0019"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueuedZoneTransfersSentWithoutWaiting",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer"
         ]
       }
     },
@@ -2804,6 +3241,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::DoqUsesRfc9000FlowControlForSuccessfulStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::DoqUsesRfc9000FlowControlToRejectExcessStreamData"
         ]
       }
     },
@@ -2830,6 +3271,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::TransportParametersCarryAggregateDataLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::AggregateDataLimitRejectsDataBeyondConnectionCredit"
         ]
       }
     },
@@ -2856,6 +3301,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::TransportParametersCarryPerStreamDataLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::PerStreamDataLimitRejectsDataBeyondStreamCredit"
         ]
       }
     },
@@ -2882,6 +3331,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::TransportParametersCarryStreamCreationLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::StreamCreationLimitRejectsStreamsBeyondPeerCredit"
         ]
       }
     },
@@ -2908,6 +3361,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ServerUsesGlobalAndPerStreamLimitsForClientData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ServerRejectsClientDataBeyondPerStreamLimit"
         ]
       }
     },
@@ -2934,6 +3391,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ClientUsesGlobalAndPerStreamLimitsForServerData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ClientRejectsServerDataBeyondPerStreamLimit"
         ]
       }
     },
@@ -2960,6 +3421,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::HandshakeTransportParametersCarryFlowControlLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::HandshakeTransportParametersRejectInvalidStreamCreationLimit"
         ]
       }
     },
@@ -2986,6 +3451,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0021"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ZeroRttAcceptsRememberedInitialFlowControlLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs::ZeroRttRejectsReducedRememberedInitialFlowControlLimit"
         ]
       }
     },
@@ -3012,6 +3481,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0015"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ReplayableOpcodesAreStatePreserving",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction"
         ]
       }
     },
@@ -3038,6 +3511,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0018"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_PadsToBlockSize",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled"
         ]
       }
     },
@@ -3064,6 +3541,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::AlpnByteSequenceMatchesDoqDefaultsAlpn",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::AlpnByteSequenceDoesNotUseHttp3Token"
         ]
       }
     },
@@ -3090,6 +3571,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::RegistrySpaceUsesSixtyTwoBitQuicVariableLengthIntegerRange",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::RegistrySpaceDoesNotTreatSixtyThreeBitValueAsRegisteredDoqError"
         ]
       },
       "notes": [
@@ -3119,6 +3604,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::PermanentLowRangeRegistrationPolicyAllowsStandardsActionOrIesgApproval",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::PermanentLowRangeRegistrationPolicyDoesNotUseExpertReviewOnly"
         ]
       },
       "notes": [
@@ -3148,6 +3637,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::PermanentHighRangeRegistrationPolicyUsesSpecificationRequired",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::PermanentHighRangeRegistrationPolicyDoesNotUseLowRangePolicy"
         ]
       },
       "notes": [
@@ -3177,6 +3670,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalHighRangeRegistrationPolicyUsesExpertReview",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalHighRangeRegistrationPolicyDoesNotRequireStandardsAction"
         ]
       },
       "notes": [
@@ -3206,6 +3703,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalRegistrationSpecificationCanBeOmitted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalRegistrationSpecificationOptionalityIsNotPermanentPolicy"
         ]
       },
       "notes": [
@@ -3235,6 +3736,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DescriptionCanBeSummaryWhenSpecificationReferenceExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DescriptionSummaryIsNotAllowedWithoutSpecificationReference"
         ]
       }
     },
@@ -3261,6 +3766,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0022"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalDateUpdatesCanSkipExpertReview",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::ProvisionalDateUpdateWaiverDoesNotApplyToPolicyChanges"
         ]
       },
       "notes": [
@@ -3290,6 +3799,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqNoErrorUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqNoErrorDoesNotUseInternalErrorValue"
         ]
       }
     },
@@ -3316,6 +3829,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqInternalErrorUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqInternalErrorDoesNotUseNoErrorValue"
         ]
       }
     },
@@ -3342,6 +3859,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqProtocolErrorUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqProtocolErrorDoesNotUseRequestCancelledValue"
         ]
       }
     },
@@ -3368,6 +3889,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqRequestCancelledUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqRequestCancelledDoesNotUseProtocolErrorValue"
         ]
       }
     },
@@ -3394,6 +3919,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqExcessiveLoadUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqExcessiveLoadDoesNotUseRequestCancelledValue"
         ]
       }
     },
@@ -3420,6 +3949,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqUnspecifiedErrorUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqUnspecifiedErrorDoesNotUseExcessiveLoadValue"
         ]
       }
     },
@@ -3446,6 +3979,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0001"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqErrorReservedUsesRegisteredValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs::DoqErrorReservedDoesNotUseAdjacentValue"
         ]
       }
     },
@@ -3472,6 +4009,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0015"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NotifyQueryPayloadIsClassifiedAsReplayable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable"
         ]
       }
     },
@@ -3498,6 +4039,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDefaultsToNoFallback",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDoesNotSelectFallbackTransport"
         ]
       }
     },
@@ -3524,6 +4069,13 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0087.cs::DoqOpportunisticFallbackTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0087.cs::DoqOpportunisticFallbackPolicyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDoesNotSelectFallbackTransport",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted"
         ]
       }
     },
@@ -3550,6 +4102,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff"
         ]
       }
     },
@@ -3576,6 +4134,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::FallbackCache_ClearAllowsRetry",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::KeyPinnedEndpointMayRetryDuringShortBackoffWindow",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff"
         ]
       }
     },
@@ -3602,6 +4165,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::FallbackCache_RecordsAndChecksBackoff",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::FallbackCache_DoesNotBackOffUnfailedEndpoint"
         ]
       }
     },
@@ -3628,6 +4195,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::FallbackCache_BackoffExpires",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::FallbackCache_RejectsNonPositiveBackoffPeriods"
         ]
       }
     },
@@ -3654,6 +4225,14 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0016"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0092.cs::DoqCleartextFallbackConservatismTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0092.cs::DoqCleartextFallbackPolicyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackRequiresExplicitCleartextPermission",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint"
         ]
       }
     },
@@ -3680,6 +4259,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0017"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::AmplificationLimitEnforcedByDefault",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRejectsOversizedZeroRttResponseByAmplificationLimit",
+          "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal"
         ]
       }
     },
@@ -3706,6 +4290,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0017"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::RetryPacketsEnabledByDefault",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::AddressValidationEnabledByDefault",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::RetryAndAddressValidationPolicyCanBeExplicitlyDisabled"
         ]
       }
     },
@@ -3731,6 +4320,10 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0018"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_PadsToBlockSize",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled"
         ]
       }
     },
@@ -3758,6 +4351,11 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0018"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_BlockSizeZeroDisabled",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_LeavesMalformedQuestionNameUnchanged",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_AddsPaddingOptionWithCorrectCode"
         ]
       }
     },
@@ -3783,6 +4381,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0018"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_AlreadyAlignedWithPadding",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_RespectsMaxPayloadLength",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::PadMessage_ReturnsOriginalWhenPaddingCannotFit",
+          "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit"
         ]
       }
     },
@@ -3808,8 +4412,12 @@
         ],
         "verified_by": [
           "VER-QUIC-RFC9250-0018"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0098.cs::DoqPaddingBenchmarkTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0098.cs::DoqPaddingBenchmarkSuiteIsTraceLinked"
         ]
       }
-    },
+    }
   ]
 }

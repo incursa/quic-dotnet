@@ -517,6 +517,20 @@ function Get-InteropRunnerTestCaseInventory {
         }
 
         [pscustomobject]@{
+            TestCase = 'handshakecorruption'
+            RunnerTestCase = 'handshakecorruption'
+            Classification = 'prerequisite-blocked'
+            Notes = 'Corruption diagnostic cell remains blocked after the upstream runner mapped it through a multiconnect-derived corruption flow and the preserved quic-go/chrome diagnostic failed with FRAME_ENCODING_ERROR/unknown frame evidence.'
+        }
+
+        [pscustomobject]@{
+            TestCase = 'transfercorruption'
+            RunnerTestCase = 'transfercorruption'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed transfer corruption cell with fresh quic-go/chrome runner proof under artifacts/interop-runner/20260611-094544073-client-chrome.'
+        }
+
+        [pscustomobject]@{
             TestCase = 'keyupdate'
             RunnerTestCase = 'keyupdate'
             Classification = 'supported-executed'
@@ -575,15 +589,15 @@ function Get-InteropRunnerTestCaseInventory {
         [pscustomobject]@{
             TestCase = 'rebind-port'
             RunnerTestCase = 'rebind-port'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT port rebinding; the internal path-state and endpoint-host socket rebinding prerequisites are already covered by the migration proof lane.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed NAT port rebinding cell with fresh quic-go/chrome runner proof under artifacts/interop-runner/20260611-085254961-direct-rebind-port-cid-warmup-tools-patched and qlog-backed PATH_CHALLENGE/PATH_RESPONSE evidence.'
         }
 
         [pscustomobject]@{
             TestCase = 'rebind-addr'
             RunnerTestCase = 'rebind-addr'
-            Classification = 'prerequisite-blocked'
-            Notes = 'Requires dedicated live runner proof and inventory promotion for NAT address rebinding; the runner analyzer shim validates server paths from the server trace once transfer proof is stable.'
+            Classification = 'supported-executed'
+            Notes = 'Supported/executed NAT address rebinding cell with fresh quic-go/chrome runner proof under artifacts/interop-runner/20260611-090616967-direct-rebind-addr-cid-warmup-tools-patched, 10 MiB transfer completion, three observed server paths, and qlog-backed PATH_CHALLENGE/PATH_RESPONSE evidence.'
         }
 
         [pscustomobject]@{
@@ -1679,11 +1693,39 @@ function Get-InteropRunnerFailureDiagnosticClassification {
     }
 
     $testCase = $TestCases[0]
-    if ($testCase -notin @('transfer', 'keyupdate', 'chacha20')) {
+    if ($testCase -notin @('transfer', 'keyupdate', 'chacha20', 'handshakecorruption')) {
         return $emptyClassification
     }
 
     if (-not (Test-Path -LiteralPath $RunnerLogDir)) {
+        return $emptyClassification
+    }
+
+    if ($testCase -eq 'handshakecorruption') {
+        $outputFiles = @(Get-ChildItem -LiteralPath $RunnerLogDir -Filter 'output.txt' -File -Recurse -ErrorAction SilentlyContinue)
+        foreach ($outputFile in $outputFiles) {
+            $outputPath = $outputFile.FullName.Replace('\', '/')
+            if ($outputPath.IndexOf('/handshakecorruption/', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                continue
+            }
+
+            $outputText = Get-Content -LiteralPath $outputFile.FullName -Raw
+            if ($outputText.IndexOf('testcase=multiconnect failed: unknown frame type', [System.StringComparison]::OrdinalIgnoreCase) -lt 0 -and
+                $outputText.IndexOf('FRAME_ENCODING_ERROR', [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+                continue
+            }
+
+            $frameTypeSummary = ''
+            $frameTypeMatch = [regex]::Match($outputText, 'unknown frame type\s+(?<type>0x[0-9a-fA-F]+)')
+            if ($frameTypeMatch.Success) {
+                $frameTypeSummary = " $($frameTypeMatch.Groups['type'].Value)"
+            }
+
+            return [pscustomobject]@{
+                Summary = "Diagnostic: handshakecorruption remains prerequisite-blocked. The upstream runner maps this cell through a multiconnect-derived corruption flow, and the preserved local client output shows FRAME_ENCODING_ERROR/unknown frame type$frameTypeSummary instead of a completed corrupted-handshake proof. Keep the cell failed and inspect packet authentication/discard evidence plus corruption-path frame handling before changing support classification."
+            }
+        }
+
         return $emptyClassification
     }
 
@@ -2172,11 +2214,20 @@ def _iter_qlog_events(self, vantage_point):
 def _client_qlog_frame_data(self, event_name, frame_type):
     values = set()
     for event in _iter_qlog_events(self, "client"):
+        if not isinstance(event, dict):
+            continue
+
         if event.get("name") != event_name:
             continue
 
         data = event.get("data", {})
+        if not isinstance(data, dict):
+            continue
+
         for frame in data.get("frames", []):
+            if not isinstance(frame, dict):
+                continue
+
             if frame.get("frame_type") == frame_type and "data" in frame:
                 values.add(frame["data"])
 

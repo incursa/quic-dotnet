@@ -84,6 +84,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTransportTlsBridgeState tlsState;
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
+    private readonly bool enableInitialPeerUsableConnectionId;
     private QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly bool allowClientPeerInitialReplacementBeforeTranscript;
@@ -553,7 +554,8 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
         bool enableServerEarlyData = false,
         QuicServerResumptionTicketStore? serverResumptionTicketStore = null,
         Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver = null,
-        int maximumInboundDatagramQueueSize = 1024)
+        int maximumInboundDatagramQueueSize = 1024,
+        bool enableInitialPeerUsableConnectionId = true)
     {
         this.clock = clock ?? new MonotonicClock();
         timeOriginTicks = this.clock.Ticks;
@@ -576,6 +578,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
 
         dormantDetachedResumptionTicketSnapshot = detachedResumptionTicketSnapshot;
         this.tlsKeyLogSecretObserver = tlsKeyLogSecretObserver;
+        this.enableInitialPeerUsableConnectionId = enableInitialPeerUsableConnectionId;
         tlsState = new QuicTransportTlsBridgeState(tlsRole);
         tlsBridgeDriver = new QuicTlsTransportBridgeDriver(
             tlsRole,

@@ -6,6 +6,7 @@
   "title": "DNS over QUIC RFC 9250 Response Ordering Verification Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
+  "purpose": "Record how independent DoQ stream dispatch satisfies response-ordering behavior by allowing faster streams to complete without waiting for slower zone-transfer streams.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0020",
@@ -19,8 +20,6 @@
   ],
   "design_summary": "The existing adapter architecture dispatches each stream independently in DoqServer.HandleQueryStreamAsync, ensuring that a slow zone transfer on one stream does not block another stream's response. This slice adds a verification test proving out-of-order response delivery.",
   "data_and_state_considerations": "No new adapter state or code changes required.",
-  "edge_cases_and_constraints": [],
-  "risks": [],
   "supplemental_sections": [
     {
       "heading": "Existing Architecture",

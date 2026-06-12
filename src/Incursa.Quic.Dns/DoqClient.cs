@@ -10,12 +10,15 @@ namespace Incursa.Quic.Dns;
 /// </summary>
 public sealed class DoqClient : IAsyncDisposable
 {
-    private readonly QuicConnection connection;
+    private readonly SemaphoreSlim connectionGate = new(1, 1);
     private readonly bool ownsConnection;
-    private readonly TimeSpan? advertisedIdleTimeout;
+    private readonly QuicClientConnectionOptions? reconnectOptions;
     private readonly string? endpoint;
+    private QuicConnection connection;
+    private TimeSpan? advertisedIdleTimeout;
     private CancellationTokenSource? inboundMonitorCts;
     private Task? inboundMonitorTask;
+    private CancellationTokenSource connectionFailureCts = new();
     private int disposed;
     private int unsolicitedResetCount;
     private long lastActivityTicks;
@@ -87,12 +90,20 @@ public sealed class DoqClient : IAsyncDisposable
     /// </summary>
     public TimeSpan IdleTimeoutMargin { get; set; } = DoqDefaults.DefaultIdleTimeoutMargin;
 
-    private DoqClient(QuicConnection connection, bool ownsConnection, TimeSpan? advertisedIdleTimeout = null, string? endpoint = null)
+    internal QuicConnection CurrentConnection => connection;
+
+    private DoqClient(
+        QuicConnection connection,
+        bool ownsConnection,
+        TimeSpan? advertisedIdleTimeout = null,
+        string? endpoint = null,
+        QuicClientConnectionOptions? reconnectOptions = null)
     {
         this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
         this.ownsConnection = ownsConnection;
         this.advertisedIdleTimeout = advertisedIdleTimeout;
         this.endpoint = endpoint;
+        this.reconnectOptions = reconnectOptions;
         lastActivityTicks = Stopwatch.GetTimestamp();
     }
 
@@ -108,7 +119,7 @@ public sealed class DoqClient : IAsyncDisposable
         TimeSpan advertisedTimeout = options.IdleTimeout;
         string? endpoint = options.RemoteEndPoint?.ToString();
         QuicConnection connection = await QuicConnection.ConnectAsync(options, cancellationToken).ConfigureAwait(false);
-        DoqClient client = new(connection, ownsConnection: true, advertisedTimeout, endpoint);
+        DoqClient client = new(connection, ownsConnection: true, advertisedTimeout, endpoint, options);
         client.StartInboundStreamMonitor();
         return client;
     }
@@ -118,6 +129,13 @@ public sealed class DoqClient : IAsyncDisposable
     /// </summary>
     public static DoqClient Attach(QuicConnection connection)
         => new(connection, ownsConnection: false);
+
+    /// <summary>
+    /// Returns a value indicating whether an address validation token may be used for
+    /// a connection attempt with the given session-resumption state.
+    /// </summary>
+    public bool CanUseAddressValidationToken(bool usingSessionResumption)
+        => !UseAddressValidationWithResumptionOnly || usingSessionResumption;
 
     /// <summary>
     /// Gets or sets the maximum time to wait for the server STREAM FIN after the response payload has been received.
@@ -142,7 +160,7 @@ public sealed class DoqClient : IAsyncDisposable
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
 
-        EnsureConnectionSafeOrThrow();
+        QuicConnection activeConnection = await EnsureConnectionSafeOrReconnectAsync(cancellationToken).ConfigureAwait(false);
 
         if (AllowZeroRtt && !DoqDefaults.IsReplayableQuery(query.Span))
         {
@@ -171,8 +189,15 @@ public sealed class DoqClient : IAsyncDisposable
             EnsureNotBackedOff();
         }
 
-        await using QuicStream stream = await connection
-            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
+        CancellationTokenSource activeConnectionFailureCts = connectionFailureCts;
+        ThrowIfConnectionFailed(activeConnectionFailureCts, this);
+        using CancellationTokenSource queryCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            activeConnectionFailureCts.Token);
+        CancellationToken queryCancellationToken = queryCts.Token;
+
+        await using QuicStream stream = await activeConnection
+            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, queryCancellationToken)
             .ConfigureAwait(false);
 
         Interlocked.Increment(ref activeQueryCount);
@@ -180,21 +205,14 @@ public sealed class DoqClient : IAsyncDisposable
         {
             byte[] outboundQuery = NormalizeQueryMessageId(query);
             outboundQuery = DoqPadding.PadMessage(outboundQuery, DoqDefaults.PaddingBlockSize);
-            await DoqStream.WriteMessageAndCompleteAsync(stream, outboundQuery, cancellationToken).ConfigureAwait(false);
+            await DoqStream.WriteMessageAndCompleteAsync(stream, outboundQuery, queryCancellationToken).ConfigureAwait(false);
 
-            ValueTask<DoqMessage> readTask = DoqStream.ReadSingleMessageUntilFinAsync(stream, cancellationToken);
-            DoqMessage response;
-            if (StreamFinTimeout.HasValue)
-            {
-                response = await readTask
-                    .AsTask()
-                    .WaitAsync(StreamFinTimeout.Value, cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            else
-            {
-                response = await readTask.ConfigureAwait(false);
-            }
+            ValueTask<DoqMessage> readTask = DoqStream.ReadSingleMessageUntilFinAsync(stream, queryCancellationToken);
+            DoqMessage response = await ReadResponseOrConnectionFailureAsync(
+                activeConnection,
+                readTask,
+                StreamFinTimeout,
+                queryCancellationToken).ConfigureAwait(false);
 
             ValidateZeroMessageId(response.Payload.Span, "response");
             lastActivityTicks = Stopwatch.GetTimestamp();
@@ -202,7 +220,7 @@ public sealed class DoqClient : IAsyncDisposable
         }
         catch (TimeoutException) when (StreamFinTimeout.HasValue)
         {
-            await CloseConnectionAsync(DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+            await CloseConnectionAsync(activeConnection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
             throw new DoqException(
                 DoqErrorCode.ProtocolError,
                 "The DoQ server did not signal STREAM FIN within the configured timeout after the response payload was received.");
@@ -212,19 +230,25 @@ public sealed class DoqClient : IAsyncDisposable
             AbortStreamRead(stream, DoqErrorCode.RequestCancelled);
             throw;
         }
+        catch (OperationCanceledException) when (activeConnectionFailureCts.IsCancellationRequested)
+        {
+            throw new DoqException(
+                DoqErrorCode.InternalError,
+                "The DoQ connection failed while a query was in progress.");
+        }
         catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
         {
             int count = Interlocked.Increment(ref unsolicitedResetCount);
             if (MaxUnsolicitedResets == 0 || count > MaxUnsolicitedResets)
             {
-                await CloseConnectionAsync(DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+                await CloseConnectionAsync(activeConnection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
             }
 
             throw new DoqException(DoqErrorCode.ProtocolError, "The DoQ response stream was aborted by the peer.");
         }
         catch (DoqException exception) when (exception.ErrorCode == DoqErrorCode.ProtocolError)
         {
-            await CloseConnectionAsync(DoqErrorCode.ProtocolError, cancellationToken).ConfigureAwait(false);
+            await CloseConnectionAsync(activeConnection, DoqErrorCode.ProtocolError, cancellationToken).ConfigureAwait(false);
             throw;
         }
         finally
@@ -241,33 +265,26 @@ public sealed class DoqClient : IAsyncDisposable
             return;
         }
 
-        if (ownsConnection && Volatile.Read(ref activeQueryCount) > 0)
+        await connectionGate.WaitAsync().ConfigureAwait(false);
+        try
         {
-            await AttemptNoErrorCloseAsync().ConfigureAwait(false);
-        }
-
-        if (inboundMonitorCts is not null)
-        {
-            await inboundMonitorCts.CancelAsync().ConfigureAwait(false);
-        }
-
-        if (inboundMonitorTask is not null)
-        {
-            try
+            QuicConnection currentConnection = connection;
+            if (ownsConnection && Volatile.Read(ref activeQueryCount) > 0)
             {
-                await inboundMonitorTask.ConfigureAwait(false);
+                SignalConnectionFailure();
+                await AttemptNoErrorCloseAsync(currentConnection).ConfigureAwait(false);
             }
-            catch (OperationCanceledException exception)
+
+            await StopInboundStreamMonitorAsync().ConfigureAwait(false);
+
+            if (ownsConnection)
             {
-                SuppressExpectedAbortException(exception);
+                await currentConnection.DisposeAsync().ConfigureAwait(false);
             }
         }
-
-        inboundMonitorCts?.Dispose();
-
-        if (ownsConnection)
+        finally
         {
-            await connection.DisposeAsync().ConfigureAwait(false);
+            connectionGate.Release();
         }
     }
 
@@ -282,31 +299,86 @@ public sealed class DoqClient : IAsyncDisposable
         }
 
         inboundMonitorCts = new CancellationTokenSource();
-        inboundMonitorTask = Task.Run(() => MonitorInboundStreamsAsync(inboundMonitorCts.Token));
+        QuicConnection monitoredConnection = connection;
+        inboundMonitorTask = Task.Run(() => MonitorInboundStreamsAsync(monitoredConnection, inboundMonitorCts.Token));
     }
 
-    private void EnsureConnectionSafeOrThrow()
+    private async ValueTask<QuicConnection> EnsureConnectionSafeOrReconnectAsync(CancellationToken cancellationToken)
+    {
+        if (!IsTooCloseToIdleTimeout())
+        {
+            return connection;
+        }
+
+        if (!ownsConnection || reconnectOptions is not { } options)
+        {
+            ThrowConnectionTooCloseToIdleTimeout();
+            throw new InvalidOperationException("The DoQ idle-time reconnect guard did not throw.");
+        }
+
+        await connectionGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+
+            if (!IsTooCloseToIdleTimeout())
+            {
+                return connection;
+            }
+
+            QuicConnection oldConnection = connection;
+            await StopInboundStreamMonitorAsync().ConfigureAwait(false);
+            await oldConnection.DisposeAsync().ConfigureAwait(false);
+
+            QuicConnection newConnection = await QuicConnection.ConnectAsync(options, cancellationToken).ConfigureAwait(false);
+            connection = newConnection;
+            advertisedIdleTimeout = options.IdleTimeout;
+            CancellationTokenSource previousFailureCts = connectionFailureCts;
+            connectionFailureCts = new CancellationTokenSource();
+            previousFailureCts.Dispose();
+            Volatile.Write(ref lastActivityTicks, Stopwatch.GetTimestamp());
+            Interlocked.Exchange(ref unsolicitedResetCount, 0);
+            StartInboundStreamMonitor();
+            return newConnection;
+        }
+        finally
+        {
+            connectionGate.Release();
+        }
+    }
+
+    private bool IsTooCloseToIdleTimeout()
     {
         if (IdleTimeoutMargin <= TimeSpan.Zero)
         {
-            return;
+            return false;
         }
 
         if (!advertisedIdleTimeout.HasValue || advertisedIdleTimeout.Value <= TimeSpan.Zero)
         {
-            return;
+            return false;
         }
 
         long elapsedTicks = Stopwatch.GetTimestamp() - Volatile.Read(ref lastActivityTicks);
         TimeSpan elapsed = TimeSpan.FromTicks(elapsedTicks * TimeSpan.TicksPerSecond / Stopwatch.Frequency);
         TimeSpan remaining = advertisedIdleTimeout.Value - elapsed;
 
-        if (remaining <= IdleTimeoutMargin)
+        return remaining <= IdleTimeoutMargin;
+    }
+
+    private void ThrowConnectionTooCloseToIdleTimeout()
+    {
+        TimeSpan remaining = TimeSpan.Zero;
+        if (advertisedIdleTimeout.HasValue && advertisedIdleTimeout.Value > TimeSpan.Zero)
         {
-            throw new DoqException(
-                DoqErrorCode.InternalError,
-                $"The DoQ connection is too close to its idle timeout ({remaining.TotalMilliseconds:F0}ms remaining, margin {IdleTimeoutMargin.TotalMilliseconds:F0}ms). Create a new DoqClient or increase the idle timeout.");
+            long elapsedTicks = Stopwatch.GetTimestamp() - Volatile.Read(ref lastActivityTicks);
+            TimeSpan elapsed = TimeSpan.FromTicks(elapsedTicks * TimeSpan.TicksPerSecond / Stopwatch.Frequency);
+            remaining = advertisedIdleTimeout.Value - elapsed;
         }
+
+        throw new DoqException(
+            DoqErrorCode.InternalError,
+            $"The DoQ connection is too close to its idle timeout ({remaining.TotalMilliseconds:F0}ms remaining, margin {IdleTimeoutMargin.TotalMilliseconds:F0}ms), and this client cannot establish a replacement connection.");
     }
 
     private void EnsureNotBackedOff()
@@ -336,11 +408,11 @@ public sealed class DoqClient : IAsyncDisposable
             $"DoQ is temporarily backed off for {endpoint}. Remaining backoff: {remaining.TotalSeconds:F0}s.");
     }
 
-    private async ValueTask AttemptNoErrorCloseAsync()
+    private async ValueTask AttemptNoErrorCloseAsync(QuicConnection targetConnection)
     {
         try
         {
-            await connection.CloseAsync((long)DoqErrorCode.NoError, CancellationToken.None).ConfigureAwait(false);
+            await targetConnection.CloseAsync((long)DoqErrorCode.NoError, CancellationToken.None).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is InvalidOperationException or ObjectDisposedException or QuicException)
         {
@@ -378,12 +450,17 @@ public sealed class DoqClient : IAsyncDisposable
         }
     }
 
-    private async ValueTask CloseConnectionAsync(DoqErrorCode errorCode, CancellationToken cancellationToken)
+    private async ValueTask CloseConnectionAsync(QuicConnection targetConnection, DoqErrorCode errorCode, CancellationToken cancellationToken)
     {
+        if (ReferenceEquals(targetConnection, connection))
+        {
+            SignalConnectionFailure();
+        }
+
         try
         {
-            await connection.CloseAsync((long)errorCode, cancellationToken).ConfigureAwait(false);
-            await connection.DisposeAsync().ConfigureAwait(false);
+            await targetConnection.CloseAsync((long)errorCode, cancellationToken).ConfigureAwait(false);
+            await targetConnection.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is InvalidOperationException or ObjectDisposedException or QuicException)
         {
@@ -391,15 +468,74 @@ public sealed class DoqClient : IAsyncDisposable
         }
     }
 
-    private async Task MonitorInboundStreamsAsync(CancellationToken cancellationToken)
+    private async ValueTask<DoqMessage> ReadResponseOrConnectionFailureAsync(
+        QuicConnection activeConnection,
+        ValueTask<DoqMessage> readTask,
+        TimeSpan? streamFinTimeout,
+        CancellationToken cancellationToken)
+    {
+        using CancellationTokenSource terminalWaitCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        Task<DoqMessage> responseTask = readTask.AsTask();
+        Task connectionFailureTask = WaitForConnectionFailureStateAsync(
+            activeConnection,
+            terminalWaitCts.Token);
+        Task delayTask = streamFinTimeout.HasValue
+            ? Task.Delay(streamFinTimeout.Value, terminalWaitCts.Token)
+            : Task.Delay(Timeout.InfiniteTimeSpan, terminalWaitCts.Token);
+
+        Task completedTask = await Task
+            .WhenAny(responseTask, connectionFailureTask, delayTask)
+            .ConfigureAwait(false);
+
+        if (completedTask == connectionFailureTask)
+        {
+            await connectionFailureTask.ConfigureAwait(false);
+            SignalConnectionFailure();
+            throw new DoqException(
+                DoqErrorCode.InternalError,
+                "The DoQ connection failed while a query was in progress.");
+        }
+
+        if (completedTask == delayTask)
+        {
+            await delayTask.ConfigureAwait(false);
+            throw new TimeoutException();
+        }
+
+        try
+        {
+            return await responseTask.ConfigureAwait(false);
+        }
+        finally
+        {
+            await terminalWaitCts.CancelAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async Task MonitorInboundStreamsAsync(QuicConnection monitoredConnection, CancellationToken cancellationToken)
     {
         try
         {
-            QuicStream inboundStream = await connection
+            Task<QuicStream> acceptInboundStreamTask = monitoredConnection
                 .AcceptInboundStreamAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .AsTask();
+            Task connectionFailureTask = WaitForConnectionFailureStateAsync(
+                monitoredConnection,
+                cancellationToken);
 
-            await CloseConnectionAsync(DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+            Task completedTask = await Task
+                .WhenAny(acceptInboundStreamTask, connectionFailureTask)
+                .ConfigureAwait(false);
+            if (completedTask == connectionFailureTask)
+            {
+                await connectionFailureTask.ConfigureAwait(false);
+                SignalConnectionFailure();
+                return;
+            }
+
+            QuicStream inboundStream = await acceptInboundStreamTask.ConfigureAwait(false);
+
+            await CloseConnectionAsync(monitoredConnection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
             await inboundStream.DisposeAsync().ConfigureAwait(false);
         }
         catch (OperationCanceledException exception)
@@ -414,6 +550,67 @@ public sealed class DoqClient : IAsyncDisposable
         {
             SuppressExpectedAbortException(exception);
         }
+    }
+
+    private async ValueTask StopInboundStreamMonitorAsync()
+    {
+        if (inboundMonitorCts is not null)
+        {
+            await inboundMonitorCts.CancelAsync().ConfigureAwait(false);
+        }
+
+        if (inboundMonitorTask is not null)
+        {
+            try
+            {
+                await inboundMonitorTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException exception)
+            {
+                SuppressExpectedAbortException(exception);
+            }
+        }
+
+        inboundMonitorCts?.Dispose();
+        inboundMonitorCts = null;
+        inboundMonitorTask = null;
+    }
+
+    private static async Task WaitForConnectionFailureStateAsync(
+        QuicConnection monitoredConnection,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (monitoredConnection.Runtime.IsDisposed
+                || monitoredConnection.Runtime.TerminalState is not null
+                || monitoredConnection.Runtime.Phase is QuicConnectionPhase.Closing
+                    or QuicConnectionPhase.Draining
+                    or QuicConnectionPhase.Discarded)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private void SignalConnectionFailure()
+    {
+        try
+        {
+            connectionFailureCts.Cancel();
+        }
+        catch (ObjectDisposedException exception)
+        {
+            SuppressExpectedAbortException(exception);
+        }
+    }
+
+    private static void ThrowIfConnectionFailed(CancellationTokenSource failureCts, DoqClient client)
+    {
+        ObjectDisposedException.ThrowIf(failureCts.IsCancellationRequested, client);
     }
 
     private static void AbortStreamRead(QuicStream stream, DoqErrorCode errorCode)

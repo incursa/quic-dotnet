@@ -341,6 +341,25 @@ internal sealed partial class QuicConnectionRuntime
             out Exception? payloadException))
         {
             QuicBufferPool.ReturnBytes(streamPayload);
+            if (IsTransientCongestionExhaustion(payloadException))
+            {
+                if (!streamRegistry.Bookkeeping.TryOpenLocalStream(bidirectional, out QuicStreamId congestionCommittedStreamId, out QuicStreamsBlockedFrame congestionCommittedBlockedFrame))
+                {
+                    _ = congestionCommittedBlockedFrame;
+                    openCompletion!.TrySetException(new InvalidOperationException("The connection runtime could not commit the stream open."));
+                    return true;
+                }
+
+                if (congestionCommittedStreamId.Value != streamId.Value)
+                {
+                    openCompletion!.TrySetException(new InvalidOperationException("The connection runtime committed an unexpected outbound stream identifier."));
+                    return true;
+                }
+
+                openCompletion!.TrySetResult(congestionCommittedStreamId.Value);
+                return true;
+            }
+
             openCompletion!.TrySetException(payloadException!);
             return true;
         }
@@ -4933,6 +4952,12 @@ internal sealed partial class QuicConnectionRuntime
             return false;
         }
 
+        NotifyStreamObservers(
+            stopSendingFrame.StreamId,
+            new QuicStreamNotification(
+                QuicStreamNotificationKind.WriteAborted,
+                CreateStreamWriteAbortedException(stopSendingFrame.ApplicationProtocolErrorCode)));
+
         if (!TryBuildOutboundResetPayload(
             resetStreamFrame.StreamId,
             resetStreamFrame.ApplicationProtocolErrorCode,
@@ -4964,12 +4989,6 @@ internal sealed partial class QuicConnectionRuntime
         AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
             currentPath.Identity,
             protectedPacket));
-
-        NotifyStreamObservers(
-            stopSendingFrame.StreamId,
-            new QuicStreamNotification(
-                QuicStreamNotificationKind.WriteAborted,
-                CreateStreamWriteAbortedException(stopSendingFrame.ApplicationProtocolErrorCode)));
 
         TryReleasePeerStreamCapacity(stopSendingFrame.StreamId, ref effects);
         return true;

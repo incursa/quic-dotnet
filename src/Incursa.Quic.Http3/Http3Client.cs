@@ -13,15 +13,23 @@ namespace Incursa.Quic.Http3;
 public sealed class Http3Client : IAsyncDisposable
 {
     private const int RequiredPeerUnidirectionalStreamCount = 3;
+    private const ulong ClientInitiatedBidirectionalStreamIdMask = 0x03UL;
+    private const ulong ClientInitiatedBidirectionalStreamIdStride = 4;
     private const string MethodGet = "GET";
     private readonly QuicConnection connection;
     private readonly Http3Settings localSettings;
     private readonly string? userAgent;
     private readonly int readBufferSize;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
+    private readonly Http3StreamDispatcher peerStreamDispatcher = new(Http3EndpointRole.Client);
+    private readonly object peerStreamDispatcherGate = new();
+    private readonly CancellationTokenSource peerStreamObserverCancellation = new();
     private QuicStream? controlStream;
     private QuicStream? qpackEncoderStream;
     private QuicStream? qpackDecoderStream;
+    private Task? peerStreamObserverTask;
+    private ulong nextClientRequestStreamId;
+    private ulong? peerGoAwayStreamId;
     private int disposed;
 
     private Http3Client(QuicConnection connection, Http3ClientOptions options)
@@ -115,6 +123,8 @@ public sealed class Http3Client : IAsyncDisposable
             throw new ArgumentException("The HTTP/3 request URI must be absolute.", nameof(requestUri));
         }
 
+        ThrowIfPeerGoAwayRejectsNextRequest();
+
         long requestStartedTimestamp = 0;
         bool requestStarted = false;
         try
@@ -132,6 +142,7 @@ public sealed class Http3Client : IAsyncDisposable
             await using QuicStream requestStream = await connection
                 .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
                 .ConfigureAwait(false);
+            RecordOpenedClientRequestStream(checked((ulong)requestStream.Id));
 
             Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
             {
@@ -187,6 +198,19 @@ public sealed class Http3Client : IAsyncDisposable
             return;
         }
 
+        await peerStreamObserverCancellation.CancelAsync().ConfigureAwait(false);
+        if (peerStreamObserverTask is not null)
+        {
+            try
+            {
+                await peerStreamObserverTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException exception)
+            {
+                SuppressExpectedException(exception);
+            }
+        }
+
         if (qpackDecoderStream is not null)
         {
             await qpackDecoderStream.DisposeAsync().ConfigureAwait(false);
@@ -207,6 +231,7 @@ public sealed class Http3Client : IAsyncDisposable
             Role = "client",
         });
         await connection.DisposeAsync().ConfigureAwait(false);
+        peerStreamObserverCancellation.Dispose();
     }
 
     private static void EnsureHttp3Alpn(QuicClientConnectionOptions quicOptions)
@@ -288,6 +313,311 @@ public sealed class Http3Client : IAsyncDisposable
             StreamId = qpackDecoderStream.Id,
             StreamKind = Http3StreamKind.QPackDecoder,
             QPackInstruction = "stream_type",
+        });
+
+        StartPeerUnidirectionalStreamObserver();
+    }
+
+    private void StartPeerUnidirectionalStreamObserver()
+    {
+        if (peerStreamObserverTask is not null)
+        {
+            return;
+        }
+
+        peerStreamObserverTask = Task.Run(
+            () => ObservePeerUnidirectionalStreamsAsync(peerStreamObserverCancellation.Token));
+    }
+
+    private async Task ObservePeerUnidirectionalStreamsAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            QuicStream stream;
+            try
+            {
+                stream = await connection.AcceptInboundStreamAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+            {
+                SuppressExpectedException(exception);
+                break;
+            }
+            catch (ObjectDisposedException exception) when (Volatile.Read(ref disposed) != 0)
+            {
+                SuppressExpectedException(exception);
+                break;
+            }
+            catch (QuicException exception)
+            {
+                SuppressExpectedException(exception);
+                break;
+            }
+
+            if (stream.Type != QuicStreamType.Unidirectional)
+            {
+                _ = RejectPeerBidirectionalStreamAsync(stream);
+                continue;
+            }
+
+            _ = ObservePeerUnidirectionalStreamAsync(stream, cancellationToken);
+        }
+    }
+
+    private async Task RejectPeerBidirectionalStreamAsync(QuicStream stream)
+    {
+        await using (stream.ConfigureAwait(false))
+        {
+            try
+            {
+                lock (peerStreamDispatcherGate)
+                {
+                    peerStreamDispatcher.RegisterBidirectionalStream(checked((ulong)stream.Id));
+                }
+            }
+            catch (Http3Exception exception)
+            {
+                EmitError(exception);
+            }
+        }
+    }
+
+    private async Task ObservePeerUnidirectionalStreamAsync(
+        QuicStream stream,
+        CancellationToken cancellationToken)
+    {
+        await using (stream.ConfigureAwait(false))
+        {
+            byte[] buffer = new byte[readBufferSize];
+            byte[] pendingStreamType = [];
+            Http3StreamKind streamKind = Http3StreamKind.Unknown;
+            try
+            {
+                lock (peerStreamDispatcherGate)
+                {
+                    peerStreamDispatcher.RegisterUnidirectionalStream(checked((ulong)stream.Id));
+                }
+
+                while (true)
+                {
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                    {
+                        lock (peerStreamDispatcherGate)
+                        {
+                            peerStreamDispatcher.ReceiveUnidirectionalStreamTypeBytes(
+                                checked((ulong)stream.Id),
+                                pendingStreamType,
+                                endOfStream: true);
+                        }
+
+                        return;
+                    }
+
+                    pendingStreamType = Append(pendingStreamType, buffer.AsSpan(0, bytesRead));
+                    if (!Http3VariableLengthInteger.TryParse(pendingStreamType, out _, out int bytesConsumed))
+                    {
+                        continue;
+                    }
+
+                    byte[] streamTypeBytes = pendingStreamType.AsSpan(0, bytesConsumed).ToArray();
+                    byte[] initialPayload = pendingStreamType.AsSpan(bytesConsumed).ToArray();
+                    Http3StreamInfo streamInfo;
+                    lock (peerStreamDispatcherGate)
+                    {
+                        streamInfo = peerStreamDispatcher.ReceiveUnidirectionalStreamTypeBytes(
+                            checked((ulong)stream.Id),
+                            streamTypeBytes);
+                    }
+
+                    streamKind = streamInfo.Kind;
+                    Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+                    {
+                        Role = "client",
+                        StreamId = stream.Id,
+                        StreamKind = streamKind,
+                    });
+
+                    await ObservePeerUnidirectionalPayloadAsync(
+                        stream,
+                        streamKind,
+                        initialPayload,
+                        buffer,
+                        cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+            }
+            catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+            {
+                SuppressExpectedException(exception);
+            }
+            catch (ObjectDisposedException exception) when (Volatile.Read(ref disposed) != 0)
+            {
+                SuppressExpectedException(exception);
+            }
+            catch (QuicException exception)
+            {
+                SuppressExpectedException(exception);
+            }
+            catch (Http3Exception exception)
+            {
+                EmitError(exception);
+            }
+            finally
+            {
+                Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamClosed)
+                {
+                    Role = "client",
+                    StreamId = stream.Id,
+                    StreamKind = streamKind,
+                });
+            }
+        }
+    }
+
+    private async ValueTask ObservePeerUnidirectionalPayloadAsync(
+        QuicStream stream,
+        Http3StreamKind streamKind,
+        byte[] initialPayload,
+        byte[] buffer,
+        CancellationToken cancellationToken)
+    {
+        switch (streamKind)
+        {
+            case Http3StreamKind.Control:
+                await ObservePeerControlStreamAsync(
+                    stream,
+                    initialPayload,
+                    buffer,
+                    cancellationToken).ConfigureAwait(false);
+                break;
+            case Http3StreamKind.QPackEncoder:
+            case Http3StreamKind.QPackDecoder:
+                await DrainPeerQPackStreamAsync(stream, streamKind, initialPayload, buffer, cancellationToken).ConfigureAwait(false);
+                break;
+            case Http3StreamKind.Unknown:
+            case Http3StreamKind.Reserved:
+                await DrainPeerUnidirectionalStreamAsync(stream, buffer, cancellationToken).ConfigureAwait(false);
+                break;
+            case Http3StreamKind.Push:
+            case Http3StreamKind.Request:
+            default:
+                throw new Http3Exception(Http3ErrorCode.StreamCreationError, "The HTTP/3 unidirectional stream type is invalid for this endpoint.");
+        }
+    }
+
+    private async ValueTask ObservePeerControlStreamAsync(
+        QuicStream stream,
+        byte[] initialPayload,
+        byte[] buffer,
+        CancellationToken cancellationToken)
+    {
+        Http3FrameReader frameReader = new();
+        ProcessPeerControlBytes(frameReader, initialPayload, stream.Id);
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                ProcessPeerControlFrames(frameReader.Complete(), stream.Id);
+                return;
+            }
+
+            ProcessPeerControlBytes(frameReader, buffer.AsSpan(0, bytesRead), stream.Id);
+        }
+    }
+
+    private async ValueTask DrainPeerQPackStreamAsync(
+        QuicStream stream,
+        Http3StreamKind streamKind,
+        byte[] initialPayload,
+        byte[] buffer,
+        CancellationToken cancellationToken)
+    {
+        EmitQPackBytesReceived(stream.Id, streamKind, initialPayload.Length);
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                return;
+            }
+
+            EmitQPackBytesReceived(stream.Id, streamKind, bytesRead);
+        }
+    }
+
+    private static async ValueTask DrainPeerUnidirectionalStreamAsync(
+        QuicStream stream,
+        byte[] buffer,
+        CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                return;
+            }
+        }
+    }
+
+    private void ProcessPeerControlBytes(
+        Http3FrameReader frameReader,
+        ReadOnlySpan<byte> bytes,
+        long streamId)
+    {
+        if (bytes.IsEmpty)
+        {
+            return;
+        }
+
+        ProcessPeerControlFrames(frameReader.Read(bytes), streamId);
+    }
+
+    private void ProcessPeerControlFrames(
+        IEnumerable<Http3Frame> frames,
+        long streamId)
+    {
+        foreach (Http3Frame frame in frames)
+        {
+            lock (peerStreamDispatcherGate)
+            {
+                peerStreamDispatcher.ReceiveFrame(checked((ulong)streamId), frame);
+            }
+
+            EmitFrame(Http3DiagnosticKind.FrameReceived, streamId, frame);
+            switch (frame)
+            {
+                case Http3SettingsFrame:
+                    Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.SettingsReceived)
+                    {
+                        Role = "client",
+                        StreamId = streamId,
+                    });
+                    break;
+                case Http3GoAwayFrame goAwayFrame:
+                    RecordPeerGoAway(goAwayFrame.StreamOrPushId);
+                    break;
+            }
+        }
+    }
+
+    private void EmitQPackBytesReceived(long streamId, Http3StreamKind streamKind, int payloadLength)
+    {
+        if (payloadLength == 0)
+        {
+            return;
+        }
+
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.QPackInstructionReceived)
+        {
+            Role = "client",
+            StreamId = streamId,
+            StreamKind = streamKind,
+            PayloadLength = payloadLength,
+            QPackInstruction = "bytes",
         });
     }
 
@@ -476,6 +806,44 @@ public sealed class Http3Client : IAsyncDisposable
         diagnosticsSink.Emit(diagnosticEvent);
     }
 
+    private void ThrowIfPeerGoAwayRejectsNextRequest()
+    {
+        lock (peerStreamDispatcherGate)
+        {
+            if (peerGoAwayStreamId.HasValue && nextClientRequestStreamId >= peerGoAwayStreamId.Value)
+            {
+                throw new Http3Exception(Http3ErrorCode.RequestRejected, "The HTTP/3 peer has sent GOAWAY for new request streams.");
+            }
+        }
+    }
+
+    private void RecordOpenedClientRequestStream(ulong streamId)
+    {
+        lock (peerStreamDispatcherGate)
+        {
+            ulong nextStreamId = checked(streamId + ClientInitiatedBidirectionalStreamIdStride);
+            if (nextStreamId > nextClientRequestStreamId)
+            {
+                nextClientRequestStreamId = nextStreamId;
+            }
+        }
+    }
+
+    private void RecordPeerGoAway(ulong streamOrPushId)
+    {
+        if ((streamOrPushId & ClientInitiatedBidirectionalStreamIdMask) != 0)
+        {
+            throw new Http3Exception(Http3ErrorCode.IdError, "The HTTP/3 server GOAWAY frame carried an invalid client request stream ID.");
+        }
+
+        lock (peerStreamDispatcherGate)
+        {
+            peerGoAwayStreamId = peerGoAwayStreamId.HasValue
+                ? Math.Min(peerGoAwayStreamId.Value, streamOrPushId)
+                : streamOrPushId;
+        }
+    }
+
     private static string BuildAuthority(Uri requestUri)
     {
         if (requestUri.IsDefaultPort)
@@ -518,5 +886,23 @@ public sealed class Http3Client : IAsyncDisposable
         }
 
         return destination[..bytesWritten].ToArray();
+    }
+
+    private static byte[] Append(byte[] pending, ReadOnlySpan<byte> source)
+    {
+        if (source.IsEmpty)
+        {
+            return pending;
+        }
+
+        byte[] combined = new byte[pending.Length + source.Length];
+        pending.CopyTo(combined, 0);
+        source.CopyTo(combined.AsSpan(pending.Length));
+        return combined;
+    }
+
+    private static void SuppressExpectedException(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
     }
 }

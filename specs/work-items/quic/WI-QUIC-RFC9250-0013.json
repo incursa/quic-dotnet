@@ -21,8 +21,8 @@
     "REQ-QUIC-RFC9250-0082",
     "REQ-QUIC-RFC9250-0083"
   ],
-  "summary": "Add DNS opcode replayability classification, client 0-RTT gating, and server 0-RTT transaction queue with limit.",
-  "planned_changes": "- Add DoqDefaults.IsReplayableOpcode static method classifying OPCODE 0 (QUERY) and 4 (NOTIFY) as replayable.\n- Add DoqClient.AllowZeroRtt property; catch non-replayable opcodes in QueryAsync when AllowZeroRtt is true.\n- Add DoqQueryContext.IsZeroRtt property for server-side 0-RTT signal (default false, transport placeholder).\n- Add DoqServerOptions.MaxQueuedZeroRttTransactions for server-side queue limit.\n- Add server 0-RTT handling pathway that queues non-replayable 0-RTT queries and responds REFUSED+EDE Too Early.\n- Add focused unit and integration tests.",
+  "summary": "Add DNS opcode replayability classification, client 0-RTT gating, and server non-replayable 0-RTT refusal when an early-data signal is supplied.",
+  "planned_changes": "- Add DoqDefaults.IsReplayableOpcode static method classifying OPCODE 0 (QUERY) and 4 (NOTIFY) as replayable.\n- Add DoqClient.AllowZeroRtt property; catch non-replayable opcodes in QueryAsync when AllowZeroRtt is true.\n- Add DoqQueryContext.IsZeroRtt property for server-side 0-RTT signal (default false).\n- Add DoqServerOptions.ZeroRttStreamDetector as the adapter seam for a hosting layer or future transport integration to supply early-data state.\n- Add server 0-RTT handling pathway that responds to non-replayable 0-RTT queries with REFUSED+EDE Too Early before handler dispatch.\n- Add focused unit and integration tests.",
   "verification_plan": "Run DoQ foundation tests, stream lifecycle tests, core SpecTrace JSON validation, and diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9250-0013"
@@ -35,5 +35,5 @@
     "Residual/security documentation (slice 0015).",
     "Wire-level transport 0-RTT state exposure (future slice)."
   ],
-  "completion_notes": "All 8 REQs are now traced and verified. Opcode classification, client gating, and server queue handling are implemented."
+  "completion_notes": "All 8 REQs are now traced and verified at the adapter-policy layer. Opcode classification, client gating, and server REFUSED+EDE Too Early handling for signaled non-replayable 0-RTT are implemented. Transport-native early-data detection remains outside this slice until the transport API exposes that state."
 }

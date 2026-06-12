@@ -12,6 +12,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0002">The library now exposes the server-side listener entry surface through QuicListener.ListenAsync(QuicListenerOptions, CancellationToken) and QuicListener.AcceptConnectionAsync(CancellationToken), and it exposes the first honest client entry surface through QuicConnection.ConnectAsync(QuicClientConnectionOptions, CancellationToken).</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0002")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0002
 {
     [Fact]

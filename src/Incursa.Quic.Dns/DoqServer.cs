@@ -8,6 +8,9 @@ namespace Incursa.Quic.Dns;
 /// </summary>
 public sealed class DoqServer : IAsyncDisposable
 {
+    private static readonly TimeSpan ImmediateCancellationObservationDelay = TimeSpan.FromMilliseconds(250);
+    private static readonly TimeSpan DeferredCancellationObservationDelay = TimeSpan.FromSeconds(5);
+
     private readonly QuicListener listener;
     private readonly IDoqQueryHandler handler;
     private readonly DoqServerOptions options;
@@ -150,6 +153,7 @@ public sealed class DoqServer : IAsyncDisposable
                 if (!resourceState.TryRegisterDanglingStream())
                 {
                     await CloseConnectionAsync(connection, DoqErrorCode.ExcessiveLoad, CancellationToken.None).ConfigureAwait(false);
+                    await Task.Yield();
                     await connectionCancellation.CancelAsync().ConfigureAwait(false);
                     await stream.DisposeAsync().ConfigureAwait(false);
                     break;
@@ -172,99 +176,198 @@ public sealed class DoqServer : IAsyncDisposable
         CancellationTokenSource connectionCancellation)
     {
         CancellationToken cancellationToken = connectionCancellation.Token;
-        await using (stream.ConfigureAwait(false))
+        Task? writeAbort = null;
+        try
         {
-            try
+            DoqMessage query = await DoqStream.ReadSingleMessageUntilFinAsync(stream, cancellationToken).ConfigureAwait(false);
+
+            // REQ-0041: check for STOP_SENDING before dispatching the query
+            writeAbort = stream.WaitForWriteAbortAsync(CancellationToken.None);
+            if (await TryHandlePeerCancellationAsync(
+                    connection,
+                    stream,
+                    resourceState,
+                    connectionCancellation,
+                    writeAbort,
+                    observationDelay: null).ConfigureAwait(false))
             {
-                DoqMessage query = await DoqStream.ReadSingleMessageUntilFinAsync(stream, cancellationToken).ConfigureAwait(false);
-
-                // REQ-0041: check for STOP_SENDING before dispatching the query
-                Task writeAbort = stream.WaitForWriteAbortAsync(CancellationToken.None);
-                if (writeAbort.IsCompleted)
-                {
-                    await writeAbort.ConfigureAwait(false);
-                    return;
-                }
-
-                ValidateZeroMessageId(query.Payload.Span, "query");
-
-                DoqQueryContext context = new(stream.Id, query.Payload);
-
-                // REQ-0076/0080: 0-RTT replay protection
-                if (context.IsZeroRtt && !DoqDefaults.IsReplayableQuery(query.Payload.Span))
-                {
-                    if (options.MaxQueuedZeroRttTransactions > 0)
-                    {
-                        await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
-                        await Task.Yield();
-                        await connectionCancellation.CancelAsync().ConfigureAwait(false);
-                        return;
-                    }
-
-                    byte[] refused = DoqDefaults.BuildRefusedWithTooEarlyResponse(query.Payload.Span);
-                    await DoqStream.WriteMessageAndCompleteAsync(stream, refused, cancellationToken).ConfigureAwait(false);
-                    return;
-                }
-
-                DoqQueryResult result = await handler
-                    .HandleAsync(context, cancellationToken)
-                    .ConfigureAwait(false);
-
-                if (writeAbort.IsCompleted)
-                {
-                    await writeAbort.ConfigureAwait(false);
-                    return;
-                }
-
-                // REQ-0093: amplification limit enforcement
-                if (options.EnforceAmplificationLimit && context.IsZeroRtt)
-                {
-                    int maxResponseSize = query.Payload.Length * 3;
-                    if (result.Response.Length > maxResponseSize)
-                    {
-                        throw new DoqException(
-                            DoqErrorCode.ProtocolError,
-                            $"The response size ({result.Response.Length} bytes) exceeds the 3x amplification limit ({maxResponseSize} bytes) for the query.");
-                    }
-                }
-
-                byte[] paddedResponse = DoqPadding.PadMessage(result.Response.Span, options.PaddingBlockSize);
-                await DoqStream.WriteMessageAndCompleteAsync(stream, paddedResponse, cancellationToken).ConfigureAwait(false);
+                return;
             }
-            catch (DoqException exception)
-            {
-                AbortStreamWrite(stream, exception.ErrorCode);
 
-                if (exception.ErrorCode == DoqErrorCode.ProtocolError)
+            ValidateZeroMessageId(query.Payload.Span, "query");
+
+            DoqQueryContext context = new(stream.Id, query.Payload)
+            {
+                IsZeroRtt = options.ZeroRttStreamDetector?.Invoke(connection, stream) ?? false,
+            };
+
+            // REQ-0082/0083: 0-RTT replay protection
+            if (context.IsZeroRtt && !DoqDefaults.IsReplayableQuery(query.Payload.Span))
+            {
+                if (options.MaxQueuedZeroRttTransactions > 0)
                 {
                     await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
                     await Task.Yield();
                     await connectionCancellation.CancelAsync().ConfigureAwait(false);
-                }
-            }
-            catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
-            {
-                if (!resourceState.TryRegisterCancellation())
-                {
-                    await CloseConnectionAsync(connection, DoqErrorCode.ExcessiveLoad, CancellationToken.None).ConfigureAwait(false);
-                    await connectionCancellation.CancelAsync().ConfigureAwait(false);
+                    return;
                 }
 
-                AbortStreamWrite(stream, DoqErrorCode.RequestCancelled);
+                byte[] refused = DoqDefaults.BuildRefusedWithTooEarlyResponse(query.Payload.Span);
+                await DoqStream.WriteMessageAndCompleteAsync(stream, refused, cancellationToken).ConfigureAwait(false);
+                return;
             }
-            catch (Exception exception) when (exception is not OperationCanceledException)
+
+            DoqQueryResult result = await handler
+                .HandleAsync(context, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (await TryHandlePeerCancellationAsync(
+                    connection,
+                    stream,
+                    resourceState,
+                    connectionCancellation,
+                    writeAbort,
+                    observationDelay: resourceState.CancellationLimitEnabled
+                        ? ImmediateCancellationObservationDelay
+                        : null).ConfigureAwait(false))
             {
-                AbortStreamWrite(stream, DoqErrorCode.InternalError);
+                return;
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+
+            // REQ-0093: amplification limit enforcement
+            if (options.EnforceAmplificationLimit && context.IsZeroRtt)
             {
-                SuppressExpectedAbortException(new OperationCanceledException(cancellationToken));
+                int maxResponseSize = query.Payload.Length * 3;
+                if (result.Response.Length > maxResponseSize)
+                {
+                    throw new DoqException(
+                        DoqErrorCode.ProtocolError,
+                        $"The response size ({result.Response.Length} bytes) exceeds the 3x amplification limit ({maxResponseSize} bytes) for the query.");
+                }
             }
-            finally
+
+            byte[] paddedResponse = DoqPadding.PadMessage(result.Response.Span, options.PaddingBlockSize);
+            await DoqStream.WriteMessageAndCompleteAsync(stream, paddedResponse, cancellationToken).ConfigureAwait(false);
+        }
+        catch (DoqException exception)
+        {
+            AbortStreamWrite(stream, exception.ErrorCode);
+
+            if (exception.ErrorCode == DoqErrorCode.ProtocolError)
             {
-                resourceState.ReleaseDanglingStream();
+                await CloseConnectionAsync(connection, DoqErrorCode.ProtocolError, CancellationToken.None).ConfigureAwait(false);
+                await Task.Yield();
+                await connectionCancellation.CancelAsync().ConfigureAwait(false);
             }
         }
+        catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
+        {
+            await HandlePeerCancellationAsync(connection, stream, resourceState, connectionCancellation).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            AbortStreamWrite(stream, DoqErrorCode.InternalError);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            SuppressExpectedAbortException(new OperationCanceledException(cancellationToken));
+        }
+        finally
+        {
+            resourceState.ReleaseDanglingStream();
+            if (writeAbort is not null
+                && resourceState.CancellationLimitEnabled
+                && !writeAbort.IsCompleted
+                && !connectionCancellation.IsCancellationRequested)
+            {
+                _ = ObservePeerCancellationAndDisposeAsync(
+                    connection,
+                    stream,
+                    resourceState,
+                    connectionCancellation,
+                    writeAbort);
+            }
+            else
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    private static async ValueTask<bool> TryHandlePeerCancellationAsync(
+        QuicConnection connection,
+        QuicStream stream,
+        ConnectionResourceState resourceState,
+        CancellationTokenSource connectionCancellation,
+        Task writeAbort,
+        TimeSpan? observationDelay)
+    {
+        if (!writeAbort.IsCompleted && observationDelay.HasValue)
+        {
+            Task completed = await Task
+                .WhenAny(writeAbort, Task.Delay(observationDelay.Value, connectionCancellation.Token))
+                .ConfigureAwait(false);
+            if (completed != writeAbort)
+            {
+                return false;
+            }
+        }
+
+        if (!writeAbort.IsCompleted)
+        {
+            return false;
+        }
+
+        try
+        {
+            await writeAbort.ConfigureAwait(false);
+            return false;
+        }
+        catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
+        {
+            await HandlePeerCancellationAsync(connection, stream, resourceState, connectionCancellation).ConfigureAwait(false);
+            return true;
+        }
+    }
+
+    private static async Task ObservePeerCancellationAndDisposeAsync(
+        QuicConnection connection,
+        QuicStream stream,
+        ConnectionResourceState resourceState,
+        CancellationTokenSource connectionCancellation,
+        Task writeAbort)
+    {
+        try
+        {
+            await TryHandlePeerCancellationAsync(
+                    connection,
+                    stream,
+                    resourceState,
+                    connectionCancellation,
+                    writeAbort,
+                    DeferredCancellationObservationDelay)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            await stream.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static async ValueTask HandlePeerCancellationAsync(
+        QuicConnection connection,
+        QuicStream stream,
+        ConnectionResourceState resourceState,
+        CancellationTokenSource connectionCancellation)
+    {
+        if (!resourceState.TryRegisterCancellation())
+        {
+            await CloseConnectionAsync(connection, DoqErrorCode.ExcessiveLoad, CancellationToken.None).ConfigureAwait(false);
+            await Task.Yield();
+            await connectionCancellation.CancelAsync().ConfigureAwait(false);
+        }
+
+        AbortStreamWrite(stream, DoqErrorCode.RequestCancelled);
     }
 
     private static async ValueTask CloseConnectionAsync(
@@ -343,5 +446,7 @@ public sealed class DoqServer : IAsyncDisposable
             int count = Interlocked.Increment(ref cancellationRequests);
             return options.MaxCancellationRequests == 0 || count <= options.MaxCancellationRequests;
         }
+
+        public bool CancellationLimitEnabled => options.MaxCancellationRequests > 0;
     }
 }

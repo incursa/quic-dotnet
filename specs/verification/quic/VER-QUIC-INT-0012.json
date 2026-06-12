@@ -57,7 +57,7 @@
   "supplemental_sections": [
     {
       "heading": "Deferred Coverage",
-      "content": "`http3` remains out of scope. `v2`, `rebind-port`, and `rebind-addr` remain prerequisite-blocked under the non-HTTP/3 inventory. `connectionmigration` now has a dedicated hosted proof lane, but it remains outside this role-backed profile by scope. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope. The generated major-peer inventory and evidence reports stay advisory and are not support proof."
+      "content": "`http3` remains out of scope. `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` are supported/executed inventory cells, but they remain outside this role-backed profile by scope. `versionnegotiation` now has explicit harness dispatch, but it remains outside this role-backed profile by scope. The generated major-peer inventory and evidence reports stay advisory and are not support proof."
     }
   ]
 }

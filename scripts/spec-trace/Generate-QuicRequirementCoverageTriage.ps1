@@ -341,6 +341,16 @@ function Get-RequirementGapMappings {
 
     $gapContent = Get-Content $GapPath -Raw
 
+    function New-RequirementIdRange {
+        param(
+            [string]$Rfc,
+            [int]$Start,
+            [int]$End
+        )
+
+        $Start..$End | ForEach-Object { 'REQ-QUIC-{0}-{1:D4}' -f $Rfc, $_ }
+    }
+
     return @(
         [pscustomobject]@{
             Slug               = '9000-19-retransmission-and-frame-reliability'
@@ -551,6 +561,40 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-S22P4-0002',
                 'REQ-QUIC-RFC9000-S22P4-0005'
             )
+        },
+        [pscustomobject]@{
+            Slug               = 'websockets-http3-extended-connect'
+            Summary            = 'RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9220' -Start 1 -End 8)
+        },
+        [pscustomobject]@{
+            Slug               = 'http-datagrams-and-capsules'
+            Summary            = 'RFC 9297 HTTP Datagram and Capsule Protocol requirements remain blocked by the recorded planning-only scope until HTTP Datagram/Capsule support is explicitly committed.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9297' -Start 1 -End 84)
+        },
+        [pscustomobject]@{
+            Slug               = 'connect-udp'
+            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked by the recorded planning-only scope until CONNECT-UDP support is explicitly committed.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9298' -Start 1 -End 117)
+        },
+        [pscustomobject]@{
+            Slug               = 'encrypted-dns-discovery-and-provisioning'
+            Summary            = 'RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                New-RequirementIdRange -Rfc 'RFC9461' -Start 1 -End 38
+                New-RequirementIdRange -Rfc 'RFC9463' -Start 1 -End 116
+                New-RequirementIdRange -Rfc 'RFC9464' -Start 1 -End 76
+            )
+        },
+        [pscustomobject]@{
+            Slug               = 'connect-ip-masque'
+            Summary            = 'RFC 9484 CONNECT-IP/MASQUE requirements remain blocked by the recorded planning-only scope until MASQUE support is explicitly committed.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9484' -Start 1 -End 213)
         },
         [pscustomobject]@{
             Slug               = '9002-06-key-discard-lifecycle'

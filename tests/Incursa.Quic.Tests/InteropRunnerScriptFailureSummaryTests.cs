@@ -195,6 +195,53 @@ public sealed class InteropRunnerScriptFailureSummaryTests
     }
 
     [Fact]
+    public async Task RunnerExitNonZeroWithHandshakecorruptionUnknownFrameReportsBlockedDiagnosticButRemainsFailed()
+    {
+        using InteropRunnerScriptFixture fixture = new();
+        fixture.WriteRunnerScript("non-zero-handshakecorruption-unknown-frame");
+        File.WriteAllText(
+            Path.Combine(fixture.RunnerRoot, "implementations_quic.json"),
+            """
+            {
+              "chrome": { "role": "client" },
+              "quic-go": { "role": "server" }
+            }
+            """);
+
+        ScriptRunResult result = await fixture.RunAsync(
+            "-RepoRoot",
+            fixture.RepoRoot,
+            "-RunnerRoot",
+            fixture.RunnerRoot,
+            "-ArtifactsRoot",
+            fixture.ArtifactsRoot,
+            "-LocalRole",
+            "client",
+            "-ImplementationSlot",
+            "chrome",
+            "-PeerImplementationSlots",
+            "quic-go",
+            "-TestCases",
+            "handshakecorruption");
+
+        string output = result.CombinedOutput;
+
+        Assert.Equal(7, result.ExitCode);
+        Assert.True(string.IsNullOrEmpty(result.ExceptionMessage));
+        Assert.Contains("Interop runner helper failed.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("handshakecorruption remains prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("multiconnect-derived corruption flow", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("FRAME_ENCODING_ERROR/unknown frame type 0x23de", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("packet authentication/discard evidence", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Runner exit code: 7", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Interop runner helper complete.", output, StringComparison.OrdinalIgnoreCase);
+
+        string runRoot = GetSingleRunRoot(fixture.ArtifactsRoot);
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "handshakecorruption", "output.txt")));
+        Assert.True(File.Exists(Path.Combine(runRoot, "runner-logs", "quic-go_chrome", "handshakecorruption", "server", "log.txt")));
+    }
+
+    [Fact]
     public async Task RunnerExitNonZeroAfterValidOutputsAcceptsDocumentedInventoryCellsAndRecordsThem()
     {
         using InteropRunnerScriptFixture fixture = new();
@@ -1410,6 +1457,7 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 findstr /c:"# fake-runner: non-zero-valid-outputs" run.py >nul && set "mode=non-zero-valid-outputs"
                 findstr /c:"# fake-runner: non-zero-xquic-ack-consumption-candidate" run.py >nul && set "mode=non-zero-xquic-ack-consumption-candidate"
                 findstr /c:"# fake-runner: non-zero-xquic-shared-ceiling-candidate" run.py >nul && set "mode=non-zero-xquic-shared-ceiling-candidate"
+                findstr /c:"# fake-runner: non-zero-handshakecorruption-unknown-frame" run.py >nul && set "mode=non-zero-handshakecorruption-unknown-frame"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-success" run.py >nul && set "mode=file-not-found-handshake-server-success"
                 findstr /c:"# fake-runner: file-not-found-handshake-server-incomplete" run.py >nul && set "mode=file-not-found-handshake-server-incomplete"
                 findstr /c:"# fake-runner: file-not-found-transfer-client-success" run.py >nul && set "mode=file-not-found-transfer-client-success"
@@ -1497,6 +1545,22 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     )
                   )
                   echo shared ceiling timeout 1>&2
+                  exit /b 7
+                )
+
+                if /I "%mode%"=="non-zero-handshakecorruption-unknown-frame" (
+                  echo fake-runner sentinel non-zero-handshakecorruption-unknown-frame
+                  if not defined jsonPath exit /b 2
+                  if not exist "%logsDir%\quic-go_chrome\handshakecorruption\server" md "%logsDir%\quic-go_chrome\handshakecorruption\server" >nul 2>&1
+                  > "%jsonPath%" echo {"mode":"non-zero-handshakecorruption-unknown-frame"}
+                  > "%logsDir%\quic-go_chrome\handshakecorruption\output.txt" (
+                    echo client ^| interop harness: role=client, testcase=multiconnect failed: unknown frame type 0x23de
+                    echo client ^| interop harness: failed with FRAME_ENCODING_ERROR after several corrupted-flow downloads.
+                  )
+                  > "%logsDir%\quic-go_chrome\handshakecorruption\server\log.txt" (
+                    echo failed after upstream multiconnect-derived corruption flow
+                  )
+                  echo handshakecorruption unknown frame 1>&2
                   exit /b 7
                 )
 
@@ -1724,6 +1788,8 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                 mode=non-zero-xquic-ack-consumption-candidate
             elif grep -q '# fake-runner: non-zero-xquic-shared-ceiling-candidate' run.py; then
                 mode=non-zero-xquic-shared-ceiling-candidate
+            elif grep -q '# fake-runner: non-zero-handshakecorruption-unknown-frame' run.py; then
+                mode=non-zero-handshakecorruption-unknown-frame
             elif grep -q '# fake-runner: file-not-found-handshake-server-success' run.py; then
                 mode=file-not-found-handshake-server-success
             elif grep -q '# fake-runner: file-not-found-handshake-server-incomplete' run.py; then
@@ -1823,6 +1889,22 @@ public sealed class InteropRunnerScriptFailureSummaryTests
                     printf '%s\n' 'xqc_hq_parse_req|259||hq recv CR LF|' > "$logs_dir/xquic_chrome/$testcase/server/server.log"
                 done
                 printf '%s\n' 'shared ceiling timeout' >&2
+                exit 7
+            fi
+
+            if [ "$mode" = "non-zero-handshakecorruption-unknown-frame" ]; then
+                printf '%s\n' 'fake-runner sentinel non-zero-handshakecorruption-unknown-frame'
+                if [ -z "$json_path" ]; then
+                    exit 2
+                fi
+                mkdir -p "$logs_dir/quic-go_chrome/handshakecorruption/server"
+                printf '%s\n' '{"mode":"non-zero-handshakecorruption-unknown-frame"}' > "$json_path"
+                {
+                    printf '%s\n' 'client | interop harness: role=client, testcase=multiconnect failed: unknown frame type 0x23de'
+                    printf '%s\n' 'client | interop harness: failed with FRAME_ENCODING_ERROR after several corrupted-flow downloads.'
+                } > "$logs_dir/quic-go_chrome/handshakecorruption/output.txt"
+                printf '%s\n' 'failed after upstream multiconnect-derived corruption flow' > "$logs_dir/quic-go_chrome/handshakecorruption/server/log.txt"
+                printf '%s\n' 'handshakecorruption unknown frame' >&2
                 exit 7
             fi
 

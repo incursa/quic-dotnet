@@ -294,10 +294,46 @@ public sealed class InteropHarnessRunnerTests
     }
 
     [Theory]
+    [InlineData("handshakecorruption")]
+    public void HandshakeBackedClientDispatchUsesTheSupportedHarnessPathBeforeConnectionFailures(string testcase)
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, $"sslkeylog-{testcase}-client.txt");
+        IDictionary environment = CreateEnvironment(
+            "client",
+            testcase,
+            "https://localhost:443/proof",
+            qlogDirectory,
+            sslKeyLogFile);
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=client, testcase={testcase}, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Contains(
+            $"interop harness: role=client, testcase={testcase}, requestCount=1 connecting to",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("is currently unsupported", stdout.ToString(), StringComparison.Ordinal);
+        Assert.Contains(
+            $"interop harness: role=client, testcase={testcase} failed:",
+            stderr.ToString(),
+            StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("transfercorruption")]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
     [InlineData("connectionmigration")]
-    public void RebindClientDispatchUsesTheTransferBackedHarnessPathBeforeTransferValidationFailures(string testcase)
+    public void TransferBackedClientDispatchUsesTheSupportedHarnessPathBeforeTransferValidationFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
         string qlogDirectory = fixture.CreateSubdirectory("qlog");
@@ -326,10 +362,39 @@ public sealed class InteropHarnessRunnerTests
     }
 
     [Theory]
+    [InlineData("handshakecorruption")]
+    public void HandshakeBackedServerDispatchUsesTheSupportedHarnessPathBeforeTlsMaterialFailures(string testcase)
+    {
+        using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
+        string qlogDirectory = fixture.CreateSubdirectory("qlog");
+        string sslKeyLogFile = Path.Combine(fixture.RootDirectory, $"sslkeylog-{testcase}-server.txt");
+        IDictionary environment = CreateEnvironment("server", testcase, qlogDir: qlogDirectory, sslKeyLogFile: sslKeyLogFile);
+
+        string certificatePath = Path.Combine(fixture.RootDirectory, $"missing-cert-{Guid.NewGuid():N}.pem");
+        string privateKeyPath = fixture.CreateFile("priv.key", "unused");
+
+        using StringWriter stdout = new();
+        using StringWriter stderr = new();
+
+        int exitCode = InteropHarnessRunner.Run(environment, stdout, stderr, certificatePath, privateKeyPath);
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains(
+            $"interop harness: role=server, testcase={testcase}, SSLKEYLOGFILE export enabled at {sslKeyLogFile}.",
+            stdout.ToString(),
+            StringComparison.Ordinal);
+        Assert.Equal(
+            $"TLS certificate not found at '{certificatePath}'.{Environment.NewLine}",
+            stderr.ToString());
+        Assert.Empty(Directory.GetFiles(qlogDirectory, "*.qlog"));
+    }
+
+    [Theory]
+    [InlineData("transfercorruption")]
     [InlineData("rebind-port")]
     [InlineData("rebind-addr")]
     [InlineData("connectionmigration")]
-    public void RebindServerDispatchUsesTheTransferBackedHarnessPathBeforeTlsMaterialFailures(string testcase)
+    public void TransferBackedServerDispatchUsesTheSupportedHarnessPathBeforeTlsMaterialFailures(string testcase)
     {
         using TempDirectoryFixture fixture = new(nameof(InteropHarnessRunnerTests));
         string qlogDirectory = fixture.CreateSubdirectory("qlog");

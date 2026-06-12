@@ -29,8 +29,9 @@ public sealed class DoqQueryContext
 
     /// <summary>
     /// Gets or sets a value indicating whether the query arrived via QUIC 0-RTT.
-    /// Defaults to <c>false</c>. The transport layer does not currently expose
-    /// 0-RTT state; this property is a placeholder for future integration.
+    /// Defaults to <c>false</c>. The DoQ server sets this from
+    /// <see cref="DoqServerOptions.ZeroRttStreamDetector"/> when the hosting layer
+    /// can supply an early-data signal.
     /// </summary>
     public bool IsZeroRtt { get; set; }
 }

@@ -4,6 +4,7 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Collections.Concurrent;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -14,6 +15,10 @@ namespace Incursa.Quic.Tests;
 
 internal static class QuicLoopbackEstablishmentTestSupport
 {
+    private const int PreferredLoopbackPortStart = 20_000;
+    private const int PreferredLoopbackPortEnd = 30_000;
+    private static readonly ConcurrentDictionary<int, byte> UsedLoopbackPorts = new();
+
     internal static X509Certificate2 CreateServerCertificate(string? dnsName = null)
     {
         using ECDsa leafKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
@@ -124,9 +129,39 @@ internal static class QuicLoopbackEstablishmentTestSupport
 
     internal static IPEndPoint GetUnusedLoopbackEndPoint()
     {
-        using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
-        return (IPEndPoint)socket.LocalEndPoint!;
+        for (int attempt = 0; attempt <= PreferredLoopbackPortEnd - PreferredLoopbackPortStart; attempt++)
+        {
+            int selectedPort = RandomNumberGenerator.GetInt32(PreferredLoopbackPortStart, PreferredLoopbackPortEnd + 1);
+            if (!UsedLoopbackPorts.TryAdd(selectedPort, 0))
+            {
+                continue;
+            }
+
+            using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            try
+            {
+                socket.Bind(new IPEndPoint(IPAddress.Loopback, selectedPort));
+                return (IPEndPoint)socket.LocalEndPoint!;
+            }
+            catch (SocketException)
+            {
+                UsedLoopbackPorts.TryRemove(selectedPort, out _);
+                continue;
+            }
+        }
+
+        for (int attempt = 0; attempt < 100; attempt++)
+        {
+            using Socket socket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            socket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+            IPEndPoint selectedEndPoint = (IPEndPoint)socket.LocalEndPoint!;
+            if (UsedLoopbackPorts.TryAdd(selectedEndPoint.Port, 0))
+            {
+                return selectedEndPoint;
+            }
+        }
+
+        throw new InvalidOperationException("Unable to allocate a loopback UDP port that has not already been used by this test process.");
     }
 
     internal static string DescribeConnection(QuicConnection? connection)

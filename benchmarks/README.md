@@ -108,6 +108,7 @@ The benchmark project also contains the following permanent suites:
 - `QuicHandshakePacketProtectionBenchmarks`
 - `QuicRetryIntegrityBenchmarks`
 - `QuicAddressValidationTokenBenchmarks`
+- `DoqPaddingBenchmarks`
 - `QuicTlsServerHelloRetryRequestBenchmarks`
 - `QuicTlsServerFinishedPublicationBenchmarks`
 - `QuicTlsClientFinishedPublicationBenchmarks`
@@ -149,6 +150,7 @@ dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --j
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicRetransmissionQueueRemovalBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicCongestionControlDiscardBenchmarks*" --inProcess
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicAddressValidationTokenBenchmarks*"
+dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*DoqPaddingBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicInitialPacketOpenBenchmarks*"
 dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter "*QuicDatagramFrameBenchmarks*" --inProcess
 ```

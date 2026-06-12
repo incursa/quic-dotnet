@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9250-0016",
     "WI-QUIC-RFC9250-0016"
   ],
-  "verification_method": "Focused unit tests for cache behavior, profile enforcement, backoff timing, and key-pinned override.",
+  "verification_method": "Focused unit tests for cache behavior, profile enforcement, fallback transport selection, conservative cleartext fallback, backoff timing, and key-pinned override.",
   "verifies": [
     "REQ-QUIC-RFC9250-0086",
     "REQ-QUIC-RFC9250-0087",
@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9250-0091",
     "REQ-QUIC-RFC9250-0092"
   ],
-  "scope": "This verification covers the DoqFallbackCache, DoqClientProfile, and profile-aware behavior in DoqClient.",
+  "scope": "This verification covers the DoqFallbackCache, DoqFallbackPolicy, DoqClientProfile, and profile-aware behavior in DoqClient.",
   "preconditions": [
     "Slices 0001 through 0015 exist and pass."
   ],
@@ -31,11 +31,11 @@
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `git diff --check`."
   ],
-  "expected_result": "All DoQ tests pass, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0016, and no whitespace hygiene issues are introduced.",
+  "expected_result": "All DoQ tests pass, fallback policy tests show DoT preference and explicit cleartext gating for Opportunistic profile, core SpecTrace validation accepts the RFC 9250 artifacts including slice 0016, and no whitespace hygiene issues are introduced.",
   "evidence": [
     "src/Incursa.Quic.Dns/DoqFallbackCache.cs",
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
   ],
-  "status_summary": "All 7 REQs are now traced and verified. Profile behavior, fallback cache, backoff enforcement, and key-pinned override are implemented."
+  "status_summary": "All 7 REQs are now traced and verified. Profile behavior, fallback transport selection, conservative cleartext policy, fallback cache, backoff enforcement, and key-pinned override are implemented. Alternate DoT or cleartext DNS transport execution remains caller-owned and out of scope."
 }

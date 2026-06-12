@@ -62,6 +62,7 @@ internal sealed partial class QuicConnectionRuntime
 
             stateChanged |= TryFlushHandshakeDonePacket(ref effects);
             stateChanged |= TryFlushOneRttCryptoPackets(ref effects);
+            stateChanged |= TryEnsureInitialPeerUsableConnectionId(ref effects);
             stateChanged |= TryFlushNewTokenEmissions(nowTicks, ref effects);
 
             if (tlsState.Role == QuicTlsRole.Server)
@@ -83,6 +84,17 @@ internal sealed partial class QuicConnectionRuntime
 
         AppendLifecycleTimerEffects(ref effects);
         return stateChanged;
+    }
+
+    private bool TryEnsureInitialPeerUsableConnectionId(ref QuicConnectionEffectAccumulator effects)
+    {
+        if (!enableInitialPeerUsableConnectionId
+            || issuedConnectionIdState.TotalIssuedConnectionIdCount != 0)
+        {
+            return false;
+        }
+
+        return TryReplenishIssuedConnectionId(ref effects);
     }
 
     private bool HandleHandshakeBootstrapRequested(

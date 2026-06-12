@@ -13,7 +13,7 @@ public sealed class REQ_QUIC_INT_0018
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndClassifiesZerorttAndConnectionMigrationAsSupportedWhileKeepingTheRebindCellsBlocked()
+    public async Task DryRunPublishesTheDocumentedNonHttp3InventoryAndClassifiesRebindingCellsAsSupportedAfterLiveProof()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_INT_0018
             "-PeerImplementationSlots",
             "quic-go,msquic",
             "-TestCases",
-            "longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration");
+            "longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration,handshakecorruption,transfercorruption");
 
         string output = result.CombinedOutput;
         string runRoot = GetPlanValue(output, "Run root");
@@ -44,13 +44,13 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Peer implementation slots"));
         Assert.Equal("chrome", GetPlanValue(output, "Runner client implementations"));
         Assert.Equal("quic-go,msquic", GetPlanValue(output, "Runner server implementations"));
-        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Test cases"));
-        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Runner test cases"));
-        Assert.Equal("20", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration,handshakecorruption,transfercorruption", GetPlanValue(output, "Test cases"));
+        Assert.Equal("longrtt,multiplexing,versionnegotiation,zerortt,amplificationlimit,blackhole,transferloss,ipv6,rebind-port,rebind-addr,connectionmigration,handshakecorruption,transfercorruption", GetPlanValue(output, "Runner test cases"));
+        Assert.Equal("22", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.GetFullPath(fixture.ArtifactsRoot), GetPlanValue(output, "Artifact root"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
-        Assert.Equal("rebind-port,rebind-addr", GetPlanValue(output, "Prerequisite-blocked"));
+        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,transfercorruption,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshakecorruption", GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
         Assert.StartsWith(Path.GetFullPath(fixture.ArtifactsRoot), runRoot, StringComparison.OrdinalIgnoreCase);
@@ -65,10 +65,15 @@ public sealed class REQ_QUIC_INT_0018
         Assert.Contains("transferloss -> supported-executed (runner: transferloss)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("ipv6 -> supported-executed (runner: ipv6)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("dedicated live runner proof and inventory promotion for NAT port rebinding", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("runner analyzer shim validates server paths from the server trace", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-port -> supported-executed (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-addr -> supported-executed (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("handshakecorruption -> prerequisite-blocked (runner: handshakecorruption)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("transfercorruption -> supported-executed (runner: transfercorruption)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fresh quic-go/chrome runner proof", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("multiconnect-derived corruption flow", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("FRAME_ENCODING_ERROR/unknown frame evidence", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("three observed server paths", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("handshake-backed harness path", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Requires client-host socket rebinding lifecycle support before inventory promotion", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("v2 -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("buffered request-line reads", output, StringComparison.OrdinalIgnoreCase);

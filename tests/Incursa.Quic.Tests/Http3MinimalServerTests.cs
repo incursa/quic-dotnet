@@ -11,6 +11,9 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3MinimalServerTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task GetAsync_StaticRoute_ReturnsSuccess()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -29,6 +32,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     [InlineData(65_536, 12)]
     [InlineData(1_048_576, 4)]
     public async Task RepeatedLargeResponses_CompleteWithExactBodyAndFin(int responseSize, int requestCount)
@@ -69,6 +75,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -125,6 +134,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task InMemoryRouteHandler_MissingGet_Returns404()
     {
         Http3InMemoryRouteHandler handler = new();
@@ -146,6 +158,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task MalformedRequestHeaders_Returns400()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -175,6 +190,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task GetWithoutRequestStreamFin_DispatchesAfterHeaders()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -407,6 +425,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -442,6 +463,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public async Task PostDataRequest_WithIncompleteContentLength_Returns400()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -520,6 +544,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task PeerControlStream_BundledSettingsFrame_IsObserved()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -715,6 +742,9 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task AbruptStreamReset_DoesNotStopLaterRequest()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)

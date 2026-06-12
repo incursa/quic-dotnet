@@ -11,6 +11,9 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3MinimalClientTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public async Task GetAsync_OverLoopbackQuic_ReturnsResponseHeadersAndBody()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -62,6 +65,9 @@ public sealed class Http3MinimalClientTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public async Task GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
@@ -136,6 +142,135 @@ public sealed class Http3MinimalClientTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S8-0001")]
+    [Requirement("REQ-QUIC-RFC9114-S9-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task GetAsync_WithShortResponseBodyAndFin_RejectsContentLengthMismatch()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
+        };
+
+        byte[] responseBody = "short response body"u8.ToArray();
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        TaskCompletionSource<object?> responsePayloadSent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> responseFinAllowed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task serverTask = RunDelayedResponseFinServerAsync(
+            listener,
+            responseBody,
+            responsePayloadSent,
+            responseFinAllowed.Task,
+            declaredContentLength: checked((ulong)responseBody.Length + 1));
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate);
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+
+        await using Http3Client client = await Http3Client.ConnectAsync(
+            clientOptions,
+            new Http3ClientOptions { DiagnosticsSink = diagnostics }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<Http3Response> responseTask = client.GetAsync(
+            new Uri($"https://localhost:{listenEndPoint.Port}/delayed-fin")).AsTask();
+
+        await responsePayloadSent.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        responseFinAllowed.TrySetResult(null);
+        Http3Exception exception = await Assert.ThrowsAsync<Http3Exception>(
+            async () => await responseTask.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+        Assert.Contains("Content-Length", exception.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            diagnostics.Events,
+            diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseCompleted);
+
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConnectAsync_ObservesPeerControlSettingsAndRejectsRequestsAfterGoAway()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        TaskCompletionSource<object?> clientCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task serverTask = RunGoAwayControlServerAsync(listener, clientCompleted.Task);
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate);
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+
+        await using Http3Client client = await Http3Client.ConnectAsync(
+            clientOptions,
+            new Http3ClientOptions { DiagnosticsSink = diagnostics }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        try
+        {
+            await WaitForDiagnosticAsync(
+                diagnostics,
+                diagnostic => diagnostic.Kind == Http3DiagnosticKind.SettingsReceived
+                    && diagnostic.Role == "client");
+            await WaitForDiagnosticAsync(
+                diagnostics,
+                diagnostic => diagnostic.Kind == Http3DiagnosticKind.FrameReceived
+                    && diagnostic.Role == "client"
+                    && diagnostic.FrameType == Http3FrameType.GoAway);
+
+            Http3Exception exception = await Assert.ThrowsAsync<Http3Exception>(
+                async () => await client.GetAsync(
+                    new Uri($"https://localhost:{listenEndPoint.Port}/after-goaway")).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+            Assert.Equal(Http3ErrorCode.RequestRejected, exception.ErrorCode);
+        }
+        finally
+        {
+            clientCompleted.TrySetResult(null);
+        }
+
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ConnectAsync_RejectsClientOptionsWithoutH3Alpn()
     {
         QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
@@ -196,11 +331,68 @@ public sealed class Http3MinimalClientTests
         }
     }
 
+    private static async Task RunGoAwayControlServerAsync(QuicListener listener, Task clientCompleted)
+    {
+        await using QuicConnection connection = await listener.AcceptConnectionAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        List<QuicStream> clientUnidirectionalStreams = [];
+        QuicStream? serverControlStream = null;
+
+        try
+        {
+            serverControlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await WriteServerControlStreamWithGoAwayAsync(serverControlStream, goAwayStreamId: 0);
+
+            while (clientUnidirectionalStreams.Count < 3)
+            {
+                QuicStream stream = await connection.AcceptInboundStreamAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                if (stream.Type != QuicStreamType.Unidirectional)
+                {
+                    await stream.DisposeAsync();
+                    continue;
+                }
+
+                clientUnidirectionalStreams.Add(stream);
+                await ObserveUnidirectionalStreamPreambleAsync(stream);
+            }
+
+            await clientCompleted.WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        finally
+        {
+            if (serverControlStream is not null)
+            {
+                await serverControlStream.DisposeAsync();
+            }
+
+            foreach (QuicStream stream in clientUnidirectionalStreams)
+            {
+                await stream.DisposeAsync();
+            }
+        }
+    }
+
+    private static async Task WriteServerControlStreamWithGoAwayAsync(
+        QuicStream controlStream,
+        ulong goAwayStreamId)
+    {
+        byte[] streamTypeBytes = EncodeVariableLengthInteger((ulong)Http3StreamType.Control);
+        byte[] settingsFrame = Http3FrameWriter.WriteSettings(
+        [
+            new Http3Setting((ulong)Http3SettingIdentifier.QPackMaxTableCapacity, 0),
+            new Http3Setting((ulong)Http3SettingIdentifier.QPackBlockedStreams, 0),
+        ]);
+        byte[] goAwayFrame = Http3FrameWriter.WriteGoAway(goAwayStreamId);
+        byte[] controlPayload = [.. streamTypeBytes, .. settingsFrame, .. goAwayFrame];
+
+        await controlStream.WriteAsync(controlPayload, 0, controlPayload.Length).WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
     private static async Task RunDelayedResponseFinServerAsync(
         QuicListener listener,
         byte[] responseBody,
         TaskCompletionSource<object?> responsePayloadSent,
-        Task responseFinAllowed)
+        Task responseFinAllowed,
+        ulong? declaredContentLength = null)
     {
         await using QuicConnection connection = await listener.AcceptConnectionAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         QuicStream? requestStream = null;
@@ -230,7 +422,7 @@ public sealed class Http3MinimalClientTests
             [
                 new QPackFieldLine(":status", "200"),
                 new QPackFieldLine("content-type", "application/octet-stream"),
-                new QPackFieldLine("content-length", responseBody.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                new QPackFieldLine("content-length", (declaredContentLength ?? checked((ulong)responseBody.Length)).ToString(System.Globalization.CultureInfo.InvariantCulture)),
             ]);
             byte[] headersFrame = Http3FrameWriter.WriteHeaders(responseHeaders);
             byte[] dataFrame = Http3FrameWriter.WriteData(responseBody);
@@ -289,6 +481,13 @@ public sealed class Http3MinimalClientTests
 
         Assert.Equal(0UL, settingsFrame.Values.QPackMaxTableCapacity);
         Assert.Equal(0UL, settingsFrame.Values.QPackBlockedStreams);
+    }
+
+    private static byte[] EncodeVariableLengthInteger(ulong value)
+    {
+        Span<byte> destination = stackalloc byte[Http3VariableLengthInteger.MaxEncodedLength];
+        Assert.True(Http3VariableLengthInteger.TryFormat(value, destination, out int bytesWritten));
+        return destination[..bytesWritten].ToArray();
     }
 
     private static Http3SettingsFrame? ReadSettingsFrame(IEnumerable<Http3Frame> frames)

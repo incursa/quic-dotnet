@@ -312,9 +312,9 @@ Expected result for this branch: RFC 9308 remains 10/10 trace-clean and RFC
 
 ### Correct-Looking Behavior Without External Interop Evidence
 
-- NAT rebinding and path validation have focused local proof, but the live
-  interop `rebind-port` and `rebind-addr` cells remain prerequisite-blocked in
-  the gap ledger.
+- NAT rebinding and path validation have focused local proof. The live
+  interop `rebind-port` and `rebind-addr` cells are promoted by the June 11,
+  2026 quic-go/chrome runner proofs.
 - Retry and Version Negotiation are covered by parser/runtime/qlog evidence in
   this repository, but RFC 9312-specific external qlog visibility has not been
   proven against multiple peers in this slice.

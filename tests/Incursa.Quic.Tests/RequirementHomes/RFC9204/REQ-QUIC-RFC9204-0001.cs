@@ -20,6 +20,8 @@ public sealed class REQ_QUIC_RFC9204_0001
         string qpackMilestones = ReadRepositoryFile("tests/Incursa.Quic.Tests/QPackMilestoneTests.cs");
         string qpackInstructions = ReadRepositoryFile("tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs");
         string qpackMatrix = ReadRepositoryFile("tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs");
+        string qpackBenchmarks = ReadRepositoryFile("benchmarks/QPackPrimitiveBenchmarks.cs");
+        string qpackFieldSectionBenchmarks = ReadRepositoryFile("benchmarks/QPackFieldSectionBenchmarks.cs");
         string qpackReadme = ReadRepositoryFile("src/Incursa.Qpack/README.md");
 
         Assert.Contains("REQ-QUIC-RFC9204-S2-0001", spec, StringComparison.Ordinal);
@@ -42,6 +44,8 @@ public sealed class REQ_QUIC_RFC9204_0001
         Assert.Contains("QPackMilestoneTests", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("QPackInstructionStreamTests", qpackInstructions, StringComparison.Ordinal);
         Assert.Contains("Http3QPackErrorHandlingMatrixTests", qpackMatrix, StringComparison.Ordinal);
+        Assert.Contains("QPackPrimitiveBenchmarks", qpackBenchmarks, StringComparison.Ordinal);
+        Assert.Contains("QPackFieldSectionBenchmarks", qpackFieldSectionBenchmarks, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -53,9 +57,13 @@ public sealed class REQ_QUIC_RFC9204_0001
         string qpackMilestones = ReadRepositoryFile("tests/Incursa.Quic.Tests/QPackMilestoneTests.cs");
 
         Assert.Contains("PrefixedInteger_RoundTripsBoundaryAndMultibyteValues", qpackMilestones, StringComparison.Ordinal);
+        Assert.Contains("PrefixedInteger_RejectsTruncatedAndOverflowEncodings", qpackMilestones, StringComparison.Ordinal);
+        Assert.Contains("StringLiteral_DecodesRawAndHuffmanValues", qpackMilestones, StringComparison.Ordinal);
+        Assert.Contains("StringLiteral_RejectsTruncatedLengthOrPayload", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("StaticTable_ContainsRfc9204Entries", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("DecodeFieldSection_DecodesRfc9204AppendixB1LiteralWithStaticNameReference", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("DecodeFieldSection_PreservesFieldOrderAndDuplicates", qpackMilestones, StringComparison.Ordinal);
+        Assert.Contains("DecodeFieldSection_RejectsTruncatedLiteralFieldLineWithDecompressionFailed", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("EncodeFieldSection_IsDeterministicForCommonHttp3Request", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("EncodeFieldSection_RoundTripsCommonHttp3Response", qpackMilestones, StringComparison.Ordinal);
         Assert.Contains("QPACK", spec, StringComparison.Ordinal);

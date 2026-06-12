@@ -15,6 +15,7 @@ namespace Incursa.Quic.Benchmarks;
 public class Http3AllocationPathBenchmarks
 {
     private const int DefaultServerReadBufferSize = 16 * 1024;
+    private const ulong BenchmarkServerControlStreamId = 3;
 
     private static readonly byte[] PlaintextBody = "Hello, World!"u8.ToArray();
     private static readonly byte[] JsonBody = """{"message":"Hello, World!"}"""u8.ToArray();
@@ -44,6 +45,8 @@ public class Http3AllocationPathBenchmarks
     private byte[] postRequestHeadersAndDataFrames = [];
     private byte[] plaintextResponseFrames = [];
     private byte[] jsonResponseFrames = [];
+    private byte[] serverControlStreamSettingsOnly = [];
+    private byte[] serverControlStreamSettingsAndGoAway = [];
 
     /// <summary>
     /// Prepares realistic tiny HTTP/3 endpoint request and response frame shapes.
@@ -100,6 +103,17 @@ public class Http3AllocationPathBenchmarks
         postRequestHeadersAndDataFrames = Concat(postRequestHeadersFrame, smallRequestDataFrame);
         plaintextResponseFrames = BufferResponseFrames(plaintextHeadersFrame, PlaintextBody);
         jsonResponseFrames = BufferResponseFrames(jsonHeadersFrame, JsonBody);
+        byte[] serverControlStreamType = EncodeHttp3VariableLengthInteger((ulong)Http3StreamType.Control);
+        serverControlStreamSettingsOnly = Concat(
+            serverControlStreamType,
+            Http3FrameWriter.WriteSettings(
+            [
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackMaxTableCapacity, 0),
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackBlockedStreams, 0),
+            ]));
+        serverControlStreamSettingsAndGoAway = Concat(
+            serverControlStreamSettingsOnly,
+            Http3FrameWriter.WriteGoAway(0));
     }
 
     /// <summary>
@@ -165,6 +179,26 @@ public class Http3AllocationPathBenchmarks
         Http3Frame[] first = reader.Read(plaintextRequestHeadersFrame.AsSpan(0, split));
         Http3Frame[] second = reader.Read(plaintextRequestHeadersFrame.AsSpan(split));
         return CountFramePayloadBytes(first) ^ CountFramePayloadBytes(second) ^ reader.PendingByteCount;
+    }
+
+    /// <summary>
+    /// Measures peer control-stream parsing and dispatch for a server SETTINGS frame.
+    /// </summary>
+    [Benchmark]
+    public int ControlStream_ReadServerSettings()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+        return ProcessBenchmarkControlStream(serverControlStreamSettingsOnly, dispatcher);
+    }
+
+    /// <summary>
+    /// Measures peer control-stream parsing and dispatch for server SETTINGS followed by GOAWAY.
+    /// </summary>
+    [Benchmark]
+    public int ControlStream_ReadServerSettingsAndGoAway()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+        return ProcessBenchmarkControlStream(serverControlStreamSettingsAndGoAway, dispatcher);
     }
 
     /// <summary>
@@ -736,6 +770,17 @@ public class Http3AllocationPathBenchmarks
         return combined;
     }
 
+    private static byte[] EncodeHttp3VariableLengthInteger(ulong value)
+    {
+        Span<byte> destination = stackalloc byte[Http3VariableLengthInteger.MaxEncodedLength];
+        if (!Http3VariableLengthInteger.TryFormat(value, destination, out int bytesWritten))
+        {
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        return destination[..bytesWritten].ToArray();
+    }
+
     private static byte[] CreateDeterministicBytes(int length)
     {
         byte[] bytes = new byte[length];
@@ -789,6 +834,32 @@ public class Http3AllocationPathBenchmarks
         {
             ArrayPool<byte>.Shared.Return(buffer, clearArray: false);
         }
+    }
+
+    private static int ProcessBenchmarkControlStream(
+        byte[] controlStreamBytes,
+        Http3StreamDispatcher dispatcher)
+    {
+        if (!Http3VariableLengthInteger.TryParse(controlStreamBytes, out ulong streamType, out int bytesConsumed))
+        {
+            throw new InvalidOperationException("The benchmark control stream did not contain a stream type.");
+        }
+
+        dispatcher.RegisterUnidirectionalStream(BenchmarkServerControlStreamId);
+        dispatcher.ReceiveUnidirectionalStreamTypeBytes(
+            BenchmarkServerControlStreamId,
+            controlStreamBytes.AsSpan(0, bytesConsumed));
+
+        Http3FrameReader reader = new();
+        Http3Frame[] frames = reader.Read(controlStreamBytes.AsSpan(bytesConsumed));
+        int result = checked((int)streamType) ^ bytesConsumed ^ reader.PendingByteCount;
+        foreach (Http3Frame frame in frames)
+        {
+            dispatcher.ReceiveFrame(BenchmarkServerControlStreamId, frame);
+            result ^= unchecked((int)frame.Type) ^ frame.Payload.Length;
+        }
+
+        return result;
     }
 
     private static ArrayBufferWriter<byte>? ProcessBenchmarkRequestFrames(

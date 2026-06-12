@@ -16,7 +16,8 @@
     "REQ-QUIC-RFC9250-0058",
     "REQ-QUIC-RFC9250-0059",
     "REQ-QUIC-RFC9250-0061",
-    "REQ-QUIC-RFC9250-0064"
+    "REQ-QUIC-RFC9250-0064",
+    "REQ-QUIC-RFC9250-0103"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/DoqErrorCode.cs",

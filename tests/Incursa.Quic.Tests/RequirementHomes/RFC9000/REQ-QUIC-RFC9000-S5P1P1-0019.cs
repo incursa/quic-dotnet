@@ -17,6 +17,36 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0019
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    public void HandshakeCompletion_ProvidesInitialPeerUsableConnectionIdWithinThePeerLimit()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            peerActiveConnectionIdLimit: 2,
+            enableInitialPeerUsableConnectionId: true);
+
+        QuicNewConnectionIdFrameProofSnapshot initialFrame = GetSentNewConnectionIdFrames(runtime).Single();
+
+        Assert.Equal(1UL, initialFrame.SequenceNumber);
+        Assert.Equal(0UL, initialFrame.RetirePriorTo);
+        Assert.Equal(8, initialFrame.ConnectionId.Length);
+        Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, initialFrame.StatelessResetToken.Length);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void HandshakeCompletion_WhenLocalIssuanceBudgetIsExhausted_DoesNotProvideInitialPeerUsableConnectionId()
+    {
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+            peerActiveConnectionIdLimit: 2,
+            maximumLocallyIssuedConnectionIds: 0,
+            enableInitialPeerUsableConnectionId: true);
+
+        Assert.Empty(GetSentNewConnectionIdFrames(runtime));
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void MigratedPathPacketOnPreviouslyUnusedIssuedConnectionId_ReplenishesPeerUsableConnectionIdPool()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
@@ -121,5 +151,52 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0019
             issued.Effects,
             effect => effect is QuicConnectionRegisterStatelessResetTokenEffect token
                 && token.ConnectionId == 1UL);
+    }
+
+    private static QuicNewConnectionIdFrameProofSnapshot[] GetSentNewConnectionIdFrames(QuicConnectionRuntime runtime)
+    {
+        List<QuicNewConnectionIdFrameProofSnapshot> frames = [];
+
+        foreach (QuicConnectionSentPacket sentPacket in runtime.SendRuntime.SentPackets.Values)
+        {
+            ReadOnlySpan<byte> payload = sentPacket.PlaintextPayload.Span;
+            int offset = 0;
+            while (offset < payload.Length)
+            {
+                ReadOnlySpan<byte> remaining = payload[offset..];
+                if (QuicFrameCodec.TryParsePaddingFrame(remaining, out int paddingBytesConsumed)
+                    && paddingBytesConsumed > 0)
+                {
+                    offset += paddingBytesConsumed;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed)
+                    && ackBytesConsumed > 0)
+                {
+                    offset += ackBytesConsumed;
+                    continue;
+                }
+
+                if (QuicFrameCodec.TryParseNewConnectionIdFrame(
+                        remaining,
+                        out QuicNewConnectionIdFrame frame,
+                        out int bytesConsumed)
+                    && bytesConsumed > 0)
+                {
+                    frames.Add(new QuicNewConnectionIdFrameProofSnapshot(
+                        frame.SequenceNumber,
+                        frame.RetirePriorTo,
+                        frame.ConnectionId.ToArray(),
+                        frame.StatelessResetToken.ToArray()));
+                    offset += bytesConsumed;
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        return frames.ToArray();
     }
 }

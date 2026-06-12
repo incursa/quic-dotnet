@@ -1,6 +1,6 @@
 # Current Repository Status
 
-Last verified: 2026-05-25 bounded QUIC interop-runner `http3` adapter build/unit/dry-run proof, RFC9368 compatible-version runtime-selection closeout, RFC9221 QUIC DATAGRAM transport-floor closure, RFC9000 repeated MAX_STREAM_DATA/MAX_DATA runtime proof, xquic captured-packet and credit-burst proof, non-promoting xquic runner diagnostic proof, 2026-05-22 local simulator promotion review, regenerated RFC requirement coverage triage, advisory peer-characterization report closeout, the 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713`, the May 22 focused xquic transfer rerun, and the May 22 `rebind-addr` server-trace-shim rerun. HTTP/3 is now present as a bounded interop-runner adapter over the standalone HTTP/3/QPACK modules; broader HTTP/3 production hosting, dynamic-QPACK-dependent support, server push, trailers, CONNECT, HTTP Datagrams, and MASQUE remain intentionally out of scope. Core SpecTrace JSON validation passes for 591 artifacts, and generated QUIC requirement coverage reports 1,823/1,823 RFC 8999/9000/9001/9002/9221/9287/9368/9369 requirements as `trace_clean`: RFC 8999 is 8/8, RFC 9000 is 1,451/1,451, RFC 9001 is 96/96, RFC 9002 is 224/224, RFC 9221 is 33/33, RFC 9287 is 4/4, RFC 9368 is 4/4, and RFC 9369 is 3/3. The latest focused RFC9221/API filter passed 106/106, the latest focused RFC9368 filter passed 20/20, the targeted v2 interop sanity checks passed 2/2, the full test project passed 5,530/5,530, the RFC9221 DATAGRAM frame benchmark dry run executed all 4 parse/format benchmarks with `--inProcess`, the focused RFC9000 MAX credit publication filter passed 7/7, the focused xquic/runner diagnostic proof set passed 27/27, the focused simulator-accounting verification passed 9/9, and the earlier Release/full-suite floor remains documented below but was not rerun in this status refresh. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: RFC9221 now has bounded public send/receive DATAGRAM support with transport-parameter negotiation, DATAGRAM frame codec support, 1-RTT protection, congestion/drop, non-retransmission, flow-control exclusion, and benchmark evidence; HTTP Datagrams, CONNECT-UDP, MASQUE, application-facing DATAGRAM ACK/loss callbacks, and 0-RTT DATAGRAM transmission remain separate future work. `REQ-QUIC-INT-0030` owns the runner-facing `http3` Docker endpoint cell, but live local quic-go/quic-go `http3` runner attempts still stall after the first server-side request is read and are preserved under `.artifacts/interop-runner/http3-local-live`; `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is green for the bounded `connectionmigration` profile, `VER-QUIC-INT-0020` now accepts the preserved baseline and deterministic-loss simulator evidence as bounded proof for the mapped requirements, `VER-QUIC-INT-0016` closes the advisory peer-characterization reporting surface as non-promoting evidence, `REQ-QUIC-INT-0029` now owns the remaining xquic client-role all-upstream `transfer`/`keyupdate`/`chacha20` residual, proves the managed client emitted a decryptable ACK through xquic response packet 17 plus repeated increasing MAX_DATA/MAX_STREAM_DATA updates through client packet 28, and adds a non-promoting runner diagnostic for the preserved timeout shape plus xquic's server-log packet-processing ceiling through packets 0..3; the rebind cells remain prerequisite-blocked by live runner evidence rather than missing RFC requirement trace. RFC9000 reference reconciliation should use the derived crosswalk and retired-ID ledger in `specs/generated/quic` before changing live requirement references.
+Last verified: 2026-05-25 bounded QUIC interop-runner `http3` adapter build/unit/dry-run proof, RFC9368 compatible-version runtime-selection closeout, RFC9221 QUIC DATAGRAM transport-floor closure, RFC9000 repeated MAX_STREAM_DATA/MAX_DATA runtime proof, xquic captured-packet and credit-burst proof, non-promoting xquic runner diagnostic proof, 2026-05-22 local simulator promotion review, regenerated RFC requirement coverage triage, advisory peer-characterization report closeout, the 2026-05-20 hosted `connectionmigration-server-proof` run `26174181713`, the May 22 focused xquic transfer rerun, and the May 22 `rebind-addr` server-trace-shim rerun. HTTP/3 is now present as a bounded interop-runner adapter over the standalone HTTP/3/QPACK modules; broader HTTP/3 production hosting, dynamic-QPACK-dependent support, server push, trailers, CONNECT, HTTP Datagrams, and MASQUE remain intentionally out of scope. Core SpecTrace JSON validation passes for 591 artifacts, and generated QUIC requirement coverage reports 1,823/1,823 RFC 8999/9000/9001/9002/9221/9287/9368/9369 requirements as `trace_clean`: RFC 8999 is 8/8, RFC 9000 is 1,451/1,451, RFC 9001 is 96/96, RFC 9002 is 224/224, RFC 9221 is 33/33, RFC 9287 is 4/4, RFC 9368 is 4/4, and RFC 9369 is 3/3. The latest focused RFC9221/API filter passed 106/106, the latest focused RFC9368 filter passed 20/20, the targeted v2 interop sanity checks passed 2/2, the full test project passed 5,530/5,530, the RFC9221 DATAGRAM frame benchmark dry run executed all 4 parse/format benchmarks with `--inProcess`, the focused RFC9000 MAX credit publication filter passed 7/7, the focused xquic/runner diagnostic proof set passed 27/27, the focused simulator-accounting verification passed 9/9, and the earlier Release/full-suite floor remains documented below but was not rerun in this status refresh. The remaining QUIC-only open/advisory work is evidence-scoped, not an RFC requirement coverage gap: RFC9221 now has bounded public send/receive DATAGRAM support with transport-parameter negotiation, DATAGRAM frame codec support, 1-RTT protection, congestion/drop, non-retransmission, flow-control exclusion, and benchmark evidence; HTTP Datagrams, CONNECT-UDP, MASQUE, application-facing DATAGRAM ACK/loss callbacks, and 0-RTT DATAGRAM transmission remain separate future work. `REQ-QUIC-INT-0030` owns the runner-facing `http3` Docker endpoint cell, but live local quic-go/quic-go `http3` runner attempts still stall after the first server-side request is read and are preserved under `.artifacts/interop-runner/http3-local-live`; `REQ-QUIC-INT-0025` connectionmigration hosted corroboration is green for the bounded `connectionmigration` profile, `VER-QUIC-INT-0020` now accepts the preserved baseline and deterministic-loss simulator evidence as bounded proof for the mapped requirements, `VER-QUIC-INT-0016` closes the advisory peer-characterization reporting surface as non-promoting evidence, `REQ-QUIC-INT-0029` now owns the remaining xquic client-role all-upstream `transfer`/`keyupdate`/`chacha20` residual, proves the managed client emitted a decryptable ACK through xquic response packet 17 plus repeated increasing MAX_DATA/MAX_STREAM_DATA updates through client packet 28, and adds a non-promoting runner diagnostic for the preserved timeout shape plus xquic's server-log packet-processing ceiling through packets 0..3; the rebind cells now have June 11, 2026 direct quic-go/chrome runner proof and are supported/executed inventory cells rather than prerequisite-blocked cells. RFC9000 reference reconciliation should use the derived crosswalk and retired-ID ledger in `specs/generated/quic` before changing live requirement references.
 
 `REQ-QUIC-INT-0031` now owns the advisory external HTTP/3 peer harness shape: Docker Compose targets, Windows/POSIX runners, JSONL results, and Markdown report generation for Incursa, curl, aioquic, quiche/h3i, and ngtcp2/nghttp3 target cells. This is a characterization surface with explicit `skip` rows for unwired peer/scenario cells, not proof of broad HTTP/3 peer interoperability.
 
@@ -185,10 +185,10 @@ successful live local runner proof under
 excluded from the major-peer-matrix profile by scope.
 
 `rebind-port`, `rebind-addr`, and `connectionmigration` stay outside this
-profile. `connectionmigration` now has its own green hosted proof lane, while
-the two rebind cells remain blocked on dedicated live runner corroboration and
-inventory promotion rather than missing socket rebinding logic. The runtime
-path-state ledger already models internal migration promotion.
+profile by scope. `connectionmigration` now has its own green hosted proof
+lane, and the two rebind cells now have direct quic-go/chrome runner proof and
+supported/executed inventory promotion. The runtime path-state ledger already
+models internal migration promotion.
 
 Local proof for this slice is workflow shape, dry-run planning, and helper
 fallback behavior, not hosted runner success. In this session, the focused INT
@@ -422,23 +422,21 @@ verification artifact.
 non-HTTP/3 interop testcase list. The current helper inventory keeps
 `versionnegotiation`, `longrtt`, `multiplexing`, `chacha20`, `keyupdate`,
 `resumption`, `zerortt`, `amplificationlimit`, `blackhole`, `transferloss`,
-`ipv6`, `v2`, and `connectionmigration` in the supported/executed class, with
-`versionnegotiation` now backed by explicit reserved-version runner dispatch,
-keeps `http3` out of scope, and classifies `rebind-port` and `rebind-addr` as
-prerequisite-blocked.
+`ipv6`, `v2`, `rebind-port`, `rebind-addr`, and `connectionmigration` in the
+supported/executed class, with `versionnegotiation` now backed by explicit
+reserved-version runner dispatch, and keeps `http3` out of scope.
 
-Those two socket-rebind cells remain blocked on dedicated live runner
-corroboration and inventory promotion. `connectionmigration` now has hosted run
+The two socket-rebind cells now have June 11, 2026 direct quic-go/chrome runner
+proof. The `rebind-port` artifact under
+`artifacts/interop-runner/20260611-085254961-direct-rebind-port-cid-warmup-tools-patched`
+records a succeeded 10 MiB transfer with two server-observed paths and
+PATH_CHALLENGE/PATH_RESPONSE evidence. The `rebind-addr` artifact under
+`artifacts/interop-runner/20260611-090616967-direct-rebind-addr-cid-warmup-tools-patched`
+records a succeeded 10 MiB transfer with three server-observed paths and
+PATH_CHALLENGE/PATH_RESPONSE evidence. `connectionmigration` has hosted run
 `26174181713` as its green proof using the local `nginx` replacement slot
 against `neqo`; none of these cells are blocked on missing internal path-state
 promotion logic or socket rebinding support.
-
-The May 22 `rebind-addr` rerun under
-`.artifacts/interop-runner/rebind-addr-server-trace-shim/20260522-223326878-server-nginx`
-kept the inventory blocked. The helper shim now validates server path changes
-from the server trace instead of the client trace, but this run failed before
-analyzer post-check: the client timed out after the second rebound address
-while the simulator dropped packets to the previous binding.
 
 `chacha20` is now green on this runner: `InteropHarnessRunner` now exposes the
 `chacha20` client/server dispatch branches and the local `quic-go`/`quic-go`

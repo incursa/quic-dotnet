@@ -6,6 +6,9 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3StreamDispatcherTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void RegisterBidirectionalStream_MapsClientInitiatedStreamsToRequests()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -18,6 +21,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RegisterBidirectionalStream_RejectsServerInitiatedStreamsWhenExtensionsAreNotEnabled()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
@@ -28,6 +34,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void RegisterBidirectionalStream_AllowsServerInitiatedStreamsWhenExtensionIsEnabled()
     {
         Http3StreamDispatcher dispatcher = new(
@@ -41,6 +50,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void RegisterUnidirectionalStream_ParsesStreamTypeAcrossPartialBuffers()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -57,6 +69,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     [InlineData(0UL, Http3StreamKind.Control)]
     [InlineData(2UL, Http3StreamKind.QPackEncoder)]
     [InlineData(3UL, Http3StreamKind.QPackDecoder)]
@@ -78,6 +93,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RegisterUnidirectionalStream_RejectsMissingStreamTypeAtEndOfStream()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -90,6 +108,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RegisterUnidirectionalStream_RejectsPayloadBytesBundledWithStreamType()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -102,6 +123,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -116,6 +140,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ControlStream_AllowsOneControlStreamPerEndpoint()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -130,6 +157,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ControlStream_RequiresSettingsAsFirstFrame()
     {
         Http3StreamDispatcher dispatcher = CreateDispatcherWithClientControlStream();
@@ -141,6 +171,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ControlStream_AcceptsSettingsAsFirstFrameAndControlFramesAfterward()
     {
         Http3StreamDispatcher dispatcher = CreateDispatcherWithClientControlStream();
@@ -150,6 +183,34 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ControlStream_ClientEndpointCapturesServerSettings()
+    {
+        Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
+        dispatcher.RegisterUnidirectionalStream(3);
+        dispatcher.ReceiveUnidirectionalStreamTypeBytes(3, [(byte)Http3StreamType.Control]);
+
+        dispatcher.ReceiveFrame(
+            3,
+            ReadFrame(Http3FrameWriter.WriteSettings(
+            [
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackMaxTableCapacity, 128),
+                new Http3Setting((ulong)Http3SettingIdentifier.QPackBlockedStreams, 2),
+            ])));
+
+        Assert.True(dispatcher.TryGetControlStreamSettings(Http3StreamInitiator.Server, out Http3Settings? settings));
+        Assert.NotNull(settings);
+        Assert.Equal(128UL, settings.QPackMaxTableCapacity);
+        Assert.Equal(2UL, settings.QPackBlockedStreams);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ControlStream_RejectsSecondSettingsFrame()
     {
         Http3StreamDispatcher dispatcher = CreateDispatcherWithClientControlStream();
@@ -162,6 +223,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void ControlStream_RejectsRequestOnlyFrames()
     {
         Http3StreamDispatcher dispatcher = CreateDispatcherWithClientControlStream();
@@ -174,6 +238,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void RequestStream_AcceptsDataAndHeadersFrames()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -184,6 +251,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RequestStream_ServerEndpointRejectsClientPushPromise()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -196,6 +266,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
@@ -208,6 +281,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void RequestStream_ClientEndpointAcceptsPushPromiseWhenPushIsEnabled()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client, enableServerPush: true);
@@ -217,6 +293,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void RequestStream_RejectsControlFrames()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -229,6 +308,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void QPackStreams_RegisterButRejectHttp3Frames()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -242,6 +324,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void PushStream_IsRejectedWhileServerPushIsDisabled()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client);
@@ -254,6 +339,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void PushStream_WhenEnabledAcceptsDataAndHeadersButRejectsPushPromise()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Client, enableServerPush: true);
@@ -269,6 +357,9 @@ public sealed class Http3StreamDispatcherTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void UnknownAndReservedStreamsRejectHttp3FrameProcessing()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);

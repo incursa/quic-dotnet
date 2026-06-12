@@ -223,7 +223,9 @@ internal sealed class QuicConnectionRuntimeShard : IAsyncDisposable, IDisposable
     {
         try
         {
-            if (workItem.Runtime.IsDisposed || workItem.Runtime.IsInboxConsumerRunning)
+            if ((workItem.Runtime.IsDisposed
+                    && workItem.ConnectionEvent is not QuicConnectionLocalCloseRequestedEvent)
+                || workItem.Runtime.IsInboxConsumerRunning)
             {
                 return;
             }

@@ -1,0 +1,74 @@
+// Copyright (c) 2026 Incursa LLC.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace Incursa.Quic.Tests;
+
+[Requirement("REQ-QUIC-RFC9250-0109")]
+public sealed class REQ_QUIC_RFC9250_0109
+{
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void DoqConnectivityPrivacyTraceArtifactsAreLinked()
+    {
+        string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-RFC9250.json");
+        string architecture = ReadRepositoryFile("specs/architecture/quic/ARC-QUIC-RFC9250-0014.json");
+        string workItem = ReadRepositoryFile("specs/work-items/quic/WI-QUIC-RFC9250-0014.json");
+        string verification = ReadRepositoryFile("specs/verification/quic/VER-QUIC-RFC9250-0014.json");
+
+        Assert.Contains("REQ-QUIC-RFC9250-0109", spec, StringComparison.Ordinal);
+        Assert.Contains("ARC-QUIC-RFC9250-0014", spec, StringComparison.Ordinal);
+        Assert.Contains("WI-QUIC-RFC9250-0014", spec, StringComparison.Ordinal);
+        Assert.Contains("VER-QUIC-RFC9250-0014", spec, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0109", architecture, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0109", workItem, StringComparison.Ordinal);
+        Assert.Contains("REQ-QUIC-RFC9250-0109", verification, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void DoqConnectivityPrivacyCodeAndTestsAreTraceLinked()
+    {
+        string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
+        string tests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
+        string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-RFC9250.json");
+
+        Assert.Contains("Connectivity has changed since the connection was established. Create a new DoqClient.", client, StringComparison.Ordinal);
+        Assert.Contains("AllowsQueryWhenConnectivityIsUnchanged", tests, StringComparison.Ordinal);
+        Assert.Contains("RejectsQueryAfterConnectivityChange", tests, StringComparison.Ordinal);
+        Assert.Contains("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged", spec, StringComparison.Ordinal);
+        Assert.Contains("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange", spec, StringComparison.Ordinal);
+    }
+
+    private static string ReadRepositoryFile(string relativePath)
+    {
+        string repoRoot = FindRepoRoot();
+        string candidate = Path.Combine(repoRoot, relativePath);
+        if (File.Exists(candidate))
+        {
+            return File.ReadAllText(candidate);
+        }
+
+        throw new InvalidOperationException($"Unable to locate '{relativePath}' under '{repoRoot}'.");
+    }
+
+    private static string FindRepoRoot()
+    {
+        DirectoryInfo? current = new(AppContext.BaseDirectory);
+        while (current is not null)
+        {
+            string gitMarker = Path.Combine(current.FullName, ".git");
+            string specMarker = Path.Combine(current.FullName, "specs", "requirements", "quic", "SPEC-QUIC-RFC9250.json");
+            string codeMarker = Path.Combine(current.FullName, "src", "Incursa.Quic.Dns", "DoqClient.cs");
+            if ((Directory.Exists(gitMarker) || File.Exists(gitMarker)) && File.Exists(specMarker) && File.Exists(codeMarker))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        throw new InvalidOperationException("Unable to locate the repository root for the RFC 9250 DoQ connectivity privacy tests.");
+    }
+}

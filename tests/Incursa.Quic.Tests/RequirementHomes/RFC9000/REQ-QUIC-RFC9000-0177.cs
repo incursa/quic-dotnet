@@ -151,10 +151,9 @@ public sealed class REQ_QUIC_RFC9000_0177
         outboundEffects.Clear();
 
         byte[] payload = new byte[100];
-        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
-            () => stream.WriteAsync(payload, 0, payload.Length));
-
-        Assert.Contains("flow-control credit", exception.Message);
+        using CancellationTokenSource writeCancellation = new();
+        Task writeTask = stream.WriteAsync(payload, 0, payload.Length, writeCancellation.Token);
+        AssertWritePending(writeTask);
 
         Assert.Single(outboundEffects);
         QuicConnectionSendDatagramEffect sendEffect = Assert.IsType<QuicConnectionSendDatagramEffect>(
@@ -189,6 +188,7 @@ public sealed class REQ_QUIC_RFC9000_0177
         Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
         Assert.True(retransmission.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+        await CancelPendingWriteAsync(writeTask, writeCancellation);
     }
 
     [Fact]
@@ -222,10 +222,9 @@ public sealed class REQ_QUIC_RFC9000_0177
         outboundEffects.Clear();
 
         byte[] payload = new byte[2];
-        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
-            () => stream.WriteAsync(payload, 0, payload.Length));
-
-        Assert.Contains("flow-control credit", exception.Message);
+        using CancellationTokenSource writeCancellation = new();
+        Task writeTask = stream.WriteAsync(payload, 0, payload.Length, writeCancellation.Token);
+        AssertWritePending(writeTask);
 
         Assert.Single(outboundEffects);
         QuicConnectionSendDatagramEffect sendEffect = Assert.IsType<QuicConnectionSendDatagramEffect>(
@@ -259,6 +258,7 @@ public sealed class REQ_QUIC_RFC9000_0177
         Assert.True(runtime.SendRuntime.TryDequeueRetransmission(out QuicConnectionRetransmissionPlan retransmission));
         Assert.True(retransmission.PacketBytes.Span.SequenceEqual(sendEffect.Datagram.Span));
         Assert.False(runtime.SendRuntime.TryDequeueRetransmission(out _));
+        await CancelPendingWriteAsync(writeTask, writeCancellation);
     }
 
     /// <workbench-requirements generated="true" source="manual">
@@ -287,11 +287,11 @@ public sealed class REQ_QUIC_RFC9000_0177
         outboundEffects.Clear();
 
         byte[] payload = new byte[100];
-        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
-            () => stream.WriteAsync(payload, 0, payload.Length));
-
-        Assert.Contains("flow-control credit", exception.Message);
+        using CancellationTokenSource writeCancellation = new();
+        Task writeTask = stream.WriteAsync(payload, 0, payload.Length, writeCancellation.Token);
+        AssertWritePending(writeTask);
         Assert.Empty(outboundEffects);
+        await CancelPendingWriteAsync(writeTask, writeCancellation);
     }
 
     [Fact]
@@ -317,11 +317,25 @@ public sealed class REQ_QUIC_RFC9000_0177
         outboundEffects.Clear();
 
         byte[] payload = new byte[2];
-        NotSupportedException exception = await Assert.ThrowsAsync<NotSupportedException>(
-            () => stream.WriteAsync(payload, 0, payload.Length));
-
-        Assert.Contains("flow-control credit", exception.Message);
+        using CancellationTokenSource writeCancellation = new();
+        Task writeTask = stream.WriteAsync(payload, 0, payload.Length, writeCancellation.Token);
+        AssertWritePending(writeTask);
         Assert.Empty(outboundEffects);
+        await CancelPendingWriteAsync(writeTask, writeCancellation);
+    }
+
+    private static void AssertWritePending(Task writeTask)
+    {
+        Assert.False(
+            writeTask.IsCompleted,
+            "The flow-control-blocked write should remain pending until peer credit changes or the caller cancels it.");
+    }
+
+    private static async Task CancelPendingWriteAsync(Task writeTask, CancellationTokenSource writeCancellation)
+    {
+        writeCancellation.Cancel();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(
+            () => writeTask.WaitAsync(TimeSpan.FromSeconds(10)));
     }
 
     private static void AcknowledgeTrackedPackets(QuicConnectionRuntime runtime)

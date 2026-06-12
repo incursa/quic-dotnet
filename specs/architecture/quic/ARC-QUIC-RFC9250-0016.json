@@ -6,6 +6,7 @@
   "title": "DNS over QUIC RFC 9250 Usage Profiles and Fallback Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
+  "purpose": "Define the DoQ usage-profile and fallback behavior that lets strict clients fail closed while opportunistic clients record transport failures and delegate alternate DNS transport selection to callers.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0016",
@@ -25,11 +26,12 @@
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
   ],
-  "design_summary": "Adds DoqClientProfile enum (Strict/Opportunistic), DoqFallbackCache class for in-memory failure tracking, and profile-aware behavior to DoqClient. Strict profile fails hard on DoQ errors. Opportunistic profile records failures in the cache, backs off for a configurable period, and supports key-pinned endpoints with shortened backoff.",
+  "design_summary": "Adds DoqClientProfile enum (Strict/Opportunistic), DoqFallbackCache class for in-memory failure tracking, and profile-aware behavior to DoqClient. Strict profile fails hard on DoQ errors. Opportunistic profile records failures in the cache, backs off for a configurable period, and supports key-pinned endpoints with shortened backoff. DoqFallbackPolicy exposes the caller-owned fallback selection after a DoQ connection failure: prefer DoT when available, use cleartext DNS only when caller policy explicitly permits it, and suppress cleartext fallback for key-pinned endpoints.",
   "data_and_state_considerations": "DoqFallbackCache uses a ConcurrentDictionary for thread-safe failure tracking. The cache is shared across DoqClient instances.",
   "edge_cases_and_constraints": [
     "Attached clients (via Attach) do not have an endpoint string; fallback checks are skipped.",
     "Key-pinned endpoints shorten backoff to 1 minute instead of the configured period.",
+    "Cleartext fallback is never selected unless caller policy explicitly allows it, and key-pinned endpoints do not select cleartext fallback.",
     "The backoff is advisory; callers can clear the cache to force retries."
   ],
   "risks": [
@@ -39,7 +41,7 @@
   "supplemental_sections": [
     {
       "heading": "Fallback Abstraction",
-      "content": "No DoT or cleartext DNS client is included in this adapter. The Opportunistic profile surfaces a clear DoqException when backed off, allowing the caller to fall back to an alternative transport. A future slice may integrate a transport abstraction."
+      "content": "No DoT or cleartext DNS client is included in this adapter. The Opportunistic profile surfaces a clear DoqException when backed off, and DoqFallbackPolicy selects the caller-owned fallback transport after a DoQ connection failure. A future slice may integrate a transport abstraction."
     }
   ]
 }

@@ -61,6 +61,13 @@ public sealed class REQ_QUIC_RFC9250_0002
         Assert.Contains("HandleQueryStreamAsync", server, StringComparison.Ordinal);
         Assert.Contains("IDoqQueryHandler", handler, StringComparison.Ordinal);
         Assert.Contains("QueryAsync_UsesOneBidirectionalStreamAndReturnsSameStreamResponse", tests, StringComparison.Ordinal);
+        Assert.Contains("ClientSendsZeroDnsMessageIdOnDoqQueryStream", tests, StringComparison.Ordinal);
+        Assert.Contains("ClientNormalizesNonZeroDnsMessageIdBeforeSendingDoqQuery", tests, StringComparison.Ordinal);
+        Assert.Contains("ConcurrentQueriesWithZeroMessageIdsAreCorrelatedByTheirStreams", tests, StringComparison.Ordinal);
+        Assert.Contains("ConcurrentQueriesWithSameNonZeroMessageIdAreCorrelatedByTheirStreams", tests, StringComparison.Ordinal);
+        Assert.Contains("SequentialQueryResponseTransactionsUseSeparateStreams", tests, StringComparison.Ordinal);
+        Assert.Contains("ServerWritesResponseOnTheSameQueryStream", tests, StringComparison.Ordinal);
+        Assert.Contains("ServerTreatsMultipleQueriesOnOneStreamAsFatalProtocolError", tests, StringComparison.Ordinal);
         Assert.Contains("ConcurrentQueriesUseNextClientInitiatedBidirectionalStreamsOnOneConnection", tests, StringComparison.Ordinal);
     }
 

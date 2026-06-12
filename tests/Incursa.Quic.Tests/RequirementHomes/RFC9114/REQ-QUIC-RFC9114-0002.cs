@@ -72,12 +72,20 @@ public sealed class REQ_QUIC_RFC9114_0002
         string frameTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs");
 
         Assert.Contains("FrameWriter_And_Reader_RoundTripDataFrame", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameWriter_DataFrameUsesExactLengthForLargePayload", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameWriter_And_Reader_RoundTripHeadersFrame", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameWriter_And_Reader_RoundTripSettingsFrame", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameWriter_And_Reader_RoundTripSingleIntegerFrames", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameWriter_And_Reader_RoundTripPushPromiseFrame", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReader_ReturnsUnknownFrameForUnknownType", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameReader_ParsesHeadersAndPayloadSplitAcrossSingleByteReads", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameReader_ParsesMultipleFramesAcrossSmallReads", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameReader_RejectsTruncatedHeaderAtEndOfStream", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameReader_RejectsTruncatedPayloadAtEndOfStream", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReader_RejectsSingleIntegerFrameWithExtraPayloadBytes", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReader_RejectsSettingsPayloadWithTruncatedPair", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReader_RejectsDuplicateSettingsIdentifiers", frameTests, StringComparison.Ordinal);
+        Assert.Contains("FrameReader_RejectsPushPromiseWithoutPushId", frameTests, StringComparison.Ordinal);
         Assert.Contains("FrameReader_PreservesReservedFrameTypesAsUnknownFrames", frameTests, StringComparison.Ordinal);
         Assert.Contains("DATA, HEADERS, SETTINGS, GOAWAY, CANCEL_PUSH, MAX_PUSH_ID, and PUSH_PROMISE", spec, StringComparison.Ordinal);
     }
@@ -92,14 +100,27 @@ public sealed class REQ_QUIC_RFC9114_0002
 
         Assert.Contains("RegisterBidirectionalStream_MapsClientInitiatedStreamsToRequests", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RegisterBidirectionalStream_RejectsServerInitiatedStreamsWhenExtensionsAreNotEnabled", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RegisterBidirectionalStream_AllowsServerInitiatedStreamsWhenExtensionIsEnabled", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RegisterUnidirectionalStream_ParsesStreamTypeAcrossPartialBuffers", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RegisterUnidirectionalStream_MapsKnownReservedAndUnknownStreamTypes", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RegisterUnidirectionalStream_RejectsMissingStreamTypeAtEndOfStream", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RegisterUnidirectionalStream_RejectsPayloadBytesBundledWithStreamType", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_AllowsOneControlStreamPerEndpoint", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("ControlStream_RequiresSettingsAsFirstFrame", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_AcceptsSettingsAsFirstFrameAndControlFramesAfterward", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_ClientEndpointCapturesServerSettings", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_RejectsSecondSettingsFrame", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_RejectsRequestOnlyFrames", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RequestStream_AcceptsDataAndHeadersFrames", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RequestStream_RejectsControlFrames", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RequestStream_ServerEndpointRejectsClientPushPromise", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("RequestStream_ClientEndpointAcceptsPushPromiseWhenPushIsEnabled", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("QPackStreams_RegisterButRejectHttp3Frames", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("PushStream_IsRejectedWhileServerPushIsDisabled", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("PushStream_WhenEnabledAcceptsDataAndHeadersButRejectsPushPromise", dispatcherTests, StringComparison.Ordinal);
+        Assert.Contains("UnknownAndReservedStreamsRejectHttp3FrameProcessing", dispatcherTests, StringComparison.Ordinal);
         Assert.Contains("stream classification", spec, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -115,9 +136,15 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("SettingsWriter_And_Parser_RoundTripKnownSettings", settingsTests, StringComparison.Ordinal);
         Assert.Contains("SettingsWriter_WritesInitialControlStreamBytes", settingsTests, StringComparison.Ordinal);
         Assert.Contains("SettingsExchange_EmitsInitialSettingsExactlyOnceWhenTransportIsReady", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("SettingsExchange_CapturesPeerSettingsOnce", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("SettingsModel_EnforcesMaxFieldSectionSize", settingsTests, StringComparison.Ordinal);
         Assert.Contains("SettingsParser_IgnoresUnknownSettings", settingsTests, StringComparison.Ordinal);
         Assert.Contains("SettingsParser_RejectsDuplicateSettings", settingsTests, StringComparison.Ordinal);
         Assert.Contains("SettingsParser_RejectsReservedHttp2Settings", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("SettingsWriter_RejectsReservedHttp2Settings", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("ControlStream_StoresParsedPeerSettings", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("SettingsNotFirstOnControlStream_IsRejected", settingsTests, StringComparison.Ordinal);
+        Assert.Contains("SettingsOnRequestStream_IsRejected", settingsTests, StringComparison.Ordinal);
         Assert.Contains("ValidateRequestHeaders_CommonGet_Passes", headerTests, StringComparison.Ordinal);
         Assert.Contains("ValidateResponseHeaders_CommonFinalResponse_Passes", headerTests, StringComparison.Ordinal);
         Assert.Contains("ValidateRequestHeaders_MalformedConditions_ThrowMessageError", headerTests, StringComparison.Ordinal);
@@ -147,6 +174,7 @@ public sealed class REQ_QUIC_RFC9114_0002
 
         Assert.Contains("GetAsync_OverLoopbackQuic_ReturnsResponseHeadersAndBody", clientTests, StringComparison.Ordinal);
         Assert.Contains("ConnectAsync_RejectsClientOptionsWithoutH3Alpn", clientTests, StringComparison.Ordinal);
+        Assert.Contains("ConnectAsync_ObservesPeerControlSettingsAndRejectsRequestsAfterGoAway", clientTests, StringComparison.Ordinal);
         Assert.Contains("GetAsync_StaticRoute_ReturnsSuccess", serverTests, StringComparison.Ordinal);
         Assert.Contains("DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess", serverTests, StringComparison.Ordinal);
         Assert.Contains("InMemoryRouteHandler_MissingGet_Returns404", serverTests, StringComparison.Ordinal);
@@ -179,6 +207,7 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("REQ-QUIC-RFC9114-S9-0002", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9114-S9-0002", verification, StringComparison.Ordinal);
         Assert.Contains("GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting", clientTests, StringComparison.Ordinal);
+        Assert.Contains("GetAsync_WithShortResponseBodyAndFin_RejectsContentLengthMismatch", clientTests, StringComparison.Ordinal);
         Assert.Contains("CompleteResponseOnContentLength = true", clientTests, StringComparison.Ordinal);
         Assert.Contains("RepeatedLargeResponses_CompleteWithExactBodyAndFin", serverTests, StringComparison.Ordinal);
         Assert.Contains("PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler", serverTests, StringComparison.Ordinal);

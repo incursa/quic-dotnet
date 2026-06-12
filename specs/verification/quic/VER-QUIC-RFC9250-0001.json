@@ -34,7 +34,7 @@
     "REQ-QUIC-RFC9250-0139",
     "REQ-QUIC-RFC9250-0140"
   ],
-  "scope": "This verification covers the DoQ foundation package: ALPN `doq`, UDP port 853 default helpers, UDP port 53 rejection, RFC 9250 error-code constants, and the two-octet DNS message length-prefix codec. It does not verify complete DNS query/response stream dispatch.",
+  "scope": "This verification covers the DoQ foundation package: ALPN `doq`, UDP port 853 default helpers, explicitly supplied alternate DoQ ports, UDP port 53 rejection, RFC 9250 error-code constants, and the two-octet DNS message length-prefix codec. It does not verify complete DNS query/response stream dispatch.",
   "preconditions": [
     "The RFC 9250 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9250.json`.",
     "DoQ behavior remains in `Incursa.Quic.Dns` rather than in the transport runtime."
@@ -53,5 +53,5 @@
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs"
   ],
-  "status_summary": "The DoQ foundation is trace-owned and verified as a constants, option-validation, and message-framing floor. Full RFC 9250 stream lifecycle and interop behavior remains future work."
+  "status_summary": "The DoQ foundation is trace-owned and verified as a constants, option-validation, alternate-port, and message-framing floor. Full RFC 9250 stream lifecycle and interop behavior remains future work."
 }

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\Incursa.Quic\Incursa.Quic.csproj" />
+    <ProjectReference Include="..\src\Incursa.Quic.Dns\Incursa.Quic.Dns.csproj" />
     <ProjectReference Include="..\src\Incursa.Quic.Http3\Incursa.Quic.Http3.csproj" />
     <ProjectReference Include="..\src\Incursa.Qpack\Incursa.Qpack.csproj" />
     <PackageReference Include="BenchmarkDotNet" />

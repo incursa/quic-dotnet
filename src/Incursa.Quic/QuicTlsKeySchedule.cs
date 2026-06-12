@@ -20,7 +20,7 @@ namespace Incursa.Quic;
 internal sealed class QuicTlsKeySchedule
 {
     private const int HandshakeHeaderLength = 4;
-    private const uint ServerResumptionTicketLifetimeSeconds = 600;
+    private const uint ServerResumptionTicketLifetimeSeconds = 6 * 60 * 60;
     private const uint QuicEarlyDataMaxEarlyDataSizeSentinel = uint.MaxValue;
     private const int ServerResumptionTicketNonceLength = 8;
     private const int ServerResumptionTicketBytesLength = 32;

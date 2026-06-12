@@ -49,8 +49,7 @@ public sealed class REQ_QUIC_INT_0025
         Assert.DoesNotContain("preferred_lft 1", setupScript, StringComparison.Ordinal);
         Assert.DoesNotContain("preferred_lft 1", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("preferred migration address with `preferred_lft 1`", setupScript, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("`rebind-port` as supported", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("`rebind-addr` as supported", readme, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("preferred-address proof as `rebind-addr` support", readme, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadRepositoryFile(string relativePath)

@@ -11,6 +11,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0004">The QuicStream type MUST derive from Stream and expose the stream identifier, stream direction, read-side and write-side closed-completion tasks, the narrow abort control surface, and the standard capability members used by the currently supported consumer slice, including a truthful writable-side flag only on send-capable streams.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0004")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0004
 {
     [Fact]

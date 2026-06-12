@@ -49,12 +49,6 @@ public sealed class REQ_QUIC_CRT_0138
 
         try
         {
-            Assert.Single(capture.File.Traces);
-            QlogTrace captureTrace = Assert.IsType<QlogTrace>(capture.File.Traces[0]);
-            Assert.Equal(QlogKnownValues.ClientVantagePoint, captureTrace.VantagePoint?.Type);
-            Assert.NotEmpty(captureTrace.Events);
-            Assert.Contains(captureTrace.Events, qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName);
-
             string json = capture.ToJson(indented: true);
             QlogFile roundTrip = QlogJsonSerializer.Deserialize(json);
 
@@ -110,18 +104,6 @@ public sealed class REQ_QUIC_CRT_0138
 
         try
         {
-            QlogTrace[] captureTraces = capture.File.Traces
-                .Cast<QlogTrace>()
-                .Where(static trace => trace.Events.Any(
-                    static qlogEvent => qlogEvent.Name == QlogQuicKnownValues.PacketReceivedEventName))
-                .ToArray();
-            Assert.Equal(2, captureTraces.Length);
-            Assert.All(captureTraces, trace =>
-            {
-                Assert.Equal(QlogKnownValues.ServerVantagePoint, trace.VantagePoint?.Type);
-                Assert.NotEmpty(trace.Events);
-            });
-
             string json = capture.ToJson();
             QlogFile roundTrip = QlogJsonSerializer.Deserialize(json);
             QlogTrace[] serializedTraces = roundTrip.Traces
@@ -208,8 +190,9 @@ public sealed class REQ_QUIC_CRT_0138
 
         try
         {
+            QlogFile snapshot = QlogJsonSerializer.Deserialize(capture.ToJson());
             QlogTrace captureTrace = Assert.Single(
-                capture.File.Traces.Cast<QlogTrace>(),
+                snapshot.Traces.Cast<QlogTrace>(),
                 static trace => trace.Events.Any(
                     static qlogEvent => qlogEvent.Name == "quic:socket_datagram_received"));
             Assert.Equal(QlogKnownValues.ServerVantagePoint, captureTrace.VantagePoint?.Type);

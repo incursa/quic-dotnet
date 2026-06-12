@@ -16,6 +16,9 @@ public sealed class QPackInstructionStreamTests
     private const string RfcAppendixB5DynamicNameInsertHex = "810D637573746F6D2D76616C756532";
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void EncoderStreamParser_ParsesSetDynamicTableCapacityAcrossPartialBuffers()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -29,6 +32,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncoderStreamParser_ParsesInsertWithStaticNameReference()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -41,6 +47,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncoderStreamParser_ParsesInsertWithDynamicNameReference()
     {
         QPackDecoder decoder = CreateDecoderWithAppendixB4Table();
@@ -52,6 +61,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void EncoderStreamParser_ParsesInsertWithLiteralNameAcrossPartialBuffers()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -67,6 +79,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncoderStreamParser_ParsesDuplicate()
     {
         QPackDecoder decoder = CreateDecoderWithAppendixB3Table();
@@ -79,6 +94,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void EncoderStreamParser_RejectsPartialInstructionAtEndOfStream()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -90,6 +108,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void EncoderStreamParser_RejectsMalformedIntegerDeterministically()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -101,6 +122,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void EncoderStreamParser_RejectsMalformedHuffmanLiteralWithEncoderStreamError()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -112,6 +136,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DecoderStreamParser_ParsesSectionAcknowledgmentAcrossPartialBuffers()
     {
         QPackEncoder encoder = CreateEncoderWithBlockedSection(streamId: 132);
@@ -125,6 +152,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecoderStreamParser_ParsesStreamCancellation()
     {
         QPackEncoder encoder = CreateEncoderWithBlockedSection(streamId: 4);
@@ -136,6 +166,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecoderStreamParser_ParsesInsertCountIncrement()
     {
         QPackEncoder encoder = CreateEncoderWithTwoInsertedEntries();
@@ -146,6 +179,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecoderStreamParser_RejectsPartialInstructionAtEndOfStream()
     {
         QPackEncoder encoder = CreateEncoderWithBlockedSection(streamId: 132);
@@ -157,6 +193,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecoderStreamParser_RejectsMalformedIntegerDeterministically()
     {
         QPackEncoder encoder = CreateEncoderWithTwoInsertedEntries();
@@ -168,6 +207,9 @@ public sealed class QPackInstructionStreamTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void InstructionStreams_SynchronizeEncoderAndDecoderDynamicState()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);

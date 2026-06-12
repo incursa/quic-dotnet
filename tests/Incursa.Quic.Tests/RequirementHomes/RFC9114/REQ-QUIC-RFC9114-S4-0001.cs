@@ -59,7 +59,9 @@ public sealed class REQ_QUIC_RFC9114_S4_0001
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Negative")]
+    [Trait("Category", "Edge")]
     public void LowLevelMalformedSequenceTestsKeepUnknownAndReservedFramesNonFatal()
     {
         string spec = ReadRepositoryFile("specs/requirements/quic/SPEC-QUIC-RFC9114.json");

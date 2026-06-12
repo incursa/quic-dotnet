@@ -6,6 +6,9 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3SettingsHandlingTests
 {
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void SettingsWriter_And_Parser_RoundTripKnownSettings()
     {
         Http3Settings localSettings = new(
@@ -22,6 +25,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void SettingsWriter_WritesInitialControlStreamBytes()
     {
         Http3Settings settings = new(qpackMaxTableCapacity: 128, qpackBlockedStreams: 2);
@@ -35,6 +41,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void SettingsExchange_EmitsInitialSettingsExactlyOnceWhenTransportIsReady()
     {
         Http3SettingsExchange exchange = new(new Http3Settings(qpackMaxTableCapacity: 128));
@@ -47,6 +56,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void SettingsExchange_CapturesPeerSettingsOnce()
     {
         Http3SettingsExchange exchange = new(new Http3Settings());
@@ -62,6 +74,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void SettingsModel_EnforcesMaxFieldSectionSize()
     {
         Http3Settings settings = new(maxFieldSectionSize: 10);
@@ -73,6 +88,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void SettingsParser_IgnoresUnknownSettings()
     {
         byte[] encoded = Http3FrameWriter.WriteFrame((ulong)Http3FrameType.Settings, [0x41, 0x00, 0x01, 0x06, 0x40, 0x64]);
@@ -86,6 +104,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void SettingsParser_RejectsDuplicateSettings()
     {
         byte[] encoded = Http3FrameWriter.WriteFrame((ulong)Http3FrameType.Settings, [0x06, 0x01, 0x06, 0x02]);
@@ -96,6 +117,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     [InlineData(0x00UL)]
     [InlineData(0x02UL)]
     [InlineData(0x03UL)]
@@ -112,6 +136,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void SettingsWriter_RejectsReservedHttp2Settings()
     {
         Http3Exception exception = Assert.Throws<Http3Exception>(
@@ -121,6 +148,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void ControlStream_StoresParsedPeerSettings()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -140,6 +170,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void SettingsNotFirstOnControlStream_IsRejected()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);
@@ -153,6 +186,9 @@ public sealed class Http3SettingsHandlingTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S7-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void SettingsOnRequestStream_IsRejected()
     {
         Http3StreamDispatcher dispatcher = new(Http3EndpointRole.Server);

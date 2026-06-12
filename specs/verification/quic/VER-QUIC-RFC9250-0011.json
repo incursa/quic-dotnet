@@ -40,7 +40,9 @@
   "evidence": [
     "src/Incursa.Quic.Dns/DoqDefaults.cs",
     "src/Incursa.Quic.Dns/DoqClient.cs",
-    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0072.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0073.cs"
   ],
-  "status_summary": "The DoQ client now manages connection lifecycle with idle timeout negotiation, reuse safety checks, explicit DOQ_NO_ERROR close, and in-progress query tracking. All 11 REQs are traced and verified."
+  "status_summary": "The DoQ client now manages connection lifecycle with idle timeout negotiation, reuse safety checks, explicit DOQ_NO_ERROR close, and in-progress query tracking. Focused loopback proof covers outstanding-query disposal with DOQ_NO_ERROR and idle-dispose negative behavior. All 11 REQs are traced and verified."
 }

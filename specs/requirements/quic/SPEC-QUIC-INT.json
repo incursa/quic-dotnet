@@ -618,11 +618,12 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0013.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0018.cs",
           "tests/Incursa.Quic.Tests/InteropHarnessRunnerTests.cs",
-          "tests/Incursa.Quic.Tests/InteropHarnessProcessObservabilityTests.cs"
+          "tests/Incursa.Quic.Tests/InteropHarnessProcessObservabilityTests.cs",
+          "tests/Incursa.Quic.Tests/InteropRunnerScriptFailureSummaryTests.cs::RunnerExitNonZeroWithHandshakecorruptionUnknownFrameReportsBlockedDiagnosticButRemainsFailed"
         ]
       },
       "notes": [
-        "The documented upstream non-HTTP/3 suite currently includes versionnegotiation, handshake, transfer, longrtt, chacha20, multiplexing, keyupdate, retry, resumption, zerortt, amplificationlimit, blackhole, multiconnect, transferloss, ipv6, v2, rebind-port, rebind-addr, and connectionmigration. HTTP/3, corruption, and ECN cells remain outside this helper-supported inventory until a separate proof slice promotes them explicitly.",
+        "The documented upstream non-HTTP/3 suite currently includes versionnegotiation, handshake, transfer, longrtt, chacha20, transfercorruption, multiplexing, keyupdate, retry, resumption, zerortt, amplificationlimit, blackhole, multiconnect, transferloss, ipv6, v2, rebind-port, rebind-addr, connectionmigration, and handshakecorruption. HTTP/3 and ECN remain outside this helper-supported inventory until a separate proof slice promotes them explicitly; handshakecorruption is currently an explicit prerequisite-blocked diagnostic cell after the preserved quic-go/chrome run mapped through the upstream multiconnect-derived corruption flow and failed with FRAME_ENCODING_ERROR/unknown-frame evidence.",
         "`http3` remains out of scope for this slice.",
         "A testcase may be classified as intentionally unsupported or prerequisite-blocked while its underlying protocol slice is still red; that classification must be explicit rather than implied by a generic unsupported fallthrough."
       ]
@@ -672,7 +673,7 @@
       "notes": [
         "This profile is an evidence-collection surface, not a broad interop-readiness gate. The generated `interop-major-peer-matrix-inventory` report keeps the current cell set explicit, and the completed run `25904716076` now has the dedicated `interop-major-peer-matrix-evidence-25904716076` report that preserves its mixed peer-specific pass and failure classes.",
         "`versionnegotiation` now has explicit reserved-version runner dispatch, but it remains excluded from the role-backed major peer matrix by profile scope, and the generated inventory/evidence reports stay limited to the current handshake, retry, transfer, keyupdate, and resumption cell set.",
-        "`rebind-port` and `rebind-addr` remain governed by their prerequisite-blocked inventory classifications under `REQ-QUIC-INT-0018`, while `v2`, `chacha20`, and `connectionmigration` are now supported/executed under that same inventory requirement and `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
+        "`rebind-port`, `rebind-addr`, `v2`, `chacha20`, and `connectionmigration` are now supported/executed under `REQ-QUIC-INT-0018`, while `zerortt` is now governed by `REQ-QUIC-INT-0021` as supported/executed."
       ]
     },
     {

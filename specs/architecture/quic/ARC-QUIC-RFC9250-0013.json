@@ -6,7 +6,7 @@
   "title": "DNS over QUIC RFC 9250 0-RTT Replay Protection Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Define DNS opcode classification for replayability, client-side 0-RTT gating, and server-side 0-RTT transaction handling with queue limits.",
+  "purpose": "Define DNS opcode classification for replayability, client-side 0-RTT gating, and server-side 0-RTT transaction handling when a hosting layer supplies early-data state.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0013",
@@ -30,20 +30,20 @@
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"
   ],
-  "design_summary": "Three independent layers: (1) DoqDefaults.IsReplayableOpcode classifies DNS opcodes 0 (QUERY) and 4 (NOTIFY) as replayable and all others as non-replayable. (2) DoqClient exposes AllowZeroRtt; when enabled, QueryAsync rejects non-replayable opcodes with a clear exception. (3) DoqServer and DoqServerOptions add MaxQueuedZeroRttTransactions to limit queued 0-RTT queries; DoqQueryContext carries an IsZeroRtt signal (default false, not yet wired to transport). Non-replayable 0-RTT transactions receive a REFUSED response with Extended DNS Error \"Too Early\".",
-  "data_and_state_considerations": "The server gains a queue of pending 0-RTT transactions bounded by MaxQueuedZeroRttTransactions. The client adds a boolean AllowZeroRtt flag.",
+  "design_summary": "Three independent layers: (1) DoqDefaults.IsReplayableOpcode classifies DNS opcodes 0 (QUERY) and 4 (NOTIFY) as replayable and all others as non-replayable. (2) DoqClient exposes AllowZeroRtt; when enabled, QueryAsync rejects non-replayable opcodes with a clear exception. (3) DoqServerOptions.ZeroRttStreamDetector supplies the early-data signal to DoqQueryContext.IsZeroRtt; when true, non-replayable 0-RTT transactions receive a REFUSED response with Extended DNS Error \"Too Early\" before handler dispatch.",
+  "data_and_state_considerations": "The client adds a boolean AllowZeroRtt flag. The server adds a nullable ZeroRttStreamDetector delegate; when it is absent, streams remain handshake-confirmed by default.",
   "edge_cases_and_constraints": [
-    "The transport layer does not currently expose 0-RTT detection on the server side; DoqQueryContext.IsZeroRtt defaults to false and is a placeholder for future transport integration.",
+    "The transport layer does not currently expose 0-RTT detection on the server side; DoqQueryContext.IsZeroRtt defaults to false unless DoqServerOptions.ZeroRttStreamDetector supplies a true signal.",
     "OPCODE values beyond the registered range are treated as non-replayable.",
     "REFUSED response with EDE Too Early (option code 20) is constructed inline."
   ],
   "risks": [
-    "The 0-RTT detection abstraction point (IsZeroRtt on DoqQueryContext) is not wired to the transport until the QUIC layer exposes early data state."
+    "The 0-RTT detection abstraction point is DoqServerOptions.ZeroRttStreamDetector; the default remains false until a hosting layer or future transport integration supplies early-data state."
   ],
   "supplemental_sections": [
     {
       "heading": "Transport Limitation",
-      "content": "The repository's QuicConnection.ConnectAsync public entry point does not expose 0-RTT state. The DoqServer.HandleConnectionAsync cannot currently detect whether an inbound stream arrived in 0-RTT data. A future slice may wire the IsZeroRtt flag when the transport API is extended."
+      "content": "The repository's QuicConnection.ConnectAsync public entry point does not expose 0-RTT state. DoqServerOptions.ZeroRttStreamDetector is the adapter seam for hosts or future transport integration to supply whether an inbound stream arrived in 0-RTT data; when absent, streams are treated as handshake-confirmed."
     }
   ]
 }

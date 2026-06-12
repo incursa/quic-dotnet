@@ -125,12 +125,20 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripDataFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_DataFrameUsesExactLengthForLargePayload",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripHeadersFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripSettingsFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripSingleIntegerFrames",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameWriter_And_Reader_RoundTripPushPromiseFrame",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_ReturnsUnknownFrameForUnknownType",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_ParsesHeadersAndPayloadSplitAcrossSingleByteReads",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_ParsesMultipleFramesAcrossSmallReads",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsTruncatedHeaderAtEndOfStream",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsTruncatedPayloadAtEndOfStream",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsSingleIntegerFrameWithExtraPayloadBytes",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsSettingsPayloadWithTruncatedPair",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsDuplicateSettingsIdentifiers",
+          "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_RejectsPushPromiseWithoutPushId",
           "tests/Incursa.Quic.Tests/Http3FrameLayerTests.cs::FrameReader_PreservesReservedFrameTypesAsUnknownFrames"
         ]
       },
@@ -168,6 +176,7 @@
           "https://www.rfc-editor.org/rfc/rfc9114.html"
         ],
         "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Client.cs",
           "src/Incursa.Quic.Http3/Http3StreamDispatcher.cs",
           "src/Incursa.Quic.Http3/Http3ControlStreamState.cs",
           "src/Incursa.Quic.Http3/Http3StreamKind.cs",
@@ -176,14 +185,29 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterBidirectionalStream_MapsClientInitiatedStreamsToRequests",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterBidirectionalStream_RejectsServerInitiatedStreamsWhenExtensionsAreNotEnabled",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterBidirectionalStream_AllowsServerInitiatedStreamsWhenExtensionIsEnabled",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterUnidirectionalStream_ParsesStreamTypeAcrossPartialBuffers",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterUnidirectionalStream_MapsKnownReservedAndUnknownStreamTypes",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterUnidirectionalStream_RejectsMissingStreamTypeAtEndOfStream",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RegisterUnidirectionalStream_RejectsPayloadBytesBundledWithStreamType",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RejectsDuplicateControlStreamsFromSameEndpoint",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_AllowsOneControlStreamPerEndpoint",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RequiresSettingsAsFirstFrame",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_AcceptsSettingsAsFirstFrameAndControlFramesAfterward",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_ClientEndpointCapturesServerSettings",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RejectsSecondSettingsFrame",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_RejectsRequestOnlyFrames",
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::ConnectAsync_ObservesPeerControlSettingsAndRejectsRequestsAfterGoAway",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PeerControlStream_BundledSettingsFrame_IsObserved",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_AcceptsDataAndHeadersFrames",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_RejectsControlFrames",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_ServerEndpointRejectsClientPushPromise",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_ClientEndpointRejectsPushPromiseUntilPushIsEnabled",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::RequestStream_ClientEndpointAcceptsPushPromiseWhenPushIsEnabled",
           "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::QPackStreams_RegisterButRejectHttp3Frames",
-          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::PushStream_IsRejectedWhileServerPushIsDisabled"
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::PushStream_IsRejectedWhileServerPushIsDisabled",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::PushStream_WhenEnabledAcceptsDataAndHeadersButRejectsPushPromise",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::UnknownAndReservedStreamsRejectHttp3FrameProcessing"
         ]
       },
       "notes": [
@@ -219,6 +243,7 @@
           "https://www.rfc-editor.org/rfc/rfc9114.html"
         ],
         "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Client.cs",
           "src/Incursa.Quic.Http3/Http3Settings.cs",
           "src/Incursa.Quic.Http3/Http3SettingsExchange.cs",
           "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
@@ -231,12 +256,16 @@
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsWriter_WritesInitialControlStreamBytes",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsExchange_EmitsInitialSettingsExactlyOnceWhenTransportIsReady",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsExchange_CapturesPeerSettingsOnce",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsModel_EnforcesMaxFieldSectionSize",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_IgnoresUnknownSettings",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_RejectsDuplicateSettings",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsParser_RejectsReservedHttp2Settings",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsWriter_RejectsReservedHttp2Settings",
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::ControlStream_StoresParsedPeerSettings",
           "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsNotFirstOnControlStream_IsRejected",
-          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsOnRequestStream_IsRejected"
+          "tests/Incursa.Quic.Tests/Http3SettingsHandlingTests.cs::SettingsOnRequestStream_IsRejected",
+          "tests/Incursa.Quic.Tests/Http3StreamDispatcherTests.cs::ControlStream_ClientEndpointCapturesServerSettings",
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::ConnectAsync_ObservesPeerControlSettingsAndRejectsRequestsAfterGoAway"
         ]
       },
       "notes": [
@@ -390,6 +419,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_WithExactContentLength_WaitsForStreamFinBeforeCompleting",
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_WithShortResponseBodyAndFin_RejectsContentLengthMismatch",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::RepeatedLargeResponses_CompleteWithExactBodyAndFin",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithIncompleteContentLength_Returns400",

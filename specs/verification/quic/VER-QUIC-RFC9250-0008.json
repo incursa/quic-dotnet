@@ -16,7 +16,8 @@
     "REQ-QUIC-RFC9250-0058",
     "REQ-QUIC-RFC9250-0059",
     "REQ-QUIC-RFC9250-0061",
-    "REQ-QUIC-RFC9250-0064"
+    "REQ-QUIC-RFC9250-0064",
+    "REQ-QUIC-RFC9250-0103"
   ],
   "scope": "This verification covers EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization within the DoQ adapter.",
   "preconditions": [
@@ -37,5 +38,5 @@
     "src/Incursa.Quic.Dns/DoqStream.cs",
     "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs"
   ],
-  "status_summary": "The DoQ adapter now proves EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization. All four REQs are traced and verified."
+  "status_summary": "The DoQ adapter now proves EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout enforcement, and unknown/unexpected-context error code normalization. All linked REQs are traced and verified."
 }

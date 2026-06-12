@@ -11,6 +11,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P4-0006">An application protocol MAY read data from a stream.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S2P4_0006
 {
     [Fact]

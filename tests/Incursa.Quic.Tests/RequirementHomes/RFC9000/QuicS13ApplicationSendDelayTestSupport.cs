@@ -35,7 +35,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
         ulong? peerInitialMaxData = null,
         ulong? localMaxDatagramFrameSize = null,
         ulong? peerMaxDatagramFrameSize = null,
-        int maximumInboundDatagramQueueSize = 1024)
+        int maximumInboundDatagramQueueSize = 1024,
+        bool enableInitialPeerUsableConnectionId = false)
     {
         byte[] localHandshakePrivateKey = CreateScalar(0x11);
         QuicTransportParameters localTransportParameters = QuicPostHandshakeTicketTestSupport.CreateBootstrapLocalTransportParameters();
@@ -72,7 +73,8 @@ internal static class QuicS13ApplicationSendDelayTestSupport
             tlsRole: QuicTlsRole.Client,
             localHandshakePrivateKey: localHandshakePrivateKey,
             pinnedPeerLeafCertificateSha256: pinnedPeerLeafCertificateSha256,
-            maximumInboundDatagramQueueSize: maximumInboundDatagramQueueSize);
+            maximumInboundDatagramQueueSize: maximumInboundDatagramQueueSize,
+            enableInitialPeerUsableConnectionId: enableInitialPeerUsableConnectionId);
 
         Assert.True(runtime.TryConfigureInitialPacketProtection(PacketConnectionId));
         Assert.True(runtime.TrySetBootstrapOutboundPath(PacketPathIdentity));

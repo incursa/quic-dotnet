@@ -54,11 +54,15 @@
           "src/Incursa.Qpack/QPackStringLiteral.cs",
           "src/Incursa.Qpack/QPackStaticTable.cs",
           "src/Incursa.Qpack/README.md",
+          "benchmarks/QPackPrimitiveBenchmarks.cs",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
           "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs"
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::PrefixedInteger_RoundTripsBoundaryAndMultibyteValues",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::PrefixedInteger_RejectsTruncatedAndOverflowEncodings",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::StringLiteral_DecodesRawAndHuffmanValues",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::StringLiteral_RejectsTruncatedLengthOrPayload",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::StaticTable_ContainsRfc9204Entries",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesHuffmanLiteralWithStaticNameReference",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_RejectsMalformedHuffmanPaddingWithDecompressionFailed",
@@ -94,6 +98,7 @@
           "src/Incursa.Qpack/QPackEncoder.cs",
           "src/Incursa.Qpack/QPackDecoder.cs",
           "src/Incursa.Qpack/QPackFieldLine.cs",
+          "benchmarks/QPackFieldSectionBenchmarks.cs",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs"
         ],
         "x_test_refs": [
@@ -103,6 +108,7 @@
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesLiteralFieldLineWithLiteralName",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_DecodesHuffmanLiteralFieldLineWithLiteralName",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_PreservesFieldOrderAndDuplicates",
+          "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::DecodeFieldSection_RejectsTruncatedLiteralFieldLineWithDecompressionFailed",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_IsDeterministicForCommonHttp3Request",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs::EncodeFieldSection_RoundTripsCommonHttp3Response"
         ]
@@ -137,6 +143,7 @@
           "src/Incursa.Qpack/QPackDynamicTable.cs",
           "src/Incursa.Qpack/QPackEncoder.cs",
           "src/Incursa.Qpack/QPackDecoder.cs",
+          "benchmarks/QPackFieldSectionBenchmarks.cs",
           "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
           "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs"
         ],

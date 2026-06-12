@@ -33,6 +33,7 @@ public sealed class REQ_QUIC_CRT_0153
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
+    [Requirement("REQ-QUIC-RFC9250-0107")]
     public void EnabledServerEarlyDataAdvertisesNewSessionTicketExtensionAndStoresRememberedParameters()
     {
         QuicServerResumptionTicketStore ticketStore = new();
@@ -48,6 +49,7 @@ public sealed class REQ_QUIC_CRT_0153
             QuicTlsHandshakeMessageType.NewSessionTicket);
         Assert.True(TryParseNewSessionTicketEarlyData(newSessionTicket, out IssuedTicket issuedTicket, out uint maxEarlyDataSize));
         Assert.Equal(QuicEarlyDataMaxEarlyDataSizeSentinel, maxEarlyDataSize);
+        Assert.Equal(21_600u, issuedTicket.TicketLifetimeSeconds);
 
         Assert.True(ticketStore.TryGetLiveTicket(issuedTicket.TicketBytes, out QuicServerResumptionTicketRecord storedTicket));
         Assert.NotNull(storedTicket.ZeroRttTransportParameters);
@@ -94,6 +96,7 @@ public sealed class REQ_QUIC_CRT_0153
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
+    [Requirement("REQ-QUIC-RFC9250-0108")]
     public void DisabledServerEarlyDataAndReplayKeepZeroRttOpenMaterialAndEncryptedExtensionsClosed()
     {
         QuicServerResumptionTicketStore disabledTicketStore = new();

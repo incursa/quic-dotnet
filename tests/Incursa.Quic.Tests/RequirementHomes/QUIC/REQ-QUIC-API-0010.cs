@@ -14,6 +14,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0010">On the supported active loopback path, send-capable QuicStream facades MUST support immediate 1-RTT writes, best-effort graceful write completion through stream disposal, peer read-side byte delivery, and matching EOF observation without implying broader stream parity.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0010")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0010
 {
     [Fact]
@@ -84,6 +85,13 @@ public sealed class REQ_QUIC_API_0010
 
         await pair.ClientStream.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
         await pair.ClientStream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(5));
+
+        byte[] receiveBuffer = new byte[payload.Length];
+        int bytesRead = await pair.ServerStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Equal(payload.Length, bytesRead);
+        Assert.True(payload.AsSpan().SequenceEqual(receiveBuffer));
+        Assert.Equal(0, await pair.ServerStream.ReadAsync(receiveBuffer, 0, receiveBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5)));
+        await pair.ServerStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     [Fact]

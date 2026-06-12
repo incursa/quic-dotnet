@@ -6,6 +6,7 @@
   "title": "DNS over QUIC RFC 9250 Amplification and Retry Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
+  "purpose": "Document the DoQ adapter policy surface for amplification limiting, Retry use, and address-validation intent while leaving transport-level packet validation to the shared QUIC runtime.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0017",

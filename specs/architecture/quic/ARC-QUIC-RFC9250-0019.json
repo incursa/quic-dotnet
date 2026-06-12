@@ -6,6 +6,7 @@
   "title": "DNS over QUIC RFC 9250 Zone Transfer Concurrency Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
+  "purpose": "Trace zone-transfer concurrency requirements to the existing stream-per-query DoQ architecture and its verification of parallel IXFR and AXFR request handling.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0019",

@@ -60,10 +60,12 @@ public sealed class REQ_QUIC_RFC9250_0022
         string client = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqClient.cs");
         string server = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqServer.cs");
         string stream = ReadRepositoryFile("src/Incursa.Quic.Dns/DoqStream.cs");
+        string foundationTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqFoundationTests.cs");
         string lifecycleTests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs");
 
         Assert.Contains("OpenOutboundStreamAsync(QuicStreamType.Bidirectional", client, StringComparison.Ordinal);
         Assert.Contains("AcceptInboundStreamAsync", server, StringComparison.Ordinal);
+        Assert.Contains("MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu", foundationTests, StringComparison.Ordinal);
         Assert.Contains("LargeDnsResponsesFlowThroughTheDoqStreamPath", lifecycleTests, StringComparison.Ordinal);
         Assert.DoesNotContain("SendDatagram", client, StringComparison.Ordinal);
         Assert.DoesNotContain("ReceiveDatagram", client, StringComparison.Ordinal);

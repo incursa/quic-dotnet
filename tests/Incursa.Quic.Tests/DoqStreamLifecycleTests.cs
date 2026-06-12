@@ -10,6 +10,8 @@ namespace Incursa.Quic.Tests;
 [Collection(DoqLoopbackTestCollection.Name)]
 public sealed class DoqStreamLifecycleTests
 {
+    private const ushort DnsQTypeIxfr = 251;
+    private const ushort DnsQTypeAxfr = 252;
     private const int LargeDnsResponseLength = 2048;
 
     [Fact]
@@ -42,6 +44,168 @@ public sealed class DoqStreamLifecycleTests
         DoqQueryContext observed = Assert.Single(handler.Queries);
         Assert.Equal(0, observed.StreamId);
         Assert.Equal([0x00, 0x00, 0x10], observed.Query.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0022")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ClientSendsZeroDnsMessageIdOnDoqQueryStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x91)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(new byte[] { 0x00, 0x00, 0x31 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x91], result.Response.ToArray());
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.Equal([0x00, 0x00, 0x31], observed.Query.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0022")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ClientNormalizesNonZeroDnsMessageIdBeforeSendingDoqQuery()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x92)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(new byte[] { 0x12, 0x34, 0x32 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x92], result.Response.ToArray());
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.Equal([0x00, 0x00, 0x32], observed.Query.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0023")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConcurrentQueriesWithZeroMessageIdsAreCorrelatedByTheirStreams()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CoordinatedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> first = client.QueryAsync(new byte[] { 0x00, 0x00, 0x11 }).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        Task<DoqQueryResult> second = client.QueryAsync(new byte[] { 0x00, 0x00, 0x12 }).AsTask();
+
+        DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xa1], results[0].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa2], results[1].Response.ToArray());
+        long[] streamIds = handler.StreamIds;
+        Assert.Equal(2, streamIds.Length);
+        Assert.NotEqual(streamIds[0], streamIds[1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0023")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ConcurrentQueriesWithSameNonZeroMessageIdAreCorrelatedByTheirStreams()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CoordinatedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> first = client.QueryAsync(new byte[] { 0x44, 0x44, 0x11 }).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        Task<DoqQueryResult> second = client.QueryAsync(new byte[] { 0x44, 0x44, 0x12 }).AsTask();
+
+        DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xa1], results[0].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa2], results[1].Response.ToArray());
+        long[] streamIds = handler.StreamIds;
+        Assert.Equal(2, streamIds.Length);
+        Assert.NotEqual(streamIds[0], streamIds[1]);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0002")]
+    [Requirement("REQ-QUIC-RFC9250-0008")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task SequentialQueryResponseTransactionsUseSeparateStreams()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+        {
+            byte marker = context.Query.Span[2] == 0x61 ? (byte)0xb1 : (byte)0xb2;
+            return new DoqQueryResult(CreateDnsResponse(context.Query.Span, marker));
+        });
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult first = await client.QueryAsync(new byte[] { 0x00, 0x00, 0x61 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        DoqQueryResult second = await client.QueryAsync(new byte[] { 0x00, 0x00, 0x62 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xb1], first.Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xb2], second.Response.ToArray());
+        DoqQueryContext[] queries = handler.Queries;
+        Assert.Equal(2, queries.Length);
+        Assert.NotEqual(queries[0].StreamId, queries[1].StreamId);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0009")]
+    [Requirement("REQ-QUIC-RFC9250-0015")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerWritesResponseOnTheSameQueryStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xb9)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        byte[] encodedQuery = DoqMessageCodec.Encode([0x00, 0x00, 0x19]);
+        await stream.WriteAsync(encodedQuery, 0, encodedQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await stream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqMessage response = await ReadSingleDoqMessageUntilFinAsync(stream).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xb9], response.Payload.ToArray());
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.Equal(stream.Id, observed.StreamId);
     }
 
     [Fact]
@@ -124,6 +288,41 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0011")]
+    [Requirement("REQ-QUIC-RFC9250-0012")]
+    [Requirement("REQ-QUIC-RFC9250-0017")]
+    [Requirement("REQ-QUIC-RFC9250-0099")]
+    [Requirement("REQ-QUIC-RFC9250-0100")]
+    [Requirement("REQ-QUIC-RFC9250-0101")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ConcurrentQueryDoesNotReuseBlockedClientInitiatedBidirectionalStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsQuery(0x31)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsQuery(0x32)).AsTask();
+
+        DoqQueryResult secondResult = await second.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xd5], secondResult.Response.ToArray());
+        Assert.False(first.IsCompleted, "The first blocked query must not be reused to carry the second query.");
+        Assert.Equal([0, 4], handler.StreamIds);
+
+        handler.ReleaseFirstQuery();
+        DoqQueryResult firstResult = await first.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal([0x00, 0x00, 0xd5], firstResult.Response.ToArray());
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -143,6 +342,63 @@ public sealed class DoqStreamLifecycleTests
         DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x03)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
         Assert.Equal([0x00, 0x00, 0xb0], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0013")]
+    [Requirement("REQ-QUIC-RFC9250-0014")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task QueryAsyncSendsSelectedStreamQueryAndFin()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xb4)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(new byte[] { 0x12, 0x34, 0x44 }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xb4], result.Response.ToArray());
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.Equal(0, observed.StreamId);
+        Assert.Equal([0x00, 0x00, 0x44], observed.Query.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0013")]
+    [Requirement("REQ-QUIC-RFC9250-0014")]
+    [Requirement("REQ-QUIC-RFC9250-0018")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ServerDoesNotDispatchQueryBeforeClientStreamFin()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xb3)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await using QuicStream stream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        byte[] query = DoqMessageCodec.Encode([0x00, 0x00, 0x33]);
+        await stream.WriteAsync(query, 0, query.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await Task.Delay(TimeSpan.FromMilliseconds(250));
+
+        Assert.Empty(handler.Queries);
+
+        await stream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        DoqMessage response = await ReadSingleDoqMessageUntilFinAsync(stream).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xb3], response.Payload.ToArray());
         Assert.Single(handler.Queries);
     }
 
@@ -230,6 +486,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0002")]
+    [Requirement("REQ-QUIC-RFC9250-0008")]
     [Requirement("REQ-QUIC-RFC9250-0055")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -262,7 +520,6 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0042")]
     [Requirement("REQ-QUIC-RFC9250-0034")]
     [Requirement("REQ-QUIC-RFC9250-0035")]
     [Requirement("REQ-QUIC-RFC9250-0036")]
@@ -278,9 +535,7 @@ public sealed class DoqStreamLifecycleTests
         }
 
         DelayedDoqHandler handler = new();
-        await using TestServerContext context = await TestServerContext.StartAsync(
-            handler,
-            new DoqServerOptions { MaxCancellationRequests = 1 });
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
         await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         using CancellationTokenSource queryCancellation = new();
 
@@ -308,33 +563,38 @@ public sealed class DoqStreamLifecycleTests
             return;
         }
 
-        CancellationVolumeDoqHandler handler = new();
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xd5)));
         await using TestServerContext context = await TestServerContext.StartAsync(
             handler,
             new DoqServerOptions { MaxCancellationRequests = 1 });
         await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-        await using DoqClient client = DoqClient.Attach(connection);
 
-        using CancellationTokenSource firstCancellation = new();
-        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsQuery(0x04), firstCancellation.Token).AsTask();
-        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+        await using QuicStream firstStream = await connection
+            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] partialFirstQuery = [0x00, 0x03, 0x00];
+        await firstStream.WriteAsync(partialFirstQuery, 0, partialFirstQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        firstStream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.RequestCancelled);
+        await WaitForLocalWriteAbortAsync(firstStream);
+        await WaitForPeerReadAbortAsync(firstStream, DoqErrorCode.RequestCancelled);
 
-        await firstCancellation.CancelAsync();
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => firstQuery.WaitAsync(TimeSpan.FromSeconds(10)));
-        handler.ReleaseFirstQuery();
-
-        using CancellationTokenSource secondCancellation = new();
-        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsQuery(0x05), secondCancellation.Token).AsTask();
-        await handler.SecondQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
-
-        await secondCancellation.CancelAsync();
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => secondQuery.WaitAsync(TimeSpan.FromSeconds(10)));
-        handler.ReleaseSecondQuery();
+        await using QuicStream secondStream = await connection
+            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] partialSecondQuery = [0x00, 0x03, 0x00];
+        await secondStream.WriteAsync(partialSecondQuery, 0, partialSecondQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        secondStream.Abort(QuicAbortDirection.Write, (long)DoqErrorCode.RequestCancelled);
+        await WaitForLocalWriteAbortAsync(secondStream);
+        await WaitForPeerReadAbortOrConnectionCloseAsync(secondStream, DoqErrorCode.RequestCancelled);
 
         QuicConnectionTerminalState terminalState = await WaitForConnectionAbortAsync(connection);
 
         Assert.Equal(QuicConnectionCloseOrigin.Remote, terminalState.Origin);
         Assert.Equal((ulong)DoqErrorCode.ExcessiveLoad, terminalState.Close.ApplicationErrorCode);
+        Assert.Empty(handler.Queries);
     }
 
     [Fact]
@@ -418,7 +678,13 @@ public sealed class DoqStreamLifecycleTests
         Task<DoqQueryResult> first = client.QueryAsync(CreateDnsQuery(0x09)).AsTask();
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
-        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsQuery(0x0a)).AsTask();
+        await using QuicStream secondStream = await connection
+            .OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] partialQuery = [0x00];
+        await secondStream.WriteAsync(partialQuery, 0, partialQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await secondStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
         QuicConnectionTerminalState terminalState = await WaitForConnectionAbortAsync(connection);
 
@@ -430,6 +696,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0067")]
+    [Requirement("REQ-QUIC-RFC9250-0068")]
     [Requirement("REQ-QUIC-RFC9250-0069")]
     [Requirement("REQ-QUIC-RFC9250-0102")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -456,6 +724,9 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0067")]
+    [Requirement("REQ-QUIC-RFC9250-0068")]
+    [Requirement("REQ-QUIC-RFC9250-0069")]
     [Requirement("REQ-QUIC-RFC9250-0070")]
     [Requirement("REQ-QUIC-RFC9250-0102")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -476,13 +747,117 @@ public sealed class DoqStreamLifecycleTests
         clientOptions.MaxInboundBidirectionalStreams = 2;
 
         await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection originalConnection = client.CurrentConnection;
         client.IdleTimeoutMargin = TimeSpan.FromSeconds(3);
 
-        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
-            client.QueryAsync(CreateDnsQuery(0x03)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x03)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection replacementConnection = client.CurrentConnection;
 
-        Assert.Equal(DoqErrorCode.InternalError, exception.ErrorCode);
-        Assert.Contains("idle timeout", exception.Message, StringComparison.Ordinal);
+        Assert.Equal([0x00, 0x00, 0xe0], result.Response.ToArray());
+        Assert.NotSame(originalConnection, replacementConnection);
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0070")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OpensReplacementConnectionWhenIdleTimeIsNotLowEnough()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xe1)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        clientOptions.IdleTimeout = TimeSpan.FromSeconds(2);
+        clientOptions.MaxInboundBidirectionalStreams = 2;
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.IdleTimeoutMargin = TimeSpan.FromMilliseconds(100);
+
+        DoqQueryResult first = await client.QueryAsync(CreateDnsQuery(0x03)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection originalConnection = client.CurrentConnection;
+
+        client.IdleTimeoutMargin = TimeSpan.FromMilliseconds(1500);
+        await Task.Delay(TimeSpan.FromMilliseconds(750));
+
+        DoqQueryResult second = await client.QueryAsync(CreateDnsQuery(0x04)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection replacementConnection = client.CurrentConnection;
+
+        Assert.Equal([0x00, 0x00, 0xe1], first.Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xe1], second.Response.ToArray());
+        Assert.NotSame(originalConnection, replacementConnection);
+        Assert.Equal(2, handler.Queries.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0071")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task DiscardsConnectionBeforeIdleTimeoutExpires()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xd1)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        clientOptions.IdleTimeout = TimeSpan.FromSeconds(2);
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.IdleTimeoutMargin = TimeSpan.FromMilliseconds(100);
+
+        DoqQueryResult first = await client.QueryAsync(CreateDnsQuery(0x04)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection originalConnection = client.CurrentConnection;
+        Assert.Equal([0x00, 0x00, 0xd1], first.Response.ToArray());
+
+        client.IdleTimeoutMargin = TimeSpan.FromMilliseconds(1500);
+        await Task.Delay(TimeSpan.FromMilliseconds(750));
+
+        DoqQueryResult second = await client.QueryAsync(CreateDnsQuery(0x05)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection replacementConnection = client.CurrentConnection;
+
+        Assert.Equal([0x00, 0x00, 0xd1], second.Response.ToArray());
+        Assert.NotSame(originalConnection, replacementConnection);
+        Assert.Equal(2, handler.Queries.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0071")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task KeepsConnectionWhenIdleTimeIsSafelyBelowTimeout()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xd2)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        clientOptions.IdleTimeout = TimeSpan.FromSeconds(5);
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.IdleTimeoutMargin = TimeSpan.FromMilliseconds(500);
+
+        DoqQueryResult first = await client.QueryAsync(CreateDnsQuery(0x06)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        DoqQueryResult second = await client.QueryAsync(CreateDnsQuery(0x07)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xd2], first.Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xd2], second.Response.ToArray());
+        Assert.Equal(2, handler.Queries.Length);
     }
 
     [Fact]
@@ -509,6 +884,63 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0072")]
+    [Requirement("REQ-QUIC-RFC9250-0073")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task DisposeAsyncWithOutstandingQueryClosesConnectionWithDoqNoError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection connection = client.CurrentConnection;
+
+        Task<DoqQueryResult> query = client.QueryAsync(CreateDnsQuery(0x08)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        await client.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        handler.ReleaseFirstQuery();
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionAbortAsync(connection);
+        Assert.Equal((ulong)DoqErrorCode.NoError, terminalState.Close.ApplicationErrorCode);
+
+        Exception? queryException = await Record.ExceptionAsync(() => query.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.NotNull(queryException);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0072")]
+    [Requirement("REQ-QUIC-RFC9250-0073")]
+    [Requirement("REQ-QUIC-RFC9250-0074")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task DisposeAsyncWithoutOutstandingQueryDoesNotEmitDoqNoErrorClose()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static _ =>
+            new DoqQueryResult(CreateDnsResponse([0x00, 0x00, 0x10], 0xd0)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicConnection connection = client.CurrentConnection;
+
+        await client.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState? terminalState = await WaitBrieflyForTerminalStateAsync(connection);
+        Assert.True(
+            !terminalState.HasValue || terminalState.Value.Close.ApplicationErrorCode != (ulong)DoqErrorCode.NoError,
+            "An idle client disposal must not use the outstanding-query DOQ_NO_ERROR close path.");
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0111")]
     [Requirement("REQ-QUIC-RFC9250-0112")]
     [Requirement("REQ-QUIC-RFC9250-0113")]
@@ -527,10 +959,10 @@ public sealed class DoqStreamLifecycleTests
         await using TestServerContext context = await TestServerContext.StartAsync(handler);
         await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsQuery(0x01)).AsTask();
+        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeIxfr)).AsTask();
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(10));
 
-        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsQuery(0x02)).AsTask();
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeAxfr)).AsTask();
 
         DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
 
@@ -556,14 +988,165 @@ public sealed class DoqStreamLifecycleTests
         await using TestServerContext context = await TestServerContext.StartAsync(handler);
         await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsQuery(0x01)).AsTask();
+        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeIxfr)).AsTask();
         await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
-        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsQuery(0x02)).AsTask();
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeAxfr)).AsTask();
 
         DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
 
-        Assert.NotEqual(results[0].Response.ToArray(), results[1].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa1], results[0].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa2], results[1].Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0111")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConcurrentIxfrTransfersUseSeparateStreamsOnOneConnection()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CoordinatedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeIxfr)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeIxfr)).AsTask();
+
+        DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xa1], results[0].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa2], results[1].Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0112")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConcurrentAxfrTransfersUseSeparateStreamsOnOneConnection()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        CoordinatedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> first = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeAxfr)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> second = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeAxfr)).AsTask();
+
+        DoqQueryResult[] results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xa1], results[0].Response.ToArray());
+        Assert.Equal([0x00, 0x00, 0xa2], results[1].Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0111")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task LaterIxfrTransferDoesNotWaitForBlockedEarlierIxfr()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeIxfr)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeIxfr)).AsTask();
+        DoqQueryResult secondResult = await secondQuery.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.False(firstQuery.IsCompleted);
+        Assert.Equal([0x00, 0x00, 0xd5], secondResult.Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+
+        handler.ReleaseFirstQuery();
+        await firstQuery.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0112")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task LaterAxfrTransferDoesNotWaitForBlockedEarlierAxfr()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeAxfr)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeAxfr)).AsTask();
+        DoqQueryResult secondResult = await secondQuery.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.False(firstQuery.IsCompleted);
+        Assert.Equal([0x00, 0x00, 0xd5], secondResult.Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+
+        handler.ReleaseFirstQuery();
+        await firstQuery.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0113")]
+    [Requirement("REQ-QUIC-RFC9250-0114")]
+    [Requirement("REQ-QUIC-RFC9250-0115")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task MixedZoneTransfersDoNotWaitForEarlierBlockedTransfer()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x01, DnsQTypeIxfr)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsZoneTransferQuery(0x02, DnsQTypeAxfr)).AsTask();
+        DoqQueryResult secondResult = await secondQuery.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.False(firstQuery.IsCompleted);
+        Assert.Equal([0x00, 0x00, 0xd5], secondResult.Response.ToArray());
+        Assert.Contains(0L, handler.StreamIds);
+        Assert.Contains(4L, handler.StreamIds);
+
+        handler.ReleaseFirstQuery();
+        await firstQuery.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
     [Fact]
@@ -595,11 +1178,505 @@ public sealed class DoqStreamLifecycleTests
         Assert.Equal([0x00, 0x00, 0xd5], firstResult.Response.ToArray());
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0110")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task LaterStreamResponseDoesNotWaitForBlockedEarlierStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        DelayedDoqHandler handler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> firstQuery = client.QueryAsync(CreateDnsQuery(0x11)).AsTask();
+        await handler.FirstQueryArrived.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Task<DoqQueryResult> secondQuery = client.QueryAsync(CreateDnsQuery(0x12)).AsTask();
+        DoqQueryResult secondResult = await secondQuery.WaitAsync(TimeSpan.FromSeconds(5));
+
+        Assert.False(firstQuery.IsCompleted);
+        Assert.Equal([0x00, 0x00, 0xd5], secondResult.Response.ToArray());
+
+        handler.ReleaseFirstQuery();
+        await firstQuery.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0104")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AllowsQueryWhenResumptionTicketIsNotMarkedUsed()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc4)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x24)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xc4], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0104")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RejectsQueryWhenResumptionTicketIsAlreadyUsed()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc4)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.IsTicketUsed = true;
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x25)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.InternalError, exception.ErrorCode);
+        Assert.Contains("resumption ticket", exception.Message, StringComparison.Ordinal);
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0106")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AddressValidationTokenPolicyAllowsTokenWithSessionResumption()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc6)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.True(client.UseAddressValidationWithResumptionOnly);
+        Assert.True(client.CanUseAddressValidationToken(usingSessionResumption: true));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0106")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc6)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.True(client.UseAddressValidationWithResumptionOnly);
+        Assert.False(client.CanUseAddressValidationToken(usingSessionResumption: false));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0105")]
+    [Requirement("REQ-QUIC-RFC9250-0109")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AllowsQueryWhenConnectivityIsUnchanged()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc5)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.PriorConnectivityId = "wifi-a";
+        client.ConnectivityId = "wifi-a";
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x26)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0xc5], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0105")]
+    [Requirement("REQ-QUIC-RFC9250-0109")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RejectsQueryAfterConnectivityChange()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0xc5)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.PriorConnectivityId = "wifi-a";
+        client.ConnectivityId = "cell-b";
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x27)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.InternalError, exception.ErrorCode);
+        Assert.Contains("Connectivity has changed", exception.Message, StringComparison.Ordinal);
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [Requirement("REQ-QUIC-RFC9250-0077")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task AllowsZeroRttForReplayableQueryOpcode()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x77)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.AllowZeroRtt = true;
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQueryWithOpcode(0x28, opcode: 0)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x77], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [Requirement("REQ-QUIC-RFC9250-0077")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x77)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.AllowZeroRtt = true;
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQueryWithOpcode(0x29, opcode: 2)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.InternalError, exception.ErrorCode);
+        Assert.Contains("non-replayable", exception.Message, StringComparison.Ordinal);
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0082")]
+    [Requirement("REQ-QUIC-RFC9250-0083")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRefusesNonReplayableZeroRttTransactionWithTooEarlyResponse()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x99)));
+        DoqServerOptions serverOptions = new()
+        {
+            ZeroRttStreamDetector = static (_, _) => true,
+        };
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, doqServerOptions: serverOptions);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsHeaderQueryWithOpcode(0x2c, opcode: 2)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.True((result.Response.Span[2] & 0x80) != 0);
+        Assert.Equal(5, result.Response.Span[3] & 0x0f);
+        Assert.Contains(result.Response.ToArray(), value => value == 20);
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0082")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ServerProcessesNonReplayableTransactionWhenZeroRttSignalIsAbsent()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x9a)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsHeaderQueryWithOpcode(0x2e, opcode: 2)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x9a], result.Response.ToArray());
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.False(observed.IsZeroRtt);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0093")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ServerRejectsOversizedZeroRttResponseByAmplificationLimit()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static _ =>
+            new DoqQueryResult(CreateDnsPayload(length: 32, marker: 0x93)));
+        DoqServerOptions serverOptions = new()
+        {
+            ZeroRttStreamDetector = static (_, _) => true,
+        };
+        await using TestServerContext context = await TestServerContext.StartAsync(handler, doqServerOptions: serverOptions);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQueryWithOpcode(0x30, opcode: 0)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.ProtocolError, exception.ErrorCode);
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.True(observed.IsZeroRtt);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0093")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task ServerDoesNotApplyZeroRttAmplificationLimitWithoutZeroRttSignal()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static _ =>
+            new DoqQueryResult(CreateDnsPayload(length: 32, marker: 0x94)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQueryWithOpcode(0x31, opcode: 0)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(32, result.Response.Length);
+        Assert.Equal(0x94, result.Response.Span[2]);
+        DoqQueryContext observed = Assert.Single(handler.Queries);
+        Assert.False(observed.IsZeroRtt);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0088")]
+    [Requirement("REQ-QUIC-RFC9250-0089")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x88)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        string endpoint = clientOptions.RemoteEndPoint!.ToString()!;
+        DoqFallbackCache fallbackCache = new(TimeSpan.FromMinutes(5));
+        fallbackCache.RecordFailure(endpoint);
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.Profile = DoqClientProfile.Opportunistic;
+        client.FallbackCache = fallbackCache;
+
+        DoqException exception = await Assert.ThrowsAsync<DoqException>(() =>
+            client.QueryAsync(CreateDnsQuery(0x2a)).AsTask().WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(DoqErrorCode.InternalError, exception.ErrorCode);
+        Assert.Contains("temporarily backed off", exception.Message, StringComparison.Ordinal);
+        Assert.Empty(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0089")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task KeyPinnedEndpointMayRetryDuringShortBackoffWindow()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x89)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        string endpoint = clientOptions.RemoteEndPoint!.ToString()!;
+        DoqFallbackCache fallbackCache = new(TimeSpan.FromSeconds(30));
+        fallbackCache.RecordFailure(endpoint);
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.Profile = DoqClientProfile.Opportunistic;
+        client.FallbackCache = fallbackCache;
+        client.KeyPinnedEndpoints.Add(endpoint);
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x2f)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x89], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0088")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task OpportunisticProfileAllowsQueryAfterBackoffIsCleared()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        RecordingDoqHandler handler = new(static context =>
+            new DoqQueryResult(CreateDnsResponse(context.Query.Span, 0x88)));
+        await using TestServerContext context = await TestServerContext.StartAsync(handler);
+        QuicClientConnectionOptions clientOptions = context.CreateClientOptions();
+        string endpoint = clientOptions.RemoteEndPoint!.ToString()!;
+        DoqFallbackCache fallbackCache = new(TimeSpan.FromMinutes(5));
+        fallbackCache.RecordFailure(endpoint);
+        fallbackCache.ClearFailure(endpoint);
+
+        await using DoqClient client = await DoqClient.ConnectAsync(clientOptions).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        client.Profile = DoqClientProfile.Opportunistic;
+        client.FallbackCache = fallbackCache;
+
+        DoqQueryResult result = await client.QueryAsync(CreateDnsQuery(0x2b)).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal([0x00, 0x00, 0x88], result.Response.ToArray());
+        Assert.Single(handler.Queries);
+    }
+
     private static byte[] CreateDnsQuery(byte idLowByte)
         => [0x12, idLowByte, (byte)(0x10 + idLowByte)];
 
+    private static byte[] CreateDnsQueryWithOpcode(byte idLowByte, int opcode)
+        => [0x12, idLowByte, (byte)(opcode << 3)];
+
+    private static byte[] CreateDnsHeaderQueryWithOpcode(byte idLowByte, int opcode)
+        =>
+        [
+            0x12, idLowByte, (byte)(opcode << 3), 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+        ];
+
+    private static byte[] CreateDnsZoneTransferQuery(byte idLowByte, ushort qtype)
+    {
+        byte[] query =
+        [
+            0x12, idLowByte, 0x01, 0x00,
+            0x00, 0x01, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            0x07, (byte)'e', (byte)'x', (byte)'a', (byte)'m', (byte)'p', (byte)'l', (byte)'e',
+            0x03, (byte)'c', (byte)'o', (byte)'m',
+            0x00,
+            0x00, 0x00,
+            0x00, 0x01,
+        ];
+
+        query[^4] = (byte)(qtype >> 8);
+        query[^3] = (byte)qtype;
+        return query;
+    }
+
     private static byte[] CreateDnsResponse(ReadOnlySpan<byte> query, byte responseMarker)
         => [0x00, query.Length > 1 ? query[1] : (byte)0x00, responseMarker];
+
+    private static byte CreateCoordinatedResponseMarker(ReadOnlySpan<byte> query, bool isFirst)
+    {
+        if (TryReadQuestionType(query, out ushort qtype) &&
+            (qtype == DnsQTypeIxfr || qtype == DnsQTypeAxfr))
+        {
+            return isFirst ? (byte)0xa1 : (byte)0xa2;
+        }
+
+        return query.Length > 2 && query[2] == 0x11 ? (byte)0xa1 : (byte)0xa2;
+    }
+
+    private static bool TryReadQuestionType(ReadOnlySpan<byte> query, out ushort qtype)
+    {
+        qtype = default;
+        const int dnsHeaderLength = 12;
+        if (query.Length < dnsHeaderLength || query[4] != 0x00 || query[5] != 0x01)
+        {
+            return false;
+        }
+
+        int offset = dnsHeaderLength;
+        while (offset < query.Length && query[offset] != 0)
+        {
+            int labelLength = query[offset];
+            offset += 1 + labelLength;
+        }
+
+        if (offset >= query.Length)
+        {
+            return false;
+        }
+
+        offset++;
+        if (offset > query.Length - 4)
+        {
+            return false;
+        }
+
+        qtype = (ushort)((query[offset] << 8) | query[offset + 1]);
+        return true;
+    }
+
+    private static byte[] CreateDnsPayload(int length, byte marker)
+    {
+        byte[] payload = new byte[length];
+        payload[0] = 0x00;
+        payload[1] = 0x00;
+        payload[2] = marker;
+        return payload;
+    }
 
     private static byte[] CreateLargeDnsResponse(int payloadLength)
     {
@@ -628,6 +1705,28 @@ public sealed class DoqStreamLifecycleTests
         }
     }
 
+    private static async Task<DoqMessage> ReadSingleDoqMessageUntilFinAsync(QuicStream stream)
+    {
+        byte[] buffer = new byte[256];
+        List<byte> pending = [];
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            pending.AddRange(buffer.AsSpan(0, bytesRead).ToArray());
+        }
+
+        byte[] source = [.. pending];
+        Assert.True(DoqMessageCodec.TryDecode(source, out DoqMessage message, out int bytesConsumed));
+        Assert.Equal(source.Length, bytesConsumed);
+        return message;
+    }
+
     private static async Task WaitForAsync(Func<bool> predicate)
     {
         TimeSpan pollInterval = TimeSpan.FromMilliseconds(25);
@@ -641,6 +1740,56 @@ public sealed class DoqStreamLifecycleTests
 
             await Task.Delay(pollInterval).ConfigureAwait(false);
         }
+    }
+
+    private static async Task<QuicConnectionTerminalState?> WaitBrieflyForTerminalStateAsync(QuicConnection connection)
+    {
+        TimeSpan pollInterval = TimeSpan.FromMilliseconds(25);
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddMilliseconds(250);
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            if (connection.Runtime.TerminalState is QuicConnectionTerminalState terminalState)
+            {
+                return terminalState;
+            }
+
+            await Task.Delay(pollInterval).ConfigureAwait(false);
+        }
+
+        return connection.Runtime.TerminalState;
+    }
+
+    private static async Task WaitForLocalWriteAbortAsync(QuicStream stream)
+    {
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
+            stream.WritesClosed.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(QuicError.OperationAborted, exception.QuicError);
+        Assert.Null(exception.ApplicationErrorCode);
+    }
+
+    private static async Task WaitForPeerReadAbortAsync(QuicStream stream, DoqErrorCode expectedErrorCode)
+    {
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
+            stream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal(QuicError.StreamAborted, exception.QuicError);
+        Assert.Equal((long)expectedErrorCode, exception.ApplicationErrorCode);
+    }
+
+    private static async Task WaitForPeerReadAbortOrConnectionCloseAsync(QuicStream stream, DoqErrorCode expectedErrorCode)
+    {
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(() =>
+            stream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        if (exception.QuicError == QuicError.ConnectionAborted)
+        {
+            return;
+        }
+
+        Assert.Equal(QuicError.StreamAborted, exception.QuicError);
+        Assert.Equal((long)expectedErrorCode, exception.ApplicationErrorCode);
     }
 
     private static async Task<QuicConnectionTerminalState> WaitForConnectionAbortAsync(QuicConnection connection)
@@ -734,24 +1883,41 @@ public sealed class DoqStreamLifecycleTests
                 secondQueryArrived.TrySetResult(null);
             }
 
-            byte marker = context.Query.Span[2] == 0x11 ? (byte)0xa1 : (byte)0xa2;
+            byte marker = CreateCoordinatedResponseMarker(context.Query.Span, isFirst);
             return new DoqQueryResult(CreateDnsResponse(context.Query.Span, marker));
         }
     }
 
     private sealed class DelayedDoqHandler : IDoqQueryHandler
     {
+        private readonly List<long> streamIds = [];
         private readonly TaskCompletionSource<object?> firstQueryArrived = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<object?> releaseFirstQuery = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private int queryCount;
 
         public TaskCompletionSource<object?> FirstQueryArrived => firstQueryArrived;
 
+        public long[] StreamIds
+        {
+            get
+            {
+                lock (streamIds)
+                {
+                    return [.. streamIds];
+                }
+            }
+        }
+
         public void ReleaseFirstQuery()
             => releaseFirstQuery.TrySetResult(null);
 
         public async ValueTask<DoqQueryResult> HandleAsync(DoqQueryContext context, CancellationToken cancellationToken = default)
         {
+            lock (streamIds)
+            {
+                streamIds.Add(context.StreamId);
+            }
+
             if (Interlocked.Increment(ref queryCount) == 1)
             {
                 firstQueryArrived.TrySetResult(null);

@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_RFC9250_0007
         string tests = ReadRepositoryFile("tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs");
 
         Assert.Contains("catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)", client, StringComparison.Ordinal);
-        Assert.Contains("CloseConnectionAsync(DoqErrorCode.ProtocolError, cancellationToken)", client, StringComparison.Ordinal);
+        Assert.Contains("CloseConnectionAsync(activeConnection, DoqErrorCode.ProtocolError, cancellationToken)", client, StringComparison.Ordinal);
         Assert.Contains("ClientTreatsPeerStopSendingAsFatalProtocolErrorAndClosesConnection", tests, StringComparison.Ordinal);
         Assert.Contains("stream.Abort(QuicAbortDirection.Read, (long)DoqErrorCode.RequestCancelled);", tests, StringComparison.Ordinal);
     }

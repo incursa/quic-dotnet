@@ -16,6 +16,9 @@ public sealed class QPackMilestoneTests
     private const string RfcAppendixB5EvictingInsertHex = "810D637573746F6D2D76616C756532";
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     [InlineData(0UL, 5, "00")]
     [InlineData(10UL, 5, "0A")]
     [InlineData(30UL, 5, "1E")]
@@ -32,7 +35,62 @@ public sealed class QPackMilestoneTests
         Assert.Equal(encoded.Length, bytesConsumed);
     }
 
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [InlineData("1F", 5)]
+    [InlineData("1F80808080808080808080", 5)]
+    [InlineData("FFFFFFFFFFFFFFFFFFFFFF7F", 8)]
+    public void PrefixedInteger_RejectsTruncatedAndOverflowEncodings(string encodedHex, int prefixBitCount)
+    {
+        byte[] encoded = Convert.FromHexString(encodedHex);
+
+        QPackException exception = Assert.Throws<QPackException>(
+            () => QPackInteger.Decode(encoded, prefixBitCount, out _));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    [InlineData("00", "")]
+    [InlineData("0568656C6C6F", "hello")]
+    [InlineData("8CF1E3C2E5F23A6BA0AB90F4FF", "www.example.com")]
+    public void StringLiteral_DecodesRawAndHuffmanValues(string encodedHex, string expected)
+    {
+        byte[] encoded = Convert.FromHexString(encodedHex);
+
+        string decoded = QPackStringLiteral.Read(encoded, prefixBitCount: 8, out int bytesConsumed);
+
+        Assert.Equal(expected, decoded);
+        Assert.Equal(encoded.Length, bytesConsumed);
+    }
+
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [InlineData("")]
+    [InlineData("05")]
+    [InlineData("056865")]
+    [InlineData("8CF1E3")]
+    public void StringLiteral_RejectsTruncatedLengthOrPayload(string encodedHex)
+    {
+        byte[] encoded = Convert.FromHexString(encodedHex);
+
+        QPackException exception = Assert.Throws<QPackException>(
+            () => QPackStringLiteral.Read(encoded, prefixBitCount: 8, out _));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void StaticTable_ContainsRfc9204Entries()
     {
         Assert.Equal(99, QPackStaticTable.Count);
@@ -44,6 +102,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_DecodesRfc9204AppendixB1LiteralWithStaticNameReference()
     {
         byte[] encoded = Convert.FromHexString("0000510B2F696E6465782E68746D6C");
@@ -55,6 +116,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncodeFieldSection_ProducesRfc9204AppendixB1StaticNameReferenceForPathLiteral()
     {
         byte[] encoded = QPackEncoder.EncodeFieldSection(
@@ -66,6 +130,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncodeFieldSection_UsesStaticIndexedFieldForExactStaticMatch()
     {
         byte[] encoded = QPackEncoder.EncodeFieldSection(
@@ -79,6 +146,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_DecodesLiteralFieldLineWithLiteralName()
     {
         byte[] encoded = QPackEncoder.EncodeFieldSection(
@@ -92,6 +162,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_DecodesHuffmanLiteralFieldLineWithLiteralName()
     {
         byte[] encoded = Convert.FromHexString("00002F0125A849E95BA97D7F8925A849E95BB8E8B4BF");
@@ -102,6 +175,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_DecodesHuffmanLiteralWithStaticNameReference()
     {
         byte[] encoded = Convert.FromHexString("0000518CF1E3C2E5F23A6BA0AB90F4FF");
@@ -112,6 +188,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeFieldSection_RejectsMalformedHuffmanPaddingWithDecompressionFailed()
     {
         byte[] encoded = Convert.FromHexString("0000518100");
@@ -122,6 +201,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DecodeFieldSection_PreservesFieldOrderAndDuplicates()
     {
         QPackFieldLine[] fields =
@@ -137,6 +219,22 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void DecodeFieldSection_RejectsTruncatedLiteralFieldLineWithDecompressionFailed()
+    {
+        byte[] encoded = Convert.FromHexString("000027036375");
+
+        QPackException exception = Assert.Throws<QPackException>(() => QPackDecoder.DecodeFieldSection(encoded));
+
+        Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S2-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeFieldSection_RejectsInvalidStaticTableIndexWithDecompressionFailed()
     {
         byte[] encoded = Convert.FromHexString("0000FF24");
@@ -146,6 +244,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeFieldSection_RejectsDynamicTableReferencesWithDecompressionFailed()
     {
         byte[] encoded = Convert.FromHexString("000080");
@@ -155,6 +256,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void EncodeFieldSection_IsDeterministicForCommonHttp3Request()
     {
         QPackFieldLine[] fields =
@@ -174,6 +278,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void EncodeFieldSection_RoundTripsCommonHttp3Response()
     {
         QPackFieldLine[] fields =
@@ -192,6 +299,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DynamicTable_StartsWithZeroCapacityAndUsesRfcEntrySize()
     {
         QPackDynamicTable table = new(maximumCapacity: 220);
@@ -204,6 +314,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DynamicTable_AllowsDuplicateEntries()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -219,6 +332,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void DynamicTable_EvictsOldestEntriesWhenCapacityRequiresIt()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -237,6 +353,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_BlocksWhenFieldSectionArrivesBeforeEncoderInstructions()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -250,6 +369,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeEncoderStream_UnblocksFieldSectionAfterMissingEntriesArrive()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -271,6 +393,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void DecodeFieldSection_DecodesDynamicRelativeReferences()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -291,6 +416,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeFieldSection_RejectsInvalidDynamicReferenceWithDecompressionFailed()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -303,6 +431,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeEncoderStream_RejectsInvalidDynamicInstructionReferenceWithEncoderStreamError()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -314,6 +445,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void DecodeFieldSection_RejectsMoreBlockedStreamsThanConfigured()
     {
         QPackDecoder decoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -326,6 +460,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void Encoder_EmitsRfcAppendixB2CapacityAndInsertInstructions()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -341,6 +478,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void Encoder_DoesNotInsertEntryLargerThanCurrentCapacity()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -353,6 +493,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void Encoder_DoesNotEvictEntriesThatAreNotEvictable()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 106, maximumBlockedStreams: 1);
@@ -367,6 +510,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void Encoder_EvictsEntriesAfterDecoderAcknowledgesInsertCount()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 106, maximumBlockedStreams: 1);
@@ -383,6 +529,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void Encoder_UsesDynamicReferencesWhenBlockedStreamLimitPermits()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
@@ -402,6 +551,9 @@ public sealed class QPackMilestoneTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void Encoder_AvoidsDynamicReferencesWhenBlockedStreamLimitIsZero()
     {
         QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 0);

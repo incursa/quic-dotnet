@@ -89,6 +89,13 @@ public sealed class DoqServerOptions
     public bool EnableAntiReplay { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets a detector that identifies whether an accepted query stream arrived in QUIC 0-RTT data.
+    /// The current transport surface does not expose early-data state directly, so the default is <c>null</c>
+    /// and all streams are treated as handshake-confirmed unless a hosting layer supplies this signal.
+    /// </summary>
+    public Func<QuicConnection, QuicStream, bool>? ZeroRttStreamDetector { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the 3x anti-amplification limit is enforced
     /// for server responses in the pre-validation state. When <c>true</c>, responses larger
     /// than 3x the received query size are truncated or rejected.

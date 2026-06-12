@@ -6,6 +6,7 @@
   "title": "DNS over QUIC RFC 9250 Padding and Traffic Analysis Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
+  "purpose": "Describe how the DoQ adapter applies EDNS(0) padding for encrypted DNS messages and bounds padding so DNS payloads remain within the RFC 9250 message-size limit.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9250",
     "WI-QUIC-RFC9250-0018",

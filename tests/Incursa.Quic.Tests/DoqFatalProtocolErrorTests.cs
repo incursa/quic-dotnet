@@ -198,6 +198,7 @@ public sealed class DoqFatalProtocolErrorTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0059")]
+    [Requirement("REQ-QUIC-RFC9250-0103")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ClientRejectsEdnsTcpKeepaliveInResponseAsFatalProtocolError()
@@ -303,6 +304,7 @@ public sealed class DoqFatalProtocolErrorTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0059")]
+    [Requirement("REQ-QUIC-RFC9250-0103")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContainsTcpKeepaliveEdnsOption_DetectsKeepaliveOption()
@@ -311,6 +313,17 @@ public sealed class DoqFatalProtocolErrorTests
         byte[] dnsWithoutKeepalive = BuildDnsMessageWithoutEdns();
 
         Assert.True(DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(dnsWithKeepalive));
+        Assert.False(DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(dnsWithoutKeepalive));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0103")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ContainsTcpKeepaliveEdnsOption_AllowsMessagesWithoutKeepaliveOption()
+    {
+        byte[] dnsWithoutKeepalive = BuildDnsMessageWithoutEdns();
+
         Assert.False(DoqMessageCodec.ContainsTcpKeepaliveEdnsOption(dnsWithoutKeepalive));
     }
 
@@ -491,6 +504,76 @@ public sealed class DoqFatalProtocolErrorTests
         Assert.Contains("Cannot access", secondException.Message, StringComparison.Ordinal);
 
         clientCompleted.TrySetResult(null);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0075")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task ConnectionFailureAbandonsInProgressQuery()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        TaskCompletionSource<object?> queryReceived = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        await using RawServerContext context = await RawServerContext.StartAsync(async (connection, cancellationToken) =>
+        {
+            await using QuicStream stream = await connection
+                .AcceptInboundStreamAsync(cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+
+            DoqMessage query = await ReadSingleDoqMessageUntilFinAsync(stream, cancellationToken)
+                .WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.Equal([0x00, 0x00, 0x45], query.Payload.ToArray());
+            queryReceived.TrySetResult(null);
+
+            await connection
+                .CloseAsync((long)DoqErrorCode.InternalError, cancellationToken)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10));
+        });
+
+        await using DoqClient client = await DoqClient.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<DoqQueryResult> queryTask = client.QueryAsync(CreateDnsQuery(0x35)).AsTask();
+        await queryReceived.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Exception? exception = await Record.ExceptionAsync(() => queryTask.WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.NotNull(exception);
+        Assert.False(queryTask.IsCompletedSuccessfully, "The in-progress query must not produce a response after the connection fails.");
+        Assert.True(
+            queryTask.IsCompleted,
+            "The in-progress query must be abandoned rather than left pending. " +
+            QuicLoopbackEstablishmentTestSupport.DescribeConnection(client.CurrentConnection));
+        Assert.False(exception is TimeoutException, "The in-progress query must fault because of connection failure, not the test timeout.");
+    }
+
+    private static async Task<DoqMessage> ReadSingleDoqMessageUntilFinAsync(
+        QuicStream stream,
+        CancellationToken cancellationToken)
+    {
+        byte[] buffer = new byte[256];
+        List<byte> pending = [];
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            pending.AddRange(buffer.AsSpan(0, bytesRead).ToArray());
+        }
+
+        byte[] source = [.. pending];
+        Assert.True(DoqMessageCodec.TryDecode(source, out DoqMessage message, out int bytesConsumed));
+        Assert.Equal(source.Length, bytesConsumed);
+        return message;
     }
 
     private static byte[] BuildDnsMessageWithTcpKeepaliveEdnsOption()

@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9250-0018",
     "VER-QUIC-RFC9250-0018"
   ],
-  "verification_method": "Focused unit tests for padding boundaries, padding-only payload, oversized padding, max-message-size interaction, and disabled padding.",
+  "verification_method": "Focused unit tests for padding boundaries, padding-only payload, oversized padding, max-message-size interaction, disabled padding, and BenchmarkDotNet Dry validation for DoQ padding overhead coverage.",
   "verifies": [
     "REQ-QUIC-RFC9250-0095",
     "REQ-QUIC-RFC9250-0096",
@@ -26,6 +26,7 @@
   "procedure": [
     "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~Doq\"`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*DoqPaddingBenchmarks*\" --noOverwrite --artifacts .artifacts/bdn/rfc9250-padding-overhead`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `git diff --check`."
   ],
@@ -36,7 +37,13 @@
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "src/Incursa.Quic.Dns/DoqServerOptions.cs",
-    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0098.cs",
+    "benchmarks/DoqPaddingBenchmarks.cs",
+    "benchmarks/Incursa.Quic.Benchmarks.csproj",
+    "benchmarks/README.md",
+    ".artifacts/bdn/rfc9250-padding-overhead/benchmark.log",
+    ".artifacts/bdn/rfc9250-padding-overhead/20260611-004049/Incursa.Quic.Benchmarks.DoqPaddingBenchmarks-report-github.md"
   ],
-  "status_summary": "All 5 REQs are now traced and verified. Padding is implemented, configured, and integrated with tests."
+  "status_summary": "All 5 REQs are now traced and verified. Padding is implemented, configured, integrated with tests, and covered by a BenchmarkDotNet DoQ padding overhead suite."
 }

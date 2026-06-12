@@ -23,6 +23,60 @@ public enum DoqClientProfile
 }
 
 /// <summary>
+/// Alternate DNS transport selected after a failed DoQ attempt.
+/// </summary>
+public enum DoqFallbackTransport
+{
+    /// <summary>
+    /// Do not fall back to another DNS transport.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// Prefer DNS over TLS as the encrypted fallback transport.
+    /// </summary>
+    DnsOverTls = 1,
+
+    /// <summary>
+    /// Use cleartext DNS only when explicitly permitted by caller policy.
+    /// </summary>
+    CleartextDns = 2,
+}
+
+/// <summary>
+/// Selects the caller-owned fallback transport for RFC 9250 usage profiles.
+/// </summary>
+public static class DoqFallbackPolicy
+{
+    /// <summary>
+    /// Selects the fallback transport to use after a DoQ connection failure.
+    /// </summary>
+    public static DoqFallbackTransport SelectTransportAfterDoqFailure(
+        DoqClientProfile profile,
+        bool dnsOverTlsAvailable,
+        bool cleartextDnsAllowed,
+        bool endpointKeyPinned = false)
+    {
+        if (profile != DoqClientProfile.Opportunistic)
+        {
+            return DoqFallbackTransport.None;
+        }
+
+        if (dnsOverTlsAvailable)
+        {
+            return DoqFallbackTransport.DnsOverTls;
+        }
+
+        if (endpointKeyPinned || !cleartextDnsAllowed)
+        {
+            return DoqFallbackTransport.None;
+        }
+
+        return DoqFallbackTransport.CleartextDns;
+    }
+}
+
+/// <summary>
 /// In-memory cache mapping a server endpoint to the last DoQ failure timestamp.
 /// Used by <see cref="DoqClient"/> in Opportunistic profile to avoid repeated
 /// DoQ attempts to a failing server.

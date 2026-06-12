@@ -73,6 +73,11 @@ public static class DoqPadding
         int mod = baseLen % blockSize;
         if (mod == 0)
         {
+            if (optOff < 0 && msg.Length + OptOvhd > DoqMessageCodec.MaxPayloadLength)
+            {
+                return msg.ToArray();
+            }
+
             return optOff >= 0 ? msg.ToArray() : Build(msg, p, optOff, 0);
         }
 

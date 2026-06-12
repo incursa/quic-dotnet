@@ -15,6 +15,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0013">The library MUST honor the mainstream BCL-shaped client TLS validation path on the existing SslClientAuthenticationOptions carrier, including TargetHost, CertificateChainPolicy, CertificateRevocationCheckMode, and RemoteCertificateValidationCallback, while keeping QuicPeerCertificatePolicy as the separate exact-pinning floor.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0013")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0013
 {
     [Fact]

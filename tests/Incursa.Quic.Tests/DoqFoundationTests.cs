@@ -20,12 +20,60 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ClientOptionsCarryTlsAuthenticationOptionsForDoqSetup()
+    {
+        SslClientAuthenticationOptions authenticationOptions = new();
+        QuicClientConnectionOptions options = new()
+        {
+            ClientAuthenticationOptions = authenticationOptions,
+            RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+        };
+
+        DoqDefaults.EnsureClientConnectionOptions(options);
+
+        Assert.Same(authenticationOptions, options.ClientAuthenticationOptions);
+        Assert.NotNull(authenticationOptions.ApplicationProtocols);
+        Assert.Contains(DoqDefaults.ApplicationProtocol, authenticationOptions.ApplicationProtocols);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientOptionsRejectMissingTlsAuthenticationOptionsForDoqSetup()
+    {
+        QuicClientConnectionOptions options = new()
+        {
+            ClientAuthenticationOptions = null!,
+            RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+        };
+
+        ArgumentException exception = Assert.Throws<ArgumentException>(() =>
+            DoqDefaults.EnsureClientConnectionOptions(options));
+
+        Assert.Contains("DoQ client authentication options are required", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0126")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void AlpnByteSequenceMatchesDoqDefaultsAlpn()
     {
         Assert.True(DoqDefaults.Alpn.SequenceEqual("doq"u8));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0126")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void AlpnByteSequenceDoesNotUseHttp3Token()
+    {
+        Assert.False(DoqDefaults.Alpn.SequenceEqual("h3"u8));
+        Assert.NotEqual(new SslApplicationProtocol("h3"), DoqDefaults.ApplicationProtocol);
     }
 
     [Fact]
@@ -44,6 +92,24 @@ public sealed class DoqFoundationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0007")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void EndpointHelpersAllowDoqPortsOtherThanUdp53()
+    {
+        const int alternatePort = DoqDefaults.DefaultPort + 1;
+
+        Assert.True(DoqDefaults.IsAllowedPort(DoqDefaults.DefaultPort));
+        Assert.True(DoqDefaults.IsAllowedPort(alternatePort));
+
+        DnsEndPoint clientEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example", alternatePort);
+        IPEndPoint listenEndPoint = DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, alternatePort);
+
+        Assert.Equal(alternatePort, clientEndPoint.Port);
+        Assert.Equal(alternatePort, listenEndPoint.Port);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EndpointHelpersRejectUdpPort53()
@@ -53,6 +119,43 @@ public sealed class DoqFoundationTests
             DoqDefaults.CreateClientEndPoint("resolver.example", DoqDefaults.ProhibitedPlainDnsPort));
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, DoqDefaults.ProhibitedPlainDnsPort));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0006")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ClientOptionsAllowExplicitAlternateDoqPort()
+    {
+        const int alternatePort = DoqDefaults.DefaultPort + 1;
+        QuicClientConnectionOptions options = new()
+        {
+            ClientAuthenticationOptions = new SslClientAuthenticationOptions(),
+            RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example", alternatePort),
+        };
+
+        DoqDefaults.EnsureClientConnectionOptions(options);
+
+        DnsEndPoint endPoint = Assert.IsType<DnsEndPoint>(options.RemoteEndPoint);
+        Assert.Equal(alternatePort, endPoint.Port);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0005")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ListenerOptionsAllowExplicitAlternateDoqPort()
+    {
+        const int alternatePort = DoqDefaults.DefaultPort + 1;
+        QuicListenerOptions options = new()
+        {
+            ListenEndPoint = DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, alternatePort),
+            ConnectionOptionsCallback = (_, _, _) => throw new NotSupportedException(),
+        };
+
+        DoqDefaults.EnsureListenerOptions(options);
+
+        Assert.Equal(alternatePort, options.ListenEndPoint.Port);
     }
 
     [Fact]
@@ -161,6 +264,26 @@ public sealed class DoqFoundationTests
         Assert.False(DoqMessageCodec.TryEncode(oversizedPayload, destination, out int bytesWritten));
         Assert.Equal(0, bytesWritten);
         Assert.Throws<ArgumentOutOfRangeException>(() => DoqMessageCodec.Encode(oversizedPayload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu()
+    {
+        const int typicalUdpSafePayloadSize = 1232;
+        byte[] payload = new byte[typicalUdpSafePayloadSize + 1];
+        payload[0] = 0xab;
+        payload[^1] = 0xcd;
+
+        byte[] encoded = DoqMessageCodec.Encode(payload);
+
+        Assert.Equal(DoqMessageCodec.LengthPrefixSize + payload.Length, encoded.Length);
+        Assert.Equal(payload.Length, BinaryPrimitives.ReadUInt16BigEndian(encoded));
+        Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.Equal(payload, message.Payload.ToArray());
     }
 
     [Fact]
@@ -348,6 +471,22 @@ public sealed class DoqFoundationTests
         Assert.Equal(dnsMessageWithEdns, message.Payload.ToArray());
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0084")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize()
+    {
+        byte[] dnsMessageWithSmallEdnsPayloadSize = BuildDnsResponseWithEdnsUdpPayloadSize(16);
+        byte[] encoded = DoqMessageCodec.Encode(dnsMessageWithSmallEdnsPayloadSize);
+
+        Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
+
+        Assert.Equal(encoded.Length, bytesConsumed);
+        Assert.True(message.Payload.Length > 16);
+        Assert.Equal(dnsMessageWithSmallEdnsPayloadSize, message.Payload.ToArray());
+    }
+
     private static byte[] BuildFramedMessage(int payloadLength)
     {
         byte[] source = new byte[DoqMessageCodec.LengthPrefixSize + payloadLength];
@@ -509,7 +648,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [Requirement("REQ-QUIC-RFC9250-0078")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IsReplayableOpcode_OtherOpcodesAreNotReplayable()
@@ -535,7 +674,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0079")]
+    [Requirement("REQ-QUIC-RFC9250-0078")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IsReplayableQuery_DetectsNonQueryOpcode()
@@ -558,6 +697,20 @@ public sealed class DoqFoundationTests
         Assert.Equal(5, response[3] & 0x0F);
         Assert.Equal(1, (response[2] >> 7));
         Assert.NotEmpty(response);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0081")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerResumptionPolicyDoesNotRequireZeroRttQueueing()
+    {
+        DoqServerOptions options = new();
+
+        Assert.True(options.ResumptionTicketLifetime > TimeSpan.Zero);
+        Assert.True(options.EnableAntiReplay);
+        Assert.Equal(0, options.MaxQueuedZeroRttTransactions);
+        Assert.Null(options.ZeroRttStreamDetector);
     }
 
     [Fact]
@@ -601,6 +754,18 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0107")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ResumptionTicketLifetimeRejectsNonPositiveValues()
+    {
+        DoqServerOptions options = new();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => options.ResumptionTicketLifetime = TimeSpan.Zero);
+        Assert.Throws<ArgumentOutOfRangeException>(() => options.ResumptionTicketLifetime = TimeSpan.FromSeconds(-1));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0108")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -632,6 +797,18 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0141")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable()
+    {
+        byte[] updateQuery = [0x00, 0x00, 0x28, 0x00, 0x00, 0x01];
+
+        Assert.False(DoqDefaults.IsReplayableOpcode(5));
+        Assert.False(DoqDefaults.IsReplayableQuery(updateQuery));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0124")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -644,6 +821,18 @@ public sealed class DoqFoundationTests
         Assert.False(DoqDefaults.IsReplayableOpcode(2));
         Assert.False(DoqDefaults.IsReplayableOpcode(5));
         Assert.False(DoqDefaults.IsReplayableOpcode(6));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0124")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction()
+    {
+        byte[] updateQuery = [0x00, 0x00, 0x28, 0x00, 0x00, 0x01];
+
+        Assert.False(DoqDefaults.IsReplayableOpcode(5));
+        Assert.False(DoqDefaults.IsReplayableQuery(updateQuery));
     }
 
     [Fact]
@@ -662,6 +851,20 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0090")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void FallbackCache_DoesNotBackOffUnfailedEndpoint()
+    {
+        DoqFallbackCache cache = new(TimeSpan.FromMinutes(5));
+
+        cache.RecordFailure("resolver-a.example:853");
+
+        Assert.True(cache.IsBackedOff("resolver-a.example:853"));
+        Assert.False(cache.IsBackedOff("resolver-b.example:853"));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0091")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -673,6 +876,21 @@ public sealed class DoqFoundationTests
         Thread.Sleep(10);
 
         Assert.False(cache.IsBackedOff("resolver.example:853"));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0091")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void FallbackCache_RejectsNonPositiveBackoffPeriods()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => new DoqFallbackCache(TimeSpan.Zero));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new DoqFallbackCache(TimeSpan.FromMilliseconds(-1)));
+
+        DoqFallbackCache cache = new(TimeSpan.FromMinutes(5));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => cache.BackoffPeriod = TimeSpan.Zero);
+        Assert.Throws<ArgumentOutOfRangeException>(() => cache.BackoffPeriod = TimeSpan.FromMilliseconds(-1));
     }
 
     [Fact]
@@ -698,6 +916,80 @@ public sealed class DoqFoundationTests
     public void StrictProfileDefaultsToNoFallback()
     {
         Assert.Equal(DoqClientProfile.Strict, default(DoqClientProfile));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0086")]
+    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void StrictProfileDoesNotSelectFallbackTransport()
+    {
+        DoqFallbackTransport transport = DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+            DoqClientProfile.Strict,
+            dnsOverTlsAvailable: true,
+            cleartextDnsAllowed: true);
+
+        Assert.Equal(DoqFallbackTransport.None, transport);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [Requirement("REQ-QUIC-RFC9250-0092")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void OpportunisticFallbackPrefersDnsOverTlsWhenAvailable()
+    {
+        DoqFallbackTransport transport = DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+            DoqClientProfile.Opportunistic,
+            dnsOverTlsAvailable: true,
+            cleartextDnsAllowed: true);
+
+        Assert.Equal(DoqFallbackTransport.DnsOverTls, transport);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0092")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OpportunisticFallbackRequiresExplicitCleartextPermission()
+    {
+        DoqFallbackTransport transport = DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+            DoqClientProfile.Opportunistic,
+            dnsOverTlsAvailable: false,
+            cleartextDnsAllowed: false);
+
+        Assert.Equal(DoqFallbackTransport.None, transport);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [Requirement("REQ-QUIC-RFC9250-0092")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted()
+    {
+        DoqFallbackTransport transport = DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+            DoqClientProfile.Opportunistic,
+            dnsOverTlsAvailable: false,
+            cleartextDnsAllowed: true);
+
+        Assert.Equal(DoqFallbackTransport.CleartextDns, transport);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0092")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint()
+    {
+        DoqFallbackTransport transport = DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+            DoqClientProfile.Opportunistic,
+            dnsOverTlsAvailable: false,
+            cleartextDnsAllowed: true,
+            endpointKeyPinned: true);
+
+        Assert.Equal(DoqFallbackTransport.None, transport);
     }
 
     [Fact]
@@ -734,6 +1026,22 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0094")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void RetryAndAddressValidationPolicyCanBeExplicitlyDisabled()
+    {
+        DoqServerOptions options = new()
+        {
+            UseRetryPackets = false,
+            UseAddressValidationForFutureConnections = false,
+        };
+
+        Assert.False(options.UseRetryPackets);
+        Assert.False(options.UseAddressValidationForFutureConnections);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0095")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -748,6 +1056,19 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0095")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled()
+    {
+        byte[] query = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+
+        byte[] padded = DoqPadding.PadMessage(query, 1);
+
+        Assert.Equal(query, padded);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0096")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -758,6 +1079,19 @@ public sealed class DoqFoundationTests
         byte[] padded = DoqPadding.PadMessage(query, 0);
 
         Assert.Equal(query.Length, padded.Length);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0096")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PadMessage_LeavesMalformedQuestionNameUnchanged()
+    {
+        byte[] malformedQuery = [0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f];
+
+        byte[] padded = DoqPadding.PadMessage(malformedQuery, 32);
+
+        Assert.Equal(malformedQuery, padded);
     }
 
     [Fact]
@@ -801,6 +1135,55 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0097")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void PadMessage_ReturnsOriginalWhenPaddingCannotFit()
+    {
+        byte[] maxLengthQuery = new byte[DoqMessageCodec.MaxPayloadLength];
+        maxLengthQuery[0] = 0x00;
+        maxLengthQuery[1] = 0x00;
+
+        byte[] padded = DoqPadding.PadMessage(maxLengthQuery, 2);
+
+        Assert.Equal(maxLengthQuery.Length, padded.Length);
+        Assert.Equal(maxLengthQuery, padded);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0097")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit()
+    {
+        int[] lengths = [0, 1, 11, 12, 13, 29, 30, 127, 128, 129, 511, 512, 1024, 4096, 65480, 65520, 65535];
+        int[] blockSizes = [0, 1, 2, 16, 32, 128, 255];
+
+        foreach (int length in lengths)
+        {
+            byte[] message = CreateDnsFuzzPayload(length);
+            foreach (int blockSize in blockSizes)
+            {
+                byte[] padded = DoqPadding.PadMessage(message, blockSize);
+
+                Assert.True(padded.Length <= DoqMessageCodec.MaxPayloadLength);
+                if (blockSize <= 1 || length < 12)
+                {
+                    Assert.Equal(message, padded);
+                }
+
+                if (padded.Length > message.Length && padded.Length + DoqMessageCodec.LengthPrefixSize <= ushort.MaxValue + DoqMessageCodec.LengthPrefixSize)
+                {
+                    byte[] framed = DoqMessageCodec.Encode(padded);
+                    Assert.True(DoqMessageCodec.TryDecode(framed, out DoqMessage decoded, out int bytesConsumed));
+                    Assert.Equal(framed.Length, bytesConsumed);
+                    Assert.Equal(padded, decoded.Payload.ToArray());
+                }
+            }
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0096")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -813,5 +1196,19 @@ public sealed class DoqFoundationTests
         Assert.True(padded.Length > query.Length);
         Assert.True(padded.Length % 32 == 0);
         Assert.Equal(1, padded[11]);
+    }
+
+    private static byte[] CreateDnsFuzzPayload(int length)
+    {
+        byte[] message = new byte[length];
+        if (length >= 12)
+        {
+            message[0] = 0x00;
+            message[1] = 0x00;
+            message[2] = 0x01;
+            message[3] = 0x00;
+        }
+
+        return message;
     }
 }

@@ -35,7 +35,10 @@
   "evidence": [
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "src/Incursa.Quic.Dns/DoqServerOptions.cs",
-    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
+    "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+    "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs"
   ],
   "status_summary": "All 8 REQs are now traced and verified. Policy-layer idle-timeout reuse gating, ticket single-use, connectivity-change detection, address validation gating, ticket lifetime, and anti-replay are implemented."
 }

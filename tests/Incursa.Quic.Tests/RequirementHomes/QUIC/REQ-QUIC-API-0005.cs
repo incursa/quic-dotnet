@@ -15,6 +15,7 @@ namespace Incursa.Quic.Tests;
 ///   <workbench-requirement requirementId="REQ-QUIC-API-0005">The listener and client surfaces carry configuration through QuicConnectionOptions, QuicListenerOptions, QuicClientConnectionOptions, QuicPeerCertificatePolicy, and QuicServerConnectionOptions, and the supported client TLS subset is explicit, standard-shaped on the mainstream path, reject-first for still-unsupported knobs, and honest about the supported stream-capacity callback and RFC 9221 DATAGRAM receive knobs rather than implied.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-API-0005")]
+[Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_API_0005
 {
     [Fact]

@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9250-0092"
   ],
   "summary": "Add DoqClientProfile enum, DoqFallbackCache class, and profile/fallback integration in DoqClient.",
-  "planned_changes": "- Add DoqClientProfile enum: Strict (no fallback) and Opportunistic (backoff).\n- Add DoqFallbackCache class with RecordFailure, GetRemainingBackoff, IsBackedOff.\n- Add Profile, FallbackCache, and KeyPinnedEndpoints properties to DoqClient.\n- Add backoff check in QueryAsync for Opportunistic profile.\n- Record failures in fallback cache on QuicException in QueryAsync.\n- Add focused tests for Strict profile, Opportunistic backoff, backoff expiry, and key-pinned override.",
+  "planned_changes": "- Add DoqClientProfile enum: Strict (no fallback) and Opportunistic (backoff).\n- Add DoqFallbackCache class with RecordFailure, GetRemainingBackoff, IsBackedOff.\n- Add DoqFallbackPolicy with explicit caller-owned fallback transport selection after DoQ connection failure: DoT preference, cleartext opt-in, and key-pinned cleartext suppression.\n- Add Profile, FallbackCache, and KeyPinnedEndpoints properties to DoqClient.\n- Add backoff check in QueryAsync for Opportunistic profile.\n- Record failures in fallback cache on QuicException in QueryAsync.\n- Add focused tests for Strict profile, Opportunistic fallback selection, conservative cleartext fallback, Opportunistic backoff, backoff expiry, and key-pinned override.",
   "verification_plan": "Run DoQ foundation tests, core SpecTrace JSON validation, and diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9250-0016"
@@ -34,5 +34,5 @@
     "Padding, amplification, or resumption.",
     "Automatic cache expiration (caller-managed)."
   ],
-  "completion_notes": "All 7 REQs are now traced and verified. Profile and fallback behavior is implemented with tests."
+  "completion_notes": "All 7 REQs are now traced and verified. Profile, fallback selection, conservative cleartext policy, and fallback-cache behavior are implemented with tests. DoT and cleartext DNS transport execution remains caller-owned and out of scope."
 }

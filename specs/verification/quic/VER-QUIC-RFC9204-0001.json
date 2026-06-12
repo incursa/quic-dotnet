@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9204-0001",
     "WI-QUIC-RFC9204-0001"
   ],
-  "verification_method": "Focused requirement-home tests, QPACK milestone and instruction-stream tests, HTTP/3 QPACK error-matrix tests, SpecTrace JSON validation, and diff hygiene for the standalone RFC 9204 QPACK floor.",
+  "verification_method": "Focused requirement-home tests, QPACK milestone and instruction-stream tests, HTTP/3 QPACK error-matrix tests, QPACK primitive benchmark Dry validation, SpecTrace JSON validation, and diff hygiene for the standalone RFC 9204 QPACK floor.",
   "verifies": [
     "REQ-QUIC-RFC9204-S2-0001",
     "REQ-QUIC-RFC9204-S5-0001",
@@ -34,6 +34,10 @@
     "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs",
     "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
+    "benchmarks/QPackPrimitiveBenchmarks.cs",
+    "benchmarks/QPackFieldSectionBenchmarks.cs",
+    ".artifacts/bdn-qpack-primitives-dry/results/Incursa.Quic.Benchmarks.QPackPrimitiveBenchmarks-report-github.md",
+    ".artifacts/bdn-qpack-field-sections-dry/results/Incursa.Quic.Benchmarks.QPackFieldSectionBenchmarks-report-github.md",
     "src/Incursa.Qpack/QPackInteger.cs",
     "src/Incursa.Qpack/QPackStringLiteral.cs",
     "src/Incursa.Qpack/QPackStaticTable.cs",
@@ -41,5 +45,5 @@
     "src/Incursa.Qpack/QPackDecoder.cs",
     "src/Incursa.Qpack/QPackDynamicTable.cs"
   ],
-  "status_summary": "The standalone QPACK implementation is trace-owned by canonical RFC 9204 artifacts and is covered by focused milestone, instruction-stream, and error-matrix tests. Runtime HTTP/3 stream-state capture and restore work remains a separate layer concern."
+  "status_summary": "The standalone QPACK implementation is trace-owned by canonical RFC 9204 artifacts and is covered by focused milestone, instruction-stream, and error-matrix tests. The primitive proof for `REQ-QUIC-RFC9204-S2-0001` directly covers classified positive raw and Huffman string literal decoding, negative malformed prefixed-integer and string-literal encodings, and edge coverage for boundary prefixed integers plus static-table first/last/out-of-range lookups; `QPackPrimitiveBenchmarks` provides a permanent BenchmarkDotNet surface for integer, string-literal, and static-table hot paths. The field-section proof for `REQ-QUIC-RFC9204-S5-0001` now explicitly classifies positive static/literal-name encode/decode cases, negative truncated literal field-line decoding, and edge cases for duplicate field-line preservation plus deterministic output. The dynamic-state proof for `REQ-QUIC-RFC9204-S6-0001` now explicitly classifies positive dynamic table insertion, blocking, unblocking, instruction-stream synchronization, negative malformed dynamic references/instructions, and edge capacity, eviction, partial-buffer, and blocked-stream-limit behavior. On 2026-06-10, BenchmarkDotNet Dry validation for `*QPackPrimitiveBenchmarks*` completed successfully with six cases and `*QPackFieldSectionBenchmarks*` completed successfully with five cases; those Dry runs prove the benchmark surfaces compile and execute but are not performance evidence or a public benchmark claim. Runtime HTTP/3 stream-state capture and restore work remains a separate layer concern."
 }

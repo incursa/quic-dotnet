@@ -69,11 +69,11 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "runner-logs"), GetPlanValue(output, "Runner logs"));
         Assert.Equal(Path.Combine(runRoot, "artifact-tree.txt"), GetPlanValue(output, "Artifact tree"));
         Assert.Equal(Path.Combine(runRoot, "runner-shim.py"), GetPlanValue(output, "Runner shim"));
-        Assert.Equal("20", GetPlanValue(output, "Inventory testcase count"));
+        Assert.Equal("22", GetPlanValue(output, "Inventory testcase count"));
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
-        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,connectionmigration", GetPlanValue(output, "Supported/executed"));
+        Assert.Equal("handshake,transfer,http3,longrtt,multiplexing,retry,multiconnect,versionnegotiation,chacha20,transfercorruption,keyupdate,resumption,zerortt,amplificationlimit,blackhole,transferloss,ipv6,v2,rebind-port,rebind-addr,connectionmigration", GetPlanValue(output, "Supported/executed"));
         Assert.Equal(
-            "rebind-port,rebind-addr",
+            "handshakecorruption",
             GetPlanValue(output, "Prerequisite-blocked"));
         Assert.Equal("(none)", GetPlanValue(output, "Intentionally unsupported"));
         Assert.Equal("(none)", GetPlanValue(output, "Not mappable"));
@@ -293,7 +293,7 @@ public sealed class InteropRunnerScriptDryRunTests
     }
 
     [Fact]
-    public async Task DryRunAcceptsPathValidationCellsAsBlockedAndKeepsTheBlockedCellExplicit()
+    public async Task DryRunAcceptsPathValidationCellsAsSupportedAfterLiveProof()
     {
         using InteropRunnerScriptFixture fixture = new();
 
@@ -315,11 +315,11 @@ public sealed class InteropRunnerScriptDryRunTests
         Assert.Equal(Path.Combine(runRoot, "testcase-inventory.json"), GetPlanValue(output, "Inventory JSON"));
         Assert.Contains("Requested inventory:", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("versionnegotiation -> supported-executed (runner: versionnegotiation)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("rebind-port -> prerequisite-blocked (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("rebind-addr -> prerequisite-blocked (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-port -> supported-executed (runner: rebind-port)", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("rebind-addr -> supported-executed (runner: rebind-addr)", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connectionmigration -> supported-executed (runner: connectionmigration)", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("rebind-port -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("rebind-addr -> supported-executed", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("rebind-port -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("rebind-addr -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("connectionmigration -> prerequisite-blocked", output, StringComparison.OrdinalIgnoreCase);
         Assert.False(Directory.Exists(fixture.ArtifactsRoot));
         Assert.False(File.Exists(fixture.DockerSentinelPath));

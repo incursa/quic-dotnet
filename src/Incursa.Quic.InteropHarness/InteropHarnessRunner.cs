@@ -135,6 +135,8 @@ internal static class InteropHarnessRunner
             "multiconnect" => RunMulticonnectClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "v2" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "chacha20" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "handshakecorruption" => RunHandshakeClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
+            "transfercorruption" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
             "connectionmigration" => RunTransferClientAsync(settings, stdout, stderr).GetAwaiter().GetResult(),
@@ -167,6 +169,8 @@ internal static class InteropHarnessRunner
             "multiconnect" => RunMulticonnectServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "v2" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "chacha20" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "handshakecorruption" => RunHandshakeServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
+            "transfercorruption" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-port" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "rebind-addr" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
             "connectionmigration" => RunTransferServerAsync(settings, stdout, stderr, certificatePath, privateKeyPath).GetAwaiter().GetResult(),
@@ -995,7 +999,7 @@ internal static class InteropHarnessRunner
                     index,
                     transferPlans.Count,
                     responseReadTimeout,
-                    waitForPeerFinAfterExpectedBody: index + 1 < transferPlans.Count).ConfigureAwait(false);
+                    waitForPeerFinAfterExpectedBody: true).ConfigureAwait(false);
                 await connection.CloseAsync(0).ConfigureAwait(false);
 
                 WriteLineAndFlush(
@@ -1934,7 +1938,7 @@ internal static class InteropHarnessRunner
         TimeSpan responseReadTimeout = default,
         TimeSpan? sendCreditRetryTimeout = null,
         Action<long>? bytesDownloadedObserver = null,
-        bool waitForPeerFinAfterExpectedBody = false)
+        bool waitForPeerFinAfterExpectedBody = true)
     {
         TimeSpan effectiveSendCreditRetryTimeout = sendCreditRetryTimeout ?? CongestionRetryTimeout;
 
@@ -2369,6 +2373,14 @@ internal static class InteropHarnessRunner
                     WriteLineAndFlush(
                         stdout,
                         $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} parsed HTTP/0.9 request target {requestTarget} on stream {servedRequestCount + 1}.");
+                    await WaitForHttp09RequestFinAsync(
+                        stream,
+                        stdout,
+                        testCase,
+                        configuredRequestCount,
+                        servedRequestCount,
+                        requestTarget,
+                        effectiveRequestWaitTimeout).ConfigureAwait(false);
 
                     if (!InteropHarnessPreflightPlanner.TryGetTransferPathsFromRequestTarget(
                         requestTarget,
@@ -2562,6 +2574,42 @@ internal static class InteropHarnessRunner
         return requestTarget;
     }
 
+    internal static async Task WaitForHttp09RequestFinAsync(
+        Stream stream,
+        TextWriter stdout,
+        string testCase,
+        int configuredRequestCount,
+        int requestIndex,
+        string requestTarget,
+        TimeSpan requestFinTimeout)
+    {
+        byte[] buffer = new byte[StreamCopyBufferSize];
+        using CancellationTokenSource timeout = new(requestFinTimeout);
+
+        int bytesRead;
+        try
+        {
+            bytesRead = await stream.ReadAsync(buffer, timeout.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException ex) when (timeout.IsCancellationRequested)
+        {
+            throw new TimeoutException(
+                $"Timed out waiting for HTTP/0.9 request FIN after target {requestTarget}.",
+                ex);
+        }
+
+        if (bytesRead == 0)
+        {
+            WriteLineAndFlush(
+                stdout,
+                $"interop harness: role=server, testcase={testCase}, requestCount={configuredRequestCount} observed HTTP/0.9 request FIN for {requestTarget} on stream {requestIndex + 1}.");
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"HTTP/0.9 request for {requestTarget} included {bytesRead} unexpected byte(s) after the request line.");
+    }
+
     private static byte[] BuildHttp09GetRequestBytes(Uri requestUri)
     {
         string requestTarget = string.IsNullOrEmpty(requestUri.PathAndQuery)
@@ -2741,6 +2789,8 @@ internal static class InteropHarnessRunner
             "multiconnect" or
             "v2" or
             "chacha20" or
+            "handshakecorruption" or
+            "transfercorruption" or
             "rebind-port" or
             "rebind-addr" or
             "connectionmigration" or

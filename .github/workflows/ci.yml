@@ -96,3 +96,64 @@ jobs:
 
       - name: Pack
         run: dotnet pack src/Incursa.Quic/Incursa.Quic.csproj --configuration Release --no-build /p:ContinuousIntegrationBuild=true
+
+  protocol-lab-package-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: protocol-lab-package-smoke-${{ github.ref }}
+      cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: Http3
+            package_id: quic-dotnet-dev
+          - target: RawQuic
+            package_id: quic-dotnet-raw-dev
+
+    steps:
+      - name: Checkout quic-dotnet
+        uses: actions/checkout@v6
+        with:
+          path: quic-dotnet
+
+      - name: Checkout public ProtocolLab contracts
+        uses: actions/checkout@v6
+        with:
+          repository: incursa/protocol-lab
+          path: protocol-lab
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: quic-dotnet/global.json
+
+      - name: Build ProtocolLab implementation package
+        shell: pwsh
+        working-directory: quic-dotnet
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $outputPath = "artifacts/protocol-lab/packages/${{ matrix.package_id }}.ci.plabpkg"
+          pwsh -NoProfile -File eng/protocol-lab/New-QuicDotNetProtocolLabPackage.ps1 `
+            -PackageTarget ${{ matrix.target }} `
+            -ProtocolLabRoot ../protocol-lab `
+            -RuntimeIdentifier linux-x64 `
+            -PackageVersion "ci-${{ github.run_id }}-${{ matrix.target }}" `
+            -OutputPath $outputPath `
+            -Force
+          if (-not (Test-Path -LiteralPath $outputPath -PathType Leaf)) {
+            throw "Expected package artifact was not produced: $outputPath"
+          }
+
+      - name: Validate ProtocolLab implementation package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet run `
+            --project protocol-lab/src/Incursa.ProtocolLab.Cli `
+            -- `
+            conformance package `
+            --package "quic-dotnet/artifacts/protocol-lab/packages/${{ matrix.package_id }}.ci.plabpkg" `
+            --root protocol-lab

@@ -16,6 +16,7 @@ internal static class DoqStream
         byte[] readBuffer = new byte[InitialBufferSize];
         byte[] pending = [];
         Task writeAbortTask = stream.WaitForWriteAbortAsync(cancellationToken);
+        Task readsClosedTask = stream.ReadsClosed;
 
         while (true)
         {
@@ -43,11 +44,26 @@ internal static class DoqStream
                 return message;
             }
 
+            if (readsClosedTask.IsCompleted)
+            {
+                await readsClosedTask.ConfigureAwait(false);
+                throw new DoqException(
+                    DoqErrorCode.ProtocolError,
+                    "The DoQ stream ended before a complete DNS message was received.");
+            }
+
             Task<int> readTask = stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken);
-            Task completed = await Task.WhenAny(readTask, writeAbortTask).ConfigureAwait(false);
+            Task completed = await Task.WhenAny(readTask, writeAbortTask, readsClosedTask).ConfigureAwait(false);
             if (completed == writeAbortTask)
             {
                 await writeAbortTask.ConfigureAwait(false);
+            }
+            else if (completed == readsClosedTask)
+            {
+                await readsClosedTask.ConfigureAwait(false);
+                throw new DoqException(
+                    DoqErrorCode.ProtocolError,
+                    "The DoQ stream ended before a complete DNS message was received.");
             }
 
             int bytesRead = await readTask.ConfigureAwait(false);

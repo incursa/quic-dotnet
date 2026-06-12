@@ -11,6 +11,9 @@ public sealed class Http3FrameLayerTests
     private static readonly byte[] JsonResponseBody = """{"message":"Hello, World!"}"""u8.ToArray();
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void FrameWriter_And_Reader_RoundTripDataFrame()
     {
         byte[] encoded = Http3FrameWriter.WriteData([0x01, 0x02, 0x03]);
@@ -23,6 +26,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void FrameWriter_DataFrameUsesExactLengthForLargePayload()
     {
         byte[] payload = Enumerable.Range(0, 16 * 1024)
@@ -39,6 +45,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void FrameWriter_And_Reader_RoundTripHeadersFrame()
     {
         byte[] encoded = Http3FrameWriter.WriteHeaders([0x00, 0x00, 0xC1]);
@@ -291,6 +300,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void FrameWriter_And_Reader_RoundTripSettingsFrame()
     {
         byte[] encoded = Http3FrameWriter.WriteSettings(
@@ -310,6 +322,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     [InlineData((int)Http3FrameType.CancelPush, 17UL)]
     [InlineData((int)Http3FrameType.GoAway, 4UL)]
     [InlineData((int)Http3FrameType.MaxPushId, 9UL)]
@@ -331,6 +346,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
     public void FrameWriter_And_Reader_RoundTripPushPromiseFrame()
     {
         byte[] encoded = Http3FrameWriter.WritePushPromise(3, [0x00, 0x00, 0xC1]);
@@ -342,6 +360,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void FrameReader_ReturnsUnknownFrameForUnknownType()
     {
         byte[] encoded = Http3FrameWriter.WriteFrame(0x41, [0xAA, 0xBB]);
@@ -354,6 +375,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Theory]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     [InlineData(0x02UL)]
     [InlineData(0x21UL)]
     [InlineData(0x40UL)]
@@ -483,6 +507,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void FrameReader_ParsesHeadersAndPayloadSplitAcrossSingleByteReads()
     {
         byte[] payload = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
@@ -501,6 +528,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
     public void FrameReader_ParsesMultipleFramesAcrossSmallReads()
     {
         byte[] encoded =
@@ -526,6 +556,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsTruncatedHeaderAtEndOfStream()
     {
         Http3FrameReader reader = new();
@@ -537,6 +570,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsTruncatedPayloadAtEndOfStream()
     {
         Http3FrameReader reader = new();
@@ -548,6 +584,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsSingleIntegerFrameWithExtraPayloadBytes()
     {
         byte[] encoded = Convert.FromHexString("03020102");
@@ -558,6 +597,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsSettingsPayloadWithTruncatedPair()
     {
         byte[] encoded = Convert.FromHexString("040101");
@@ -568,6 +610,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsDuplicateSettingsIdentifiers()
     {
         byte[] encoded = Http3FrameWriter.WriteFrame((ulong)Http3FrameType.Settings, [0x01, 0x02, 0x01, 0x03]);
@@ -578,6 +623,9 @@ public sealed class Http3FrameLayerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
     public void FrameReader_RejectsPushPromiseWithoutPushId()
     {
         byte[] encoded = Http3FrameWriter.WriteFrame((ulong)Http3FrameType.PushPromise, []);
