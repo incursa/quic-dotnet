@@ -147,13 +147,97 @@ jobs:
             throw "Expected package artifact was not produced: $outputPath"
           }
 
-      - name: Validate ProtocolLab implementation package
+      - name: Validate ProtocolLab package archive
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          dotnet run `
-            --project protocol-lab/src/Incursa.ProtocolLab.Cli `
-            -- `
-            conformance package `
-            --package "quic-dotnet/artifacts/protocol-lab/packages/${{ matrix.package_id }}.ci.plabpkg" `
-            --root protocol-lab
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+          $packagePath = "quic-dotnet/artifacts/protocol-lab/packages/${{ matrix.package_id }}.ci.plabpkg"
+          if (-not (Test-Path -LiteralPath $packagePath -PathType Leaf)) {
+            throw "Expected package artifact was not produced: $packagePath"
+          }
+
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($packagePath)
+          try {
+            $entries = @{}
+            foreach ($entry in $archive.Entries) {
+              $entries[$entry.FullName] = $entry
+            }
+
+            foreach ($requiredEntry in @('protocol-lab-package.json', 'protocol-lab.internal.json')) {
+              if (-not $entries.ContainsKey($requiredEntry)) {
+                throw "Package archive missing required entry: $requiredEntry"
+              }
+            }
+
+            function Read-ZipText([string]$entryName) {
+              $stream = $entries[$entryName].Open()
+              try {
+                $reader = [System.IO.StreamReader]::new($stream)
+                try {
+                  return $reader.ReadToEnd()
+                }
+                finally {
+                  $reader.Dispose()
+                }
+              }
+              finally {
+                $stream.Dispose()
+              }
+            }
+
+            $publicManifestText = Read-ZipText 'protocol-lab-package.json'
+            if ($publicManifestText -match '\bhttp\.(core|payload)\.' -or $publicManifestText -match '\bh3\.protocol\b') {
+              throw 'Package public manifest contains stale generic HTTP scenario identifiers.'
+            }
+
+            $publicManifest = $publicManifestText | ConvertFrom-Json
+            $internalManifest = (Read-ZipText 'protocol-lab.internal.json') | ConvertFrom-Json
+
+            if ($publicManifest.schemaVersion -ne 'protocol-lab-package-v2') {
+              throw "Unexpected public package schemaVersion: $($publicManifest.schemaVersion)"
+            }
+
+            if ($publicManifest.packageId -ne '${{ matrix.package_id }}') {
+              throw "Unexpected packageId: $($publicManifest.packageId)"
+            }
+
+            if ([string]::IsNullOrWhiteSpace($publicManifest.packageVersion)) {
+              throw 'Public package manifest is missing packageVersion.'
+            }
+
+            if ($publicManifest.kind -ne 'implementation') {
+              throw "Unexpected package kind: $($publicManifest.kind)"
+            }
+
+            $entryManifests = @($publicManifest.entryManifests)
+            if ($entryManifests.Count -eq 0) {
+              throw 'Public package manifest does not declare entryManifests.'
+            }
+
+            foreach ($entryManifest in $entryManifests) {
+              if (-not $entries.ContainsKey([string]$entryManifest)) {
+                throw "Package archive missing declared entry manifest: $entryManifest"
+              }
+            }
+
+            if ($internalManifest.schemaVersion -ne 'protocol-lab-internal-execution-v1') {
+              throw "Unexpected internal package schemaVersion: $($internalManifest.schemaVersion)"
+            }
+
+            $providedImplementations = @($publicManifest.providedImplementations)
+            if ($providedImplementations.Count -eq 0) {
+              throw 'Public package manifest does not provide any implementation entries.'
+            }
+
+            $matchingImplementation = $providedImplementations |
+              Where-Object { $_.implementationId -eq '${{ matrix.package_id }}' } |
+              Select-Object -First 1
+            if (-not $matchingImplementation) {
+              throw 'Public package manifest does not provide the expected package implementation.'
+            }
+          }
+          finally {
+            $archive.Dispose()
+          }

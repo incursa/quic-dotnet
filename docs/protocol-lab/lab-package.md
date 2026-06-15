@@ -40,7 +40,7 @@ The raw target builds both `linux-x64` and `win-x64` payloads by default. Pass `
 pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -ProtocolLabRoot ../protocol-lab `
   -ControllerUri http://10.10.99.176:5088 `
-  -ScenarioId http.core.plaintext `
+  -ScenarioId http3.core.status `
   -LoadProfileId smoke
 ```
 

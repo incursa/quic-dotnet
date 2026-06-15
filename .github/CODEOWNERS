@@ -1,0 +1,4 @@
+# Default owner for all repository changes.
+#
+# Branch rulesets can require Code Owner review for protected branches.
+* @SamuelMcAravey

@@ -3,7 +3,7 @@ param(
     [string] $ProtocolLabRoot = "C:\src\incursa\protocol-lab",
     [string] $OutputRoot = ".artifacts\perf\incursa-h3-profile-pack",
     [string] $RunId,
-    [string] $Scenario = "plaintext",
+    [string] $Scenario = "http3.core.status",
     [int] $DurationSeconds = 10,
     [int] $WarmupSeconds = 2,
     [int] $Repetitions = 1,
@@ -37,8 +37,9 @@ function Resolve-RootedPath([string] $Path, [string] $BasePath) {
 
 function Resolve-ScenarioId([string] $Value) {
     switch -Regex ($Value) {
-        '^(plaintext|plain|http\.core\.plaintext)$' { return "http.core.plaintext" }
-        '^(json|http\.core\.json)$' { return "http.core.json" }
+        '^(status|http3\.core\.status)$' { return "http3.core.status" }
+        '^(bytes64|bytes-64kb|http3\.payload\.bytes\.64kb)$' { return "http3.payload.bytes.64kb" }
+        '^(bytes1mb|bytes-1mb|http3\.payload\.bytes\.1mb)$' { return "http3.payload.bytes.1mb" }
         default { return $Value }
     }
 }

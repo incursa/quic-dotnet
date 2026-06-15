@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string] $ProtocolLabRoot = "C:\src\incursa\protocol-lab",
-    [string[]] $Scenarios = @("http.core.plaintext", "http.core.json"),
+    [string[]] $Scenarios = @("http3.core.status", "http3.payload.bytes.64kb"),
     [int] $Connections = 16,
     [int] $StreamsPerConnection = 10,
     [int] $DurationSeconds = 10,

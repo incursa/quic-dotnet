@@ -8,6 +8,11 @@ Keep changes focused, reviewable, and aligned with the public library and tracea
 - Prefer shared defaults in [`Directory.Build.props`](Directory.Build.props), [`Directory.Build.targets`](Directory.Build.targets), and [`Directory.Packages.props`](Directory.Packages.props) over repeating settings in individual projects.
 - Keep public API changes synchronized with [`src/Incursa.Quic/PublicAPI.Shipped.txt`](src/Incursa.Quic/PublicAPI.Shipped.txt) and [`src/Incursa.Quic/PublicAPI.Unshipped.txt`](src/Incursa.Quic/PublicAPI.Unshipped.txt).
 - Use repository-relative links in Markdown for repository content.
+- Review [`CONTRIBUTOR-AGREEMENT.md`](CONTRIBUTOR-AGREEMENT.md) before opening a pull request. Non-allowlisted contributors must satisfy the Contributor Agreement check by commenting exactly:
+
+  ```text
+  I have read the Incursa Contributor Agreement and I hereby assign my contribution rights as described.
+  ```
 
 Run the baseline validation before opening a pull request:
 

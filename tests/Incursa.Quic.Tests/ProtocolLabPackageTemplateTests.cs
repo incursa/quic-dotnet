@@ -17,10 +17,8 @@ public sealed class ProtocolLabPackageTemplateTests
 
     private static readonly string[] Http3ScenarioIds =
     [
-        "http.core.plaintext",
-        "http.core.json",
-        "http.payload.bytes.64kb",
-        "http.payload.bytes.1mb",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb",
     ];
 
     [Fact]
@@ -28,6 +26,7 @@ public sealed class ProtocolLabPackageTemplateTests
     {
         var repoRoot = FindRepoRoot();
         var packageTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "raw-quic", "protocol-lab-package.json");
+        var internalTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "raw-quic", "protocol-lab.internal.json");
         var implementationTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "raw-quic", "implementations", "quic-dotnet-raw-dev.yaml");
 
         using var packageDocument = JsonDocument.Parse(File.ReadAllText(packageTemplatePath));
@@ -40,22 +39,33 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal(RawQuicScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("h3", ReadJsonStringArray(providedImplementation, "protocols"));
         Assert.DoesNotContain("http.core.plaintext", ReadJsonStringArray(providedImplementation, "scenarios"));
-        Assert.DoesNotContain("http.payload.bytes.64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
-        Assert.DoesNotContain("http.payload.bytes.1mb", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("http3.payload.bytes.64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.DoesNotContain("http3.payload.bytes.1mb", ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.False(packageRoot.TryGetProperty("supportedProtocols", out _));
         Assert.False(packageRoot.TryGetProperty("supportedWorkloadFamilies", out _));
         Assert.False(packageRoot.TryGetProperty("supportedScenarios", out _));
         Assert.False(packageRoot.TryGetProperty("capabilities", out _));
-        var environments = packageRoot.GetProperty("environments").EnumerateArray().ToArray();
+        var dependencies = packageRoot.GetProperty("dependencies");
+        Assert.False(packageRoot.TryGetProperty("environments", out _));
+        Assert.False(dependencies.TryGetProperty("requiresDotNet", out _));
+        Assert.False(dependencies.TryGetProperty("requiresPwsh", out _));
+        Assert.False(dependencies.TryGetProperty("requiresBash", out _));
+        var runtimeRequirement = Assert.Single(dependencies.GetProperty("requiredCapabilities").EnumerateArray());
+        Assert.Equal("libmsquic", runtimeRequirement.GetProperty("name").GetString());
+
+        using var internalDocument = JsonDocument.Parse(File.ReadAllText(internalTemplatePath));
+        var internalRoot = internalDocument.RootElement;
+        Assert.Equal("protocol-lab-internal-execution-v1", internalRoot.GetProperty("schemaVersion").GetString());
+        var environments = internalRoot.GetProperty("environments").EnumerateArray().ToArray();
         Assert.Equal(2, environments.Length);
         AssertPackageEnvironment(environments, "linux", "x64");
         AssertPackageEnvironment(environments, "windows", "x64");
-        var dependencies = packageRoot.GetProperty("dependencies");
-        Assert.True(dependencies.GetProperty("requiresDotNet").GetBoolean());
-        Assert.True(dependencies.GetProperty("requiresPwsh").GetBoolean());
-        Assert.False(dependencies.GetProperty("requiresBash").GetBoolean());
-        var runtimeRequirement = Assert.Single(dependencies.GetProperty("requiredCapabilities").EnumerateArray());
-        Assert.Equal("libmsquic", runtimeRequirement.GetProperty("name").GetString());
+        var executionDependencies = internalRoot.GetProperty("dependencies");
+        Assert.True(executionDependencies.GetProperty("requiresDotNet").GetBoolean());
+        Assert.True(executionDependencies.GetProperty("requiresPwsh").GetBoolean());
+        Assert.False(executionDependencies.GetProperty("requiresBash").GetBoolean());
+        var executionRuntimeRequirement = Assert.Single(executionDependencies.GetProperty("requiredCapabilities").EnumerateArray());
+        Assert.Equal("libmsquic", executionRuntimeRequirement.GetProperty("name").GetString());
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-raw-dev", implementationYaml);
@@ -72,7 +82,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("h3", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.DoesNotContain("http.application", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
         Assert.DoesNotContain("http.core.", implementationYaml);
-        Assert.DoesNotContain("http.payload.bytes.", implementationYaml);
+        Assert.DoesNotContain("http3.", implementationYaml);
         Assert.DoesNotContain("managed-httpclient-h3-load", implementationYaml);
         Assert.Contains("quicTransport", ReadYamlList(implementationYaml, "capabilities"));
         Assert.Contains("quicStreams", ReadYamlList(implementationYaml, "capabilities"));
@@ -145,9 +155,15 @@ public sealed class ProtocolLabPackageTemplateTests
             .Select(element => element.Attribute("Include")?.Value ?? "")
             .ToArray();
 
-        Assert.Contains(@"$(ProtocolLabRoot)\src\Incursa.ProtocolLab.Adapter.Contracts\Incursa.ProtocolLab.Adapter.Contracts.csproj", projectReferences);
-        Assert.Contains(@"$(ProtocolLabRoot)\src\Incursa.ProtocolLab.Model\Incursa.ProtocolLab.Model.csproj", projectReferences);
+        var packageReferences = document.Descendants("PackageReference")
+            .Select(element => element.Attribute("Include")?.Value ?? "")
+            .ToArray();
+
+        Assert.Contains("Incursa.ProtocolLab.Adapter.Contracts", packageReferences);
+        Assert.Contains("Incursa.ProtocolLab.Model", packageReferences);
         Assert.Contains(@"..\..\servers\IncursaRawQuicServer\IncursaRawQuicServer.csproj", projectReferences);
+        Assert.DoesNotContain(projectReferences, value =>
+            value.Contains(@"$(ProtocolLabRoot)\src\Incursa.ProtocolLab.", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(projectReferences, value =>
             value.Contains(@"$(ProtocolLabRoot)\src\Incursa.ProtocolLab.Adapters.", StringComparison.OrdinalIgnoreCase));
     }
@@ -187,8 +203,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);
         Assert.Contains("New-ProtocolLabH3ComponentPackages.ps1", helperScript);
         Assert.Contains("h3-large-body-v1", helperScript);
-        Assert.Contains("http.payload.bytes.64kb", helperScript);
-        Assert.Contains("http.payload.bytes.1mb", helperScript);
+        Assert.Contains("http3.payload.bytes.64kb", helperScript);
+        Assert.Contains("http3.payload.bytes.1mb", helperScript);
         Assert.Contains("($ScenarioId -join \",\")", helperScript);
         Assert.Contains("SourceBackedTestExecutor", helperScript);
         Assert.Contains("packageReferences", helperScript);
@@ -202,7 +218,7 @@ public sealed class ProtocolLabPackageTemplateTests
 
     [Theory]
     [InlineData("h3", "quic.transport.multiplex.100x64kb", "only supports protocol 'quic'")]
-    [InlineData("quic", "http.core.plaintext", "scenario(s) are not declared by the package template")]
+    [InlineData("quic", "http1.core.plaintext", "scenario(s) are not declared by the package template")]
     [InlineData("quic", "quic.transport.handshake-cold", "scenario(s) are not declared by the package template")]
     public void Run_helper_rejects_raw_quic_h3_fallback_arguments(string protocol, string scenarioId, string expectedError)
     {
@@ -257,9 +273,9 @@ public sealed class ProtocolLabPackageTemplateTests
     }
 
     [Theory]
-    [InlineData("h3-large-body-v1", "http.payload.stream.100x16kb", "scenario(s) are not declared by the package template")]
+    [InlineData("h3-large-body-v1", "http3.payload.stream.100x16kb", "scenario(s) are not declared by the package template")]
     [InlineData("h3-large-body-v1", "quic.transport.multiplex.100x64kb", "scenario(s) are not declared by the package template")]
-    [InlineData("quic-transport-v1-comparison", "http.payload.bytes.64kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
+    [InlineData("quic-transport-v1-comparison", "http3.payload.bytes.64kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
     public void Run_helper_rejects_http3_undeclared_package_arguments(string suiteId, string scenarioId, string expectedError)
     {
         var repoRoot = FindRepoRoot();

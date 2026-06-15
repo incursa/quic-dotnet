@@ -276,7 +276,7 @@ $steps += Invoke-LoggedProcess `
     -FileName "dotnet" `
     -Arguments (New-ProtocolLabRunArguments `
         -Implementations "kestrel-http3,incursa-http3" `
-        -Scenarios "http.core.plaintext,http.core.json" `
+        -Scenarios "http3.core.status,http3.payload.bytes.64kb" `
         -Connections "16" `
         -StreamsPerConnection "10" `
         -RunId $baselineRunId `
@@ -292,7 +292,7 @@ if (-not $SkipMatrix) {
         -FileName "dotnet" `
         -Arguments (New-ProtocolLabRunArguments `
             -Implementations "incursa-http3" `
-            -Scenarios "http.core.plaintext" `
+            -Scenarios "http3.core.status" `
             -Connections ($MatrixConnections -join ",") `
             -StreamsPerConnection ($MatrixStreamsPerConnection -join ",") `
             -RunId $matrixRunId `
@@ -309,7 +309,7 @@ if (-not $SkipQlogComparison) {
         -FileName "dotnet" `
         -Arguments (New-ProtocolLabRunArguments `
             -Implementations "incursa-http3" `
-            -Scenarios "http.core.plaintext,http.core.json" `
+            -Scenarios "http3.core.status,http3.payload.bytes.64kb" `
             -Connections "16" `
             -StreamsPerConnection "10" `
             -RunId $qlogRunId `
@@ -322,7 +322,7 @@ if (-not $SkipQlogComparison) {
 
 if (-not $SkipProfilePack) {
     $steps += Invoke-LoggedProcess `
-        -Name "profile-pack-plaintext" `
+        -Name "profile-pack-status" `
         -FileName "pwsh" `
         -Arguments @(
             "-NoProfile",
@@ -330,7 +330,7 @@ if (-not $SkipProfilePack) {
             "-ProtocolLabRoot", $ProtocolLabRoot,
             "-OutputRoot", $profileRoot,
             "-RunId", $profileRunId,
-            "-Scenario", "plaintext",
+            "-Scenario", "http3.core.status",
             "-DurationSeconds", $DurationSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
             "-WarmupSeconds", $WarmupSeconds.ToString([Globalization.CultureInfo]::InvariantCulture),
             "-Repetitions", "1",
@@ -340,7 +340,7 @@ if (-not $SkipProfilePack) {
             "-DisableLoadToolQlog"
         ) `
         -WorkingDirectory $repoRoot `
-        -ArtifactRoot (Join-Path $runRoot "profile-pack-plaintext")
+        -ArtifactRoot (Join-Path $runRoot "profile-pack-status")
 }
 }
 

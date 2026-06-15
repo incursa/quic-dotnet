@@ -110,7 +110,7 @@ function Get-PackageTargetConfig {
                 DefaultProject = "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj"
                 TemplateRoot = Join-Path (Join-Path $PSScriptRoot "templates") "raw-quic"
                 UseIncursaQuicSourceRoot = $true
-                UseProtocolLabContracts = $true
+                UseProtocolLabContracts = $false
                 RawServerProject = "eng/protocol-lab/servers/IncursaRawQuicServer/IncursaRawQuicServer.csproj"
                 SelfContained = $false
                 RequiresDotNet = $true
@@ -240,10 +240,6 @@ $projectFullPath = Resolve-ProjectPathOrThrow -Path $Project -Description "Proto
 Assert-PathUnderRoot -Path $projectFullPath -Root $repoRoot -Description "ProtocolLab package project"
 
 $protocolLabRootFullPath = Resolve-PathOrThrow -Path $ProtocolLabRoot -Description "ProtocolLab root"
-$packageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabPackage.ps1"
-if (-not (Test-Path -LiteralPath $packageBuilder -PathType Leaf)) {
-    throw "ProtocolLab package builder was not found: $packageBuilder"
-}
 
 if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
     $PackageVersion = Get-DefaultPackageVersion
@@ -265,6 +261,7 @@ Remove-Item -LiteralPath $publishRoot -Recurse -Force -ErrorAction SilentlyConti
 New-Item -ItemType Directory -Force -Path $stageRoot | Out-Null
 
 Copy-Item -LiteralPath (Join-Path $templateRoot "protocol-lab-package.json") -Destination (Join-Path $stageRoot "protocol-lab-package.json")
+Copy-Item -LiteralPath (Join-Path $templateRoot "protocol-lab.internal.json") -Destination (Join-Path $stageRoot "protocol-lab.internal.json")
 Copy-Item -LiteralPath (Join-Path $templateRoot "implementations") -Destination (Join-Path $stageRoot "implementations") -Recurse
 $scriptsRoot = Join-Path $templateRoot "scripts"
 if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
@@ -274,21 +271,22 @@ if (Test-Path -LiteralPath $scriptsRoot -PathType Container) {
 $manifestPath = Join-Path $stageRoot "protocol-lab-package.json"
 (Get-Content -LiteralPath $manifestPath -Raw).Replace("__PACKAGE_VERSION__", $PackageVersion) |
     Set-Content -LiteralPath $manifestPath -NoNewline
+$executionManifestPath = Join-Path $stageRoot "protocol-lab.internal.json"
 
 $requestedEnvironmentKeys = foreach ($rid in $RuntimeIdentifier) {
     Get-ProtocolLabEnvironmentKey -RuntimeIdentifier $rid
 }
 
-$packageManifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-$packageManifest.environments = @(
-    $packageManifest.environments | Where-Object {
+$executionManifest = Get-Content -LiteralPath $executionManifestPath -Raw | ConvertFrom-Json
+$executionManifest.environments = @(
+    $executionManifest.environments | Where-Object {
         $requestedEnvironmentKeys -contains "$($_.os)/$($_.arch)"
     }
 )
-$packageManifest.dependencies.requiresDotNet = [bool]$targetConfig.RequiresDotNet
-$packageManifest.dependencies.requiresPwsh = [bool]$targetConfig.RequiresPwsh
-$packageManifest.dependencies.requiresBash = [bool]($targetConfig.RequiresBash -and ($requestedEnvironmentKeys -contains "linux/x64"))
-$packageManifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $manifestPath
+$executionManifest.dependencies.requiresDotNet = [bool]$targetConfig.RequiresDotNet
+$executionManifest.dependencies.requiresPwsh = [bool]$targetConfig.RequiresPwsh
+$executionManifest.dependencies.requiresBash = [bool]($targetConfig.RequiresBash -and ($requestedEnvironmentKeys -contains "linux/x64"))
+$executionManifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $executionManifestPath
 
 foreach ($rid in $RuntimeIdentifier) {
     $publishOutput = Join-Path (Join-Path $publishRoot $rid) "entrypoint"
@@ -325,4 +323,22 @@ foreach ($rid in $RuntimeIdentifier) {
     }
 }
 
-& pwsh -NoLogo -NoProfile -File $packageBuilder -SourcePath $stageRoot -OutputPath $OutputPath -Force:$Force
+if ((Test-Path -LiteralPath $OutputPath) -and -not $Force) {
+    throw "Output package already exists: $OutputPath. Use -Force to overwrite it."
+}
+
+$outputDirectory = Split-Path -Parent $OutputPath
+if (-not [string]::IsNullOrWhiteSpace($outputDirectory)) {
+    New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
+}
+
+Remove-Item -LiteralPath $OutputPath -Force -ErrorAction SilentlyContinue
+Compress-Archive -Path (Join-Path $stageRoot "*") -DestinationPath $OutputPath -Force
+
+$sha256 = (Get-FileHash -LiteralPath $OutputPath -Algorithm SHA256).Hash.ToLowerInvariant()
+[pscustomobject]@{
+    path = [System.IO.Path]::GetFullPath($OutputPath)
+    packageId = $targetConfig.PackageId
+    packageVersion = $PackageVersion
+    sha256 = $sha256
+} | ConvertTo-Json -Depth 8

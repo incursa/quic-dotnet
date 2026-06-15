@@ -10,6 +10,8 @@ namespace Incursa.Quic.Dns;
 /// </summary>
 public sealed class DoqClient : IAsyncDisposable
 {
+    private const string QueryConnectionFailedMessage = "The DoQ connection failed while a query was in progress.";
+
     private readonly SemaphoreSlim connectionGate = new(1, 1);
     private readonly bool ownsConnection;
     private readonly QuicClientConnectionOptions? reconnectOptions;
@@ -234,7 +236,7 @@ public sealed class DoqClient : IAsyncDisposable
         {
             throw new DoqException(
                 DoqErrorCode.InternalError,
-                "The DoQ connection failed while a query was in progress.");
+                QueryConnectionFailedMessage);
         }
         catch (QuicException exception) when (exception.QuicError is QuicError.StreamAborted or QuicError.OperationAborted)
         {
@@ -493,7 +495,7 @@ public sealed class DoqClient : IAsyncDisposable
             SignalConnectionFailure();
             throw new DoqException(
                 DoqErrorCode.InternalError,
-                "The DoQ connection failed while a query was in progress.");
+                QueryConnectionFailedMessage);
         }
 
         if (completedTask == delayTask)
@@ -505,6 +507,14 @@ public sealed class DoqClient : IAsyncDisposable
         try
         {
             return await responseTask.ConfigureAwait(false);
+        }
+        catch (QuicException exception) when (exception.QuicError == QuicError.ConnectionAborted)
+        {
+            SignalConnectionFailure();
+            throw new DoqException(
+                DoqErrorCode.InternalError,
+                QueryConnectionFailedMessage,
+                exception);
         }
         finally
         {

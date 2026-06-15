@@ -64,7 +64,7 @@
     },
     {
       "heading": "ProtocolLab Local Loop Note",
-      "content": "The repo-local source-root ProtocolLab loop was attempted on 2026-06-09 with `scripts/perf/Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -Suite h3-local-v1-comparison -WorkflowProfile Quick -Scenarios http.core.plaintext,http.core.json -NoRestore`, but the current ProtocolLab script surface rejected the wrapper-emitted `-IncursaQuicSourceRoot` parameter before running benchmarks. A direct ProtocolLab CLI run with `-p:IncursaQuicSourceRoot=C:\\shared\\src\\incursa\\quic-dotnet` and `--implementations incursa-http3` then reported `No run cells were selected`; both checked local ProtocolLab inventories contain only kestrel/caddy/nginx/quic-go HTTP/3 implementation manifests after the quic-dotnet package-handoff removal. No package-template files or package uploads were used for this bounded slice."
+      "content": "The repo-local source-root ProtocolLab loop was attempted on 2026-06-09 with `scripts/perf/Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -Suite h3-local-v1-comparison -WorkflowProfile Quick -Scenarios http3.core.status,http3.payload.bytes.64kb -NoRestore`, but the current ProtocolLab script surface rejected the wrapper-emitted `-IncursaQuicSourceRoot` parameter before running benchmarks. A direct ProtocolLab CLI run with `-p:IncursaQuicSourceRoot=C:\\shared\\src\\incursa\\quic-dotnet` and `--implementations incursa-http3` then reported `No run cells were selected`; both checked local ProtocolLab inventories contain only kestrel/caddy/nginx/quic-go HTTP/3 implementation manifests after the quic-dotnet package-handoff removal. No package-template files or package uploads were used for this bounded slice."
     }
   ]
 }

@@ -20,33 +20,7 @@
       ]
     }
   ],
-  "environments": [
-    {
-      "os": "linux",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "pwsh",
-        "path": "scripts/run-current-platform.ps1",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    },
-    {
-      "os": "windows",
-      "arch": "x64",
-      "entrypoint": {
-        "kind": "pwsh",
-        "path": "scripts/run-current-platform.ps1",
-        "arguments": [],
-        "workingDirectory": "."
-      }
-    }
-  ],
   "dependencies": {
-    "requiresDotNet": true,
-    "requiresDocker": false,
-    "requiresPwsh": true,
-    "requiresBash": false,
     "requiredCapabilities": [
       {
         "name": "libmsquic",

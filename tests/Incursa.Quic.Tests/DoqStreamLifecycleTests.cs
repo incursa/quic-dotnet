@@ -692,7 +692,9 @@ public sealed class DoqStreamLifecycleTests
         Assert.Equal((ulong)DoqErrorCode.ExcessiveLoad, terminalState.Close.ApplicationErrorCode);
 
         handler.ReleaseFirstQuery();
-        await Assert.ThrowsAsync<QuicException>(() => first.WaitAsync(TimeSpan.FromSeconds(10)));
+        DoqException firstFailure = await Assert.ThrowsAsync<DoqException>(() =>
+            first.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(DoqErrorCode.InternalError, firstFailure.ErrorCode);
     }
 
     [Fact]

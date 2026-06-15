@@ -16,7 +16,7 @@ param(
 
     [string] $SuiteId = "h3-local-v1",
 
-    [string[]] $ScenarioId = @("http.core.plaintext"),
+    [string[]] $ScenarioId = @("http3.payload.bytes.64kb"),
 
     [string] $Protocol = "h3",
 
@@ -68,9 +68,9 @@ function Get-PackageTargetConfig {
                 DefaultProject = "samples/Incursa.Http3.Samples.TechEmpower/Incursa.Http3.Samples.TechEmpower.csproj"
                 ImplementationId = "quic-dotnet-dev"
                 SuiteId = "h3-local-v1"
-                ScenarioIds = @("http.core.plaintext")
+                ScenarioIds = @("http3.payload.bytes.64kb")
                 SupportedSuiteIds = @("h3-local-v1", "h3-large-body-v1")
-                SupportedScenarioIds = @("http.core.plaintext", "http.core.json", "http.payload.bytes.64kb", "http.payload.bytes.1mb")
+                SupportedScenarioIds = @("http3.payload.bytes.64kb", "http3.payload.bytes.1mb")
                 Protocol = "h3"
                 TestExecutorId = "managed-httpclient-h3-load"
                 RequiredCapabilities = @()

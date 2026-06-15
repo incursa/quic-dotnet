@@ -35,9 +35,10 @@ Required root file:
 
 ```text
 protocol-lab-package.json
+protocol-lab.internal.json
 ```
 
-Required manifest fields:
+Public package manifest fields:
 
 ```json
 {
@@ -54,9 +55,17 @@ Required manifest fields:
       "implementationId": "quic-dotnet-dev",
       "displayName": "QUIC.NET development build",
       "protocols": ["h3"],
-      "scenarios": ["http.core.plaintext", "http.core.json"]
+      "scenarios": ["http3.core.status", "http3.payload.bytes.64kb"]
     }
-  ],
+  ]
+}
+```
+
+Internal execution manifest fields:
+
+```json
+{
+  "schemaVersion": "protocol-lab-internal-execution-v1",
   "environments": [
     {
       "os": "linux",
@@ -112,7 +121,7 @@ Example body:
 {
   "suiteIds": ["ci-public-report"],
   "implementationIds": ["quic-dotnet-dev"],
-  "scenarioIds": ["http.core.plaintext"],
+  "scenarioIds": ["http3.core.status"],
   "protocols": ["h3"],
   "workflowProfile": "Quick",
   "targetMode": "process",
@@ -146,7 +155,7 @@ Build and submit through the current compatibility helper:
 pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -ProtocolLabRoot ../protocol-lab `
   -ControllerUri http://10.10.99.176:5088 `
-  -ScenarioId http.core.plaintext `
+  -ScenarioId http3.core.status `
   -Protocol h3 `
   -LoadProfileId smoke
 ```

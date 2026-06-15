@@ -25,10 +25,8 @@ supportedProtocols:
 supportedWorkloadFamilies:
   - http.application
 supportedScenarios:
-  - http.core.plaintext
-  - http.core.json
-  - http.payload.bytes.64kb
-  - http.payload.bytes.1mb
+  - http3.payload.bytes.64kb
+  - http3.payload.bytes.1mb
 ports:
   - name: https-h3
     containerPort: 5444
