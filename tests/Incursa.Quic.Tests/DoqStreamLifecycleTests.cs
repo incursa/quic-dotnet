@@ -684,7 +684,14 @@ public sealed class DoqStreamLifecycleTests
             .WaitAsync(TimeSpan.FromSeconds(10));
         byte[] partialQuery = [0x00];
         await secondStream.WriteAsync(partialQuery, 0, partialQuery.Length).WaitAsync(TimeSpan.FromSeconds(10));
-        await secondStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        try
+        {
+            await secondStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        catch (QuicException exception) when (exception.QuicError == QuicError.ConnectionAborted)
+        {
+            // The server may close for excessive load before the client's FIN is acknowledged.
+        }
 
         QuicConnectionTerminalState terminalState = await WaitForConnectionAbortAsync(connection);
 
