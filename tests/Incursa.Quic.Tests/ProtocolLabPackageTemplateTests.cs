@@ -224,10 +224,7 @@ public sealed class ProtocolLabPackageTemplateTests
     {
         var repoRoot = FindRepoRoot();
         var helperScript = Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1");
-        var result = RunPowerShell(
-            "-NoLogo",
-            "-NoProfile",
-            "-File",
+        var result = RunPowerShellFile(
             helperScript,
             "-ControllerUri",
             "http://127.0.0.1:1",
@@ -253,10 +250,7 @@ public sealed class ProtocolLabPackageTemplateTests
     {
         var repoRoot = FindRepoRoot();
         var helperScript = Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1");
-        var result = RunPowerShell(
-            "-NoLogo",
-            "-NoProfile",
-            "-File",
+        var result = RunPowerShellFile(
             helperScript,
             "-ControllerUri",
             "http://127.0.0.1:1",
@@ -281,10 +275,7 @@ public sealed class ProtocolLabPackageTemplateTests
         var repoRoot = FindRepoRoot();
         var protocolLabRoot = Path.GetFullPath(Path.Combine(repoRoot, "..", "protocol-lab"));
         var helperScript = Path.Combine(repoRoot, "eng", "protocol-lab", "Invoke-QuicDotNetProtocolLabRun.ps1");
-        var result = RunPowerShell(
-            "-NoLogo",
-            "-NoProfile",
-            "-File",
+        var result = RunPowerShellFile(
             helperScript,
             "-ControllerUri",
             "http://127.0.0.1:1",
@@ -377,6 +368,64 @@ public sealed class ProtocolLabPackageTemplateTests
         {
             startInfo.ArgumentList.Add(argument);
         }
+
+        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start pwsh.");
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+        if (!process.WaitForExit(30_000))
+        {
+            process.Kill(entireProcessTree: true);
+            throw new TimeoutException("PowerShell script did not exit within 30 seconds.");
+        }
+
+        return new ProcessResult(process.ExitCode, output + error);
+    }
+
+    private static ProcessResult RunPowerShellFile(string scriptPath, params string[] arguments)
+    {
+        static string QuotePowerShellString(string value)
+        {
+            if (value.StartsWith("-", StringComparison.Ordinal) &&
+                value.Length > 1 &&
+                char.IsLetter(value[1]))
+            {
+                return value;
+            }
+
+            return "'" + value.Replace("'", "''", StringComparison.Ordinal) + "'";
+        }
+
+        var scriptInvocation = string.Join(
+            " ",
+            new[] { QuotePowerShellString(scriptPath) }.Concat(arguments.Select(QuotePowerShellString)));
+        var command = $$"""
+            $ErrorActionPreference = 'Stop'
+            $ErrorView = 'NormalView'
+            if (Get-Variable -Name PSStyle -ErrorAction SilentlyContinue) {
+                $PSStyle.OutputRendering = 'PlainText'
+            }
+
+            try {
+                & {{scriptInvocation}}
+                exit $LASTEXITCODE
+            }
+            catch {
+                [Console]::Error.WriteLine($_.Exception.Message)
+                exit 1
+            }
+            """;
+
+        var startInfo = new ProcessStartInfo("pwsh")
+        {
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+        };
+
+        startInfo.ArgumentList.Add("-NoLogo");
+        startInfo.ArgumentList.Add("-NoProfile");
+        startInfo.ArgumentList.Add("-Command");
+        startInfo.ArgumentList.Add(command);
 
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("Failed to start pwsh.");
         var output = process.StandardOutput.ReadToEnd();
