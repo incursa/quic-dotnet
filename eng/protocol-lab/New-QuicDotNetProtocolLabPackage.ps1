@@ -288,6 +288,19 @@ $executionManifest.dependencies.requiresPwsh = [bool]$targetConfig.RequiresPwsh
 $executionManifest.dependencies.requiresBash = [bool]($targetConfig.RequiresBash -and ($requestedEnvironmentKeys -contains "linux/x64"))
 $executionManifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $executionManifestPath
 
+$manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+if ($manifest.PSObject.Properties.Name -notcontains "environments") {
+    $manifest | Add-Member -NotePropertyName "environments" -NotePropertyValue @()
+}
+
+$manifest.environments = @($executionManifest.environments)
+if ($manifest.PSObject.Properties.Name -notcontains "dependencies") {
+    $manifest | Add-Member -NotePropertyName "dependencies" -NotePropertyValue ([pscustomobject]@{})
+}
+
+$manifest.dependencies = $executionManifest.dependencies
+$manifest | ConvertTo-Json -Depth 16 | Set-Content -LiteralPath $manifestPath
+
 foreach ($rid in $RuntimeIdentifier) {
     $publishOutput = Join-Path (Join-Path $publishRoot $rid) "entrypoint"
     $publishProperties = @()
