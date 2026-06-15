@@ -3,8 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[CollectionDefinition(Name, DisableParallelization = true)]
-public sealed class DoqLoopbackTestCollection
+public static class DoqLoopbackTestCollection
 {
-    public const string Name = "DoQ loopback tests";
+    public const string Name = QuicLoopbackNetworkTestCollection.Name;
 }
