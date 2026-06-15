@@ -102,7 +102,7 @@ jobs:
     permissions:
       contents: read
     concurrency:
-      group: protocol-lab-package-smoke-${{ github.ref }}
+      group: protocol-lab-package-smoke-${{ github.ref }}-${{ matrix.target }}
       cancel-in-progress: true
     strategy:
       fail-fast: false
