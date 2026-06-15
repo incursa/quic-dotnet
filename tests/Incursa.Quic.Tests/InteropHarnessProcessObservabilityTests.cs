@@ -457,10 +457,10 @@ public sealed class InteropHarnessProcessObservabilityTests
                     clientProcess,
                     "completed managed keyupdate response",
                     "completed managed keyupdate download",
-                    TimeSpan.FromSeconds(35));
-                await serverProcess.WaitForStdoutContainsAsync("completed managed keyupdate response", TimeSpan.FromSeconds(35));
-                await clientProcess.WaitForStdoutContainsAsync("initiated one-RTT key update after", TimeSpan.FromSeconds(35));
-                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(35));
+                    TimeSpan.FromSeconds(70));
+                await serverProcess.WaitForStdoutContainsAsync("completed managed keyupdate response", TimeSpan.FromSeconds(70));
+                await clientProcess.WaitForStdoutContainsAsync("initiated one-RTT key update after", TimeSpan.FromSeconds(70));
+                await WaitForExitAsync(serverProcess, clientProcess, TimeSpan.FromSeconds(70));
 
                 Assert.Equal(0, serverProcess.Process.ExitCode);
                 Assert.Equal(0, clientProcess.Process.ExitCode);

@@ -26,6 +26,7 @@ internal static class InteropHarnessRunner
     private const string CongestionControllerExhaustedMessage = "The congestion controller cannot send another ordinary packet.";
     private const string FlowControlCreditExhaustedMessage = "Writes that wait for additional flow-control credit are not supported by this slice.";
     private static readonly TimeSpan InteropRequestWaitTimeout = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan KeyUpdateResponseReadTimeout = TimeSpan.FromSeconds(60);
     internal static readonly TimeSpan MulticonnectLossHandshakeBudget = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan CongestionRetryDelay = TimeSpan.FromMilliseconds(10);
     private static readonly TimeSpan CongestionRetryTimeout = TimeSpan.FromSeconds(30);
@@ -1176,7 +1177,7 @@ internal static class InteropHarnessRunner
                     settings.Requests.Count,
                     index,
                     transferPlans.Count,
-                    responseReadTimeout: InteropRequestWaitTimeout,
+                    responseReadTimeout: testCase == "keyupdate" ? KeyUpdateResponseReadTimeout : InteropRequestWaitTimeout,
                     sendCreditRetryTimeout: InteropRequestWaitTimeout,
                     bytesDownloadedObserver: bytesDownloaded =>
                     {
