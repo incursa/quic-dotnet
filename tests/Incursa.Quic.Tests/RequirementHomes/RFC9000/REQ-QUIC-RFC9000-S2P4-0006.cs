@@ -134,7 +134,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
     [Trait("Category", "Positive")]
     public async Task ReadAsync_DeliversConcurrentProtocolLabSizedEchoesBeforeEof(int streamCount)
     {
-        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync();
+        await using LoopbackConnectionPair pair = await LoopbackConnectionPair.CreateAsync(streamCount);
 
         byte[] payload = new byte[65_536];
         Random.Shared.NextBytes(payload);
@@ -221,7 +221,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
 
         public QuicConnection ClientConnection { get; }
 
-        public static async Task<LoopbackConnectionPair> CreateAsync()
+        public static async Task<LoopbackConnectionPair> CreateAsync(int expectedConcurrentBidirectionalStreams = 0)
         {
             using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -229,14 +229,20 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             QuicReceiveWindowSizes receiveWindowSizes = new()
             {
                 Connection = 16 * 1024 * 1024,
-                LocallyInitiatedBidirectionalStream = 256 * 1024,
-                RemotelyInitiatedBidirectionalStream = 256 * 1024,
-                UnidirectionalStream = 256 * 1024,
+                LocallyInitiatedBidirectionalStream = 16 * 1024 * 1024,
+                RemotelyInitiatedBidirectionalStream = 16 * 1024 * 1024,
+                UnidirectionalStream = 16 * 1024 * 1024,
             };
 
             QuicServerConnectionOptions serverOptions =
                 QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
             serverOptions.InitialReceiveWindowSizes = receiveWindowSizes;
+            if (expectedConcurrentBidirectionalStreams > 0)
+            {
+                serverOptions.MaxInboundBidirectionalStreams = Math.Max(
+                    serverOptions.MaxInboundBidirectionalStreams,
+                    expectedConcurrentBidirectionalStreams + 8);
+            }
 
             QuicListenerOptions listenerOptions = new()
             {
@@ -251,6 +257,12 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
                 new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port));
             clientOptions.InitialReceiveWindowSizes = receiveWindowSizes;
+            if (expectedConcurrentBidirectionalStreams > 0)
+            {
+                clientOptions.MaxInboundBidirectionalStreams = Math.Max(
+                    clientOptions.MaxInboundBidirectionalStreams,
+                    expectedConcurrentBidirectionalStreams + 8);
+            }
             Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
                 clientOptions).AsTask();
 
