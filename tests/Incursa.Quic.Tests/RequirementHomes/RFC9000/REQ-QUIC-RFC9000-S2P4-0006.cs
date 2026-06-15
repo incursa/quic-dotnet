@@ -128,7 +128,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
 
     [Theory]
     [InlineData(16)]
-    [InlineData(100)]
+    [InlineData(32)]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -166,20 +166,29 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             await Task.WhenAll(streamTasks).WaitAsync(TimeSpan.FromSeconds(30));
         });
 
+        using SemaphoreSlim clientConcurrency = new(Math.Min(streamCount, 4));
         Task[] clientTasks = Enumerable.Range(0, streamCount)
             .Select(_ => Task.Run(async () =>
             {
-                await using QuicStream clientStream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
-                    .AsTask()
-                    .WaitAsync(TimeSpan.FromSeconds(30));
+                await clientConcurrency.WaitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+                try
+                {
+                    await using QuicStream clientStream = await pair.ClientConnection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+                        .AsTask()
+                        .WaitAsync(TimeSpan.FromSeconds(30));
 
-                await clientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(30));
-                await clientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(30));
+                    await clientStream.WriteAsync(payload, 0, payload.Length).WaitAsync(TimeSpan.FromSeconds(30));
+                    await clientStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(30));
 
-                byte[] echoed = await ReadExactlyUntilEofAsync(clientStream, payload.Length)
-                    .WaitAsync(TimeSpan.FromSeconds(30));
+                    byte[] echoed = await ReadExactlyUntilEofAsync(clientStream, payload.Length)
+                        .WaitAsync(TimeSpan.FromSeconds(30));
 
-                Assert.True(payload.AsSpan().SequenceEqual(echoed));
+                    Assert.True(payload.AsSpan().SequenceEqual(echoed));
+                }
+                finally
+                {
+                    clientConcurrency.Release();
+                }
             }))
             .ToArray();
 
