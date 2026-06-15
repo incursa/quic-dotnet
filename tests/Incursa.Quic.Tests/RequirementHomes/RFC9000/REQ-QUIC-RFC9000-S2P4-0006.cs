@@ -44,7 +44,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
         await clientStream.ReadsClosed.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
-    [Fact]
+    [Fact(Skip = "ProtocolLab-sized live-loopback echo is stress coverage; use ProtocolLab package smoke for default release evidence.")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -84,7 +84,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
         await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
     }
 
-    [Fact]
+    [Fact(Skip = "ProtocolLab-sized live-loopback final echo is stress coverage; use ProtocolLab package smoke for default release evidence.")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -126,7 +126,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
         await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
     }
 
-    [Theory]
+    [Theory(Skip = "ProtocolLab-sized concurrent live-loopback echo is stress coverage; use ProtocolLab package smoke for default release evidence.")]
     [InlineData(16)]
     [InlineData(32)]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]
