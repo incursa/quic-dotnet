@@ -139,6 +139,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
+        Assert.Contains("$manifest.environments = @($executionManifest.environments)", builderScript);
+        Assert.Contains("$manifest.dependencies = $executionManifest.dependencies", builderScript);
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
 
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
