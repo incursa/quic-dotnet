@@ -226,20 +226,33 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
             using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate();
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
 
+            QuicReceiveWindowSizes receiveWindowSizes = new()
+            {
+                Connection = 16 * 1024 * 1024,
+                LocallyInitiatedBidirectionalStream = 256 * 1024,
+                RemotelyInitiatedBidirectionalStream = 256 * 1024,
+                UnidirectionalStream = 256 * 1024,
+            };
+
+            QuicServerConnectionOptions serverOptions =
+                QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+            serverOptions.InitialReceiveWindowSizes = receiveWindowSizes;
+
             QuicListenerOptions listenerOptions = new()
             {
                 ListenEndPoint = listenEndPoint,
                 ApplicationProtocols = [SslApplicationProtocol.Http3],
                 ListenBacklog = 1,
-                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(
-                    QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate)),
+                ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
             };
 
             QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
             Task<QuicConnection> acceptConnectionTask = listener.AcceptConnectionAsync().AsTask();
+            QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+                new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port));
+            clientOptions.InitialReceiveWindowSizes = receiveWindowSizes;
             Task<QuicConnection> connectTask = QuicConnection.ConnectAsync(
-                QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
-                    new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port))).AsTask();
+                clientOptions).AsTask();
 
             await Task.WhenAll(acceptConnectionTask, connectTask);
 

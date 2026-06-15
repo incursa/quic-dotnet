@@ -186,7 +186,8 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
         byte[] payloadBytes = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
 
         Assert.False(QuicFrameCodec.TryParseAckFrame(payloadBytes, out _, out _));
-        Assert.True(QuicStreamParser.TryParseStreamFrame(payloadBytes, out _));
+        ReadOnlySpan<byte> streamPayload = QuicS13AckPiggybackTestSupport.SkipPadding(payloadBytes);
+        Assert.True(QuicStreamParser.TryParseStreamFrame(streamPayload, out _));
     }
 
     [Fact]
