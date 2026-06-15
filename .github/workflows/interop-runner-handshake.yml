@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload server-handshake-quic-go artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-server-handshake-quic-go-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/server-handshake-quic-go/
@@ -209,7 +209,7 @@ jobs:
 
       - name: Upload interop runner artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -283,7 +283,7 @@ jobs:
 
       - name: Upload server-zerortt-quic-go artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-server-zerortt-quic-go-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/server-zerortt-quic-go/
@@ -367,7 +367,7 @@ jobs:
 
       - name: Upload connectionmigration proof artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -486,7 +486,7 @@ jobs:
 
       - name: Upload connectionmigration proof artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -704,7 +704,7 @@ jobs:
 
       - name: Upload major peer matrix artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
@@ -846,7 +846,7 @@ jobs:
 
       - name: Upload all-implementation matrix artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: interop-runner-${{ matrix.cell }}-${{ github.run_id }}
           path: quic-dotnet/artifacts/interop-runner/${{ matrix.cell }}/
