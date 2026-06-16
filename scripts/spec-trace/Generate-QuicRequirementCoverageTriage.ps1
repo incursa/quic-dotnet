@@ -570,14 +570,13 @@ function Get-RequirementGapMappings {
         },
         [pscustomobject]@{
             Slug               = 'connect-udp'
-            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, and forwarding-policy floors.'
+            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors.'
             RequirementPrefixes = @()
             RequirementIds     = @(
                 'REQ-QUIC-RFC9298-0001'
                 'REQ-QUIC-RFC9298-0021'
                 'REQ-QUIC-RFC9298-0033'
                 New-RequirementIdRange -Rfc 'RFC9298' -Start 36 -End 64
-                New-RequirementIdRange -Rfc 'RFC9298' -Start 96 -End 98
             )
         },
         [pscustomobject]@{

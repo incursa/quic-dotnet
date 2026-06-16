@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0006",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Early Datagram Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0006",
+    "VER-QUIC-RFC9298-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0096",
+    "REQ-QUIC-RFC9298-0097",
+    "REQ-QUIC-RFC9298-0098"
+  ],
+  "summary": "Add early-datagram and optimistic-send policy helpers for CONNECT-UDP.",
+  "planned_changes": "- Add early datagram action classification for process/drop/buffer decisions.\n- Add buffering-limit policy and optimistic client send permission.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused early-datagram policy tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0006"
+  ],
+  "out_of_scope": [
+    "Live datagram buffering queues.",
+    "Round-trip timer implementation.",
+    "Live request association and forwarding."
+  ],
+  "completion_notes": "The RFC 9298 early-datagram policy surface is implemented and verified locally."
+}

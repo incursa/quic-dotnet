@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Early Datagram Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 early HTTP Datagram drop/buffer behavior, buffering-limit policy, and optimistic client datagram sending before response.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0006",
+    "VER-QUIC-RFC9298-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0096",
+    "REQ-QUIC-RFC9298-0097",
+    "REQ-QUIC-RFC9298-0098"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpEarlyDatagramPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpEarlyDatagramAction.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpEarlyDatagramPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpEarlyDatagramPolicy` classifies datagrams that arrive before their request as silent drop or temporary buffer, requires buffering limits when buffering is used, and records the client-side permission to send optimistic datagrams before receiving the proxy response.",
+  "data_and_state_considerations": "The policy is stateless and leaves actual buffer implementation and capacity accounting to the live adapter.",
+  "edge_cases_and_constraints": [
+    "Known-request datagrams are processed rather than classified as early.",
+    "Unknown-request datagrams can only be dropped or temporarily buffered.",
+    "Buffering requires explicit buffering-limit application."
+  ],
+  "risks": [
+    "Live buffering queues and round-trip timers remain adapter work.",
+    "Live request association remains in the tunnel forwarding slice."
+  ]
+}
