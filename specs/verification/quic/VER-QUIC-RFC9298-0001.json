@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP URI Template and Target Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0001",
+    "WI-QUIC-RFC9298-0001"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, HTTP/3 package build, and diff hygiene for the RFC 9298 URI Template and target surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0002",
+    "REQ-QUIC-RFC9298-0003",
+    "REQ-QUIC-RFC9298-0004",
+    "REQ-QUIC-RFC9298-0005",
+    "REQ-QUIC-RFC9298-0006",
+    "REQ-QUIC-RFC9298-0007",
+    "REQ-QUIC-RFC9298-0008",
+    "REQ-QUIC-RFC9298-0009",
+    "REQ-QUIC-RFC9298-0010",
+    "REQ-QUIC-RFC9298-0011",
+    "REQ-QUIC-RFC9298-0012",
+    "REQ-QUIC-RFC9298-0013",
+    "REQ-QUIC-RFC9298-0014",
+    "REQ-QUIC-RFC9298-0015",
+    "REQ-QUIC-RFC9298-0016",
+    "REQ-QUIC-RFC9298-0017",
+    "REQ-QUIC-RFC9298-0018",
+    "REQ-QUIC-RFC9298-0019",
+    "REQ-QUIC-RFC9298-0020",
+    "REQ-QUIC-RFC9298-0024",
+    "REQ-QUIC-RFC9298-0025",
+    "REQ-QUIC-RFC9298-0026",
+    "REQ-QUIC-RFC9298-0027",
+    "REQ-QUIC-RFC9298-0028",
+    "REQ-QUIC-RFC9298-0029",
+    "REQ-QUIC-RFC9298-0030",
+    "REQ-QUIC-RFC9298-0031",
+    "REQ-QUIC-RFC9298-0032"
+  ],
+  "scope": "This verification covers CONNECT-UDP URI Template level and form constraints, printable ASCII restriction, required target_host and target_port variables, allowed additional simple variables, default template use, invalid-template rejection, target host and port validation, IPv6 scoped-zone rejection, IPv6 literal colon percent-encoding, and expansion to request path/query.",
+  "preconditions": [
+    "RFC 9297 HTTP Datagram and Capsule Protocol support is trace-clean.",
+    "The HTTP/3 project builds successfully."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0002|FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9298 URI-template tests pass, the HTTP/3 package builds, core SpecTrace validation accepts the RFC 9298 URI-template artifacts, generated triage reflects the slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpUriTemplate.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpTarget.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpRequestTarget.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpUriTemplateTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0002.cs"
+  ],
+  "status_summary": "The RFC 9298 URI Template and target validation floor is trace-owned and verified by focused local gates. Request construction, context-id framing, UDP socket lifecycle, forwarding, congestion, and ECN behavior remain future RFC 9298 slices."
+}

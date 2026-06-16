@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP URI Template and Target Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0001",
+    "VER-QUIC-RFC9298-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0002",
+    "REQ-QUIC-RFC9298-0003",
+    "REQ-QUIC-RFC9298-0004",
+    "REQ-QUIC-RFC9298-0005",
+    "REQ-QUIC-RFC9298-0006",
+    "REQ-QUIC-RFC9298-0007",
+    "REQ-QUIC-RFC9298-0008",
+    "REQ-QUIC-RFC9298-0009",
+    "REQ-QUIC-RFC9298-0010",
+    "REQ-QUIC-RFC9298-0011",
+    "REQ-QUIC-RFC9298-0012",
+    "REQ-QUIC-RFC9298-0013",
+    "REQ-QUIC-RFC9298-0014",
+    "REQ-QUIC-RFC9298-0015",
+    "REQ-QUIC-RFC9298-0016",
+    "REQ-QUIC-RFC9298-0017",
+    "REQ-QUIC-RFC9298-0018",
+    "REQ-QUIC-RFC9298-0019",
+    "REQ-QUIC-RFC9298-0020",
+    "REQ-QUIC-RFC9298-0024",
+    "REQ-QUIC-RFC9298-0025",
+    "REQ-QUIC-RFC9298-0026",
+    "REQ-QUIC-RFC9298-0027",
+    "REQ-QUIC-RFC9298-0028",
+    "REQ-QUIC-RFC9298-0029",
+    "REQ-QUIC-RFC9298-0030",
+    "REQ-QUIC-RFC9298-0031",
+    "REQ-QUIC-RFC9298-0032"
+  ],
+  "summary": "Add CONNECT-UDP URI Template and target validation helpers with focused RFC 9298 proof.",
+  "planned_changes": "- Add URI Template validation for absolute printable templates, required variables, forbidden level 4 operators, default template creation, and path/query expansion.\n- Add target host and port validation including IPv6 scoped-zone rejection and IPv6 colon percent-encoding.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run the HTTP/3 package build, focused CONNECT-UDP URI-template tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0001"
+  ],
+  "out_of_scope": [
+    "HTTP request construction for CONNECT-UDP.",
+    "UDP socket lifecycle.",
+    "HTTP Datagram context-id framing.",
+    "UDP payload forwarding and congestion/ECN behavior."
+  ],
+  "completion_notes": "The RFC 9298 URI Template and target validation floor is implemented for later CONNECT-UDP request and forwarding slices."
+}

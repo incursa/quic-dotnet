@@ -570,9 +570,13 @@ function Get-RequirementGapMappings {
         },
         [pscustomobject]@{
             Slug               = 'connect-udp'
-            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked by the recorded planning-only scope until CONNECT-UDP support is explicitly committed.'
+            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor.'
             RequirementPrefixes = @()
-            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9298' -Start 1 -End 117)
+            RequirementIds     = @(
+                'REQ-QUIC-RFC9298-0001'
+                New-RequirementIdRange -Rfc 'RFC9298' -Start 21 -End 23
+                New-RequirementIdRange -Rfc 'RFC9298' -Start 33 -End 117
+            )
         },
         [pscustomobject]@{
             Slug               = 'encrypted-dns-discovery-and-provisioning'

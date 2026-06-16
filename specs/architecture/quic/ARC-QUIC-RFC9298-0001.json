@@ -1,0 +1,64 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP URI Template and Target Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 CONNECT-UDP URI Template validation, default template construction, target host/port validation, IPv6 literal encoding, and request path/query expansion.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0001",
+    "VER-QUIC-RFC9298-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0002",
+    "REQ-QUIC-RFC9298-0003",
+    "REQ-QUIC-RFC9298-0004",
+    "REQ-QUIC-RFC9298-0005",
+    "REQ-QUIC-RFC9298-0006",
+    "REQ-QUIC-RFC9298-0007",
+    "REQ-QUIC-RFC9298-0008",
+    "REQ-QUIC-RFC9298-0009",
+    "REQ-QUIC-RFC9298-0010",
+    "REQ-QUIC-RFC9298-0011",
+    "REQ-QUIC-RFC9298-0012",
+    "REQ-QUIC-RFC9298-0013",
+    "REQ-QUIC-RFC9298-0014",
+    "REQ-QUIC-RFC9298-0015",
+    "REQ-QUIC-RFC9298-0016",
+    "REQ-QUIC-RFC9298-0017",
+    "REQ-QUIC-RFC9298-0018",
+    "REQ-QUIC-RFC9298-0019",
+    "REQ-QUIC-RFC9298-0020",
+    "REQ-QUIC-RFC9298-0024",
+    "REQ-QUIC-RFC9298-0025",
+    "REQ-QUIC-RFC9298-0026",
+    "REQ-QUIC-RFC9298-0027",
+    "REQ-QUIC-RFC9298-0028",
+    "REQ-QUIC-RFC9298-0029",
+    "REQ-QUIC-RFC9298-0030",
+    "REQ-QUIC-RFC9298-0031",
+    "REQ-QUIC-RFC9298-0032"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpUriTemplate.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpTarget.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpRequestTarget.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpUriTemplateTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpUriTemplate` validates absolute printable-ASCII URI Templates, rejects forbidden level 4 expansion operators, requires target_host and target_port variables in path/query, supports the default MASQUE path, and expands templates into HTTP/3 scheme, authority, and path/query components. `Http3ConnectUdpTarget` validates non-empty target hosts, rejects scoped IPv6 zone identifiers, constrains ports to 1 through 65535, and percent-encodes IPv6 literal colons for template expansion.",
+  "data_and_state_considerations": "The slice is pure request-contract validation. It does not open UDP sockets, perform DNS resolution, send HTTP requests, or proxy packets.",
+  "edge_cases_and_constraints": [
+    "Template variables before the path/query are rejected.",
+    "Non-printable ASCII and non-ASCII characters are rejected before request creation.",
+    "IPv6 literal colons are percent-encoded in target_host expansion.",
+    "Invalid template configuration is rejected locally before sending to a UDP proxy."
+  ],
+  "risks": [
+    "Actual CONNECT-UDP HTTP/1.1 and HTTP/3 request construction is left to a later slice.",
+    "UDP packet forwarding and datagram payload framing are left to later RFC 9298 slices.",
+    "This slice intentionally does not depend on a general URI Template library."
+  ]
+}
