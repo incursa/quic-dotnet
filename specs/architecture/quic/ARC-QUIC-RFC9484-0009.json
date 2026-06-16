@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP ADDRESS_ASSIGN Capsule Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 ADDRESS_ASSIGN capsule wire format and complete assignment-list semantics.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0009",
+    "VER-QUIC-RFC9484-0009"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0080",
+    "REQ-QUIC-RFC9484-0081",
+    "REQ-QUIC-RFC9484-0082",
+    "REQ-QUIC-RFC9484-0083",
+    "REQ-QUIC-RFC9484-0084",
+    "REQ-QUIC-RFC9484-0085",
+    "REQ-QUIC-RFC9484-0086",
+    "REQ-QUIC-RFC9484-0087",
+    "REQ-QUIC-RFC9484-0088",
+    "REQ-QUIC-RFC9484-0089",
+    "REQ-QUIC-RFC9484-0090",
+    "REQ-QUIC-RFC9484-0091",
+    "REQ-QUIC-RFC9484-0092",
+    "REQ-QUIC-RFC9484-0093",
+    "REQ-QUIC-RFC9484-0094",
+    "REQ-QUIC-RFC9484-0095",
+    "REQ-QUIC-RFC9484-0096",
+    "REQ-QUIC-RFC9484-0097",
+    "REQ-QUIC-RFC9484-0098",
+    "REQ-QUIC-RFC9484-0099"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpAssignedAddress.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpAddressAssignCapsule.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpAddressAssignCapsule` creates and parses Capsule Type 0x01 using the generic Capsule codec, while `Http3ConnectIpAssignedAddress` validates Request ID, IP Version, address length, prefix length, zero host bits, and prefix source-address permissions. Assignment-list application treats each ADDRESS_ASSIGN capsule as a complete replacement list.",
+  "data_and_state_considerations": "The codec returns immutable assignment snapshots. It does not own tunnel state; callers apply the complete list to their tunnel assignment store.",
+  "edge_cases_and_constraints": [
+    "Malformed capsule fields map to HTTP/3 message errors.",
+    "Empty ADDRESS_ASSIGN payloads remove all prior assignments.",
+    "Omitted prior addresses are removed because each capsule carries the complete current list."
+  ],
+  "risks": [
+    "ADDRESS_REQUEST and ROUTE_ADVERTISEMENT capsules remain separate RFC 9484 slices.",
+    "Live address installation and packet forwarding remain adapter work."
+  ]
+}

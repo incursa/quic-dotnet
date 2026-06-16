@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP ADDRESS_ASSIGN Capsule Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0009",
+    "VER-QUIC-RFC9484-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0080",
+    "REQ-QUIC-RFC9484-0081",
+    "REQ-QUIC-RFC9484-0082",
+    "REQ-QUIC-RFC9484-0083",
+    "REQ-QUIC-RFC9484-0084",
+    "REQ-QUIC-RFC9484-0085",
+    "REQ-QUIC-RFC9484-0086",
+    "REQ-QUIC-RFC9484-0087",
+    "REQ-QUIC-RFC9484-0088",
+    "REQ-QUIC-RFC9484-0089",
+    "REQ-QUIC-RFC9484-0090",
+    "REQ-QUIC-RFC9484-0091",
+    "REQ-QUIC-RFC9484-0092",
+    "REQ-QUIC-RFC9484-0093",
+    "REQ-QUIC-RFC9484-0094",
+    "REQ-QUIC-RFC9484-0095",
+    "REQ-QUIC-RFC9484-0096",
+    "REQ-QUIC-RFC9484-0097",
+    "REQ-QUIC-RFC9484-0098",
+    "REQ-QUIC-RFC9484-0099"
+  ],
+  "summary": "Add CONNECT-IP ADDRESS_ASSIGN capsule codec and complete-list policy.",
+  "planned_changes": "- Add Assigned Address model validation and source-prefix permission checks.\n- Add ADDRESS_ASSIGN capsule create/parse/apply helpers.\n- Add focused wire-format, malformed-field, and assignment supersession tests.\n- Add canonical xrefs and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused ADDRESS_ASSIGN tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0009"
+  ],
+  "out_of_scope": [
+    "ADDRESS_REQUEST capsule codec.",
+    "ROUTE_ADVERTISEMENT capsule codec.",
+    "Live address installation and forwarding."
+  ],
+  "completion_notes": "The RFC 9484 ADDRESS_ASSIGN capsule surface is implemented and verified locally."
+}
