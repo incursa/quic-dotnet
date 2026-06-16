@@ -126,7 +126,7 @@ public sealed class REQ_QUIC_RFC9000_S2P4_0006
         await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
     }
 
-    [Theory(Skip = "ProtocolLab-sized concurrent live-loopback echo is stress coverage; use ProtocolLab package smoke for default release evidence.")]
+    [Theory]
     [InlineData(16)]
     [InlineData(32)]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0006")]

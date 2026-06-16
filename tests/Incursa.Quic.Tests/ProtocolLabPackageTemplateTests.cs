@@ -139,8 +139,10 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
-        Assert.Contains("$manifest.environments = @($executionManifest.environments)", builderScript);
-        Assert.Contains("$manifest.dependencies = $executionManifest.dependencies", builderScript);
+        Assert.DoesNotContain("$manifest.environments = @($executionManifest.environments)", builderScript);
+        Assert.DoesNotContain("$manifest.dependencies = $executionManifest.dependencies", builderScript);
+        Assert.Contains("$executionManifest.environments = @(", builderScript);
+        Assert.Contains("$executionManifest.dependencies.requiresDotNet", builderScript);
         Assert.DoesNotContain("@($RepoRoot, $ProtocolLabRoot)", builderScript, StringComparison.Ordinal);
 
         Assert.True(File.Exists(Path.Combine(repoRoot, "eng", "protocol-lab", "src", "Incursa.ProtocolLab.Adapters.IncursaRawQuic", "Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj")));
@@ -212,9 +214,14 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("packageReferences", helperScript);
         Assert.Contains("$componentPackageReferences = @($componentPackageResult.packageReferences)", helperScript);
         Assert.Contains("$componentPackagePaths = @(", helperScript);
-        Assert.Contains("$submitParameters.Add(\"AdditionalPackagePath\", $componentPackagePaths)", helperScript);
-        Assert.Contains("$allPackageReferences = @($PackageReference)", helperScript);
-        Assert.Contains("$submitParameters.Add(\"PackageReference\", $allPackageReferences)", helperScript);
+        Assert.Contains("Upload-LabPackage", helperScript);
+        Assert.Contains("Invoke-ControllerJson", helperScript);
+        Assert.Contains("Wait-LabJob", helperScript);
+        Assert.Contains("$allPackageReferences = @()", helperScript);
+        Assert.Contains("$allPackageReferences += @($PackageReference", helperScript);
+        Assert.Contains("packages = $allPackageReferences", helperScript);
+        Assert.Contains("ConvertFrom-PackageReferenceString", helperScript);
+        Assert.Contains("packageId|packageVersion|sha256", helperScript);
         Assert.Contains("componentPackages = $componentPackageResult", helperScript);
     }
 
