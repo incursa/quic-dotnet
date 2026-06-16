@@ -22,4 +22,9 @@ public enum Http3SettingIdentifier : long
     /// SETTINGS_QPACK_BLOCKED_STREAMS.
     /// </summary>
     QPackBlockedStreams = 0x07,
+
+    /// <summary>
+    /// SETTINGS_ENABLE_CONNECT_PROTOCOL.
+    /// </summary>
+    EnableConnectProtocol = 0x08,
 }

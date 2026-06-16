@@ -13,7 +13,7 @@ public static class Http3HeaderValidator
 {
     private const int MinimumStatusCode = 100;
     private const int MaximumStatusCode = 999;
-    private static readonly string[] RequestPseudoHeaders = [":method", ":scheme", ":authority", ":path"];
+    private static readonly string[] RequestPseudoHeaders = [":method", ":scheme", ":authority", ":path", ":protocol"];
     private static readonly string[] ResponsePseudoHeaders = [":status"];
     private static readonly string[] ProhibitedFields =
     [
@@ -39,6 +39,7 @@ public static class Http3HeaderValidator
         string? scheme = null;
         string? authority = null;
         string? path = null;
+        string? protocol = null;
         string? host = null;
         List<ulong> contentLengths = [];
 
@@ -59,6 +60,9 @@ public static class Http3HeaderValidator
                 case ":path":
                     path = SetOnce(path, header.Name, header.Value);
                     break;
+                case ":protocol":
+                    protocol = SetOnce(protocol, header.Name, header.Value);
+                    break;
                 case "host":
                     host = SetOnce(host, header.Name, header.Value);
                     break;
@@ -76,6 +80,12 @@ public static class Http3HeaderValidator
         }
 
         bool isConnect = method == "CONNECT";
+        bool isExtendedConnect = isConnect && protocol is not null;
+        if (protocol is not null && !isConnect)
+        {
+            throw MessageError("HTTP/3 :protocol is only valid on Extended CONNECT requests.");
+        }
+
         if (!isConnect && string.IsNullOrEmpty(scheme))
         {
             throw MessageError("HTTP/3 requests require exactly one :scheme pseudo-header.");
@@ -88,7 +98,14 @@ public static class Http3HeaderValidator
 
         if (isConnect)
         {
-            if (scheme is not null || path is not null || string.IsNullOrEmpty(authority))
+            if (isExtendedConnect)
+            {
+                if (string.IsNullOrEmpty(protocol) || string.IsNullOrEmpty(scheme) || string.IsNullOrEmpty(path) || string.IsNullOrEmpty(authority))
+                {
+                    throw MessageError("HTTP/3 Extended CONNECT requests require :protocol, :scheme, :authority, and :path.");
+                }
+            }
+            else if (scheme is not null || path is not null || string.IsNullOrEmpty(authority))
             {
                 throw MessageError("HTTP/3 CONNECT requests require :authority and must omit :scheme and :path.");
             }
@@ -126,7 +143,7 @@ public static class Http3HeaderValidator
             ValidateContentLength(contentLengths, receivedDataLength);
         }
 
-        return new Http3HeaderValidationResult(method, scheme, authority ?? host, path, statusCode: null);
+        return new Http3HeaderValidationResult(method, scheme, authority ?? host, path, statusCode: null, protocol);
     }
 
     /// <summary>

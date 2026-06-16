@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 Extended CONNECT RFC 9220 Foundation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0001",
+    "VER-QUIC-RFC9220-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0001",
+    "REQ-QUIC-RFC9220-0002",
+    "REQ-QUIC-RFC9220-0003",
+    "REQ-QUIC-RFC9220-0004",
+    "REQ-QUIC-RFC9220-0005",
+    "REQ-QUIC-RFC9220-0006",
+    "REQ-QUIC-RFC9220-0007",
+    "REQ-QUIC-RFC9220-0008"
+  ],
+  "summary": "Add the RFC 9220 HTTP/3 Extended CONNECT scalar and validation foundation without building a full WebSocket tunnel.",
+  "planned_changes": "- Add SETTINGS_ENABLE_CONNECT_PROTOCOL to the typed HTTP/3 settings model, writer, and parser.\n- Add RFC 8441-style Extended CONNECT request pseudo-header validation and expose `:protocol` on validated request results and materialized requests.\n- Add unsupported-protocol 501 response creation with optional problem-details payload.\n- Add closure mapping helpers for orderly FIN and reset-to-H3_REQUEST_CANCELLED behavior.\n- Add focused unit tests and canonical spec xrefs.\n- Narrow the RFC 9220 planning gap to record this foundation as trace-owned.",
+  "verification_plan": "Run the focused HTTP/3 Extended CONNECT, settings, and header-validation test subset, validate core SpecTrace JSON artifacts, regenerate QUIC requirement coverage triage, and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0001"
+  ],
+  "out_of_scope": [
+    "WebSocket frame parsing, masking, and message reassembly.",
+    "Bidirectional tunnel forwarding between HTTP/3 streams and TCP sockets.",
+    "HTTP Datagram, CONNECT-UDP, CONNECT-IP, and MASQUE support.",
+    "Changing QUIC transport packet, TLS, scheduler, or stream-state behavior."
+  ],
+  "completion_notes": "The HTTP/3 adapter now has a trace-owned RFC 9220 foundation for settings, Extended CONNECT validation, unsupported-protocol response behavior, and closure mapping."
+}

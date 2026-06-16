@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 Extended CONNECT RFC 9220 Foundation Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first RFC 9220 implementation boundary for HTTP/3 Extended CONNECT and WebSocket-over-HTTP/3 scalar behavior.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "WI-QUIC-RFC9220-0001",
+    "VER-QUIC-RFC9220-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0001",
+    "REQ-QUIC-RFC9220-0002",
+    "REQ-QUIC-RFC9220-0003",
+    "REQ-QUIC-RFC9220-0004",
+    "REQ-QUIC-RFC9220-0005",
+    "REQ-QUIC-RFC9220-0006",
+    "REQ-QUIC-RFC9220-0007",
+    "REQ-QUIC-RFC9220-0008"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3SettingIdentifier.cs",
+    "src/Incursa.Quic.Http3/Http3Settings.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidator.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidationResult.cs",
+    "src/Incursa.Quic.Http3/Http3Request.cs",
+    "src/Incursa.Quic.Http3/Http3ExtendedConnect.cs",
+    "src/Incursa.Quic.Http3/Http3ExtendedConnectClosure.cs",
+    "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+  ],
+  "design_summary": "The RFC 9220 floor stays in the HTTP/3 adapter layer. `Http3Settings` models SETTINGS_ENABLE_CONNECT_PROTOCOL with wire value 0x08 and default zero. `Http3HeaderValidator` accepts RFC 8441-style Extended CONNECT request pseudo-headers only for CONNECT, retains the validated `:protocol` value, and keeps ordinary request pseudo-header validation strict. `Http3ExtendedConnect` centralizes the WebSocket protocol token, unsupported-protocol 501 response creation with optional problem-details payload, and the required FIN versus H3_REQUEST_CANCELLED closure mappings.",
+  "data_and_state_considerations": "The implementation stores only scalar request metadata and typed settings. It does not introduce WebSocket framing, TCP tunnel state, HTTP Datagram state, MASQUE behavior, or QUIC transport runtime changes.",
+  "edge_cases_and_constraints": [
+    "Traditional CONNECT remains valid only with `:authority` and without `:scheme`, `:path`, or `:protocol`.",
+    "Extended CONNECT requires `:method` CONNECT plus `:protocol`, `:scheme`, `:authority`, and `:path`.",
+    "Unsupported Extended CONNECT protocol values map to a 501 response before application handler dispatch in the built-in server.",
+    "Orderly tunnel closures map to stream FIN; abnormal reset exceptions map to H3_REQUEST_CANCELLED."
+  ],
+  "risks": [
+    "This slice does not implement WebSocket frame parsing or application-level tunnel forwarding.",
+    "This slice does not implement HTTP Datagram, CONNECT-UDP, CONNECT-IP, or MASQUE extensions.",
+    "The built-in server recognizes unsupported Extended CONNECT values before handler dispatch; application handlers still own actual WebSocket handling for supported `websocket` requests."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The RFC 9220 foundation deliberately lives in `Incursa.Quic.Http3` above the core QUIC transport runtime. Later WebSocket tunnel implementation can consume the validated request protocol, typed setting, and closure mapping helpers without moving tunnel policy into packet, TLS, scheduler, or stream-state internals."
+    }
+  ]
+}

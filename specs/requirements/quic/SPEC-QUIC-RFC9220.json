@@ -7,6 +7,11 @@
   "status": "draft",
   "owner": "protocol-team",
   "purpose": "Capture QUIC RFC 9220 requirements.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9220-0001",
+    "WI-QUIC-RFC9220-0001",
+    "VER-QUIC-RFC9220-0001"
+  ],
   "requirements": [
     {
       "id": "REQ-QUIC-RFC9220-0001",
@@ -22,6 +27,10 @@
         "upstream_refs": [
           "RFC9220-S3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_MalformedExtendedConnect_ThrowsMessageError"
         ]
       },
       "notes": [
@@ -42,6 +51,11 @@
         "upstream_refs": [
           "RFC9220-S3-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
         ]
       },
       "notes": [
@@ -62,6 +76,10 @@
         "upstream_refs": [
           "RFC9220-S3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse"
         ]
       },
       "notes": [
@@ -82,6 +100,9 @@
         "upstream_refs": [
           "RFC9220-S3-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_CanIncludeProblemDetails"
         ]
       },
       "notes": [
@@ -102,6 +123,10 @@
         "upstream_refs": [
           "RFC9220-S3-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_UsesFin",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_DoesNotUseReset"
         ]
       },
       "notes": [
@@ -122,6 +147,10 @@
         "upstream_refs": [
           "RFC9220-S3-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_UsesRequestCancelled",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_DoesNotUseFin"
         ]
       },
       "notes": [
@@ -142,6 +171,11 @@
         "upstream_refs": [
           "RFC 9220 section 5 RFC9220-S5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
         ]
       },
       "notes": [
@@ -162,6 +196,10 @@
         "upstream_refs": [
           "RFC 9220 section 5 RFC9220-S5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9220.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
         ]
       },
       "notes": [

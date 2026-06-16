@@ -527,7 +527,9 @@ public sealed class Http3Server : IAsyncDisposable
                 requestStarted = true;
                 Http3Metrics.RecordRequestStarted("server");
                 EmitRequestStartedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path);
-                Http3ServerResponse response = await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
+                Http3ServerResponse response = request.Protocol is not null && !Http3ExtendedConnect.IsSupportedProtocol(request.Protocol)
+                    ? Http3ExtendedConnect.CreateUnsupportedProtocolResponse(request.Protocol)
+                    : await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
                 await WriteResponseAsync(stream, response, cancellationToken).ConfigureAwait(false);
                 if (response.SendGoAwayAfterResponse)
                 {
@@ -679,7 +681,7 @@ public sealed class Http3Server : IAsyncDisposable
             return false;
         }
 
-        request = new Http3Request(result.Method, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, headers);
+        request = new Http3Request(result.Method, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, ReadOnlyMemory<byte>.Empty);
         return true;
     }
 
@@ -780,7 +782,7 @@ public sealed class Http3Server : IAsyncDisposable
     private static Http3Request CreateRequest(IReadOnlyList<QPackFieldLine> headers, ReadOnlyMemory<byte> body)
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
-        return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, headers, body);
+        return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, body);
     }
 
     private async ValueTask TryWriteResponseAsync(

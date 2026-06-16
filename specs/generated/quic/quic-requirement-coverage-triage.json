@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T05:39:27.0527597-06:00",
+  "generated_at": "2026-06-16T05:58:08.3614054-06:00",
   "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T05:39:27.0495608-06:00",
+    "generated_at": "2026-06-16T05:58:08.3577394-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2040,
-      "uncovered_blocked": 601
+      "trace_clean": 2048,
+      "uncovered_blocked": 593
     },
     "by_work_queue_tag": {
-      "blocked": 601,
-      "clean": 2040,
-      "new_tests_needed": 601
+      "blocked": 593,
+      "clean": 2048,
+      "new_tests_needed": 593
     },
     "by_rfc": [
       {
@@ -92,7 +92,7 @@
         "rfc": "RFC9220",
         "total": 8,
         "by_state": {
-          "uncovered_blocked": 8
+          "trace_clean": 8
         }
       },
       {
@@ -317951,32 +317951,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_MalformedExtendedConnect_ThrowsMessageError"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -317984,7 +317983,96 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "method": "HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "line": 67,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "method": "HeaderValidator_ExtendedConnectWebSocket_PreservesRfc8441PseudoHeaders",
+          "line": 67,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.HeaderValidator_MalformedExtendedConnect_ThrowsMessageError",
+          "method": "HeaderValidator_MalformedExtendedConnect_ThrowsMessageError",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::HeaderValidator_MalformedExtendedConnect_ThrowsMessageError",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.HeaderValidator_MalformedExtendedConnect_ThrowsMessageError",
+          "method": "HeaderValidator_MalformedExtendedConnect_ThrowsMessageError",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0002",
@@ -317999,32 +318087,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318032,7 +318120,148 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "method": "SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "method": "SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "method": "SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "method": "SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0003",
@@ -318047,32 +318276,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318080,7 +318308,96 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
+          "method": "SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
+          "line": 115,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
+          "method": "SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
+          "line": 115,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "method": "UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "method": "UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0004",
@@ -318095,22 +318412,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_CanIncludeProblemDetails",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -318125,7 +318441,52 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.UnsupportedProtocolResponse_CanIncludeProblemDetails",
+          "method": "UnsupportedProtocolResponse_CanIncludeProblemDetails",
+          "line": 124,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_CanIncludeProblemDetails",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.UnsupportedProtocolResponse_CanIncludeProblemDetails",
+          "method": "UnsupportedProtocolResponse_CanIncludeProblemDetails",
+          "line": 124,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0004"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0005",
@@ -318140,32 +318501,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_UsesFin",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_DoesNotUseReset"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318173,7 +318533,96 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_OrderlyClosure_DoesNotUseReset",
+          "method": "ClosureMapping_OrderlyClosure_DoesNotUseReset",
+          "line": 149,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_DoesNotUseReset",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_OrderlyClosure_DoesNotUseReset",
+          "method": "ClosureMapping_OrderlyClosure_DoesNotUseReset",
+          "line": 149,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_OrderlyClosure_UsesFin",
+          "method": "ClosureMapping_OrderlyClosure_UsesFin",
+          "line": 137,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_OrderlyClosure_UsesFin",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_OrderlyClosure_UsesFin",
+          "method": "ClosureMapping_OrderlyClosure_UsesFin",
+          "line": 137,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0006",
@@ -318188,32 +318637,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_UsesRequestCancelled",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_DoesNotUseFin"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318221,7 +318669,96 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_ResetException_DoesNotUseFin",
+          "method": "ClosureMapping_ResetException_DoesNotUseFin",
+          "line": 170,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_DoesNotUseFin",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_ResetException_DoesNotUseFin",
+          "method": "ClosureMapping_ResetException_DoesNotUseFin",
+          "line": 170,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_ResetException_UsesRequestCancelled",
+          "method": "ClosureMapping_ResetException_UsesRequestCancelled",
+          "line": 158,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::ClosureMapping_ResetException_UsesRequestCancelled",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.ClosureMapping_ResetException_UsesRequestCancelled",
+          "method": "ClosureMapping_ResetException_UsesRequestCancelled",
+          "line": 158,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0006"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0007",
@@ -318236,32 +318773,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318269,7 +318806,148 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "method": "SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "method": "SettingsIdentifier_UsesRegisteredEnableConnectProtocolValue",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "method": "SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "method": "SettingsWriter_And_Parser_RoundTripEnableConnectProtocol",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9220-0008",
@@ -318284,32 +318962,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsModel_DefaultsEnableConnectProtocolToZero",
+        "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -318317,7 +318994,100 @@
           "summary": "RFC 9220 Extended CONNECT/WebSocket over HTTP/3 requirements remain blocked by the recorded planning-only scope until support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "method": "SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "line": 22,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "method": "SettingsModel_DefaultsEnableConnectProtocolToZero",
+          "line": 22,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0008",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
+          "class": "Http3ExtendedConnectTests",
+          "member": "Http3ExtendedConnectTests.SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "method": "SettingsParser_RejectsDuplicateEnableConnectProtocol",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0002",
+            "REQ-QUIC-RFC9220-0007",
+            "REQ-QUIC-RFC9220-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9221-S3-0001",

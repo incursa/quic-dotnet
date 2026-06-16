@@ -13,13 +13,15 @@ public sealed class Http3HeaderValidationResult
         string? scheme,
         string? authority,
         string? path,
-        int? statusCode)
+        int? statusCode,
+        string? protocol = null)
     {
         Method = method;
         Scheme = scheme;
         Authority = authority;
         Path = path;
         StatusCode = statusCode;
+        Protocol = protocol;
     }
 
     /// <summary>
@@ -41,6 +43,11 @@ public sealed class Http3HeaderValidationResult
     /// Gets the validated :path value for requests.
     /// </summary>
     public string? Path { get; }
+
+    /// <summary>
+    /// Gets the validated RFC 9220 Extended CONNECT :protocol value for requests.
+    /// </summary>
+    public string? Protocol { get; }
 
     /// <summary>
     /// Gets the validated :status value for responses.

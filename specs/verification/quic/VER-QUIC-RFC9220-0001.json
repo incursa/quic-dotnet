@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9220-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 Extended CONNECT RFC 9220 Foundation Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0001",
+    "WI-QUIC-RFC9220-0001"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for the RFC 9220 HTTP/3 Extended CONNECT foundation.",
+  "verifies": [
+    "REQ-QUIC-RFC9220-0001",
+    "REQ-QUIC-RFC9220-0002",
+    "REQ-QUIC-RFC9220-0003",
+    "REQ-QUIC-RFC9220-0004",
+    "REQ-QUIC-RFC9220-0005",
+    "REQ-QUIC-RFC9220-0006",
+    "REQ-QUIC-RFC9220-0007",
+    "REQ-QUIC-RFC9220-0008"
+  ],
+  "scope": "This verification covers SETTINGS_ENABLE_CONNECT_PROTOCOL value 0x08 and default zero, round-trip settings parse/write behavior, duplicate setting rejection, RFC 8441-style Extended CONNECT pseudo-header validation, unsupported-protocol 501 response creation, optional problem-details payload creation, orderly closure-to-FIN mapping, and reset exception-to-H3_REQUEST_CANCELLED mapping.",
+  "preconditions": [
+    "The RFC 9220 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9220.json`.",
+    "The RFC 9220 foundation remains in `Incursa.Quic.Http3` rather than in the core QUIC transport runtime."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ExtendedConnectTests|FullyQualifiedName~Http3SettingsHandlingTests|FullyQualifiedName~Http3HeaderValidationTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused HTTP/3 tests pass, core SpecTrace validation accepts the RFC 9220 artifacts, generated triage reflects the trace-owned RFC 9220 foundation, and no whitespace hygiene issues are introduced.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3SettingIdentifier.cs",
+    "src/Incursa.Quic.Http3/Http3Settings.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidator.cs",
+    "src/Incursa.Quic.Http3/Http3HeaderValidationResult.cs",
+    "src/Incursa.Quic.Http3/Http3Request.cs",
+    "src/Incursa.Quic.Http3/Http3ExtendedConnect.cs",
+    "src/Incursa.Quic.Http3/Http3ExtendedConnectClosure.cs",
+    "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs"
+  ],
+  "status_summary": "The RFC 9220 HTTP/3 Extended CONNECT foundation is trace-owned and verified. Full WebSocket tunnel forwarding, WebSocket frame handling, HTTP Datagram, CONNECT-UDP, CONNECT-IP, and MASQUE support remain future work."
+}

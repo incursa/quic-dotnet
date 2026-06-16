@@ -14,11 +14,13 @@ public sealed class Http3Settings
     public Http3Settings(
         ulong qpackMaxTableCapacity = 0,
         ulong qpackBlockedStreams = 0,
-        ulong? maxFieldSectionSize = null)
+        ulong? maxFieldSectionSize = null,
+        ulong enableConnectProtocol = 0)
     {
         QPackMaxTableCapacity = qpackMaxTableCapacity;
         QPackBlockedStreams = qpackBlockedStreams;
         MaxFieldSectionSize = maxFieldSectionSize;
+        EnableConnectProtocol = enableConnectProtocol;
     }
 
     /// <summary>
@@ -35,6 +37,11 @@ public sealed class Http3Settings
     /// Gets SETTINGS_MAX_FIELD_SECTION_SIZE. A null value means unlimited.
     /// </summary>
     public ulong? MaxFieldSectionSize { get; }
+
+    /// <summary>
+    /// Gets SETTINGS_ENABLE_CONNECT_PROTOCOL. The default is zero.
+    /// </summary>
+    public ulong EnableConnectProtocol { get; }
 
     /// <summary>
     /// Validates a field section size against SETTINGS_MAX_FIELD_SECTION_SIZE when it is present.
@@ -63,6 +70,11 @@ public sealed class Http3Settings
         if (QPackBlockedStreams != 0)
         {
             settings.Add(new Http3Setting((ulong)Http3SettingIdentifier.QPackBlockedStreams, QPackBlockedStreams));
+        }
+
+        if (EnableConnectProtocol != 0)
+        {
+            settings.Add(new Http3Setting((ulong)Http3SettingIdentifier.EnableConnectProtocol, EnableConnectProtocol));
         }
 
         return settings;
