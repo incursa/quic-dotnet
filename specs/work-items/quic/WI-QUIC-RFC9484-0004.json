@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Request Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0004",
+    "VER-QUIC-RFC9484-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0025",
+    "REQ-QUIC-RFC9484-0026",
+    "REQ-QUIC-RFC9484-0027",
+    "REQ-QUIC-RFC9484-0028",
+    "REQ-QUIC-RFC9484-0029",
+    "REQ-QUIC-RFC9484-0030",
+    "REQ-QUIC-RFC9484-0041"
+  ],
+  "summary": "Add CONNECT-IP request initiation, URI expansion, encryption, recipient action, rejection, and non-success response abort policy.",
+  "planned_changes": "- Add request policy helpers and recipient action enum.\n- Add focused positive/negative tests and canonical xrefs.\n- Narrow RFC9484 blocked triage around the completed request-policy slice.",
+  "verification_plan": "Run focused CONNECT-IP request policy tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0004"
+  ],
+  "out_of_scope": [
+    "HTTP/1.1 upgrade request/response validation.",
+    "HTTP/2 and HTTP/3 Extended CONNECT header validation.",
+    "Tunnel variable extraction and assignment lifecycle."
+  ],
+  "completion_notes": "The RFC 9484 request policy surface is implemented and verified locally."
+}

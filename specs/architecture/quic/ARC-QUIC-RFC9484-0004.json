@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Request Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP request initiation, URI expansion, encryption, recipient action, rejection, and non-success response abort policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0004",
+    "VER-QUIC-RFC9484-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0025",
+    "REQ-QUIC-RFC9484-0026",
+    "REQ-QUIC-RFC9484-0027",
+    "REQ-QUIC-RFC9484-0028",
+    "REQ-QUIC-RFC9484-0029",
+    "REQ-QUIC-RFC9484-0030",
+    "REQ-QUIC-RFC9484-0041"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpRequestPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpRecipientAction.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpRequestPolicy` validates that tunnel initiation uses the `connect-ip` token for a single HTTP stream, delegates URI Template expansion to the CONNECT-IP template helper, requires TLS, QUIC, or equivalent encryption, chooses forwarding versus local proxy action from configuration, exposes request rejection permission, and classifies non-2xx proxying responses as client abort conditions.",
+  "data_and_state_considerations": "The helper is stateless policy. It does not own HTTP connection state, upstream forwarding, or tunnel assignment state.",
+  "edge_cases_and_constraints": [
+    "A correct token without single-stream association does not initiate a tunnel.",
+    "Unresolved URI Template variables fail before request dispatch.",
+    "Forwarding and local proxy behavior are mutually exclusive routing actions."
+  ],
+  "risks": [
+    "HTTP/1.1 upgrade and HTTP/2/3 Extended CONNECT header validation remain separate request-format slices.",
+    "Tunnel variable extraction and address/route assignment remain later slices."
+  ]
+}
