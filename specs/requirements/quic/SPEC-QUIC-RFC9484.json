@@ -883,6 +883,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_UsesGetMethod",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsNonGetMethod"
         ]
       }
     },
@@ -900,6 +904,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_IncludesSingleHostHeader",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsMissingHostHeader"
         ]
       }
     },
@@ -917,6 +925,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_IncludesConnectionUpgradeHeader",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsMissingConnectionUpgradeHeader"
         ]
       }
     },
@@ -934,6 +946,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_IncludesConnectIpUpgradeHeader",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsWrongUpgradeHeader"
         ]
       }
     },
@@ -951,6 +967,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_MalformedRequestProducesValidationError",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_ValidRequestDoesNotProduceValidationError"
         ]
       }
     },
@@ -968,6 +988,10 @@
         "upstream_refs": [
           "RFC 9484 4.2 RFC9484-S4P2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RecommendsBadRequestForMalformedRequests",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_DoesNotRecommendSuccessForMalformedRequests"
         ]
       }
     },
@@ -985,6 +1009,10 @@
         "upstream_refs": [
           "RFC 9484 4.3 RFC9484-S4P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_ResponseStatusIsSwitchingProtocols",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsNonSwitchingProtocolsStatus"
         ]
       }
     },
@@ -1002,6 +1030,10 @@
         "upstream_refs": [
           "RFC 9484 4.3 RFC9484-S4P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_ResponseConnectionHeaderIsUpgrade",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsResponseWithoutConnectionUpgrade"
         ]
       }
     },
@@ -1019,6 +1051,10 @@
         "upstream_refs": [
           "RFC 9484 4.3 RFC9484-S4P3-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_ResponseUpgradeHeaderIsConnectIp",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsDuplicateResponseUpgradeHeaders"
         ]
       }
     },
@@ -1036,6 +1072,10 @@
         "upstream_refs": [
           "RFC 9484 4.3 RFC9484-S4P3-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_ResponseMeetsCapsuleProtocolStartRequirements",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_RejectsResponseContent"
         ]
       }
     },
@@ -1053,6 +1093,10 @@
         "upstream_refs": [
           "RFC 9484 4.3 RFC9484-S4P3-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_FailedProxyingAttemptClosesConnection",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs::Http11Upgrade_SuccessfulProxyingAttemptDoesNotCloseConnection"
         ]
       }
     },

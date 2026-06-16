@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP HTTP/1.1 Upgrade Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 HTTP/1.1 CONNECT-IP upgrade request and response policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0006",
+    "VER-QUIC-RFC9484-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0042",
+    "REQ-QUIC-RFC9484-0043",
+    "REQ-QUIC-RFC9484-0044",
+    "REQ-QUIC-RFC9484-0045",
+    "REQ-QUIC-RFC9484-0046",
+    "REQ-QUIC-RFC9484-0047",
+    "REQ-QUIC-RFC9484-0048",
+    "REQ-QUIC-RFC9484-0049",
+    "REQ-QUIC-RFC9484-0050",
+    "REQ-QUIC-RFC9484-0051",
+    "REQ-QUIC-RFC9484-0052"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpHttp11UpgradePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpHttp11UpgradePolicy` builds and validates HTTP/1.1 CONNECT-IP upgrade request/response fields: GET, single Host, Connection: Upgrade, Upgrade: connect-ip, malformed 400 recommendation, 101 Switching Protocols, response upgrade fields, no message content, Capsule Protocol start requirements, and failed-attempt connection close decision.",
+  "data_and_state_considerations": "The helper is header/status policy only. It does not own TCP connection state or start a live Capsule stream.",
+  "edge_cases_and_constraints": [
+    "Connection upgrade tokens are compared case-insensitively.",
+    "Request and response content is rejected.",
+    "Duplicate response Upgrade fields are rejected where the RFC requires a single field."
+  ],
+  "risks": [
+    "Live HTTP/1.1 connection upgrade handling remains adapter work.",
+    "HTTP/2 and HTTP/3 Extended CONNECT policy remains a separate slice."
+  ]
+}

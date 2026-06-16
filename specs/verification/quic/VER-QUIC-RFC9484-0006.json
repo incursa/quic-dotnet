@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0006",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP HTTP/1.1 Upgrade Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0006",
+    "WI-QUIC-RFC9484-0006"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 HTTP/1.1 upgrade policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0042",
+    "REQ-QUIC-RFC9484-0043",
+    "REQ-QUIC-RFC9484-0044",
+    "REQ-QUIC-RFC9484-0045",
+    "REQ-QUIC-RFC9484-0046",
+    "REQ-QUIC-RFC9484-0047",
+    "REQ-QUIC-RFC9484-0048",
+    "REQ-QUIC-RFC9484-0049",
+    "REQ-QUIC-RFC9484-0050",
+    "REQ-QUIC-RFC9484-0051",
+    "REQ-QUIC-RFC9484-0052"
+  ],
+  "scope": "This verification covers the HTTP/1.1 GET method, single Host field, Connection: Upgrade, Upgrade: connect-ip, malformed 400 recommendation, 101 response, response upgrade fields, no-content Capsule requirements, and failed-attempt connection-close decision.",
+  "preconditions": [
+    "RFC 9484 request and tunnel setup policies are trace-owned."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpHttp11UpgradePolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0042|FullyQualifiedName~Http3ConnectIpHttp11UpgradePolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused HTTP/1.1 CONNECT-IP upgrade tests pass, core SpecTrace validation accepts the RFC 9484 HTTP/1.1 artifacts, generated triage reflects requirements 0042-0052 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpHttp11UpgradePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpHttp11UpgradePolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9484 HTTP/1.1 upgrade policy surface is trace-owned and verified by focused local gates."
+}
