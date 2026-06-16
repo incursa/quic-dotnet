@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9464-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Provisioning RFC 9464 Client Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "ARC-QUIC-RFC9464-0004",
+    "VER-QUIC-RFC9464-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9464-0050",
+    "REQ-QUIC-RFC9464-0066",
+    "REQ-QUIC-RFC9464-0067",
+    "REQ-QUIC-RFC9464-0068",
+    "REQ-QUIC-RFC9464-0069",
+    "REQ-QUIC-RFC9464-0070",
+    "REQ-QUIC-RFC9464-0071",
+    "REQ-QUIC-RFC9464-0072",
+    "REQ-QUIC-RFC9464-0073",
+    "REQ-QUIC-RFC9464-0076"
+  ],
+  "summary": "Add trace-owned client-side RFC 9464 encrypted DNS provisioning policy.",
+  "planned_changes": "- Add a pure client policy that consumes decoded ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes.\n- Prefer encrypted DNS resolvers over classic INTERNAL_IP*_DNS data when ENCDNS_IP* is available.\n- Expand conveyed ENCDNS_IP* addresses into resolver session targets sorted by service priority.\n- Route split-tunnel INTERNAL_DNS_DOMAIN names to encrypted resolvers when present.\n- Reject ENCDNS_IP* data received after responder NULL authentication unless preconfigured.\n- Model ADN and SHA2-256 SubjectPublicKeyInfo digest certificate validation outcomes and non-recoverable failure.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused client-policy tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9464-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9464-0004"
+  ],
+  "out_of_scope": [
+    "Full IKEv2 Configuration Payload exchange processing.",
+    "TLS stack certificate chain construction or hostname matching.",
+    "Host OS resolver installation and split-tunnel route management."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9464 client policy floor that can feed future IPsec/IKEv2 adapters and ProtocolLab scenarios."
+}

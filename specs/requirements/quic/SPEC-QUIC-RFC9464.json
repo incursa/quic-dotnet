@@ -1083,6 +1083,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::MalformedProvisioningAttributesAreRejectedBeforePolicyUse",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::WellFormedProvisioningAttributesDecodeForPolicyUse"
         ]
       }
     },
@@ -1415,6 +1419,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::PlanPrefersEncryptedResolversAndUsesConveyedAddresses",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::PlanWithoutEncryptedResolversDoesNotInventEncryptedSessionTargets"
         ]
       }
     },
@@ -1432,6 +1440,10 @@
         "upstream_refs": [
           "RFC 9464 Section 4 RFC9464-S4-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::PlanPrefersEncryptedResolversAndUsesConveyedAddresses",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::PlanWithoutEncryptedResolversDoesNotInventEncryptedSessionTargets"
         ]
       }
     },
@@ -1450,6 +1462,10 @@
           "RFC 9464 Section 4 RFC9464-S4-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4",
           "https://www.rfc-editor.org/rfc/rfc8310.html#section-8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMatchValidatesResolverCertificate",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMismatchMakesResolverCertificateFailureNonRecoverable"
         ]
       }
     },
@@ -1467,6 +1483,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMatchValidatesResolverCertificate",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMismatchMakesResolverCertificateFailureNonRecoverable"
         ]
       }
     },
@@ -1484,6 +1504,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B11-P11-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMatchValidatesResolverCertificate",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMismatchMakesResolverCertificateFailureNonRecoverable"
         ]
       },
       "notes": [
@@ -1504,6 +1528,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B11-P11-S4",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMatchValidatesResolverCertificate",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::DigestMismatchMakesResolverCertificateFailureNonRecoverable"
         ]
       }
     },
@@ -1522,6 +1550,10 @@
           "RFC 9464 section 4 RFC9464-S4-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4",
           "RFC 8598"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::NonSplitTunnelPlanDoesNotRouteInternalDomainsBySplitTunnelPolicy",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::SplitTunnelInternalDomainsUseEncryptedResolversWithoutClassicDnsPrerequisite"
         ]
       }
     },
@@ -1539,6 +1571,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B13-P13-S3",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::NonSplitTunnelPlanDoesNotRouteInternalDomainsBySplitTunnelPolicy",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::SplitTunnelInternalDomainsUseEncryptedResolversWithoutClassicDnsPrerequisite"
         ]
       }
     },
@@ -1604,6 +1640,10 @@
         "upstream_refs": [
           "RFC 9464 section 6 RFC9464-S6-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::NullAuthenticatedResponderBlocksEncryptedDnsUnlessPreconfigured",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs::PreconfiguredNullAuthenticatedResponderCanUseEncryptedDns"
         ]
       },
       "notes": [
@@ -1620,6 +1660,9 @@
     "VER-QUIC-RFC9464-0002",
     "ARC-QUIC-RFC9464-0003",
     "WI-QUIC-RFC9464-0003",
-    "VER-QUIC-RFC9464-0003"
+    "VER-QUIC-RFC9464-0003",
+    "ARC-QUIC-RFC9464-0004",
+    "VER-QUIC-RFC9464-0004",
+    "WI-QUIC-RFC9464-0004"
   ]
 }

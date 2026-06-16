@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9464-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Provisioning RFC 9464 Client Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the pure client-side policy boundary for consuming RFC 9464 ENCDNS_IP* and ENCDNS_DIGEST_INFO provisioning results.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9464-0004",
+    "VER-QUIC-RFC9464-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9464-0050",
+    "REQ-QUIC-RFC9464-0066",
+    "REQ-QUIC-RFC9464-0067",
+    "REQ-QUIC-RFC9464-0068",
+    "REQ-QUIC-RFC9464-0069",
+    "REQ-QUIC-RFC9464-0070",
+    "REQ-QUIC-RFC9464-0071",
+    "REQ-QUIC-RFC9464-0072",
+    "REQ-QUIC-RFC9464-0073",
+    "REQ-QUIC-RFC9464-0076"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPolicy.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResolverEndpoint.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningCertificateValidationStatus.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningDigestInfoAttribute.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningClientPolicyTests.cs"
+  ],
+  "design_summary": "The client-policy slice consumes already-decoded CFG_REPLY or CFG_SET ENCDNS_IP* attributes and optional ENCDNS_DIGEST_INFO data, prefers encrypted resolvers over classic INTERNAL_IP*_DNS addresses, expands conveyed resolver addresses into session targets sorted by service priority, routes split-tunnel INTERNAL_DNS_DOMAIN names to encrypted resolvers, rejects non-preconfigured NULL-authenticated responder data, and models certificate validation as ADN validation or SHA2-256 SubjectPublicKeyInfo digest validation with non-recoverable failure on mismatch.",
+  "data_and_state_considerations": "The policy is immutable and side-effect free. It does not open DNS sessions, modify OS resolver state, parse IKEv2 messages, or own IPsec connection state.",
+  "edge_cases_and_constraints": [
+    "Malformed ENCDNS_IP* attributes are rejected during decode before policy use.",
+    "Encrypted resolver endpoints are produced only from CFG_REPLY or CFG_SET attributes.",
+    "NULL-authenticated responder data is ignored unless the initiator is explicitly preconfigured to accept it.",
+    "ENCDNS_DIGEST_INFO with SHA2-256 must match the resolver certificate SubjectPublicKeyInfo digest when it applies to the endpoint ADN.",
+    "Digest or ADN validation failure is represented as a non-recoverable resolver-certificate failure."
+  ],
+  "risks": [
+    "This slice does not implement full IKEv2 Configuration Payload exchange processing.",
+    "This slice does not install resolvers into the host operating system.",
+    "This slice relies on callers to supply the TLS certificate ADN-match signal or SubjectPublicKeyInfo bytes from their TLS stack."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The policy boundary keeps RFC 9464 resolver selection and validation decisions testable without coupling Incursa.Quic.Dns to a specific IPsec/IKEv2 implementation or platform resolver API."
+    }
+  ]
+}
