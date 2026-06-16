@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0001",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP Foundation Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0001",
+    "WI-QUIC-RFC9484-0001"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 foundation policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0001",
+    "REQ-QUIC-RFC9484-0002",
+    "REQ-QUIC-RFC9484-0003",
+    "REQ-QUIC-RFC9484-0004",
+    "REQ-QUIC-RFC9484-0005"
+  ],
+  "scope": "This verification covers no IP header-field conveyance, no non-IP protocol tunneling, QUIC variable-length integer formatting and parsing, truncated varint rejection, non-minimal varint acceptance, minimal varint acceptance, and non-multiplexed stream references as whole-connection references.",
+  "preconditions": [
+    "HTTP/3 QUIC variable-length integer helpers are already trace-owned."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpFoundationPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0001|FullyQualifiedName~Http3ConnectIpFoundationPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused CONNECT-IP foundation tests pass, core SpecTrace validation accepts the RFC 9484 foundation artifacts, generated triage reflects requirements 0001-0005 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpFoundationPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpStreamReferenceScope.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9484 foundation policy surface is trace-owned and verified by focused local gates."
+}

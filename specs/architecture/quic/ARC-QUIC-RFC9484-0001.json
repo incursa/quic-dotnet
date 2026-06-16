@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Foundation Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP mechanism scope, QUIC variable-length integer use, and stream-reference interpretation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0001",
+    "VER-QUIC-RFC9484-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0001",
+    "REQ-QUIC-RFC9484-0002",
+    "REQ-QUIC-RFC9484-0003",
+    "REQ-QUIC-RFC9484-0004",
+    "REQ-QUIC-RFC9484-0005"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpFoundationPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpStreamReferenceScope.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpFoundationPolicy` rejects IP header-field conveyance and non-IP protocol tunneling, delegates variable-length integer parsing/formatting to the HTTP/3 QUIC varint helper, accepts non-minimal encodings through that parser, and maps stream references to the whole connection when the HTTP version does not multiplex streams.",
+  "data_and_state_considerations": "The helper is stateless and does not own packet forwarding or tunnel assignment state.",
+  "edge_cases_and_constraints": [
+    "Truncated variable-length integers are rejected.",
+    "Minimal encodings remain valid even though non-minimal encodings are accepted.",
+    "The foundation scope does not define URI Template or capsule behavior."
+  ],
+  "risks": [
+    "Later CONNECT-IP slices still need URI Template, request, capsule, route, and datagram policy coverage."
+  ]
+}

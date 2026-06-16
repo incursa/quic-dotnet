@@ -22,6 +22,10 @@
         "upstream_refs": [
           "RFC 9484 Section 1 RFC9484-S1-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_DoesNotConveyIpHeaderFields",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_RejectsIpHeaderFieldConveyance"
         ]
       }
     },
@@ -39,6 +43,10 @@
         "upstream_refs": [
           "RFC 9484 Section 1 RFC9484-S1-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_DoesNotTunnelOtherIpProtocols",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_RejectsOtherProtocolTunneling"
         ]
       }
     },
@@ -56,6 +64,10 @@
         "upstream_refs": [
           "RFC 9484 Section 2 RFC9484-S2-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_EncodesAndDecodesQuicVariableLengthIntegers",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_RejectsTruncatedVariableLengthIntegers"
         ]
       }
     },
@@ -73,6 +85,10 @@
         "upstream_refs": [
           "RFC 9484 Section 2 RFC9484-S2-B3-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_AcceptsNonMinimalVariableLengthIntegerEncodings",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_DoesNotRequireNonMinimalVariableLengthIntegerEncodings"
         ]
       }
     },
@@ -90,6 +106,10 @@
         "upstream_refs": [
           "RFC 9484 Section 2 RFC9484-S2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpFoundationPolicyTests.cs::Foundation_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams"
         ]
       }
     },

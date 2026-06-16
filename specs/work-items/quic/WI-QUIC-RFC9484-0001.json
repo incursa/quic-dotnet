@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Foundation Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0001",
+    "VER-QUIC-RFC9484-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0001",
+    "REQ-QUIC-RFC9484-0002",
+    "REQ-QUIC-RFC9484-0003",
+    "REQ-QUIC-RFC9484-0004",
+    "REQ-QUIC-RFC9484-0005"
+  ],
+  "summary": "Add CONNECT-IP foundation helpers for mechanism scope, QUIC varints, and stream-reference interpretation.",
+  "planned_changes": "- Add pure policy helpers and stream-reference scope enum.\n- Add focused positive/negative tests and canonical xrefs.\n- Narrow RFC9484 blocked triage to the remaining requirements.",
+  "verification_plan": "Run focused CONNECT-IP foundation tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0001"
+  ],
+  "out_of_scope": [
+    "URI Template validation.",
+    "CONNECT-IP request/response handling.",
+    "ADDRESS_ASSIGN and ROUTE_ADVERTISEMENT capsule encoding."
+  ],
+  "completion_notes": "The RFC 9484 foundation policy surface is implemented and verified locally."
+}
