@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery RFC 9463 DHCPv4 OPTION_V4_DNR Wire Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0003",
+    "VER-QUIC-RFC9463-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0045",
+    "REQ-QUIC-RFC9463-0046",
+    "REQ-QUIC-RFC9463-0047",
+    "REQ-QUIC-RFC9463-0048",
+    "REQ-QUIC-RFC9463-0049",
+    "REQ-QUIC-RFC9463-0050",
+    "REQ-QUIC-RFC9463-0051",
+    "REQ-QUIC-RFC9463-0052",
+    "REQ-QUIC-RFC9463-0053",
+    "REQ-QUIC-RFC9463-0054",
+    "REQ-QUIC-RFC9463-0055",
+    "REQ-QUIC-RFC9463-0056",
+    "REQ-QUIC-RFC9463-0057",
+    "REQ-QUIC-RFC9463-0058",
+    "REQ-QUIC-RFC9463-0059",
+    "REQ-QUIC-RFC9463-0060",
+    "REQ-QUIC-RFC9463-0061",
+    "REQ-QUIC-RFC9463-0062",
+    "REQ-QUIC-RFC9463-0063",
+    "REQ-QUIC-RFC9463-0064",
+    "REQ-QUIC-RFC9463-0065",
+    "REQ-QUIC-RFC9463-0066",
+    "REQ-QUIC-RFC9463-0067",
+    "REQ-QUIC-RFC9463-0068",
+    "REQ-QUIC-RFC9463-0069",
+    "REQ-QUIC-RFC9463-0070",
+    "REQ-QUIC-RFC9463-0071",
+    "REQ-QUIC-RFC9463-0072",
+    "REQ-QUIC-RFC9463-0073",
+    "REQ-QUIC-RFC9463-0074",
+    "REQ-QUIC-RFC9463-0075",
+    "REQ-QUIC-RFC9463-0076"
+  ],
+  "summary": "Add trace-owned byte-level support for RFC 9463 DHCPv4 OPTION_V4_DNR.",
+  "planned_changes": "- Add `EncryptedDnsDiscoveryDhcpv4Option` and nested DNR Instance Data helpers.\n- Encode and decode OPTION_V4_DNR tag/length fields and repeated DNR instances.\n- Encode and decode RFC 8415 authentication-domain-name wire format.\n- Encode and validate IPv4 Addr Length and IPv4 resolver address lists.\n- Reuse RFC 9460 SvcParam key/value encoding and reject superseded address hints.\n- Support ADN-only mode, Parameter Request List data, RFC 3396 option segmentation, multiple instance parsing, service-priority sorting, and invalid-instance discard.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused DHCPv4 option tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0003"
+  ],
+  "out_of_scope": [
+    "Neighbor Discovery encrypted DNS option encoding and padding.",
+    "Full DHCPv4 client state and platform resolver configuration.",
+    "PKIX certificate validation and encrypted resolver connection establishment."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned DHCPv4 OPTION_V4_DNR wire floor that can feed future DHCP client, ProtocolLab, or resolver-selection integration."
+}

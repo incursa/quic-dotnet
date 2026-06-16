@@ -10,10 +10,13 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9463-0001",
     "ARC-QUIC-RFC9463-0002",
+    "ARC-QUIC-RFC9463-0003",
     "VER-QUIC-RFC9463-0001",
     "VER-QUIC-RFC9463-0002",
+    "VER-QUIC-RFC9463-0003",
     "WI-QUIC-RFC9463-0001",
-    "WI-QUIC-RFC9463-0002"
+    "WI-QUIC-RFC9463-0002",
+    "WI-QUIC-RFC9463-0003"
   ],
   "requirements": [
     {
@@ -930,6 +933,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsMissingOrMismatchedOptionV4DnrData",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesOptionV4DnrCodeLengthAndInstanceData"
         ]
       }
     },
@@ -947,6 +954,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsMissingOrMismatchedOptionV4DnrData",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesOptionV4DnrCodeLengthAndInstanceData"
         ]
       },
       "notes": [
@@ -967,6 +978,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsMissingOrMismatchedOptionV4DnrData",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesOptionV4DnrCodeLengthAndInstanceData"
         ]
       }
     },
@@ -984,6 +999,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       }
     },
@@ -1001,6 +1020,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeIgnoresNonDnrDhcpv4Options",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeReturnsSeparateInstancesSortedByServicePriority"
         ]
       }
     },
@@ -1018,6 +1041,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       }
     },
@@ -1035,6 +1062,10 @@
         "upstream_refs": [
           "RFC 9463 section 5.1 RFC9463-S5P1-B12-P12-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::AdnOnlyInstanceSetsLengthToAdnLengthPlusThreeAndOmitsTrailingFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::PopulatedInstanceIncludesAddressLengthBeforeIpv4Addresses"
         ]
       },
       "notes": [
@@ -1056,6 +1087,10 @@
           "RFC9463-S5P1-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       },
       "notes": [
@@ -1076,6 +1111,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B14-P14-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       }
     },
@@ -1093,6 +1132,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       }
     },
@@ -1111,6 +1154,10 @@
           "RFC9463-S5P1-B15-P15-S2",
           "https://www.rfc-editor.org/rfc/rfc8415.html#section-10",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidInstanceDataLengthOrAdnLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::InstanceDataPreservesPriorityAndRfc8415AuthenticationDomainName"
         ]
       }
     },
@@ -1128,6 +1175,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B16-P16-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidIpv4AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesIpv4AddressLengthAndAddresses"
         ]
       }
     },
@@ -1145,6 +1196,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B16-P16-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidIpv4AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesIpv4AddressLengthAndAddresses"
         ]
       }
     },
@@ -1162,6 +1217,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B17-P17-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidIpv4AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesIpv4AddressLengthAndAddresses"
         ]
       }
     },
@@ -1179,6 +1238,10 @@
         "upstream_refs": [
           "RFC9463-S5P1-B17-P17-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsInvalidIpv4AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesIpv4AddressLengthAndAddresses"
         ]
       }
     },
@@ -1196,6 +1259,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrWithAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesSvcParamsAndIncludesAlpn"
         ]
       },
       "notes": [
@@ -1216,6 +1283,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S3",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrWithAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesSvcParamsAndIncludesAlpn"
         ]
       },
       "notes": [
@@ -1236,6 +1307,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S5",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrWithAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesSvcParamsAndIncludesAlpn"
         ]
       },
       "notes": [
@@ -1256,6 +1331,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B20-P20-S5",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrWithAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::EncodeWritesSvcParamsAndIncludesAlpn"
         ]
       },
       "notes": [
@@ -1276,6 +1355,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B21-P21-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DefaultPortsFollowEncryptedDnsAlpnWhenPortSvcParamIsAbsent",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DefaultPortsRejectUnknownAlpn"
         ]
       },
       "notes": [
@@ -1296,6 +1379,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B22-P22-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeRejectsTruncatedServiceParameterField",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::ServiceParameterLengthMatchesInstanceDataLengthFormula"
         ]
       },
       "notes": [
@@ -1316,6 +1403,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::AdnOnlyInstanceSetsLengthToAdnLengthPlusThreeAndOmitsTrailingFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::PopulatedInstanceIncludesAddressLengthBeforeIpv4Addresses"
         ]
       },
       "notes": [
@@ -1336,6 +1427,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::AdnOnlyInstanceSetsLengthToAdnLengthPlusThreeAndOmitsTrailingFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::PopulatedInstanceIncludesAddressLengthBeforeIpv4Addresses"
         ]
       },
       "notes": [
@@ -1356,6 +1451,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B23-P23-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::AdnOnlyInstanceSetsLengthToAdnLengthPlusThreeAndOmitsTrailingFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::PopulatedInstanceIncludesAddressLengthBeforeIpv4Addresses"
         ]
       },
       "notes": [
@@ -1376,6 +1475,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.1 RFC9463-S5P1-B24-P24-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::OversizedOptionRejectsSingleOptionEncoding",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::OversizedOptionUsesRfc3396Segments"
         ]
       },
       "notes": [
@@ -1396,6 +1499,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::ParameterRequestListDataDoesNotRequestUnknownOrDhcpv6DnrCode",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::ParameterRequestListDataRequestsOptionV4Dnr"
         ]
       },
       "notes": [
@@ -1416,6 +1523,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeIgnoresNonDnrDhcpv4Options",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeReturnsSeparateInstancesSortedByServicePriority"
         ]
       },
       "notes": [
@@ -1436,6 +1547,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeIgnoresNonDnrDhcpv4Options",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeReturnsSeparateInstancesSortedByServicePriority"
         ]
       },
       "notes": [
@@ -1456,6 +1571,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeIgnoresNonDnrDhcpv4Options",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeReturnsSeparateInstancesSortedByServicePriority"
         ]
       },
       "notes": [
@@ -1476,6 +1595,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeCanRejectInvalidInstanceWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeSilentlyDiscardsInvalidLoopbackAndMulticastInstances"
         ]
       },
       "notes": [
@@ -1496,6 +1619,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeCanRejectInvalidInstanceWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeSilentlyDiscardsInvalidLoopbackAndMulticastInstances"
         ]
       },
       "notes": [
@@ -1516,6 +1643,10 @@
         "upstream_refs": [
           "RFC 9463 Section 5.2 RFC9463-S5P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeCanRejectInvalidInstanceWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeSilentlyDiscardsInvalidLoopbackAndMulticastInstances"
         ]
       },
       "notes": [

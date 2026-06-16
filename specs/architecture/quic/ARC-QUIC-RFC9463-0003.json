@@ -1,0 +1,77 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 DHCPv4 OPTION_V4_DNR Wire Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9463 DHCPv4 OPTION_V4_DNR wire-format boundary for encrypted DNS discovery data.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0003",
+    "VER-QUIC-RFC9463-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0045",
+    "REQ-QUIC-RFC9463-0046",
+    "REQ-QUIC-RFC9463-0047",
+    "REQ-QUIC-RFC9463-0048",
+    "REQ-QUIC-RFC9463-0049",
+    "REQ-QUIC-RFC9463-0050",
+    "REQ-QUIC-RFC9463-0051",
+    "REQ-QUIC-RFC9463-0052",
+    "REQ-QUIC-RFC9463-0053",
+    "REQ-QUIC-RFC9463-0054",
+    "REQ-QUIC-RFC9463-0055",
+    "REQ-QUIC-RFC9463-0056",
+    "REQ-QUIC-RFC9463-0057",
+    "REQ-QUIC-RFC9463-0058",
+    "REQ-QUIC-RFC9463-0059",
+    "REQ-QUIC-RFC9463-0060",
+    "REQ-QUIC-RFC9463-0061",
+    "REQ-QUIC-RFC9463-0062",
+    "REQ-QUIC-RFC9463-0063",
+    "REQ-QUIC-RFC9463-0064",
+    "REQ-QUIC-RFC9463-0065",
+    "REQ-QUIC-RFC9463-0066",
+    "REQ-QUIC-RFC9463-0067",
+    "REQ-QUIC-RFC9463-0068",
+    "REQ-QUIC-RFC9463-0069",
+    "REQ-QUIC-RFC9463-0070",
+    "REQ-QUIC-RFC9463-0071",
+    "REQ-QUIC-RFC9463-0072",
+    "REQ-QUIC-RFC9463-0073",
+    "REQ-QUIC-RFC9463-0074",
+    "REQ-QUIC-RFC9463-0075",
+    "REQ-QUIC-RFC9463-0076"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv4Option.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningServiceParameter.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs"
+  ],
+  "design_summary": "The DHCPv4 slice adds a pure OPTION_V4_DNR codec that writes and parses the RFC 9463 option tag, one-octet length, repeated DNR Instance Data entries, service-priority, RFC 8415 DNS-name, IPv4 address-length/address list, RFC 9460 SvcParams, ADN-only mode, Parameter Request List value, RFC 3396 concatenated option segments, service-priority sorting, and invalid-instance discard behavior.",
+  "data_and_state_considerations": "The helper owns only DHCPv4 option bytes and normalized instance values. It does not own DHCP client state, lease handling, platform resolver installation, certificate validation, DHCPv6, or Neighbor Discovery encoding.",
+  "edge_cases_and_constraints": [
+    "Single OPTION_V4_DNR encoding is rejected when option data exceeds 255 octets.",
+    "RFC 3396 segment encoding splits oversized option data across repeated OPTION_V4_DNR TLVs.",
+    "ADN-only instances omit Addr Length, IPv4 addresses, and SvcParams.",
+    "Populated instances require non-zero Addr Length that is a multiple of 4.",
+    "IPv4 loopback and multicast addresses are discarded during decode, and an instance with no usable address is invalid.",
+    "Multiple DNR Instance Data entries remain separate and are returned in service-priority order."
+  ],
+  "risks": [
+    "This slice does not implement Neighbor Discovery encrypted DNS option padding or lifetime processing.",
+    "This slice does not implement a DHCPv4 client, lease state, or platform resolver configuration.",
+    "This slice does not implement PKIX validation or encrypted resolver connection establishment."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The codec sits beside the DHCPv6 OPTION_V6_DNR helper and below any platform DHCP client integration. It gives ProtocolLab and future network adapters exact DHCPv4 byte-level proof without moving DHCP state into the QUIC runtime."
+    }
+  ]
+}
