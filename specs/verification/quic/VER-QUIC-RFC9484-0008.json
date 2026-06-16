@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0008",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP Target and Protocol Scope Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0008",
+    "WI-QUIC-RFC9484-0008"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 target/ipproto scope policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0065",
+    "REQ-QUIC-RFC9484-0066",
+    "REQ-QUIC-RFC9484-0067",
+    "REQ-QUIC-RFC9484-0068",
+    "REQ-QUIC-RFC9484-0069",
+    "REQ-QUIC-RFC9484-0070",
+    "REQ-QUIC-RFC9484-0071",
+    "REQ-QUIC-RFC9484-0072",
+    "REQ-QUIC-RFC9484-0073",
+    "REQ-QUIC-RFC9484-0074",
+    "REQ-QUIC-RFC9484-0075",
+    "REQ-QUIC-RFC9484-0076",
+    "REQ-QUIC-RFC9484-0077",
+    "REQ-QUIC-RFC9484-0078",
+    "REQ-QUIC-RFC9484-0079"
+  ],
+  "scope": "This verification covers IP-prefix single-version policy, scoped route advertisement filtering, specific and wildcard ipproto semantics, allowable next-header values, ICMP exception handling, Figure 6 target/ipproto grammar, percent-encoded IPv6 colons and prefix slashes, prefix length limits, zero host-bit enforcement, and client-scope access-control rejection.",
+  "preconditions": [
+    "RFC 9484 URI Template expansion and CONNECT-IP request policy are implemented."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpScopePolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0065|FullyQualifiedName~Http3ConnectIpScopePolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused CONNECT-IP scope-policy tests pass, core SpecTrace validation accepts the RFC 9484 scope artifacts, generated triage reflects requirements 0065-0079 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpScopePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9484 target/ipproto scope policy surface is trace-owned and verified by focused local gates."
+}

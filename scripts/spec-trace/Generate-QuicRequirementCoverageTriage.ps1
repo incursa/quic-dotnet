@@ -580,9 +580,9 @@ function Get-RequirementGapMappings {
         },
         [pscustomobject]@{
             Slug               = 'connect-ip-masque'
-            Summary            = 'RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, and HTTP/2/HTTP/3 Extended CONNECT slices; remaining work covers detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy.'
+            Summary            = 'RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, and target/ipproto scope slices; remaining work covers capsules, route/address assignment, datagram forwarding, and manageability policy.'
             RequirementPrefixes = @()
-            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9484' -Start 65 -End 213)
+            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9484' -Start 80 -End 213)
         },
         [pscustomobject]@{
             Slug               = '9002-06-key-discard-lifecycle'

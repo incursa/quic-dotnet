@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Target and Protocol Scope Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP target, ipproto, scoped route advertisement, and access-control policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0008",
+    "VER-QUIC-RFC9484-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0065",
+    "REQ-QUIC-RFC9484-0066",
+    "REQ-QUIC-RFC9484-0067",
+    "REQ-QUIC-RFC9484-0068",
+    "REQ-QUIC-RFC9484-0069",
+    "REQ-QUIC-RFC9484-0070",
+    "REQ-QUIC-RFC9484-0071",
+    "REQ-QUIC-RFC9484-0072",
+    "REQ-QUIC-RFC9484-0073",
+    "REQ-QUIC-RFC9484-0074",
+    "REQ-QUIC-RFC9484-0075",
+    "REQ-QUIC-RFC9484-0076",
+    "REQ-QUIC-RFC9484-0077",
+    "REQ-QUIC-RFC9484-0078",
+    "REQ-QUIC-RFC9484-0079"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpScopePolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpTargetScope.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpProtocolScope.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpTargetScope` and `Http3ConnectIpProtocolScope` parse Figure 6 target and ipproto values, while `Http3ConnectIpScopePolicy` adds route-advertisement filtering, IP-version classification, single-version prefix policy, and access-control rejection decisions. URI Template expansion continues to percent-encode IPv6 colons and prefix slashes before request dispatch.",
+  "data_and_state_considerations": "The helper surfaces are stateless policy checks. They do not own DNS resolution, address assignment state, or route capsule serialization.",
+  "edge_cases_and_constraints": [
+    "Prefix lengths are constrained to the address bit length.",
+    "Prefix lower bits must be zero outside the covered prefix.",
+    "ICMPv4 and ICMPv6 remain allowed even when a specific ipproto is scoped."
+  ],
+  "risks": [
+    "Live DNS resolution and route capsule emission remain adapter work.",
+    "ADDRESS_ASSIGN and ROUTE_ADVERTISEMENT capsule wire formats remain separate slices."
+  ]
+}

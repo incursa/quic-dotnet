@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Target and Protocol Scope Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0008",
+    "VER-QUIC-RFC9484-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0065",
+    "REQ-QUIC-RFC9484-0066",
+    "REQ-QUIC-RFC9484-0067",
+    "REQ-QUIC-RFC9484-0068",
+    "REQ-QUIC-RFC9484-0069",
+    "REQ-QUIC-RFC9484-0070",
+    "REQ-QUIC-RFC9484-0071",
+    "REQ-QUIC-RFC9484-0072",
+    "REQ-QUIC-RFC9484-0073",
+    "REQ-QUIC-RFC9484-0074",
+    "REQ-QUIC-RFC9484-0075",
+    "REQ-QUIC-RFC9484-0076",
+    "REQ-QUIC-RFC9484-0077",
+    "REQ-QUIC-RFC9484-0078",
+    "REQ-QUIC-RFC9484-0079"
+  ],
+  "summary": "Add CONNECT-IP target/ipproto grammar and scoped route/access-control policy coverage.",
+  "planned_changes": "- Add target/protocol scope policy helpers for IP version, route advertisement filtering, and access-control rejection.\n- Add focused tests for Figure 6 target/ipproto grammar, percent-encoding, prefix constraints, ICMP exception, route advertisement scope, and access-control decisions.\n- Add canonical xrefs and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused scope-policy tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0008"
+  ],
+  "out_of_scope": [
+    "DNS resolver integration.",
+    "ADDRESS_ASSIGN and ROUTE_ADVERTISEMENT capsule wire serialization.",
+    "Live packet forwarding enforcement."
+  ],
+  "completion_notes": "The RFC 9484 target/ipproto scope and route/access-control policy surface is implemented and verified locally."
+}

@@ -1376,6 +1376,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B3-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_AcceptsIpPrefixWithSingleIpVersion",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_RejectsMixedOrMalformedPrefixScope"
         ]
       }
     },
@@ -1393,6 +1397,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B3-P3-S6",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::RouteAdvertisement_IncludesAccessibleResolvedAddressWithAssignedFamily",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::RouteAdvertisement_ExcludesInaccessibleOrUnassignedFamilyAddress"
         ]
       }
     },
@@ -1410,6 +1418,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_SpecificIpprotoAllowsOnlySelectedProtocolAndIcmp",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_SpecificIpprotoRejectsDifferentNonIcmpProtocol"
         ]
       }
     },
@@ -1427,6 +1439,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_WildcardOrOmittedIpprotoAllowsAnyProtocol",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_SpecificIpprotoDoesNotMeanAnyProtocol"
         ]
       }
     },
@@ -1444,6 +1460,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_AllowsValidOutermostNextHeaderValue",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_RejectsOutOfRangeNextHeaderValue"
         ]
       }
     },
@@ -1461,6 +1481,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_AlwaysAllowsIcmpTraffic",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_IcmpExceptionDoesNotAllowEveryOtherProtocol"
         ]
       }
     },
@@ -1478,6 +1502,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ScopeGrammar_AcceptsFigure6TargetAndIpprotoValues",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ScopeGrammar_RejectsValuesOutsideFigure6Format"
         ]
       }
     },
@@ -1495,6 +1523,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::UriTemplateExpansion_PercentEncodesColonsInIpv6Targets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::UriTemplateExpansion_DoesNotEmitRawColonsInIpv6TargetSegment"
         ]
       }
     },
@@ -1512,6 +1544,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::UriTemplateExpansion_PercentEncodesPrefixSlash",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::UriTemplateExpansion_DoesNotEmitRawPrefixSlashInsideTargetSegment"
         ]
       }
     },
@@ -1529,6 +1565,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_AcceptsPrefixLengthWithinAddressBitLength",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_RejectsPrefixLengthOutsideAddressBitLength"
         ]
       }
     },
@@ -1546,6 +1586,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_AcceptsPrefixWithZeroUncoveredLowerBits",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_RejectsPrefixWithNonZeroUncoveredLowerBits"
         ]
       }
     },
@@ -1563,6 +1607,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_AcceptsDecimalZeroTo255OrWildcard",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_RejectsValuesOutsideDecimalZeroTo255"
         ]
       }
     },
@@ -1580,6 +1628,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_AcceptsIpprotoGrammarAlternatives",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::ProtocolScope_RejectsInvalidIpprotoGrammarAlternatives"
         ]
       }
     },
@@ -1597,6 +1649,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_AcceptsTargetGrammarAlternatives",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::TargetScope_RejectsInvalidTargetGrammarAlternatives"
         ]
       }
     },
@@ -1614,6 +1670,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.6 RFC9484-S4P6-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::AccessControl_CanRejectUnauthorizedClientScope",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpScopePolicyTests.cs::AccessControl_DoesNotRejectWhenDisabledOrAuthorized"
         ]
       }
     },
