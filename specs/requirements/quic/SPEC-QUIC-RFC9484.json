@@ -3546,6 +3546,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_ProcessesReceivedIpPacketAfterChecksAndRouteSelection",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsReceivedIpPacketWithoutRouteOrLocalApplication"
         ]
       },
       "notes": [
@@ -3566,6 +3570,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AppliesAdditionalFilteringPolicyWhenConfigured",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPacketsDeniedByAdditionalFilteringPolicy"
         ]
       }
     },
@@ -3583,6 +3591,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_TreatsFailedChecksAsForwardingErrors",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotTreatFailedChecksAsProtocolViolation"
         ]
       }
     },
@@ -3600,6 +3612,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_ChecksMappedRoutesBeforeSendingHttpDatagrams",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsHttpDatagramTransmissionWithoutMatchingRoute"
         ]
       },
       "notes": [
@@ -3620,6 +3636,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DecrementsHopCountOnEncapsulation",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDecrementHopCountWhenNotForwardingBetweenLinks"
         ]
       }
     },
@@ -3637,6 +3657,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDecrementHopCountOnDecapsulation",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsDecapsulationHopCountDecrement"
         ]
       }
     },
@@ -3654,6 +3678,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DecrementsHopCountBeforeHttpDatagramTransmission",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotTransmitInvalidPacketForHopCountDecrement"
         ]
       },
       "notes": [
@@ -3674,6 +3702,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B4-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_ExcludesSelfGeneratedPacketsFromHopCountDecrement",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotApplySelfGeneratedExceptionToForwardedPackets"
         ]
       },
       "notes": [
@@ -3694,6 +3726,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AllowsNonLinkLocalTrafficBeyondReceivedInterface",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotForwardLinkLocalTrafficBeyondReceivedInterface"
         ]
       },
       "notes": [
@@ -3714,6 +3750,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B6-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AcceptsIpv6TunnelMtuAtLeast1280",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsIpv6TunnelMtuBelow1280"
         ]
       },
       "notes": [
@@ -3734,6 +3774,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B8-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_UsesIcmpv6EchoRequestsToVerifyLinkMtu",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotProbeMtuWithSufficientOutOfBandGuarantee"
         ]
       },
       "notes": [
@@ -3754,6 +3798,10 @@
         "upstream_refs": [
           "RFC9484-S7P2-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AbortsRequestStreamWhenQuicMtuTooLowForIpv6Datagrams",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotAbortWhenQuicMtuSupportsIpv6Datagrams"
         ]
       }
     },
@@ -3771,6 +3819,10 @@
         "upstream_refs": [
           "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_SignalsForwardingErrorsWithIcmp",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSignalIcmpWithoutForwardingError"
         ]
       },
       "notes": [
@@ -3791,6 +3843,10 @@
         "upstream_refs": [
           "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_UsesDestinationUnreachableCodeFiveForInvalidSource",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSendInvalidSourceDestinationUnreachableForValidSource"
         ]
       },
       "notes": [
@@ -3811,6 +3867,10 @@
         "upstream_refs": [
           "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AllowsUnroutableDestinationCodesZeroOrOne",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_RejectsOtherUnroutableDestinationCodes"
         ]
       },
       "notes": [
@@ -3831,6 +3891,10 @@
         "upstream_refs": [
           "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_SendsPacketTooBigForMtuExceedingPackets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSendPacketTooBigForPacketsWithinMtu"
         ]
       },
       "notes": [
@@ -3851,6 +3915,10 @@
         "upstream_refs": [
           "RFC 9484 section 7.2.1 RFC9484-S7P2P1-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_ProcessesProxiedIcmpWhenRouteAdvertisementAbsent",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseAbsentRouteAdvertisementPolicyForNonIcmp"
         ]
       },
       "notes": [
@@ -3871,6 +3939,10 @@
         "upstream_refs": [
           "RFC 9484 8.2 RFC9484-S8P2-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-8.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DecrementsHopCountOnEncapsulation",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDecrementHopCountWhenNotForwardingBetweenLinks"
         ]
       }
     },

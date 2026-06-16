@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0013",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Forwarding and MTU Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP forwarding checks, route matching, Hop Count and TTL handling, link-local forwarding suppression, IPv6 MTU policy, and ICMP forwarding-error decisions.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0013",
+    "VER-QUIC-RFC9484-0013"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0168",
+    "REQ-QUIC-RFC9484-0169",
+    "REQ-QUIC-RFC9484-0170",
+    "REQ-QUIC-RFC9484-0171",
+    "REQ-QUIC-RFC9484-0172",
+    "REQ-QUIC-RFC9484-0173",
+    "REQ-QUIC-RFC9484-0174",
+    "REQ-QUIC-RFC9484-0175",
+    "REQ-QUIC-RFC9484-0176",
+    "REQ-QUIC-RFC9484-0177",
+    "REQ-QUIC-RFC9484-0178",
+    "REQ-QUIC-RFC9484-0179",
+    "REQ-QUIC-RFC9484-0180",
+    "REQ-QUIC-RFC9484-0181",
+    "REQ-QUIC-RFC9484-0182",
+    "REQ-QUIC-RFC9484-0183",
+    "REQ-QUIC-RFC9484-0184",
+    "REQ-QUIC-RFC9484-0185"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpForwardingPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpForwardingPolicy` centralizes received-packet admissibility, additional filtering, route matching, forwarding-error classification, encapsulation-only Hop Count or TTL decrement, link-local forwarding suppression, IPv6 MTU minimums, ICMPv6 echo MTU probing, low-QUIC-MTU stream abort policy, and ICMP forwarding-error signaling helpers.",
+  "data_and_state_considerations": "The helper is stateless and accepts caller-provided route ranges, policy flags, and MTU observations. Live routing tables and outbound interface selection remain adapter-owned.",
+  "edge_cases_and_constraints": [
+    "Invalid or policy-denied packets are forwarding errors rather than protocol violations.",
+    "Self-generated packets and decapsulation do not decrement Hop Count or TTL.",
+    "IPv6 tunnel MTU must be at least 1280 bytes and QUIC DATAGRAM IPv6 conveyance aborts below that boundary."
+  ],
+  "risks": [
+    "Actual ICMP packet construction remains adapter work.",
+    "Operational DSCP, congestion-control, authentication, and registry policies remain separate RFC 9484 slices."
+  ]
+}

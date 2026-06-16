@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0013",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Forwarding and MTU Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0013",
+    "VER-QUIC-RFC9484-0013"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0168",
+    "REQ-QUIC-RFC9484-0169",
+    "REQ-QUIC-RFC9484-0170",
+    "REQ-QUIC-RFC9484-0171",
+    "REQ-QUIC-RFC9484-0172",
+    "REQ-QUIC-RFC9484-0173",
+    "REQ-QUIC-RFC9484-0174",
+    "REQ-QUIC-RFC9484-0175",
+    "REQ-QUIC-RFC9484-0176",
+    "REQ-QUIC-RFC9484-0177",
+    "REQ-QUIC-RFC9484-0178",
+    "REQ-QUIC-RFC9484-0179",
+    "REQ-QUIC-RFC9484-0180",
+    "REQ-QUIC-RFC9484-0181",
+    "REQ-QUIC-RFC9484-0182",
+    "REQ-QUIC-RFC9484-0183",
+    "REQ-QUIC-RFC9484-0184",
+    "REQ-QUIC-RFC9484-0185"
+  ],
+  "summary": "Add CONNECT-IP forwarding, route matching, hop-count, MTU, and ICMP forwarding-error policy helpers.",
+  "planned_changes": "- Add forwarding admissibility and additional filtering helpers.\n- Add route matching against ROUTE_ADVERTISEMENT ranges.\n- Add Hop Count/TTL decrement policy and pre-transmission decrement helper.\n- Add link-local, IPv6 MTU, ICMPv6 echo probing, low-QUIC-MTU abort, and ICMP forwarding-error helpers.\n- Add focused tests, canonical xrefs, and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused CONNECT-IP forwarding policy tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0013"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0013"
+  ],
+  "out_of_scope": [
+    "Live outbound interface selection.",
+    "Actual ICMP packet serialization.",
+    "DSCP and congestion-control policy.",
+    "MASQUE registry governance."
+  ],
+  "completion_notes": "The RFC 9484 forwarding, Hop Count/TTL, MTU, and ICMP forwarding-error policy surface is implemented and verified locally."
+}
