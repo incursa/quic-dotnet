@@ -2114,6 +2114,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.1 RFC9484-S4P7P1-B14-P14-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_IsSentWhenAssignmentIsExpectedAndNeeded",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_IsNotSentWhenAssignmentIsNotExpectedOrNeeded"
         ]
       },
       "notes": [
@@ -2134,6 +2138,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.1 RFC9484-S4P7P1-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressAssign_CanBeSentUnprompted",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressAssign_UnpromptedPermissionIsNotDisabled"
         ]
       }
     },
@@ -2151,6 +2159,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_UsesTypeTwoWithLengthField",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsWrongCapsuleType"
         ]
       }
     },
@@ -2168,6 +2180,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_UsesTypeTwoWithLengthField",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsWrongCapsuleType"
         ]
       }
     },
@@ -2185,6 +2201,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_ContainsOneOrMoreRequestedAddressEntriesAfterLength",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsEmptyRequestedAddressList"
         ]
       }
     },
@@ -2202,6 +2222,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_ContainsOneOrMoreRequestedAddressEntriesAfterLength",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsEmptyRequestedAddressList"
         ]
       }
     },
@@ -2219,6 +2243,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_UsesThirtyTwoBitIpv4Address",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsTruncatedIpAddressField"
         ]
       }
     },
@@ -2236,6 +2264,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesPrefixLengthAsUnsignedByte",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsPrefixLengthBeyondAddressLength"
         ]
       }
     },
@@ -2253,6 +2285,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion"
         ]
       }
     },
@@ -2270,6 +2306,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesRequestIdFirstAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsTruncatedRequestIdVarint"
         ]
       }
     },
@@ -2287,6 +2327,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesRequestIdFirstAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsTruncatedRequestIdVarint"
         ]
       }
     },
@@ -2304,6 +2348,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_AllowsUniqueRequestIds",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsReusedRequestIds"
         ]
       }
     },
@@ -2321,6 +2369,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B8-P8-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_AcceptsNonZeroRequestId",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsZeroRequestId"
         ]
       }
     },
@@ -2338,6 +2390,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion"
         ]
       }
     },
@@ -2355,6 +2411,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B9-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion"
         ]
       }
     },
@@ -2372,6 +2432,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B10-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_UsesThirtyTwoBitIpv4Address",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsTruncatedIpAddressField"
         ]
       }
     },
@@ -2389,6 +2453,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B10-P10-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_UsesOneHundredTwentyEightBitIpv6Address",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsTruncatedIpAddressField"
         ]
       }
     },
@@ -2406,6 +2474,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesPrefixLengthAsUnsignedByte",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsPrefixLengthBeyondAddressLength"
         ]
       }
     },
@@ -2423,6 +2495,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_AllowsPrefixLengthEqualToAddressLength",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsPrefixLengthBeyondAddressLength"
         ]
       }
     },
@@ -2440,6 +2516,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.2 RFC9484-S4P7P2-B11-P11-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_AcceptsZeroUnusedAddressBits",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsNonZeroUnusedAddressBits"
         ]
       }
     },
@@ -2457,6 +2537,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B13-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_ParsesWellFormedCapsuleFields",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_MalformedCapsuleFieldsThrowMessageError"
         ]
       }
     },
@@ -2474,6 +2558,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RespondsWithAddressAssignWhenAddressCanBeAssigned",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_DoesNotRespondWithoutAddressRequest"
         ]
       }
     },
@@ -2491,6 +2579,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_AssignedResponseMatchesRequestId",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_DetectsMismatchedResponseRequestId"
         ]
       }
     },
@@ -2508,6 +2600,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_AssignedResponseUsesAssignedValues",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_AssignedResponseDoesNotUseRequestedPlaceholderWhenAssigned"
         ]
       }
     },
@@ -2525,6 +2621,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_UnassignedResponseUsesZeroAddressAndMaxPrefix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_UnassignedResponseDoesNotUseRequestedNonZeroPrefix"
         ]
       }
     },
@@ -2542,6 +2642,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B14-P14-S5",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectionsAreKeptOutOfSubsequentAssignments",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_NonRejectedAddressesCanRemainInSubsequentAssignments"
         ]
       }
     },
@@ -2559,6 +2663,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.2 RFC9484-S4P7P2-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_RejectsEmptyRequestedAddressList",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::AddressRequest_NonEmptyRequestDoesNotAbortRequestStream"
         ]
       }
     },

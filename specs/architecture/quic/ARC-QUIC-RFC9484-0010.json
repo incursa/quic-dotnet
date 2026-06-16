@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0010",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP ADDRESS_REQUEST Capsule Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 ADDRESS_REQUEST capsule wire format and address-assignment response policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0010",
+    "VER-QUIC-RFC9484-0010"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0100",
+    "REQ-QUIC-RFC9484-0101",
+    "REQ-QUIC-RFC9484-0102",
+    "REQ-QUIC-RFC9484-0103",
+    "REQ-QUIC-RFC9484-0104",
+    "REQ-QUIC-RFC9484-0105",
+    "REQ-QUIC-RFC9484-0106",
+    "REQ-QUIC-RFC9484-0107",
+    "REQ-QUIC-RFC9484-0108",
+    "REQ-QUIC-RFC9484-0109",
+    "REQ-QUIC-RFC9484-0110",
+    "REQ-QUIC-RFC9484-0111",
+    "REQ-QUIC-RFC9484-0112",
+    "REQ-QUIC-RFC9484-0113",
+    "REQ-QUIC-RFC9484-0114",
+    "REQ-QUIC-RFC9484-0115",
+    "REQ-QUIC-RFC9484-0116",
+    "REQ-QUIC-RFC9484-0117",
+    "REQ-QUIC-RFC9484-0118",
+    "REQ-QUIC-RFC9484-0119",
+    "REQ-QUIC-RFC9484-0120",
+    "REQ-QUIC-RFC9484-0121",
+    "REQ-QUIC-RFC9484-0122",
+    "REQ-QUIC-RFC9484-0123",
+    "REQ-QUIC-RFC9484-0124",
+    "REQ-QUIC-RFC9484-0125",
+    "REQ-QUIC-RFC9484-0126"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpRequestedAddress.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpAddressRequestCapsule.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpAddressRequestCapsule` creates and parses Capsule Type 0x02, enforces non-empty Requested Address lists, unique non-zero Request IDs, IP version/address/prefix validation, and maps malformed fields to HTTP/3 message errors. The helper also models when ADDRESS_REQUEST is sent, unprompted ADDRESS_ASSIGN permission, matching Assigned Address responses, unassigned zero-address responses, and exclusion of rejected addresses from later assignments.",
+  "data_and_state_considerations": "The codec is stateless and leaves actual address-pool allocation to adapters. Request ID uniqueness is validated per capsule input.",
+  "edge_cases_and_constraints": [
+    "Empty ADDRESS_REQUEST capsules abort the request stream.",
+    "Unassigned responses use all-zero addresses with maximum prefix length.",
+    "Request IDs must be non-zero and unique."
+  ],
+  "risks": [
+    "Route advertisement wire format remains a separate RFC 9484 slice.",
+    "Live address-pool allocation and tunnel state integration remain adapter work."
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0010",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP ADDRESS_REQUEST Capsule Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0010",
+    "WI-QUIC-RFC9484-0010"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 ADDRESS_REQUEST capsule behavior.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0100",
+    "REQ-QUIC-RFC9484-0101",
+    "REQ-QUIC-RFC9484-0102",
+    "REQ-QUIC-RFC9484-0103",
+    "REQ-QUIC-RFC9484-0104",
+    "REQ-QUIC-RFC9484-0105",
+    "REQ-QUIC-RFC9484-0106",
+    "REQ-QUIC-RFC9484-0107",
+    "REQ-QUIC-RFC9484-0108",
+    "REQ-QUIC-RFC9484-0109",
+    "REQ-QUIC-RFC9484-0110",
+    "REQ-QUIC-RFC9484-0111",
+    "REQ-QUIC-RFC9484-0112",
+    "REQ-QUIC-RFC9484-0113",
+    "REQ-QUIC-RFC9484-0114",
+    "REQ-QUIC-RFC9484-0115",
+    "REQ-QUIC-RFC9484-0116",
+    "REQ-QUIC-RFC9484-0117",
+    "REQ-QUIC-RFC9484-0118",
+    "REQ-QUIC-RFC9484-0119",
+    "REQ-QUIC-RFC9484-0120",
+    "REQ-QUIC-RFC9484-0121",
+    "REQ-QUIC-RFC9484-0122",
+    "REQ-QUIC-RFC9484-0123",
+    "REQ-QUIC-RFC9484-0124",
+    "REQ-QUIC-RFC9484-0125",
+    "REQ-QUIC-RFC9484-0126"
+  ],
+  "scope": "This verification covers ADDRESS_REQUEST send policy, unprompted ADDRESS_ASSIGN permission, Type 0x02 and length encoding, Requested Address field order and one-or-more requirement, IP address/version/prefix field validation, Request ID varint/non-zero/unique rules, malformed field handling, assignment response matching and values, unassigned zero-address responses, rejected-address exclusion, and empty-request stream abort policy.",
+  "preconditions": [
+    "RFC 9484 ADDRESS_ASSIGN capsule support is implemented."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpAddressRequestCapsuleTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0100|FullyQualifiedName~Http3ConnectIpAddressRequestCapsuleTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused ADDRESS_REQUEST tests pass, core SpecTrace validation accepts the RFC 9484 ADDRESS_REQUEST artifacts, generated triage reflects requirements 0100-0126 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpRequestedAddress.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpAddressRequestCapsule.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs"
+  ],
+  "status_summary": "The RFC 9484 ADDRESS_REQUEST capsule surface is trace-owned and verified by focused local gates."
+}

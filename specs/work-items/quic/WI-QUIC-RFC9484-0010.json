@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP ADDRESS_REQUEST Capsule Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0010",
+    "VER-QUIC-RFC9484-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0100",
+    "REQ-QUIC-RFC9484-0101",
+    "REQ-QUIC-RFC9484-0102",
+    "REQ-QUIC-RFC9484-0103",
+    "REQ-QUIC-RFC9484-0104",
+    "REQ-QUIC-RFC9484-0105",
+    "REQ-QUIC-RFC9484-0106",
+    "REQ-QUIC-RFC9484-0107",
+    "REQ-QUIC-RFC9484-0108",
+    "REQ-QUIC-RFC9484-0109",
+    "REQ-QUIC-RFC9484-0110",
+    "REQ-QUIC-RFC9484-0111",
+    "REQ-QUIC-RFC9484-0112",
+    "REQ-QUIC-RFC9484-0113",
+    "REQ-QUIC-RFC9484-0114",
+    "REQ-QUIC-RFC9484-0115",
+    "REQ-QUIC-RFC9484-0116",
+    "REQ-QUIC-RFC9484-0117",
+    "REQ-QUIC-RFC9484-0118",
+    "REQ-QUIC-RFC9484-0119",
+    "REQ-QUIC-RFC9484-0120",
+    "REQ-QUIC-RFC9484-0121",
+    "REQ-QUIC-RFC9484-0122",
+    "REQ-QUIC-RFC9484-0123",
+    "REQ-QUIC-RFC9484-0124",
+    "REQ-QUIC-RFC9484-0125",
+    "REQ-QUIC-RFC9484-0126"
+  ],
+  "summary": "Add CONNECT-IP ADDRESS_REQUEST capsule codec and response policy.",
+  "planned_changes": "- Add Requested Address model validation.\n- Add ADDRESS_REQUEST capsule create/parse helpers and request ID validation.\n- Add address-assignment response policy helpers.\n- Add focused tests, canonical xrefs, and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused ADDRESS_REQUEST tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0010"
+  ],
+  "out_of_scope": [
+    "Route advertisement codec.",
+    "Live address-pool allocation.",
+    "Tunnel state integration."
+  ],
+  "completion_notes": "The RFC 9484 ADDRESS_REQUEST capsule and assignment-response policy surface is implemented and verified locally."
+}
