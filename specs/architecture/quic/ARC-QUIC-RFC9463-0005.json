@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 Client Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the pure client-side policy boundary for consuming RFC 9463 DHCP and Router Advertisement encrypted DNS discovery data.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0005",
+    "VER-QUIC-RFC9463-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0015",
+    "REQ-QUIC-RFC9463-0016",
+    "REQ-QUIC-RFC9463-0017",
+    "REQ-QUIC-RFC9463-0018",
+    "REQ-QUIC-RFC9463-0019",
+    "REQ-QUIC-RFC9463-0020"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryClientPolicy.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryClientPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryResolverEndpoint.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoverySource.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryTrustAnchorMode.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryCertificateValidationStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+  ],
+  "design_summary": "The client-policy slice consumes normalized RFC 9463 discovery options from DHCP and Router Advertisement sources, applies RFC 8106 source precedence by keeping DHCP-learned information before RA-learned information, orders endpoints by service priority within a source, prefers encrypted DNS over Do53 unless explicit configuration says otherwise, allows Do53 fallback only after encrypted connection establishment failure, models PKIX plus ADN certificate validation, and records default versus explicit trust-anchor mode.",
+  "data_and_state_considerations": "The policy is immutable and side-effect free. It does not own DHCP client state, Router Advertisement sockets, platform resolver installation, TLS chain construction, or network connection establishment.",
+  "edge_cases_and_constraints": [
+    "DHCP and Router Advertisement sources remain distinguishable so RFC 8106 precedence can be applied.",
+    "Do53 fallback is available only when encrypted DNS was selected, connection establishment failed, fallback is allowed, and Do53 resolvers are present.",
+    "Explicit configuration can choose Do53 over discovered encrypted DNS.",
+    "Certificate validation succeeds only when both PKIX validation and ADN comparison succeed.",
+    "Default system or application trust anchors are used unless explicit trust anchors are configured."
+  ],
+  "risks": [
+    "This slice does not implement platform resolver configuration.",
+    "This slice does not perform TLS chain construction or RFC 6125 hostname matching itself; callers supply those outcomes.",
+    "This slice does not send or receive DHCP, Router Advertisement, or Do53 traffic."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The policy boundary makes RFC 9463 resolver-consumption behavior testable without coupling Incursa.Quic.Dns to a platform network manager, DHCP stack, Router Advertisement listener, or TLS implementation."
+    }
+  ]
+}

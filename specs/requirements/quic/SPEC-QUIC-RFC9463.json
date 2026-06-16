@@ -19,7 +19,10 @@
     "WI-QUIC-RFC9463-0003",
     "ARC-QUIC-RFC9463-0004",
     "VER-QUIC-RFC9463-0004",
-    "WI-QUIC-RFC9463-0004"
+    "WI-QUIC-RFC9463-0004",
+    "ARC-QUIC-RFC9463-0005",
+    "VER-QUIC-RFC9463-0005",
+    "WI-QUIC-RFC9463-0005"
   ],
   "requirements": [
     {
@@ -296,6 +299,10 @@
         "upstream_refs": [
           "RFC 9463 Section 3.2 RFC9463-S3P2-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::MixedRaAndDhcpDiscoveryKeepsDhcpFirstThenServicePriority",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::SingleSourceDiscoveryDoesNotInventOtherSourcePrecedence"
         ]
       }
     },
@@ -313,6 +320,10 @@
         "upstream_refs": [
           "RFC 9463 section 3.2 RFC9463-S3P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::EncryptedDnsIsPreferredWhenDo53IsAlsoLearned",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::ExplicitConfigurationCanPreferDo53"
         ]
       }
     },
@@ -330,6 +341,10 @@
         "upstream_refs": [
           "RFC 9463 section 3.2 RFC9463-S3P2-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::EstablishedEncryptedConnectionDoesNotFallbackToDo53",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::FailedEncryptedConnectionCanFallbackToDo53WhenAllowed"
         ]
       }
     },
@@ -347,6 +362,10 @@
         "upstream_refs": [
           "RFC 9463 Section 3.3 RFC9463-S3P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::MixedRaAndDhcpDiscoveryKeepsDhcpFirstThenServicePriority",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::SingleSourceDiscoveryDoesNotInventOtherSourcePrecedence"
         ]
       }
     },
@@ -364,6 +383,10 @@
         "upstream_refs": [
           "RFC 9463 Section 3.3 RFC9463-S3P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::CertificateValidationFailsWithoutAdnMatchAndCanUseExplicitTrustAnchors",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::CertificateValidationRequiresPkixAndAdnMatchWithDefaultTrustAnchors"
         ]
       }
     },
@@ -381,6 +404,10 @@
         "upstream_refs": [
           "RFC 9463 Section 3.3 RFC9463-S3P3-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::CertificateValidationFailsWithoutAdnMatchAndCanUseExplicitTrustAnchors",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs::CertificateValidationRequiresPkixAndAdnMatchWithDefaultTrustAnchors"
         ]
       }
     },

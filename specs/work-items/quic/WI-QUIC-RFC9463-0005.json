@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery RFC 9463 Client Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0005",
+    "VER-QUIC-RFC9463-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0015",
+    "REQ-QUIC-RFC9463-0016",
+    "REQ-QUIC-RFC9463-0017",
+    "REQ-QUIC-RFC9463-0018",
+    "REQ-QUIC-RFC9463-0019",
+    "REQ-QUIC-RFC9463-0020"
+  ],
+  "summary": "Add trace-owned client-side policy for consuming RFC 9463 encrypted DNS discovery data.",
+  "planned_changes": "- Add a pure client policy and immutable plan/endpoint value objects for RFC 9463 discovery consumption.\n- Apply RFC 8106 source precedence when DHCP and Router Advertisement discovery data are both present.\n- Prefer encrypted DNS over Do53 unless explicit local configuration says otherwise.\n- Allow Do53 fallback only when encrypted DNS connection establishment fails and fallback is allowed.\n- Model service-priority ordering, PKIX plus ADN certificate validation, and default versus explicit trust-anchor mode.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused client-policy tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0005"
+  ],
+  "out_of_scope": [
+    "DHCP client state and Router Advertisement socket integration.",
+    "TLS certificate chain construction and RFC 6125 hostname matching internals.",
+    "Platform resolver installation and live Do53 traffic."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9463 client policy floor that can consume DHCP and Router Advertisement DNR outputs."
+}

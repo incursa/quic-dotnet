@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0005",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Discovery RFC 9463 Client Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0005",
+    "WI-QUIC-RFC9463-0005"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9463 client discovery policy surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0015",
+    "REQ-QUIC-RFC9463-0016",
+    "REQ-QUIC-RFC9463-0017",
+    "REQ-QUIC-RFC9463-0018",
+    "REQ-QUIC-RFC9463-0019",
+    "REQ-QUIC-RFC9463-0020"
+  ],
+  "scope": "This verification covers RFC 8106 DHCP-before-Router-Advertisement source precedence, service-priority ordering within a discovery source, encrypted DNS preference when Do53 resolvers are also learned from the same network, explicit local configuration that prefers Do53, Do53 fallback after encrypted connection establishment failure, PKIX plus ADN certificate validation, and default versus explicit trust-anchor mode.",
+  "preconditions": [
+    "The RFC 9463 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9463.json`.",
+    "Client policy receives normalized encrypted DNS discovery options from DHCP and Router Advertisement adapters."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsDiscoveryClientPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused client-policy tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage reflects the client-policy slice, diff hygiene passes, and the full solution test suite remains green.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryClientPolicy.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryClientPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryResolverEndpoint.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryClientPolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9463 encrypted DNS discovery client policy is trace-owned and verified. DHCP/RA adapters, TLS chain validation internals, and host resolver installation remain future integration work."
+}
