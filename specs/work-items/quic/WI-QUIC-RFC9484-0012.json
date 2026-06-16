@@ -1,0 +1,50 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0012",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP HTTP Datagram Payload Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0012",
+    "VER-QUIC-RFC9484-0012"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0150",
+    "REQ-QUIC-RFC9484-0151",
+    "REQ-QUIC-RFC9484-0152",
+    "REQ-QUIC-RFC9484-0153",
+    "REQ-QUIC-RFC9484-0154",
+    "REQ-QUIC-RFC9484-0155",
+    "REQ-QUIC-RFC9484-0156",
+    "REQ-QUIC-RFC9484-0157",
+    "REQ-QUIC-RFC9484-0158",
+    "REQ-QUIC-RFC9484-0159",
+    "REQ-QUIC-RFC9484-0160",
+    "REQ-QUIC-RFC9484-0161",
+    "REQ-QUIC-RFC9484-0162",
+    "REQ-QUIC-RFC9484-0163",
+    "REQ-QUIC-RFC9484-0164",
+    "REQ-QUIC-RFC9484-0165",
+    "REQ-QUIC-RFC9484-0166",
+    "REQ-QUIC-RFC9484-0167"
+  ],
+  "summary": "Add CONNECT-IP IP Proxying HTTP Datagram codec, Context ID registry, and datagram policy helpers.",
+  "planned_changes": "- Add IP Proxying HTTP Datagram create/parse/embed helpers.\n- Add per-request Context ID allocation registry.\n- Add unknown Context ID, future registration, payload semantics, Context ID zero, and optimistic-send policy helpers.\n- Add focused tests, canonical xrefs, and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused CONNECT-IP datagram tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0012"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0012"
+  ],
+  "out_of_scope": [
+    "Route table forwarding.",
+    "Hop Count or TTL mutation.",
+    "ICMP forwarding-error generation.",
+    "Tunnel MTU probing."
+  ],
+  "completion_notes": "The RFC 9484 IP Proxying HTTP Datagram payload and Context ID surface is implemented and verified locally."
+}

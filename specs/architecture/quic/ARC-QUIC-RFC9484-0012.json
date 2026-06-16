@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0012",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP HTTP Datagram Payload Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 IP Proxying HTTP Datagram Context ID layout, Context ID allocation policy, Context ID zero IP packet semantics, unknown Context ID handling, and optimistic client send policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0012",
+    "VER-QUIC-RFC9484-0012"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0150",
+    "REQ-QUIC-RFC9484-0151",
+    "REQ-QUIC-RFC9484-0152",
+    "REQ-QUIC-RFC9484-0153",
+    "REQ-QUIC-RFC9484-0154",
+    "REQ-QUIC-RFC9484-0155",
+    "REQ-QUIC-RFC9484-0156",
+    "REQ-QUIC-RFC9484-0157",
+    "REQ-QUIC-RFC9484-0158",
+    "REQ-QUIC-RFC9484-0159",
+    "REQ-QUIC-RFC9484-0160",
+    "REQ-QUIC-RFC9484-0161",
+    "REQ-QUIC-RFC9484-0162",
+    "REQ-QUIC-RFC9484-0163",
+    "REQ-QUIC-RFC9484-0164",
+    "REQ-QUIC-RFC9484-0165",
+    "REQ-QUIC-RFC9484-0166",
+    "REQ-QUIC-RFC9484-0167"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpDatagram.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpContextIdRegistry.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpDatagramPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpUnknownContextAction.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpDatagram` creates, parses, and embeds IP Proxying HTTP Datagram payloads, enforcing 62-bit variable-length Context IDs and Context ID zero full IPv4/IPv6 packet validation. `Http3ConnectIpContextIdRegistry` owns per-request dynamic non-zero allocation and reallocation rejection. `Http3ConnectIpDatagramPolicy` owns unknown Context ID handling, future extension registration recognition, payload semantics lookup, and HTTP/2 or HTTP/3 optimistic client send permission.",
+  "data_and_state_considerations": "The datagram codec is stateless. Context ID allocation state is intentionally per request namespace and accepts caller-driven allocation order.",
+  "edge_cases_and_constraints": [
+    "Context ID zero is reserved for complete IP packets and rejects malformed or truncated IPv4/IPv6 packets.",
+    "Nonzero Context IDs are dynamically allocated and may carry extension-defined payloads.",
+    "Unknown Context IDs are either dropped silently or buffered temporarily while awaiting registration."
+  ],
+  "risks": [
+    "Forwarding, route-table selection, hop-count updates, and ICMP error generation remain separate RFC 9484 slices.",
+    "Live tunnel integration remains adapter work."
+  ]
+}

@@ -11,30 +11,30 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2577 |
+| trace_clean | 2595 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
 | covered_but_proof_too_broad | 0 |
 | partially_covered | 0 |
-| uncovered_blocked | 64 |
+| uncovered_blocked | 46 |
 | uncovered_unblocked | 0 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2577 |
+| clean | 2595 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
 | restructure_needed | 0 |
-| new_tests_needed | 64 |
-| blocked | 64 |
+| new_tests_needed | 46 |
+| blocked | 46 |
 
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes: 0 requirements. Examples: .
 - Restructure-needed proof: 0 requirements. Examples: .
-- New proof or implementation work: 64 requirements. Examples: .
-- Blocked by recorded gap families: 64 requirements. Examples: REQ-QUIC-RFC9484-0150, REQ-QUIC-RFC9484-0151, REQ-QUIC-RFC9484-0152, REQ-QUIC-RFC9484-0153, REQ-QUIC-RFC9484-0154, REQ-QUIC-RFC9484-0155, REQ-QUIC-RFC9484-0156, REQ-QUIC-RFC9484-0157, REQ-QUIC-RFC9484-0158, REQ-QUIC-RFC9484-0159, REQ-QUIC-RFC9484-0160, REQ-QUIC-RFC9484-0161.
+- New proof or implementation work: 46 requirements. Examples: .
+- Blocked by recorded gap families: 46 requirements. Examples: REQ-QUIC-RFC9484-0168, REQ-QUIC-RFC9484-0169, REQ-QUIC-RFC9484-0170, REQ-QUIC-RFC9484-0171, REQ-QUIC-RFC9484-0172, REQ-QUIC-RFC9484-0173, REQ-QUIC-RFC9484-0174, REQ-QUIC-RFC9484-0175, REQ-QUIC-RFC9484-0176, REQ-QUIC-RFC9484-0177, REQ-QUIC-RFC9484-0178, REQ-QUIC-RFC9484-0179.
 
 ## RFC Breakdown
 
@@ -59,4 +59,4 @@
 | RFC9461 | 38 | 38 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9463 | 116 | 116 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9464 | 76 | 76 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9484 | 213 | 149 | 0 | 0 | 0 | 0 | 64 | 0 |
+| RFC9484 | 213 | 167 | 0 | 0 | 0 | 0 | 46 | 0 |

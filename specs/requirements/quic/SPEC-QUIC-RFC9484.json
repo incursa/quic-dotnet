@@ -3166,6 +3166,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_StartsWithContextIdBeforePayload",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_RejectsMissingContextId"
         ]
       }
     },
@@ -3183,6 +3187,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits"
         ]
       }
     },
@@ -3200,6 +3208,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger"
         ]
       }
     },
@@ -3217,6 +3229,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllocatesDynamicNonZeroContextIds",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_RejectsDynamicAllocationOfContextIdZero"
         ]
       }
     },
@@ -3234,6 +3250,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllocatesDynamicNonZeroContextIds",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_RejectsDynamicAllocationOfContextIdZero"
         ]
       }
     },
@@ -3251,6 +3271,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S6",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllowsAnyAllocationOrder",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_DoesNotRequireMonotonicAllocationOrder"
         ]
       }
     },
@@ -3268,6 +3292,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S6",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllowsDistinctContextIds",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_RejectsReallocationInsideOneRequestNamespace"
         ]
       }
     },
@@ -3285,6 +3313,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B2-P2-S8",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllocatedContextIdsAreUsableByEitherEndpoint",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_UnknownNonZeroContextIdsAreNotUsable"
         ]
       }
     },
@@ -3302,6 +3334,10 @@
         "upstream_refs": [
           "RFC 9484 section 5 RFC9484-S5-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_AllowsFutureHeaderOrCapsuleRegistrationMechanisms",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism"
         ]
       }
     },
@@ -3319,6 +3355,10 @@
         "upstream_refs": [
           "RFC 9484 section 6 RFC9484-S6-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_ContextIdFollowsQuarterStreamIdInHttp3Datagram",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId"
         ]
       }
     },
@@ -3336,6 +3376,10 @@
         "upstream_refs": [
           "RFC 9484 section 6 RFC9484-S6-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_StartsWithContextIdBeforePayload",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_RejectsMissingContextId"
         ]
       }
     },
@@ -3353,6 +3397,10 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger"
         ]
       }
     },
@@ -3370,6 +3418,10 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_UnknownContextIdCanBeBufferedTemporarily",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable"
         ]
       }
     },
@@ -3387,6 +3439,10 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_ContextIdDefinesPayloadSemantics",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_UnknownNonZeroContextHasNoPayloadSemantics"
         ]
       }
     },
@@ -3404,6 +3460,10 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_AllowsEmptyExtensionPayload",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPayload_RejectsNullPayload"
         ]
       }
     },
@@ -3421,6 +3481,10 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_UsesContextIdZeroAndCarriesFullIpv4Packet",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_RejectsNonIpPacketAtContextIdZero"
         ]
       }
     },
@@ -3438,6 +3502,12 @@
         "upstream_refs": [
           "RFC 9484 Section 6 RFC9484-S6-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_UsesContextIdZeroAndCarriesFullIpv4Packet",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_RejectsNonIpPacketAtContextIdZero",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_AcceptsFullIpv6Packet",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::IpPacketPayload_RejectsTruncatedIpv6Packet"
         ]
       }
     },
@@ -3455,6 +3525,10 @@
         "upstream_refs": [
           "RFC 9484 Section 7.1 RFC9484-S7P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-7.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_AllowsOptimisticIpPacketsOverHttp2OrHttp3",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_DoesNotAllowOptimisticIpPacketsOutsideHttp2OrHttp3"
         ]
       }
     },
