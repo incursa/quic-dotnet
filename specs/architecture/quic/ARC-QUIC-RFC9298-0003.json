@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Datagram Context Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 UDP Proxying HTTP Datagram payload layout, Context ID encoding/allocation policy, unknown-context handling, and UDP payload size discard decisions.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0003",
+    "VER-QUIC-RFC9298-0003",
+    "ARC-QUIC-RFC9298-0001",
+    "ARC-QUIC-RFC9298-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0073",
+    "REQ-QUIC-RFC9298-0074",
+    "REQ-QUIC-RFC9298-0075",
+    "REQ-QUIC-RFC9298-0076",
+    "REQ-QUIC-RFC9298-0077",
+    "REQ-QUIC-RFC9298-0078",
+    "REQ-QUIC-RFC9298-0079",
+    "REQ-QUIC-RFC9298-0080",
+    "REQ-QUIC-RFC9298-0081",
+    "REQ-QUIC-RFC9298-0082",
+    "REQ-QUIC-RFC9298-0083",
+    "REQ-QUIC-RFC9298-0084",
+    "REQ-QUIC-RFC9298-0085",
+    "REQ-QUIC-RFC9298-0086",
+    "REQ-QUIC-RFC9298-0087",
+    "REQ-QUIC-RFC9298-0088",
+    "REQ-QUIC-RFC9298-0089",
+    "REQ-QUIC-RFC9298-0090",
+    "REQ-QUIC-RFC9298-0091",
+    "REQ-QUIC-RFC9298-0092",
+    "REQ-QUIC-RFC9298-0093",
+    "REQ-QUIC-RFC9298-0094",
+    "REQ-QUIC-RFC9298-0095"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpDatagram.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpContextIdRegistry.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpDatagramPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpUnknownContextAction.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpDatagram` encodes and parses UDP Proxying HTTP Datagram payloads as Context ID varint plus payload and embeds them after the RFC 9297 Quarter Stream ID. `Http3ConnectUdpContextIdRegistry` tracks per-request Context ID allocation, parity, and reallocation rules. `Http3ConnectUdpDatagramPolicy` captures unknown-context drop/buffer behavior, known-MTU discard decisions, DATAGRAM Capsule discard behavior, and future header/capsule registration allowance.",
+  "data_and_state_considerations": "Context ID allocation state is scoped to one registry instance representing one HTTP request namespace. The codec owns byte arrays at this layer and does not hold live socket or QUIC connection state.",
+  "edge_cases_and_constraints": [
+    "Context ID zero is reserved for UDP payloads.",
+    "Non-zero client Context IDs are even and proxy Context IDs are odd.",
+    "Context IDs are bounded to 62-bit QUIC variable-length integers.",
+    "Context ID zero UDP payloads larger than 65527 bytes are rejected before send/receive promotion.",
+    "Unknown Context IDs classify to silent drop or temporary buffering without allocating transport state."
+  ],
+  "risks": [
+    "The slice does not implement live UDP socket forwarding.",
+    "The slice does not implement Context ID registration capsules beyond the permission policy.",
+    "The slice does not integrate with QUIC DATAGRAM PMTU discovery or ICMP Packet Too Big emission."
+  ]
+}

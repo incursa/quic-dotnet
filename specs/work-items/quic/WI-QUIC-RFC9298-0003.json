@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Datagram Context Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0003",
+    "VER-QUIC-RFC9298-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0073",
+    "REQ-QUIC-RFC9298-0074",
+    "REQ-QUIC-RFC9298-0075",
+    "REQ-QUIC-RFC9298-0076",
+    "REQ-QUIC-RFC9298-0077",
+    "REQ-QUIC-RFC9298-0078",
+    "REQ-QUIC-RFC9298-0079",
+    "REQ-QUIC-RFC9298-0080",
+    "REQ-QUIC-RFC9298-0081",
+    "REQ-QUIC-RFC9298-0082",
+    "REQ-QUIC-RFC9298-0083",
+    "REQ-QUIC-RFC9298-0084",
+    "REQ-QUIC-RFC9298-0085",
+    "REQ-QUIC-RFC9298-0086",
+    "REQ-QUIC-RFC9298-0087",
+    "REQ-QUIC-RFC9298-0088",
+    "REQ-QUIC-RFC9298-0089",
+    "REQ-QUIC-RFC9298-0090",
+    "REQ-QUIC-RFC9298-0091",
+    "REQ-QUIC-RFC9298-0092",
+    "REQ-QUIC-RFC9298-0093",
+    "REQ-QUIC-RFC9298-0094",
+    "REQ-QUIC-RFC9298-0095"
+  ],
+  "summary": "Add CONNECT-UDP UDP Proxying HTTP Datagram and Context ID helpers with focused RFC 9298 proof.",
+  "planned_changes": "- Add byte-level UDP Proxying HTTP Datagram codec for Context ID plus payload.\n- Add per-request Context ID registry for non-zero dynamic allocation, client/proxy parity, reallocation prevention, and request-namespace scoping.\n- Add unknown Context ID, known-MTU discard, DATAGRAM Capsule discard, and future registration policy helpers.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused CONNECT-UDP datagram tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0003"
+  ],
+  "out_of_scope": [
+    "Live UDP socket forwarding.",
+    "DNS resolution and target filtering.",
+    "Congestion-control disablement and ECN handling.",
+    "ICMP Packet Too Big emission and live PMTU integration."
+  ],
+  "completion_notes": "The RFC 9298 datagram Context ID codec and allocation-policy floor is implemented and verified locally."
+}

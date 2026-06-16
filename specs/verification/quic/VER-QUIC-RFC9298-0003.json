@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0003",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP Datagram Context Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0003",
+    "WI-QUIC-RFC9298-0003"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for the RFC 9298 UDP Proxying HTTP Datagram and Context ID surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0073",
+    "REQ-QUIC-RFC9298-0074",
+    "REQ-QUIC-RFC9298-0075",
+    "REQ-QUIC-RFC9298-0076",
+    "REQ-QUIC-RFC9298-0077",
+    "REQ-QUIC-RFC9298-0078",
+    "REQ-QUIC-RFC9298-0079",
+    "REQ-QUIC-RFC9298-0080",
+    "REQ-QUIC-RFC9298-0081",
+    "REQ-QUIC-RFC9298-0082",
+    "REQ-QUIC-RFC9298-0083",
+    "REQ-QUIC-RFC9298-0084",
+    "REQ-QUIC-RFC9298-0085",
+    "REQ-QUIC-RFC9298-0086",
+    "REQ-QUIC-RFC9298-0087",
+    "REQ-QUIC-RFC9298-0088",
+    "REQ-QUIC-RFC9298-0089",
+    "REQ-QUIC-RFC9298-0090",
+    "REQ-QUIC-RFC9298-0091",
+    "REQ-QUIC-RFC9298-0092",
+    "REQ-QUIC-RFC9298-0093",
+    "REQ-QUIC-RFC9298-0094",
+    "REQ-QUIC-RFC9298-0095"
+  ],
+  "scope": "This verification covers Context ID varint encoding, 62-bit bounds, Context ID zero reservation, UDP payload layout, Context ID allocation parity and request-namespace scoping, reallocation rejection, unknown Context ID drop/buffer policy, empty payloads, Context ID zero payload limits, known-MTU discard decisions, and DATAGRAM Capsule discard policy.",
+  "preconditions": [
+    "RFC 9297 HTTP Datagram support is trace-clean.",
+    "RFC 9298 HTTP/3 CONNECT-UDP request policy is trace-owned by `VER-QUIC-RFC9298-0002`."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpDatagramTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0073|FullyQualifiedName~Http3ConnectUdpDatagramTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused datagram Context ID tests pass, core SpecTrace validation accepts the RFC 9298 datagram artifacts, generated triage reflects the slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpDatagram.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpContextIdRegistry.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpDatagramPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpUnknownContextAction.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0073.cs"
+  ],
+  "status_summary": "The RFC 9298 UDP Proxying HTTP Datagram and Context ID surface is trace-owned and verified by focused local gates. Live UDP socket lifecycle, forwarding, congestion, ECN, target filtering, and HTTP/1.1 upgrade behavior remain future RFC 9298 slices."
+}
