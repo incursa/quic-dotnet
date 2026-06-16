@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Conversion Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0010",
+    "VER-QUIC-RFC9298-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0001",
+    "REQ-QUIC-RFC9298-0021",
+    "REQ-QUIC-RFC9298-0033"
+  ],
+  "summary": "Add CONNECT-UDP stream interpretation and HTTP Datagram conversion helpers.",
+  "planned_changes": "- Add stream-reference scope policy for non-multiplexed HTTP versions.\n- Add UDP packet to Section 5 HTTP Datagram conversion and reverse conversion.\n- Add tunnel-open gating, focused tests, and canonical xrefs.",
+  "verification_plan": "Run focused conversion policy tests, RFC9298 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0010"
+  ],
+  "out_of_scope": [
+    "Live UDP receive/send loops.",
+    "ProtocolLab performance proof."
+  ],
+  "completion_notes": "The remaining RFC 9298 conversion policy surface is implemented and verified locally."
+}

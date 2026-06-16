@@ -22,6 +22,10 @@
         "upstream_refs": [
           "RFC9298-S1P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams"
         ]
       }
     },
@@ -434,6 +438,10 @@
         "upstream_refs": [
           "RFC 9298 section 3 RFC9298-S3-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets"
         ]
       }
     },
@@ -682,6 +690,10 @@
         "upstream_refs": [
           "RFC9298-S3-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_StopsConvertingAfterTunnelCloses"
         ]
       }
     },

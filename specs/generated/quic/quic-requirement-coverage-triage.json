@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T11:15:57.9553921-06:00",
+  "generated_at": "2026-06-16T11:20:43.2187144-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T11:15:57.9525899-06:00",
+    "generated_at": "2026-06-16T11:20:43.2157875-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2425,
-      "uncovered_blocked": 216
+      "trace_clean": 2428,
+      "uncovered_blocked": 213
     },
     "by_work_queue_tag": {
-      "blocked": 216,
-      "clean": 2425,
-      "new_tests_needed": 216
+      "blocked": 213,
+      "clean": 2428,
+      "new_tests_needed": 213
     },
     "by_rfc": [
       {
@@ -127,8 +127,7 @@
         "rfc": "RFC9298",
         "total": 117,
         "by_state": {
-          "trace_clean": 114,
-          "uncovered_blocked": 3
+          "trace_clean": 117
         }
       },
       {
@@ -375102,40 +375101,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "method": "ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "method": "ConversionPolicy_UsesEntireConnectionScopeWhenHttpVersionDoesNotMultiplexStreams",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams",
+          "method": "ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams",
+          "method": "ConversionPolicy_UsesRequestStreamScopeWhenHttpVersionMultiplexesStreams",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0002",
@@ -379563,40 +379645,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "method": "ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "method": "ConversionPolicy_EncodesUdpPayloadsUsingSectionFiveHttpDatagramFormat",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets",
+          "method": "ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets",
+          "method": "ConversionPolicy_RejectsNonUdpPayloadContextIdsForSectionFiveUdpPackets",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0022",
@@ -382170,40 +382335,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_StopsConvertingAfterTunnelCloses"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "method": "ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "line": 61,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "method": "ConversionPolicy_ConvertsHttpDatagramsAndUdpPacketsWhileTunnelIsOpen",
+          "line": 61,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_StopsConvertingAfterTunnelCloses",
+          "method": "ConversionPolicy_StopsConvertingAfterTunnelCloses",
+          "line": 77,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs::ConversionPolicy_StopsConvertingAfterTunnelCloses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs",
+          "class": "Http3ConnectUdpConversionPolicyTests",
+          "member": "Http3ConnectUdpConversionPolicyTests.ConversionPolicy_StopsConvertingAfterTunnelCloses",
+          "method": "ConversionPolicy_StopsConvertingAfterTunnelCloses",
+          "line": 77,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0034",

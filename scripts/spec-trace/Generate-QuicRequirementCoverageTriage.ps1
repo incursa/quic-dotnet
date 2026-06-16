@@ -569,16 +569,6 @@ function Get-RequirementGapMappings {
             RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9220' -Start 1 -End 8)
         },
         [pscustomobject]@{
-            Slug               = 'connect-udp'
-            Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors.'
-            RequirementPrefixes = @()
-            RequirementIds     = @(
-                'REQ-QUIC-RFC9298-0001'
-                'REQ-QUIC-RFC9298-0021'
-                'REQ-QUIC-RFC9298-0033'
-            )
-        },
-        [pscustomobject]@{
             Slug               = 'encrypted-dns-discovery-and-provisioning'
             Summary            = 'RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed.'
             RequirementPrefixes = @()

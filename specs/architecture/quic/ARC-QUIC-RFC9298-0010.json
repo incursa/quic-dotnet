@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0010",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Conversion Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 stream-reference interpretation and UDP packet to HTTP Datagram conversion policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0010",
+    "VER-QUIC-RFC9298-0010"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0001",
+    "REQ-QUIC-RFC9298-0021",
+    "REQ-QUIC-RFC9298-0033"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpConversionPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpStreamReferenceScope.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpConversionPolicy` maps stream references to the entire connection for HTTP versions without stream multiplexing, encodes UDP packet payloads as RFC 9298 Section 5 Context ID zero HTTP Datagrams, decodes received HTTP Datagrams back to UDP packet payloads, rejects non-UDP Context IDs for packet conversion, and stops conversion after tunnel closure.",
+  "data_and_state_considerations": "The helper owns byte-format conversion and tunnel-open gating but does not schedule network I/O.",
+  "edge_cases_and_constraints": [
+    "Context IDs other than zero are not converted to UDP packets by this helper.",
+    "Closed tunnels reject both UDP-to-HTTP-Datagram and HTTP-Datagram-to-UDP conversion.",
+    "Stream reference scope is selected from HTTP version multiplexing capability."
+  ],
+  "risks": [
+    "Adapter code still needs end-to-end packet-loop integration.",
+    "Performance proof remains a ProtocolLab follow-up."
+  ]
+}

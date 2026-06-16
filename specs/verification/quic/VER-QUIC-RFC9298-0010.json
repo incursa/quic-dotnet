@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0010",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP Conversion Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0010",
+    "WI-QUIC-RFC9298-0010"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9298 conversion policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0001",
+    "REQ-QUIC-RFC9298-0021",
+    "REQ-QUIC-RFC9298-0033"
+  ],
+  "scope": "This verification covers non-multiplexed stream references as whole-connection references, RFC 9298 Section 5 Context ID zero HTTP Datagram format, UDP packet to HTTP Datagram conversion, HTTP Datagram to UDP packet conversion, non-zero Context ID rejection for UDP packet conversion, and tunnel-closed conversion rejection.",
+  "preconditions": [
+    "RFC 9298 datagram, tunnel setup, and socket lifecycle policy helpers are trace-owned."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpConversionPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0001|FullyQualifiedName~Http3ConnectUdpConversionPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused conversion policy tests pass, core SpecTrace validation accepts the RFC 9298 conversion artifacts, generated triage reflects RFC 9298 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpConversionPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpStreamReferenceScope.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpConversionPolicyTests.cs"
+  ],
+  "status_summary": "The remaining RFC 9298 conversion policy surface is trace-owned and verified by focused local gates."
+}
