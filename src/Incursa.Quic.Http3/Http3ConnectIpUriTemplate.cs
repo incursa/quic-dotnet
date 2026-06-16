@@ -40,6 +40,26 @@ public sealed class Http3ConnectIpUriTemplate
     public string ProxyAuthority => AbsoluteUri.IsDefaultPort ? AbsoluteUri.Host : AbsoluteUri.Authority;
 
     /// <summary>
+    /// Indicates that clients can use a general-purpose URI Template implementation.
+    /// </summary>
+    public const bool GeneralPurposeUriTemplateImplementationAllowed = true;
+
+    /// <summary>
+    /// Indicates that clients should validate CONNECT-IP URI Template requirements before use.
+    /// </summary>
+    public const bool ShouldValidateTemplateBeforeUse = true;
+
+    /// <summary>
+    /// Indicates that clients abort without sending a request when local template validation fails.
+    /// </summary>
+    public const bool AbortRequestWhenTemplateInvalid = true;
+
+    /// <summary>
+    /// Indicates that deployments should offer service at the default template location for interoperability.
+    /// </summary>
+    public const bool ShouldOfferDefaultTemplateForInteroperability = true;
+
+    /// <summary>
     /// Validates and creates a CONNECT-IP URI Template.
     /// </summary>
     public static Http3ConnectIpUriTemplate Create(string template)
@@ -74,6 +94,23 @@ public sealed class Http3ConnectIpUriTemplate
     }
 
     /// <summary>
+    /// Attempts to validate and create a CONNECT-IP URI Template.
+    /// </summary>
+    public static bool TryCreate(string template, out Http3ConnectIpUriTemplate? uriTemplate)
+    {
+        try
+        {
+            uriTemplate = Create(template);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            uriTemplate = null;
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Creates the default CONNECT-IP URI Template for a proxy authority.
     /// </summary>
     public static Http3ConnectIpUriTemplate CreateDefault(string proxyAuthority, string scheme = "https")
@@ -81,6 +118,35 @@ public sealed class Http3ConnectIpUriTemplate
         ArgumentException.ThrowIfNullOrEmpty(proxyAuthority);
         ArgumentException.ThrowIfNullOrEmpty(scheme);
         return Create($"{scheme}://{proxyAuthority}{DefaultPathTemplate}");
+    }
+
+    /// <summary>
+    /// Expands simple CONNECT-IP variables in the path and query.
+    /// </summary>
+    public Http3ConnectIpRequestTarget Expand(
+        string? target = null,
+        string? ipproto = null,
+        IReadOnlyDictionary<string, string>? additionalVariables = null)
+    {
+        string expanded = Template;
+        expanded = ReplaceVariable(expanded, "target", target, requiredWhenPresent: true);
+        expanded = ReplaceVariable(expanded, "ipproto", ipproto, requiredWhenPresent: true);
+
+        if (additionalVariables is not null)
+        {
+            foreach (KeyValuePair<string, string> variable in additionalVariables)
+            {
+                expanded = ReplaceVariable(expanded, variable.Key, variable.Value, requiredWhenPresent: false);
+            }
+        }
+
+        if (expanded.Contains('{', StringComparison.Ordinal) || expanded.Contains('}', StringComparison.Ordinal))
+        {
+            throw new ArgumentException("CONNECT-IP URI Template expansion left unresolved variables.", nameof(additionalVariables));
+        }
+
+        Uri expandedUri = new(expanded, UriKind.Absolute);
+        return new Http3ConnectIpRequestTarget(expandedUri.Scheme, ProxyAuthority, expandedUri.PathAndQuery);
     }
 
     private static void ValidatePrintableAscii(string template)
@@ -141,5 +207,27 @@ public sealed class Http3ConnectIpUriTemplate
         }
 
         return builder.ToString();
+    }
+
+    private static string ReplaceVariable(string template, string name, string? value, bool requiredWhenPresent)
+    {
+        string pathToken = "{" + name + "}";
+        string queryToken = "{?" + name + "}";
+        bool containsPathToken = template.Contains(pathToken, StringComparison.Ordinal);
+        bool containsQueryToken = template.Contains(queryToken, StringComparison.Ordinal);
+        if (!containsPathToken && !containsQueryToken)
+        {
+            return template;
+        }
+
+        if (requiredWhenPresent && string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentException($"CONNECT-IP URI Template variable {name} must not be empty.", nameof(value));
+        }
+
+        string encodedValue = Uri.EscapeDataString(value ?? "");
+        return template
+            .Replace(pathToken, encodedValue, StringComparison.Ordinal)
+            .Replace(queryToken, "?" + name + "=" + encodedValue, StringComparison.Ordinal);
     }
 }

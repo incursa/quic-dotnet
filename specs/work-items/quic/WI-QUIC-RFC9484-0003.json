@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP URI Template Expansion Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0003",
+    "VER-QUIC-RFC9484-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0011",
+    "REQ-QUIC-RFC9484-0012",
+    "REQ-QUIC-RFC9484-0013",
+    "REQ-QUIC-RFC9484-0014",
+    "REQ-QUIC-RFC9484-0015",
+    "REQ-QUIC-RFC9484-0016",
+    "REQ-QUIC-RFC9484-0017",
+    "REQ-QUIC-RFC9484-0018",
+    "REQ-QUIC-RFC9484-0019",
+    "REQ-QUIC-RFC9484-0020",
+    "REQ-QUIC-RFC9484-0021",
+    "REQ-QUIC-RFC9484-0022",
+    "REQ-QUIC-RFC9484-0023",
+    "REQ-QUIC-RFC9484-0024"
+  ],
+  "summary": "Add CONNECT-IP URI Template variable, expansion, validation, abort, and default-template policy.",
+  "planned_changes": "- Extend URI Template helper with simple path/query expansion and policy constants.\n- Add request target model.\n- Add focused positive/negative tests and canonical xrefs.\n- Narrow RFC9484 blocked triage to the remaining requirements.",
+  "verification_plan": "Run focused CONNECT-IP URI Template tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0003"
+  ],
+  "out_of_scope": [
+    "Full target/ipproto grammar validation.",
+    "CONNECT-IP request/response handling.",
+    "Capsule encoding."
+  ],
+  "completion_notes": "The RFC 9484 URI Template expansion and default-template policy surface is implemented and verified locally."
+}

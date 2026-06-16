@@ -232,6 +232,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AllowsOtherVariables",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsUnresolvedOtherVariablesAtExpansion"
         ]
       }
     },
@@ -249,6 +253,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AllowsTargetAndIpprotoVariables",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_DoesNotRequireTargetAndIpprotoVariables"
         ]
       }
     },
@@ -266,6 +274,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B10-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_ExpandsNonEmptyTargetAndIpprotoValues",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsEmptyTargetAndIpprotoValuesWhenIncluded"
         ]
       }
     },
@@ -283,6 +295,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsPrintableAsciiTemplates",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsNonPrintableAsciiTemplates"
         ]
       }
     },
@@ -300,6 +316,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSimpleExpansionInsteadOfForbiddenOperators",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenExpansionOperators"
         ]
       }
     },
@@ -317,6 +337,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSimpleExpansionInsteadOfForbiddenOperators",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenExpansionOperators"
         ]
       }
     },
@@ -334,6 +358,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSimpleExpansionInsteadOfForbiddenOperators",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenExpansionOperators"
         ]
       }
     },
@@ -351,6 +379,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSimpleExpansionInsteadOfForbiddenOperators",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenExpansionOperators"
         ]
       }
     },
@@ -368,6 +400,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B12-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSimpleExpansionInsteadOfForbiddenOperators",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenExpansionOperators"
         ]
       }
     },
@@ -385,6 +421,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B13-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AllowsGeneralPurposeImplementations",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_StillProvidesSpecificValidation"
         ]
       }
     },
@@ -402,6 +442,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B13-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RecommendsValidationBeforeUse",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_DetectsInvalidTemplatesDuringValidation"
         ]
       }
     },
@@ -419,6 +463,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AbortsRequestWhenTemplateInvalid",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_DoesNotAbortRequestForValidTemplate"
         ]
       }
     },
@@ -436,6 +484,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B14-P14-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_CreatesDefaultTemplateForLimitedClients",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_DefaultTemplateDoesNotPreventCustomTemplates"
         ]
       }
     },
@@ -453,6 +505,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B14-P14-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RecommendsOfferingDefaultTemplateForInteroperability",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_DefaultLocationIsConcreteAndNotEmpty"
         ]
       }
     },

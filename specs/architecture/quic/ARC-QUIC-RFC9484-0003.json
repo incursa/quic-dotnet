@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP URI Template Expansion Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP URI Template variable, expansion, validation, abort, and default-template policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0003",
+    "VER-QUIC-RFC9484-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0011",
+    "REQ-QUIC-RFC9484-0012",
+    "REQ-QUIC-RFC9484-0013",
+    "REQ-QUIC-RFC9484-0014",
+    "REQ-QUIC-RFC9484-0015",
+    "REQ-QUIC-RFC9484-0016",
+    "REQ-QUIC-RFC9484-0017",
+    "REQ-QUIC-RFC9484-0018",
+    "REQ-QUIC-RFC9484-0019",
+    "REQ-QUIC-RFC9484-0020",
+    "REQ-QUIC-RFC9484-0021",
+    "REQ-QUIC-RFC9484-0022",
+    "REQ-QUIC-RFC9484-0023",
+    "REQ-QUIC-RFC9484-0024"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpUriTemplate.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpRequestTarget.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpUriTemplate` accepts optional `target`, `ipproto`, and other variables, expands simple path and query variables, rejects empty `target` or `ipproto` values when present, enforces printable ASCII and forbidden operator policy, exposes validation and invalid-template abort decisions, and constructs the default CONNECT-IP template.",
+  "data_and_state_considerations": "Expansion returns request target components and does not validate target/ipproto grammar beyond non-empty variable values in this slice.",
+  "edge_cases_and_constraints": [
+    "Unresolved variables are rejected at expansion time.",
+    "The default template is available without preventing custom templates.",
+    "Forbidden operator checks remain conservative and shared with validation."
+  ],
+  "risks": [
+    "Full target and ipproto grammar validation is intentionally deferred to the Section 4.6 slice."
+  ]
+}
