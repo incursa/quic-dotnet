@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9114-0004",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 RFC 9114 Dynamic QPACK Stream-State Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "SPEC-QUIC-RFC9204",
+    "ARC-QUIC-RFC9114-0004",
+    "WI-QUIC-RFC9114-0004"
+  ],
+  "verification_method": "Focused HTTP/3 loopback tests, affected Release build, SpecTrace core validation, generated QUIC triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9114-S9-0003"
+  ],
+  "scope": "This verification covers local HTTP/3 client and server integration with QPACK encoder-stream state for dynamic field-section decoding. It does not verify external h3spec completion, live interop peers, or ProtocolLab publication.",
+  "preconditions": [
+    "The client advertises explicit QPACK dynamic table capacity and blocked-stream credit for the positive dynamic response test.",
+    "The negative response test advertises zero blocked-stream credit while the peer sends a dynamic response field section before encoder instructions."
+  ],
+  "procedure": [
+    "Run `dotnet build tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build --filter \"FullyQualifiedName~Http3MinimalClientTests.GetAsync_DynamicQpackResponse_UsesPeerEncoderStreamAndReturnsSuccess|FullyQualifiedName~Http3MinimalClientTests.GetAsync_DynamicQpackResponseWithoutBlockedStreamCredit_ThrowsQPackError|FullyQualifiedName~Http3MinimalServerTests.DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Regenerate `specs/generated/quic/quic-requirement-coverage-triage.json` and confirm all QUIC requirements remain trace clean.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The positive dynamic response test must keep the response incomplete until peer QPACK encoder-stream instructions arrive, then complete with the dynamic `server: incursa-dynamic` header and body. The negative response test must throw a QPACK decompression error when blocked-stream credit is zero. The existing dynamic request test must continue to pass through the server peer encoder-stream path. SpecTrace validation, generated triage, and diff hygiene must remain clean.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_DynamicQpackResponse_UsesPeerEncoderStreamAndReturnsSuccess",
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_DynamicQpackResponseWithoutBlockedStreamCredit_ThrowsQPackError",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess"
+  ],
+  "status_summary": "On 2026-06-16, the affected test project built in Release and the focused HTTP/3 dynamic QPACK tests passed locally: client dynamic response unblock, client blocked-stream-credit rejection, and existing server dynamic request decode. This is repo-local protocol evidence only."
+}

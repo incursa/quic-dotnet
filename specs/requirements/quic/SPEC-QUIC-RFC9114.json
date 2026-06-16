@@ -14,6 +14,9 @@
     "ARC-QUIC-RFC9114-0002",
     "WI-QUIC-RFC9114-0002",
     "VER-QUIC-RFC9114-0002",
+    "ARC-QUIC-RFC9114-0004",
+    "WI-QUIC-RFC9114-0004",
+    "VER-QUIC-RFC9114-0004",
     "SPEC-QUIC-RFC9204",
     "SPEC-QUIC-INT"
   ],
@@ -431,6 +434,58 @@
         "This requirement owns the recovery slice for ProtocolLab large-body rows that failed with premature response EOF under managed HTTP/3 load.",
         "Completing a client response solely because Content-Length bytes arrived is not sufficient proof when the transport stream tail or FIN path is still incorrect.",
         "`Http3ClientOptions.CompleteResponseOnContentLength` is retained as a compatibility flag, but the client must still observe stream FIN before reporting response completion."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9114-S9-0003",
+      "title": "Consume dynamic QPACK state across HTTP/3 streams",
+      "statement": "The HTTP/3 client and server MUST route peer QPACK encoder-stream instructions into connection-level header decoding so dynamic request and response HEADERS frames can block, unblock, and fail deterministically without treating the QPACK streams as opaque diagnostics-only bytes.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9114-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9114-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9114-0004"
+        ],
+        "related": [
+          "REQ-QUIC-RFC9114-S6-0001",
+          "REQ-QUIC-RFC9114-S7-0001",
+          "REQ-QUIC-RFC9114-S9-0001",
+          "SPEC-QUIC-RFC9204"
+        ],
+        "upstream_refs": [
+          "RFC 9114 §§6.2.1, 7.2.4.1, 9",
+          "RFC 9204 §§2.1, 4.5, 6",
+          "https://www.rfc-editor.org/rfc/rfc9114.html",
+          "https://www.rfc-editor.org/rfc/rfc9204.html"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Http3/Http3Client.cs",
+          "src/Incursa.Quic.Http3/Http3Server.cs",
+          "src/Incursa.Qpack/QPackDecoder.cs",
+          "src/Incursa.Qpack/QPackEncoder.cs",
+          "src/Incursa.Qpack/QPackFieldSectionDecodeResult.cs",
+          "src/Incursa.Qpack/QPackFieldSectionDecodeStatus.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_DynamicQpackResponse_UsesPeerEncoderStreamAndReturnsSuccess",
+          "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_DynamicQpackResponseWithoutBlockedStreamCredit_ThrowsQPackError",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess"
+        ]
+      },
+      "notes": [
+        "The standalone QPACK codec and instruction grammar remain owned by SPEC-QUIC-RFC9204; this requirement owns the HTTP/3 stream integration that feeds encoder-stream bytes into request and response field-section decoding.",
+        "The client-side negative proof covers a peer response that requires a blocked dynamic field section after the client advertised zero blocked-stream credit.",
+        "This requirement does not claim h3spec or external HTTP/3 peer conformance; those advisory surfaces remain in SPEC-QUIC-INT."
       ]
     }
   ]

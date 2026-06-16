@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9114-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 RFC 9114 Dynamic QPACK Stream-State Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the HTTP/3 integration boundary that consumes peer QPACK encoder-stream instructions as connection-level state for dynamic request and response field-section decoding.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "SPEC-QUIC-RFC9204",
+    "WI-QUIC-RFC9114-0004",
+    "VER-QUIC-RFC9114-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9114-S9-0003"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Qpack/QPackDecoder.cs",
+    "src/Incursa.Qpack/QPackEncoder.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "The HTTP/3 client and server keep per-connection QPACK decoder state separate from request and response frame readers. Peer QPACK encoder streams feed that decoder as bytes arrive, and HEADERS frames that reference missing dynamic entries are recorded as blocked field sections until the relevant encoder-stream instructions arrive. Static and literal-only field sections continue through the same request and response validators without dynamic state.",
+  "data_and_state_considerations": "The state boundary is connection scoped because QPACK encoder-stream instructions apply across request streams. HEADERS processing records blocked stream IDs and completes them from the QPACK decoder once dynamic insert count has advanced. The client decoder is initialized from the client's advertised local QPACK SETTINGS because those settings constrain what a peer may reference in response field sections; the server keeps its existing peer-settings gate for the request path used by the current minimal HTTP/3 loopback surface.",
+  "edge_cases_and_constraints": [
+    "Dynamic response HEADERS can arrive before the peer QPACK encoder-stream instructions and must unblock once the instructions are consumed.",
+    "A dynamic field section that would exceed advertised blocked-stream credit must fail deterministically with a QPACK decompression error.",
+    "The peer QPACK decoder stream remains diagnostics-only in this slice because field-section acknowledgments and cancellation handling are owned by the standalone RFC 9204 encoder tests.",
+    "External h3spec or peer conformance is not promoted by this architecture without a separate SPEC-QUIC-INT proof."
+  ],
+  "risks": [
+    "Treating QPACK streams as diagnostics-only bytes would leave dynamic response decoding dependent on static/literal fallbacks.",
+    "Using per-stream decoder instances would lose dynamic entries inserted on the connection-level encoder stream.",
+    "Broad h3spec-driven rewrites could obscure this bounded stream-state defect."
+  ]
+}

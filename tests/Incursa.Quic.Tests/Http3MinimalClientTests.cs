@@ -65,6 +65,157 @@ public sealed class Http3MinimalClientTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0003")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Positive")]
+    [Trait("Category", "Edge")]
+    public async Task GetAsync_DynamicQpackResponse_UsesPeerEncoderStreamAndReturnsSuccess()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        TaskCompletionSource<object?> responsePayloadSent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> encoderInstructionsAllowed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> clientCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task serverTask = RunDynamicQpackResponseServerAsync(
+            listener,
+            new Http3Settings(qpackMaxTableCapacity: 220, qpackBlockedStreams: 1),
+            responsePayloadSent,
+            encoderInstructionsAllowed.Task,
+            clientCompleted.Task);
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate);
+        RecordingHttp3DiagnosticsSink diagnostics = new();
+
+        await using Http3Client client = await Http3Client.ConnectAsync(
+            clientOptions,
+            new Http3ClientOptions
+            {
+                DiagnosticsSink = diagnostics,
+                Settings = new Http3Settings(qpackMaxTableCapacity: 220, qpackBlockedStreams: 1),
+            }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<Http3Response> responseTask = client.GetAsync(
+            new Uri($"https://localhost:{listenEndPoint.Port}/dynamic-response")).AsTask();
+
+        try
+        {
+            await responsePayloadSent.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            await WaitForDiagnosticAsync(
+                diagnostics,
+                diagnostic => diagnostic.Kind == Http3DiagnosticKind.ResponseStarted
+                    && diagnostic.Role == "client");
+
+            Task firstCompleted = await Task.WhenAny(responseTask, Task.Delay(TimeSpan.FromMilliseconds(500)));
+            Assert.NotSame(responseTask, firstCompleted);
+
+            encoderInstructionsAllowed.TrySetResult(null);
+            Http3Response response = await responseTask.WaitAsync(TimeSpan.FromSeconds(10));
+
+            Assert.Equal(200, response.StatusCode);
+            Assert.Equal("dynamic response", System.Text.Encoding.ASCII.GetString(response.Body));
+            Assert.Contains(response.Headers, header => header.Name == "server" && header.Value == "incursa-dynamic");
+            Assert.Contains(
+                diagnostics.Events,
+                diagnostic => diagnostic.Kind == Http3DiagnosticKind.QPackInstructionReceived
+                    && diagnostic.StreamKind == Http3StreamKind.QPackEncoder);
+        }
+        finally
+        {
+            clientCompleted.TrySetResult(null);
+            encoderInstructionsAllowed.TrySetResult(null);
+        }
+
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S9-0003")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task GetAsync_DynamicQpackResponseWithoutBlockedStreamCredit_ThrowsQPackError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        using X509Certificate2 serverCertificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
+        IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
+        QuicServerConnectionOptions serverOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedServerOptions(serverCertificate);
+
+        QuicListenerOptions listenerOptions = new()
+        {
+            ListenEndPoint = listenEndPoint,
+            ApplicationProtocols = [SslApplicationProtocol.Http3],
+            ListenBacklog = 1,
+            ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
+        };
+
+        await using QuicListener listener = await QuicListener.ListenAsync(listenerOptions);
+        TaskCompletionSource<object?> responsePayloadSent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> encoderInstructionsAllowed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        TaskCompletionSource<object?> clientCompleted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task serverTask = RunDynamicQpackResponseServerAsync(
+            listener,
+            new Http3Settings(qpackMaxTableCapacity: 220, qpackBlockedStreams: 0),
+            responsePayloadSent,
+            encoderInstructionsAllowed.Task,
+            clientCompleted.Task);
+
+        QuicClientConnectionOptions clientOptions = QuicLoopbackEstablishmentTestSupport.CreateSupportedClientOptions(
+            new IPEndPoint(IPAddress.Loopback, listenEndPoint.Port),
+            targetHost: "localhost",
+            trustedServerCertificate: serverCertificate);
+
+        await using Http3Client client = await Http3Client.ConnectAsync(
+            clientOptions,
+            new Http3ClientOptions
+            {
+                Settings = new Http3Settings(qpackMaxTableCapacity: 220, qpackBlockedStreams: 0),
+            }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Task<Http3Response> responseTask = client.GetAsync(
+            new Uri($"https://localhost:{listenEndPoint.Port}/dynamic-response")).AsTask();
+
+        try
+        {
+            await responsePayloadSent.Task.WaitAsync(TimeSpan.FromSeconds(10));
+            QPackException exception = await Assert.ThrowsAsync<QPackException>(
+                async () => await responseTask.WaitAsync(TimeSpan.FromSeconds(10)));
+
+            Assert.Equal(QPackErrorCode.DecompressionFailed, exception.ErrorCode);
+            Assert.Contains("blocked stream limit", exception.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            clientCompleted.TrySetResult(null);
+            encoderInstructionsAllowed.TrySetResult(null);
+        }
+
+        await serverTask.WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0002")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
@@ -371,6 +522,108 @@ public sealed class Http3MinimalClientTests
         }
     }
 
+    private static async Task RunDynamicQpackResponseServerAsync(
+        QuicListener listener,
+        Http3Settings expectedClientSettings,
+        TaskCompletionSource<object?> responsePayloadSent,
+        Task encoderInstructionsAllowed,
+        Task clientCompleted)
+    {
+        await using QuicConnection connection = await listener.AcceptConnectionAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        QuicStream? requestStream = null;
+        QuicStream? serverControlStream = null;
+        QuicStream? serverQPackEncoderStream = null;
+        QuicStream? serverQPackDecoderStream = null;
+        List<QuicStream> clientUnidirectionalStreams = [];
+
+        try
+        {
+            serverControlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await WriteServerControlStreamAsync(serverControlStream, new Http3Settings());
+
+            serverQPackEncoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await WriteStreamTypeAsync(serverQPackEncoderStream, Http3StreamType.QPackEncoder);
+
+            serverQPackDecoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await WriteStreamTypeAsync(serverQPackDecoderStream, Http3StreamType.QPackDecoder);
+
+            while (requestStream is null || clientUnidirectionalStreams.Count < 3)
+            {
+                QuicStream stream = await connection.AcceptInboundStreamAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                if (stream.Type == QuicStreamType.Bidirectional)
+                {
+                    requestStream = stream;
+                }
+                else
+                {
+                    clientUnidirectionalStreams.Add(stream);
+                    await ObserveUnidirectionalStreamPreambleAsync(stream, expectedClientSettings);
+                }
+            }
+
+            Assert.NotNull(requestStream);
+            QPackFieldLine[] requestHeaders = await ReadRequestHeadersAsync(requestStream);
+            Assert.Contains(requestHeaders, header => header.Name == ":path" && header.Value == "/dynamic-response");
+
+            byte[] responseBody = "dynamic response"u8.ToArray();
+            QPackEncoder encoder = new(maximumDynamicTableCapacity: 220, maximumBlockedStreams: 1);
+            Assert.True(encoder.TrySetDynamicTableCapacity(220, out byte[] capacityInstruction));
+            Assert.True(encoder.TryInsert(new QPackFieldLine("server", "incursa-dynamic"), out byte[] serverInstruction));
+            QPackFieldSectionEncodeResult responseFieldSection = encoder.EncodeFieldSection(
+                checked((ulong)requestStream.Id),
+                [
+                    new QPackFieldLine(":status", "200"),
+                    new QPackFieldLine("server", "incursa-dynamic"),
+                    new QPackFieldLine("content-length", responseBody.Length.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                ]);
+            Assert.True(responseFieldSection.RequiredInsertCount > 0);
+
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(responseFieldSection.EncodedFieldSection);
+            byte[] dataFrame = Http3FrameWriter.WriteData(responseBody);
+            await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            responsePayloadSent.TrySetResult(null);
+
+            await encoderInstructionsAllowed.WaitAsync(TimeSpan.FromSeconds(10));
+            await serverQPackEncoderStream.WriteAsync(capacityInstruction, 0, capacityInstruction.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await serverQPackEncoderStream.WriteAsync(serverInstruction, 0, serverInstruction.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            await clientCompleted.WaitAsync(TimeSpan.FromSeconds(10));
+        }
+        catch (Exception exception)
+        {
+            responsePayloadSent.TrySetException(exception);
+            throw;
+        }
+        finally
+        {
+            if (requestStream is not null)
+            {
+                await requestStream.DisposeAsync();
+            }
+
+            if (serverControlStream is not null)
+            {
+                await serverControlStream.DisposeAsync();
+            }
+
+            if (serverQPackEncoderStream is not null)
+            {
+                await serverQPackEncoderStream.DisposeAsync();
+            }
+
+            if (serverQPackDecoderStream is not null)
+            {
+                await serverQPackDecoderStream.DisposeAsync();
+            }
+
+            foreach (QuicStream stream in clientUnidirectionalStreams)
+            {
+                await stream.DisposeAsync();
+            }
+        }
+    }
+
     private static async Task WriteServerControlStreamWithGoAwayAsync(
         QuicStream controlStream,
         ulong goAwayStreamId)
@@ -383,6 +636,17 @@ public sealed class Http3MinimalClientTests
         ]);
         byte[] goAwayFrame = Http3FrameWriter.WriteGoAway(goAwayStreamId);
         byte[] controlPayload = [.. streamTypeBytes, .. settingsFrame, .. goAwayFrame];
+
+        await controlStream.WriteAsync(controlPayload, 0, controlPayload.Length).WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WriteServerControlStreamAsync(
+        QuicStream controlStream,
+        Http3Settings settings)
+    {
+        byte[] streamTypeBytes = EncodeVariableLengthInteger((ulong)Http3StreamType.Control);
+        byte[] settingsFrame = Http3SettingsWriter.WriteSettingsFrame(settings);
+        byte[] controlPayload = [.. streamTypeBytes, .. settingsFrame];
 
         await controlStream.WriteAsync(controlPayload, 0, controlPayload.Length).WaitAsync(TimeSpan.FromSeconds(10));
     }
@@ -453,8 +717,9 @@ public sealed class Http3MinimalClientTests
         }
     }
 
-    private static async Task ObserveUnidirectionalStreamPreambleAsync(QuicStream stream)
+    private static async Task ObserveUnidirectionalStreamPreambleAsync(QuicStream stream, Http3Settings? expectedSettings = null)
     {
+        expectedSettings ??= new Http3Settings();
         byte[] buffer = new byte[512];
         int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(10));
         Assert.True(bytesRead > 0);
@@ -479,8 +744,8 @@ public sealed class Http3MinimalClientTests
             settingsFrame = ReadSettingsFrame(reader.Read(buffer.AsSpan(0, bytesRead)));
         }
 
-        Assert.Equal(0UL, settingsFrame.Values.QPackMaxTableCapacity);
-        Assert.Equal(0UL, settingsFrame.Values.QPackBlockedStreams);
+        Assert.Equal(expectedSettings.QPackMaxTableCapacity, settingsFrame.Values.QPackMaxTableCapacity);
+        Assert.Equal(expectedSettings.QPackBlockedStreams, settingsFrame.Values.QPackBlockedStreams);
     }
 
     private static byte[] EncodeVariableLengthInteger(ulong value)
@@ -488,6 +753,12 @@ public sealed class Http3MinimalClientTests
         Span<byte> destination = stackalloc byte[Http3VariableLengthInteger.MaxEncodedLength];
         Assert.True(Http3VariableLengthInteger.TryFormat(value, destination, out int bytesWritten));
         return destination[..bytesWritten].ToArray();
+    }
+
+    private static async Task WriteStreamTypeAsync(QuicStream stream, Http3StreamType streamType)
+    {
+        byte[] encoded = EncodeVariableLengthInteger(checked((ulong)streamType));
+        await stream.WriteAsync(encoded, 0, encoded.Length).WaitAsync(TimeSpan.FromSeconds(10));
     }
 
     private static Http3SettingsFrame? ReadSettingsFrame(IEnumerable<Http3Frame> frames)

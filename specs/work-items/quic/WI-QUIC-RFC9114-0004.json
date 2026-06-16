@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9114-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 RFC 9114 Dynamic QPACK Stream-State Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9114",
+    "SPEC-QUIC-RFC9204",
+    "ARC-QUIC-RFC9114-0004",
+    "VER-QUIC-RFC9114-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9114-S9-0003"
+  ],
+  "summary": "Complete the local HTTP/3 integration seam that consumes peer QPACK encoder-stream instructions for dynamic request and response field sections.",
+  "planned_changes": "- Add client connection-level QPACK decoder state for response HEADERS.\n- Feed peer QPACK encoder-stream bytes into the client decoder instead of treating the stream as diagnostics-only.\n- Keep the existing server dynamic request decoder path intact and cover both directions with focused loopback tests.\n- Add a negative response test for peers that require blocked dynamic response decoding without advertised blocked-stream credit.\n- Update the QPACK stream-state gap ledger and generated SpecTrace triage.",
+  "verification_plan": "Run the focused HTTP/3 dynamic QPACK client/server tests, Release build of the affected test project, SpecTrace core validation, generated QUIC triage, and diff hygiene before committing.",
+  "verification_links": [
+    "VER-QUIC-RFC9114-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9114-0004"
+  ],
+  "out_of_scope": [
+    "External h3spec conformance claims.",
+    "QPACK decoder-stream acknowledgments as a live HTTP/3 optimization.",
+    "ProtocolLab package publication."
+  ],
+  "completion_notes": "The client now routes peer QPACK encoder-stream bytes into connection-level response header decoding, and focused loopback coverage proves dynamic response unblock behavior plus rejection when a peer exceeds the client's blocked-stream credit. Existing server loopback coverage continues to prove dynamic request decoding through the peer encoder stream."
+}

@@ -23,6 +23,7 @@ public sealed class Http3Client : IAsyncDisposable
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private readonly Http3StreamDispatcher peerStreamDispatcher = new(Http3EndpointRole.Client);
     private readonly object peerStreamDispatcherGate = new();
+    private readonly ConnectionQPackState qpackState;
     private readonly CancellationTokenSource peerStreamObserverCancellation = new();
     private QuicStream? controlStream;
     private QuicStream? qpackEncoderStream;
@@ -42,6 +43,7 @@ public sealed class Http3Client : IAsyncDisposable
             ? options.ReadBufferSize
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
         diagnosticsSink = options.DiagnosticsSink;
+        qpackState = new ConnectionQPackState(localSettings);
         Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ConnectionStarted)
         {
             Role = "client",
@@ -536,6 +538,11 @@ public sealed class Http3Client : IAsyncDisposable
         CancellationToken cancellationToken)
     {
         EmitQPackBytesReceived(stream.Id, streamKind, initialPayload.Length);
+        if (streamKind == Http3StreamKind.QPackEncoder)
+        {
+            qpackState.ProcessPeerEncoderStreamBytes(initialPayload);
+        }
+
         while (true)
         {
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
@@ -545,6 +552,10 @@ public sealed class Http3Client : IAsyncDisposable
             }
 
             EmitQPackBytesReceived(stream.Id, streamKind, bytesRead);
+            if (streamKind == Http3StreamKind.QPackEncoder)
+            {
+                qpackState.ProcessPeerEncoderStreamBytes(buffer.AsSpan(0, bytesRead));
+            }
         }
     }
 
@@ -655,7 +666,7 @@ public sealed class Http3Client : IAsyncDisposable
                 streamCompleted = true;
                 foreach (Http3Frame frame in frameReader.Complete())
                 {
-                    ProcessResponseFrame(frame, validator, body, requestStream.Id);
+                    await ProcessResponseFrameAsync(frame, validator, body, requestStream.Id, cancellationToken).ConfigureAwait(false);
                 }
 
                 break;
@@ -663,7 +674,7 @@ public sealed class Http3Client : IAsyncDisposable
 
             foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
             {
-                ProcessResponseFrame(frame, validator, body, requestStream.Id);
+                await ProcessResponseFrameAsync(frame, validator, body, requestStream.Id, cancellationToken).ConfigureAwait(false);
             }
 
             ValidateContentLengthNotExceeded(validator, body.WrittenCount);
@@ -732,11 +743,12 @@ public sealed class Http3Client : IAsyncDisposable
         return false;
     }
 
-    private void ProcessResponseFrame(
+    private async ValueTask ProcessResponseFrameAsync(
         Http3Frame frame,
         Http3ResponseSequenceValidator validator,
         IBufferWriter<byte> body,
-        long streamId)
+        long streamId,
+        CancellationToken cancellationToken)
     {
         EmitFrame(Http3DiagnosticKind.FrameReceived, streamId, frame);
         switch (frame)
@@ -747,7 +759,11 @@ public sealed class Http3Client : IAsyncDisposable
                     Role = "client",
                     StreamId = streamId,
                 });
-                validator.ReceiveHeaders(QPackDecoder.DecodeFieldSection(headersFrame.EncodedFieldSection));
+                IReadOnlyList<QPackFieldLine> fieldSection = await qpackState.DecodeResponseHeadersAsync(
+                        checked((ulong)streamId),
+                        headersFrame.EncodedFieldSection,
+                        cancellationToken).ConfigureAwait(false);
+                validator.ReceiveHeaders(fieldSection);
                 break;
             case Http3DataFrame dataFrame:
                 validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
@@ -757,6 +773,68 @@ public sealed class Http3Client : IAsyncDisposable
                 break;
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The HTTP/3 response stream contained an invalid frame type.");
+        }
+    }
+
+    private sealed class ConnectionQPackState
+    {
+        private readonly object gate = new();
+        private readonly Dictionary<ulong, TaskCompletionSource<QPackFieldLine[]>> blockedResponses = [];
+        private readonly QPackDecoder decoder;
+
+        public ConnectionQPackState(Http3Settings localSettings)
+        {
+            ArgumentNullException.ThrowIfNull(localSettings);
+
+            decoder = new QPackDecoder(
+                checked((int)localSettings.QPackMaxTableCapacity),
+                checked((int)localSettings.QPackBlockedStreams));
+        }
+
+        public async ValueTask<IReadOnlyList<QPackFieldLine>> DecodeResponseHeadersAsync(
+            ulong streamId,
+            ReadOnlyMemory<byte> encodedFieldSection,
+            CancellationToken cancellationToken)
+        {
+            TaskCompletionSource<QPackFieldLine[]>? blockedCompletion = null;
+            Http3FieldLineBuffer fieldLines = new();
+            lock (gate)
+            {
+                QPackFieldSectionDecodeStatus decoded = decoder.DecodeFieldSection(streamId, encodedFieldSection, fieldLines);
+                if (!decoded.IsBlocked)
+                {
+                    return fieldLines.CommitToReadOnlyList();
+                }
+
+                blockedCompletion = new TaskCompletionSource<QPackFieldLine[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+                blockedResponses[streamId] = blockedCompletion;
+            }
+
+            return await blockedCompletion.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public void ProcessPeerEncoderStreamBytes(ReadOnlySpan<byte> bytes)
+        {
+            if (bytes.IsEmpty)
+            {
+                return;
+            }
+
+            lock (gate)
+            {
+                CompleteUnblockedResponses(decoder.DecodeEncoderStream(bytes));
+            }
+        }
+
+        private void CompleteUnblockedResponses(QPackFieldSectionDecodeResult[] results)
+        {
+            foreach (QPackFieldSectionDecodeResult result in results)
+            {
+                if (blockedResponses.Remove(result.StreamId, out TaskCompletionSource<QPackFieldLine[]>? completion))
+                {
+                    completion.TrySetResult(result.FieldLines);
+                }
+            }
         }
     }
 
