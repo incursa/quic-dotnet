@@ -1,0 +1,54 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0011",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP ROUTE_ADVERTISEMENT Capsule Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0011",
+    "VER-QUIC-RFC9484-0011"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0127",
+    "REQ-QUIC-RFC9484-0128",
+    "REQ-QUIC-RFC9484-0129",
+    "REQ-QUIC-RFC9484-0130",
+    "REQ-QUIC-RFC9484-0131",
+    "REQ-QUIC-RFC9484-0132",
+    "REQ-QUIC-RFC9484-0133",
+    "REQ-QUIC-RFC9484-0134",
+    "REQ-QUIC-RFC9484-0135",
+    "REQ-QUIC-RFC9484-0136",
+    "REQ-QUIC-RFC9484-0137",
+    "REQ-QUIC-RFC9484-0138",
+    "REQ-QUIC-RFC9484-0139",
+    "REQ-QUIC-RFC9484-0140",
+    "REQ-QUIC-RFC9484-0141",
+    "REQ-QUIC-RFC9484-0142",
+    "REQ-QUIC-RFC9484-0143",
+    "REQ-QUIC-RFC9484-0144",
+    "REQ-QUIC-RFC9484-0145",
+    "REQ-QUIC-RFC9484-0146",
+    "REQ-QUIC-RFC9484-0147",
+    "REQ-QUIC-RFC9484-0148",
+    "REQ-QUIC-RFC9484-0149"
+  ],
+  "summary": "Add CONNECT-IP ROUTE_ADVERTISEMENT capsule codec and route/protocol validation policy.",
+  "planned_changes": "- Add route range model validation.\n- Add ROUTE_ADVERTISEMENT capsule create/parse helpers.\n- Add supersession, withdrawal, route ordering, overlap, request-stream abort, validation-permission, and extension-header protocol-number policy helpers.\n- Add focused tests, canonical xrefs, and narrow RFC9484 blocked triage.",
+  "verification_plan": "Run focused ROUTE_ADVERTISEMENT tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0011"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0011"
+  ],
+  "out_of_scope": [
+    "HTTP Datagram payload conversion.",
+    "Live route table integration.",
+    "IP packet forwarding and MTU policy."
+  ],
+  "completion_notes": "The RFC 9484 ROUTE_ADVERTISEMENT capsule and route/protocol policy surface is implemented and verified locally."
+}

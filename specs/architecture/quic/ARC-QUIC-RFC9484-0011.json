@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0011",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP ROUTE_ADVERTISEMENT Capsule Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 ROUTE_ADVERTISEMENT capsule wire format, route range validation, supersession, overlap policy, and protocol-number scoping helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0011",
+    "VER-QUIC-RFC9484-0011"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0127",
+    "REQ-QUIC-RFC9484-0128",
+    "REQ-QUIC-RFC9484-0129",
+    "REQ-QUIC-RFC9484-0130",
+    "REQ-QUIC-RFC9484-0131",
+    "REQ-QUIC-RFC9484-0132",
+    "REQ-QUIC-RFC9484-0133",
+    "REQ-QUIC-RFC9484-0134",
+    "REQ-QUIC-RFC9484-0135",
+    "REQ-QUIC-RFC9484-0136",
+    "REQ-QUIC-RFC9484-0137",
+    "REQ-QUIC-RFC9484-0138",
+    "REQ-QUIC-RFC9484-0139",
+    "REQ-QUIC-RFC9484-0140",
+    "REQ-QUIC-RFC9484-0141",
+    "REQ-QUIC-RFC9484-0142",
+    "REQ-QUIC-RFC9484-0143",
+    "REQ-QUIC-RFC9484-0144",
+    "REQ-QUIC-RFC9484-0145",
+    "REQ-QUIC-RFC9484-0146",
+    "REQ-QUIC-RFC9484-0147",
+    "REQ-QUIC-RFC9484-0148",
+    "REQ-QUIC-RFC9484-0149"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpRouteRange.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpRouteAdvertisementCapsule.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpRouteAdvertisementCapsule` creates and parses Capsule Type 0x03, validates IP Address Range field layout, enforces route ordering and non-overlap, models supersession and withdrawal semantics, and maps malformed advertisements to HTTP/3 message errors. `Http3ConnectIpRouteRange` owns IP version, address-ordering, protocol-zero, ICMP exception, and extension-header protocol-number policy used by CONNECT-IP scoping.",
+  "data_and_state_considerations": "The codec is stateless. Supersession and withdrawal helpers operate over caller-provided snapshots so adapters can store route state at the request-stream boundary.",
+  "edge_cases_and_constraints": [
+    "ROUTE_ADVERTISEMENT capsules may contain zero route ranges.",
+    "Routes are ordered by IP version, IP protocol, then strictly non-overlapping address ranges.",
+    "Malformed field layout, unsupported IP versions, invalid address order, and overlapping routes map to request-stream abort policy."
+  ],
+  "risks": [
+    "HTTP Datagram payload conversion and forwarding remain separate RFC 9484 slices.",
+    "Live route-state integration remains adapter work."
+  ]
+}

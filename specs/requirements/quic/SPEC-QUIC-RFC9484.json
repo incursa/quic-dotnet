@@ -2684,6 +2684,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.3 RFC9484-S4P7P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsWrongCapsuleType"
         ]
       }
     },
@@ -2701,6 +2705,10 @@
         "upstream_refs": [
           "RFC 9484 section 4.7.3 RFC9484-S4P7P3-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedRangeLayout"
         ]
       }
     },
@@ -2718,6 +2726,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion"
         ]
       }
     },
@@ -2735,6 +2747,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B8-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion"
         ]
       }
     },
@@ -2752,6 +2768,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv4EndAddress"
         ]
       }
     },
@@ -2769,6 +2789,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv6EndAddress"
         ]
       }
     },
@@ -2786,6 +2810,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B9-P9-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsStartGreaterThanEnd"
         ]
       }
     },
@@ -2803,6 +2831,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte"
         ]
       }
     },
@@ -2820,6 +2852,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_ProtocolZeroAllowsAllProtocols",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolDoesNotAllowAllProtocols"
         ]
       }
     },
@@ -2837,6 +2873,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol"
         ]
       }
     },
@@ -2854,6 +2894,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AlwaysAllowsIcmpTraffic",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_IcmpExceptionDoesNotAllowEveryProtocol"
         ]
       }
     },
@@ -2871,6 +2915,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_ParsesWellFormedCapsule",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
         ]
       }
     },
@@ -2888,6 +2936,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded"
         ]
       }
     },
@@ -2905,6 +2957,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B13-P13-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_PresentPriorRangeIsNotWithdrawn"
         ]
       }
     },
@@ -2922,6 +2978,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder"
         ]
       }
     },
@@ -2939,6 +2999,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B16-P16-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfProtocolOrder"
         ]
       }
     },
@@ -2956,6 +3020,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B17-P17-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol"
         ]
       }
     },
@@ -2973,6 +3041,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B18-P18-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
         ]
       }
     },
@@ -2990,6 +3062,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol"
         ]
       }
     },
@@ -3007,6 +3083,10 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
         ]
       }
     },
@@ -3024,6 +3104,9 @@
         "upstream_refs": [
           "RFC 9484 4.7.3 RFC9484-S4P7P3-B19-P19-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MayValidateRoutes"
         ]
       }
     },
@@ -3041,6 +3124,10 @@
         "upstream_refs": [
           "RFC 9484 4.8 RFC9484-S4P8-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions"
         ]
       }
     },
@@ -3058,6 +3145,10 @@
         "upstream_refs": [
           "RFC 9484 4.8 RFC9484-S4P8-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol"
         ]
       }
     },

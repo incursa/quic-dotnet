@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T12:31:53.0033966-06:00",
+  "generated_at": "2026-06-16T12:41:49.2252521-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T12:31:52.9983534-06:00",
+    "generated_at": "2026-06-16T12:41:49.2223119-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2554,
-      "uncovered_blocked": 87
+      "trace_clean": 2577,
+      "uncovered_blocked": 64
     },
     "by_work_queue_tag": {
-      "blocked": 87,
-      "clean": 2554,
-      "new_tests_needed": 87
+      "blocked": 64,
+      "clean": 2577,
+      "new_tests_needed": 64
     },
     "by_rfc": [
       {
@@ -183,8 +183,8 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_state": {
-          "trace_clean": 126,
-          "uncovered_blocked": 87
+          "trace_clean": 149,
+          "uncovered_blocked": 64
         }
       }
     ]
@@ -454287,40 +454287,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsWrongCapsuleType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0127",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsWrongCapsuleType",
+          "method": "RouteAdvertisement_RejectsWrongCapsuleType",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0127"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0127",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsWrongCapsuleType",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsWrongCapsuleType",
+          "method": "RouteAdvertisement_RejectsWrongCapsuleType",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0127"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0127",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "method": "RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0127"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0127",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "method": "RouteAdvertisement_UsesTypeThreeWithLengthAndRanges",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0127"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0128",
@@ -454335,40 +454418,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedRangeLayout"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0128",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "method": "RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0128"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0128",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "method": "RouteRange_EncodesVersionStartEndAndProtocolInOrder",
+          "line": 37,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0128"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0128",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedRangeLayout",
+          "method": "RouteRange_RejectsTruncatedRangeLayout",
+          "line": 48,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0128"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0128",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedRangeLayout",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedRangeLayout",
+          "method": "RouteRange_RejectsTruncatedRangeLayout",
+          "line": 48,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0128"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0129",
@@ -454383,40 +454549,127 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0129",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0129",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0129",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsUnsupportedIpVersion",
+          "method": "RouteRange_RejectsUnsupportedIpVersion",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0129",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsUnsupportedIpVersion",
+          "method": "RouteRange_RejectsUnsupportedIpVersion",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0130",
@@ -454431,40 +454684,127 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0130",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0130",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RouteRange_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0130",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsUnsupportedIpVersion",
+          "method": "RouteRange_RejectsUnsupportedIpVersion",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0130",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsUnsupportedIpVersion",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsUnsupportedIpVersion",
+          "method": "RouteRange_RejectsUnsupportedIpVersion",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0129",
+            "REQ-QUIC-RFC9484-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0131",
@@ -454479,40 +454819,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv4EndAddress"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0131",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedIpv4EndAddress",
+          "method": "RouteRange_RejectsTruncatedIpv4EndAddress",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0131"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0131",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv4EndAddress",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedIpv4EndAddress",
+          "method": "RouteRange_RejectsTruncatedIpv4EndAddress",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0131"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0131",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "method": "RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "line": 81,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0131"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0131",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "method": "RouteRange_UsesThirtyTwoBitIpv4StartAndEndAddresses",
+          "line": 81,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0131"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0132",
@@ -454527,40 +454950,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv6EndAddress"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0132",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedIpv6EndAddress",
+          "method": "RouteRange_RejectsTruncatedIpv6EndAddress",
+          "line": 108,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0132"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0132",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsTruncatedIpv6EndAddress",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsTruncatedIpv6EndAddress",
+          "method": "RouteRange_RejectsTruncatedIpv6EndAddress",
+          "line": 108,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0132"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0132",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "method": "RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "line": 99,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0132"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0132",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "method": "RouteRange_UsesOneHundredTwentyEightBitIpv6StartAndEndAddresses",
+          "line": 99,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0132"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0133",
@@ -454575,40 +455081,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AllowsStartLessThanOrEqualToEnd",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsStartGreaterThanEnd"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0133",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "method": "RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "line": 117,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0133",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "method": "RouteRange_AllowsStartLessThanOrEqualToEnd",
+          "line": 117,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0133",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsStartGreaterThanEnd",
+          "method": "RouteRange_RejectsStartGreaterThanEnd",
+          "line": 127,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0133",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsStartGreaterThanEnd",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsStartGreaterThanEnd",
+          "method": "RouteRange_RejectsStartGreaterThanEnd",
+          "line": 127,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0134",
@@ -454623,40 +455212,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0134",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "line": 136,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0134"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0134",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "line": 136,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0134"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0134",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "line": 145,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0134"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0134",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "line": 145,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0134"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0135",
@@ -454671,40 +455343,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_ProtocolZeroAllowsAllProtocols",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolDoesNotAllowAllProtocols"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0135",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolDoesNotAllowAllProtocols",
+          "method": "RouteRange_NonZeroProtocolDoesNotAllowAllProtocols",
+          "line": 166,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0135"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0135",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolDoesNotAllowAllProtocols",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolDoesNotAllowAllProtocols",
+          "method": "RouteRange_NonZeroProtocolDoesNotAllowAllProtocols",
+          "line": 166,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0135"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0135",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_ProtocolZeroAllowsAllProtocols",
+          "method": "RouteRange_ProtocolZeroAllowsAllProtocols",
+          "line": 154,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0135"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0135",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_ProtocolZeroAllowsAllProtocols",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_ProtocolZeroAllowsAllProtocols",
+          "method": "RouteRange_ProtocolZeroAllowsAllProtocols",
+          "line": 154,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0135"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0136",
@@ -454719,40 +455474,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0136",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol",
+          "method": "RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol",
+          "line": 184,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0136"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0136",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol",
+          "method": "RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol",
+          "line": 184,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0136"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0136",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "method": "RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "line": 175,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0136"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0136",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "method": "RouteRange_NonZeroProtocolRepresentsNextHeaderValue",
+          "line": 175,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0136"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0137",
@@ -454767,40 +455605,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AlwaysAllowsIcmpTraffic",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_IcmpExceptionDoesNotAllowEveryProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0137",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_AlwaysAllowsIcmpTraffic",
+          "method": "RouteRange_AlwaysAllowsIcmpTraffic",
+          "line": 195,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0137"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0137",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_AlwaysAllowsIcmpTraffic",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_AlwaysAllowsIcmpTraffic",
+          "method": "RouteRange_AlwaysAllowsIcmpTraffic",
+          "line": 195,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0137"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0137",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_IcmpExceptionDoesNotAllowEveryProtocol",
+          "method": "RouteRange_IcmpExceptionDoesNotAllowEveryProtocol",
+          "line": 204,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0137"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0137",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_IcmpExceptionDoesNotAllowEveryProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_IcmpExceptionDoesNotAllowEveryProtocol",
+          "method": "RouteRange_IcmpExceptionDoesNotAllowEveryProtocol",
+          "line": 204,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0137"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0138",
@@ -454815,40 +455736,127 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_ParsesWellFormedCapsule",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0138",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0138",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0138",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_ParsesWellFormedCapsule",
+          "method": "RouteAdvertisement_ParsesWellFormedCapsule",
+          "line": 213,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0138",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_ParsesWellFormedCapsule",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_ParsesWellFormedCapsule",
+          "method": "RouteAdvertisement_ParsesWellFormedCapsule",
+          "line": 213,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0139",
@@ -454863,40 +455871,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0139",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "line": 252,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0139"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0139",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "line": 252,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0139"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0139",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "line": 239,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0139"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0139",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "line": 239,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0139"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0140",
@@ -454911,40 +456002,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_PresentPriorRangeIsNotWithdrawn"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0140",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "method": "RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "line": 263,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0140"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0140",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "method": "RouteAdvertisement_MissingPriorRangeIsWithdrawn",
+          "line": 263,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0140"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0140",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_PresentPriorRangeIsNotWithdrawn",
+          "method": "RouteAdvertisement_PresentPriorRangeIsNotWithdrawn",
+          "line": 272,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0140"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0140",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_PresentPriorRangeIsNotWithdrawn",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_PresentPriorRangeIsNotWithdrawn",
+          "method": "RouteAdvertisement_PresentPriorRangeIsNotWithdrawn",
+          "line": 272,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0140"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0141",
@@ -454959,40 +456133,127 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0141",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0141",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0141",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder",
+          "method": "RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder",
+          "line": 302,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0141",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder",
+          "method": "RouteAdvertisement_RejectsRoutesOutOfIpVersionOrder",
+          "line": 302,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0142",
@@ -455007,40 +456268,127 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfProtocolOrder"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0142",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0142",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0142",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsRoutesOutOfProtocolOrder",
+          "method": "RouteAdvertisement_RejectsRoutesOutOfProtocolOrder",
+          "line": 311,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0142"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0142",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsRoutesOutOfProtocolOrder",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsRoutesOutOfProtocolOrder",
+          "method": "RouteAdvertisement_RejectsRoutesOutOfProtocolOrder",
+          "line": 311,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0142"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0143",
@@ -455055,40 +456403,129 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0143",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0143",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "method": "RouteAdvertisement_AcceptsOrderedNonOverlappingRoutes",
+          "line": 285,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0141",
+            "REQ-QUIC-RFC9484-0142",
+            "REQ-QUIC-RFC9484-0143"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0143",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "method": "RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "line": 321,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0143",
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0143",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "method": "RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "line": 321,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0143",
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0144",
@@ -455103,40 +456540,129 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0144",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "method": "RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "line": 334,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0144",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "method": "RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "line": 334,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0144",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0144",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0145",
@@ -455151,40 +456677,125 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_CanSendNonOverlappingRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0145",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "method": "RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "line": 343,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0145",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "method": "RouteAdvertisement_CanSendNonOverlappingRoutes",
+          "line": 343,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0145",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "method": "RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "line": 321,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0143",
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0145",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "method": "RouteAdvertisement_RejectsOverlappingRoutesWithSameVersionAndProtocol",
+          "line": 321,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0143",
+            "REQ-QUIC-RFC9484-0145"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0146",
@@ -455199,40 +456810,129 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0146",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "method": "RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "line": 334,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0146",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "method": "RouteAdvertisement_DoesNotAbortForValidAdvertisement",
+          "line": 334,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0146",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0146",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "method": "RouteAdvertisement_MalformedCapsuleFieldsAbortRequestStream",
+          "line": 227,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0138",
+            "REQ-QUIC-RFC9484-0144",
+            "REQ-QUIC-RFC9484-0146"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0147",
@@ -455247,22 +456947,21 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MayValidateRoutes",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 2,
+        "focused": 2,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
+          "positive": 2,
           "negative": 0,
           "edge": 0,
           "fuzz": 0,
@@ -455271,13 +456970,53 @@
         },
         "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0147",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MayValidateRoutes",
+          "method": "RouteAdvertisement_MayValidateRoutes",
+          "line": 352,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0147"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0147",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_MayValidateRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_MayValidateRoutes",
+          "method": "RouteAdvertisement_MayValidateRoutes",
+          "line": 352,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0147"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0148",
@@ -455292,40 +457031,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
+          "method": "ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
+          "line": 370,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0148"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
+          "method": "ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
+          "line": 370,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0148"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "method": "ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "line": 361,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0148"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "method": "ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
+          "line": 361,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0148"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0149",
@@ -455340,40 +457162,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0149",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol",
+          "method": "ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol",
+          "line": 388,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0149"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0149",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol",
+          "method": "ProtocolPolicy_DoesNotStopAtExtensionHeaderProtocol",
+          "line": 388,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0149"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0149",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "method": "ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "line": 379,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0149"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0149",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "method": "ProtocolPolicy_WalksExtensionHeadersToOutermostNonExtensionProtocol",
+          "line": 379,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0149"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0150",
@@ -455418,7 +457323,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455466,7 +457371,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455514,7 +457419,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455562,7 +457467,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455610,7 +457515,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455655,7 +457560,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455703,7 +457608,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455748,7 +457653,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455793,7 +457698,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455841,7 +457746,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455889,7 +457794,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455937,7 +457842,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -455985,7 +457890,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456033,7 +457938,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456081,7 +457986,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456129,7 +458034,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456177,7 +458082,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456225,7 +458130,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456273,7 +458178,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456318,7 +458223,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456366,7 +458271,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456414,7 +458319,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456462,7 +458367,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456510,7 +458415,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456558,7 +458463,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456606,7 +458511,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456654,7 +458559,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456702,7 +458607,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456750,7 +458655,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456798,7 +458703,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456846,7 +458751,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456894,7 +458799,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456942,7 +458847,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -456990,7 +458895,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457038,7 +458943,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457086,7 +458991,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457133,7 +459038,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457181,7 +459086,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457229,7 +459134,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457277,7 +459182,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457325,7 +459230,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457373,7 +459278,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457421,7 +459326,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457469,7 +459374,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457517,7 +459422,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457565,7 +459470,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457613,7 +459518,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457661,7 +459566,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457706,7 +459611,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457754,7 +459659,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457802,7 +459707,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457847,7 +459752,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457895,7 +459800,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457943,7 +459848,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -457991,7 +459896,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458039,7 +459944,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458087,7 +459992,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458135,7 +460040,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458183,7 +460088,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458231,7 +460136,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458279,7 +460184,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458327,7 +460232,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458375,7 +460280,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []
@@ -458423,7 +460328,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, and ADDRESS_REQUEST slices; remaining work covers route advertisement, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, and ROUTE_ADVERTISEMENT slices; remaining work covers datagram forwarding and manageability policy."
         }
       ],
       "evidence": []

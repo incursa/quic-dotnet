@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0011",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP ROUTE_ADVERTISEMENT Capsule Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0011",
+    "WI-QUIC-RFC9484-0011"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 ROUTE_ADVERTISEMENT capsule behavior.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0127",
+    "REQ-QUIC-RFC9484-0128",
+    "REQ-QUIC-RFC9484-0129",
+    "REQ-QUIC-RFC9484-0130",
+    "REQ-QUIC-RFC9484-0131",
+    "REQ-QUIC-RFC9484-0132",
+    "REQ-QUIC-RFC9484-0133",
+    "REQ-QUIC-RFC9484-0134",
+    "REQ-QUIC-RFC9484-0135",
+    "REQ-QUIC-RFC9484-0136",
+    "REQ-QUIC-RFC9484-0137",
+    "REQ-QUIC-RFC9484-0138",
+    "REQ-QUIC-RFC9484-0139",
+    "REQ-QUIC-RFC9484-0140",
+    "REQ-QUIC-RFC9484-0141",
+    "REQ-QUIC-RFC9484-0142",
+    "REQ-QUIC-RFC9484-0143",
+    "REQ-QUIC-RFC9484-0144",
+    "REQ-QUIC-RFC9484-0145",
+    "REQ-QUIC-RFC9484-0146",
+    "REQ-QUIC-RFC9484-0147",
+    "REQ-QUIC-RFC9484-0148",
+    "REQ-QUIC-RFC9484-0149"
+  ],
+  "scope": "This verification covers ROUTE_ADVERTISEMENT Type 0x03 and length encoding, IP Address Range field order, IP version/address/protocol validation, protocol-zero and ICMP semantics, malformed field handling, supersession and withdrawal semantics, ordered non-overlapping route validation, request-stream abort policy, validation permission, and extension-header protocol-number matching policy.",
+  "preconditions": [
+    "RFC 9484 CONNECT-IP request and address-assignment support is implemented."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpRouteAdvertisementCapsuleTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0127|FullyQualifiedName~Http3ConnectIpRouteAdvertisementCapsuleTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused ROUTE_ADVERTISEMENT tests pass, core SpecTrace validation accepts the RFC 9484 ROUTE_ADVERTISEMENT artifacts, generated triage reflects requirements 0127-0149 as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpRouteRange.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpRouteAdvertisementCapsule.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs"
+  ],
+  "status_summary": "The RFC 9484 ROUTE_ADVERTISEMENT capsule surface is trace-owned and verified by focused local gates."
+}
