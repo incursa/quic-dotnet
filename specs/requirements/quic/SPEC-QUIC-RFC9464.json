@@ -1100,6 +1100,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SupportAdvertisementIncludesZeroLengthIpAttributes",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SupportAdvertisementRejectsMissingAddressFamilies"
         ]
       }
     },
@@ -1117,6 +1121,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsSupportedAddressFamilyConfigurationWithAlpn",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ResponseOptionsRejectReplyConfigurationsWithoutAddresses"
         ]
       }
     },
@@ -1134,6 +1142,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SupportAdvertisementIncludesZeroLengthIpAttributes",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SupportAdvertisementRejectsMissingAddressFamilies"
         ]
       }
     },
@@ -1151,6 +1163,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SpecificResolverRequestUsesNonZeroLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::SupportAdvertisementIncludesZeroLengthIpAttributes"
         ]
       }
     },
@@ -1168,6 +1184,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::RequestMayContainSpecificSuggestedResolverList",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::RequestRejectsEmptySpecificResolverListForReplyShape"
         ]
       }
     },
@@ -1185,6 +1205,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B3-P3-S4",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::DigestInfoRequestRejectsMissingHashAlgorithmList",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::RequestMayIncludeDigestInfoHashAlgorithmList"
         ]
       }
     },
@@ -1202,6 +1226,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyIgnoresDuplicateIdenticalRequestAttributesAfterFirst",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyRejectsNonRequestAttributes"
         ]
       }
     },
@@ -1219,6 +1247,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyMayDiscardRequestWithTooManyRepeatedAttributes",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ResponseOptionsRejectInvalidDuplicateDiscardThreshold"
         ]
       }
     },
@@ -1236,6 +1268,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsSupportedAddressFamilyConfigurationWithAlpn",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ResponseOptionsRejectReplyConfigurationsWithoutAddresses"
         ]
       }
     },
@@ -1253,6 +1289,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsSupportedAddressFamilyConfigurationWithAlpn",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ResponseOptionsRejectReplyConfigurationsWithoutAddresses"
         ]
       }
     },
@@ -1270,6 +1310,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B5-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsSupportedAddressFamilyConfigurationWithAlpn",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ResponseOptionsRejectReplyConfigurationsWithoutAlpnByDefault"
         ]
       }
     },
@@ -1287,6 +1331,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyCanIgnoreSuggestedValuesFromRequest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsSupportedAddressFamilyConfigurationWithAlpn"
         ]
       }
     },
@@ -1304,6 +1352,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyDoesNotReturnUnsupportedAddressFamilies",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsMultipleInstancesOrderedByServicePriority"
         ]
       }
     },
@@ -1321,6 +1373,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B6-P6-S4",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyDoesNotReturnUnsupportedAddressFamilies",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyReturnsMultipleInstancesOrderedByServicePriority"
         ]
       }
     },
@@ -1338,6 +1394,10 @@
         "upstream_refs": [
           "RFC 9464 section 4 RFC9464-S4-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyOmitsDigestInfoWhenDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs::ReplyOptionallyReturnsDigestInfo"
         ]
       }
     },
@@ -1557,6 +1617,9 @@
     "VER-QUIC-RFC9464-0001",
     "ARC-QUIC-RFC9464-0002",
     "WI-QUIC-RFC9464-0002",
-    "VER-QUIC-RFC9464-0002"
+    "VER-QUIC-RFC9464-0002",
+    "ARC-QUIC-RFC9464-0003",
+    "WI-QUIC-RFC9464-0003",
+    "VER-QUIC-RFC9464-0003"
   ]
 }

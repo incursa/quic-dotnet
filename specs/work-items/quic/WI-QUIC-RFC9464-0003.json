@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9464-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Provisioning RFC 9464 Response Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "ARC-QUIC-RFC9464-0003",
+    "VER-QUIC-RFC9464-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9464-0051",
+    "REQ-QUIC-RFC9464-0052",
+    "REQ-QUIC-RFC9464-0053",
+    "REQ-QUIC-RFC9464-0054",
+    "REQ-QUIC-RFC9464-0055",
+    "REQ-QUIC-RFC9464-0056",
+    "REQ-QUIC-RFC9464-0057",
+    "REQ-QUIC-RFC9464-0058",
+    "REQ-QUIC-RFC9464-0059",
+    "REQ-QUIC-RFC9464-0060",
+    "REQ-QUIC-RFC9464-0061",
+    "REQ-QUIC-RFC9464-0062",
+    "REQ-QUIC-RFC9464-0063",
+    "REQ-QUIC-RFC9464-0064",
+    "REQ-QUIC-RFC9464-0065"
+  ],
+  "summary": "Add trace-owned RFC 9464 provisioning response-policy helpers above the ENCDNS_IP* and ENCDNS_DIGEST_INFO codecs.",
+  "planned_changes": "- Add `EncryptedDnsProvisioningResponder`, `EncryptedDnsProvisioningResponse`, and `EncryptedDnsProvisioningResponseOptions`.\n- Support zero-length CFG_REQUEST support advertisements for IPv4, IPv6, or both.\n- Accept specific resolver suggestions in requests while allowing responder policy to ignore them.\n- Ignore identical duplicate request attributes and optionally discard requests past a repeated-attribute threshold.\n- Select CFG_REPLY configurations by supported address family, require at least one returned IP address, prefer `alpn`, and order multiple replies by service priority.\n- Optionally include CFG_REPLY ENCDNS_DIGEST_INFO.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused provisioning responder tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9464-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9464-0003"
+  ],
+  "out_of_scope": [
+    "RFC 7296 notify/error payload integration.",
+    "Full IKEv2 Configuration payload exchange state machine.",
+    "Operating-system resolver provisioning and split-tunnel policy.",
+    "TLS certificate-chain extraction and validation."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9464 request/reply policy floor that future IKEv2 or ProtocolLab provisioning integration can consume."
+}

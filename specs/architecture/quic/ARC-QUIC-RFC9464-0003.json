@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9464-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Provisioning RFC 9464 Response Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9464 encrypted DNS provisioning request/reply policy boundary above the ENCDNS_IP* and ENCDNS_DIGEST_INFO byte codecs.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9464-0003",
+    "VER-QUIC-RFC9464-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9464-0051",
+    "REQ-QUIC-RFC9464-0052",
+    "REQ-QUIC-RFC9464-0053",
+    "REQ-QUIC-RFC9464-0054",
+    "REQ-QUIC-RFC9464-0055",
+    "REQ-QUIC-RFC9464-0056",
+    "REQ-QUIC-RFC9464-0057",
+    "REQ-QUIC-RFC9464-0058",
+    "REQ-QUIC-RFC9464-0059",
+    "REQ-QUIC-RFC9464-0060",
+    "REQ-QUIC-RFC9464-0061",
+    "REQ-QUIC-RFC9464-0062",
+    "REQ-QUIC-RFC9464-0063",
+    "REQ-QUIC-RFC9464-0064",
+    "REQ-QUIC-RFC9464-0065"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponder.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponse.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponseOptions.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningDigestInfoAttribute.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningResponderTests.cs"
+  ],
+  "design_summary": "The response-policy slice adds pure helpers for constructing CFG_REQUEST support advertisements, deduplicating identical request attributes, optionally discarding overly repetitive requests, selecting supported CFG_REPLY ENCDNS_IP* configurations by requested address family, ignoring suggested resolver values when responder policy supplies its own configuration, returning multiple matching configurations ordered by service priority, and optionally attaching CFG_REPLY ENCDNS_DIGEST_INFO. The policy consumes the existing validated attribute and digest codecs rather than owning IKEv2 session state.",
+  "data_and_state_considerations": "The helpers are deterministic value selectors. They do not parse complete IKEv2 messages, negotiate IPsec, provision operating-system resolver state, open encrypted DNS sessions, or validate certificates.",
+  "edge_cases_and_constraints": [
+    "A support advertisement must include ENCDNS_IP4, ENCDNS_IP6, or both.",
+    "Only CFG_REQUEST attributes are accepted as responder input.",
+    "Available configurations must be CFG_REPLY ENCDNS_IP* attributes with at least one IP address.",
+    "Identical duplicate request attributes are ignored until the configured threshold permits discarding the request.",
+    "Returned configurations are sorted by service priority, where lower values are preferred."
+  ],
+  "risks": [
+    "This slice does not implement RFC 7296 notify/error payloads for malformed attributes.",
+    "This slice does not implement full IKEv2 exchange integration or resolver-install policy.",
+    "This slice does not perform certificate-chain validation; digest information remains caller-provided."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The policy is intentionally above the RFC 9464 byte codec and below any future IKEv2 integration. It lets ProtocolLab or higher-level provisioning code select response values without coupling the QUIC transport runtime to IPsec configuration exchange behavior."
+    }
+  ]
+}
