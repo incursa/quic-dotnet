@@ -30,7 +30,8 @@ function Get-DefaultPackageVersion {
 
     try {
         $shortSha = (git rev-parse --short HEAD 2>$null).Trim()
-        $dirty = if ((git status --porcelain 2>$null).Length -gt 0) { "dirty" } else { "clean" }
+        $status = @(git status --porcelain 2>$null)
+        $dirty = if ($status.Count -gt 0) { "dirty" } else { "clean" }
     }
     catch {
         $shortSha = "nogit"
