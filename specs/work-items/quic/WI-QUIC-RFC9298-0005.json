@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Forwarding Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0005",
+    "VER-QUIC-RFC9298-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0099",
+    "REQ-QUIC-RFC9298-0100",
+    "REQ-QUIC-RFC9298-0101",
+    "REQ-QUIC-RFC9298-0102",
+    "REQ-QUIC-RFC9298-0103",
+    "REQ-QUIC-RFC9298-0104",
+    "REQ-QUIC-RFC9298-0105",
+    "REQ-QUIC-RFC9298-0106",
+    "REQ-QUIC-RFC9298-0107",
+    "REQ-QUIC-RFC9298-0108",
+    "REQ-QUIC-RFC9298-0109",
+    "REQ-QUIC-RFC9298-0110",
+    "REQ-QUIC-RFC9298-0111",
+    "REQ-QUIC-RFC9298-0112",
+    "REQ-QUIC-RFC9298-0113",
+    "REQ-QUIC-RFC9298-0114",
+    "REQ-QUIC-RFC9298-0115"
+  ],
+  "summary": "Add forwarding, congestion, QUIC DATAGRAM, and ECN policy helpers for CONNECT-UDP.",
+  "planned_changes": "- Add allocation-free policy constants and helpers for burstiness, batching, congestion-control disablement, ECN, HTTP/3 preference, QUIC DATAGRAM limits, oversized target payloads, ICMP Packet Too Big recommendation, and inner IP header prohibition.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused forwarding-policy tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0005"
+  ],
+  "out_of_scope": [
+    "Live UDP socket forwarding.",
+    "Live ICMP Packet Too Big emission.",
+    "Live PMTU discovery integration."
+  ],
+  "completion_notes": "The RFC 9298 forwarding/congestion/ECN policy surface is implemented and verified locally."
+}

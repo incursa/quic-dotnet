@@ -1,0 +1,52 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Forwarding Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 forwarding, congestion, QUIC DATAGRAM sizing, oversized-payload, inner-header, and ECN policy helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0005",
+    "VER-QUIC-RFC9298-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0099",
+    "REQ-QUIC-RFC9298-0100",
+    "REQ-QUIC-RFC9298-0101",
+    "REQ-QUIC-RFC9298-0102",
+    "REQ-QUIC-RFC9298-0103",
+    "REQ-QUIC-RFC9298-0104",
+    "REQ-QUIC-RFC9298-0105",
+    "REQ-QUIC-RFC9298-0106",
+    "REQ-QUIC-RFC9298-0107",
+    "REQ-QUIC-RFC9298-0108",
+    "REQ-QUIC-RFC9298-0109",
+    "REQ-QUIC-RFC9298-0110",
+    "REQ-QUIC-RFC9298-0111",
+    "REQ-QUIC-RFC9298-0112",
+    "REQ-QUIC-RFC9298-0113",
+    "REQ-QUIC-RFC9298-0114",
+    "REQ-QUIC-RFC9298-0115"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpForwardingPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpEcnCodepoint.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpForwardingPolicy` captures allocation-free decisions for burstiness, batching, congestion-control disablement, ECN signaling, HTTP/3 and QUIC DATAGRAM preference, QUIC DATAGRAM payload limits, oversized-payload drop and ICMP Packet Too Big recommendation, inner IP header prohibition, and outbound UDP ECN control.",
+  "data_and_state_considerations": "The policy is stateless and does not emit packets or mutate live QUIC/UDP state. Live adapters consume these decisions when forwarding is integrated.",
+  "edge_cases_and_constraints": [
+    "Congestion control can only be disabled with out-of-band certainty.",
+    "ECN support is not signaled when congestion control is disabled.",
+    "Oversized UDP payloads are dropped rather than sent as DATAGRAM capsules when QUIC DATAGRAM is in use.",
+    "Outbound UDP ECN is fixed to Not-ECT."
+  ],
+  "risks": [
+    "Live ICMP Packet Too Big emission remains adapter work.",
+    "Live PMTU discovery integration remains adapter work.",
+    "The helper does not implement UDP socket forwarding itself."
+  ]
+}

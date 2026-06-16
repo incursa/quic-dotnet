@@ -1937,6 +1937,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AvoidsIncreasingUdpBurstiness tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPermitIncreasedBurstiness"
         ]
       }
     },
@@ -1954,6 +1957,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsBatchingOnlyQueuePermission"
         ]
       }
     },
@@ -1971,6 +1977,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DisablesCongestionControlOnlyWithCertainty tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDisableCongestionControlWithoutCertainty"
         ]
       }
     },
@@ -1988,6 +1997,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSignalEcnWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled"
         ]
       }
     },
@@ -2005,6 +2017,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_MarksIpHeadersNotEctWhenCongestionControlDisabled tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseEctWhenCongestionControlDisabled"
         ]
       }
     },
@@ -2022,6 +2037,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ReportsEcnFeedbackWhenPeerMayStillUseCongestionControl tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotReportEcnFeedbackWhenNotPermitted"
         ]
       }
     },
@@ -2039,6 +2057,9 @@
         "upstream_refs": [
           "RFC 9298 section 6 RFC9298-S6-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_PrefersHttp3ForUdpProxying tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreferNonHttp3UdpProxying"
         ]
       }
     },
@@ -2056,6 +2077,9 @@
         "upstream_refs": [
           "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_UsesQuicDatagramFramesWhenAvailable tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable"
         ]
       },
       "notes": [
@@ -2076,6 +2100,9 @@
         "upstream_refs": [
           "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_AllowsPayloadsWithinQuicDatagramLimit tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPayloadsBeyondQuicDatagramLimit"
         ]
       },
       "notes": [
@@ -2096,6 +2123,9 @@
         "upstream_refs": [
           "RFC 9298 section 6.1 RFC9298-S6P1-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCapsuleOversizedPayloadWhenQuicDatagramInUse tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsCapsuleFallbackForOversizedQuicDatagramPayload"
         ]
       },
       "notes": [
@@ -2116,6 +2146,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.1 RFC9298-S6P1-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DropsOversizedUdpPayloads tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotDropPayloadsThatFitQuicDatagram"
         ]
       },
       "notes": [
@@ -2136,6 +2169,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.1 RFC9298-S6P1-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SendsIcmpPacketTooBigForOversizedTargetPayload tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotSendIcmpPacketTooBigForFittingTargetPayload"
         ]
       },
       "notes": [
@@ -2156,6 +2192,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.2 RFC9298-S6P2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_TunnelDoesNotIncludeInnerIpHeader tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsInnerIpHeaderPresence"
         ]
       }
     },
@@ -2173,6 +2212,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.2 RFC9298-S6P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_ProxyRetainsControlOfOutboundUdpEcnCodepoints tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsClientControlOfOutboundUdpEcnCodepoints"
         ]
       }
     },
@@ -2190,6 +2232,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.2 RFC9298-S6P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotCommunicatePerPacketTargetMarkingsToClient tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_RejectsPerPacketTargetMarkingCommunication"
         ]
       }
     },
@@ -2207,6 +2252,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.2 RFC9298-S6P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_IgnoresTargetEcnBits tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotPreserveTargetEcnBits"
         ]
       }
     },
@@ -2224,6 +2272,9 @@
         "upstream_refs": [
           "RFC 9298 Section 6.2 RFC9298-S6P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_SetsOutboundUdpEcnToNotEct tests/Incursa.Quic.Tests/Http3ConnectUdpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotExposeAlternateOutboundUdpEcnCodepoint"
         ]
       }
     },
@@ -2284,6 +2335,9 @@
     "VER-QUIC-RFC9298-0003",
     "ARC-QUIC-RFC9298-0004",
     "WI-QUIC-RFC9298-0004",
-    "VER-QUIC-RFC9298-0004"
+    "VER-QUIC-RFC9298-0004",
+    "ARC-QUIC-RFC9298-0005",
+    "WI-QUIC-RFC9298-0005",
+    "VER-QUIC-RFC9298-0005"
   ]
 }
