@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Target Filtering Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0004",
+    "VER-QUIC-RFC9298-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0116",
+    "REQ-QUIC-RFC9298-0117"
+  ],
+  "summary": "Add vulnerable-target filtering and destination_ip_prohibited Proxy-Status helpers for CONNECT-UDP.",
+  "planned_changes": "- Add deterministic target-address classification for loopback, link-local, multicast, broadcast, unspecified, and proxy-local addresses.\n- Add Proxy-Status field creation for `destination_ip_prohibited` rejections.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused CONNECT-UDP target-policy tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0004"
+  ],
+  "out_of_scope": [
+    "DNS resolution.",
+    "Live UDP socket opening.",
+    "Deployment-specific allow-list or deny-list policy."
+  ],
+  "completion_notes": "The RFC 9298 vulnerable-target filtering and Proxy-Status error helper surface is implemented and verified locally."
+}

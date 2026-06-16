@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T10:35:30.0922503-06:00",
+  "generated_at": "2026-06-16T10:41:05.6070989-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T10:35:30.0891067-06:00",
+    "generated_at": "2026-06-16T10:41:05.6038916-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2374,
-      "uncovered_blocked": 267
+      "trace_clean": 2376,
+      "uncovered_blocked": 265
     },
     "by_work_queue_tag": {
-      "blocked": 267,
-      "clean": 2374,
-      "new_tests_needed": 267
+      "blocked": 265,
+      "clean": 2376,
+      "new_tests_needed": 265
     },
     "by_rfc": [
       {
@@ -127,8 +127,8 @@
         "rfc": "RFC9298",
         "total": 117,
         "by_state": {
-          "trace_clean": 63,
-          "uncovered_blocked": 54
+          "trace_clean": 65,
+          "uncovered_blocked": 52
         }
       },
       {
@@ -375132,7 +375132,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -379593,7 +379593,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382200,7 +382200,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382677,7 +382677,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382725,7 +382725,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382773,7 +382773,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382821,7 +382821,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382869,7 +382869,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382917,7 +382917,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -382965,7 +382965,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383013,7 +383013,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383061,7 +383061,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383109,7 +383109,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383157,7 +383157,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383205,7 +383205,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383253,7 +383253,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383301,7 +383301,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383349,7 +383349,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383397,7 +383397,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383445,7 +383445,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383493,7 +383493,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383541,7 +383541,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383589,7 +383589,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383637,7 +383637,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383685,7 +383685,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383733,7 +383733,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383781,7 +383781,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383829,7 +383829,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383877,7 +383877,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383925,7 +383925,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -383973,7 +383973,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -384021,7 +384021,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390279,7 +390279,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390327,7 +390327,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390375,7 +390375,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390423,7 +390423,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390471,7 +390471,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390519,7 +390519,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390567,7 +390567,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390615,7 +390615,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390663,7 +390663,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390711,7 +390711,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390759,7 +390759,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390807,7 +390807,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390855,7 +390855,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390903,7 +390903,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390951,7 +390951,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -390999,7 +390999,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -391047,7 +391047,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -391095,7 +391095,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -391143,7 +391143,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -391191,7 +391191,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, and ECN after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, and vulnerable-target filtering floors."
         }
       ],
       "evidence": []
@@ -391209,40 +391209,214 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsVulnerableTargets",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsProxyOwnAddresses",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_AllowsNonVulnerableDocumentationTargets"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 8,
+        "focused": 6,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 6,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_AllowsNonVulnerableDocumentationTargets",
+          "method": "TargetPolicy_AllowsNonVulnerableDocumentationTargets",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_AllowsNonVulnerableDocumentationTargets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_AllowsNonVulnerableDocumentationTargets",
+          "method": "TargetPolicy_AllowsNonVulnerableDocumentationTargets",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DisallowsProxyOwnAddresses",
+          "method": "TargetPolicy_DisallowsProxyOwnAddresses",
+          "line": 30,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsProxyOwnAddresses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DisallowsProxyOwnAddresses",
+          "method": "TargetPolicy_DisallowsProxyOwnAddresses",
+          "line": 30,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DisallowsVulnerableTargets",
+          "method": "TargetPolicy_DisallowsVulnerableTargets",
+          "line": 21,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsVulnerableTargets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DisallowsVulnerableTargets",
+          "method": "TargetPolicy_DisallowsVulnerableTargets",
+          "line": 21,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0116.cs",
+          "class": "REQ_QUIC_RFC9298_0116",
+          "member": "REQ_QUIC_RFC9298_0116.Rfc9298TargetPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298TargetPolicyCodeAndTestsAreTraceLinked",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116",
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0116.cs",
+          "class": "REQ_QUIC_RFC9298_0116",
+          "member": "REQ_QUIC_RFC9298_0116.Rfc9298TargetPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298TargetPolicyTraceArtifactsAreLinked",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116",
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0117",
@@ -391257,40 +391431,169 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, early-datagram handling, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, HTTP/3 request-policy, and datagram Context ID floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "method": "TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "line": 52,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "method": "TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "line": 52,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType",
+          "method": "TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs",
+          "class": "Http3ConnectUdpTargetPolicyTests",
+          "member": "Http3ConnectUdpTargetPolicyTests.TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType",
+          "method": "TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0116.cs",
+          "class": "REQ_QUIC_RFC9298_0116",
+          "member": "REQ_QUIC_RFC9298_0116.Rfc9298TargetPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298TargetPolicyCodeAndTestsAreTraceLinked",
+          "line": 34,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116",
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0116.cs",
+          "class": "REQ_QUIC_RFC9298_0116",
+          "member": "REQ_QUIC_RFC9298_0116.Rfc9298TargetPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298TargetPolicyTraceArtifactsAreLinked",
+          "line": 13,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0116",
+            "REQ-QUIC-RFC9298-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9308-S11-0001",

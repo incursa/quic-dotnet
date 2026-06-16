@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Target Filtering Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 vulnerable-target rejection and destination_ip_prohibited Proxy-Status reporting helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0004",
+    "VER-QUIC-RFC9298-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0116",
+    "REQ-QUIC-RFC9298-0117"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpTargetPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpTargetPolicy` classifies loopback, link-local, multicast, broadcast, unspecified, and caller-provided proxy-local addresses as prohibited UDP proxying destinations. It also creates the Proxy-Status field value carrying `destination_ip_prohibited` for rejected requests.",
+  "data_and_state_considerations": "The policy is deterministic and does not enumerate host interfaces. Callers provide the proxy-local address set from their deployment/runtime context.",
+  "edge_cases_and_constraints": [
+    "IPv4 and IPv6 loopback addresses are prohibited.",
+    "IPv4 and IPv6 link-local and multicast addresses are prohibited.",
+    "IPv4 broadcast and unspecified addresses are prohibited.",
+    "Proxy-owned addresses are prohibited when the caller provides them."
+  ],
+  "risks": [
+    "Live DNS resolution and target filtering integration remain in the tunnel setup slice.",
+    "The helper does not make deployment-specific allow-list decisions."
+  ]
+}

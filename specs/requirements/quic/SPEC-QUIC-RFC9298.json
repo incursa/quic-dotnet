@@ -2241,6 +2241,11 @@
         "upstream_refs": [
           "RFC 9298 Section 7 RFC9298-S7-B2-P2-S5",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsVulnerableTargets",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DisallowsProxyOwnAddresses",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_AllowsNonVulnerableDocumentationTargets"
         ]
       }
     },
@@ -2259,6 +2264,10 @@
           "RFC 9298 Section 7 RFC9298-S7-B2-P2-S6",
           "Section 2.3.5 of PROXY-STATUS",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_CreatesDestinationIpProhibitedProxyStatusHeader",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTargetPolicyTests.cs::TargetPolicy_DestinationIpProhibitedHeaderDoesNotUseUnrelatedErrorType"
         ]
       }
     }
@@ -2272,6 +2281,9 @@
     "VER-QUIC-RFC9298-0002",
     "ARC-QUIC-RFC9298-0003",
     "WI-QUIC-RFC9298-0003",
-    "VER-QUIC-RFC9298-0003"
+    "VER-QUIC-RFC9298-0003",
+    "ARC-QUIC-RFC9298-0004",
+    "WI-QUIC-RFC9298-0004",
+    "VER-QUIC-RFC9298-0004"
   ]
 }
