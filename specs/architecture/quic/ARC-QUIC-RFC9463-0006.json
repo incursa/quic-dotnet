@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 Generic DNR Information Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the generic DNR information behavior shared by RFC 9463 DHCPv4, DHCPv6, and Neighbor Discovery encodings.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0006",
+    "VER-QUIC-RFC9463-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0002",
+    "REQ-QUIC-RFC9463-0003",
+    "REQ-QUIC-RFC9463-0004",
+    "REQ-QUIC-RFC9463-0005",
+    "REQ-QUIC-RFC9463-0006",
+    "REQ-QUIC-RFC9463-0007",
+    "REQ-QUIC-RFC9463-0011",
+    "REQ-QUIC-RFC9463-0012",
+    "REQ-QUIC-RFC9463-0013",
+    "REQ-QUIC-RFC9463-0014",
+    "REQ-QUIC-RFC9463-0111",
+    "REQ-QUIC-RFC9463-0113",
+    "REQ-QUIC-RFC9463-0115"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv4Option.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv6Option.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryNeighborDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningServiceParameter.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs"
+  ],
+  "design_summary": "The generic DNR information slice proves the common RFC 9463 behavior that sits above individual transport encodings: normalized ADN presence, usable resolver-address preservation and filtering, preference-order preservation for multiple addresses, service-priority exposure, RFC 9460 SvcParam wire encoding, ADN-only mode availability, DHCPv6 ORO requestability, OPTION_V6_DNR non-singleton status, and DHCPv4 option data length semantics.",
+  "data_and_state_considerations": "The slice owns scalar DNR information and byte-level option metadata only. It does not own router interface selection, DHCP lease state, Router Advertisement socket state, or platform resolver installation.",
+  "edge_cases_and_constraints": [
+    "Missing ADN, missing usable addresses, and invalid service parameter keys are rejected.",
+    "Loopback and multicast addresses are filtered without reordering remaining resolver addresses.",
+    "ADN-only mode is available in DHCPv4, DHCPv6, and Neighbor Discovery helper surfaces.",
+    "OPTION_V6_DNR is requestable in ORO and is not represented as a singleton option.",
+    "OPTION_V4_DNR uses the encoded option data length as N and rejects mismatches."
+  ],
+  "risks": [
+    "This slice does not prove that a router selected a specific physical LAN-facing interface.",
+    "This slice does not implement platform DHCP or Router Advertisement integration.",
+    "This slice does not install encrypted DNS resolver configuration into the host operating system."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The generic tests intentionally bind already-existing scalar and wire helpers to the RFC 9463 shared DNR requirements so future platform adapters can reuse the same validated behavior."
+    }
+  ]
+}

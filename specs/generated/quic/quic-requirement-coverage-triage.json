@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T08:44:31.1004053-06:00",
+  "generated_at": "2026-06-16T08:56:05.8608048-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T08:44:31.0972817-06:00",
+    "generated_at": "2026-06-16T08:56:05.8577486-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2200,
-      "uncovered_blocked": 441
+      "trace_clean": 2213,
+      "uncovered_blocked": 428
     },
     "by_work_queue_tag": {
-      "blocked": 441,
-      "clean": 2200,
-      "new_tests_needed": 441
+      "blocked": 428,
+      "clean": 2213,
+      "new_tests_needed": 428
     },
     "by_rfc": [
       {
@@ -170,8 +170,7 @@
         "rfc": "RFC9463",
         "total": 116,
         "by_state": {
-          "trace_clean": 103,
-          "uncovered_blocked": 13
+          "trace_clean": 116
         }
       },
       {
@@ -372787,32 +372786,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -372820,7 +372818,112 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0003",
@@ -372835,32 +372938,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::InvalidAddressesAreFilteredWithoutReorderingPreference",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::MultipleAddressesAndInstancesRetainPreferenceInformation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -372868,7 +372970,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "method": "InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "method": "InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "method": "MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "line": 64,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "method": "MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "line": 64,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0004",
@@ -372883,32 +373078,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -372916,7 +373110,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0005",
@@ -372931,32 +373222,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -372964,7 +373254,96 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+          "method": "AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+          "line": 142,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+          "method": "AdnOnlyModeIsAvailableAcrossDnrOptionFamilies",
+          "line": 142,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed",
+          "method": "PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed",
+          "line": 153,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0005",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed",
+          "method": "PopulatedModeCarriesAddressesWhenAdnOnlyModeIsNotUsed",
+          "line": 153,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0006",
@@ -372979,32 +373358,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373012,7 +373390,112 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0006",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0006",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0007",
@@ -373027,32 +373510,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373060,7 +373542,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0007",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0008",
@@ -373821,32 +374400,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::InvalidAddressesAreFilteredWithoutReorderingPreference",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::MultipleAddressesAndInstancesRetainPreferenceInformation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373854,7 +374432,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "method": "InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "method": "InvalidAddressesAreFilteredWithoutReorderingPreference",
+          "line": 90,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "method": "MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "line": 64,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0011",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "method": "MultipleAddressesAndInstancesRetainPreferenceInformation",
+          "line": 64,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0003",
+            "REQ-QUIC-RFC9463-0011"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0012",
@@ -373869,32 +374540,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373902,7 +374572,112 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0012",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0012",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0013",
@@ -373917,32 +374692,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373950,7 +374724,112 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0013",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0013",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0014",
@@ -373965,32 +374844,33 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 4,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -373998,7 +374878,208 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "method": "DiscoveryInformationCarriesAdnAddressAndServiceParameterSet",
+          "line": 18,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "method": "DiscoveryInformationRejectsMissingAdnAddressOrServiceParameterKey",
+          "line": 40,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0002",
+            "REQ-QUIC-RFC9463-0006",
+            "REQ-QUIC-RFC9463-0012",
+            "REQ-QUIC-RFC9463-0013",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "method": "ServiceParametersRejectForbiddenHintsAndMissingAlpn",
+          "line": 126,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0014",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::ServiceParametersUseRfc9460WireEncoding",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.ServiceParametersUseRfc9460WireEncoding",
+          "method": "ServiceParametersUseRfc9460WireEncoding",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0004",
+            "REQ-QUIC-RFC9463-0007",
+            "REQ-QUIC-RFC9463-0014"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0015",
@@ -389285,32 +390366,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -389318,7 +390398,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0111",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "method": "Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0111",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "method": "Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0111",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "method": "Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0111",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "method": "Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0112",
@@ -389553,32 +390726,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -389586,7 +390758,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0113",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "method": "Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0113",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "method": "Dhcpv6DnrIsRequestableInOroAndNotSingleton",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0113",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "method": "Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0113",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "method": "Dhcpv6DnrOroDataDoesNotRequestUnknownOrSingletonOnlyOption",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0111",
+            "REQ-QUIC-RFC9463-0113"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0114",
@@ -389821,32 +391086,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv4OptionLengthIsOptionDataLengthN"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -389854,7 +391118,96 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0115",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+          "method": "Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+          "line": 203,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0115",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+          "method": "Dhcpv4DecodeRejectsMismatchedOptionDataLength",
+          "line": 203,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0115",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv4OptionLengthIsOptionDataLengthN",
+          "method": "Dhcpv4OptionLengthIsOptionDataLengthN",
+          "line": 189,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0115",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs::Dhcpv4OptionLengthIsOptionDataLengthN",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryGenericInformationTests.cs",
+          "class": "EncryptedDnsDiscoveryGenericInformationTests",
+          "member": "EncryptedDnsDiscoveryGenericInformationTests.Dhcpv4OptionLengthIsOptionDataLengthN",
+          "method": "Dhcpv4OptionLengthIsOptionDataLengthN",
+          "line": 189,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0115"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9463-0116",

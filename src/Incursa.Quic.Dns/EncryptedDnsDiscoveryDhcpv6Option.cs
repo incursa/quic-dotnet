@@ -42,6 +42,11 @@ public sealed class EncryptedDnsDiscoveryDhcpv6Option
     public ushort OptionCode => EncryptedDnsDiscoveryOptionCodes.Dhcpv6OptionV6Dnr;
 
     /// <summary>
+    /// Gets a value indicating whether OPTION_V6_DNR is a singleton DHCPv6 option.
+    /// </summary>
+    public static bool IsSingletonOption => false;
+
+    /// <summary>
     /// Gets the enclosed DHCPv6 option data length.
     /// </summary>
     public ushort OptionLength => checked((ushort)(

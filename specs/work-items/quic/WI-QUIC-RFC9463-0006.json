@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0006",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery RFC 9463 Generic DNR Information Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0006",
+    "VER-QUIC-RFC9463-0006"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0002",
+    "REQ-QUIC-RFC9463-0003",
+    "REQ-QUIC-RFC9463-0004",
+    "REQ-QUIC-RFC9463-0005",
+    "REQ-QUIC-RFC9463-0006",
+    "REQ-QUIC-RFC9463-0007",
+    "REQ-QUIC-RFC9463-0011",
+    "REQ-QUIC-RFC9463-0012",
+    "REQ-QUIC-RFC9463-0013",
+    "REQ-QUIC-RFC9463-0014",
+    "REQ-QUIC-RFC9463-0111",
+    "REQ-QUIC-RFC9463-0113",
+    "REQ-QUIC-RFC9463-0115"
+  ],
+  "summary": "Add focused proof and one explicit metadata flag for the shared RFC 9463 DNR information surface.",
+  "planned_changes": "- Add focused tests for ADN presence, resolver-address preservation, service parameters, ADN-only mode, service priority, DHCPv6 ORO data, OPTION_V6_DNR non-singleton status, and DHCPv4 option-data length.\n- Expose OPTION_V6_DNR non-singleton status as explicit metadata.\n- Add canonical xrefs and trace artifacts for the remaining RFC 9463 generic requirements.",
+  "verification_plan": "Run the DNS project build, focused generic-information tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0006"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0006"
+  ],
+  "out_of_scope": [
+    "Physical router LAN-interface selection.",
+    "Platform DHCP and Router Advertisement integration.",
+    "Host resolver installation."
+  ],
+  "completion_notes": "The shared RFC 9463 DNR information surface is now fully trace-owned across scalar, DHCPv4, DHCPv6, and Neighbor Discovery helpers."
+}
