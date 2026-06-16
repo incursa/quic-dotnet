@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery RFC 9463 Scalar Option Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0001",
+    "VER-QUIC-RFC9463-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0001",
+    "REQ-QUIC-RFC9463-0008",
+    "REQ-QUIC-RFC9463-0009",
+    "REQ-QUIC-RFC9463-0010",
+    "REQ-QUIC-RFC9463-0022",
+    "REQ-QUIC-RFC9463-0025",
+    "REQ-QUIC-RFC9463-0083",
+    "REQ-QUIC-RFC9463-0086",
+    "REQ-QUIC-RFC9463-0087",
+    "REQ-QUIC-RFC9463-0102",
+    "REQ-QUIC-RFC9463-0109",
+    "REQ-QUIC-RFC9463-0110",
+    "REQ-QUIC-RFC9463-0112",
+    "REQ-QUIC-RFC9463-0114",
+    "REQ-QUIC-RFC9463-0116"
+  ],
+  "summary": "Add a trace-owned RFC 9463 encrypted DNS discovery option helper for code points, scalar lifetime behavior, ADN validation, resolver-address filtering, service priority, and forbidden address-hint SvcParams.",
+  "planned_changes": "- Add `EncryptedDnsDiscoveryOptionCodes` and `EncryptedDnsDiscoveryOption` under `Incursa.Quic.Dns`.\n- Validate that encrypted DNS options include an ADN and at least one usable resolver IP address.\n- Filter loopback and multicast resolver addresses before deciding whether the option is usable.\n- Reject `ipv4hint` and `ipv6hint` SvcParam keys.\n- Add focused unit tests and requirement-home trace tests.\n- Add architecture and verification artifacts and narrow the encrypted DNS discovery planning gap.",
+  "verification_plan": "Run a focused build for the DNS package, run RFC 9463 encrypted DNS discovery option tests and requirement-home tests, validate core SpecTrace JSON artifacts, and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0001"
+  ],
+  "out_of_scope": [
+    "DHCPv6 OPTION_V6_DNR byte-level encoding and parsing.",
+    "DHCPv4 OPTION_V4_DNR byte-level encoding and parsing.",
+    "Neighbor Discovery encrypted DNS option byte-level encoding, padding, and parsing.",
+    "RFC 8415 DNS wire-name codec integration.",
+    "Full RFC 9460 SvcParam parsing or encoding.",
+    "Resolver cache provisioning and router/forwarder advertisement behavior."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9463 scalar option policy floor that later DHCP and RA codecs can consume."
+}

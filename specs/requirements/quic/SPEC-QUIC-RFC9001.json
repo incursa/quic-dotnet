@@ -1850,20 +1850,20 @@
           "VER-QUIC-RFC9001-0003"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveServerRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveServerRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatOnlyAcknowledgeOldKeyPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatOnlyAcknowledgePhaseTwoPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatOnlyAcknowledgePhaseThreePackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeRejectsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatOnlyAcknowledgePhaseFourPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateError"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessed"
         ],
         "upstream_refs": [
           "RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1",

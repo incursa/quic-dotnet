@@ -7,6 +7,11 @@
   "status": "draft",
   "owner": "protocol-team",
   "purpose": "Capture QUIC RFC 9463 requirements.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9463-0001",
+    "WI-QUIC-RFC9463-0001",
+    "VER-QUIC-RFC9463-0001"
+  ],
   "requirements": [
     {
       "id": "REQ-QUIC-RFC9463-0001",
@@ -22,6 +27,10 @@
         "upstream_refs": [
           "RFC 9463 3.1.1 RFC9463-S3P1P1-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsMissingOrInvalidAuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateNormalizesAuthenticationDomainNameToAbsoluteName"
         ]
       }
     },
@@ -144,6 +153,10 @@
         "upstream_refs": [
           "RFC9463-S3P1P8-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.8"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsOptionWhenNoUsableResolverAddressRemains",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateSilentlyFiltersLoopbackAndMulticastAddresses"
         ]
       }
     },
@@ -1839,6 +1852,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S5",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsForbiddenAddressHintServiceParameters",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreatePreservesServicePriorityAndNonHintServiceParameterKeys"
         ]
       }
     },
@@ -1958,6 +1975,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.2 RFC9463-S6P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsOptionWhenNoUsableResolverAddressRemains",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateSilentlyFiltersLoopbackAndMulticastAddresses"
         ]
       }
     },
@@ -1975,6 +1996,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.2 RFC9463-S6P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsOptionWhenNoUsableResolverAddressRemains",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateSilentlyFiltersLoopbackAndMulticastAddresses"
         ]
       }
     },

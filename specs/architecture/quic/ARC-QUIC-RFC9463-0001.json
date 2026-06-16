@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 Scalar Option Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first RFC 9463 implementation boundary for encrypted DNS option code points, scalar lifetime semantics, ADN validation, resolver address filtering, and forbidden address-hint SvcParams.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0001",
+    "VER-QUIC-RFC9463-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0001",
+    "REQ-QUIC-RFC9463-0008",
+    "REQ-QUIC-RFC9463-0009",
+    "REQ-QUIC-RFC9463-0010",
+    "REQ-QUIC-RFC9463-0022",
+    "REQ-QUIC-RFC9463-0025",
+    "REQ-QUIC-RFC9463-0083",
+    "REQ-QUIC-RFC9463-0086",
+    "REQ-QUIC-RFC9463-0087",
+    "REQ-QUIC-RFC9463-0102",
+    "REQ-QUIC-RFC9463-0109",
+    "REQ-QUIC-RFC9463-0110",
+    "REQ-QUIC-RFC9463-0112",
+    "REQ-QUIC-RFC9463-0114",
+    "REQ-QUIC-RFC9463-0116"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-0001.cs"
+  ],
+  "design_summary": "The first RFC 9463 slice is a scalar helper in `Incursa.Quic.Dns`, not a DHCP or Router Advertisement packet codec. `EncryptedDnsDiscoveryOptionCodes` owns the IANA-assigned code points and lifetime constants, while `EncryptedDnsDiscoveryOption` validates that an option has an authentication domain name, has at least one usable resolver address after host-side loopback/multicast filtering, rejects `ipv4hint` and `ipv6hint` SvcParam keys, and exposes service priority as a `ushort`.",
+  "data_and_state_considerations": "The helper is pure and stores normalized input snapshots only. It does not perform network I/O, parse DHCP messages, parse Neighbor Discovery options, encode RFC 8415 DNS wire names, or mutate resolver configuration. The lifetime value is preserved as a 32-bit unsigned integer so later RA ingestion can apply expiry or retirement policy without widening the type.",
+  "edge_cases_and_constraints": [
+    "Authentication domain names are normalized to lower-case absolute DNS names and literal IP addresses are rejected for the ADN field.",
+    "Loopback, wildcard, broadcast, and multicast addresses are filtered before the minimum-address validation check is applied.",
+    "A discovery option with only discarded addresses is treated as invalid and is not created.",
+    "`ipv4hint` and `ipv6hint` are rejected case-insensitively because RFC 9463 conveys addresses in option fields rather than SvcParams."
+  ],
+  "risks": [
+    "This slice does not implement RFC 9463 DHCPv6 option byte layout, DHCPv4 option layout, Router Advertisement option padding, or RFC 8415 domain-name encoding.",
+    "This slice does not parse or encode full RFC 9460 SvcParams.",
+    "Resolver provisioning, cache update policy, and router/forwarder behavior remain future work."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The public surface is intentionally limited to constants and validated scalar state. Later DHCPv6, DHCPv4, and Neighbor Discovery codecs can build on this helper without moving RFC 9463 option policy into the QUIC transport runtime."
+    }
+  ]
+}

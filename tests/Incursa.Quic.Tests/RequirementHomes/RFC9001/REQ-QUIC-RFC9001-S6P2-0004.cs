@@ -15,18 +15,18 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ActiveClientRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets()
+    public void ActiveClientRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets()
     {
-        AssertRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
+        AssertRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
             QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ActiveServerRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets()
+    public void ActiveServerRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets()
     {
-        AssertRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
+        AssertRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
             () => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime());
     }
 
@@ -85,7 +85,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ActiveClientRuntimeRejectsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets()
+    public void ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseThreeWithPhaseTwoRetained(runtime);
@@ -114,13 +114,10 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             nowTicks: 70_000);
 
         Assert.True(result.StateChanged);
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
-        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-        Assert.Equal(
-            "The peer acknowledged a newer-key packet in an old-key packet.",
-            runtime.TerminalState?.Close.ReasonPhrase);
-        Assert.True(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+        Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
     }
 
     [Fact]
@@ -173,7 +170,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ActiveClientRuntimeRejectsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets()
+    public void ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFourWithPhaseThreeRetained(runtime);
@@ -202,13 +199,10 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             nowTicks: 90_000);
 
         Assert.True(result.StateChanged);
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
-        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-        Assert.Equal(
-            "The peer acknowledged a newer-key packet in an old-key packet.",
-            runtime.TerminalState?.Close.ReasonPhrase);
-        Assert.True(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+        Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
     }
 
     [Fact]
@@ -261,7 +255,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    public void ActiveClientRuntimeRejectsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets()
+    public void ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets()
     {
         using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
         QuicRfc9001RepeatedKeyUpdateTestSupport.PrepareLocalPhaseFiveWithPhaseFourRetained(runtime);
@@ -290,13 +284,10 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             nowTicks: 120_000);
 
         Assert.True(result.StateChanged);
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
-        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-        Assert.Equal(
-            "The peer acknowledged a newer-key packet in an old-key packet.",
-            runtime.TerminalState?.Close.ReasonPhrase);
-        Assert.True(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+        Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(currentPhasePacketKey));
     }
 
     [Fact]
@@ -348,7 +339,7 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
+    public void FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessedAcrossRepresentativePayloadSizes()
     {
         Random random = new(unchecked((int)0x9001_6204));
 
@@ -394,17 +385,16 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                 nowTicks: iteration * 30 + 20);
 
             Assert.True(result.StateChanged);
-            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-            Assert.Equal(
-                "The peer acknowledged a newer-key packet in an old-key packet.",
-                runtime.TerminalState?.Close.ReasonPhrase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
+            Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(newerKeyPacket.Key));
         }
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
+    public void FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_AreProcessedAcrossRepresentativePayloadSizes()
     {
         Random random = new(unchecked((int)0x9001_6234));
 
@@ -437,17 +427,15 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                 nowTicks: 90_000 + iteration);
 
             Assert.True(result.StateChanged);
-            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-            Assert.Equal(
-                "The peer acknowledged a newer-key packet in an old-key packet.",
-                runtime.TerminalState?.Close.ReasonPhrase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
         }
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
+    public void FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_AreProcessedAcrossRepresentativePayloadSizes()
     {
         Random random = new(unchecked((int)0x9001_6244));
 
@@ -480,17 +468,15 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                 nowTicks: 110_000 + iteration);
 
             Assert.True(result.StateChanged);
-            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-            Assert.Equal(
-                "The peer acknowledged a newer-key packet in an old-key packet.",
-                runtime.TerminalState?.Close.ReasonPhrase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
         }
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes()
+    public void FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_AreProcessedAcrossRepresentativePayloadSizes()
     {
         Random random = new(unchecked((int)0x9001_6254));
 
@@ -523,17 +509,15 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                 nowTicks: 140_000 + iteration);
 
             Assert.True(result.StateChanged);
-            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-            Assert.Equal(
-                "The peer acknowledged a newer-key packet in an old-key packet.",
-                runtime.TerminalState?.Close.ReasonPhrase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
         }
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
-    public void FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_RaiseKeyUpdateError()
+    public void FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessed()
     {
         Random random = new(unchecked((int)0x9001_6265));
 
@@ -570,15 +554,13 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
                 nowTicks: 150_000 + iteration);
 
             Assert.True(result.StateChanged);
-            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-            Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-            Assert.Equal(
-                "The peer acknowledged a newer-key packet in an old-key packet.",
-                runtime.TerminalState?.Close.ReasonPhrase);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.Null(runtime.TerminalState);
+            Assert.Null(runtime.TlsState.FatalAlertCode);
         }
     }
 
-    private static void AssertRuntimeRejectsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
+    private static void AssertRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets(
         Func<QuicConnectionRuntime> runtimeFactory)
     {
         using QuicConnectionRuntime runtime = runtimeFactory();
@@ -613,14 +595,11 @@ public sealed class REQ_QUIC_RFC9001_S6P2_0004
             nowTicks: 2);
 
         Assert.True(result.StateChanged);
-        Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
-        Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
-        Assert.Equal(QuicTransportErrorCode.KeyUpdateError, runtime.TerminalState?.Close.TransportErrorCode);
-        Assert.Equal(
-            "The peer acknowledged a newer-key packet in an old-key packet.",
-            runtime.TerminalState?.Close.ReasonPhrase);
-        Assert.Contains(result.Effects, static effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
-        Assert.Contains(result.Effects, static effect => effect is QuicConnectionSendDatagramEffect);
+        Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+        Assert.Null(runtime.TerminalState);
+        Assert.Null(runtime.TlsState.FatalAlertCode);
+        Assert.DoesNotContain(result.Effects, static effect => effect is QuicConnectionNotifyStreamsOfTerminalStateEffect);
+        Assert.False(runtime.SendRuntime.SentPackets.ContainsKey(newerKeyPacket.Key));
     }
 
     private static KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> ReceiveApplicationPacketAndGetTrackedResponsePacket(

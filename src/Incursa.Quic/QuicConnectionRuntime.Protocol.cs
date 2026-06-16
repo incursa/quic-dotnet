@@ -944,7 +944,6 @@ internal sealed partial class QuicConnectionRuntime
                         packetNumberSpace,
                         ackFrame,
                         nowTicks,
-                        receivedInRetainedOldOneRttPacket: false,
                         ref effects);
                 }
                 finally
@@ -1411,7 +1410,6 @@ internal sealed partial class QuicConnectionRuntime
                     stateChanged |= HandleApplicationAckFrame(
                         ackFrame,
                         nowTicks,
-                        openedWithRetainedOldOpenMaterial,
                         ref effects);
                 }
                 finally
@@ -2392,14 +2390,12 @@ internal sealed partial class QuicConnectionRuntime
     private bool HandleApplicationAckFrame(
         QuicAckFrame ackFrame,
         long nowTicks,
-        bool receivedInRetainedOldOneRttPacket,
         ref QuicConnectionEffectAccumulator effects)
     {
         return HandleAckFrame(
             QuicPacketNumberSpace.ApplicationData,
             ackFrame,
             nowTicks,
-            receivedInRetainedOldOneRttPacket,
             ref effects);
     }
 
@@ -2407,7 +2403,6 @@ internal sealed partial class QuicConnectionRuntime
         QuicPacketNumberSpace packetNumberSpace,
         QuicAckFrame ackFrame,
         long nowTicks,
-        bool receivedInRetainedOldOneRttPacket,
         ref QuicConnectionEffectAccumulator effects)
     {
         ArgumentNullException.ThrowIfNull(ackFrame);
@@ -2428,17 +2423,6 @@ internal sealed partial class QuicConnectionRuntime
                     new QuicConnectionSentPacketKey(packetNumberSpace, packetNumber),
                     out QuicConnectionSentPacket sentPacket))
             {
-                if (receivedInRetainedOldOneRttPacket
-                    && packetNumberSpace == QuicPacketNumberSpace.ApplicationData
-                    && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
-                {
-                    return HandleFatalTlsSignal(
-                        nowTicks,
-                        QuicTransportErrorCode.KeyUpdateError,
-                        "The peer acknowledged a newer-key packet in an old-key packet.",
-                        ref effects);
-                }
-
                 if (packetNumberSpace == QuicPacketNumberSpace.ApplicationData
                     && tlsState.KeyUpdateInstalled
                     && sentPacket.OneRttKeyPhase == tlsState.CurrentOneRttKeyPhase)
