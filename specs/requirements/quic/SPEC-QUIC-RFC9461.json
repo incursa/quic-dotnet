@@ -19,7 +19,10 @@
     "WI-QUIC-RFC9461-0003",
     "ARC-QUIC-RFC9461-0004",
     "WI-QUIC-RFC9461-0004",
-    "VER-QUIC-RFC9461-0004"
+    "VER-QUIC-RFC9461-0004",
+    "ARC-QUIC-RFC9461-0005",
+    "WI-QUIC-RFC9461-0005",
+    "VER-QUIC-RFC9461-0005"
   ],
   "requirements": [
     {
@@ -910,6 +913,52 @@
       "notes": [
         "This requirement covers ServiceMode RDATA parsing only. AliasMode resolution, DNS message querying, Additional-section address processing, DNSSEC, and operator publication automation remain outside this slice.",
         "The parser reuses existing RFC 9461 scalar validation after decoding wire-format SvcParams."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0040",
+      "title": "Resolve AliasMode DNS SVCB chains to ServiceMode records",
+      "statement": "The DNS service binding resolver MUST parse AliasMode SVCB RDATA as priority zero plus an uncompressed TargetName with no SvcParams, follow AliasMode owner-to-target chains to ServiceMode SVCB records, and report loops, missing targets, malformed AliasMode RDATA, compressed target names, non-zero priorities, and AliasMode records carrying SvcParams without performing DNS message parsing, Additional-section address processing, DNSSEC validation, operator publication, host resolver installation, or encrypted DNS session establishment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9461-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9461-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9461-0005"
+        ],
+        "upstream_refs": [
+          "RFC 9461 Appendix A",
+          "RFC 9460 section 2.4.2",
+          "RFC 9460 section 7.1.1",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.2",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-7.1.1"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Dns/DnsServiceBindingAliasRecord.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolver.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolution.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingNamedRecord.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs::ResolveAliasModeChain_ReturnsServiceModeRecordsAtTheFinalTarget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs::ResolveAliasModeChain_DetectsLoopsAndMissingTargets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs::ParseAliasModeRData_RejectsMalformedServiceModeCompressedAndParamBearingData"
+        ]
+      },
+      "notes": [
+        "This requirement covers local AliasMode chain resolution over already available SVCB records only.",
+        "Full DNS response parsing, Additional-section A/AAAA processing, DNSSEC validation, and platform/session integration remain outside this slice."
       ]
     }
   ]

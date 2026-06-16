@@ -109,7 +109,7 @@ public sealed class DnsServiceBindingWireRecord
         return new DnsServiceBindingWireRecord(priority, targetName, record, serviceParameters);
     }
 
-    private static string ReadUncompressedDomainName(ReadOnlySpan<byte> source, ref int offset)
+    internal static string ReadUncompressedDomainName(ReadOnlySpan<byte> source, ref int offset)
     {
         int start = offset;
         List<string> labels = [];

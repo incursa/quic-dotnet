@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS Service Binding RFC 9461 AliasMode Chain Resolution Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the bounded RFC 9461 AliasMode SVCB chain resolution boundary for DNS service binding records.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0005",
+    "VER-QUIC-RFC9461-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0040"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolver.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolution.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolutionStatus.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingNamedRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs"
+  ],
+  "design_summary": "`DnsServiceBindingAliasRecord` parses AliasMode SVCB RDATA separately from the ServiceMode parser: priority zero, uncompressed TargetName, and no SvcParams. `DnsServiceBindingNamedRecord` associates parsed ServiceMode records with owner names, and `DnsServiceBindingAliasResolver` performs deterministic in-memory chain traversal from the requested service name to the final ServiceMode owner. The resolver returns an explicit `DnsServiceBindingAliasResolutionStatus` for success, missing target, alias loop, and maximum-depth exhaustion instead of silently falling back to cleartext or external DNS behavior.",
+  "data_and_state_considerations": "The resolver consumes already available AliasMode and ServiceMode records as immutable scalar inputs. It does not query DNS, parse DNS message sections, consume Additional-section address hints, validate DNSSEC, install host resolver configuration, or establish encrypted DNS sessions.",
+  "edge_cases_and_constraints": [
+    "AliasMode RDATA with a non-zero priority is rejected by the AliasMode parser and remains valid input only for the ServiceMode parser.",
+    "AliasMode records carrying SvcParams are rejected.",
+    "Compressed TargetName pointers are rejected through the shared SVCB TargetName parser.",
+    "Owner and target names are normalized to absolute lowercase presentation form and permit service-prefix underscore labels.",
+    "Resolution reports loops, missing targets, and caller-limited chain depth as explicit statuses."
+  ],
+  "risks": [
+    "The slice does not choose between multiple DNS answers from a complete DNS response.",
+    "The slice does not validate DNSSEC proof for aliases or targets.",
+    "The slice does not consume Additional-section A or AAAA records for endpoint address preference."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Keeping AliasMode resolution in `Incursa.Quic.Dns` gives future DNS message or resolver adapters a pure chain-resolution primitive without coupling it to QUIC transport runtime, TLS state, or platform resolver installation."
+    }
+  ]
+}

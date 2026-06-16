@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9461-0005",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS Service Binding RFC 9461 AliasMode Chain Resolution Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0005",
+    "WI-QUIC-RFC9461-0005"
+  ],
+  "verification_method": "Focused requirement-home tests, DNS package build, SpecTrace JSON validation, generated coverage triage, diff hygiene, and full local Release solution test for RFC 9461 AliasMode chain resolution.",
+  "verifies": [
+    "REQ-QUIC-RFC9461-0040"
+  ],
+  "scope": "This verification covers AliasMode RDATA parsing for priority zero and uncompressed TargetName with no SvcParams, deterministic owner-to-target chain traversal to ServiceMode records, explicit loop reporting, explicit missing-target reporting, and malformed AliasMode RDATA rejection for short data, ServiceMode priority, compressed target names, and AliasMode records carrying SvcParams.",
+  "preconditions": [
+    "The RFC 9461 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9461.json`.",
+    "ServiceMode SVCB RDATA parsing remains owned by `REQ-QUIC-RFC9461-0039` and `DnsServiceBindingWireRecord.ParseServiceModeRData`."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~REQ_QUIC_RFC9461_0040\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore` before final goal completion."
+  ],
+  "expected_result": "The focused requirement-home tests pass, the DNS project builds, core SpecTrace validation accepts the RFC 9461 artifacts, generated triage reports the new requirement as trace-clean, diff hygiene passes, and the full local Release solution test suite remains green before final goal completion.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolver.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolution.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasResolutionStatus.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingNamedRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0040.cs"
+  ],
+  "status_summary": "The RFC 9461 AliasMode chain-resolution primitive is trace-owned and verified. Full DNS message parsing, Additional-section processing, DNSSEC, operator publication, host resolver installation, and encrypted DNS session establishment remain future adapter work."
+}

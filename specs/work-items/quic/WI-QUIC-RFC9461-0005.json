@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS Service Binding RFC 9461 AliasMode Chain Resolution Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0005",
+    "VER-QUIC-RFC9461-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0040"
+  ],
+  "summary": "Add bounded AliasMode parsing and in-memory AliasMode chain resolution for RFC 9461 DNS service binding records.",
+  "planned_changes": "- Add `DnsServiceBindingAliasRecord` for priority-zero AliasMode RDATA parsing.\n- Add named ServiceMode records and an alias-resolution result/status model.\n- Add `DnsServiceBindingAliasResolver` to follow local AliasMode owner-to-target chains to ServiceMode records.\n- Detect loops, missing targets, maximum-depth exhaustion, compressed target names, non-zero priorities, and AliasMode SvcParams.\n- Add requirement-owned positive, negative, and edge tests.\n- Update RFC 9461 trace artifacts, generated triage, and the requirement gap ledger.",
+  "verification_plan": "Run the DNS project build, focused RFC 9461 AliasMode requirement-home tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full local Release solution test before final goal completion.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0005"
+  ],
+  "out_of_scope": [
+    "Complete DNS message parsing.",
+    "Additional-section A or AAAA processing.",
+    "DNSSEC validation.",
+    "Operator DNS publication automation.",
+    "Host resolver installation.",
+    "Encrypted DNS session establishment."
+  ],
+  "completion_notes": "RFC 9461 now has a trace-owned AliasMode chain-resolution primitive that future DNS response and resolver adapters can consume."
+}
