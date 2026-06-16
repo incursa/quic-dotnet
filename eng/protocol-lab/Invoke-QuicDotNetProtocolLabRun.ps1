@@ -155,6 +155,7 @@ function Assert-RunSelection {
 }
 
 $targetConfig = Get-PackageTargetConfig -Target $PackageTarget
+$requiredCapabilityWasSpecified = $PSBoundParameters.ContainsKey("RequiredCapability")
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
 }
@@ -187,22 +188,117 @@ Assert-RunSelection `
     -RequiredCapabilities $RequiredCapability
 
 $protocolLabRootFullPath = Resolve-PathOrThrow -Path $ProtocolLabRoot -Description "ProtocolLab root"
-$submitScript = Join-Path $protocolLabRootFullPath "scripts/lab/Submit-ProtocolLabPackageRun.ps1"
-if (-not (Test-Path -LiteralPath $submitScript -PathType Leaf)) {
-    throw "ProtocolLab submit script was not found: $submitScript"
-}
 
 $rawComponentPackageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabRawQuicComponentPackages.ps1"
-if ($PackageTarget -eq "RawQuic" -and -not (Test-Path -LiteralPath $rawComponentPackageBuilder -PathType Leaf)) {
-    throw "ProtocolLab raw QUIC component package builder was not found: $rawComponentPackageBuilder"
-}
+$rawComponentPackageBuilderExists = Test-Path -LiteralPath $rawComponentPackageBuilder -PathType Leaf
 
 $h3ComponentPackageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabH3ComponentPackages.ps1"
-if ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and -not (Test-Path -LiteralPath $h3ComponentPackageBuilder -PathType Leaf)) {
-    throw "ProtocolLab H3 component package builder was not found: $h3ComponentPackageBuilder"
+$h3ComponentPackageBuilderExists = Test-Path -LiteralPath $h3ComponentPackageBuilder -PathType Leaf
+if ($PackageTarget -eq "RawQuic" -and -not $rawComponentPackageBuilderExists -and $PackageReference.Count -eq 0) {
+    throw "ProtocolLab raw QUIC component package builder was not found: $rawComponentPackageBuilder. Pass -PackageReference entries as 'packageId|packageVersion|sha256' for already-installed raw QUIC scenario and test-executor packages."
 }
 
-$packageResultJson = & pwsh -NoLogo -NoProfile -File (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
+if ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and -not $h3ComponentPackageBuilderExists -and $PackageReference.Count -eq 0) {
+    throw "ProtocolLab H3 component package builder was not found: $h3ComponentPackageBuilder. Pass -PackageReference entries as 'packageId|packageVersion|sha256' for already-installed H3 scenario and test-executor packages."
+}
+
+function ConvertTo-LabPackageReference {
+    param([Parameter(Mandatory = $true)] $Metadata)
+
+    return [ordered]@{
+        packageId = [string]$Metadata.packageId
+        packageVersion = [string]$Metadata.packageVersion
+        sha256 = [string]$Metadata.sha256
+    }
+}
+
+function ConvertFrom-PackageReferenceString {
+    param([Parameter(Mandatory = $true)][string] $Reference)
+
+    $parts = $Reference.Split('|', 3, [StringSplitOptions]::TrimEntries)
+    if ($parts.Length -ne 3 -or
+        [string]::IsNullOrWhiteSpace($parts[0]) -or
+        [string]::IsNullOrWhiteSpace($parts[1]) -or
+        [string]::IsNullOrWhiteSpace($parts[2])) {
+        throw "Package reference '$Reference' must use 'packageId|packageVersion|sha256'."
+    }
+
+    return [ordered]@{
+        packageId = $parts[0]
+        packageVersion = $parts[1]
+        sha256 = $parts[2].ToLowerInvariant()
+    }
+}
+
+function Upload-LabPackage {
+    param(
+        [Parameter(Mandatory = $true)][string] $ControllerUri,
+        [Parameter(Mandatory = $true)][string] $Path
+    )
+
+    Add-Type -AssemblyName System.Net.Http
+    $resolved = Resolve-PathOrThrow -Path $Path -Description "Lab package"
+    $client = [System.Net.Http.HttpClient]::new()
+    $form = [System.Net.Http.MultipartFormDataContent]::new()
+    $stream = [System.IO.File]::OpenRead($resolved)
+    try {
+        $fileContent = [System.Net.Http.StreamContent]::new($stream)
+        $form.Add($fileContent, "file", [System.IO.Path]::GetFileName($resolved))
+        $response = $client.PostAsync("$ControllerUri/api/lab/packages", $form).GetAwaiter().GetResult()
+        $body = $response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+        if (-not $response.IsSuccessStatusCode) {
+            throw "Package upload failed with HTTP $([int]$response.StatusCode): $body"
+        }
+
+        return $body | ConvertFrom-Json
+    }
+    finally {
+        $stream.Dispose()
+        $form.Dispose()
+        $client.Dispose()
+    }
+}
+
+function Invoke-ControllerJson {
+    param(
+        [Parameter(Mandatory = $true)][string] $Uri,
+        [Parameter(Mandatory = $true)][string] $Method,
+        [object] $Body
+    )
+
+    $parameters = @{
+        Uri = $Uri
+        Method = $Method
+    }
+    if ($null -ne $Body) {
+        $parameters.ContentType = "application/json"
+        $parameters.Body = ($Body | ConvertTo-Json -Depth 32)
+    }
+
+    return Invoke-RestMethod @parameters
+}
+
+function Wait-LabJob {
+    param(
+        [Parameter(Mandatory = $true)][string] $ControllerUri,
+        [Parameter(Mandatory = $true)][string] $JobId,
+        [Parameter(Mandatory = $true)][int] $TimeoutSeconds
+    )
+
+    $deadline = [DateTimeOffset]::UtcNow.AddSeconds($TimeoutSeconds)
+    do {
+        $job = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs/$JobId" -Method "GET"
+        if (@("Completed", "Failed", "Cancelled") -contains [string]$job.status) {
+            return $job
+        }
+
+        Start-Sleep -Seconds 5
+    } while ([DateTimeOffset]::UtcNow -lt $deadline)
+
+    throw "Timed out waiting for lab job '$JobId' after $TimeoutSeconds seconds."
+}
+
+$packageResultJson = & (Join-Path $PSScriptRoot "New-QuicDotNetProtocolLabPackage.ps1") `
     -PackageTarget $PackageTarget `
     -ProtocolLabRoot $protocolLabRootFullPath `
     -Project $Project `
@@ -217,7 +313,7 @@ New-Item -ItemType Directory -Force -Path $resultRoot | Out-Null
 $componentPackageResult = $null
 $componentPackageReferences = @()
 $componentPackagePaths = @()
-if ($PackageTarget -eq "RawQuic") {
+if ($PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
     $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
     $componentArgs = @(
         "-NoLogo",
@@ -249,7 +345,7 @@ if ($PackageTarget -eq "RawQuic") {
         [string]$componentPackageResult.scenarioPackage.path
     )
 }
-elseif ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase)) {
+elseif ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and $h3ComponentPackageBuilderExists) {
     $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
     $componentArgs = @(
         "-NoLogo",
@@ -278,39 +374,49 @@ elseif ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-bod
 }
 
 $artifactPath = Join-Path $resultRoot "latest.zip"
-$submitParameters = @{
-    ControllerUri = $ControllerUri
-    PackagePath = $packageResult.path
-    ImplementationId = $targetConfig.ImplementationId
-    TestExecutorId = $TestExecutorId
-    SuiteId = $SuiteId
-    ScenarioId = $ScenarioId
-    Protocol = $Protocol
-    LoadProfileId = $LoadProfileId
-    TimeoutSeconds = $TimeoutSeconds
-    ArtifactOutputPath = $artifactPath
+$uploadedPackages = @()
+$uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $packageResult.path
+foreach ($componentPackagePath in $componentPackagePaths) {
+    $uploadedPackages += Upload-LabPackage -ControllerUri $ControllerUri -Path $componentPackagePath
 }
 
-$allPackageReferences = @($PackageReference)
-if ($componentPackagePaths.Count -gt 0) {
-    $submitParameters.Add("AdditionalPackagePath", $componentPackagePaths)
+$allPackageReferences = @()
+$allPackageReferences += @($uploadedPackages | ForEach-Object { ConvertTo-LabPackageReference -Metadata $_ })
+$allPackageReferences += @($PackageReference | ForEach-Object { ConvertFrom-PackageReferenceString -Reference $_ })
+
+$requiredCapabilities = @()
+if ($requiredCapabilityWasSpecified) {
+    $requiredCapabilities = @($RequiredCapability | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object {
+            [ordered]@{
+                name = $_
+                value = "true"
+            }
+        })
 }
 
-if ($allPackageReferences.Count -gt 0) {
-    $submitParameters.Add("PackageReference", $allPackageReferences)
+$runIdPrefix = "$($targetConfig.ImplementationId)-$((Get-Date -AsUTC -Format 'yyyyMMddTHHmmssZ'))"
+$jobRequest = [ordered]@{
+    suiteIds = @($SuiteId)
+    implementationIds = @($targetConfig.ImplementationId)
+    scenarioIds = @($ScenarioId)
+    protocols = @($Protocol)
+    testExecutorIds = @($TestExecutorId)
+    loadProfileId = $LoadProfileId
+    runIdPrefix = $runIdPrefix
+    maxAttempts = 1
+    packages = $allPackageReferences
+    requiredCapabilities = $requiredCapabilities
 }
 
-$requiredCapabilities = @($RequiredCapability)
-if ($requiredCapabilities.Count -gt 0) {
-    $submitParameters.Add("RequiredCapability", $requiredCapabilities)
+$submittedJob = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs" -Method "POST" -Body $jobRequest
+$jobResult = if ($NoWait) {
+    $submittedJob
+}
+else {
+    Wait-LabJob -ControllerUri $ControllerUri -JobId $submittedJob.jobId -TimeoutSeconds $TimeoutSeconds
 }
 
-if ($NoWait) {
-    $submitParameters.Add("NoWait", $true)
-}
-
-$jobResultJson = & $submitScript @submitParameters
-$jobResult = $jobResultJson | ConvertFrom-Json
+$jobResultJson = $jobResult | ConvertTo-Json -Depth 32
 $jobResultPath = Join-Path $resultRoot "$($jobResult.jobId).json"
 $jobResultJson | Set-Content -LiteralPath $jobResultPath
 
@@ -319,6 +425,8 @@ $jobResultJson | Set-Content -LiteralPath $jobResultPath
     componentPackages = $componentPackageResult
     componentPackageReferences = $componentPackageReferences
     packageReferences = $PackageReference
+    uploadedPackages = $uploadedPackages
+    artifactOutputPath = $artifactPath
     job = $jobResult
     jobResultPath = $jobResultPath
 } | ConvertTo-Json -Depth 32
