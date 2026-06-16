@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T11:10:22.0707681-06:00",
+  "generated_at": "2026-06-16T11:15:57.9553921-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T11:10:22.0678781-06:00",
+    "generated_at": "2026-06-16T11:15:57.9525899-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2414,
-      "uncovered_blocked": 227
+      "trace_clean": 2425,
+      "uncovered_blocked": 216
     },
     "by_work_queue_tag": {
-      "blocked": 227,
-      "clean": 2414,
-      "new_tests_needed": 227
+      "blocked": 216,
+      "clean": 2425,
+      "new_tests_needed": 216
     },
     "by_rfc": [
       {
@@ -127,8 +127,8 @@
         "rfc": "RFC9298",
         "total": 117,
         "by_state": {
-          "trace_clean": 103,
-          "uncovered_blocked": 14
+          "trace_clean": 114,
+          "uncovered_blocked": 3
         }
       },
       {
@@ -375132,7 +375132,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
         }
       ],
       "evidence": []
@@ -379593,7 +379593,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
         }
       ],
       "evidence": []
@@ -382200,7 +382200,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation and HTTP Datagram-to-UDP conversion after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, tunnel setup, and socket lifecycle floors."
         }
       ],
       "evidence": []
@@ -383302,40 +383302,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0041",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0041",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0042",
@@ -383350,40 +383433,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0042",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0042",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0043",
@@ -383398,40 +383564,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0043",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "method": "SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "line": 62,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0043",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "method": "SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "line": 62,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0043",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket",
+          "method": "SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket",
+          "line": 74,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0043",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket",
+          "method": "SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket",
+          "line": 74,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0043"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0044",
@@ -383446,40 +383695,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses",
+          "method": "SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses",
+          "line": 98,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0044",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses",
+          "method": "SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses",
+          "line": 98,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0044",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "method": "SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "line": 86,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0044",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "method": "SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "line": 86,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0044"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0045",
@@ -383494,40 +383826,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "method": "SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "line": 110,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0045",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "method": "SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "line": 110,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0045",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket",
+          "method": "SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket",
+          "line": 119,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0045",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket",
+          "method": "SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket",
+          "line": 119,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0045"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0046",
@@ -383542,40 +383957,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_CanCloseSocketAfterInactivity",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_CanCloseSocketAfterInactivity",
+          "method": "SocketLifecycle_CanCloseSocketAfterInactivity",
+          "line": 128,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0046",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_CanCloseSocketAfterInactivity",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_CanCloseSocketAfterInactivity",
+          "method": "SocketLifecycle_CanCloseSocketAfterInactivity",
+          "line": 128,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0046",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout",
+          "method": "SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout",
+          "line": 137,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0046",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout",
+          "method": "SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout",
+          "line": 137,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0046"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0047",
@@ -383590,40 +384088,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "method": "SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "line": 146,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0047",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "method": "SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "line": 146,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0047",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen",
+          "method": "SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen",
+          "line": 155,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0047",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen",
+          "method": "SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen",
+          "line": 155,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0047"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0048",
@@ -383638,40 +384219,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsShortInactivityTimeouts"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0048",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "method": "SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0048",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "method": "SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "line": 166,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0048",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsShortInactivityTimeouts",
+          "method": "SocketLifecycle_RejectsShortInactivityTimeouts",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0048",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsShortInactivityTimeouts",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsShortInactivityTimeouts",
+          "method": "SocketLifecycle_RejectsShortInactivityTimeouts",
+          "line": 177,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0048"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0049",
@@ -383817,40 +384481,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0050",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "method": "SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "line": 186,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0050",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "method": "SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "line": 186,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0050",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation",
+          "method": "SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation",
+          "line": 197,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0050",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation",
+          "method": "SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation",
+          "line": 197,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0050"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0051",
@@ -383865,40 +384612,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0051",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit",
+          "method": "SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit",
+          "line": 219,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0051",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit",
+          "method": "SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit",
+          "line": 219,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0051",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "method": "SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "line": 208,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0051",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "method": "SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "line": 208,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0051"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0052",
@@ -383913,40 +384743,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for non-multiplexed stream interpretation, live UDP lifecycle, and HTTP Datagram forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, HTTP/1.1 upgrade, and tunnel setup floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0052",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible",
+          "method": "SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible",
+          "line": 243,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0052",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible",
+          "method": "SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible",
+          "line": 243,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0052",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "method": "SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "line": 230,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0052",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "method": "SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "line": 230,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0052"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0053",

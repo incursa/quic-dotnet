@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Socket Lifecycle Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0009",
+    "VER-QUIC-RFC9298-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0041",
+    "REQ-QUIC-RFC9298-0042",
+    "REQ-QUIC-RFC9298-0043",
+    "REQ-QUIC-RFC9298-0044",
+    "REQ-QUIC-RFC9298-0045",
+    "REQ-QUIC-RFC9298-0046",
+    "REQ-QUIC-RFC9298-0047",
+    "REQ-QUIC-RFC9298-0048",
+    "REQ-QUIC-RFC9298-0050",
+    "REQ-QUIC-RFC9298-0051",
+    "REQ-QUIC-RFC9298-0052"
+  ],
+  "summary": "Add CONNECT-UDP socket lifecycle and forwarding policy helpers.",
+  "planned_changes": "- Add source endpoint validation and discard policy.\n- Add request-stream/socket lifecycle and inactivity policy.\n- Add no-fragmentation, oversized-drop, and IPv4 DF policy.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused socket lifecycle policy tests, RFC9298 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0009"
+  ],
+  "out_of_scope": [
+    "Operating-system socket option application.",
+    "Live UDP receive/send loops.",
+    "ProtocolLab performance proof."
+  ],
+  "completion_notes": "The RFC 9298 socket lifecycle and forwarding policy surface is implemented and verified locally."
+}

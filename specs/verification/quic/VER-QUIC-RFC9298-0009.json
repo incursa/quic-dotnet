@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0009",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP Socket Lifecycle Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0009",
+    "WI-QUIC-RFC9298-0009"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9298 socket lifecycle and forwarding policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0041",
+    "REQ-QUIC-RFC9298-0042",
+    "REQ-QUIC-RFC9298-0043",
+    "REQ-QUIC-RFC9298-0044",
+    "REQ-QUIC-RFC9298-0045",
+    "REQ-QUIC-RFC9298-0046",
+    "REQ-QUIC-RFC9298-0047",
+    "REQ-QUIC-RFC9298-0048",
+    "REQ-QUIC-RFC9298-0050",
+    "REQ-QUIC-RFC9298-0051",
+    "REQ-QUIC-RFC9298-0052"
+  ],
+  "scope": "This verification covers non-connected socket source address and port matching, unmatched packet discard, socket/request stream lifetime coupling, socket-unusable close behavior, inactivity timeout policy, minimum two-minute inactivity guidance, no-fragmentation forwarding, silent oversized datagram drops, and IPv4 DF intent when supported.",
+  "preconditions": [
+    "RFC 9298 tunnel setup and datagram format policy helpers are trace-owned."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpSocketLifecyclePolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0041|FullyQualifiedName~Http3ConnectUdpSocketLifecyclePolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused socket lifecycle policy tests pass, core SpecTrace validation accepts the RFC 9298 lifecycle artifacts, generated triage reflects the slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpSocketLifecyclePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9298 socket lifecycle and forwarding policy surface is trace-owned and verified by focused local gates. Live adapter integration and ProtocolLab performance proof remain future work."
+}

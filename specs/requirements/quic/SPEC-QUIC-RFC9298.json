@@ -846,6 +846,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket"
         ]
       }
     },
@@ -863,6 +867,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket"
         ]
       }
     },
@@ -880,6 +888,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B5-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket"
         ]
       }
     },
@@ -898,6 +910,10 @@
           "RFC9298-S3P1-B6-P6-S1",
           "RFC9298-S3P1-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_KeepsSocketOpenWhileRequestStreamIsOpen",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotKeepSocketOpenAfterRequestStreamCloses"
         ]
       }
     },
@@ -915,6 +931,10 @@
         "upstream_refs": [
           "RFC9298 3.1 RFC9298-S3P1-B6-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsUnusable",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamForUsableSocket"
         ]
       }
     },
@@ -932,6 +952,10 @@
         "upstream_refs": [
           "RFC9298 3.1 RFC9298-S3P1-B6-P6-S5",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_CanCloseSocketAfterInactivity",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseSocketBeforeInactivityTimeout"
         ]
       }
     },
@@ -949,6 +973,10 @@
         "upstream_refs": [
           "RFC9298 3.1 RFC9298-S3P1-B6-P6-S5",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ClosesRequestStreamWhenSocketIsClosing",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotCloseRequestStreamWhenSocketRemainsOpen"
         ]
       }
     },
@@ -966,6 +994,10 @@
         "upstream_refs": [
           "RFC 9298 3.1 RFC9298-S3P1-B6-P6-S6",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsRecommendedInactivityTimeouts",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsShortInactivityTimeouts"
         ]
       }
     },
@@ -1004,6 +1036,10 @@
         "upstream_refs": [
           "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_ForwardsOnlyWhenIpFragmentationIsNotIntroduced",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsForwardingThatWouldNeedIpFragmentation"
         ]
       }
     },
@@ -1021,6 +1057,10 @@
         "upstream_refs": [
           "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SilentlyDropsOversizedHttpDatagrams",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotDropHttpDatagramsWithinOutgoingLimit"
         ]
       }
     },
@@ -1038,6 +1078,10 @@
         "upstream_refs": [
           "RFC 9298 3.1 RFC9298-S3P1-B8-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_SetsIpv4DontFragmentBitWhenSupported",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_DoesNotSetIpv4DontFragmentBitWhenImpossible"
         ]
       }
     },

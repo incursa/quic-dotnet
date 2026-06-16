@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Socket Lifecycle Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 CONNECT-UDP UDP socket lifecycle, source validation, and outbound forwarding policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0009",
+    "VER-QUIC-RFC9298-0009"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0041",
+    "REQ-QUIC-RFC9298-0042",
+    "REQ-QUIC-RFC9298-0043",
+    "REQ-QUIC-RFC9298-0044",
+    "REQ-QUIC-RFC9298-0045",
+    "REQ-QUIC-RFC9298-0046",
+    "REQ-QUIC-RFC9298-0047",
+    "REQ-QUIC-RFC9298-0048",
+    "REQ-QUIC-RFC9298-0050",
+    "REQ-QUIC-RFC9298-0051",
+    "REQ-QUIC-RFC9298-0052"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpSocketLifecyclePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpSocketLifecyclePolicy` validates packet source address and port on non-connected sockets, classifies unmatched packets for discard, keeps sockets tied to open request streams, closes request streams when sockets fail or close, models inactivity-based socket closure with a two-minute recommendation floor, avoids IP fragmentation, drops oversized HTTP Datagrams, and exposes IPv4 DF intent when supported.",
+  "data_and_state_considerations": "The helper is a deterministic policy surface. It does not own the operating-system socket or consume packets directly.",
+  "edge_cases_and_constraints": [
+    "Connected sockets bypass source comparison because the operating system performs endpoint filtering.",
+    "The inactivity timeout recommendation is represented as a minimum duration.",
+    "IPv4 DF policy is gated by both destination address family and socket support."
+  ],
+  "risks": [
+    "Adapter code still needs to map these decisions to real socket options and stream-close operations.",
+    "End-to-end packet I/O remains covered by later ProtocolLab proof."
+  ]
+}
