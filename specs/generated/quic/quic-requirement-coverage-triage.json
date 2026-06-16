@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T11:43:46.2555091-06:00",
+  "generated_at": "2026-06-16T11:50:43.1835249-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T11:43:46.2525113-06:00",
+    "generated_at": "2026-06-16T11:50:43.1804743-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2459,
-      "uncovered_blocked": 182
+      "trace_clean": 2469,
+      "uncovered_blocked": 172
     },
     "by_work_queue_tag": {
-      "blocked": 182,
-      "clean": 2459,
-      "new_tests_needed": 182
+      "blocked": 172,
+      "clean": 2469,
+      "new_tests_needed": 172
     },
     "by_rfc": [
       {
@@ -183,8 +183,8 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_state": {
-          "trace_clean": 31,
-          "uncovered_blocked": 182
+          "trace_clean": 41,
+          "uncovered_blocked": 172
         }
       }
     ]
@@ -441187,40 +441187,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AllowsOmittedOptionalTunnelVariables"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_AllowsOmittedOptionalTunnelVariables",
+          "method": "TunnelSetup_AllowsOmittedOptionalTunnelVariables",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0031",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AllowsOmittedOptionalTunnelVariables",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_AllowsOmittedOptionalTunnelVariables",
+          "method": "TunnelSetup_AllowsOmittedOptionalTunnelVariables",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "method": "TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0031",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "method": "TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0032",
@@ -441235,40 +441318,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed",
+          "method": "TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0032",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed",
+          "method": "TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "method": "TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "line": 36,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0032",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "method": "TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "line": 36,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0033",
@@ -441283,40 +441449,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsVariablesThatFailSection46Validation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsVariablesThatFailSection46Validation",
+          "method": "TunnelSetup_RejectsVariablesThatFailSection46Validation",
+          "line": 71,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsVariablesThatFailSection46Validation",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsVariablesThatFailSection46Validation",
+          "method": "TunnelSetup_RejectsVariablesThatFailSection46Validation",
+          "line": 71,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "method": "TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "line": 56,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "method": "TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "line": 56,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0034",
@@ -441331,40 +441580,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRequireDnsResolutionForIpTargets"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotRequireDnsResolutionForIpTargets",
+          "method": "TunnelSetup_DoesNotRequireDnsResolutionForIpTargets",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0034",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRequireDnsResolutionForIpTargets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotRequireDnsResolutionForIpTargets",
+          "method": "TunnelSetup_DoesNotRequireDnsResolutionForIpTargets",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "method": "TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "line": 80,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0034",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "method": "TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "line": 80,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0035",
@@ -441379,40 +441711,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors",
+          "method": "TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0035"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0035",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors",
+          "method": "TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0035"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "method": "TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "line": 105,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0035"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0035",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "method": "TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "line": 105,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0035"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0036",
@@ -441427,40 +441842,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AddsProxyStatusDetailsOnErrors",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsEmptyProxyStatusErrorType"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0036",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "method": "TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "line": 129,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0036",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "method": "TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "line": 129,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0036",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsEmptyProxyStatusErrorType",
+          "method": "TunnelSetup_RejectsEmptyProxyStatusErrorType",
+          "line": 141,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0036",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsEmptyProxyStatusErrorType",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RejectsEmptyProxyStatusErrorType",
+          "method": "TunnelSetup_RejectsEmptyProxyStatusErrorType",
+          "line": 141,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0037",
@@ -441475,40 +441973,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0037",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses",
+          "method": "TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses",
+          "line": 162,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0037",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses",
+          "method": "TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses",
+          "line": 162,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0037",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "method": "TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "line": 150,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0037",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "method": "TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "line": 150,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0037"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0038",
@@ -441523,40 +442104,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "method": "TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "line": 174,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0038",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "method": "TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "line": 174,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished",
+          "method": "TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished",
+          "line": 186,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0038",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished",
+          "method": "TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished",
+          "line": 186,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0039",
@@ -441571,40 +442235,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_CanTearDownTunnelAfterInactivity",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTearDownTunnelBeforeInactivity"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "method": "TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "line": 198,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "method": "TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "line": 198,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotTearDownTunnelBeforeInactivity",
+          "method": "TunnelSetup_DoesNotTearDownTunnelBeforeInactivity",
+          "line": 207,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTearDownTunnelBeforeInactivity",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotTearDownTunnelBeforeInactivity",
+          "method": "TunnelSetup_DoesNotTearDownTunnelBeforeInactivity",
+          "line": 207,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0040",
@@ -441619,40 +442366,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0040",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "method": "TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "line": 216,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0040",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "method": "TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "line": 216,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0040",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown",
+          "method": "TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown",
+          "line": 225,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0040",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectIpTunnelSetupPolicyTests",
+          "member": "Http3ConnectIpTunnelSetupPolicyTests.TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown",
+          "method": "TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown",
+          "line": 225,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0041",
@@ -441828,7 +442658,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -441876,7 +442706,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -441924,7 +442754,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -441972,7 +442802,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442020,7 +442850,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442068,7 +442898,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442116,7 +442946,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442164,7 +442994,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442212,7 +443042,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442260,7 +443090,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442308,7 +443138,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442356,7 +443186,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442404,7 +443234,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442452,7 +443282,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442500,7 +443330,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442548,7 +443378,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442596,7 +443426,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442644,7 +443474,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442692,7 +443522,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442740,7 +443570,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442788,7 +443618,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442836,7 +443666,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442884,7 +443714,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442932,7 +443762,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -442980,7 +443810,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443028,7 +443858,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443076,7 +443906,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443124,7 +443954,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443172,7 +444002,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443220,7 +444050,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443268,7 +444098,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443316,7 +444146,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443364,7 +444194,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443412,7 +444242,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443460,7 +444290,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443508,7 +444338,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443556,7 +444386,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443604,7 +444434,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443652,7 +444482,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443700,7 +444530,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443748,7 +444578,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443796,7 +444626,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443844,7 +444674,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443892,7 +444722,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443940,7 +444770,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -443988,7 +444818,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444036,7 +444866,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444084,7 +444914,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444132,7 +444962,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444180,7 +445010,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444228,7 +445058,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444276,7 +445106,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444324,7 +445154,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444372,7 +445202,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444420,7 +445250,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444468,7 +445298,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444516,7 +445346,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444564,7 +445394,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444612,7 +445442,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444660,7 +445490,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444708,7 +445538,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444756,7 +445586,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444804,7 +445634,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444852,7 +445682,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444900,7 +445730,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444948,7 +445778,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -444996,7 +445826,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445044,7 +445874,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445092,7 +445922,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445140,7 +445970,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445188,7 +446018,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445236,7 +446066,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445284,7 +446114,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445332,7 +446162,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445380,7 +446210,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445428,7 +446258,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445476,7 +446306,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445524,7 +446354,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445572,7 +446402,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445620,7 +446450,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445668,7 +446498,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445716,7 +446546,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445764,7 +446594,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445812,7 +446642,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445860,7 +446690,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445908,7 +446738,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -445956,7 +446786,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446004,7 +446834,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446052,7 +446882,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446100,7 +446930,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446148,7 +446978,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446196,7 +447026,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446244,7 +447074,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446292,7 +447122,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446340,7 +447170,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446388,7 +447218,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446436,7 +447266,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446484,7 +447314,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446532,7 +447362,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446580,7 +447410,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446628,7 +447458,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446676,7 +447506,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446724,7 +447554,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446772,7 +447602,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446820,7 +447650,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446865,7 +447695,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446913,7 +447743,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -446961,7 +447791,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447009,7 +447839,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447057,7 +447887,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447105,7 +447935,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447153,7 +447983,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447201,7 +448031,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447246,7 +448076,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447294,7 +448124,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447339,7 +448169,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447384,7 +448214,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447432,7 +448262,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447480,7 +448310,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447528,7 +448358,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447576,7 +448406,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447624,7 +448454,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447672,7 +448502,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447720,7 +448550,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447768,7 +448598,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447816,7 +448646,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447864,7 +448694,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447909,7 +448739,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -447957,7 +448787,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448005,7 +448835,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448053,7 +448883,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448101,7 +448931,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448149,7 +448979,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448197,7 +449027,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448245,7 +449075,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448293,7 +449123,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448341,7 +449171,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448389,7 +449219,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448437,7 +449267,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448485,7 +449315,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448533,7 +449363,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448581,7 +449411,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448629,7 +449459,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448677,7 +449507,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448724,7 +449554,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448772,7 +449602,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448820,7 +449650,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448868,7 +449698,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448916,7 +449746,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -448964,7 +449794,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449012,7 +449842,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449060,7 +449890,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449108,7 +449938,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449156,7 +449986,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449204,7 +450034,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449252,7 +450082,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449297,7 +450127,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449345,7 +450175,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449393,7 +450223,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449438,7 +450268,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449486,7 +450316,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449534,7 +450364,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449582,7 +450412,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449630,7 +450460,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449678,7 +450508,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449726,7 +450556,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449774,7 +450604,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449822,7 +450652,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449870,7 +450700,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449918,7 +450748,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -449966,7 +450796,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []
@@ -450014,7 +450844,7 @@
       "gap_blockers": [
         {
           "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, and request-policy slices; remaining work covers tunnel setup, HTTP-specific request formats, target/ipproto validation, capsules, route/address assignment, datagram forwarding, and manageability policy."
+          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, and tunnel setup slices; remaining work covers HTTP-specific request formats, detailed target/ipproto grammar, capsules, route/address assignment, datagram forwarding, and manageability policy."
         }
       ],
       "evidence": []

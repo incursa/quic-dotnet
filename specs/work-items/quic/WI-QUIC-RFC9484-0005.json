@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Tunnel Setup Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0005",
+    "VER-QUIC-RFC9484-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0031",
+    "REQ-QUIC-RFC9484-0032",
+    "REQ-QUIC-RFC9484-0033",
+    "REQ-QUIC-RFC9484-0034",
+    "REQ-QUIC-RFC9484-0035",
+    "REQ-QUIC-RFC9484-0036",
+    "REQ-QUIC-RFC9484-0037",
+    "REQ-QUIC-RFC9484-0038",
+    "REQ-QUIC-RFC9484-0039",
+    "REQ-QUIC-RFC9484-0040"
+  ],
+  "summary": "Add CONNECT-IP tunnel setup and lifetime policy helpers.",
+  "planned_changes": "- Add target/protocol scope models and tunnel variable validation.\n- Add setup error, DNS-before-reply, assignment lifetime, inactivity teardown, and stream-close helpers.\n- Add focused positive/negative tests and canonical xrefs.\n- Narrow RFC9484 blocked triage around the completed tunnel setup slice.",
+  "verification_plan": "Run focused CONNECT-IP tunnel setup tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0005"
+  ],
+  "out_of_scope": [
+    "HTTP/1.1 upgrade and HTTP/2/3 Extended CONNECT validation.",
+    "ADDRESS_ASSIGN and ROUTE_ADVERTISEMENT capsule encoding.",
+    "Live route/address installation."
+  ],
+  "completion_notes": "The RFC 9484 tunnel setup and lifetime policy surface is implemented and verified locally."
+}

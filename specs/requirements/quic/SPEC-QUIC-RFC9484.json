@@ -652,6 +652,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AllowsOmittedOptionalTunnelVariables"
         ]
       }
     },
@@ -669,6 +673,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TreatsInvalidTunnelVariablesAsMalformed",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTreatValidTunnelVariablesAsMalformed"
         ]
       }
     },
@@ -686,6 +694,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsVariablesThatFailSection46Validation"
         ]
       }
     },
@@ -703,6 +715,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRequireDnsResolutionForIpTargets"
         ]
       }
     },
@@ -720,6 +736,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsRequestsWhenProcessingErrorsOccur",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors"
         ]
       }
     },
@@ -737,6 +757,10 @@
         "upstream_refs": [
           "RFC 9484 Section 4.1 RFC9484-S4P1-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_AddsProxyStatusDetailsOnErrors",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsEmptyProxyStatusErrorType"
         ]
       }
     },
@@ -754,6 +778,10 @@
         "upstream_refs": [
           "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_TiesTunnelLifetimeToOpenRequestStream",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotMaintainTunnelAfterRequestStreamCloses"
         ]
       }
     },
@@ -771,6 +799,10 @@
         "upstream_refs": [
           "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_MaintainsAssignmentsWhileRequestStreamIsOpen",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_RemovesAssignmentsWhenTunnelIsNotEstablished"
         ]
       }
     },
@@ -788,6 +820,10 @@
         "upstream_refs": [
           "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_CanTearDownTunnelAfterInactivity",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotTearDownTunnelBeforeInactivity"
         ]
       }
     },
@@ -805,6 +841,10 @@
         "upstream_refs": [
           "RFC 9484 4.1 RFC9484-S4P1-B5-P5-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_ClosesRequestStreamWhenTearingDownTunnel",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotCloseRequestStreamWithoutTunnelTeardown"
         ]
       }
     },

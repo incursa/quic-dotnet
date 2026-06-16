@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Tunnel Setup Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP tunnel variable validation, DNS-before-reply, setup error, assignment lifetime, inactivity teardown, and request-stream close policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0005",
+    "VER-QUIC-RFC9484-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0031",
+    "REQ-QUIC-RFC9484-0032",
+    "REQ-QUIC-RFC9484-0033",
+    "REQ-QUIC-RFC9484-0034",
+    "REQ-QUIC-RFC9484-0035",
+    "REQ-QUIC-RFC9484-0036",
+    "REQ-QUIC-RFC9484-0037",
+    "REQ-QUIC-RFC9484-0038",
+    "REQ-QUIC-RFC9484-0039",
+    "REQ-QUIC-RFC9484-0040"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpTunnelSetupPolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpTargetScope.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpProtocolScope.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpTunnelVariables.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpTunnelSetupPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpTunnelSetupPolicy` validates decoded optional `target` and `ipproto` variables, treats invalid variables as malformed, requires DNS resolution before replying for DNS targets, rejects setup on processing errors, emits Proxy-Status details, keeps assignments while the request stream and tunnel are active, allows inactivity teardown, and maps tunnel teardown to request-stream close.",
+  "data_and_state_considerations": "The helper is deterministic policy. It does not own DNS queries, HTTP response emission, packet forwarding, or operating-system route/address state.",
+  "edge_cases_and_constraints": [
+    "Omitted target and ipproto variables are wildcard scopes.",
+    "IP prefix targets must have prefix lengths within address-size bounds and zero host bits.",
+    "ICMP protocol numbers are always allowed by protocol scope evaluation."
+  ],
+  "risks": [
+    "The broader Section 4.6 grammar requirements are not all trace-closed by this slice.",
+    "Live route/address assignment adapters remain later work."
+  ]
+}
