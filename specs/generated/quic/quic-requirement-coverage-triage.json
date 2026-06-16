@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T10:14:56.1074581-06:00",
+  "generated_at": "2026-06-16T10:26:50.0785203-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T10:14:56.1042885-06:00",
+    "generated_at": "2026-06-16T10:26:50.0756688-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2339,
-      "uncovered_blocked": 302
+      "trace_clean": 2351,
+      "uncovered_blocked": 290
     },
     "by_work_queue_tag": {
-      "blocked": 302,
-      "clean": 2339,
-      "new_tests_needed": 302
+      "blocked": 290,
+      "clean": 2351,
+      "new_tests_needed": 290
     },
     "by_rfc": [
       {
@@ -127,8 +127,8 @@
         "rfc": "RFC9298",
         "total": 117,
         "by_state": {
-          "trace_clean": 28,
-          "uncovered_blocked": 89
+          "trace_clean": 40,
+          "uncovered_blocked": 77
         }
       },
       {
@@ -375132,7 +375132,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -379593,7 +379593,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -379611,40 +379611,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "method": "Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "line": 27,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "method": "Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "line": 27,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol",
+          "line": 191,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol",
+          "line": 191,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0023",
@@ -379659,40 +379808,193 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "method": "Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "method": "Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "line": 112,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "line": 112,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0024",
@@ -381898,7 +382200,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -381916,40 +382218,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsMessageContent"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "method": "Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "line": 50,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "method": "Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "line": 50,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsMessageContent",
+          "method": "Http3RequestValidator_RejectsMessageContent",
+          "line": 213,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsMessageContent",
+          "method": "Http3RequestValidator_RejectsMessageContent",
+          "line": 213,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0034"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0034",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0035",
@@ -381964,40 +382415,224 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 7,
+        "focused": 5,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 3,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0035",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0036",
@@ -382042,7 +382677,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382090,7 +382725,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382138,7 +382773,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382186,7 +382821,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382234,7 +382869,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382282,7 +382917,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382330,7 +382965,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382378,7 +383013,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382426,7 +383061,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382474,7 +383109,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382522,7 +383157,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382570,7 +383205,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382618,7 +383253,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382666,7 +383301,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382714,7 +383349,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382762,7 +383397,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382810,7 +383445,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382858,7 +383493,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382906,7 +383541,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -382954,7 +383589,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383002,7 +383637,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383050,7 +383685,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383098,7 +383733,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383146,7 +383781,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383194,7 +383829,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383242,7 +383877,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383290,7 +383925,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383338,7 +383973,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383386,7 +384021,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383404,40 +384039,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesConnectMethod",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsNonConnectMethod"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesConnectMethod",
+          "method": "Http3RequestBuilder_UsesConnectMethod",
+          "line": 61,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0065"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesConnectMethod",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesConnectMethod",
+          "method": "Http3RequestBuilder_UsesConnectMethod",
+          "line": 61,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0065"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsNonConnectMethod",
+          "method": "Http3RequestValidator_RejectsNonConnectMethod",
+          "line": 133,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0065"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsNonConnectMethod",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsNonConnectMethod",
+          "method": "Http3RequestValidator_RejectsNonConnectMethod",
+          "line": 133,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0065"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0065",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0066",
@@ -383452,40 +384236,193 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "method": "Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "method": "Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "line": 39,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "line": 112,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "method": "Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken",
+          "line": 112,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0067",
@@ -383500,40 +384437,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesUdpProxyAuthority",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesUdpProxyAuthority",
+          "method": "Http3RequestBuilder_UsesUdpProxyAuthority",
+          "line": 72,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesUdpProxyAuthority",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesUdpProxyAuthority",
+          "method": "Http3RequestBuilder_UsesUdpProxyAuthority",
+          "line": 72,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority",
+          "method": "Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority",
+          "line": 161,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority",
+          "method": "Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority",
+          "line": 161,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0067"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0067",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0068",
@@ -383548,40 +384634,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsEmptySchemeOrPath"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "method": "Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "line": 85,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0068"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "method": "Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "line": 85,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0068"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsEmptySchemeOrPath",
+          "method": "Http3RequestValidator_RejectsEmptySchemeOrPath",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0068"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsEmptySchemeOrPath",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsEmptySchemeOrPath",
+          "method": "Http3RequestValidator_RejectsEmptySchemeOrPath",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0068"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0068",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0069",
@@ -383596,40 +384831,189 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "method": "Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0069"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "method": "Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "line": 97,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0069"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion",
+          "method": "Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion",
+          "line": 176,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0069"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion",
+          "method": "Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion",
+          "line": 176,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0069"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0069",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0070",
@@ -383644,40 +385028,201 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 6,
+        "focused": 4,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0070",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0071",
@@ -383692,40 +385237,250 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 8,
+        "focused": 6,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 4,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0071",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0072",
@@ -383740,40 +385495,250 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 8,
+        "focused": 6,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 4,
+          "negative": 4,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "method": "Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "line": 229,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "method": "Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "line": 250,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+          "class": "Http3ConnectUdpRequestPolicyTests",
+          "member": "Http3ConnectUdpRequestPolicyTests.Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "method": "Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent",
+          "line": 267,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http3RequestPolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0072",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs",
+          "class": "REQ_QUIC_RFC9298_0022",
+          "member": "REQ_QUIC_RFC9298_0022.Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http3RequestPolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0022",
+            "REQ-QUIC-RFC9298-0023",
+            "REQ-QUIC-RFC9298-0034",
+            "REQ-QUIC-RFC9298-0035",
+            "REQ-QUIC-RFC9298-0065",
+            "REQ-QUIC-RFC9298-0066",
+            "REQ-QUIC-RFC9298-0067",
+            "REQ-QUIC-RFC9298-0068",
+            "REQ-QUIC-RFC9298-0069",
+            "REQ-QUIC-RFC9298-0070",
+            "REQ-QUIC-RFC9298-0071",
+            "REQ-QUIC-RFC9298-0072"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0073",
@@ -383818,7 +385783,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383866,7 +385831,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383914,7 +385879,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -383962,7 +385927,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384010,7 +385975,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384058,7 +386023,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384106,7 +386071,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384154,7 +386119,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384202,7 +386167,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384250,7 +386215,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384298,7 +386263,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384346,7 +386311,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384394,7 +386359,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384442,7 +386407,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384490,7 +386455,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384538,7 +386503,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384586,7 +386551,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384634,7 +386599,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384682,7 +386647,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384730,7 +386695,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384778,7 +386743,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384826,7 +386791,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384874,7 +386839,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384922,7 +386887,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -384970,7 +386935,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385018,7 +386983,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385066,7 +387031,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385114,7 +387079,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385162,7 +387127,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385210,7 +387175,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385258,7 +387223,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385306,7 +387271,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385354,7 +387319,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385402,7 +387367,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385450,7 +387415,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385498,7 +387463,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385546,7 +387511,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385594,7 +387559,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385642,7 +387607,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385690,7 +387655,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385738,7 +387703,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385786,7 +387751,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385834,7 +387799,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385882,7 +387847,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []
@@ -385930,7 +387895,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for request construction, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template and target-validation floor."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, context-id/datagram framing, UDP lifecycle, forwarding, congestion, ECN, and target filtering after the URI Template, target-validation, and HTTP/3 request-policy floors."
         }
       ],
       "evidence": []

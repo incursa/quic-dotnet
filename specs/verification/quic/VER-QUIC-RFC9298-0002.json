@@ -1,0 +1,48 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP HTTP/3 Request Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0002",
+    "WI-QUIC-RFC9298-0002"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for the RFC 9298 HTTP/3 CONNECT-UDP request-policy surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0022",
+    "REQ-QUIC-RFC9298-0023",
+    "REQ-QUIC-RFC9298-0034",
+    "REQ-QUIC-RFC9298-0035",
+    "REQ-QUIC-RFC9298-0065",
+    "REQ-QUIC-RFC9298-0066",
+    "REQ-QUIC-RFC9298-0067",
+    "REQ-QUIC-RFC9298-0068",
+    "REQ-QUIC-RFC9298-0069",
+    "REQ-QUIC-RFC9298-0070",
+    "REQ-QUIC-RFC9298-0071",
+    "REQ-QUIC-RFC9298-0072"
+  ],
+  "scope": "This verification covers HTTP/3 CONNECT-UDP request-header construction, connect-udp protocol-token validation, Capsule-Protocol requirement, no-content request policy, 2xx successful-response policy, successful-response no-content policy, Capsule Protocol response constraints, and failed-response abort decisions.",
+  "preconditions": [
+    "RFC 9297 Capsule Protocol support is trace-clean.",
+    "RFC 9298 URI Template and target validation is trace-owned by `VER-QUIC-RFC9298-0001`."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpRequestPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0022|FullyQualifiedName~Http3ConnectUdpRequestPolicyTests|FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused request-policy tests pass, core SpecTrace validation accepts the RFC 9298 request-policy artifacts, generated triage reflects the slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdp.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0022.cs"
+  ],
+  "status_summary": "The RFC 9298 HTTP/3 CONNECT-UDP request-policy surface is trace-owned and verified by focused local gates. HTTP/1.1 upgrade behavior, context-id framing, UDP socket lifecycle, forwarding, congestion, ECN, and vulnerable-target filtering remain future RFC 9298 slices."
+}

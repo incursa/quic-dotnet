@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP HTTP/3 Request Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 HTTP/3 CONNECT-UDP request construction and successful-response validation before UDP tunnel setup.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0002",
+    "VER-QUIC-RFC9298-0002",
+    "ARC-QUIC-RFC9298-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0022",
+    "REQ-QUIC-RFC9298-0023",
+    "REQ-QUIC-RFC9298-0034",
+    "REQ-QUIC-RFC9298-0035",
+    "REQ-QUIC-RFC9298-0065",
+    "REQ-QUIC-RFC9298-0066",
+    "REQ-QUIC-RFC9298-0067",
+    "REQ-QUIC-RFC9298-0068",
+    "REQ-QUIC-RFC9298-0069",
+    "REQ-QUIC-RFC9298-0070",
+    "REQ-QUIC-RFC9298-0071",
+    "REQ-QUIC-RFC9298-0072"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdp.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpUriTemplate.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectUdpTarget.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdp` builds HTTP/3 Extended CONNECT headers with `:method` CONNECT, `:protocol` connect-udp, expanded `:scheme`, `:authority`, and `:path`, plus a true Capsule-Protocol field. It validates incoming request headers through the existing HTTP/3 header validator, requires the Capsule Protocol, rejects request content, validates successful responses as 2xx Capsule Protocol responses without content, and exposes a Boolean proceed/abort decision for clients.",
+  "data_and_state_considerations": "The slice is header-policy only. It does not send HTTP frames, open UDP sockets, perform DNS resolution, allocate Context IDs, or proxy packets.",
+  "edge_cases_and_constraints": [
+    "Requests without `:protocol` connect-udp are rejected.",
+    "Requests without Capsule-Protocol are rejected.",
+    "Request and successful-response content is rejected before proxying proceeds.",
+    "Non-2xx and Capsule-disallowed 2xx responses are treated as failed proxying attempts."
+  ],
+  "risks": [
+    "HTTP/1.1 upgrade behavior remains a separate RFC 9298 slice.",
+    "UDP tunnel setup and Proxy-Status error reporting remain separate RFC 9298 slices.",
+    "HTTP Datagram Context ID framing remains separate from this request-policy helper."
+  ]
+}

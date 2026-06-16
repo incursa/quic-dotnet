@@ -451,6 +451,10 @@
         "upstream_refs": [
           "RFC 9298 section 3 RFC9298-S3-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesCapsuleProtocolHeader",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutCapsuleProtocol"
         ]
       }
     },
@@ -468,6 +472,10 @@
         "upstream_refs": [
           "RFC 9298 section 3 RFC9298-S3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken"
         ]
       }
     },
@@ -691,6 +699,10 @@
         "upstream_refs": [
           "RFC9298-S3-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_AcceptsRequestsWithoutMessageContent",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsMessageContent"
         ]
       }
     },
@@ -708,6 +720,10 @@
         "upstream_refs": [
           "RFC9298-S3-B11-P11-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
         ]
       }
     },
@@ -1223,6 +1239,10 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesConnectMethod",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsNonConnectMethod"
         ]
       },
       "notes": [
@@ -1243,6 +1263,10 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_IncludesConnectUdpProtocolToken",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsRequestsWithoutConnectUdpToken"
         ]
       },
       "notes": [
@@ -1263,6 +1287,10 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesUdpProxyAuthority",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsAuthorityOutsideTemplateProxyAuthority"
         ]
       },
       "notes": [
@@ -1283,6 +1311,10 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_UsesNonEmptySchemeAndPath",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsEmptySchemeOrPath"
         ]
       },
       "notes": [
@@ -1303,6 +1335,10 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestBuilder_PopulatesSchemeAndPathFromTemplate",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3RequestValidator_RejectsSchemeOrPathOutsideTemplateExpansion"
         ]
       },
       "notes": [
@@ -1323,6 +1359,10 @@
         "upstream_refs": [
           "RFC 9298 3.5 RFC9298-S3P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses"
         ]
       }
     },
@@ -1341,6 +1381,11 @@
           "RFC 9298 3.5 RFC9298-S3P5-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5",
           "[HTTP-DGRAM] 3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
         ]
       }
     },
@@ -1358,6 +1403,11 @@
         "upstream_refs": [
           "RFC 9298 3.5 RFC9298-S3P5-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_Accepts2xxCapsuleResponseWithoutContent",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsNonSuccessfulOrContentBearingStatuses",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpRequestPolicyTests.cs::Http3ResponseValidator_RejectsSuccessfulResponsesWithMessageContent"
         ]
       }
     },
@@ -2147,6 +2197,9 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9298-0001",
     "WI-QUIC-RFC9298-0001",
-    "VER-QUIC-RFC9298-0001"
+    "VER-QUIC-RFC9298-0001",
+    "ARC-QUIC-RFC9298-0002",
+    "WI-QUIC-RFC9298-0002",
+    "VER-QUIC-RFC9298-0002"
   ]
 }

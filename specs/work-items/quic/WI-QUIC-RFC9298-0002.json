@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP HTTP/3 Request Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0002",
+    "VER-QUIC-RFC9298-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0022",
+    "REQ-QUIC-RFC9298-0023",
+    "REQ-QUIC-RFC9298-0034",
+    "REQ-QUIC-RFC9298-0035",
+    "REQ-QUIC-RFC9298-0065",
+    "REQ-QUIC-RFC9298-0066",
+    "REQ-QUIC-RFC9298-0067",
+    "REQ-QUIC-RFC9298-0068",
+    "REQ-QUIC-RFC9298-0069",
+    "REQ-QUIC-RFC9298-0070",
+    "REQ-QUIC-RFC9298-0071",
+    "REQ-QUIC-RFC9298-0072"
+  ],
+  "summary": "Add HTTP/3 CONNECT-UDP request construction and response validation helpers with focused RFC 9298 proof.",
+  "planned_changes": "- Add `Http3ConnectUdp` with the connect-udp token, request-header construction, request validation, successful-response validation, and proceed/abort policy.\n- Compose the existing RFC 9220 Extended CONNECT and RFC 9297 Capsule Protocol helpers rather than adding transport I/O.\n- Add focused tests and canonical xrefs for the HTTP/3 request-policy slice.",
+  "verification_plan": "Run focused CONNECT-UDP request-policy tests, combined RFC 9298 focused tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0002"
+  ],
+  "out_of_scope": [
+    "HTTP/1.1 Upgrade CONNECT-UDP behavior.",
+    "UDP socket lifecycle and DNS resolution.",
+    "HTTP Datagram Context ID framing.",
+    "UDP payload forwarding, congestion guidance, ECN behavior, and vulnerable-target filtering."
+  ],
+  "completion_notes": "The RFC 9298 HTTP/3 CONNECT-UDP request-policy floor is implemented and verified locally."
+}
