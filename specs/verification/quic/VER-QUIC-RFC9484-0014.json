@@ -1,0 +1,63 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9484-0014",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-IP Operational and Registry Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0014",
+    "WI-QUIC-RFC9484-0014"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 CONNECT-IP operational and registry policy behavior.",
+  "verifies": [
+    "REQ-QUIC-RFC9484-0186",
+    "REQ-QUIC-RFC9484-0187",
+    "REQ-QUIC-RFC9484-0188",
+    "REQ-QUIC-RFC9484-0189",
+    "REQ-QUIC-RFC9484-0190",
+    "REQ-QUIC-RFC9484-0191",
+    "REQ-QUIC-RFC9484-0192",
+    "REQ-QUIC-RFC9484-0193",
+    "REQ-QUIC-RFC9484-0194",
+    "REQ-QUIC-RFC9484-0195",
+    "REQ-QUIC-RFC9484-0196",
+    "REQ-QUIC-RFC9484-0197",
+    "REQ-QUIC-RFC9484-0198",
+    "REQ-QUIC-RFC9484-0199",
+    "REQ-QUIC-RFC9484-0200",
+    "REQ-QUIC-RFC9484-0201",
+    "REQ-QUIC-RFC9484-0202",
+    "REQ-QUIC-RFC9484-0203",
+    "REQ-QUIC-RFC9484-0204",
+    "REQ-QUIC-RFC9484-0205",
+    "REQ-QUIC-RFC9484-0206",
+    "REQ-QUIC-RFC9484-0207",
+    "REQ-QUIC-RFC9484-0208",
+    "REQ-QUIC-RFC9484-0209",
+    "REQ-QUIC-RFC9484-0210",
+    "REQ-QUIC-RFC9484-0211",
+    "REQ-QUIC-RFC9484-0212",
+    "REQ-QUIC-RFC9484-0213"
+  ],
+  "scope": "This verification covers configuration-exchange capsule type guidance, burstiness and batching policy, DATAGRAM-only congestion-control disablement, HTTP/3 preference, QUIC DATAGRAM transmission and size limits, oversized IP packet drop and Packet Too Big feedback, ECN suppression and Not-ECT marking, DSCP differentiation and coalescing, authenticated-use restriction, persistent address-assignment avoidance, BCP 38 source-spoofing prevention, shared external-address ICMP forwarding and scope filtering, HTTP/1.x opportunistic-send prohibition and capsule delay, and MASQUE URI suffix Expert Review, token, distinctness, and approval guidance.",
+  "preconditions": [
+    "RFC 9484 CONNECT-IP forwarding and datagram support is implemented."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpOperationalPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0186|FullyQualifiedName~Http3ConnectIpOperationalPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused CONNECT-IP operational tests pass, core SpecTrace validation accepts the final RFC 9484 artifacts, generated triage reflects all RFC 9484 requirements as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpEcnCodepoint.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpOperationalPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs"
+  ],
+  "status_summary": "The final RFC 9484 operational and registry policy surface is trace-owned and verified by focused local gates."
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0014",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP Operational and Registry Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP operational, congestion-control, DSCP, security, HTTP/1.x intermediary, ICMP sharing, and MASQUE URI suffix registry policy helpers.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0014",
+    "VER-QUIC-RFC9484-0014"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0186",
+    "REQ-QUIC-RFC9484-0187",
+    "REQ-QUIC-RFC9484-0188",
+    "REQ-QUIC-RFC9484-0189",
+    "REQ-QUIC-RFC9484-0190",
+    "REQ-QUIC-RFC9484-0191",
+    "REQ-QUIC-RFC9484-0192",
+    "REQ-QUIC-RFC9484-0193",
+    "REQ-QUIC-RFC9484-0194",
+    "REQ-QUIC-RFC9484-0195",
+    "REQ-QUIC-RFC9484-0196",
+    "REQ-QUIC-RFC9484-0197",
+    "REQ-QUIC-RFC9484-0198",
+    "REQ-QUIC-RFC9484-0199",
+    "REQ-QUIC-RFC9484-0200",
+    "REQ-QUIC-RFC9484-0201",
+    "REQ-QUIC-RFC9484-0202",
+    "REQ-QUIC-RFC9484-0203",
+    "REQ-QUIC-RFC9484-0204",
+    "REQ-QUIC-RFC9484-0205",
+    "REQ-QUIC-RFC9484-0206",
+    "REQ-QUIC-RFC9484-0207",
+    "REQ-QUIC-RFC9484-0208",
+    "REQ-QUIC-RFC9484-0209",
+    "REQ-QUIC-RFC9484-0210",
+    "REQ-QUIC-RFC9484-0211",
+    "REQ-QUIC-RFC9484-0212",
+    "REQ-QUIC-RFC9484-0213"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpEcnCodepoint.cs",
+    "src/Incursa.Quic.Http3/Http3ConnectIpOperationalPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpOperationalPolicy` centralizes RFC 9484 guidance for configuration capsule types, burstiness, batching, DATAGRAM-only congestion-control disablement, HTTP/3 and QUIC DATAGRAM preference, QUIC DATAGRAM size limits and oversized-packet handling, ECN and DSCP behavior, authentication and address-assignment privacy, BCP 38 source-spoofing prevention, shared external-address ICMP forwarding, HTTP/1.x opportunistic-send and capsule-forwarding gates, and MASQUE URI suffix registry validation and expert-review approval.",
+  "data_and_state_considerations": "The helper is stateless. Operators and adapters provide deployment configuration, authentication state, congestion-control state, DSCP equivalence decisions, and registry inputs.",
+  "edge_cases_and_constraints": [
+    "Outer ECN signaling is suppressed and packets are marked Not-ECT when congestion control is disabled.",
+    "Inner DSCP values are not copied under outer congestion control and coalescing requires equivalent markings.",
+    "MASQUE URI suffix path segments must be token-only and distinct."
+  ],
+  "risks": [
+    "This policy surface records local decisions and validation helpers; production enforcement still belongs in the HTTP adapter and deployment configuration."
+  ]
+}

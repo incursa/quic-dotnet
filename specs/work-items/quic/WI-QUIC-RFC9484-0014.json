@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0014",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP Operational and Registry Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0014",
+    "VER-QUIC-RFC9484-0014"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0186",
+    "REQ-QUIC-RFC9484-0187",
+    "REQ-QUIC-RFC9484-0188",
+    "REQ-QUIC-RFC9484-0189",
+    "REQ-QUIC-RFC9484-0190",
+    "REQ-QUIC-RFC9484-0191",
+    "REQ-QUIC-RFC9484-0192",
+    "REQ-QUIC-RFC9484-0193",
+    "REQ-QUIC-RFC9484-0194",
+    "REQ-QUIC-RFC9484-0195",
+    "REQ-QUIC-RFC9484-0196",
+    "REQ-QUIC-RFC9484-0197",
+    "REQ-QUIC-RFC9484-0198",
+    "REQ-QUIC-RFC9484-0199",
+    "REQ-QUIC-RFC9484-0200",
+    "REQ-QUIC-RFC9484-0201",
+    "REQ-QUIC-RFC9484-0202",
+    "REQ-QUIC-RFC9484-0203",
+    "REQ-QUIC-RFC9484-0204",
+    "REQ-QUIC-RFC9484-0205",
+    "REQ-QUIC-RFC9484-0206",
+    "REQ-QUIC-RFC9484-0207",
+    "REQ-QUIC-RFC9484-0208",
+    "REQ-QUIC-RFC9484-0209",
+    "REQ-QUIC-RFC9484-0210",
+    "REQ-QUIC-RFC9484-0211",
+    "REQ-QUIC-RFC9484-0212",
+    "REQ-QUIC-RFC9484-0213"
+  ],
+  "summary": "Add CONNECT-IP operational, security, DSCP, HTTP/1.x intermediary, and MASQUE URI suffix registry policy helpers.",
+  "planned_changes": "- Add CONNECT-IP ECN codepoint and operational policy helpers.\n- Add congestion-control, QUIC DATAGRAM, ECN, DSCP, authentication, address-assignment privacy, BCP 38, ICMP sharing, HTTP/1.x, and registry validation tests.\n- Add canonical xrefs and close the RFC9484 blocked triage range.",
+  "verification_plan": "Run focused CONNECT-IP operational policy tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0014"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0014"
+  ],
+  "out_of_scope": [
+    "Deployment-specific authorization provider integration.",
+    "Actual packet scheduler integration.",
+    "External IANA registry publication."
+  ],
+  "completion_notes": "The final RFC 9484 operational and registry policy surface is implemented and verified locally."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T12:59:12.6533524-06:00",
+  "generated_at": "2026-06-16T13:06:54.1132466-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T12:59:12.6505185-06:00",
+    "generated_at": "2026-06-16T13:06:54.1105665-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2613,
-      "uncovered_blocked": 28
+      "trace_clean": 2641
     },
     "by_work_queue_tag": {
-      "blocked": 28,
-      "clean": 2613,
-      "new_tests_needed": 28
+      "clean": 2641
     },
     "by_rfc": [
       {
@@ -183,8 +180,7 @@
         "rfc": "RFC9484",
         "total": 213,
         "by_state": {
-          "trace_clean": 185,
-          "uncovered_blocked": 28
+          "trace_clean": 213
         }
       }
     ]
@@ -462139,39 +462135,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0186",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "method": "OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0186"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0186",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "method": "OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0186"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0186",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange",
+          "method": "OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0186"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0186",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange",
+          "method": "OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange",
+          "line": 21,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0186"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0187",
@@ -462186,40 +462266,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPermitIncreasedBurstiness"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0187",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "method": "OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "line": 30,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0187"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0187",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "method": "OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "line": 30,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0187"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0187",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotPermitIncreasedBurstiness",
+          "method": "OperationalPolicy_DoesNotPermitIncreasedBurstiness",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0187"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0187",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPermitIncreasedBurstiness",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotPermitIncreasedBurstiness",
+          "method": "OperationalPolicy_DoesNotPermitIncreasedBurstiness",
+          "line": 39,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0187"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0188",
@@ -462234,40 +462397,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsBatchingOnlyQueuePermission"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0188",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "method": "OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "line": 48,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0188"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0188",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "method": "OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "line": 48,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0188"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0188",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsBatchingOnlyQueuePermission",
+          "method": "OperationalPolicy_RejectsBatchingOnlyQueuePermission",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0188"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0188",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsBatchingOnlyQueuePermission",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsBatchingOnlyQueuePermission",
+          "method": "OperationalPolicy_RejectsBatchingOnlyQueuePermission",
+          "line": 57,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0188"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0189",
@@ -462282,40 +462528,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0189",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "method": "OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "line": 66,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0189"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0189",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "method": "OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "line": 66,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0189"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0189",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets",
+          "method": "OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets",
+          "line": 75,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0189"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0189",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets",
+          "method": "OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets",
+          "line": 75,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0189"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0190",
@@ -462330,40 +462659,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_PrefersHttp3ForIpProxying",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPreferNonHttp3IpProxying"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0190",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotPreferNonHttp3IpProxying",
+          "method": "OperationalPolicy_DoesNotPreferNonHttp3IpProxying",
+          "line": 93,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0190"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0190",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPreferNonHttp3IpProxying",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotPreferNonHttp3IpProxying",
+          "method": "OperationalPolicy_DoesNotPreferNonHttp3IpProxying",
+          "line": 93,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0190"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0190",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_PrefersHttp3ForIpProxying",
+          "method": "OperationalPolicy_PrefersHttp3ForIpProxying",
+          "line": 84,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0190"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0190",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_PrefersHttp3ForIpProxying",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_PrefersHttp3ForIpProxying",
+          "method": "OperationalPolicy_PrefersHttp3ForIpProxying",
+          "line": 84,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0190"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0191",
@@ -462378,40 +462790,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0191",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
+          "method": "OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
+          "line": 113,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0191"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0191",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
+          "method": "OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable",
+          "line": 113,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0191"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0191",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "method": "OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0191"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0191",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "method": "OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0191"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0192",
@@ -462426,40 +462921,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0192",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "method": "OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "line": 122,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0192"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0192",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "method": "OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "line": 122,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0192"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0192",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit",
+          "method": "OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit",
+          "line": 131,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0192"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0192",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit",
+          "method": "OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit",
+          "line": 131,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0192"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0193",
@@ -462474,40 +463052,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0193",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "method": "OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "line": 140,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0193"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0193",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "method": "OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "line": 140,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0193"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0193",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket",
+          "method": "OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket",
+          "line": 149,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0193"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0193",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket",
+          "method": "OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket",
+          "line": 149,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0193"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0194",
@@ -462522,40 +463183,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DropsOversizedIpPackets",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDropIpPacketsThatFit"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0194",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDropIpPacketsThatFit",
+          "method": "OperationalPolicy_DoesNotDropIpPacketsThatFit",
+          "line": 167,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0194"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0194",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDropIpPacketsThatFit",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDropIpPacketsThatFit",
+          "method": "OperationalPolicy_DoesNotDropIpPacketsThatFit",
+          "line": 167,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0194"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0194",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DropsOversizedIpPackets",
+          "method": "OperationalPolicy_DropsOversizedIpPackets",
+          "line": 158,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0194"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0194",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DropsOversizedIpPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DropsOversizedIpPackets",
+          "method": "OperationalPolicy_DropsOversizedIpPackets",
+          "line": 158,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0194"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0195",
@@ -462570,40 +463314,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0195",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets",
+          "method": "OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets",
+          "line": 185,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0195"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0195",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets",
+          "method": "OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets",
+          "line": 185,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0195"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0195",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "method": "OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "line": 176,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0195"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0195",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "method": "OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "line": 176,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0195"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0196",
@@ -462618,40 +463445,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0196",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "line": 194,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0196"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0196",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "line": 194,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0196"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0196",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
+          "line": 203,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0196"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0196",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled",
+          "line": 203,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0196"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0197",
@@ -462666,40 +463576,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0197",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled",
+          "line": 221,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0197"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0197",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled",
+          "method": "OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled",
+          "line": 221,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0197"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0197",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "method": "OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "line": 212,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0197"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0197",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "method": "OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "line": 212,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0197"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0198",
@@ -462714,23 +463707,25 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -462738,13 +463733,97 @@
         },
         "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "method": "OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "line": 230,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0198"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "method": "OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "line": 230,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0198"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
+          "method": "OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
+          "line": 239,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0198"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
+          "method": "OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
+          "line": 239,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0198"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0199",
@@ -462759,40 +463838,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0199",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "method": "OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "line": 248,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0199"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0199",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "method": "OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "line": 248,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0199"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0199",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "method": "OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "line": 257,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0199"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0199",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "method": "OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "line": 257,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0199"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0200",
@@ -462807,40 +463969,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0200",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "method": "OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "line": 266,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0200"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0200",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "method": "OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "line": 266,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0200"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0200",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "method": "OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "line": 275,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0200"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0200",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "method": "OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "line": 275,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0200"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0201",
@@ -462855,23 +464100,25 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -462879,13 +464126,97 @@
         },
         "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
+          "method": "OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
+          "line": 293,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0201"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
+          "method": "OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
+          "line": 293,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0201"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "method": "OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "line": 284,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0201"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "method": "OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "line": 284,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0201"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0202",
@@ -462900,40 +464231,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "method": "OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "line": 302,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0202"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "method": "OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "line": 302,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0202"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
+          "method": "OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
+          "line": 311,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0202"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
+          "method": "OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
+          "line": 311,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0202"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0203",
@@ -462948,40 +464362,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsUnauthenticatedIpProxyingUse"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
+          "method": "OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
+          "line": 330,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0203"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
+          "method": "OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
+          "line": 330,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0203"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "method": "OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "line": 320,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0203"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "method": "OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "line": 320,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0203"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0204",
@@ -462996,40 +464493,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
+          "method": "OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
+          "line": 349,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0204"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
+          "method": "OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
+          "line": 349,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0204"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "method": "OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "line": 339,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0204"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "method": "OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "line": 339,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0204"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0205",
@@ -463044,40 +464624,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0205",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention",
+          "method": "OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention",
+          "line": 367,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0205"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0205",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention",
+          "method": "OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention",
+          "line": 367,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0205"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0205",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "method": "OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "line": 358,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0205"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0205",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "method": "OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "line": 358,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0205"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0206",
@@ -463092,40 +464755,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0206",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses",
+          "method": "OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses",
+          "line": 385,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0206"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0206",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses",
+          "method": "OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses",
+          "line": 385,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0206"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0206",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "method": "OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "line": 376,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0206"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0206",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "method": "OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "line": 376,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0206"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0207",
@@ -463140,40 +464886,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0207",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "method": "OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "line": 394,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0207"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0207",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "method": "OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "line": 394,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0207"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0207",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch",
+          "method": "OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch",
+          "line": 403,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0207"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0207",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch",
+          "method": "OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch",
+          "line": 403,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0207"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0208",
@@ -463188,40 +465017,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0208",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "method": "OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "line": 412,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0208"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0208",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "method": "OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "line": 412,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0208"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0208",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x",
+          "method": "OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x",
+          "line": 421,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0208"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0208",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x",
+          "method": "OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x",
+          "line": 421,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0208"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0209",
@@ -463236,40 +465148,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0209",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse",
+          "method": "OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse",
+          "line": 439,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0209"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0209",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse",
+          "method": "OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse",
+          "line": 439,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0209"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0209",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "method": "OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "line": 430,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0209"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0209",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "method": "OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "line": 430,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0209"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0210",
@@ -463284,40 +465279,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0210",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy",
+          "method": "OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy",
+          "line": 457,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0210"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0210",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy",
+          "method": "OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy",
+          "line": 457,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0210"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0210",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "method": "OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "line": 448,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0210"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0210",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "method": "OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "line": 448,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0210"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0211",
@@ -463332,40 +465410,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AcceptsTokenRegistryPathSegments",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonTokenRegistryPathSegments"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0211",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "method": "OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "line": 466,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0211"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0211",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "method": "OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "line": 466,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0211"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0211",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonTokenRegistryPathSegments",
+          "method": "OperationalPolicy_RejectsNonTokenRegistryPathSegments",
+          "line": 476,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0211"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0211",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonTokenRegistryPathSegments",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsNonTokenRegistryPathSegments",
+          "method": "OperationalPolicy_RejectsNonTokenRegistryPathSegments",
+          "line": 476,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0211"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0212",
@@ -463380,40 +465541,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresDistinctRegistryPathSegments",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDuplicateRegistryPathSegments"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0212",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsDuplicateRegistryPathSegments",
+          "method": "OperationalPolicy_RejectsDuplicateRegistryPathSegments",
+          "line": 495,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0212"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0212",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDuplicateRegistryPathSegments",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsDuplicateRegistryPathSegments",
+          "method": "OperationalPolicy_RejectsDuplicateRegistryPathSegments",
+          "line": 495,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0212"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0212",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "method": "OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "line": 486,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0212"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0212",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "method": "OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "line": 486,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0212"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9484-0213",
@@ -463428,40 +465672,123 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-ip-masque",
-          "summary": "RFC 9484 CONNECT-IP/MASQUE requirements remain blocked after the implemented foundation, URI Template, request-policy, tunnel setup, HTTP/1.1 upgrade, HTTP/2/HTTP/3 Extended CONNECT, target/ipproto scope, ADDRESS_ASSIGN, ADDRESS_REQUEST, ROUTE_ADVERTISEMENT, HTTP Datagram Context ID, and forwarding/MTU policy slices; remaining work covers operational, security, and registry policy."
+          "requirement_id": "REQ-QUIC-RFC9484-0213",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "method": "OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "line": 504,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0213"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0213",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "method": "OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "line": 504,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0213"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0213",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest",
+          "method": "OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest",
+          "line": 513,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0213"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9484-0213",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
+          "class": "Http3ConnectIpOperationalPolicyTests",
+          "member": "Http3ConnectIpOperationalPolicyTests.OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest",
+          "method": "OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest",
+          "line": 513,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0213"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
-      ],
-      "evidence": []
+      ]
     }
   ]
 }

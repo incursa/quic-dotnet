@@ -3960,6 +3960,10 @@
         "upstream_refs": [
           "RFC 9484 §9 RFC9484-S9-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange"
         ]
       },
       "notes": [
@@ -3981,6 +3985,10 @@
           "RFC 9484 Section 10 RFC9484-S10-B1-P1-S1",
           "RFC 9484 Section 10 RFC9484-S10-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPermitIncreasedBurstiness"
         ]
       },
       "notes": [
@@ -4001,6 +4009,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10 RFC9484-S10-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsBatchingOnlyQueuePermission"
         ]
       },
       "notes": [
@@ -4021,6 +4033,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10 RFC9484-S10-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets"
         ]
       }
     },
@@ -4038,6 +4054,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10 RFC9484-S10-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_PrefersHttp3ForIpProxying",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotPreferNonHttp3IpProxying"
         ]
       }
     },
@@ -4055,6 +4075,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_UsesQuicDatagramFramesWhenAvailable",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseQuicDatagramFramesWhenUnavailable"
         ]
       }
     },
@@ -4072,6 +4096,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit"
         ]
       }
     },
@@ -4089,6 +4117,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket"
         ]
       }
     },
@@ -4106,6 +4138,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DropsOversizedIpPackets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDropIpPacketsThatFit"
         ]
       }
     },
@@ -4123,6 +4159,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.1 RFC9484-S10P1-B1-P1-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_SendsPacketTooBigForOversizedIpPackets",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSendPacketTooBigForFittingIpPackets"
         ]
       }
     },
@@ -4140,6 +4180,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.2 RFC9484-S10P2-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotSignalEcnWhenCongestionControlDisabled",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled"
         ]
       },
       "notes": [
@@ -4160,6 +4204,10 @@
         "upstream_refs": [
           "RFC 9484 Section 10.2 RFC9484-S10P2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_MarksOutsideCongestionControlPacketsNotEct",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotUseEctWhenCongestionControlDisabled"
         ]
       },
       "notes": [
@@ -4180,6 +4228,10 @@
         "upstream_refs": [
           "RFC 9484 10.3 RFC9484-S10P3-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain"
         ]
       }
     },
@@ -4197,6 +4249,10 @@
         "upstream_refs": [
           "RFC 9484 10.3 RFC9484-S10P3-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsEquivalentDscpMarkingsUnderOuterCongestionControl",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonEquivalentDscpMarkingsUnderOuterCongestionControl"
         ]
       }
     },
@@ -4214,6 +4270,10 @@
         "upstream_refs": [
           "RFC 9484 10.3 RFC9484-S10P3-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCopyInnerDscpToOuterHeaderUnderOuterCongestionControl",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsCopyingInnerDscpToOuterHeaderUnderOuterCongestionControl"
         ]
       },
       "notes": [
@@ -4234,6 +4294,10 @@
         "upstream_refs": [
           "RFC 9484 10.3 RFC9484-S10P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies"
         ]
       },
       "notes": [
@@ -4254,6 +4318,10 @@
         "upstream_refs": [
           "RFC 9484 10.3 RFC9484-S10P3-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-10.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic"
         ]
       },
       "notes": [
@@ -4274,6 +4342,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsUnauthenticatedIpProxyingUse"
         ]
       }
     },
@@ -4291,6 +4363,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B2-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable"
         ]
       }
     },
@@ -4308,6 +4384,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B3-P3-S5",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_FollowsBcp38SourceSpoofingPrevention",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention"
         ]
       }
     },
@@ -4325,6 +4405,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsIcmpPacketsDestinedForSharedExternalAddress",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotForwardIcmpPacketsForOtherAddresses"
         ]
       }
     },
@@ -4342,6 +4426,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsSharedExternalIcmpOnlyToMatchingScope",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsSharedExternalIcmpWhenScopeDoesNotMatch"
         ]
       },
       "notes": [
@@ -4362,6 +4450,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsOpportunisticSendingOutsideHttp1x",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ProhibitsOpportunisticSendingInHttp1x"
         ]
       }
     },
@@ -4379,6 +4471,10 @@
         "upstream_refs": [
           "RFC9484 section 11 RFC9484-S11-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-11"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ForwardsCapsulesAfterSuccessfulIpProxyingResponse",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DelaysCapsulesBeforeSuccessfulIpProxyingResponse"
         ]
       },
       "notes": [
@@ -4399,6 +4495,10 @@
         "upstream_refs": [
           "RFC 9484 Section 12.2 RFC9484-S12P2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresExpertReviewRegistrationPolicy",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonExpertReviewRegistrationPolicy"
         ]
       }
     },
@@ -4416,6 +4516,10 @@
         "upstream_refs": [
           "RFC 9484 Section 12.2 RFC9484-S12P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AcceptsTokenRegistryPathSegments",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsNonTokenRegistryPathSegments"
         ]
       }
     },
@@ -4433,6 +4537,10 @@
         "upstream_refs": [
           "RFC 9484 Section 12.2 RFC9484-S12P2-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RequiresDistinctRegistryPathSegments",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsDuplicateRegistryPathSegments"
         ]
       }
     },
@@ -4450,6 +4558,10 @@
         "upstream_refs": [
           "RFC 9484 12.2 RFC9484-S12P2-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-12.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_ApprovesRelevantNonConflictingMasqueUriSuffixRequest",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsConflictingOrIrrelevantMasqueUriSuffixRequest"
         ]
       }
     }
