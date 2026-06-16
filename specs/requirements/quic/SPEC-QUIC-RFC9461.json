@@ -27,6 +27,11 @@
         "upstream_refs": [
           "RFC 9461 section 3 RFC9461-S3-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNamePreservesAbsoluteHostnameForm",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameRejectsInvalidAuthenticationHostnames"
         ]
       }
     },
@@ -44,6 +49,10 @@
         "upstream_refs": [
           "RFC 9461 section 3 RFC9461-S3-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameRejectsInvalidNames"
         ]
       }
     },
@@ -61,6 +70,10 @@
         "upstream_refs": [
           "RFC 9461 3.1 RFC9461-S3P1-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
         ]
       }
     },
@@ -78,6 +91,11 @@
         "upstream_refs": [
           "RFC 9461 3.1 RFC9461-S3P1-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
         ]
       }
     },
@@ -163,6 +181,11 @@
         "upstream_refs": [
           "RFC9461-S4-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
         ]
       }
     },
@@ -537,6 +560,10 @@
         "upstream_refs": [
           "RFC 9461 9 RFC9461-S9-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
         ]
       },
       "notes": [
@@ -608,6 +635,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeIsDns",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeDoesNotUseTransportSpecificAliases"
         ]
       }
     },
@@ -659,6 +690,11 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
         ]
       }
     },
@@ -693,6 +729,11 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
         ]
       }
     }

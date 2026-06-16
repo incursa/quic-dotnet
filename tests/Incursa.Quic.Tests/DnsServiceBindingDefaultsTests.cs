@@ -15,6 +15,17 @@ public sealed class DnsServiceBindingDefaultsTests
         Assert.Equal("_dns", DnsServiceBindingDefaults.NodeName);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9461-0033")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void SchemeDoesNotUseTransportSpecificAliases()
+    {
+        Assert.NotEqual("doq", DnsServiceBindingDefaults.Scheme);
+        Assert.NotEqual("_doq", DnsServiceBindingDefaults.NodeName);
+        Assert.NotEqual("_dns-quic", DnsServiceBindingDefaults.NodeName);
+    }
+
     [Theory]
     [InlineData(DnsServiceTransport.CleartextUdp, 53)]
     [InlineData(DnsServiceTransport.CleartextTcp, 53)]
@@ -29,6 +40,18 @@ public sealed class DnsServiceBindingDefaultsTests
     public void GetDefaultPortReturnsPerTransportDefaults(DnsServiceTransport transport, int expectedPort)
     {
         Assert.Equal(expectedPort, DnsServiceBindingDefaults.GetDefaultPort(transport));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9461-0003")]
+    [Requirement("REQ-QUIC-RFC9461-0009")]
+    [Requirement("REQ-QUIC-RFC9461-0038")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void GetDefaultPortRejectsUnknownTransport()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            DnsServiceBindingDefaults.GetDefaultPort((DnsServiceTransport)int.MaxValue));
     }
 
     [Theory]
@@ -48,6 +71,8 @@ public sealed class DnsServiceBindingDefaultsTests
     [Theory]
     [InlineData(-1)]
     [InlineData(65536)]
+    [Requirement("REQ-QUIC-RFC9461-0004")]
+    [Requirement("REQ-QUIC-RFC9461-0029")]
     [Requirement("REQ-QUIC-RFC9461-0036")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -89,6 +114,20 @@ public sealed class DnsServiceBindingDefaultsTests
             DnsServiceTransport.DnsOverQuic);
 
         Assert.Equal("_853._dns.resolver.example.", serviceName);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("[2001:db8::1]")]
+    [InlineData("_resolver.example")]
+    [InlineData("resolver..example")]
+    [Requirement("REQ-QUIC-RFC9461-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CreateServiceNameRejectsInvalidAuthenticationHostnames(string authenticationName)
+    {
+        Assert.Throws<ArgumentException>(() =>
+            DnsServiceBindingDefaults.CreateServiceName(authenticationName, DnsServiceTransport.DnsOverQuic));
     }
 
     [Theory]

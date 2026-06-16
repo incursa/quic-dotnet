@@ -1074,10 +1074,13 @@ foreach ($tag in 'clean', 'coverage_contract_needed', 'metadata_only', 'restruct
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('## Queue')
 [void]$markdown.AppendLine()
+$metadataQueueCount = if ($summary.by_work_queue_tag.Contains('metadata_only')) { $summary.by_work_queue_tag['metadata_only'] } else { 0 }
+$restructureQueueCount = if ($summary.by_work_queue_tag.Contains('restructure_needed')) { $summary.by_work_queue_tag['restructure_needed'] } else { 0 }
+$newTestsQueueCount = if ($summary.by_work_queue_tag.Contains('new_tests_needed')) { $summary.by_work_queue_tag['new_tests_needed'] } else { 0 }
 [void]$markdown.AppendLine("- Missing coverage contracts: $coverageContractQueueCount requirements. Examples: $([string]::Join(', ', $coverageContractExamples)).")
-[void]$markdown.AppendLine("- Metadata-only fixes: $($summary.by_work_queue_tag['metadata_only']) requirements. Examples: $([string]::Join(', ', $metadataExamples)).")
-[void]$markdown.AppendLine("- Restructure-needed proof: $($summary.by_work_queue_tag['restructure_needed']) requirements. Examples: $([string]::Join(', ', $restructureExamples)).")
-[void]$markdown.AppendLine("- New proof or implementation work: $($summary.by_work_queue_tag['new_tests_needed']) requirements. Examples: $([string]::Join(', ', $newTestExamples)).")
+[void]$markdown.AppendLine("- Metadata-only fixes: $metadataQueueCount requirements. Examples: $([string]::Join(', ', $metadataExamples)).")
+[void]$markdown.AppendLine("- Restructure-needed proof: $restructureQueueCount requirements. Examples: $([string]::Join(', ', $restructureExamples)).")
+[void]$markdown.AppendLine("- New proof or implementation work: $newTestsQueueCount requirements. Examples: $([string]::Join(', ', $newTestExamples)).")
 [void]$markdown.AppendLine("- Blocked by recorded gap families: $blockedQueueCount requirements. Examples: $([string]::Join(', ', $blockedExamples)).")
 [void]$markdown.AppendLine()
 [void]$markdown.AppendLine('## RFC Breakdown')

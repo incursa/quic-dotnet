@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T04:51:32.7733756-06:00",
+  "generated_at": "2026-06-16T05:05:46.0137351-06:00",
   "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -34,20 +34,18 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T04:51:32.7696292-06:00",
+    "generated_at": "2026-06-16T05:05:46.0054763-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "covered_but_missing_xrefs": 2,
-      "partially_covered": 17,
-      "trace_clean": 1994,
+      "partially_covered": 10,
+      "trace_clean": 2003,
       "uncovered_blocked": 628
     },
     "by_work_queue_tag": {
       "blocked": 628,
-      "clean": 1994,
-      "metadata_only": 2,
-      "new_tests_needed": 645,
-      "restructure_needed": 17
+      "clean": 2003,
+      "new_tests_needed": 638,
+      "restructure_needed": 10
     },
     "by_rfc": [
       {
@@ -166,8 +164,7 @@
         "rfc": "RFC9461",
         "total": 38,
         "by_state": {
-          "covered_but_missing_xrefs": 2,
-          "partially_covered": 7,
+          "trace_clean": 9,
           "uncovered_blocked": 29
         }
       },
@@ -366856,31 +366853,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNamePreservesAbsoluteHostnameForm",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameRejectsInvalidAuthenticationHostnames"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
-          "negative": 0,
-          "edge": 1,
+          "positive": 4,
+          "negative": 2,
+          "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -366897,7 +366895,33 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
           "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "line": 71,
+          "line": 96,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001",
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0036",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -366923,12 +366947,78 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNamePreservesAbsoluteHostnameForm",
           "method": "CreateServiceNamePreservesAbsoluteHostnameForm",
-          "line": 85,
+          "line": 110,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNamePreservesAbsoluteHostnameForm",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNamePreservesAbsoluteHostnameForm",
+          "method": "CreateServiceNamePreservesAbsoluteHostnameForm",
+          "line": 110,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameRejectsInvalidAuthenticationHostnames",
+          "method": "CreateServiceNameRejectsInvalidAuthenticationHostnames",
+          "line": 127,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0001",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameRejectsInvalidAuthenticationHostnames",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameRejectsInvalidAuthenticationHostnames",
+          "method": "CreateServiceNameRejectsInvalidAuthenticationHostnames",
+          "line": 127,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -367012,22 +367102,25 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameRejectsInvalidNames"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
-          "negative": 1,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -367050,7 +367143,29 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
           "method": "AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
-          "line": 102,
+          "line": 141,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
+          "method": "AuthenticationNameAcceptsDnsHostnamesAndLiteralIpAddresses",
+          "line": 141,
           "kinds": [
             "positive"
           ],
@@ -367072,7 +367187,29 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.AuthenticationNameRejectsInvalidNames",
           "method": "AuthenticationNameRejectsInvalidNames",
-          "line": 115,
+          "line": 154,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0002",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::AuthenticationNameRejectsInvalidNames",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.AuthenticationNameRejectsInvalidNames",
+          "method": "AuthenticationNameRejectsInvalidNames",
+          "line": 154,
           "kinds": [
             "negative"
           ],
@@ -367161,31 +367298,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 1,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -367200,9 +367337,81 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
           "method": "GetDefaultPortReturnsPerTransportDefaults",
-          "line": 29,
+          "line": 40,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0003",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
+          "method": "GetDefaultPortReturnsPerTransportDefaults",
+          "line": 40,
           "kinds": [
             "positive"
           ],
@@ -367293,31 +367502,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 4,
-          "negative": 0,
+          "positive": 6,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -367334,7 +367544,33 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
           "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "line": 71,
+          "line": 96,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001",
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0036",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -367358,9 +367594,81 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
+          "method": "CreateServicePrefixRejectsInvalidPorts",
+          "line": 79,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
+          "method": "CreateServicePrefixRejectsInvalidPorts",
+          "line": 79,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
           "method": "CreateServicePrefixUsesPortPrefixNaming",
-          "line": 43,
+          "line": 66,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0004",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
+          "method": "CreateServicePrefixUsesPortPrefixNaming",
+          "line": 66,
           "kinds": [
             "positive"
           ],
@@ -367643,31 +367951,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 4,
-          "negative": 0,
+          "positive": 6,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -367684,7 +367993,33 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
           "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "line": 71,
+          "line": 96,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001",
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0036",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -367708,9 +368043,81 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0009",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
           "method": "GetDefaultPortReturnsPerTransportDefaults",
-          "line": 29,
+          "line": 40,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0009",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
+          "method": "GetDefaultPortReturnsPerTransportDefaults",
+          "line": 40,
           "kinds": [
             "positive"
           ],
@@ -368713,31 +369120,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 1,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -368752,9 +369159,81 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
+          "method": "CreateServicePrefixRejectsInvalidPorts",
+          "line": 79,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0029",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
+          "method": "CreateServicePrefixRejectsInvalidPorts",
+          "line": 79,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0029",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
           "method": "CreateServicePrefixUsesPortPrefixNaming",
-          "line": 43,
+          "line": 66,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0029",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
+          "method": "CreateServicePrefixUsesPortPrefixNaming",
+          "line": 66,
           "kinds": [
             "positive"
           ],
@@ -368989,31 +369468,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeIsDns",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeDoesNotUseTransportSpecificAliases"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 1,
+        "total": 6,
+        "focused": 4,
         "broad": 2,
         "by_kind": {
-          "positive": 3,
-          "negative": 0,
+          "positive": 4,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -369026,6 +369505,72 @@
           "requirement_id": "REQ-QUIC-RFC9461-0033",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.SchemeDoesNotUseTransportSpecificAliases",
+          "method": "SchemeDoesNotUseTransportSpecificAliases",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeDoesNotUseTransportSpecificAliases",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.SchemeDoesNotUseTransportSpecificAliases",
+          "method": "SchemeDoesNotUseTransportSpecificAliases",
+          "line": 22,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0033",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.SchemeIsDns",
+          "method": "SchemeIsDns",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0033"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0033",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::SchemeIsDns",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.SchemeIsDns",
@@ -369215,22 +369760,26 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_missing_xrefs",
-      "primary_issue": "spec_metadata",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "metadata_only"
+        "clean"
       ],
-      "rationale": "Focused proof exists in source, but the canonical spec x_test_refs are missing or no longer resolve cleanly.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 3,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 4,
-          "negative": 1,
+          "positive": 6,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -369253,7 +369802,33 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
           "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "line": 71,
+          "line": 96,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001",
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0036",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0036",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -369279,7 +369854,7 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
           "method": "CreateServicePrefixRejectsInvalidPorts",
-          "line": 54,
+          "line": 79,
           "kinds": [
             "negative"
           ],
@@ -369288,6 +369863,32 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0036",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixRejectsInvalidPorts",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixRejectsInvalidPorts",
+          "method": "CreateServicePrefixRejectsInvalidPorts",
+          "line": 79,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
             "REQ-QUIC-RFC9461-0036"
           ],
           "requirement_tagged": true,
@@ -369301,7 +369902,31 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
           "method": "CreateServicePrefixUsesPortPrefixNaming",
-          "line": 43,
+          "line": 66,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0029",
+            "REQ-QUIC-RFC9461-0036"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0036",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServicePrefixUsesPortPrefixNaming",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServicePrefixUsesPortPrefixNaming",
+          "method": "CreateServicePrefixUsesPortPrefixNaming",
+          "line": 66,
           "kinds": [
             "positive"
           ],
@@ -369440,31 +370065,32 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "partially_covered",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Some focused proof exists, but one or more required proof dimensions are still missing.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 2,
+        "total": 8,
+        "focused": 6,
         "broad": 2,
         "by_kind": {
-          "positive": 4,
-          "negative": 0,
+          "positive": 6,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -369481,7 +370107,33 @@
           "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
           "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "line": 71,
+          "line": 96,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0001",
+            "REQ-QUIC-RFC9461-0004",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0036",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0038",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "method": "CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
+          "line": 96,
           "kinds": [
             "positive"
           ],
@@ -369505,9 +370157,81 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
           "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0038",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortRejectsUnknownTransport",
+          "method": "GetDefaultPortRejectsUnknownTransport",
+          "line": 51,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0038",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
           "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
           "method": "GetDefaultPortReturnsPerTransportDefaults",
-          "line": 29,
+          "line": 40,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0003",
+            "REQ-QUIC-RFC9461-0009",
+            "REQ-QUIC-RFC9461-0038"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0038",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+          "class": "DnsServiceBindingDefaultsTests",
+          "member": "DnsServiceBindingDefaultsTests.GetDefaultPortReturnsPerTransportDefaults",
+          "method": "GetDefaultPortReturnsPerTransportDefaults",
+          "line": 40,
           "kinds": [
             "positive"
           ],
