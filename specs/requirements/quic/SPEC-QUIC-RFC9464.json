@@ -22,6 +22,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.1 RFC9464-S3P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeDecodeRejectsMalformedFieldLengths",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeEncodeWritesHeaderAndFieldsInRfc9464Order"
         ]
       }
     },
@@ -107,7 +111,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::Ip4AttributeComputesTwoOctetLengthFromAdnAddressAndServiceParameterBytes",
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::Ip6AttributeComputesTwoOctetLengthFromAdnAddressAndServiceParameterBytes",
-          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeLengthIsNotSignedOrWidened"
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeLengthIsNotSignedOrWidened",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeEncodeWritesHeaderAndFieldsInRfc9464Order"
         ]
       }
     },
@@ -209,6 +214,11 @@
         "upstream_refs": [
           "RFC 9464 Section 3.1 RFC9464-S3P1-B11-P11-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeDecodeIgnoresReservedBitAndPreservesWireParameters",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeDecodeRejectsMalformedFieldLengths",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeEncodeWritesHeaderAndFieldsInRfc9464Order"
         ]
       }
     },
@@ -226,6 +236,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.1 RFC9464-S3P1-B11-P11-S3",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeAcceptsNonZeroPriorityAndReplyAddressCount",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeRejectsAliasModeZeroOnEncodeAndDecode"
         ]
       }
     },
@@ -243,6 +257,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.1 RFC9464-S3P1-B12-P12-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeAcceptsNonZeroPriorityAndReplyAddressCount",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeDecodeRejectsZeroAddressCountForReplyAndSet"
         ]
       }
     },
@@ -367,6 +385,10 @@
           "RFC 9464 3.1 RFC9464-S3P1-B17-P17-S1",
           "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeEncodeWritesHeaderAndFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeRejectsForbiddenHintServiceParametersByNumericKey"
         ]
       }
     },
@@ -387,7 +409,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributePreservesNonHintServiceParameterKeysForAllAddresses",
-          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeRejectsAddressHintServiceParameters"
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeRejectsAddressHintServiceParameters",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::IpAttributeRejectsForbiddenHintServiceParametersByNumericKey"
         ]
       }
     },
@@ -426,6 +449,10 @@
         "upstream_refs": [
           "RFC 9464 3.2 RFC9464-S3P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyDecodeRejectsMalformedLayoutAndLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order"
         ]
       }
     },
@@ -443,6 +470,10 @@
         "upstream_refs": [
           "RFC 9464 3.2 RFC9464-S3P2-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRequestDecodeRejectsMalformedHeaderFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRequestEncodeWritesFieldsInRfc9464Order"
         ]
       }
     },
@@ -651,6 +682,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.2 RFC9464-S3P2-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAcceptsRegisteredAndPrivateUseHashAlgorithmIdentifiers",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRejectsUnregisteredHashAlgorithmIdentifier"
         ]
       }
     },
@@ -689,6 +724,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.2 RFC9464-S3P2-B19-P19-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyDecodeRejectsMalformedLayoutAndLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order"
         ]
       }
     },
@@ -748,6 +787,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.2 RFC9464-S3P2-B23-P23-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRequestDecodeRejectsMalformedHeaderFields",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRequestEncodeWritesFieldsInRfc9464Order"
         ]
       },
       "notes": [
@@ -768,6 +811,10 @@
         "upstream_refs": [
           "RFC 9464 Section 3.2 RFC9464-S3P2-B24-P24-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyDecodeRejectsMalformedLayoutAndLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order"
         ]
       },
       "notes": [
@@ -788,6 +835,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B25-P25-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyRejectsHashAlgorithmCountOtherThanOne",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyUsesOneSelectedHashAlgorithm"
         ]
       }
     },
@@ -805,6 +857,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B26-P26-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyAdnLengthMatchesAuthenticationDomainNameBytes",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyRejectsAdnLengthBeyondAvailableData"
         ]
       }
     },
@@ -822,6 +879,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B26-P26-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoNonZeroAdnLengthDoesNotApplyToProvisioningAttributeAdn",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoZeroAdnLengthAppliesToProvisioningAttributeAdn"
         ]
       }
     },
@@ -839,6 +901,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAcceptsFullyQualifiedAuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRejectsInvalidAuthenticationDomainNames",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order"
         ]
       }
     },
@@ -856,6 +923,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAuthenticationDomainNameOmitsTerminators",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRejectsInvalidAuthenticationDomainNames",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order"
         ]
       },
       "notes": [
@@ -876,6 +948,10 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B27-P27-S3",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAuthenticationDomainNameRequiresMultipleProvisionedNames",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoIncludesAuthenticationDomainNameWhenMultipleNamesArePresent"
         ]
       },
       "notes": [
@@ -896,6 +972,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B28-P28-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyPreservesSelectedHashIdentifierAndDigest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyRejectsInvalidHashDigestAndDigestLength"
         ]
       }
     },
@@ -913,6 +994,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B29-P29-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyPreservesSelectedHashIdentifierAndDigest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyRejectsInvalidHashDigestAndDigestLength"
         ]
       }
     },
@@ -930,6 +1016,11 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B29-P29-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyEncodeWritesDigestFieldsInRfc9464Order",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyPreservesSelectedHashIdentifierAndDigest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoReplyRejectsInvalidHashDigestAndDigestLength"
         ]
       }
     },
@@ -947,6 +1038,10 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B30-P30-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAckEncodesZeroLengthData",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoZeroLengthDataIsLimitedToAck"
         ]
       }
     },
@@ -964,6 +1059,10 @@
         "upstream_refs": [
           "RFC 9464 section 3.2 RFC9464-S3P2-B30-P30-S2",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoAckEncodesZeroLengthData",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoZeroLengthDataIsLimitedToAck"
         ]
       },
       "notes": [
@@ -1397,6 +1496,10 @@
         "upstream_refs": [
           "RFC 9464 section 5 RFC9464-S5-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoComputesSha2256SubjectPublicKeyInfoDigest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRejectsEmptySpkiDigestInputAndUnknownHashIdentifier"
         ]
       },
       "notes": [
@@ -1417,6 +1520,10 @@
         "upstream_refs": [
           "RFC 9464 section 5 RFC9464-S5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9464.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoComputesSha2256SubjectPublicKeyInfoDigest",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs::DigestInfoRejectsEmptySpkiDigestInputAndUnknownHashIdentifier"
         ]
       },
       "notes": [
@@ -1447,6 +1554,9 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9464-0001",
     "WI-QUIC-RFC9464-0001",
-    "VER-QUIC-RFC9464-0001"
+    "VER-QUIC-RFC9464-0001",
+    "ARC-QUIC-RFC9464-0002",
+    "WI-QUIC-RFC9464-0002",
+    "VER-QUIC-RFC9464-0002"
   ]
 }

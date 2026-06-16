@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9464-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Provisioning RFC 9464 Wire Codec Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9464 ENCDNS_IP* and ENCDNS_DIGEST_INFO byte-level codec boundary without adding a full IKEv2 exchange implementation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9464-0002",
+    "VER-QUIC-RFC9464-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9464-0001",
+    "REQ-QUIC-RFC9464-0005",
+    "REQ-QUIC-RFC9464-0010",
+    "REQ-QUIC-RFC9464-0011",
+    "REQ-QUIC-RFC9464-0012",
+    "REQ-QUIC-RFC9464-0018",
+    "REQ-QUIC-RFC9464-0019",
+    "REQ-QUIC-RFC9464-0021",
+    "REQ-QUIC-RFC9464-0022",
+    "REQ-QUIC-RFC9464-0032",
+    "REQ-QUIC-RFC9464-0034",
+    "REQ-QUIC-RFC9464-0037",
+    "REQ-QUIC-RFC9464-0038",
+    "REQ-QUIC-RFC9464-0039",
+    "REQ-QUIC-RFC9464-0040",
+    "REQ-QUIC-RFC9464-0041",
+    "REQ-QUIC-RFC9464-0042",
+    "REQ-QUIC-RFC9464-0043",
+    "REQ-QUIC-RFC9464-0044",
+    "REQ-QUIC-RFC9464-0045",
+    "REQ-QUIC-RFC9464-0046",
+    "REQ-QUIC-RFC9464-0047",
+    "REQ-QUIC-RFC9464-0048",
+    "REQ-QUIC-RFC9464-0049",
+    "REQ-QUIC-RFC9464-0074",
+    "REQ-QUIC-RFC9464-0075"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningDigestInfoAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningServiceParameter.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs"
+  ],
+  "design_summary": "The wire codec extends the scalar RFC 9464 helpers with deterministic IKEv2 configuration-attribute header encoding, ENCDNS_IP* field ordering, RFC 9460 SvcParam key/length/value encoding, reserved-bit-tolerant decoding, AliasMode rejection, CFG_REPLY/CFG_SET zero-address rejection, ENCDNS_DIGEST_INFO request/reply/set/ACK field ordering, registered-hash-identifier validation, and SHA2-256 SPKI digest computation over caller-supplied DER SPKI bytes.",
+  "data_and_state_considerations": "The codec remains a pure DNS helper. It accepts and emits attribute byte arrays only; it does not perform IKEv2 negotiation, own resolver provisioning state, open encrypted DNS sessions, or validate certificates against a live TLS handshake.",
+  "edge_cases_and_constraints": [
+    "The received IKEv2 reserved bit is masked before attribute type dispatch.",
+    "RFC 9460 SvcParams are normalized to strictly increasing numeric keys and duplicate keys are rejected.",
+    "ENCDNS_IP* service priority zero is rejected because RFC 9464 forbids AliasMode in this context.",
+    "ENCDNS_DIGEST_INFO CFG_ACK encodes and decodes only zero-length attribute data."
+  ],
+  "risks": [
+    "This slice does not implement full IKEv2 Configuration payload framing or error-notify behavior.",
+    "This slice does not choose among provisioned resolvers, establish encrypted DNS sessions, or enforce split-tunnel policy.",
+    "This slice computes SHA2-256 over a DER SPKI input supplied by the caller; certificate extraction and validation remain out of scope."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Keeping the byte-level codec in `Incursa.Quic.Dns` gives future IKEv2 integration a tested, trace-owned value codec while avoiding changes to QUIC transport packet, stream, scheduler, and TLS state machines."
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Buffers.Binary;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
@@ -16,6 +17,8 @@ public sealed class EncryptedDnsProvisioningAttribute
     private const int MaximumAuthenticationDomainNameLength = 255;
     private const int MaximumDnsLabelLength = 63;
     private const ushort EmptyLength = 0;
+    private const int AttributeHeaderOctets = 4;
+    private const int UInt16FieldOctets = 2;
     private const int IpAttributeFixedDataLength = 4;
     private const int Ipv4AddressOctets = 4;
     private const int Ipv6AddressOctets = 16;
@@ -24,19 +27,23 @@ public sealed class EncryptedDnsProvisioningAttribute
         EncryptedDnsProvisioningPayloadType payloadType,
         EncryptedDnsProvisioningAddressFamily addressFamily,
         ushort length,
+        ushort servicePriority,
         byte addressCount,
         string authenticationDomainName,
         ReadOnlyCollection<IPAddress> addresses,
         ReadOnlyCollection<string> serviceParameterKeys,
+        ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter> serviceParameters,
         bool omitsTrailingFields)
     {
         PayloadType = payloadType;
         AddressFamily = addressFamily;
         Length = length;
+        ServicePriority = servicePriority;
         AddressCount = addressCount;
         AuthenticationDomainName = authenticationDomainName;
         Addresses = addresses;
         ServiceParameterKeys = serviceParameterKeys;
+        ServiceParameters = serviceParameters;
         OmitsTrailingFields = omitsTrailingFields;
     }
 
@@ -54,6 +61,16 @@ public sealed class EncryptedDnsProvisioningAttribute
     /// Gets the ENCDNS_DIGEST_INFO attribute type.
     /// </summary>
     public const ushort DigestInfoAttributeType = 29;
+
+    /// <summary>
+    /// Gets the ENCDNS_IP4 attribute type.
+    /// </summary>
+    public const ushort Ip4AttributeType = 27;
+
+    /// <summary>
+    /// Gets the ENCDNS_IP6 attribute type.
+    /// </summary>
+    public const ushort Ip6AttributeType = 28;
 
     /// <summary>
     /// Gets a value indicating whether outbound attributes set the reserved bit.
@@ -76,6 +93,16 @@ public sealed class EncryptedDnsProvisioningAttribute
     public ushort Length { get; }
 
     /// <summary>
+    /// Gets the Service Priority field value. A value of zero is AliasMode and is not valid for RFC 9464 ENCDNS_IP* attributes.
+    /// </summary>
+    public ushort ServicePriority { get; }
+
+    /// <summary>
+    /// Gets the IKEv2 Configuration Payload Attribute Type value.
+    /// </summary>
+    public ushort AttributeType => AddressFamily == EncryptedDnsProvisioningAddressFamily.Ip4 ? Ip4AttributeType : Ip6AttributeType;
+
+    /// <summary>
     /// Gets the Num Addresses field value.
     /// </summary>
     public byte AddressCount { get; }
@@ -94,6 +121,11 @@ public sealed class EncryptedDnsProvisioningAttribute
     /// Gets normalized service parameter keys that apply to all addresses.
     /// </summary>
     public IReadOnlyCollection<string> ServiceParameterKeys { get; }
+
+    /// <summary>
+    /// Gets RFC 9460 wire-format service parameters that apply to all addresses.
+    /// </summary>
+    public IReadOnlyList<EncryptedDnsProvisioningServiceParameter> ServiceParameters { get; }
 
     /// <summary>
     /// Gets a value indicating whether zero Length omits all trailing fields.
@@ -121,10 +153,12 @@ public sealed class EncryptedDnsProvisioningAttribute
             payloadType,
             addressFamily,
             EmptyLength,
+            servicePriority: 0,
             addressCount: 0,
             authenticationDomainName: string.Empty,
             new ReadOnlyCollection<IPAddress>([]),
             new ReadOnlyCollection<string>([]),
+            new ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter>([]),
             omitsTrailingFields: true);
     }
 
@@ -136,11 +170,32 @@ public sealed class EncryptedDnsProvisioningAttribute
         EncryptedDnsProvisioningAddressFamily addressFamily,
         string authenticationDomainName,
         IEnumerable<IPAddress> addresses,
-        IEnumerable<string>? serviceParameterKeys = null)
+        IEnumerable<string>? serviceParameterKeys = null,
+        ushort servicePriority = 1)
+    {
+        ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter> serviceParameters = NormalizeServiceParameterKeys(serviceParameterKeys);
+        return CreateAddressListWithServiceParameters(payloadType, addressFamily, authenticationDomainName, addresses, serviceParameters, servicePriority);
+    }
+
+    /// <summary>
+    /// Creates a populated ENCDNS_IP* attribute with RFC 9460 wire-format service parameters.
+    /// </summary>
+    public static EncryptedDnsProvisioningAttribute CreateAddressListWithServiceParameters(
+        EncryptedDnsProvisioningPayloadType payloadType,
+        EncryptedDnsProvisioningAddressFamily addressFamily,
+        string authenticationDomainName,
+        IEnumerable<IPAddress> addresses,
+        IEnumerable<EncryptedDnsProvisioningServiceParameter>? serviceParameters,
+        ushort servicePriority = 1)
     {
         if (payloadType == EncryptedDnsProvisioningPayloadType.Ack)
         {
             throw new ArgumentException("CFG_ACK ENCDNS_IP* attributes must use zero-length data.", nameof(payloadType));
+        }
+
+        if (servicePriority == 0)
+        {
+            throw new ArgumentException("RFC 9464 ENCDNS_IP* attributes do not support AliasMode service priority zero.", nameof(servicePriority));
         }
 
         string normalizedName = NormalizeAuthenticationDomainName(authenticationDomainName);
@@ -151,9 +206,9 @@ public sealed class EncryptedDnsProvisioningAttribute
         }
 
         List<IPAddress> normalizedAddresses = NormalizeAddresses(addressFamily, addresses);
-        if (normalizedAddresses.Count == 0)
+        if (normalizedAddresses.Count == 0 && payloadType is EncryptedDnsProvisioningPayloadType.Reply or EncryptedDnsProvisioningPayloadType.Set)
         {
-            throw new ArgumentException("An ENCDNS_IP* attribute with non-zero length must contain at least one address.", nameof(addresses));
+            throw new ArgumentException("CFG_REPLY and CFG_SET ENCDNS_IP* attributes must contain at least one address.", nameof(addresses));
         }
 
         if (normalizedAddresses.Count > byte.MaxValue)
@@ -161,8 +216,10 @@ public sealed class EncryptedDnsProvisioningAttribute
             throw new ArgumentException("The address count must fit in the one-octet Num Addresses field.", nameof(addresses));
         }
 
-        ReadOnlyCollection<string> normalizedServiceParameterKeys = NormalizeServiceParameterKeys(serviceParameterKeys);
-        int serviceParameterLength = GetServiceParameterLength(normalizedServiceParameterKeys);
+        ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter> normalizedServiceParameters =
+            EncryptedDnsProvisioningServiceParameter.Normalize(serviceParameters);
+        ReadOnlyCollection<string> normalizedServiceParameterKeys = GetServiceParameterKeys(normalizedServiceParameters);
+        int serviceParameterLength = GetServiceParameterLength(normalizedServiceParameters);
         int addressOctets = addressFamily == EncryptedDnsProvisioningAddressFamily.Ip4
             ? Ipv4AddressOctets
             : Ipv6AddressOctets;
@@ -176,14 +233,136 @@ public sealed class EncryptedDnsProvisioningAttribute
             payloadType,
             addressFamily,
             (ushort)length,
+            servicePriority,
             (byte)normalizedAddresses.Count,
             normalizedName,
             new ReadOnlyCollection<IPAddress>(normalizedAddresses),
             normalizedServiceParameterKeys,
+            normalizedServiceParameters,
             omitsTrailingFields: false);
     }
 
-    private static string NormalizeAuthenticationDomainName(string? authenticationDomainName)
+    /// <summary>
+    /// Encodes the attribute header and data fields in RFC 9464 wire order.
+    /// </summary>
+    public byte[] Encode()
+    {
+        byte[] encoded = new byte[AttributeHeaderOctets + Length];
+        BinaryPrimitives.WriteUInt16BigEndian(encoded, AttributeType);
+        BinaryPrimitives.WriteUInt16BigEndian(encoded.AsSpan(UInt16FieldOctets), Length);
+        if (Length == 0)
+        {
+            return encoded;
+        }
+
+        int offset = AttributeHeaderOctets;
+        BinaryPrimitives.WriteUInt16BigEndian(encoded.AsSpan(offset), ServicePriority);
+        offset += UInt16FieldOctets;
+        encoded[offset++] = AddressCount;
+        encoded[offset++] = checked((byte)Encoding.ASCII.GetByteCount(AuthenticationDomainName));
+        foreach (IPAddress address in Addresses)
+        {
+            byte[] addressBytes = address.GetAddressBytes();
+            addressBytes.CopyTo(encoded, offset);
+            offset += addressBytes.Length;
+        }
+
+        offset += Encoding.ASCII.GetBytes(AuthenticationDomainName, encoded.AsSpan(offset));
+        foreach (EncryptedDnsProvisioningServiceParameter parameter in ServiceParameters)
+        {
+            parameter.WriteTo(encoded.AsSpan(offset, parameter.EncodedLength));
+            offset += parameter.EncodedLength;
+        }
+
+        return encoded;
+    }
+
+    /// <summary>
+    /// Decodes an ENCDNS_IP* attribute header and data fields.
+    /// </summary>
+    public static EncryptedDnsProvisioningAttribute Decode(EncryptedDnsProvisioningPayloadType payloadType, ReadOnlySpan<byte> encoded)
+    {
+        if (encoded.Length < AttributeHeaderOctets)
+        {
+            throw new ArgumentException("The ENCDNS_IP* attribute is shorter than the IKEv2 attribute header.", nameof(encoded));
+        }
+
+        ushort attributeTypeWithReservedBit = BinaryPrimitives.ReadUInt16BigEndian(encoded);
+        ushort attributeType = (ushort)(attributeTypeWithReservedBit & 0x7FFF);
+        EncryptedDnsProvisioningAddressFamily addressFamily = attributeType switch
+        {
+            Ip4AttributeType => EncryptedDnsProvisioningAddressFamily.Ip4,
+            Ip6AttributeType => EncryptedDnsProvisioningAddressFamily.Ip6,
+            _ => throw new ArgumentException("The IKEv2 attribute type is not ENCDNS_IP4 or ENCDNS_IP6.", nameof(encoded)),
+        };
+
+        ushort length = BinaryPrimitives.ReadUInt16BigEndian(encoded[UInt16FieldOctets..]);
+        if (encoded.Length != AttributeHeaderOctets + length)
+        {
+            throw new ArgumentException("The ENCDNS_IP* Length field does not match the encoded attribute size.", nameof(encoded));
+        }
+
+        if (length == 0)
+        {
+            return CreateEmpty(payloadType, addressFamily);
+        }
+
+        if (length < IpAttributeFixedDataLength)
+        {
+            throw new ArgumentException("The ENCDNS_IP* attribute data is shorter than the fixed data fields.", nameof(encoded));
+        }
+
+        ReadOnlySpan<byte> data = encoded.Slice(AttributeHeaderOctets, length);
+        ushort servicePriority = BinaryPrimitives.ReadUInt16BigEndian(data);
+        if (servicePriority == 0)
+        {
+            throw new ArgumentException("RFC 9464 ENCDNS_IP* attributes do not support AliasMode service priority zero.", nameof(encoded));
+        }
+
+        byte addressCount = data[2];
+        byte authenticationNameLength = data[3];
+        if (addressCount == 0 && payloadType is EncryptedDnsProvisioningPayloadType.Reply or EncryptedDnsProvisioningPayloadType.Set)
+        {
+            throw new ArgumentException("CFG_REPLY and CFG_SET ENCDNS_IP* attributes must not set Num Addresses to zero.", nameof(encoded));
+        }
+
+        int addressOctets = addressFamily == EncryptedDnsProvisioningAddressFamily.Ip4 ? Ipv4AddressOctets : Ipv6AddressOctets;
+        int addressBytesLength = addressCount * addressOctets;
+        if (data.Length - IpAttributeFixedDataLength < addressBytesLength + authenticationNameLength)
+        {
+            throw new ArgumentException("The ENCDNS_IP* attribute data is shorter than the fields indicated by Num Addresses and ADN Length.", nameof(encoded));
+        }
+
+        int offset = IpAttributeFixedDataLength;
+        List<IPAddress> addresses = [];
+        for (int index = 0; index < addressCount; index++)
+        {
+            addresses.Add(new IPAddress(data.Slice(offset, addressOctets)));
+            offset += addressOctets;
+        }
+
+        string authenticationDomainName = authenticationNameLength == 0
+            ? string.Empty
+            : NormalizeAuthenticationDomainName(Encoding.ASCII.GetString(data.Slice(offset, authenticationNameLength)));
+        offset += authenticationNameLength;
+
+        ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter> serviceParameters =
+            EncryptedDnsProvisioningServiceParameter.DecodeMany(data[offset..]);
+
+        return new EncryptedDnsProvisioningAttribute(
+            payloadType,
+            addressFamily,
+            length,
+            servicePriority,
+            addressCount,
+            authenticationDomainName,
+            new ReadOnlyCollection<IPAddress>(addresses),
+            GetServiceParameterKeys(serviceParameters),
+            serviceParameters,
+            omitsTrailingFields: false);
+    }
+
+    internal static string NormalizeAuthenticationDomainName(string? authenticationDomainName)
     {
         if (string.IsNullOrWhiteSpace(authenticationDomainName))
         {
@@ -264,14 +443,14 @@ public sealed class EncryptedDnsProvisioningAttribute
         return normalized;
     }
 
-    private static ReadOnlyCollection<string> NormalizeServiceParameterKeys(IEnumerable<string>? serviceParameterKeys)
+    private static ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter> NormalizeServiceParameterKeys(IEnumerable<string>? serviceParameterKeys)
     {
         if (serviceParameterKeys is null)
         {
-            return new ReadOnlyCollection<string>([]);
+            return new ReadOnlyCollection<EncryptedDnsProvisioningServiceParameter>([]);
         }
 
-        List<string> normalized = [];
+        List<EncryptedDnsProvisioningServiceParameter> normalized = [];
         foreach (string? key in serviceParameterKeys)
         {
             if (string.IsNullOrWhiteSpace(key))
@@ -279,24 +458,36 @@ public sealed class EncryptedDnsProvisioningAttribute
                 throw new ArgumentException("SvcParam keys must not be empty.", nameof(serviceParameterKeys));
             }
 
-            string trimmed = key.Trim().ToLowerInvariant();
-            if (EncryptedDnsDiscoveryOption.IsForbiddenAddressHintServiceParameter(trimmed))
-            {
-                throw new ArgumentException("RFC 9464 ENCDNS_IP* attributes must not include ipv4hint or ipv6hint SvcParams.", nameof(serviceParameterKeys));
-            }
-
-            normalized.Add(trimmed);
+            normalized.Add(EncryptedDnsProvisioningServiceParameter.FromPresentationKey(key));
         }
 
-        return new ReadOnlyCollection<string>(normalized);
+        return EncryptedDnsProvisioningServiceParameter.Normalize(normalized);
     }
 
-    private static int GetServiceParameterLength(IEnumerable<string> serviceParameterKeys)
+    private static ReadOnlyCollection<string> GetServiceParameterKeys(IEnumerable<EncryptedDnsProvisioningServiceParameter> serviceParameters)
+    {
+        List<string> keys = [];
+        foreach (EncryptedDnsProvisioningServiceParameter serviceParameter in serviceParameters)
+        {
+            keys.Add(serviceParameter.Key switch
+            {
+                EncryptedDnsProvisioningServiceParameter.AlpnKey => "alpn",
+                EncryptedDnsProvisioningServiceParameter.PortKey => "port",
+                EncryptedDnsProvisioningServiceParameter.Ipv4HintKey => "ipv4hint",
+                EncryptedDnsProvisioningServiceParameter.Ipv6HintKey => "ipv6hint",
+                _ => "key" + serviceParameter.Key.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            });
+        }
+
+        return new ReadOnlyCollection<string>(keys);
+    }
+
+    private static int GetServiceParameterLength(IEnumerable<EncryptedDnsProvisioningServiceParameter> serviceParameters)
     {
         int length = 0;
-        foreach (string key in serviceParameterKeys)
+        foreach (EncryptedDnsProvisioningServiceParameter parameter in serviceParameters)
         {
-            length += Encoding.ASCII.GetByteCount(key);
+            length += parameter.EncodedLength;
         }
 
         return length;
