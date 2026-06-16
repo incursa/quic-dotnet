@@ -576,12 +576,10 @@ function Get-RequirementGapMappings {
                 New-RequirementIdRange -Rfc 'RFC9297' -Start 4 -End 7
                 New-RequirementIdRange -Rfc 'RFC9297' -Start 14 -End 16
                 New-RequirementIdRange -Rfc 'RFC9297' -Start 26 -End 27
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 36 -End 46
+                'REQ-QUIC-RFC9297-0046'
                 'REQ-QUIC-RFC9297-0048'
                 'REQ-QUIC-RFC9297-0050'
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 52 -End 60
                 New-RequirementIdRange -Rfc 'RFC9297' -Start 66 -End 75
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 79 -End 83
             )
         },
         [pscustomobject]@{

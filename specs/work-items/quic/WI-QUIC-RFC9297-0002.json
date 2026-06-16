@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9297-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Capsule Protocol Policy and Registry Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "ARC-QUIC-RFC9297-0002",
+    "VER-QUIC-RFC9297-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9297-0036",
+    "REQ-QUIC-RFC9297-0037",
+    "REQ-QUIC-RFC9297-0038",
+    "REQ-QUIC-RFC9297-0039",
+    "REQ-QUIC-RFC9297-0040",
+    "REQ-QUIC-RFC9297-0041",
+    "REQ-QUIC-RFC9297-0042",
+    "REQ-QUIC-RFC9297-0043",
+    "REQ-QUIC-RFC9297-0044",
+    "REQ-QUIC-RFC9297-0045",
+    "REQ-QUIC-RFC9297-0052",
+    "REQ-QUIC-RFC9297-0053",
+    "REQ-QUIC-RFC9297-0054",
+    "REQ-QUIC-RFC9297-0055",
+    "REQ-QUIC-RFC9297-0056",
+    "REQ-QUIC-RFC9297-0057",
+    "REQ-QUIC-RFC9297-0058",
+    "REQ-QUIC-RFC9297-0059",
+    "REQ-QUIC-RFC9297-0060",
+    "REQ-QUIC-RFC9297-0079",
+    "REQ-QUIC-RFC9297-0080",
+    "REQ-QUIC-RFC9297-0081",
+    "REQ-QUIC-RFC9297-0082",
+    "REQ-QUIC-RFC9297-0083"
+  ],
+  "summary": "Add trace-owned Capsule Protocol response/header policy and registry metadata for RFC 9297.",
+  "planned_changes": "- Add Capsule Protocol policy helpers for CONNECT-only HTTP/3 use, allowed response status, no-content restrictions, and malformed-message mapping.\n- Add Capsule-Protocol structured-field Boolean parsing, false/non-Boolean absence behavior, unknown-parameter ignoring, intermediary processing, and recommended emission helpers.\n- Add Capsule-Protocol field-name and Capsule Type registry constants and reservation helpers.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the HTTP/3 package build, focused Capsule Protocol policy tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and broad-suite instability classification before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9297-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9297-0002"
+  ],
+  "out_of_scope": [
+    "Runtime QUIC DATAGRAM send/receive integration.",
+    "HTTP/1.x Capsule Protocol connection start policy.",
+    "Type-specific Capsule payload field validation.",
+    "Intermediary DATAGRAM Capsule conversion.",
+    "CONNECT-UDP and CONNECT-IP request semantics."
+  ],
+  "completion_notes": "The RFC 9297 Capsule Protocol policy and registry slice is implemented above the runtime adapter boundary."
+}

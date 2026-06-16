@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9297-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Capsule Protocol Policy and Registry Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "ARC-QUIC-RFC9297-0002",
+    "WI-QUIC-RFC9297-0002"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, HTTP/3 package build, diff hygiene, and broad-suite instability checks for the RFC 9297 Capsule Protocol policy surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9297-0036",
+    "REQ-QUIC-RFC9297-0037",
+    "REQ-QUIC-RFC9297-0038",
+    "REQ-QUIC-RFC9297-0039",
+    "REQ-QUIC-RFC9297-0040",
+    "REQ-QUIC-RFC9297-0041",
+    "REQ-QUIC-RFC9297-0042",
+    "REQ-QUIC-RFC9297-0043",
+    "REQ-QUIC-RFC9297-0044",
+    "REQ-QUIC-RFC9297-0045",
+    "REQ-QUIC-RFC9297-0052",
+    "REQ-QUIC-RFC9297-0053",
+    "REQ-QUIC-RFC9297-0054",
+    "REQ-QUIC-RFC9297-0055",
+    "REQ-QUIC-RFC9297-0056",
+    "REQ-QUIC-RFC9297-0057",
+    "REQ-QUIC-RFC9297-0058",
+    "REQ-QUIC-RFC9297-0059",
+    "REQ-QUIC-RFC9297-0060",
+    "REQ-QUIC-RFC9297-0079",
+    "REQ-QUIC-RFC9297-0080",
+    "REQ-QUIC-RFC9297-0081",
+    "REQ-QUIC-RFC9297-0082",
+    "REQ-QUIC-RFC9297-0083"
+  ],
+  "scope": "This verification covers Capsule Protocol response status preconditions, no-content constraints, HTTP/3 CONNECT-only use, malformed-message mapping, Capsule-Protocol structured-field Boolean parsing, false/non-Boolean absence behavior, unknown parameter ignoring, intermediary processing, recommended emission, Capsule-Protocol field-name registration, Capsule Type registration labels, and reserved Capsule Type values.",
+  "preconditions": [
+    "The RFC 9297 foundation slice exists as `ARC-QUIC-RFC9297-0001`, `WI-QUIC-RFC9297-0001`, and `VER-QUIC-RFC9297-0001`.",
+    "The HTTP/3 policy helper lives in `src/Incursa.Quic.Http3`."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3CapsuleProtocolPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9297_0036|FullyQualifiedName~Http3CapsuleProtocolPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused RFC 9297 policy tests pass, the HTTP/3 package builds, core SpecTrace validation accepts the RFC 9297 policy artifacts, generated triage reflects the policy slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3CapsuleProtocol.cs",
+    "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-0036.cs"
+  ],
+  "status_summary": "The RFC 9297 Capsule Protocol response/header policy and registry invariants are trace-owned and verified by focused local gates. Runtime stream lifecycle, flow-control deadlock policy, type-specific Capsule payload validation, HTTP/1.x start policy, and intermediary DATAGRAM Capsule conversion remain future RFC 9297 slices."
+}

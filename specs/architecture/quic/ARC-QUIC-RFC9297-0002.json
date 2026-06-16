@@ -1,0 +1,65 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9297-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Capsule Protocol Policy and Registry Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9297 Capsule Protocol response/header policy, HTTP/3 CONNECT restrictions, no-content constraints, Capsule-Protocol structured-field handling, and Capsule Type registry invariants.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "WI-QUIC-RFC9297-0002",
+    "VER-QUIC-RFC9297-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9297-0036",
+    "REQ-QUIC-RFC9297-0037",
+    "REQ-QUIC-RFC9297-0038",
+    "REQ-QUIC-RFC9297-0039",
+    "REQ-QUIC-RFC9297-0040",
+    "REQ-QUIC-RFC9297-0041",
+    "REQ-QUIC-RFC9297-0042",
+    "REQ-QUIC-RFC9297-0043",
+    "REQ-QUIC-RFC9297-0044",
+    "REQ-QUIC-RFC9297-0045",
+    "REQ-QUIC-RFC9297-0052",
+    "REQ-QUIC-RFC9297-0053",
+    "REQ-QUIC-RFC9297-0054",
+    "REQ-QUIC-RFC9297-0055",
+    "REQ-QUIC-RFC9297-0056",
+    "REQ-QUIC-RFC9297-0057",
+    "REQ-QUIC-RFC9297-0058",
+    "REQ-QUIC-RFC9297-0059",
+    "REQ-QUIC-RFC9297-0060",
+    "REQ-QUIC-RFC9297-0079",
+    "REQ-QUIC-RFC9297-0080",
+    "REQ-QUIC-RFC9297-0081",
+    "REQ-QUIC-RFC9297-0082",
+    "REQ-QUIC-RFC9297-0083"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3CapsuleProtocol.cs",
+    "tests/Incursa.Quic.Tests/Http3CapsuleProtocolPolicyTests.cs"
+  ],
+  "design_summary": "`Http3CapsuleProtocol` keeps Capsule Protocol policy separate from stream and proxy runtime behavior. It validates that HTTP/3 Capsule Protocol use is attached to CONNECT, allows only 101 or valid 2xx statuses while excluding 204/205/206, rejects HTTP content headers or body bytes, parses Capsule-Protocol as an Item Structured Field Boolean, treats false or non-Boolean values as absent, ignores unknown parameters, exposes the registered field name, and models Capsule Type registry reservation and assignment policy.",
+  "data_and_state_considerations": "The policy is pure and stateless. It does not parse live stream bytes, buffer capsules, open tunnels, emit datagrams, or mutate request/response objects.",
+  "edge_cases_and_constraints": [
+    "False and non-Boolean Capsule-Protocol values are absence-equivalent.",
+    "Unknown Capsule-Protocol parameters do not affect the true/false Boolean item.",
+    "Status 101 and successful statuses are allowed except 204, 205, and 206.",
+    "Content-Length, Content-Type, Transfer-Encoding, and nonzero content byte counts make Capsule Protocol use malformed.",
+    "Capsule Type values of the form 0x29 * N + 0x17 are reserved and not assignable."
+  ],
+  "risks": [
+    "Runtime stream lifecycle and QUIC DATAGRAM send/receive behavior remain out of scope.",
+    "Type-specific Capsule payload field validation remains out of scope.",
+    "CONNECT-UDP and CONNECT-IP request semantics remain in RFC 9298 and RFC 9484 slices."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This policy slice lets later MASQUE adapters ask whether a request/response pair is allowed to use Capsule Protocol without coupling policy checks to proxy forwarding or QUIC transport state."
+    }
+  ]
+}
