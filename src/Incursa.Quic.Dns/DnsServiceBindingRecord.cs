@@ -39,6 +39,21 @@ public sealed class DnsServiceBindingRecord
     public const ushort DohPathSvcParamKey = 7;
 
     /// <summary>
+    /// Gets the SVCB RR type value.
+    /// </summary>
+    public const ushort SvcbResourceRecordType = 64;
+
+    /// <summary>
+    /// Gets the SvcParamKey assigned to <c>port</c>.
+    /// </summary>
+    public const ushort PortSvcParamKey = 3;
+
+    /// <summary>
+    /// Gets a value indicating whether the <c>port</c> key is automatically mandatory for DNS service binding.
+    /// </summary>
+    public static bool IsPortKeyAutomaticallyMandatory => true;
+
+    /// <summary>
     /// Gets the authentication name for this SVCB mapping.
     /// </summary>
     public string AuthenticationName { get; }

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS Service Binding RFC 9461 Client Policy and Registry Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0003",
+    "VER-QUIC-RFC9461-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0017",
+    "REQ-QUIC-RFC9461-0019",
+    "REQ-QUIC-RFC9461-0020",
+    "REQ-QUIC-RFC9461-0021",
+    "REQ-QUIC-RFC9461-0022",
+    "REQ-QUIC-RFC9461-0023",
+    "REQ-QUIC-RFC9461-0024",
+    "REQ-QUIC-RFC9461-0025",
+    "REQ-QUIC-RFC9461-0026",
+    "REQ-QUIC-RFC9461-0027",
+    "REQ-QUIC-RFC9461-0028",
+    "REQ-QUIC-RFC9461-0030",
+    "REQ-QUIC-RFC9461-0031",
+    "REQ-QUIC-RFC9461-0032"
+  ],
+  "summary": "Add trace-owned client and operator policy plus registry metadata for the remaining RFC 9461 requirements.",
+  "planned_changes": "- Add client policy and immutable plan objects for selected DNS service binding endpoints.\n- Add operator publication guidance for equivalent HTTPS RRs, AliasMode, and TargetName convention.\n- Expose SVCB RR type, port key, and automatic mandatory-port metadata.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused client-policy tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0003"
+  ],
+  "out_of_scope": [
+    "DNS SVCB wire RR parsing.",
+    "Recursive resolver query execution.",
+    "Operator DNS publication automation.",
+    "TLS certificate validation internals."
+  ],
+  "completion_notes": "The RFC 9461 DNS SVCB mapping is now trace-owned across naming, scalar endpoint selection, client policy, operator guidance, and registry metadata."
+}

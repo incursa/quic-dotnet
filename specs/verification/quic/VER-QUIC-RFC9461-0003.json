@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9461-0003",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS Service Binding RFC 9461 Client Policy and Registry Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0003",
+    "WI-QUIC-RFC9461-0003"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9461 client-policy/operator-guidance surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9461-0017",
+    "REQ-QUIC-RFC9461-0019",
+    "REQ-QUIC-RFC9461-0020",
+    "REQ-QUIC-RFC9461-0021",
+    "REQ-QUIC-RFC9461-0022",
+    "REQ-QUIC-RFC9461-0023",
+    "REQ-QUIC-RFC9461-0024",
+    "REQ-QUIC-RFC9461-0025",
+    "REQ-QUIC-RFC9461-0026",
+    "REQ-QUIC-RFC9461-0027",
+    "REQ-QUIC-RFC9461-0028",
+    "REQ-QUIC-RFC9461-0030",
+    "REQ-QUIC-RFC9461-0031",
+    "REQ-QUIC-RFC9461-0032"
+  ],
+  "scope": "This verification covers dohpath HTTPS RR query suppression, equivalent HTTPS RR publication guidance, high-speed AliasMode avoidance and TargetName convention guidance, secure transport authentication to the selected authentication name, DNS-query client identity suppression with the known-safe exception, invalid-response query suppression and optional logging, SVCB-reliant behavior after successful SVCB resolution, dependent-specification fallback adjustment, cleartext fallback discouragement, dohpath registry key, SVCB RR type, and automatic mandatory-port metadata.",
+  "preconditions": [
+    "The RFC 9461 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9461.json`.",
+    "Endpoint selection already produced a `DnsServiceBindingEndpoint` from scalar SVCB record data."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~DnsServiceBindingClientPolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused client-policy tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9461 artifacts, generated triage reflects the client-policy slice, diff hygiene passes, and the full solution test suite remains green.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingClientPolicy.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingClientPlan.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingOperatorGuidance.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs"
+  ],
+  "status_summary": "The RFC 9461 DNS service binding mapping is trace-owned and verified. DNS SVCB wire parsing and operator DNS publication automation remain future adapter work."
+}

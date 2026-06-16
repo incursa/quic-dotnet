@@ -1,0 +1,58 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS Service Binding RFC 9461 Client Policy and Registry Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define client and operator policy behavior plus registry constants for the remaining RFC 9461 DNS SVCB mapping requirements.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0003",
+    "VER-QUIC-RFC9461-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0017",
+    "REQ-QUIC-RFC9461-0019",
+    "REQ-QUIC-RFC9461-0020",
+    "REQ-QUIC-RFC9461-0021",
+    "REQ-QUIC-RFC9461-0022",
+    "REQ-QUIC-RFC9461-0023",
+    "REQ-QUIC-RFC9461-0024",
+    "REQ-QUIC-RFC9461-0025",
+    "REQ-QUIC-RFC9461-0026",
+    "REQ-QUIC-RFC9461-0027",
+    "REQ-QUIC-RFC9461-0028",
+    "REQ-QUIC-RFC9461-0030",
+    "REQ-QUIC-RFC9461-0031",
+    "REQ-QUIC-RFC9461-0032"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingClientPolicy.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingClientPlan.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingOperatorGuidance.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs"
+  ],
+  "design_summary": "The policy slice keeps RFC 9461 endpoint selection separate from endpoint use. `DnsServiceBindingClientPolicy` models dohpath HTTPS RR query suppression, secure transport authentication to the SVCB authentication name, DNS-query client identity suppression, invalid-response query suppression and optional logging, SVCB-reliant behavior after successful resolution, dependent-specification fallback adjustment, and cleartext fallback discouragement. `DnsServiceBindingOperatorGuidance` models equivalent HTTPS RR publication and speed-oriented AliasMode/TargetName guidance. `DnsServiceBindingRecord` exposes dohpath, SVCB RR type, port key, and automatic mandatory-port metadata.",
+  "data_and_state_considerations": "The policy is immutable and side-effect free. It does not perform DNS resolution, open TLS/QUIC/HTTPS connections, emit logs, or publish DNS records.",
+  "edge_cases_and_constraints": [
+    "DoH endpoints with dohpath do not query HTTPS RRs.",
+    "DNS-query client authentication remains disabled unless the endpoint is specifically known safe.",
+    "Invalid DNS responses suppress further queries and may be logged.",
+    "Cleartext fallback is disabled by default and can be adjusted only by dependent specification policy.",
+    "Registry constants are explicit for dohpath, SVCB RR type, and the automatically mandatory port key."
+  ],
+  "risks": [
+    "This slice does not implement a DNS recursive resolver or SVCB RR wire parser.",
+    "This slice does not publish DNS records for operators.",
+    "This slice does not perform TLS certificate validation; it identifies the authentication name to use."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The client-policy boundary lets callers make RFC 9461 decisions around already-selected endpoints while keeping the DNS package independent from a concrete resolver loop or operator publication system."
+    }
+  ]
+}

@@ -13,7 +13,10 @@
     "VER-QUIC-RFC9461-0001",
     "ARC-QUIC-RFC9461-0002",
     "WI-QUIC-RFC9461-0002",
-    "VER-QUIC-RFC9461-0002"
+    "VER-QUIC-RFC9461-0002",
+    "ARC-QUIC-RFC9461-0003",
+    "VER-QUIC-RFC9461-0003",
+    "WI-QUIC-RFC9461-0003"
   ],
   "requirements": [
     {
@@ -382,6 +385,10 @@
         "upstream_refs": [
           "RFC9461-S5-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DohPathEndpointDoesNotQueryHttpsRecords",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutDohPathCanQueryHttpsRecords"
         ]
       },
       "notes": [
@@ -426,6 +433,10 @@
         "upstream_refs": [
           "RFC9461-S5-B3-P3-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
         ]
       },
       "notes": [
@@ -446,6 +457,10 @@
         "upstream_refs": [
           "RFC9461 section 6, source unit RFC9461-S6-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
         ]
       }
     },
@@ -463,6 +478,10 @@
         "upstream_refs": [
           "RFC9461 section 6, source unit RFC9461-S6-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
         ]
       }
     },
@@ -480,6 +499,10 @@
         "upstream_refs": [
           "RFC 9461 8.1 RFC9461-S8P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity"
         ]
       },
       "notes": [
@@ -500,6 +523,10 @@
         "upstream_refs": [
           "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity"
         ]
       }
     },
@@ -517,6 +544,10 @@
         "upstream_refs": [
           "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged"
         ]
       }
     },
@@ -534,6 +565,10 @@
         "upstream_refs": [
           "RFC 9461 8.1.2 RFC9461-S8P1P2-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged"
         ]
       }
     },
@@ -551,6 +586,10 @@
         "upstream_refs": [
           "RFC9461 section 8.2, source_unit_id RFC9461-S8P2-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
         ]
       },
       "notes": [
@@ -571,6 +610,10 @@
         "upstream_refs": [
           "RFC9461 section 8.2, source_unit_id RFC9461-S8P2-B2-P2-S4",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-8.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
         ]
       },
       "notes": [
@@ -591,6 +634,10 @@
         "upstream_refs": [
           "RFC 9461 9 RFC9461-S9-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
         ]
       },
       "notes": [
@@ -636,6 +683,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
         ]
       }
     },
@@ -653,6 +704,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
         ]
       }
     },
@@ -670,6 +725,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
         ]
       }
     },

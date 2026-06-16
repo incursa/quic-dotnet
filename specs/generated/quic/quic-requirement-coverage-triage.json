@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T08:56:05.8608048-06:00",
+  "generated_at": "2026-06-16T09:07:25.9397371-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T08:56:05.8577486-06:00",
+    "generated_at": "2026-06-16T09:07:25.9366448-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2213,
-      "uncovered_blocked": 428
+      "trace_clean": 2227,
+      "uncovered_blocked": 414
     },
     "by_work_queue_tag": {
-      "blocked": 428,
-      "clean": 2213,
-      "new_tests_needed": 428
+      "blocked": 414,
+      "clean": 2227,
+      "new_tests_needed": 414
     },
     "by_rfc": [
       {
@@ -162,8 +162,7 @@
         "rfc": "RFC9461",
         "total": 38,
         "by_state": {
-          "trace_clean": 24,
-          "uncovered_blocked": 14
+          "trace_clean": 38
         }
       },
       {
@@ -370371,32 +370370,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DohPathEndpointDoesNotQueryHttpsRecords",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutDohPathCanQueryHttpsRecords"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370404,7 +370402,96 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DohPathEndpointDoesNotQueryHttpsRecords",
+          "method": "DohPathEndpointDoesNotQueryHttpsRecords",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DohPathEndpointDoesNotQueryHttpsRecords",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DohPathEndpointDoesNotQueryHttpsRecords",
+          "method": "DohPathEndpointDoesNotQueryHttpsRecords",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0017",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutDohPathCanQueryHttpsRecords",
+          "method": "EndpointWithoutDohPathCanQueryHttpsRecords",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0017",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutDohPathCanQueryHttpsRecords",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutDohPathCanQueryHttpsRecords",
+          "method": "EndpointWithoutDohPathCanQueryHttpsRecords",
+          "line": 24,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0017"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0018",
@@ -370563,32 +370650,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370596,7 +370682,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0019",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0019",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0019",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0020",
@@ -370611,32 +370794,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370644,7 +370826,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0020",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0020",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0020",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0020",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0021",
@@ -370659,32 +370938,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370692,7 +370970,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "method": "OperatorGuidanceDoesNotRepeatSatisfiedHttpsOrFastResolutionGuidance",
+          "line": 54,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "method": "OperatorGuidancePublishesHttpsAndAvoidsAliasModeForFastResolution",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0019",
+            "REQ-QUIC-RFC9461-0020",
+            "REQ-QUIC-RFC9461-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0022",
@@ -370707,32 +371082,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370740,7 +371114,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "method": "KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "line": 87,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0022",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "method": "KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "line": 87,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "method": "SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "line": 71,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0022",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "method": "SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "line": 71,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0023",
@@ -370755,32 +371222,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370788,7 +371254,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "method": "KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "line": 87,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0023",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "method": "KnownSafeEndpointCanAllowDnsQueryClientIdentity",
+          "line": 87,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0023",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "method": "SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "line": 71,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0023",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "method": "SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity",
+          "line": 71,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0022",
+            "REQ-QUIC-RFC9461-0023"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0024",
@@ -370803,32 +371362,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370836,7 +371394,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0024",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "method": "EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0024",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "method": "EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0024",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "method": "InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0024",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "method": "InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0025",
@@ -370851,32 +371502,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370884,7 +371534,100 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0025",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "method": "EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0025",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "method": "EndpointWithoutInvalidResponseCanContinueWithoutErrorLog",
+          "line": 117,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0025",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "method": "InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0025",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "method": "InvalidResponseStopsFurtherQueriesAndMayBeLogged",
+          "line": 102,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0024",
+            "REQ-QUIC-RFC9461-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0026",
@@ -370899,32 +371642,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370932,7 +371674,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0026",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0026",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0027",
@@ -370947,32 +371786,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -370980,7 +371818,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0027",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0027",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0027",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0027",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0028",
@@ -370995,32 +371930,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -371028,7 +371962,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0028",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0028",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0028",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0028",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0029",
@@ -371247,32 +372278,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -371280,7 +372310,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0030",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0030",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0030",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0030",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0031",
@@ -371295,32 +372422,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -371328,7 +372454,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0031",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::DependentSpecificationCanAdjustFallbackBehavior",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.DependentSpecificationCanAdjustFallbackBehavior",
+          "method": "DependentSpecificationCanAdjustFallbackBehavior",
+          "line": 148,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0031",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0031",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "method": "SuccessfulSvcbResolutionUsesSvcbBehaviorAndDiscouragesCleartextFallback",
+          "line": 131,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0026",
+            "REQ-QUIC-RFC9461-0027",
+            "REQ-QUIC-RFC9461-0031"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0032",
@@ -371343,32 +372566,31 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+        "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 2,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [
         {
@@ -371376,7 +372598,104 @@
           "summary": "RFC 9461/9463/9464 encrypted DNS discovery and provisioning requirements remain blocked by the recorded planning-only scope until discovery/provisioning support is explicitly committed."
         }
       ],
-      "evidence": []
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0032",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "method": "RegistryConstantsDoNotUseUnknownOrCleartextValues",
+          "line": 179,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0032",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0032",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs::RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "file": "tests/Incursa.Quic.Tests/DnsServiceBindingClientPolicyTests.cs",
+          "class": "DnsServiceBindingClientPolicyTests",
+          "member": "DnsServiceBindingClientPolicyTests.RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "method": "RegistryConstantsExposeDohpathSvcbAndMandatoryPort",
+          "line": 165,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0028",
+            "REQ-QUIC-RFC9461-0030",
+            "REQ-QUIC-RFC9461-0032"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9461-0033",
