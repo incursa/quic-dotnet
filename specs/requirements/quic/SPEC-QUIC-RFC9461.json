@@ -22,7 +22,10 @@
     "VER-QUIC-RFC9461-0004",
     "ARC-QUIC-RFC9461-0005",
     "WI-QUIC-RFC9461-0005",
-    "VER-QUIC-RFC9461-0005"
+    "VER-QUIC-RFC9461-0005",
+    "ARC-QUIC-RFC9461-0006",
+    "WI-QUIC-RFC9461-0006",
+    "VER-QUIC-RFC9461-0006"
   ],
   "requirements": [
     {
@@ -959,6 +962,58 @@
       "notes": [
         "This requirement covers local AliasMode chain resolution over already available SVCB records only.",
         "Full DNS response parsing, Additional-section A/AAAA processing, DNSSEC validation, and platform/session integration remain outside this slice."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0041",
+      "title": "Parse DNS service binding responses and Additional addresses",
+      "statement": "The DNS service binding response parser MUST parse DNS response headers, questions, answer records, authority records, and Additional records; decode SVCB answer records into AliasMode and ServiceMode records; extract Internet-class Additional-section A and AAAA address records; skip unsupported record types and non-Internet address records; and reject truncated messages, cyclic or invalid compressed names, malformed SVCB RDATA, malformed A or AAAA RDATA, and trailing bytes without performing DNSSEC validation, operator publication, host resolver installation, or encrypted DNS session establishment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9461-0006"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9461-0006"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9461-0006"
+        ],
+        "upstream_refs": [
+          "RFC 9461 Appendix A",
+          "RFC 9460 section 2.4.3",
+          "RFC 1035 section 4.1.1",
+          "RFC 1035 section 4.1.2",
+          "RFC 1035 section 4.1.3",
+          "RFC 1035 section 4.1.4",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.3",
+          "https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.1",
+          "https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.2",
+          "https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.3",
+          "https://www.rfc-editor.org/rfc/rfc1035.html#section-4.1.4"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Dns/DnsServiceBindingResponseMessage.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingAdditionalAddress.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingQuestion.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingAliasRecord.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses"
+        ]
+      },
+      "notes": [
+        "This requirement covers DNS response parsing only for service binding records and Additional-section address hints already present in a received DNS message.",
+        "DNSSEC validation, resolver publication automation, host resolver installation, and encrypted DNS transport establishment remain outside this slice."
       ]
     }
   ]

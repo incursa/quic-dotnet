@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T14:23:29.5831784-06:00",
+  "generated_at": "2026-06-16T14:30:01.7996484-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T14:23:29.5800889-06:00",
-    "total_requirements": 2643,
+    "generated_at": "2026-06-16T14:30:01.7964824-06:00",
+    "total_requirements": 2644,
     "by_state": {
-      "trace_clean": 2643
+      "trace_clean": 2644
     },
     "by_work_queue_tag": {
-      "clean": 2643
+      "clean": 2644
     },
     "by_rfc": [
       {
@@ -157,9 +157,9 @@
       },
       {
         "rfc": "RFC9461",
-        "total": 40,
+        "total": 41,
         "by_state": {
-          "trace_clean": 40
+          "trace_clean": 41
         }
       },
       {
@@ -407208,6 +407208,182 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9461-0040"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9461-0041",
+      "artifact_id": "SPEC-QUIC-RFC9461",
+      "rfc": "RFC9461",
+      "section_prefix": "unsectioned",
+      "title": "Parse DNS service binding responses and Additional addresses",
+      "statement": "The DNS service binding response parser MUST parse DNS response headers, questions, answer records, authority records, and Additional records; decode SVCB answer records into AliasMode and ServiceMode records; extract Internet-class Additional-section A and AAAA address records; skip unsupported record types and non-Internet address records; and reject truncated messages, cyclic or invalid compressed names, malformed SVCB RDATA, malformed A or AAAA RDATA, and trailing bytes without performing DNSSEC validation, operator publication, host resolver installation, or encrypted DNS session establishment.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "method": "ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "method": "ParseResponseMessage_DecodesSvcbAnswersAndAdditionalAddresses",
+          "line": 16,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "method": "ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "method": "ParseResponseMessage_RejectsMalformedTruncatedLoopingAndInvalidAddressData",
+          "line": 72,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses",
+          "method": "ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0041",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs::ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs",
+          "class": "REQ_QUIC_RFC9461_0041",
+          "member": "REQ_QUIC_RFC9461_0041.ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses",
+          "method": "ParseResponseMessage_SkipsUnsupportedRecordsAndNonInternetAdditionalAddresses",
+          "line": 82,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0041"
           ],
           "requirement_tagged": true,
           "class_level_only": false

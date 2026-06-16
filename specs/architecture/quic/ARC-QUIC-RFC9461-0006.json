@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS Service Binding RFC 9461 Response Message Parser Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the bounded RFC 9461 DNS response parser boundary for SVCB answers and Additional-section address records.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0006",
+    "VER-QUIC-RFC9461-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0041"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingResponseMessage.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAdditionalAddress.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingQuestion.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingAliasRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0041.cs"
+  ],
+  "design_summary": "`DnsServiceBindingResponseMessage` parses a complete DNS response envelope: header counts, question names, answer records, authority records, and Additional records. Answer-section SVCB records are dispatched to the existing AliasMode and ServiceMode parsers, preserving their stricter RFC 9460 TargetName and SvcParam validation. Additional-section Internet-class A and AAAA records are converted into scalar `DnsServiceBindingAdditionalAddress` values keyed by owner name, while unsupported records and non-Internet address records are skipped.",
+  "data_and_state_considerations": "The parser is a pure byte-to-value helper over a single DNS message. It does not perform DNS queries, validate DNSSEC signatures, choose resolver policy, install host resolver configuration, publish operator DNS records, or establish encrypted DNS transports.",
+  "edge_cases_and_constraints": [
+    "DNS owner names can use RFC 1035 compression; SVCB RDATA TargetName values still use the existing uncompressed parser.",
+    "Compression pointers are bounded and cyclic or out-of-message pointers are rejected.",
+    "SVCB RDATA shorter than SvcPriority is rejected before dispatch.",
+    "Additional-section A and AAAA records must have exactly four and sixteen address octets respectively.",
+    "Trailing bytes after the declared DNS sections are rejected."
+  ],
+  "risks": [
+    "The parser does not authenticate DNS response data.",
+    "The parser does not rank addresses or merge them into endpoint connection policy.",
+    "The parser does not implement a recursive or stub resolver."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Keeping response parsing in `Incursa.Quic.Dns` provides a reusable scalar input for future discovery adapters while avoiding coupling to QUIC transport runtime, platform resolver APIs, or DNSSEC policy."
+    }
+  ]
+}
