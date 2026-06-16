@@ -569,20 +569,6 @@ function Get-RequirementGapMappings {
             RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9220' -Start 1 -End 8)
         },
         [pscustomobject]@{
-            Slug               = 'http-datagrams-and-capsules'
-            Summary            = 'Remaining RFC 9297 Capsule-Protocol policy, runtime adapter lifecycle, and intermediary conversion requirements remain blocked until those slices are explicitly committed.'
-            RequirementPrefixes = @()
-            RequirementIds     = @(
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 4 -End 7
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 14 -End 16
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 26 -End 27
-                'REQ-QUIC-RFC9297-0046'
-                'REQ-QUIC-RFC9297-0048'
-                'REQ-QUIC-RFC9297-0050'
-                New-RequirementIdRange -Rfc 'RFC9297' -Start 66 -End 75
-            )
-        },
-        [pscustomobject]@{
             Slug               = 'connect-udp'
             Summary            = 'RFC 9298 CONNECT-UDP requirements remain blocked by the recorded planning-only scope until CONNECT-UDP support is explicitly committed.'
             RequirementPrefixes = @()

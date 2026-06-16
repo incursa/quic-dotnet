@@ -85,6 +85,10 @@
         "upstream_refs": [
           "RFC 9297 2 RFC9297-S2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AllowsSupportingRequestsAndExtensionOverrides",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AbortsUnsupportedRequestsWithH3DatagramError"
         ]
       }
     },
@@ -102,6 +106,10 @@
         "upstream_refs": [
           "RFC 9297 2 RFC9297-S2-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_UnsupportedReceiveMapsToRequestAbort",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AbortsUnsupportedRequestsWithH3DatagramError"
         ]
       }
     },
@@ -119,6 +127,10 @@
         "upstream_refs": [
           "RFC 9297 2 RFC9297-S2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_UnsupportedReceiveMapsToRequestAbort",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AbortsUnsupportedRequestsWithH3DatagramError"
         ]
       }
     },
@@ -136,6 +148,10 @@
         "upstream_refs": [
           "RFC9297-S2-B6-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AllowsSupportingRequestsAndExtensionOverrides",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_AbortsUnsupportedRequestsWithH3DatagramError"
         ]
       }
     },
@@ -274,6 +290,10 @@
         "upstream_refs": [
           "RFC9297-S2P1-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_SendsOnlyWhenSendSideIsOpen",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_SilentlyDropsAfterStreamSideClose"
         ]
       }
     },
@@ -291,6 +311,10 @@
         "upstream_refs": [
           "RFC9297-S2P1-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_ReceiveSideCloseDropsWithoutError",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_SilentlyDropsAfterStreamSideClose"
         ]
       }
     },
@@ -308,6 +332,10 @@
         "upstream_refs": [
           "RFC9297-S2P1-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_BuffersOrDropsDatagramsForUncreatedCreatableStreams",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_DoesNotBufferAlreadyCreatedStreams"
         ]
       }
     },
@@ -506,6 +534,10 @@
         "upstream_refs": [
           "RFC 9297 Section 3.1 RFC9297-S3P1-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_Http1CapsuleProtocolStartsOnlyOnLastRequest",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_Http1NonLastRequestsCannotStartCapsuleProtocol"
         ]
       }
     },
@@ -523,6 +555,10 @@
         "upstream_refs": [
           "RFC 9297 3.1 RFC9297-S3P1-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_DataStreamsUseBothUnderlyingFlowControlLayers",
+          "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs::DatagramLifecycle_DataStreamsAreNotCompliantWhenAFlowControlLayerIsMissing"
         ]
       }
     },
@@ -917,6 +953,10 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B17-P17-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AvoidsFullCapsuleBufferingAndAccumulation",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DoesNotRequireFullCapsuleBufferingBeforeHandling"
         ]
       },
       "notes": [
@@ -960,6 +1000,10 @@
         "upstream_refs": [
           "RFC 9297 3.3 RFC9297-S3P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AcceptsExactCapsulePayloadFieldsAndConsistentRedundantLength",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_RejectsUnexpectedPayloadFieldsOrInconsistentRedundantLength"
         ]
       }
     },
@@ -1000,6 +1044,10 @@
         "upstream_refs": [
           "RFC 9297 3.3 RFC9297-S3P3-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AcceptsExactCapsulePayloadFieldsAndConsistentRedundantLength",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_RejectsUnexpectedPayloadFieldsOrInconsistentRedundantLength"
         ]
       }
     },
@@ -1338,6 +1386,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DatagramCapsulesParseWithHttpDatagramSemantics",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DatagramCapsulesInheritHttpDatagramParseErrors"
         ]
       },
       "notes": [
@@ -1358,6 +1410,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DatagramCapsulesParseWithHttpDatagramSemantics",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DatagramCapsulesInheritHttpDatagramParseErrors"
         ]
       },
       "notes": [
@@ -1378,6 +1434,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_ReencodesBetweenDatagramFramesAndCapsulesWhenIdentified",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_RefusesReencodingBeforeCapsuleProtocolIdentification"
         ]
       },
       "notes": [
@@ -1398,6 +1458,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B6-P6-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_ReencodesBetweenDatagramFramesAndCapsulesWhenIdentified",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_RefusesReencodingBeforeCapsuleProtocolIdentification"
         ]
       },
       "notes": [
@@ -1418,6 +1482,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_ForwardsDatagramFramesWithoutCapsuleConversionWhenFramesAreSupported",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DropsOversizedDatagramsInsteadOfConvertingWhenFramesAreSupported"
         ]
       },
       "notes": [
@@ -1438,6 +1506,10 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B8-P8-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DropsOversizedDatagramsInsteadOfConvertingWhenFramesAreSupported",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DropsPayloadsThatExceedExtensionLimitsWithoutBuffering"
         ]
       },
       "notes": [
@@ -1458,6 +1530,10 @@
         "upstream_refs": [
           "RFC 9297 3.5 RFC9297-S3P5-B9-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DropsPayloadsThatExceedExtensionLimitsWithoutBuffering",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AllowsUsableDatagramCapsuleLengthsWithinExtensionLimits"
         ]
       },
       "notes": [
@@ -1478,6 +1554,10 @@
         "upstream_refs": [
           "RFC 9297 3.5 RFC9297-S3P5-B9-P9-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DropsPayloadsThatExceedExtensionLimitsWithoutBuffering",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AllowsUsableDatagramCapsuleLengthsWithinExtensionLimits"
         ]
       },
       "notes": [
@@ -1498,6 +1578,10 @@
         "upstream_refs": [
           "RFC 9297 3.5 RFC9297-S3P5-B10-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_AvoidsFullCapsuleBufferingAndAccumulation",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_DoesNotRequireFullCapsuleBufferingBeforeHandling"
         ]
       },
       "notes": [
@@ -1518,6 +1602,10 @@
         "upstream_refs": [
           "RFC 9297 3.5 RFC9297-S3P5-B11-P11-S4",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_NewHttpExtensionsThatUseDatagramsShouldUseCapsuleProtocol",
+          "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs::IntermediaryPolicy_ExtensionsWithoutHttpDatagramsNeedNotUseCapsuleProtocol"
         ]
       }
     },
@@ -1731,6 +1819,9 @@
     "VER-QUIC-RFC9297-0001",
     "ARC-QUIC-RFC9297-0002",
     "WI-QUIC-RFC9297-0002",
-    "VER-QUIC-RFC9297-0002"
+    "VER-QUIC-RFC9297-0002",
+    "ARC-QUIC-RFC9297-0003",
+    "WI-QUIC-RFC9297-0003",
+    "VER-QUIC-RFC9297-0003"
   ]
 }

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9297-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP Datagram Lifecycle and Intermediary Conversion Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "ARC-QUIC-RFC9297-0003",
+    "VER-QUIC-RFC9297-0003"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9297-0004",
+    "REQ-QUIC-RFC9297-0005",
+    "REQ-QUIC-RFC9297-0006",
+    "REQ-QUIC-RFC9297-0007",
+    "REQ-QUIC-RFC9297-0014",
+    "REQ-QUIC-RFC9297-0015",
+    "REQ-QUIC-RFC9297-0016",
+    "REQ-QUIC-RFC9297-0026",
+    "REQ-QUIC-RFC9297-0027",
+    "REQ-QUIC-RFC9297-0046",
+    "REQ-QUIC-RFC9297-0048",
+    "REQ-QUIC-RFC9297-0050",
+    "REQ-QUIC-RFC9297-0066",
+    "REQ-QUIC-RFC9297-0067",
+    "REQ-QUIC-RFC9297-0068",
+    "REQ-QUIC-RFC9297-0069",
+    "REQ-QUIC-RFC9297-0070",
+    "REQ-QUIC-RFC9297-0071",
+    "REQ-QUIC-RFC9297-0072",
+    "REQ-QUIC-RFC9297-0073",
+    "REQ-QUIC-RFC9297-0074",
+    "REQ-QUIC-RFC9297-0075"
+  ],
+  "summary": "Add trace-owned HTTP Datagram lifecycle and intermediary conversion decisions for the remaining RFC 9297 requirements.",
+  "planned_changes": "- Add lifecycle decisions for request support, extension override, send-side openness, receive-side closure, uncreated streams, HTTP/1.x start policy, and flow-control checks.\n- Add intermediary conversion decisions for DATAGRAM frame and DATAGRAM Capsule bridging.\n- Add Capsule payload length and redundant length validation.\n- Add extension-limit discard and no-full-buffering policy helpers.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run the HTTP/3 package build, focused lifecycle/intermediary policy tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9297-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9297-0003"
+  ],
+  "out_of_scope": [
+    "CONNECT-UDP request setup and UDP forwarding.",
+    "CONNECT-IP address assignment and IP packet forwarding.",
+    "Live QUIC DATAGRAM effect scheduling inside the transport runtime."
+  ],
+  "completion_notes": "The RFC 9297 requirement set is fully trace-owned across foundation, Capsule Protocol policy, and lifecycle/conversion policy slices."
+}

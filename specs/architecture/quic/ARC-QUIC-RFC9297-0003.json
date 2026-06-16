@@ -1,0 +1,67 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9297-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP Datagram Lifecycle and Intermediary Conversion Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9297 lifecycle and intermediary conversion policy for HTTP Datagrams and DATAGRAM Capsules without coupling the policy to live transport mutation.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "WI-QUIC-RFC9297-0003",
+    "VER-QUIC-RFC9297-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9297-0004",
+    "REQ-QUIC-RFC9297-0005",
+    "REQ-QUIC-RFC9297-0006",
+    "REQ-QUIC-RFC9297-0007",
+    "REQ-QUIC-RFC9297-0014",
+    "REQ-QUIC-RFC9297-0015",
+    "REQ-QUIC-RFC9297-0016",
+    "REQ-QUIC-RFC9297-0026",
+    "REQ-QUIC-RFC9297-0027",
+    "REQ-QUIC-RFC9297-0046",
+    "REQ-QUIC-RFC9297-0048",
+    "REQ-QUIC-RFC9297-0050",
+    "REQ-QUIC-RFC9297-0066",
+    "REQ-QUIC-RFC9297-0067",
+    "REQ-QUIC-RFC9297-0068",
+    "REQ-QUIC-RFC9297-0069",
+    "REQ-QUIC-RFC9297-0070",
+    "REQ-QUIC-RFC9297-0071",
+    "REQ-QUIC-RFC9297-0072",
+    "REQ-QUIC-RFC9297-0073",
+    "REQ-QUIC-RFC9297-0074",
+    "REQ-QUIC-RFC9297-0075"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3DatagramLifecycle.cs",
+    "src/Incursa.Quic.Http3/Http3DatagramLifecycleDecision.cs",
+    "src/Incursa.Quic.Http3/Http3DatagramIntermediaryPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
+    "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs"
+  ],
+  "design_summary": "`Http3DatagramLifecycle` returns explicit send, accept, drop, buffer, or abort decisions for request support, extension overrides, send-side openness, receive-side closure, uncreated streams, HTTP/1.x Capsule Protocol start, and underlying flow-control checks. `Http3DatagramIntermediaryPolicy` validates Capsule payload length consistency, parses DATAGRAM Capsule payloads with HTTP Datagram semantics, avoids full-value buffering, chooses conversion/drop actions for intermediaries, applies extension limits, and records the recommendation that new HTTP Datagram extensions use the Capsule Protocol.",
+  "data_and_state_considerations": "The slice returns immutable decisions and does not open streams, queue frames, buffer live data, mutate QUIC transport state, or perform proxy forwarding.",
+  "edge_cases_and_constraints": [
+    "Unsupported HTTP Datagram requests map to request-stream abort with H3_DATAGRAM_ERROR.",
+    "Closed stream sides silently drop datagrams.",
+    "Uncreated but creatable streams can either drop or temporarily buffer for approximately one RTT.",
+    "HTTP/1.x Capsule Protocol can start only on the final request on a connection.",
+    "Intermediaries require Capsule Protocol identification before re-encoding.",
+    "Oversized or extension-disallowed datagrams are dropped without buffering."
+  ],
+  "risks": [
+    "This slice intentionally avoids wiring live QUIC DATAGRAM effects into `QuicConnectionRuntime`.",
+    "Actual CONNECT-UDP and CONNECT-IP forwarding are left to RFC 9298 and RFC 9484.",
+    "Future adapter work must translate these decisions into concrete stream/datagram effects without weakening the pure policy proof."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The lifecycle policy is the handoff point between RFC 9297 semantics and later MASQUE adapters. It keeps core transport ownership separate from HTTP extension semantics."
+    }
+  ]
+}
