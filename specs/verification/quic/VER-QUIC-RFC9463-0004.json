@@ -1,0 +1,68 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0004",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Discovery RFC 9463 Neighbor Discovery Option Wire Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0004",
+    "WI-QUIC-RFC9463-0004"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9463 Neighbor Discovery encrypted DNS option wire surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0077",
+    "REQ-QUIC-RFC9463-0078",
+    "REQ-QUIC-RFC9463-0079",
+    "REQ-QUIC-RFC9463-0080",
+    "REQ-QUIC-RFC9463-0081",
+    "REQ-QUIC-RFC9463-0082",
+    "REQ-QUIC-RFC9463-0083",
+    "REQ-QUIC-RFC9463-0084",
+    "REQ-QUIC-RFC9463-0085",
+    "REQ-QUIC-RFC9463-0086",
+    "REQ-QUIC-RFC9463-0087",
+    "REQ-QUIC-RFC9463-0088",
+    "REQ-QUIC-RFC9463-0089",
+    "REQ-QUIC-RFC9463-0090",
+    "REQ-QUIC-RFC9463-0091",
+    "REQ-QUIC-RFC9463-0092",
+    "REQ-QUIC-RFC9463-0093",
+    "REQ-QUIC-RFC9463-0094",
+    "REQ-QUIC-RFC9463-0095",
+    "REQ-QUIC-RFC9463-0096",
+    "REQ-QUIC-RFC9463-0097",
+    "REQ-QUIC-RFC9463-0098",
+    "REQ-QUIC-RFC9463-0099",
+    "REQ-QUIC-RFC9463-0100",
+    "REQ-QUIC-RFC9463-0101",
+    "REQ-QUIC-RFC9463-0102",
+    "REQ-QUIC-RFC9463-0103",
+    "REQ-QUIC-RFC9463-0104",
+    "REQ-QUIC-RFC9463-0105",
+    "REQ-QUIC-RFC9463-0106",
+    "REQ-QUIC-RFC9463-0107",
+    "REQ-QUIC-RFC9463-0108"
+  ],
+  "scope": "This verification covers Neighbor Discovery encrypted DNS option field order, Type and Length unit encoding, Service Priority, Lifetime and default lifetime behavior, infinity and retirement lifetime semantics, RFC 8415 authentication-domain-name wire formatting, IPv6 Addr Length and address-list encoding, shared lifetime across IPv6 addresses, RFC 9460 SvcParams encoding and alpn preference, forbidden address hints, default port lookup when the port SvcParam is absent, ADN-only mode field omission, zero padding to an 8-octet boundary, multiple option processing, service-priority ordering, invalid-option discard, and loopback-address discard behavior.",
+  "preconditions": [
+    "The RFC 9463 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9463.json`.",
+    "Neighbor Discovery wire support remains a pure option codec and does not implement ICMPv6 Router Advertisement socket integration."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsDiscoveryNeighborDiscoveryOptionTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused Neighbor Discovery option tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage reflects the Neighbor Discovery wire slice, diff hygiene passes, and the full solution test suite remains green.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryNeighborDiscoveryOption.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+  ],
+  "status_summary": "The RFC 9463 Neighbor Discovery encrypted DNS option wire floor is trace-owned and verified. Router Advertisement socket integration, resolver fallback, PKIX validation, and resolver installation remain future work."
+}

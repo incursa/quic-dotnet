@@ -16,7 +16,10 @@
     "VER-QUIC-RFC9463-0003",
     "WI-QUIC-RFC9463-0001",
     "WI-QUIC-RFC9463-0002",
-    "WI-QUIC-RFC9463-0003"
+    "WI-QUIC-RFC9463-0003",
+    "ARC-QUIC-RFC9463-0004",
+    "VER-QUIC-RFC9463-0004",
+    "WI-QUIC-RFC9463-0004"
   ],
   "requirements": [
     {
@@ -1667,6 +1670,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1684,6 +1691,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1701,6 +1712,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1718,6 +1733,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1735,6 +1754,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1753,6 +1776,10 @@
           "RFC 9463 Section 6.1 RFC9463-S6P1-B8-P8-S3",
           "RFC 9460 Section 2.4.1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsWrongTypeAndMismatchedLengthUnits",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesOptionTypeLengthPriorityLifetimeAndAdnInOrder"
         ]
       }
     },
@@ -1773,7 +1800,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::LifetimeConstantsModelInfinityAndRetirement",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::LifetimeIsNotSignedOrWidened"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::LifetimeIsNotSignedOrWidened",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::LifetimeModelsInfinityRetirementAndDefaultRecommendation"
         ]
       }
     },
@@ -1791,6 +1820,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B9-P9-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::LifetimeModelsInfinityRetirementAndDefaultRecommendation"
         ]
       }
     },
@@ -1809,6 +1842,10 @@
           "RFC 9463 Section 6.1 RFC9463-S6P1-B10-P10-S1",
           "RFC 4861 MaxRtrAdvInterval",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::LifetimeModelsInfinityRetirementAndDefaultRecommendation"
         ]
       }
     },
@@ -1829,7 +1866,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::LifetimeConstantsModelInfinityAndRetirement",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::LifetimeModelsInfinityRetirementAndDefaultRecommendation"
         ]
       }
     },
@@ -1850,7 +1889,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::LifetimeConstantsModelInfinityAndRetirement",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::FiniteLifetimeIsNeitherInfinityNorRetirement",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::LifetimeModelsInfinityRetirementAndDefaultRecommendation"
         ]
       }
     },
@@ -1868,6 +1909,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B13-P13-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodePreservesRfc8415AuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidAuthenticationDomainNameLength"
         ]
       }
     },
@@ -1885,6 +1930,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B13-P13-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodePreservesRfc8415AuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidAuthenticationDomainNameLength"
         ]
       }
     },
@@ -1902,6 +1951,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B14-P14-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodePreservesRfc8415AuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidAuthenticationDomainNameLength"
         ]
       }
     },
@@ -1920,6 +1973,10 @@
           "RFC 9463 section 6.1 RFC9463-S6P1-B14-P14-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1",
           "RFC 8415 Section 10"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodePreservesRfc8415AuthenticationDomainName",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidAuthenticationDomainNameLength"
         ]
       }
     },
@@ -1937,6 +1994,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidIpv6AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesIpv6AddressLengthAndSharedLifetime"
         ]
       }
     },
@@ -1954,6 +2015,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidIpv6AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesIpv6AddressLengthAndSharedLifetime"
         ]
       }
     },
@@ -1971,6 +2036,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B15-P15-S3",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidIpv6AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesIpv6AddressLengthAndSharedLifetime"
         ]
       }
     },
@@ -1988,6 +2057,10 @@
         "upstream_refs": [
           "RFC 9463 section 6.1 RFC9463-S6P1-B16-P16-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidIpv6AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesIpv6AddressLengthAndSharedLifetime"
         ]
       }
     },
@@ -2005,6 +2078,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B17-P17-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsInvalidIpv6AddressLength",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesIpv6AddressLengthAndSharedLifetime"
         ]
       }
     },
@@ -2022,6 +2099,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B19-P19-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2039,6 +2120,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B19-P19-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2056,6 +2141,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2073,6 +2162,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2091,6 +2184,10 @@
           "RFC 9463 Section 6.1 RFC9463-S6P1-B20-P20-S3",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section=6.1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2111,7 +2208,9 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreateRejectsForbiddenAddressHintServiceParameters",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreatePreservesServicePriorityAndNonHintServiceParameterKeys"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::TryCreatePreservesServicePriorityAndNonHintServiceParameterKeys",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::CreateRejectsSvcParamsWithoutAlpnOrAddressHints",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::EncodeWritesSvcParamsLengthAndAlpn"
         ]
       }
     },
@@ -2129,6 +2228,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B21-P21-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DefaultPortsFollowEncryptedDnsAlpnWhenPortSvcParamIsAbsent",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DefaultPortsRejectUnknownAlpn"
         ]
       }
     },
@@ -2146,6 +2249,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B22-P22-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::AdnOnlyModeOmitsTrailingFieldsAndPadsToEightOctets",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsNonZeroPadding"
         ]
       }
     },
@@ -2163,6 +2270,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.1 RFC9463-S6P1-B23-P23-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::AdnOnlyModeOmitsTrailingFieldsAndPadsToEightOctets",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeRejectsNonZeroPadding"
         ]
       }
     },
@@ -2180,6 +2291,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.2 RFC9463-S6P2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyCanRejectInvalidOptionWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyReturnsSeparateOptionsSortedByServicePriority"
         ]
       }
     },
@@ -2197,6 +2312,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.2 RFC9463-S6P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyCanRejectInvalidOptionWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyReturnsSeparateOptionsSortedByServicePriority"
         ]
       }
     },
@@ -2214,6 +2333,10 @@
         "upstream_refs": [
           "RFC 9463 Section 6.2 RFC9463-S6P2-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9463.html#section-6.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyCanRejectInvalidOptionWhenSilentDiscardIsDisabled",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyReturnsSeparateOptionsSortedByServicePriority"
         ]
       }
     },

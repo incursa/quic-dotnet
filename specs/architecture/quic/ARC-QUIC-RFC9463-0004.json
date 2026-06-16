@@ -1,0 +1,77 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 Neighbor Discovery Option Wire Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9463 Neighbor Discovery encrypted DNS option wire-format boundary for IPv6 Router Advertisement data.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0004",
+    "VER-QUIC-RFC9463-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0077",
+    "REQ-QUIC-RFC9463-0078",
+    "REQ-QUIC-RFC9463-0079",
+    "REQ-QUIC-RFC9463-0080",
+    "REQ-QUIC-RFC9463-0081",
+    "REQ-QUIC-RFC9463-0082",
+    "REQ-QUIC-RFC9463-0083",
+    "REQ-QUIC-RFC9463-0084",
+    "REQ-QUIC-RFC9463-0085",
+    "REQ-QUIC-RFC9463-0086",
+    "REQ-QUIC-RFC9463-0087",
+    "REQ-QUIC-RFC9463-0088",
+    "REQ-QUIC-RFC9463-0089",
+    "REQ-QUIC-RFC9463-0090",
+    "REQ-QUIC-RFC9463-0091",
+    "REQ-QUIC-RFC9463-0092",
+    "REQ-QUIC-RFC9463-0093",
+    "REQ-QUIC-RFC9463-0094",
+    "REQ-QUIC-RFC9463-0095",
+    "REQ-QUIC-RFC9463-0096",
+    "REQ-QUIC-RFC9463-0097",
+    "REQ-QUIC-RFC9463-0098",
+    "REQ-QUIC-RFC9463-0099",
+    "REQ-QUIC-RFC9463-0100",
+    "REQ-QUIC-RFC9463-0101",
+    "REQ-QUIC-RFC9463-0102",
+    "REQ-QUIC-RFC9463-0103",
+    "REQ-QUIC-RFC9463-0104",
+    "REQ-QUIC-RFC9463-0105",
+    "REQ-QUIC-RFC9463-0106",
+    "REQ-QUIC-RFC9463-0107",
+    "REQ-QUIC-RFC9463-0108"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryNeighborDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningServiceParameter.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs"
+  ],
+  "design_summary": "The Neighbor Discovery slice adds a pure Router Advertisement option codec that writes and parses the RFC 9463 Type, Length, Service Priority, Lifetime, ADN Length, RFC 8415 authentication-domain-name, IPv6 Addr Length/address list, SvcParams Length, RFC 9460 SvcParams, ADN-only mode, zero padding to an 8-octet option boundary, multiple option processing, service-priority sorting, and invalid-option discard behavior.",
+  "data_and_state_considerations": "The helper owns only Neighbor Discovery option bytes and normalized resolver values. It does not own ICMPv6 Router Advertisement sockets, platform network configuration, resolver installation, PKIX validation, DHCPv4, or DHCPv6 state.",
+  "edge_cases_and_constraints": [
+    "The Length field is expressed in 8-octet units and includes the Type and Length octets.",
+    "ADN-only options omit Addr Length, IPv6 addresses, SvcParams Length, and SvcParams.",
+    "Populated options require non-zero Addr Length that is a multiple of 16.",
+    "IPv6 loopback and multicast addresses are discarded during decode, and an option with no usable address is invalid.",
+    "Non-zero padding octets are rejected.",
+    "Multiple options remain separate and are returned in service-priority order."
+  ],
+  "risks": [
+    "This slice does not implement ICMPv6 Router Advertisement send/receive integration.",
+    "This slice does not implement resolver fallback, PKIX validation, or encrypted resolver connection establishment.",
+    "This slice does not implement platform resolver configuration."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The codec sits beside the DHCPv4 and DHCPv6 DNR helpers and gives ProtocolLab and future network adapters exact Neighbor Discovery byte-level proof without moving router-advertisement state into the QUIC runtime."
+    }
+  ]
+}
