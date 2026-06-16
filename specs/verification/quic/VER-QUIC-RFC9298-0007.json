@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9298-0007",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "CONNECT-UDP HTTP/1.1 Upgrade Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0007",
+    "WI-QUIC-RFC9298-0007"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9298 HTTP/1.1 upgrade policy.",
+  "verifies": [
+    "REQ-QUIC-RFC9298-0053",
+    "REQ-QUIC-RFC9298-0054",
+    "REQ-QUIC-RFC9298-0055",
+    "REQ-QUIC-RFC9298-0056",
+    "REQ-QUIC-RFC9298-0057",
+    "REQ-QUIC-RFC9298-0058",
+    "REQ-QUIC-RFC9298-0059",
+    "REQ-QUIC-RFC9298-0060",
+    "REQ-QUIC-RFC9298-0061",
+    "REQ-QUIC-RFC9298-0062",
+    "REQ-QUIC-RFC9298-0063",
+    "REQ-QUIC-RFC9298-0064"
+  ],
+  "scope": "This verification covers the HTTP/1.1 GET method, single Host field, Connection: Upgrade, Upgrade: connect-udp, malformed 400 recommendation, 101 response, response upgrade fields, no-content Capsule requirements, failed-attempt abort decision, and required HTTP setting marker.",
+  "preconditions": [
+    "RFC 9298 request target and Capsule Protocol policy helpers are trace-owned."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpHttp11UpgradePolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0053|FullyQualifiedName~Http3ConnectUdpHttp11UpgradePolicyTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused HTTP/1.1 upgrade policy tests pass, core SpecTrace validation accepts the RFC 9298 HTTP/1.1 artifacts, generated triage reflects the slice as trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpHttp11UpgradePolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs"
+  ],
+  "status_summary": "The RFC 9298 HTTP/1.1 upgrade policy surface is trace-owned and verified by focused local gates. Live connection upgrade I/O and UDP forwarding remain future adapter work."
+}

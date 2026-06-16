@@ -1031,6 +1031,9 @@
         "upstream_refs": [
           "RFC 9298 3.2 RFC9298-S3P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_UsesGetMethod tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsNonGetMethod"
         ]
       }
     },
@@ -1048,6 +1051,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.2 RFC9298-S3P2-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesSingleHostHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingOrDuplicateHostHeaders"
         ]
       }
     },
@@ -1065,6 +1071,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.2 RFC9298-S3P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectionUpgradeToken"
         ]
       }
     },
@@ -1082,6 +1091,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.2 RFC9298-S3P2-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader"
         ]
       }
     },
@@ -1099,6 +1111,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.2 RFC9298-S3P2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus"
         ]
       }
     },
@@ -1116,6 +1131,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.2 RFC9298-S3P2-B6-P6-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus"
         ]
       }
     },
@@ -1133,6 +1151,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.3 RFC9298-S3P3-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_UsesSwitchingProtocolsStatus tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsNonSwitchingProtocolsStatus"
         ]
       }
     },
@@ -1150,6 +1171,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.3 RFC9298-S3P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken"
         ]
       }
     },
@@ -1167,6 +1191,9 @@
         "upstream_refs": [
           "RFC 9298 section 3.3 RFC9298-S3P3-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders"
         ]
       }
     },
@@ -1185,6 +1212,9 @@
           "RFC 9298 section 3.3 RFC9298-S3P3-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3",
           "HTTP-DGRAM section 3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_MeetsCapsuleNoContentRequirements tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMessageContent"
         ]
       }
     },
@@ -1202,6 +1232,9 @@
         "upstream_refs": [
           "RFC9298 3.3 RFC9298-S3P3-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_AllowsProceedWhenRequirementsAreMet tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing"
         ]
       }
     },
@@ -1219,6 +1252,9 @@
         "upstream_refs": [
           "RFC9298 3.4 RFC9298-S3P4-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_RequiresServerHttpSetting tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_DoesNotAllowOmittingServerHttpSetting"
         ]
       },
       "notes": [
@@ -2350,6 +2386,9 @@
     "VER-QUIC-RFC9298-0005",
     "ARC-QUIC-RFC9298-0006",
     "WI-QUIC-RFC9298-0006",
-    "VER-QUIC-RFC9298-0006"
+    "VER-QUIC-RFC9298-0006",
+    "ARC-QUIC-RFC9298-0007",
+    "WI-QUIC-RFC9298-0007",
+    "VER-QUIC-RFC9298-0007"
   ]
 }

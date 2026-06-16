@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0007",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP HTTP/1.1 Upgrade Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0007",
+    "VER-QUIC-RFC9298-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0053",
+    "REQ-QUIC-RFC9298-0054",
+    "REQ-QUIC-RFC9298-0055",
+    "REQ-QUIC-RFC9298-0056",
+    "REQ-QUIC-RFC9298-0057",
+    "REQ-QUIC-RFC9298-0058",
+    "REQ-QUIC-RFC9298-0059",
+    "REQ-QUIC-RFC9298-0060",
+    "REQ-QUIC-RFC9298-0061",
+    "REQ-QUIC-RFC9298-0062",
+    "REQ-QUIC-RFC9298-0063",
+    "REQ-QUIC-RFC9298-0064"
+  ],
+  "summary": "Add HTTP/1.1 CONNECT-UDP upgrade request/response policy helpers.",
+  "planned_changes": "- Add request/response header builders and validators for the HTTP/1.1 Upgrade path.\n- Add focused tests and canonical xrefs.",
+  "verification_plan": "Run focused HTTP/1.1 upgrade policy tests, core SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0007"
+  ],
+  "out_of_scope": [
+    "Live HTTP/1.1 connection upgrade I/O.",
+    "Capsule stream forwarding.",
+    "UDP socket lifecycle."
+  ],
+  "completion_notes": "The RFC 9298 HTTP/1.1 upgrade policy surface is implemented and verified locally."
+}

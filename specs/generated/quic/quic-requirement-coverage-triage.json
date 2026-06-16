@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T10:54:50.1623855-06:00",
+  "generated_at": "2026-06-16T11:01:51.7440212-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T10:54:50.1592661-06:00",
+    "generated_at": "2026-06-16T11:01:51.7407969-06:00",
     "total_requirements": 2641,
     "by_state": {
-      "trace_clean": 2396,
-      "uncovered_blocked": 245
+      "trace_clean": 2408,
+      "uncovered_blocked": 233
     },
     "by_work_queue_tag": {
-      "blocked": 245,
-      "clean": 2396,
-      "new_tests_needed": 245
+      "blocked": 233,
+      "clean": 2408,
+      "new_tests_needed": 233
     },
     "by_rfc": [
       {
@@ -127,8 +127,8 @@
         "rfc": "RFC9298",
         "total": 117,
         "by_state": {
-          "trace_clean": 85,
-          "uncovered_blocked": 32
+          "trace_clean": 97,
+          "uncovered_blocked": 20
         }
       },
       {
@@ -375132,7 +375132,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -379593,7 +379593,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382200,7 +382200,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382677,7 +382677,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382725,7 +382725,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382773,7 +382773,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382821,7 +382821,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382869,7 +382869,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382917,7 +382917,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -382965,7 +382965,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383013,7 +383013,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383061,7 +383061,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383109,7 +383109,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383157,7 +383157,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383205,7 +383205,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383253,7 +383253,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383301,7 +383301,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383349,7 +383349,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383397,7 +383397,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383445,7 +383445,7 @@
       "gap_blockers": [
         {
           "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for tunnel setup and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, early-datagram, and HTTP/1.1 upgrade floors."
         }
       ],
       "evidence": []
@@ -383463,40 +383463,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_UsesGetMethod tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsNonGetMethod",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0053",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsNonGetMethod",
+          "method": "UpgradeRequest_RejectsNonGetMethod",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0053",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_UsesGetMethod tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsNonGetMethod",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsNonGetMethod",
+          "method": "UpgradeRequest_RejectsNonGetMethod",
+          "line": 23,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0053",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_UsesGetMethod",
+          "method": "UpgradeRequest_UsesGetMethod",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0053",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0053",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0054",
@@ -383511,40 +383635,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesSingleHostHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0054",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_IncludesSingleHostHeader",
+          "method": "UpgradeRequest_IncludesSingleHostHeader",
+          "line": 32,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0054"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0054",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
+          "method": "UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0054"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0054",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesSingleHostHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
+          "method": "UpgradeRequest_RejectsMissingOrDuplicateHostHeaders",
+          "line": 43,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0054"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0054",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0054",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0055",
@@ -383559,40 +383807,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectionUpgradeToken",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0055",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_IncludesConnectionUpgradeToken",
+          "method": "UpgradeRequest_IncludesConnectionUpgradeToken",
+          "line": 52,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0055"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0055",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeRequest_RejectsMissingConnectionUpgradeToken",
+          "line": 63,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0055"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0055",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectionUpgradeToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeRequest_RejectsMissingConnectionUpgradeToken",
+          "line": 63,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0055"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0055",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0055",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0056",
@@ -383607,40 +383979,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0056",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_IncludesConnectUdpUpgradeHeader",
+          "method": "UpgradeRequest_IncludesConnectUdpUpgradeHeader",
+          "line": 72,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0056"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0056",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
+          "method": "UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
+          "line": 83,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0056"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0056",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_IncludesConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
+          "method": "UpgradeRequest_RejectsMissingConnectUdpUpgradeHeader",
+          "line": 83,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0056"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0056",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0056",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0057",
@@ -383655,40 +384151,167 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0057",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "method": "UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "line": 103,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0057",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "method": "UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "line": 103,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0057",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsUseBadRequestRecommendation",
+          "method": "UpgradeRequest_MalformedRequestsUseBadRequestRecommendation",
+          "line": 93,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0057",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0057",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0058",
@@ -383703,40 +384326,167 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0058",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "method": "UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "line": 103,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0058",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsUseBadRequestRecommendation tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "method": "UpgradeRequest_MalformedRequestsDoNotUseSuccessfulStatus",
+          "line": 103,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0058",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeRequest_MalformedRequestsUseBadRequestRecommendation",
+          "method": "UpgradeRequest_MalformedRequestsUseBadRequestRecommendation",
+          "line": 93,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0058",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0058",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0059",
@@ -383751,40 +384501,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_UsesSwitchingProtocolsStatus tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0059",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
+          "method": "UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
+          "line": 123,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0059"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0059",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_UsesSwitchingProtocolsStatus tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
+          "method": "UpgradeResponse_RejectsNonSwitchingProtocolsStatus",
+          "line": 123,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0059"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0059",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_UsesSwitchingProtocolsStatus",
+          "method": "UpgradeResponse_UsesSwitchingProtocolsStatus",
+          "line": 112,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0059"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0059",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0059",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0060",
@@ -383799,40 +384673,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0060",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_IncludesConnectionUpgradeToken",
+          "method": "UpgradeResponse_IncludesConnectionUpgradeToken",
+          "line": 132,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0060"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0060",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "line": 143,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0060"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0060",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "line": 143,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0060"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0060",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0060",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0061",
@@ -383847,40 +384845,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0061",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader",
+          "method": "UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader",
+          "line": 152,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0061",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
+          "method": "UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
+          "line": 163,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0061",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesSingleConnectUdpUpgradeHeader tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
+          "method": "UpgradeResponse_RejectsDuplicateConnectUdpUpgradeHeaders",
+          "line": 163,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0061"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0061",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0061",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0062",
@@ -383895,40 +385017,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_MeetsCapsuleNoContentRequirements tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMessageContent",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0062",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_MeetsCapsuleNoContentRequirements",
+          "method": "UpgradeResponse_MeetsCapsuleNoContentRequirements",
+          "line": 172,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0062"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0062",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMessageContent",
+          "method": "UpgradeResponse_RejectsMessageContent",
+          "line": 183,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0062"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0062",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_MeetsCapsuleNoContentRequirements tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMessageContent",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMessageContent",
+          "method": "UpgradeResponse_RejectsMessageContent",
+          "line": 183,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0062"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0062",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0062",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0063",
@@ -383943,40 +385189,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_AllowsProceedWhenRequirementsAreMet tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0063",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_AllowsProceedWhenRequirementsAreMet",
+          "method": "UpgradeResponse_AllowsProceedWhenRequirementsAreMet",
+          "line": 192,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0063"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0063",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
+          "method": "UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
+          "line": 201,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0063"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0063",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_AllowsProceedWhenRequirementsAreMet tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
+          "method": "UpgradeResponse_FailsProxyingAttemptWhenRequirementsAreMissing",
+          "line": 201,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0063"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0063",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0063",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0064",
@@ -383991,40 +385361,164 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "uncovered_blocked",
-      "primary_issue": "missing_proof",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "blocked",
-        "new_tests_needed"
+        "clean"
       ],
-      "rationale": "No credible source-level proof path was found, and the requirement family is called out as blocked in REQUIREMENT-GAPS.md.",
-      "spec_test_ref_count": 0,
-      "spec_test_refs": null,
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_RequiresServerHttpSetting tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 0,
-        "focused": 0,
-        "broad": 0,
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
         "by_kind": {
-          "positive": 0,
-          "negative": 0,
+          "positive": 3,
+          "negative": 2,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative"
-        ]
+        "missing_required_kinds": []
       },
-      "gap_blockers": [
+      "gap_blockers": [],
+      "evidence": [
         {
-          "slug": "connect-udp",
-          "summary": "RFC 9298 CONNECT-UDP requirements remain blocked for HTTP/1.1 upgrade behavior, tunnel setup, and live UDP lifecycle/forwarding after the URI Template, target-validation, HTTP/3 request-policy, datagram Context ID, vulnerable-target filtering, forwarding-policy, and early-datagram floors."
+          "requirement_id": "REQ-QUIC-RFC9298-0064",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
+          "method": "UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
+          "line": 219,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0064",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_RequiresServerHttpSetting tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
+          "method": "UpgradePolicy_DoesNotAllowOmittingServerHttpSetting",
+          "line": 219,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0064",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradePolicy_RequiresServerHttpSetting",
+          "method": "UpgradePolicy_RequiresServerHttpSetting",
+          "line": 210,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0064",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9298-0064",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0060",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
-      ],
-      "evidence": []
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9298-0065",
