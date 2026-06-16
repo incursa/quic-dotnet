@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T14:35:53.1575970-06:00",
+  "generated_at": "2026-06-16T17:31:58.4730714-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T14:35:53.1542599-06:00",
-    "total_requirements": 2645,
+    "generated_at": "2026-06-16T17:31:58.4697549-06:00",
+    "total_requirements": 2646,
     "by_state": {
-      "trace_clean": 2645
+      "trace_clean": 2646
     },
     "by_work_queue_tag": {
-      "clean": 2645
+      "clean": 2646
     },
     "by_rfc": [
       {
@@ -164,9 +164,9 @@
       },
       {
         "rfc": "RFC9463",
-        "total": 116,
+        "total": 117,
         "by_state": {
-          "trace_clean": 116
+          "trace_clean": 117
         }
       },
       {
@@ -426431,6 +426431,182 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9463-0117",
+      "artifact_id": "SPEC-QUIC-RFC9463",
+      "rfc": "RFC9463",
+      "section_prefix": "S3P1P6",
+      "title": "Require secure DNSSEC for ADN-only SVCB resolution",
+      "statement": "When ADN-only encrypted DNS discovery relies on SVCB queries as the active-attack mitigation described by RFC 9463, the local policy MUST accept SVCB-derived resolver parameters only when DNSSEC validation reports a secure result.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 3,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 6,
+        "focused": 6,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "method": "AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "method": "AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "line": 12,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "method": "AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "line": 41,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "method": "AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "line": 41,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "method": "AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+          "class": "EncryptedDnsDiscoveryDnssecPolicyTests",
+          "member": "EncryptedDnsDiscoveryDnssecPolicyTests.AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "method": "AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "line": 28,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },

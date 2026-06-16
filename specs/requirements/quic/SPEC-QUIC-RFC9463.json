@@ -25,7 +25,10 @@
     "WI-QUIC-RFC9463-0005",
     "ARC-QUIC-RFC9463-0006",
     "VER-QUIC-RFC9463-0006",
-    "WI-QUIC-RFC9463-0006"
+    "WI-QUIC-RFC9463-0006",
+    "ARC-QUIC-RFC9463-0007",
+    "VER-QUIC-RFC9463-0007",
+    "WI-QUIC-RFC9463-0007"
   ],
   "requirements": [
     {
@@ -2579,6 +2582,31 @@
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs::ConstantsDoNotUseUnknownOrUnassignedEncryptedDnsOptionCodePoints"
         ]
       }
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0117",
+      "title": "Require secure DNSSEC for ADN-only SVCB resolution",
+      "statement": "When ADN-only encrypted DNS discovery relies on SVCB queries as the active-attack mitigation described by RFC 9463, the local policy MUST accept SVCB-derived resolver parameters only when DNSSEC validation reports a secure result.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 section 3.1.6 RFC9463-S3P1P6-B1-P1-S6",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation"
+        ]
+      },
+      "notes": [
+        "This requirement models the local decision boundary only. DNSSEC chain construction, live DNS queries, and resolver installation remain adapter work."
+      ]
     }
   ]
 }

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0007",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 DNSSEC Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the local DNSSEC validation policy boundary for RFC 9463 ADN-only encrypted DNS discovery.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0007",
+    "VER-QUIC-RFC9463-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0117"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDnssecPolicy.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDnssecValidationStatus.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdnOnlySvcbResolutionStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs"
+  ],
+  "design_summary": "The DNSSEC policy slice keeps live validation outside the DNS package and accepts a caller-supplied DNSSEC validation status for ADN-only SVCB resolution. Secure DNSSEC validation is the only accepted status. Insecure, bogus, indeterminate, or missing validation are rejected so SVCB-derived resolver parameters are not promoted as RFC 9463 active-attack mitigation without DNSSEC proof.",
+  "data_and_state_considerations": "The policy is immutable and side-effect free. It does not perform DNS queries, build DNSSEC chains, manage trust anchors, install host resolvers, or establish encrypted DNS sessions.",
+  "edge_cases_and_constraints": [
+    "Secure DNSSEC validation accepts ADN-only SVCB-derived resolver parameters.",
+    "Insecure, bogus, and indeterminate DNSSEC outcomes are rejected.",
+    "A missing or not-evaluated DNSSEC status is rejected for ADN-only SVCB resolution.",
+    "Self-contained DNR options with addresses and service parameters continue to use the existing RFC 9463 discovery path and do not depend on this ADN-only SVCB policy."
+  ],
+  "risks": [
+    "This slice trusts the caller-supplied DNSSEC validation status.",
+    "This slice does not implement a validating resolver, DNSSEC chain construction, live SVCB querying, or platform resolver installation."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The boundary turns the RFC 9463 DNSSEC mitigation note into deterministic local policy without coupling Incursa.Quic.Dns to a DNSSEC resolver stack or operating-system resolver adapter."
+    }
+  ]
+}
