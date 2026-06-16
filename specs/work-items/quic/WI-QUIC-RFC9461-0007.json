@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0007",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS Service Binding RFC 9461 Publication Plan Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0007",
+    "VER-QUIC-RFC9461-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0042"
+  ],
+  "summary": "Add deterministic local publication-record generation for RFC 9461 DNS service bindings.",
+  "planned_changes": "- Add `DnsServiceBindingPublicationPlan` and publication-record rendering.\n- Use existing operator guidance to decide whether an equivalent HTTPS record should be emitted.\n- Render ServiceMode SVCB records through RFC 9461 Port Prefix Naming and validated scalar SvcParams.\n- Reject invalid TargetName and TTL inputs.\n- Add requirement-owned positive, negative, and edge tests.\n- Update RFC 9461 trace artifacts, generated triage, and the requirement gap ledger.",
+  "verification_plan": "Run the DNS project build, focused RFC 9461 publication planner requirement-home tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full local Release solution test before final goal completion.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0007"
+  ],
+  "out_of_scope": [
+    "Live DNS provider publication.",
+    "DNSSEC signing or validation.",
+    "IKEv2 Configuration payload exchange integration.",
+    "Host resolver installation.",
+    "Platform router or forwarder advertisement adapters.",
+    "Encrypted DNS session establishment."
+  ],
+  "completion_notes": "RFC 9461 now has a trace-owned deterministic publication-plan renderer for operator SVCB and equivalent HTTPS records."
+}

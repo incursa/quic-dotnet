@@ -25,7 +25,10 @@
     "VER-QUIC-RFC9461-0005",
     "ARC-QUIC-RFC9461-0006",
     "WI-QUIC-RFC9461-0006",
-    "VER-QUIC-RFC9461-0006"
+    "VER-QUIC-RFC9461-0006",
+    "ARC-QUIC-RFC9461-0007",
+    "WI-QUIC-RFC9461-0007",
+    "VER-QUIC-RFC9461-0007"
   ],
   "requirements": [
     {
@@ -1014,6 +1017,53 @@
       "notes": [
         "This requirement covers DNS response parsing only for service binding records and Additional-section address hints already present in a received DNS message.",
         "DNSSEC validation, resolver publication automation, host resolver installation, and encrypted DNS transport establishment remain outside this slice."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0042",
+      "title": "Generate deterministic DNS service binding publication records",
+      "statement": "The DNS service binding publication planner MUST generate deterministic presentation-format SVCB records from validated DNS service binding values, include an equivalent HTTPS record when operator guidance recommends one and the service binding advertises HTTP protocols, avoid AliasMode in fast-resolution publication plans, preserve RFC 9461 `alpn`, `port`, `dohpath`, and HTTPS service-parameter values, and reject invalid TargetName and TTL inputs without performing live DNS provider publication, DNSSEC signing, host resolver installation, or encrypted DNS session establishment.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9461-0007"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9461-0007"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9461-0007"
+        ],
+        "upstream_refs": [
+          "RFC 9461 section 5",
+          "RFC 9461 section 6",
+          "RFC 9461 Appendix A",
+          "RFC 9460 section 2.4.2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-5",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-6",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.4.2"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Dns/DnsServiceBindingPublicationPlan.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingOperatorGuidance.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingDefaults.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RendersSvcbAndEquivalentHttpsRecords",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RejectsInvalidTargetNamesAndTtls",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_OmitsEquivalentHttpsRecordWhenNoHttpProtocolIsPresent"
+        ]
+      },
+      "notes": [
+        "This requirement covers local deterministic publication-record generation only.",
+        "DNS provider writes, DNSSEC signing, host resolver installation, and encrypted DNS session establishment remain outside this slice."
       ]
     }
   ]
