@@ -11,29 +11,29 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2003 |
+| trace_clean | 2013 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
 | covered_but_proof_too_broad | 0 |
-| partially_covered | 10 |
+| partially_covered | 0 |
 | uncovered_blocked | 628 |
 | uncovered_unblocked | 0 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2003 |
+| clean | 2013 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
-| restructure_needed | 10 |
-| new_tests_needed | 638 |
+| restructure_needed | 0 |
+| new_tests_needed | 628 |
 | blocked | 628 |
 
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes: 0 requirements. Examples: .
-- Restructure-needed proof: 10 requirements. Examples: REQ-QUIC-RFC9463-0009, REQ-QUIC-RFC9463-0010, REQ-QUIC-RFC9463-0022, REQ-QUIC-RFC9463-0025, REQ-QUIC-RFC9463-0083, REQ-QUIC-RFC9463-0086, REQ-QUIC-RFC9463-0087, REQ-QUIC-RFC9463-0112, REQ-QUIC-RFC9463-0114, REQ-QUIC-RFC9463-0116.
-- New proof or implementation work: 638 requirements. Examples: REQ-QUIC-RFC9463-0009, REQ-QUIC-RFC9463-0010, REQ-QUIC-RFC9463-0022, REQ-QUIC-RFC9463-0025, REQ-QUIC-RFC9463-0083, REQ-QUIC-RFC9463-0086, REQ-QUIC-RFC9463-0087, REQ-QUIC-RFC9463-0112, REQ-QUIC-RFC9463-0114, REQ-QUIC-RFC9463-0116.
+- Restructure-needed proof: 0 requirements. Examples: .
+- New proof or implementation work: 628 requirements. Examples: .
 - Blocked by recorded gap families: 628 requirements. Examples: REQ-QUIC-RFC9220-0001, REQ-QUIC-RFC9220-0002, REQ-QUIC-RFC9220-0003, REQ-QUIC-RFC9220-0004, REQ-QUIC-RFC9220-0005, REQ-QUIC-RFC9220-0006, REQ-QUIC-RFC9220-0007, REQ-QUIC-RFC9220-0008, REQ-QUIC-RFC9297-0001, REQ-QUIC-RFC9297-0002, REQ-QUIC-RFC9297-0003, REQ-QUIC-RFC9297-0004.
 
 ## RFC Breakdown
@@ -57,6 +57,6 @@
 | RFC9368 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9369 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9461 | 38 | 9 | 0 | 0 | 0 | 0 | 29 | 0 |
-| RFC9463 | 116 | 5 | 0 | 0 | 0 | 10 | 101 | 0 |
+| RFC9463 | 116 | 15 | 0 | 0 | 0 | 0 | 101 | 0 |
 | RFC9464 | 76 | 0 | 0 | 0 | 0 | 0 | 76 | 0 |
 | RFC9484 | 213 | 0 | 0 | 0 | 0 | 0 | 213 | 0 |

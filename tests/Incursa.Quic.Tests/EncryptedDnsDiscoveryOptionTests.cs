@@ -22,6 +22,21 @@ public sealed class EncryptedDnsDiscoveryOptionTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9463-0022")]
+    [Requirement("REQ-QUIC-RFC9463-0112")]
+    [Requirement("REQ-QUIC-RFC9463-0114")]
+    [Requirement("REQ-QUIC-RFC9463-0116")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ConstantsDoNotUseUnknownOrUnassignedEncryptedDnsOptionCodePoints()
+    {
+        Assert.NotEqual(0, EncryptedDnsDiscoveryOptionCodes.Dhcpv6OptionV6Dnr);
+        Assert.NotEqual(0, EncryptedDnsDiscoveryOptionCodes.Dhcpv4OptionV4Dnr);
+        Assert.NotEqual(0, EncryptedDnsDiscoveryOptionCodes.NeighborDiscoveryEncryptedDnsOptionType);
+        Assert.NotEqual(EncryptedDnsDiscoveryOptionCodes.Dhcpv4OptionV4Dnr, EncryptedDnsDiscoveryOptionCodes.Dhcpv6OptionV6Dnr);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9463-0083")]
     [Requirement("REQ-QUIC-RFC9463-0086")]
     [Requirement("REQ-QUIC-RFC9463-0087")]
@@ -43,6 +58,31 @@ public sealed class EncryptedDnsDiscoveryOptionTests
         Assert.Equal(0U, EncryptedDnsDiscoveryOptionCodes.RetiringLifetime);
         Assert.False(retiring.HasInfiniteLifetime);
         Assert.True(retiring.RetiresAuthenticationDomainName);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9463-0083")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void LifetimeIsNotSignedOrWidened()
+    {
+        Assert.Equal(typeof(uint), typeof(EncryptedDnsDiscoveryOption).GetProperty(nameof(EncryptedDnsDiscoveryOption.Lifetime))?.PropertyType);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9463-0086")]
+    [Requirement("REQ-QUIC-RFC9463-0087")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void FiniteLifetimeIsNeitherInfinityNorRetirement()
+    {
+        EncryptedDnsDiscoveryOption option = EncryptedDnsDiscoveryOption.Create(
+            "resolver.example",
+            [IPAddress.Parse("2001:db8::53")],
+            lifetime: 300);
+
+        Assert.False(option.HasInfiniteLifetime);
+        Assert.False(option.RetiresAuthenticationDomainName);
     }
 
     [Theory]
@@ -68,6 +108,7 @@ public sealed class EncryptedDnsDiscoveryOptionTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0001")]
+    [Requirement("REQ-QUIC-RFC9463-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryCreateNormalizesAuthenticationDomainNameToAbsoluteName()
@@ -146,6 +187,7 @@ public sealed class EncryptedDnsDiscoveryOptionTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9463-0009")]
     [Requirement("REQ-QUIC-RFC9463-0025")]
     [Requirement("REQ-QUIC-RFC9463-0102")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -160,5 +202,14 @@ public sealed class EncryptedDnsDiscoveryOptionTests
 
         Assert.Equal(ushort.MaxValue, option.ServicePriority);
         Assert.Equal(["alpn", "port"], option.ServiceParameterKeys);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9463-0025")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServicePriorityIsNotSignedOrWidened()
+    {
+        Assert.Equal(typeof(ushort), typeof(EncryptedDnsDiscoveryOption).GetProperty(nameof(EncryptedDnsDiscoveryOption.ServicePriority))?.PropertyType);
     }
 }
