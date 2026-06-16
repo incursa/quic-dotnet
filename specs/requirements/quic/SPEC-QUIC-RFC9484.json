@@ -127,6 +127,10 @@
         "upstream_refs": [
           "RFC 9484 Section 3 RFC9484-S3-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsLevelThreeTemplate",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsForbiddenLevelFourOperators"
         ]
       }
     },
@@ -144,6 +148,10 @@
         "upstream_refs": [
           "RFC 9484 Section 3 RFC9484-S3-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsAbsoluteTemplate",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsRelativeTemplate"
         ]
       }
     },
@@ -161,6 +169,10 @@
         "upstream_refs": [
           "RFC 9484 Section 3 RFC9484-S3-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsTemplateWithNonEmptyComponents",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsTemplateWithMissingPathComponent"
         ]
       }
     },
@@ -178,6 +190,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B8-P8-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsSlashPrefixedPath",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsTemplateWithoutSlashPrefixedPath"
         ]
       }
     },
@@ -195,6 +211,10 @@
         "upstream_refs": [
           "RFC 9484 section 3 RFC9484-S3-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_AcceptsVariablesInPathAndQueryComponents",
+          "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs::UriTemplate_RejectsVariablesBeforePathAndQueryComponents"
         ]
       }
     },

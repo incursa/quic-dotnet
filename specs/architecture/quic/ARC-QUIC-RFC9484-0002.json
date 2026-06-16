@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP URI Template Validation Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 CONNECT-IP URI Template validation for level, form, components, path, and variable placement.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0002",
+    "VER-QUIC-RFC9484-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0006",
+    "REQ-QUIC-RFC9484-0007",
+    "REQ-QUIC-RFC9484-0008",
+    "REQ-QUIC-RFC9484-0009",
+    "REQ-QUIC-RFC9484-0010"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIpUriTemplate.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpUriTemplateTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIpUriTemplate` validates CONNECT-IP URI Templates as absolute printable-ASCII templates with non-empty scheme, authority, and explicit slash-prefixed path, rejects level 4 expansion operators, and requires all template variables to appear in the path or query components.",
+  "data_and_state_considerations": "The helper stores the original template and parsed absolute URI only; expansion and target/ipproto validation are separate slices.",
+  "edge_cases_and_constraints": [
+    "The original template text is checked for an explicit slash-prefixed path because URI parsing normalizes a missing path to `/`.",
+    "Authority-level variables are rejected before request construction.",
+    "Level 4 URI Template operators are rejected conservatively."
+  ],
+  "risks": [
+    "Additional CONNECT-IP variable expansion and default-template behavior remain later requirements."
+  ]
+}

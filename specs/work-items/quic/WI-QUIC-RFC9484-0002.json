@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP URI Template Validation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0002",
+    "VER-QUIC-RFC9484-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0006",
+    "REQ-QUIC-RFC9484-0007",
+    "REQ-QUIC-RFC9484-0008",
+    "REQ-QUIC-RFC9484-0009",
+    "REQ-QUIC-RFC9484-0010"
+  ],
+  "summary": "Add CONNECT-IP URI Template validation helpers for level, absolute form, component presence, slash-prefixed path, and variable placement.",
+  "planned_changes": "- Add URI Template validator and default-template constructor.\n- Add focused positive/negative tests and canonical xrefs.\n- Narrow RFC9484 blocked triage to the remaining requirements.",
+  "verification_plan": "Run focused CONNECT-IP URI Template tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0002"
+  ],
+  "out_of_scope": [
+    "target/ipproto variable value validation.",
+    "URI Template expansion.",
+    "CONNECT-IP request/response handling."
+  ],
+  "completion_notes": "The RFC 9484 URI Template validation surface is implemented and verified locally."
+}
