@@ -1,0 +1,70 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9464-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Provisioning RFC 9464 Scalar Attribute Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first RFC 9464 implementation boundary for encrypted DNS provisioning scalar attributes without adding an IKEv2 packet codec.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9464-0001",
+    "VER-QUIC-RFC9464-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9464-0002",
+    "REQ-QUIC-RFC9464-0003",
+    "REQ-QUIC-RFC9464-0004",
+    "REQ-QUIC-RFC9464-0005",
+    "REQ-QUIC-RFC9464-0006",
+    "REQ-QUIC-RFC9464-0007",
+    "REQ-QUIC-RFC9464-0008",
+    "REQ-QUIC-RFC9464-0009",
+    "REQ-QUIC-RFC9464-0013",
+    "REQ-QUIC-RFC9464-0014",
+    "REQ-QUIC-RFC9464-0015",
+    "REQ-QUIC-RFC9464-0016",
+    "REQ-QUIC-RFC9464-0017",
+    "REQ-QUIC-RFC9464-0019",
+    "REQ-QUIC-RFC9464-0020",
+    "REQ-QUIC-RFC9464-0023",
+    "REQ-QUIC-RFC9464-0024",
+    "REQ-QUIC-RFC9464-0025",
+    "REQ-QUIC-RFC9464-0026",
+    "REQ-QUIC-RFC9464-0027",
+    "REQ-QUIC-RFC9464-0028",
+    "REQ-QUIC-RFC9464-0029",
+    "REQ-QUIC-RFC9464-0030",
+    "REQ-QUIC-RFC9464-0031",
+    "REQ-QUIC-RFC9464-0033",
+    "REQ-QUIC-RFC9464-0035",
+    "REQ-QUIC-RFC9464-0036"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningDigestInfoAttribute.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningAddressFamily.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningPayloadType.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningAttributeTests.cs"
+  ],
+  "design_summary": "The RFC 9464 slice adds scalar helpers for ENCDNS_IP* and ENCDNS_DIGEST_INFO configuration attributes. The helpers compute two-octet Length values, enforce zero-length CFG_REQUEST/CFG_ACK behavior, validate IPv4 versus IPv6 address family constraints, normalize DNS presentation-form ADNs, reject name terminators and forbidden `ipv4hint`/`ipv6hint` SvcParams, and model ENCDNS_DIGEST_INFO request hash-algorithm list length/count behavior.",
+  "data_and_state_considerations": "The helpers are pure value builders. They do not parse or emit IKEv2 Configuration payload bytes, implement RFC 9460 SvcParam wire encoding, perform certificate digest validation, provision resolver state, or affect the QUIC transport runtime.",
+  "edge_cases_and_constraints": [
+    "Outbound reserved bits are always modeled as clear, and received reserved-bit values are treated as ignorable scalar input.",
+    "Zero-length ENCDNS_IP* attributes are limited to CFG_REQUEST without a specific resolver and CFG_ACK.",
+    "ENCDNS_IP4 only accepts IPv4 addresses; ENCDNS_IP6 only accepts IPv6 addresses.",
+    "The DNS presentation-form ADN is normalized to a lower-case absolute name and must fit the one-octet ADN Length field."
+  ],
+  "risks": [
+    "This slice does not implement IKEv2 byte-level encoding, parsing, or policy negotiation.",
+    "This slice does not implement SPKI digest computation or certificate validation.",
+    "This slice does not implement RFC 9460 SvcParam wire encoding."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The scalar helpers intentionally sit in `Incursa.Quic.Dns` beside the RFC 9461 and RFC 9463 helpers. Later IKEv2 integration can consume these validated values without moving resolver provisioning state into the QUIC transport runtime."
+    }
+  ]
+}

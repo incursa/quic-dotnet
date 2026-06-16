@@ -1,0 +1,59 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9464-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Provisioning RFC 9464 Scalar Attribute Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "ARC-QUIC-RFC9464-0001",
+    "VER-QUIC-RFC9464-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9464-0002",
+    "REQ-QUIC-RFC9464-0003",
+    "REQ-QUIC-RFC9464-0004",
+    "REQ-QUIC-RFC9464-0005",
+    "REQ-QUIC-RFC9464-0006",
+    "REQ-QUIC-RFC9464-0007",
+    "REQ-QUIC-RFC9464-0008",
+    "REQ-QUIC-RFC9464-0009",
+    "REQ-QUIC-RFC9464-0013",
+    "REQ-QUIC-RFC9464-0014",
+    "REQ-QUIC-RFC9464-0015",
+    "REQ-QUIC-RFC9464-0016",
+    "REQ-QUIC-RFC9464-0017",
+    "REQ-QUIC-RFC9464-0019",
+    "REQ-QUIC-RFC9464-0020",
+    "REQ-QUIC-RFC9464-0023",
+    "REQ-QUIC-RFC9464-0024",
+    "REQ-QUIC-RFC9464-0025",
+    "REQ-QUIC-RFC9464-0026",
+    "REQ-QUIC-RFC9464-0027",
+    "REQ-QUIC-RFC9464-0028",
+    "REQ-QUIC-RFC9464-0029",
+    "REQ-QUIC-RFC9464-0030",
+    "REQ-QUIC-RFC9464-0031",
+    "REQ-QUIC-RFC9464-0033",
+    "REQ-QUIC-RFC9464-0035",
+    "REQ-QUIC-RFC9464-0036"
+  ],
+  "summary": "Add trace-owned RFC 9464 scalar helpers for encrypted DNS provisioning ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes.",
+  "planned_changes": "- Add scalar payload type and address family enums.\n- Add `EncryptedDnsProvisioningAttribute` for ENCDNS_IP* length, zero-length, address-family, ADN, and SvcParam policy.\n- Add `EncryptedDnsProvisioningDigestInfoAttribute` for ENCDNS_DIGEST_INFO request hash-algorithm list length and count policy.\n- Add focused unit tests and canonical spec xrefs.\n- Narrow the encrypted DNS discovery/provisioning gap to record the scalar RFC 9464 floor.",
+  "verification_plan": "Run the RFC 9464 provisioning attribute tests, build the DNS package, validate core SpecTrace JSON artifacts, regenerate QUIC requirement coverage triage, and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9464-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9464-0001"
+  ],
+  "out_of_scope": [
+    "IKEv2 Configuration payload byte-level encoding or parsing.",
+    "RFC 9460 SvcParam wire encoding.",
+    "Certificate SPKI hash computation and validation.",
+    "Resolver provisioning behavior and IPsec policy integration."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9464 scalar provisioning attribute floor that future IKEv2 integration can consume."
+}
