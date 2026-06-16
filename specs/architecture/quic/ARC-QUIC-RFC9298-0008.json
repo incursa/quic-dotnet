@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9298-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-UDP Tunnel Setup Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9298 CONNECT-UDP tunnel setup decisions before live UDP packet forwarding.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "WI-QUIC-RFC9298-0008",
+    "VER-QUIC-RFC9298-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9298-0036",
+    "REQ-QUIC-RFC9298-0037",
+    "REQ-QUIC-RFC9298-0038",
+    "REQ-QUIC-RFC9298-0039",
+    "REQ-QUIC-RFC9298-0040",
+    "REQ-QUIC-RFC9298-0049"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectUdpTunnelSetupPolicy.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectUdpTunnelSetupPolicy` reconstructs the CONNECT-UDP request target from validated HTTP/3 headers and a URI Template, decodes `target_host` and `target_port`, selects the UDP socket endpoint, gates success responses on DNS completion and socket-open state without waiting for a target packet, rejects setup errors, emits Proxy-Status details, and exposes the client abort decision for non-2xx responses.",
+  "data_and_state_considerations": "The helper is pure setup policy. It returns endpoint and response decisions but does not create or own an operating-system UDP socket.",
+  "edge_cases_and_constraints": [
+    "DNS names require a resolved address before endpoint creation.",
+    "IP literals do not require DNS gating.",
+    "Template mismatches and prohibited target addresses fail before a success response."
+  ],
+  "risks": [
+    "Live UDP socket lifetime and source endpoint validation remain a separate lifecycle policy.",
+    "Adapter code still needs to map setup decisions to actual socket APIs."
+  ]
+}

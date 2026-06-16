@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9298-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-UDP Tunnel Setup Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9298",
+    "ARC-QUIC-RFC9298-0008",
+    "VER-QUIC-RFC9298-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9298-0036",
+    "REQ-QUIC-RFC9298-0037",
+    "REQ-QUIC-RFC9298-0038",
+    "REQ-QUIC-RFC9298-0039",
+    "REQ-QUIC-RFC9298-0040",
+    "REQ-QUIC-RFC9298-0049"
+  ],
+  "summary": "Add CONNECT-UDP tunnel setup policy helpers for target extraction, DNS gating, setup rejection, Proxy-Status details, and non-success response aborts.",
+  "planned_changes": "- Add pure tunnel setup policy helpers.\n- Add focused tests and canonical xrefs.\n- Narrow the RFC9298 blocked gap list to the remaining socket lifecycle and forwarding requirements.",
+  "verification_plan": "Run focused tunnel setup policy tests, RFC9298 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9298-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9298-0008"
+  ],
+  "out_of_scope": [
+    "Live UDP socket receive/send loops.",
+    "Non-connected socket source validation.",
+    "Inactivity timeout and close propagation."
+  ],
+  "completion_notes": "The RFC 9298 tunnel setup policy surface is implemented and verified locally."
+}

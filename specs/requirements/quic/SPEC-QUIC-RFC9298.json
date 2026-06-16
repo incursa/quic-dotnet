@@ -741,6 +741,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_ExtractsDecodedTargetAndUdpSocketEndpoint",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsRequestsThatDoNotMatchTemplate"
         ]
       }
     },
@@ -758,6 +762,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRespondBeforeSocketOpen"
         ]
       }
     },
@@ -775,6 +783,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B4-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRequireDnsResolutionForIpLiteralTargets"
         ]
       }
     },
@@ -792,6 +804,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsRequestWhenSetupErrorsOccur",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRejectRequestWithoutSetupErrors"
         ]
       }
     },
@@ -809,6 +825,10 @@
         "upstream_refs": [
           "RFC9298-S3P1-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_AddsProxyStatusDetailsOnSetupErrors",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_RejectsEmptyProxyStatusErrorTypes"
         ]
       }
     },
@@ -963,6 +983,10 @@
         "upstream_refs": [
           "RFC 9298 3.1 RFC9298-S3P1-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_ClientAbortsOnNonSuccessResponse",
+          "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_ClientDoesNotAbortOnSuccessfulResponse"
         ]
       }
     },
