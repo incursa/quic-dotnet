@@ -75,10 +75,23 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION"] = payloadDirection;
         }
+
+        var behavior = plan.Scenario.QuicTransport?.Behavior;
+        if (!string.IsNullOrWhiteSpace(behavior))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_BEHAVIOR"] = behavior;
+        }
+
         var debugLogging = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG");
         if (!string.IsNullOrWhiteSpace(debugLogging))
         {
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG"] = debugLogging;
+        }
+
+        var summaryLogging = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_SUMMARY");
+        if (!string.IsNullOrWhiteSpace(summaryLogging))
+        {
+            si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_SUMMARY"] = summaryLogging;
         }
 
         var qlogPath = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH");

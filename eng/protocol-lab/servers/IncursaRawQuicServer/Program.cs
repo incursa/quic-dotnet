@@ -1,6 +1,7 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -21,6 +22,8 @@ const int RawQuicReceiveWindowBytes = 16 * 1024 * 1024;
 var certificate = GenerateSelfSignedCertificate(certSubject);
 var alpnProtocol = new SslApplicationProtocol(alpn);
 var debugLogging = string.Equals(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_DEBUG"), "1", StringComparison.Ordinal);
+var summaryLogging = debugLogging
+    || string.Equals(Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_SUMMARY"), "1", StringComparison.Ordinal);
 var connectionCount = 0;
 
 var listenerOptions = new QuicListenerOptions
@@ -76,7 +79,7 @@ try
             Console.Error.WriteLine($"IncursaRawQuicServer accepted connection #{connectionIndex} for ALPN '{alpn}'");
         }
 
-        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, echoResponses);
+        _ = HandleConnectionAsync(connection, connectionIndex, default, debugLogging, summaryLogging, echoResponses);
     }
 }
 catch (OperationCanceledException)
@@ -97,8 +100,10 @@ finally
     await listener.DisposeAsync();
 }
 
-static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool echoResponses)
+static async Task HandleConnectionAsync(QuicConnection connection, int connectionIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses)
 {
+    ConcurrentBag<QuicStream> retainedCompletedStreams = [];
+
     try
     {
         var streamIndex = 0;
@@ -111,7 +116,7 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
                 Console.Error.WriteLine($"IncursaRawQuicServer accepted inbound stream #{acceptedStreamIndex} on connection #{connectionIndex}");
             }
 
-            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, echoResponses);
+            _ = HandleStreamAsync(stream, connectionIndex, acceptedStreamIndex, cancellationToken, debugLogging, summaryLogging, echoResponses, retainedCompletedStreams);
         }
     }
     catch (OperationCanceledException)
@@ -142,12 +147,24 @@ static async Task HandleConnectionAsync(QuicConnection connection, int connectio
             Console.Error.WriteLine($"IncursaRawQuicServer closing connection #{connectionIndex}");
         }
 
+        foreach (var retainedStream in retainedCompletedStreams)
+        {
+            await retainedStream.DisposeAsync();
+        }
+
         await connection.DisposeAsync();
     }
 }
 
-static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool echoResponses)
+static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int streamIndex, CancellationToken cancellationToken, bool debugLogging, bool summaryLogging, bool echoResponses, ConcurrentBag<QuicStream> retainedCompletedStreams)
 {
+    var reachedEof = false;
+    var completedWrites = false;
+    long bytesReadTotal = 0;
+    long bytesEchoedTotal = 0;
+    var outcome = "completed";
+    var error = string.Empty;
+
     try
     {
         if (debugLogging)
@@ -162,6 +179,7 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
             var bytesRead = await stream.ReadAsync(buffer.AsMemory(), cancellationToken);
             if (bytesRead <= 0)
             {
+                reachedEof = true;
                 if (debugLogging)
                 {
                     Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} reached EOF after read loop");
@@ -174,9 +192,11 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
                 Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} read {bytesRead} byte(s)");
             }
 
+            bytesReadTotal += bytesRead;
             if (echoResponses && stream.CanWrite)
             {
                 await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                bytesEchoedTotal += bytesRead;
 
                 if (debugLogging)
                 {
@@ -188,6 +208,7 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
         if (stream.CanWrite)
         {
             await stream.CompleteWritesAsync(cancellationToken);
+            completedWrites = true;
             if (debugLogging)
             {
                 Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} completed writes");
@@ -196,6 +217,7 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     }
     catch (OperationCanceledException)
     {
+        outcome = "canceled";
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} canceled");
@@ -203,19 +225,46 @@ static async Task HandleStreamAsync(QuicStream stream, int connectionIndex, int 
     }
     catch (QuicException ex)
     {
+        outcome = "quic-error";
+        error = ex.Message;
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} failed with QUIC error: {ex.Message}");
         }
     }
+    catch (Exception ex)
+    {
+        outcome = "error";
+        error = ex.Message;
+        if (debugLogging)
+        {
+            Console.Error.WriteLine($"IncursaRawQuicServer stream #{streamIndex} on connection #{connectionIndex} failed: {ex}");
+        }
+    }
     finally
     {
+        if (summaryLogging)
+        {
+            Console.Error.WriteLine(
+                $"IncursaRawQuicServer stream-summary connection={connectionIndex} stream={streamIndex} " +
+                $"readBytes={bytesReadTotal} echoedBytes={bytesEchoedTotal} reachedEof={reachedEof} " +
+                $"completedWrites={completedWrites} outcome={outcome} error=\"{error}\"");
+        }
+
         if (debugLogging)
         {
             Console.Error.WriteLine($"IncursaRawQuicServer closing stream #{streamIndex} on connection #{connectionIndex}");
         }
 
-        await stream.DisposeAsync();
+        // Keep completed streams observed until connection teardown so tail retransmissions can still be driven.
+        if (reachedEof && completedWrites && outcome == "completed")
+        {
+            retainedCompletedStreams.Add(stream);
+        }
+        else
+        {
+            await stream.DisposeAsync();
+        }
     }
 }
 

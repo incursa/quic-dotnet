@@ -1,0 +1,42 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS Service Binding RFC 9461 Naming Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0001",
+    "VER-QUIC-RFC9461-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0001",
+    "REQ-QUIC-RFC9461-0002",
+    "REQ-QUIC-RFC9461-0003",
+    "REQ-QUIC-RFC9461-0004",
+    "REQ-QUIC-RFC9461-0009",
+    "REQ-QUIC-RFC9461-0029",
+    "REQ-QUIC-RFC9461-0033",
+    "REQ-QUIC-RFC9461-0036",
+    "REQ-QUIC-RFC9461-0038"
+  ],
+  "summary": "Add the RFC 9461 DNS SVCB service-name and default-port floor without building resolver discovery or provisioning behavior.",
+  "planned_changes": "- Add `DnsServiceTransport` and `DnsServiceBindingDefaults` under `Incursa.Quic.Dns`.\n- Expose the mapped scheme `dns`, node name `_dns`, per-transport default ports, Port Prefix Naming, and DNS hostname/literal-IP authentication-name validation.\n- Add focused unit tests for service-name construction, default ports, port-prefix boundaries, and authentication-name validation.\n- Add requirement-home proof tying the code, tests, and SpecTrace artifacts together.\n- Narrow the encrypted DNS discovery planning gap to show this RFC 9461 naming floor is now trace-owned.",
+  "verification_plan": "Run a focused build for the DNS package, run RFC 9461 service-binding tests and requirement-home tests, validate core SpecTrace JSON artifacts, and confirm diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0001"
+  ],
+  "out_of_scope": [
+    "SVCB record parser or resolver integration.",
+    "`alpn`, `dohpath`, `port`, and HTTPS SvcParam selection semantics beyond the scalar default-port/name helpers.",
+    "DoH URI-template expansion and request dispatch.",
+    "RFC 9463 and RFC 9464 provisioning flows.",
+    "Changing QUIC transport packet, stream, TLS, or scheduler behavior."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9461 naming/default-port floor that later discovery/provisioning work can consume."
+}

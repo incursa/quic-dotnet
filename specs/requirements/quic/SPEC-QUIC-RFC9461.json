@@ -7,6 +7,11 @@
   "status": "draft",
   "owner": "protocol-team",
   "purpose": "Capture QUIC RFC 9461 requirements.",
+  "related_artifacts": [
+    "ARC-QUIC-RFC9461-0001",
+    "WI-QUIC-RFC9461-0001",
+    "VER-QUIC-RFC9461-0001"
+  ],
   "requirements": [
     {
       "id": "REQ-QUIC-RFC9461-0001",

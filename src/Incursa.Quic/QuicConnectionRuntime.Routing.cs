@@ -965,6 +965,7 @@ internal sealed partial class QuicConnectionRuntime
 
         recoveryController.RecordProbeTimeoutExpired();
         QuicMetrics.RecordProbeTimeout(tlsState.Role, selectedPacketNumberSpace);
+        _ = TryFlushPendingApplicationSendsAfterRecoveryProgress(nowTicks, ref effects);
         AppendLifecycleTimerEffects(ref effects);
         return true;
     }

@@ -281,6 +281,113 @@ public sealed class REQ_QUIC_RFC9000_0708
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RecoveryTimerExpired_RetainsPlaintextForConsecutiveApplicationProbeRepair()
+    {
+        // A rebuilt 1-RTT STREAM probe can itself be lost. The send runtime has to keep an owned
+        // plaintext copy for the rebuilt packet so the next PTO can rebuild the stream repair again.
+        using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+        List<QuicConnectionEffect> outboundEffects = [];
+        QuicS12P3ApplicationRecoveryTestSupport.InstallLocalDispatcher(runtime, outboundEffects);
+        QuicS12P3ApplicationRecoveryTestSupport.PrimeApplicationPto(runtime, outboundEffects);
+
+        byte[] requestPayload = System.Text.Encoding.ASCII.GetBytes("GET /consecutive-application-probe\r\n");
+        (QuicStream stream, QuicConnectionSendDatagramEffect originalEffect) =
+            await QuicS12P3ApplicationRecoveryTestSupport.OpenStreamAndCaptureRequestPacketAsync(
+                runtime,
+                outboundEffects,
+                requestPayload);
+        try
+        {
+            ulong streamId = (ulong)stream.Id;
+            ulong originalPacketNumber = QuicS12P3ApplicationRecoveryTestSupport.ReadApplicationPacketNumber(
+                runtime,
+                originalEffect.Datagram,
+                out _,
+                out _);
+
+            long? firstRecoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+            Assert.NotNull(firstRecoveryDueTicks);
+            ulong firstRecoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+
+            QuicConnectionTransitionResult firstTimerResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: firstRecoveryDueTicks.Value,
+                    QuicConnectionTimerKind.Recovery,
+                    firstRecoveryGeneration),
+                nowTicks: firstRecoveryDueTicks.Value);
+
+            QuicConnectionSendDatagramEffect firstProbeEffect =
+                QuicS12P3ApplicationRecoveryTestSupport.FindApplicationProbe(
+                    runtime,
+                    firstTimerResult.Effects.OfType<QuicConnectionSendDatagramEffect>(),
+                    streamId,
+                    (ulong)requestPayload.Length,
+                    requireFin: false);
+            ulong firstProbePacketNumber = QuicS12P3ApplicationRecoveryTestSupport.ReadApplicationPacketNumber(
+                runtime,
+                firstProbeEffect.Datagram,
+                out QuicStreamFrame firstProbeFrame,
+                out _);
+
+            Assert.True(firstProbePacketNumber > originalPacketNumber);
+            Assert.True(firstProbeFrame.StreamData.SequenceEqual(requestPayload));
+
+            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> firstProbeSentPacket =
+                Assert.Single(
+                    runtime.SendRuntime.SentPackets,
+                    entry => entry.Value.PacketBytes.Span.SequenceEqual(firstProbeEffect.Datagram.Span));
+            Assert.NotNull(firstProbeSentPacket.Value.PlaintextPayloadOwner);
+            Assert.False(firstProbeSentPacket.Value.PlaintextPayload.IsEmpty);
+
+            byte[] overwriteReturnedOriginalPayload = QuicBufferPool.RentBytes(firstProbeSentPacket.Value.PlaintextPayload.Length);
+            try
+            {
+                Array.Fill(overwriteReturnedOriginalPayload, (byte)0xA5);
+
+                Assert.True(runtime.SendRuntime.TryRegisterLoss(
+                    firstProbeSentPacket.Key.PacketNumberSpace,
+                    firstProbeSentPacket.Key.PacketNumber,
+                    handshakeConfirmed: runtime.HandshakeConfirmed));
+
+                List<QuicConnectionEffect>? secondProbeEffects = [];
+                Assert.True(runtime.TryFlushPendingRetransmissions(
+                    QuicPacketNumberSpace.ApplicationData,
+                    firstRecoveryDueTicks.Value + TimeSpan.TicksPerMillisecond,
+                    probePacket: true,
+                    ref secondProbeEffects));
+
+                QuicConnectionSendDatagramEffect secondProbeEffect =
+                    QuicS12P3ApplicationRecoveryTestSupport.FindApplicationProbe(
+                        runtime,
+                        secondProbeEffects!.OfType<QuicConnectionSendDatagramEffect>(),
+                        streamId,
+                        (ulong)requestPayload.Length,
+                        requireFin: false);
+                ulong secondProbePacketNumber = QuicS12P3ApplicationRecoveryTestSupport.ReadApplicationPacketNumber(
+                    runtime,
+                    secondProbeEffect.Datagram,
+                    out QuicStreamFrame secondProbeFrame,
+                    out _);
+
+                Assert.True(secondProbePacketNumber > firstProbePacketNumber);
+                Assert.Equal(0UL, secondProbeFrame.Offset);
+                Assert.False(secondProbeFrame.IsFin);
+                Assert.True(secondProbeFrame.StreamData.SequenceEqual(requestPayload));
+            }
+            finally
+            {
+                QuicBufferPool.ReturnBytes(overwriteReturnedOriginalPayload);
+            }
+        }
+        finally
+        {
+            await stream.DisposeAsync();
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted()

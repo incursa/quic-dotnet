@@ -1,0 +1,51 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS Service Binding RFC 9461 Naming Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the first RFC 9461 SVCB mapping boundary for DNS service names, authentication-name validation, and per-transport default port policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0001",
+    "VER-QUIC-RFC9461-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0001",
+    "REQ-QUIC-RFC9461-0002",
+    "REQ-QUIC-RFC9461-0003",
+    "REQ-QUIC-RFC9461-0004",
+    "REQ-QUIC-RFC9461-0009",
+    "REQ-QUIC-RFC9461-0029",
+    "REQ-QUIC-RFC9461-0033",
+    "REQ-QUIC-RFC9461-0036",
+    "REQ-QUIC-RFC9461-0038"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingDefaults.cs",
+    "src/Incursa.Quic.Dns/DnsServiceTransport.cs",
+    "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0001.cs"
+  ],
+  "design_summary": "The RFC 9461 naming floor is implemented as a small stateless helper in the existing DNS adapter package. `DnsServiceTransport` models the transport families that affect default port selection, and `DnsServiceBindingDefaults` owns the mapped scheme `dns`, node name `_dns`, per-transport default ports, Port Prefix Naming, and validation of authentication names as DNS hostnames or literal IP addresses.",
+  "data_and_state_considerations": "The helper is pure and does not perform DNS resolution, network I/O, SVCB record selection, DoH request construction, or resolver provisioning. It converts scalar inputs into stable names or validation results so endpoint selection can consume those values without changing QUIC transport runtime state.",
+  "edge_cases_and_constraints": [
+    "Port 53 maps to `_dns`; other valid TCP or UDP ports map to `_$PORT._dns`.",
+    "Cleartext UDP and TCP default to port 53, DoT and DoQ default to 853, and DoH defaults to 443.",
+    "Authentication-name validation accepts DNS hostnames and literal IP addresses, including bracketed IPv6 input for URI-origin compatibility.",
+    "SVCB QNAME construction accepts DNS hostnames; literal IP address handling beyond scalar authentication-name validation remains outside this helper until a resolver/provisioning layer needs it."
+  ],
+  "risks": [
+    "This slice does not parse full SVCB records, interpret `alpn`, `dohpath`, or `port` SvcParams, or select endpoint candidates.",
+    "RFC 9463 and RFC 9464 resolver discovery and provisioning remain separate future work.",
+    "DoH URI-template expansion is not implemented by this naming helper."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "This slice deliberately keeps RFC 9461 naming and defaults above the QUIC transport runtime and inside `Incursa.Quic.Dns`. Future discovery code can use these scalar helpers without introducing resolver state into packet, stream, or TLS paths."
+    }
+  ]
+}

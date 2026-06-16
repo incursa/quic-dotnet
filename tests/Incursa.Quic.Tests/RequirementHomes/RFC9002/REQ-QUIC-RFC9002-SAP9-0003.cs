@@ -1610,6 +1610,147 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.False(finishKeyPhase);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RecoveryTimerExpired_RetransmitsProtocolLabSizedFinishedStreamFragments()
+    {
+        // ProtocolLab raw QUIC duplex sends 64 KiB bidirectional stream payloads. Those writes fragment
+        // across many packets, and PTO must repair data-bearing fragments instead of falling back to PING
+        // or only repeating a FIN close.
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 16 * 1024 * 1024,
+            localBidirectionalSendLimit: 128 * 1024);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        ulong streamId = (ulong)stream.Id;
+        outboundEffects.Clear();
+
+        byte[] payload = CreateSequentialPayload(0x31, 64 * 1024);
+        await stream.WriteAsync(payload, 0, payload.Length);
+        await stream.CompleteWritesAsync().AsTask();
+
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => PacketContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId));
+
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+        Assert.Contains(
+            sendEffects,
+            sendEffect => ProbeContainsStreamDataForStream(runtime, sendEffect.Datagram, streamId));
+        Assert.Contains(
+            runtime.SendRuntime.SentPackets.Values,
+            packet => packet.ProbePacket
+                && PacketContainsStreamDataForStream(packet.PlaintextPayload.Span, streamId));
+        Assert.DoesNotContain(
+            sendEffectDescriptions,
+            description => description == "keyPhase=False ping");
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RecoveryTimerExpired_DrainsQueuedProtocolLabFragmentsAfterApplicationRepair()
+    {
+        // A large ProtocolLab stream can have both lost application data and additional queued fragments.
+        // Once PTO sends the repair, the second PTO probe should be able to carry queued stream data
+        // instead of leaving the tail blocked behind ordinary congestion-budget checks.
+        QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+            connectionSendLimit: 16 * 1024 * 1024,
+            localBidirectionalSendLimit: 128 * 1024);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        ulong streamId = (ulong)stream.Id;
+        outboundEffects.Clear();
+
+        byte[] payload = CreateSequentialPayload(0x41, 64 * 1024);
+        await stream.WriteAsync(payload, 0, payload.Length);
+        await stream.CompleteWritesAsync().AsTask();
+
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> lostDataPacket = runtime.SendRuntime.SentPackets
+            .First(entry => PacketContainsStreamDataForStream(entry.Value.PlaintextPayload.Span, streamId));
+        Assert.True(runtime.SendRuntime.TryRegisterLoss(
+            lostDataPacket.Key.PacketNumberSpace,
+            lostDataPacket.Key.PacketNumber,
+            handshakeConfirmed: runtime.HandshakeConfirmed));
+        Assert.True(runtime.SendRuntime.HasPendingRetransmission(QuicPacketNumberSpace.ApplicationData));
+
+        ulong highestPacketNumberBeforePto = runtime.SendRuntime.SentPackets.Keys
+            .Where(key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .Select(key => key.PacketNumber)
+            .DefaultIfEmpty()
+            .Max();
+        long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+        Assert.NotNull(recoveryDueTicks);
+        ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+        outboundEffects.Clear();
+
+        QuicConnectionTransitionResult timerResult = runtime.Transition(
+            new QuicConnectionTimerExpiredEvent(
+                ObservedAtTicks: recoveryDueTicks.Value,
+                QuicConnectionTimerKind.Recovery,
+                recoveryGeneration),
+            nowTicks: recoveryDueTicks.Value);
+
+        QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] sendEffectDescriptions = sendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.NotEmpty(sendEffects);
+        Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+        int postPtoStreamProbePackets = runtime.SendRuntime.SentPackets.Count(
+            entry => entry.Key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                && entry.Key.PacketNumber > highestPacketNumberBeforePto
+                && entry.Value.ProbePacket
+                && PacketContainsStreamDataForStream(entry.Value.PlaintextPayload.Span, streamId));
+        Assert.True(
+            postPtoStreamProbePackets >= 2,
+            $"Expected PTO to send both a stream-data repair and queued stream data, but sent {string.Join(" || ", sendEffectDescriptions)}.");
+        Assert.Contains(
+            sendEffectDescriptions,
+            description => description.Contains($"stream(id={streamId},", StringComparison.Ordinal)
+                && !description.Contains("ping", StringComparison.Ordinal));
+    }
+
     [Theory]
     [InlineData(22)]
     [InlineData(24)]
@@ -2064,6 +2205,95 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
                     && streamFrame.Offset == 0UL
                     && streamFrame.IsFin == isFin
                     && streamFrame.StreamData.SequenceEqual(expectedPayload))
+                {
+                    return true;
+                }
+
+                remaining = remaining[streamFrame.ConsumedLength..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseAckFrame(remaining, out _, out int ackBytesConsumed))
+            {
+                remaining = remaining[ackBytesConsumed..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxDataFrame(remaining, out _, out int maxDataBytesConsumed))
+            {
+                remaining = remaining[maxDataBytesConsumed..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxStreamDataFrame(remaining, out _, out int maxStreamDataBytesConsumed))
+            {
+                remaining = remaining[maxStreamDataBytesConsumed..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParseMaxStreamsFrame(remaining, out _, out int maxStreamsBytesConsumed))
+            {
+                remaining = remaining[maxStreamsBytesConsumed..];
+                continue;
+            }
+
+            if (QuicFrameCodec.TryParsePingFrame(remaining, out int pingBytesConsumed))
+            {
+                remaining = remaining[pingBytesConsumed..];
+                continue;
+            }
+
+            if (remaining[0] == 0x00)
+            {
+                int paddingLength = 0;
+                while (paddingLength < remaining.Length && remaining[paddingLength] == 0x00)
+                {
+                    paddingLength++;
+                }
+
+                remaining = remaining[paddingLength..];
+                continue;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    private static bool ProbeContainsStreamDataForStream(
+        QuicConnectionRuntime runtime,
+        ReadOnlyMemory<byte> datagram,
+        ulong expectedStreamId)
+    {
+        QuicHandshakeFlowCoordinator coordinator = CreateOutgoingApplicationDataOpenCoordinator(runtime);
+        if (!coordinator.TryOpenProtectedApplicationDataPacket(
+                datagram.Span,
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength,
+                out _))
+        {
+            return false;
+        }
+
+        return PacketContainsStreamDataForStream(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            expectedStreamId);
+    }
+
+    private static bool PacketContainsStreamDataForStream(
+        ReadOnlySpan<byte> packetPayload,
+        ulong expectedStreamId)
+    {
+        ReadOnlySpan<byte> remaining = packetPayload;
+        while (!remaining.IsEmpty)
+        {
+            if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
+            {
+                if (streamFrame.StreamId.Value == expectedStreamId
+                    && streamFrame.StreamDataLength > 0)
                 {
                     return true;
                 }

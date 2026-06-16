@@ -4204,21 +4204,42 @@ internal sealed partial class QuicConnectionRuntime
         ulong[]? streamIds,
         ReadOnlyMemory<byte> plaintextPayload)
     {
-        sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
-            QuicPacketNumberSpace.ApplicationData,
-            packetNumber,
-            (ulong)protectedPacket.Length,
-            sentAtMicros,
-            AckEliciting: true,
-            AckOnlyPacket: false,
-            ProbePacket: probePacket,
-            Retransmittable: true,
-            PacketBytes: protectedPacket,
-            PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
-            StreamId: streamId,
-            StreamIds: streamIds,
-            PlaintextPayload: plaintextPayload,
-            OneRttKeyPhase: tlsState.CurrentOneRttKeyPhase));
+        byte[]? plaintextPayloadOwner = null;
+        if (!plaintextPayload.IsEmpty)
+        {
+            plaintextPayloadOwner = QuicBufferPool.RentBytes(plaintextPayload.Length);
+            plaintextPayload.Span.CopyTo(plaintextPayloadOwner.AsSpan(0, plaintextPayload.Length));
+            plaintextPayload = plaintextPayloadOwner.AsMemory(0, plaintextPayload.Length);
+        }
+
+        try
+        {
+            sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                (ulong)protectedPacket.Length,
+                sentAtMicros,
+                AckEliciting: true,
+                AckOnlyPacket: false,
+                ProbePacket: probePacket,
+                Retransmittable: true,
+                PacketBytes: protectedPacket,
+                PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt,
+                StreamId: streamId,
+                StreamIds: streamIds,
+                PlaintextPayload: plaintextPayload,
+                OneRttKeyPhase: tlsState.CurrentOneRttKeyPhase,
+                PlaintextPayloadOwner: plaintextPayloadOwner));
+            plaintextPayloadOwner = null;
+        }
+        finally
+        {
+            if (plaintextPayloadOwner is not null)
+            {
+                QuicBufferPool.ReturnBytes(plaintextPayloadOwner);
+            }
+        }
+
         recoveryController.RecordPacketSent(
             QuicPacketNumberSpace.ApplicationData,
             packetNumber,
