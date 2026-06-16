@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS Service Binding RFC 9461 SVCB RDATA Wire Parser Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0004",
+    "VER-QUIC-RFC9461-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0039"
+  ],
+  "summary": "Add a bounded ServiceMode SVCB RDATA parser for RFC 9461 DNS service binding records.",
+  "planned_changes": "- Add `DnsServiceBindingWireRecord` as a pure RDATA parser.\n- Add a generic `DnsServiceBindingServiceParameter` decoder for RFC 9460 SVCB key/value pairs.\n- Decode SvcPriority, uncompressed TargetName, sorted SvcParams, `alpn`, `port`, and `dohpath` values.\n- Reuse existing `DnsServiceBindingRecord` scalar validation and endpoint-selection inputs.\n- Add requirement-owned positive, negative, edge, and fuzz-style tests.\n- Add a permanent BenchmarkDotNet parser suite and run a Dry smoke locally.\n- Update RFC 9461 trace artifacts and generated triage.",
+  "verification_plan": "Run the DNS project build, focused RFC 9461 requirement-home tests, the SVCB RDATA parser BenchmarkDotNet Dry smoke, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full local Release solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0004"
+  ],
+  "out_of_scope": [
+    "AliasMode chain resolution.",
+    "Complete DNS message parsing.",
+    "Additional-section A/AAAA processing.",
+    "DNSSEC validation.",
+    "Operator DNS publication automation.",
+    "Host resolver installation or encrypted DNS session establishment."
+  ],
+  "completion_notes": "RFC 9461 now has a trace-owned ServiceMode SVCB RDATA parsing surface suitable for local resolver/discovery adapters."
+}

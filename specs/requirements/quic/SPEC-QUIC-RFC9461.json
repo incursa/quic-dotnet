@@ -16,7 +16,10 @@
     "VER-QUIC-RFC9461-0002",
     "ARC-QUIC-RFC9461-0003",
     "VER-QUIC-RFC9461-0003",
-    "WI-QUIC-RFC9461-0003"
+    "WI-QUIC-RFC9461-0003",
+    "ARC-QUIC-RFC9461-0004",
+    "WI-QUIC-RFC9461-0004",
+    "VER-QUIC-RFC9461-0004"
   ],
   "requirements": [
     {
@@ -860,6 +863,54 @@
           "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectionSeparatesProtocolsByDefaultPortWhenPortIsOmitted"
         ]
       }
+    },
+    {
+      "id": "REQ-QUIC-RFC9461-0039",
+      "title": "Parse ServiceMode DNS SVCB RDATA wire values",
+      "statement": "The DNS service binding parser MUST parse ServiceMode SVCB RDATA as SvcPriority, uncompressed fully qualified TargetName, and strictly increasing SvcParams, decoding `alpn`, `port`, and `dohpath` SvcParamValues into RFC 9461 scalar endpoint-selection values while rejecting AliasMode, compressed names, malformed SvcParam ordering, truncated fields, invalid ALPN values, invalid port values, and invalid dohpath values.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9461-0004"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9461-0004"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9461-0004"
+        ],
+        "upstream_refs": [
+          "RFC 9461 Appendix A",
+          "RFC 9460 section 2.2",
+          "RFC 9460 section 7.1.1",
+          "RFC 9460 section 7.2",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-2.2",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-7.1.1",
+          "https://www.rfc-editor.org/rfc/rfc9460.html#section-7.2"
+        ],
+        "x_code_refs": [
+          "benchmarks/DnsServiceBindingWireRecordBenchmarks.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingServiceParameter.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic"
+        ]
+      },
+      "notes": [
+        "This requirement covers ServiceMode RDATA parsing only. AliasMode resolution, DNS message querying, Additional-section address processing, DNSSEC, and operator publication automation remain outside this slice.",
+        "The parser reuses existing RFC 9461 scalar validation after decoding wire-format SvcParams."
+      ]
     }
   ]
 }

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS Service Binding RFC 9461 SVCB RDATA Wire Parser Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the bounded RFC 9461 ServiceMode SVCB RDATA parser boundary for DNS service binding records.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0004",
+    "VER-QUIC-RFC9461-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0039"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingServiceParameter.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "benchmarks/DnsServiceBindingWireRecordBenchmarks.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs"
+  ],
+  "design_summary": "`DnsServiceBindingWireRecord` parses RFC 9460 SVCB RDATA for RFC 9461 ServiceMode records: two-octet SvcPriority, uncompressed fully qualified TargetName, and the remaining SvcParams as sorted RFC 9460 key/value pairs. `DnsServiceBindingServiceParameter` provides the generic SVCB key/value decoder without inheriting RFC 9464 provisioning restrictions, so HTTPS SvcParam keys such as address hints remain admissible. The parser decodes registered values needed by the DNS mapping (`alpn`, `port`, and `dohpath`) and then delegates scalar validation to `DnsServiceBindingRecord`. Unknown sorted SvcParams are preserved as deterministic hex-valued HTTPS service-parameter entries for caller inspection.",
+  "data_and_state_considerations": "The parser is a pure byte-to-value helper. It does not perform DNS resolution, parse complete DNS messages, process Additional-section address records, validate DNSSEC, open encrypted DNS transports, or mutate resolver state.",
+  "edge_cases_and_constraints": [
+    "AliasMode priority zero is rejected because this slice is limited to ServiceMode endpoint-selection values.",
+    "Compressed TargetName pointers are rejected; RFC 9460 requires an uncompressed fully qualified TargetName in SVCB RDATA.",
+    "SvcParams are parsed through the existing strictly increasing RFC 9460 key/value codec.",
+    "`alpn` values must contain complete length-prefixed identifiers, `port` must be exactly two octets, and `dohpath` must decode to an existing RFC 9461-valid relative URI Template."
+  ],
+  "risks": [
+    "This slice does not implement AliasMode chain resolution.",
+    "This slice does not parse DNS message headers, questions, answers, or Additional-section address records.",
+    "Unknown SvcParams are preserved but not interpreted beyond deterministic key/value exposure."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Keeping the SVCB RDATA parser in `Incursa.Quic.Dns` lets resolver or discovery adapters consume DNS wire answers without coupling RFC 9461 scalar selection to QUIC transport runtime, TLS state, or platform resolver installation."
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T13:06:54.1132466-06:00",
+  "generated_at": "2026-06-16T13:51:49.1694556-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T13:06:54.1105665-06:00",
-    "total_requirements": 2641,
+    "generated_at": "2026-06-16T13:51:49.1662233-06:00",
+    "total_requirements": 2642,
     "by_state": {
-      "trace_clean": 2641
+      "trace_clean": 2642
     },
     "by_work_queue_tag": {
-      "clean": 2641
+      "clean": 2642
     },
     "by_rfc": [
       {
@@ -157,9 +157,9 @@
       },
       {
         "rfc": "RFC9461",
-        "total": 38,
+        "total": 39,
         "by_state": {
-          "trace_clean": 38
+          "trace_clean": 39
         }
       },
       {
@@ -406814,6 +406814,227 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9461-0039",
+      "artifact_id": "SPEC-QUIC-RFC9461",
+      "rfc": "RFC9461",
+      "section_prefix": "unsectioned",
+      "title": "Parse ServiceMode DNS SVCB RDATA wire values",
+      "statement": "The DNS service binding parser MUST parse ServiceMode SVCB RDATA as SvcPriority, uncompressed fully qualified TargetName, and strictly increasing SvcParams, decoding `alpn`, `port`, and `dohpath` SvcParamValues into RFC 9461 scalar endpoint-selection values while rejecting AliasMode, compressed names, malformed SvcParam ordering, truncated fields, invalid ALPN values, invalid port values, and invalid dohpath values.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 2,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic",
+          "method": "Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic",
+          "line": 79,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic",
+          "method": "Fuzz_ParseServiceModeRData_RepresentativeTruncationsAndMutationsAreDeterministic",
+          "line": 79,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "method": "ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "method": "ParseServiceModeRData_DecodesPriorityTargetNameAndRegisteredSvcParams",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "method": "ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "line": 54,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "method": "ParseServiceModeRData_PreservesUnknownSortedSvcParamsAsHttpsServiceParameters",
+          "line": 54,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "method": "ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "line": 44,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0039",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs::ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs",
+          "class": "REQ_QUIC_RFC9461_0039",
+          "member": "REQ_QUIC_RFC9461_0039.ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "method": "ParseServiceModeRData_RejectsMalformedAliasCompressedAndUnsortedWireData",
+          "line": 44,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0039"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },

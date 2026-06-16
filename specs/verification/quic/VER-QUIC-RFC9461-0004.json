@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9461-0004",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS Service Binding RFC 9461 SVCB RDATA Wire Parser Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0004",
+    "WI-QUIC-RFC9461-0004"
+  ],
+  "verification_method": "Focused requirement-home tests, DNS package build, BenchmarkDotNet Dry parser smoke, SpecTrace JSON validation, generated coverage triage, diff hygiene, and full local Release solution test for the RFC 9461 ServiceMode SVCB RDATA parser.",
+  "verifies": [
+    "REQ-QUIC-RFC9461-0039"
+  ],
+  "scope": "This verification covers ServiceMode SVCB RDATA parsing for SvcPriority, uncompressed TargetName, sorted SvcParams, registered `alpn`, `port`, and `dohpath` SvcParamValues, unknown sorted SvcParam preservation including HTTPS address-hint keys, AliasMode rejection, compressed-name rejection, malformed SvcParam ordering rejection, truncated-field rejection, invalid ALPN rejection, invalid port rejection, invalid dohpath rejection, and representative truncation/mutation fuzz-style determinism.",
+  "preconditions": [
+    "The RFC 9461 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9461.json`.",
+    "The existing `DnsServiceBindingRecord` scalar validation remains the source of truth for RFC 9461 endpoint-selection values after wire decoding."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9461_0039\"`.",
+    "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*DnsServiceBindingWireRecordBenchmarks*\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused requirement-home tests pass, the DNS project builds, the parser benchmark Dry smoke completes, core SpecTrace validation accepts the RFC 9461 artifacts, generated triage reports the new requirement as trace-clean, diff hygiene passes, and the full local Release solution test suite remains green.",
+  "evidence": [
+    "benchmarks/DnsServiceBindingWireRecordBenchmarks.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingServiceParameter.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingWireRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0039.cs"
+  ],
+  "status_summary": "The RFC 9461 ServiceMode SVCB RDATA parser is trace-owned and verified. AliasMode resolution, full DNS message parsing, Additional-section processing, DNSSEC, operator publication, host resolver installation, and encrypted DNS session establishment remain future adapter work."
+}
