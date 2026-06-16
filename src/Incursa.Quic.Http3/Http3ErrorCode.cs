@@ -4,7 +4,7 @@
 namespace Incursa.Quic.Http3;
 
 /// <summary>
-/// HTTP/3 application error codes registered by RFC 9114.
+/// HTTP/3 application error codes registered by HTTP/3 extensions.
 /// </summary>
 public enum Http3ErrorCode : long
 {
@@ -92,4 +92,9 @@ public enum Http3ErrorCode : long
     /// Requested operation cannot be served over HTTP/3.
     /// </summary>
     VersionFallback = 0x0110,
+
+    /// <summary>
+    /// HTTP Datagram usage was invalid.
+    /// </summary>
+    DatagramError = 0x33,
 }

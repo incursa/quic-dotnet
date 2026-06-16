@@ -22,6 +22,11 @@
         "upstream_refs": [
           "RFC 9297 1.1 RFC9297-S1P1-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_EncodesQuarterStreamIdBeforePayload",
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers",
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_RejectsTruncatedQuarterStreamIdWithDatagramError"
         ]
       }
     },
@@ -39,6 +44,10 @@
         "upstream_refs": [
           "RFC 9297 2 RFC9297-S2-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_EncodesQuarterStreamIdBeforePayload",
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_RejectsNonRequestStreamAssociation"
         ]
       }
     },
@@ -56,6 +65,9 @@
         "upstream_refs": [
           "RFC 9297 2 RFC9297-S2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RoundTripsRegisteredSettingAndDefaultsToZero"
         ]
       }
     },
@@ -141,6 +153,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_EncodesQuarterStreamIdBeforePayload"
         ]
       }
     },
@@ -158,6 +173,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_EncodesQuarterStreamIdBeforePayload"
         ]
       }
     },
@@ -175,6 +193,10 @@
         "upstream_refs": [
           "RFC9297-S2P1-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_EncodesQuarterStreamIdBeforePayload",
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_RejectsOversizedQuarterStreamIdWithDatagramError"
         ]
       }
     },
@@ -192,6 +214,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_RejectsOversizedQuarterStreamIdWithDatagramError"
         ]
       }
     },
@@ -209,6 +234,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B5-P5-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_AllowsEmptyPayloadAfterQuarterStreamId"
         ]
       }
     },
@@ -226,6 +254,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCodec_RejectsTruncatedQuarterStreamIdWithDatagramError"
         ]
       }
     },
@@ -294,6 +325,9 @@
         "upstream_refs": [
           "RFC9297-S2P1-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_RejectsAssociatedStreamsBeyondClientInitiatedBidirectionalLimit"
         ]
       }
     },
@@ -311,6 +345,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RoundTripsRegisteredSettingAndDefaultsToZero"
         ]
       }
     },
@@ -328,6 +365,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RejectsInvalidValuesWithSettingsError"
         ]
       }
     },
@@ -345,6 +385,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_GatesSendingOnLocalAndPeerSettings"
         ]
       }
     },
@@ -362,6 +405,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_AcceptsNondecreasingZeroRttSettings"
         ]
       }
     },
@@ -379,6 +425,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B4-P4-S3",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_AcceptsNondecreasingZeroRttSettings"
         ]
       }
     },
@@ -396,6 +445,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B4-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_RejectsLoweredZeroRttSettings"
         ]
       }
     },
@@ -413,6 +465,10 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B4-P4-S4",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_AcceptsNondecreasingZeroRttSettings",
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramSupport_RejectsLoweredZeroRttSettings"
         ]
       }
     },
@@ -430,6 +486,9 @@
         "upstream_refs": [
           "RFC 9297 section 2.1.1 RFC9297-S2P1P1-B4-P4-S5",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RoundTripsRegisteredSettingAndDefaultsToZero"
         ]
       }
     },
@@ -481,6 +540,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers"
         ]
       }
     },
@@ -498,6 +560,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers"
         ]
       }
     },
@@ -515,6 +580,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B6-P6-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers"
         ]
       }
     },
@@ -532,6 +600,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B7-P7-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers"
         ]
       }
     },
@@ -549,6 +620,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_EncodesTypeLengthValueWithVariableLengthIntegers"
         ]
       }
     },
@@ -566,6 +640,9 @@
         "upstream_refs": [
           "RFC 9297 3.2 RFC9297-S3P2-B9-P9-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RetainsKnownCapsulesAndSilentlyDropsUnknownCapsules"
         ]
       }
     },
@@ -584,6 +661,9 @@
           "RFC 9297 section 3.2 RFC9297-S3P2-B10-P10-S1",
           "RFC 9297 section 3.2 RFC9297-S3P2-B10-P10-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RetainsKnownCapsulesAndSilentlyDropsUnknownCapsules"
         ]
       },
       "notes": [
@@ -604,6 +684,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.2 RFC9297-S3P2-B11-P11-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RetainsKnownCapsulesAndSilentlyDropsUnknownCapsules"
         ]
       }
     },
@@ -811,6 +894,9 @@
         "upstream_refs": [
           "RFC 9297 3.3 RFC9297-S3P3-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RejectsTruncatedCapsulesAsMalformedMessages"
         ]
       },
       "notes": [
@@ -848,6 +934,9 @@
         "upstream_refs": [
           "RFC 9297 3.3 RFC9297-S3P3-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RejectsTruncatedCapsulesAsMalformedMessages"
         ]
       },
       "notes": [
@@ -885,6 +974,9 @@
         "upstream_refs": [
           "RFC 9297 3.3 RFC9297-S3P3-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::CapsuleCodec_RejectsTruncatedCapsulesAsMalformedMessages"
         ]
       },
       "notes": [
@@ -1058,6 +1150,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
@@ -1078,6 +1173,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
@@ -1098,6 +1196,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
@@ -1118,6 +1219,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
@@ -1138,6 +1242,9 @@
         "upstream_refs": [
           "RFC 9297 section 3.5 RFC9297-S3P5-B4-P4-S2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
@@ -1355,6 +1462,9 @@
         "upstream_refs": [
           "RFC 9297 section 5.1, RFC9297-S5P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RoundTripsRegisteredSettingAndDefaultsToZero"
         ]
       }
     },
@@ -1372,6 +1482,9 @@
         "upstream_refs": [
           "RFC 9297 section 5.1, RFC9297-S5P1-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::SettingsH3Datagram_RoundTripsRegisteredSettingAndDefaultsToZero"
         ]
       }
     },
@@ -1389,6 +1502,9 @@
         "upstream_refs": [
           "RFC 9297 section 5.2, RFC9297-S5P2-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::ErrorCode_UsesRegisteredH3DatagramErrorValue"
         ]
       }
     },
@@ -1506,11 +1622,19 @@
         "upstream_refs": [
           "RFC9297-S5P4-B5-P5-S1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-5.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs::DatagramCapsule_UsesTypeZeroAndCarriesHttpDatagramPayloadAfterLength"
         ]
       },
       "notes": [
         "Single value assignment invariant; no further trimming needed."
       ]
     }
+  ],
+  "related_artifacts": [
+    "ARC-QUIC-RFC9297-0001",
+    "WI-QUIC-RFC9297-0001",
+    "VER-QUIC-RFC9297-0001"
   ]
 }

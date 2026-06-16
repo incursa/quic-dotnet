@@ -1,0 +1,71 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9297-0001",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP Datagram and Capsule Protocol Foundation Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "ARC-QUIC-RFC9297-0001",
+    "VER-QUIC-RFC9297-0001"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9297-0001",
+    "REQ-QUIC-RFC9297-0002",
+    "REQ-QUIC-RFC9297-0003",
+    "REQ-QUIC-RFC9297-0008",
+    "REQ-QUIC-RFC9297-0009",
+    "REQ-QUIC-RFC9297-0010",
+    "REQ-QUIC-RFC9297-0011",
+    "REQ-QUIC-RFC9297-0012",
+    "REQ-QUIC-RFC9297-0013",
+    "REQ-QUIC-RFC9297-0017",
+    "REQ-QUIC-RFC9297-0018",
+    "REQ-QUIC-RFC9297-0019",
+    "REQ-QUIC-RFC9297-0020",
+    "REQ-QUIC-RFC9297-0021",
+    "REQ-QUIC-RFC9297-0022",
+    "REQ-QUIC-RFC9297-0023",
+    "REQ-QUIC-RFC9297-0024",
+    "REQ-QUIC-RFC9297-0025",
+    "REQ-QUIC-RFC9297-0028",
+    "REQ-QUIC-RFC9297-0029",
+    "REQ-QUIC-RFC9297-0030",
+    "REQ-QUIC-RFC9297-0031",
+    "REQ-QUIC-RFC9297-0032",
+    "REQ-QUIC-RFC9297-0033",
+    "REQ-QUIC-RFC9297-0034",
+    "REQ-QUIC-RFC9297-0035",
+    "REQ-QUIC-RFC9297-0047",
+    "REQ-QUIC-RFC9297-0049",
+    "REQ-QUIC-RFC9297-0051",
+    "REQ-QUIC-RFC9297-0061",
+    "REQ-QUIC-RFC9297-0062",
+    "REQ-QUIC-RFC9297-0063",
+    "REQ-QUIC-RFC9297-0064",
+    "REQ-QUIC-RFC9297-0065",
+    "REQ-QUIC-RFC9297-0076",
+    "REQ-QUIC-RFC9297-0077",
+    "REQ-QUIC-RFC9297-0078",
+    "REQ-QUIC-RFC9297-0084"
+  ],
+  "summary": "Add trace-owned HTTP/3 Datagram and Capsule Protocol foundation behavior for RFC 9297.",
+  "planned_changes": "- Add HTTP Datagram encode/parse helpers for Quarter Stream ID and payload bytes.\n- Add SETTINGS_H3_DATAGRAM typed settings support, default metadata, validation, local/peer send gating, and 0-RTT nondecreasing validation.\n- Add H3_DATAGRAM_ERROR and SETTINGS_H3_DATAGRAM registered constants.\n- Add Capsule Protocol Type/Length/Value encoding and parsing with unknown-capsule skipping and DATAGRAM Capsule type 0x00 support.\n- Add focused positive, negative, and edge tests plus canonical SpecTrace xrefs.",
+  "verification_plan": "Run the HTTP/3 package build, focused RFC9297 foundation tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9297-0001"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9297-0001"
+  ],
+  "out_of_scope": [
+    "Capsule-Protocol response/header policy.",
+    "HTTP/1.x Capsule Protocol start policy.",
+    "Intermediary DATAGRAM Capsule conversion policy.",
+    "Runtime QUIC DATAGRAM send/receive integration.",
+    "CONNECT-UDP and CONNECT-IP request semantics."
+  ],
+  "completion_notes": "The RFC 9297 byte-level HTTP Datagram, SETTINGS_H3_DATAGRAM, H3_DATAGRAM_ERROR, and base Capsule/DATAGRAM Capsule foundations are implemented and ready for the later policy and MASQUE slices."
+}

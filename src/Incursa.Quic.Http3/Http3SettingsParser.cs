@@ -26,6 +26,7 @@ public static class Http3SettingsParser
         ulong qpackBlockedStreams = 0;
         ulong? maxFieldSectionSize = null;
         ulong enableConnectProtocol = 0;
+        ulong h3Datagram = 0;
 
         foreach (Http3Setting setting in settings)
         {
@@ -49,10 +50,18 @@ public static class Http3SettingsParser
                 case (ulong)Http3SettingIdentifier.EnableConnectProtocol:
                     enableConnectProtocol = setting.Value;
                     break;
+                case (ulong)Http3SettingIdentifier.H3Datagram:
+                    if (setting.Value > Http3DatagramSupport.MaximumSettingsH3DatagramValue)
+                    {
+                        throw new Http3Exception(Http3ErrorCode.SettingsError, "SETTINGS_H3_DATAGRAM must be 0 or 1.");
+                    }
+
+                    h3Datagram = setting.Value;
+                    break;
             }
         }
 
-        return new Http3Settings(qpackMaxTableCapacity, qpackBlockedStreams, maxFieldSectionSize, enableConnectProtocol);
+        return new Http3Settings(qpackMaxTableCapacity, qpackBlockedStreams, maxFieldSectionSize, enableConnectProtocol, h3Datagram);
     }
 
     /// <summary>

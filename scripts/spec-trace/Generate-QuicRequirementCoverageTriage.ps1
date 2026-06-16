@@ -570,9 +570,19 @@ function Get-RequirementGapMappings {
         },
         [pscustomobject]@{
             Slug               = 'http-datagrams-and-capsules'
-            Summary            = 'RFC 9297 HTTP Datagram and Capsule Protocol requirements remain blocked by the recorded planning-only scope until HTTP Datagram/Capsule support is explicitly committed.'
+            Summary            = 'Remaining RFC 9297 Capsule-Protocol policy, runtime adapter lifecycle, and intermediary conversion requirements remain blocked until those slices are explicitly committed.'
             RequirementPrefixes = @()
-            RequirementIds     = @(New-RequirementIdRange -Rfc 'RFC9297' -Start 1 -End 84)
+            RequirementIds     = @(
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 4 -End 7
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 14 -End 16
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 26 -End 27
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 36 -End 46
+                'REQ-QUIC-RFC9297-0048'
+                'REQ-QUIC-RFC9297-0050'
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 52 -End 60
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 66 -End 75
+                New-RequirementIdRange -Rfc 'RFC9297' -Start 79 -End 83
+            )
         },
         [pscustomobject]@{
             Slug               = 'connect-udp'

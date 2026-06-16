@@ -27,4 +27,9 @@ public enum Http3SettingIdentifier : long
     /// SETTINGS_ENABLE_CONNECT_PROTOCOL.
     /// </summary>
     EnableConnectProtocol = 0x08,
+
+    /// <summary>
+    /// SETTINGS_H3_DATAGRAM.
+    /// </summary>
+    H3Datagram = 0x33,
 }

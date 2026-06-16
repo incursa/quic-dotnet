@@ -1,0 +1,84 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9297-0001",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP Datagram and Capsule Protocol Foundation Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9297 foundation for HTTP/3 Datagram payload encoding, SETTINGS_H3_DATAGRAM negotiation, H3_DATAGRAM_ERROR registration, and base Capsule Protocol entry parsing.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9297",
+    "WI-QUIC-RFC9297-0001",
+    "VER-QUIC-RFC9297-0001"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9297-0001",
+    "REQ-QUIC-RFC9297-0002",
+    "REQ-QUIC-RFC9297-0003",
+    "REQ-QUIC-RFC9297-0008",
+    "REQ-QUIC-RFC9297-0009",
+    "REQ-QUIC-RFC9297-0010",
+    "REQ-QUIC-RFC9297-0011",
+    "REQ-QUIC-RFC9297-0012",
+    "REQ-QUIC-RFC9297-0013",
+    "REQ-QUIC-RFC9297-0017",
+    "REQ-QUIC-RFC9297-0018",
+    "REQ-QUIC-RFC9297-0019",
+    "REQ-QUIC-RFC9297-0020",
+    "REQ-QUIC-RFC9297-0021",
+    "REQ-QUIC-RFC9297-0022",
+    "REQ-QUIC-RFC9297-0023",
+    "REQ-QUIC-RFC9297-0024",
+    "REQ-QUIC-RFC9297-0025",
+    "REQ-QUIC-RFC9297-0028",
+    "REQ-QUIC-RFC9297-0029",
+    "REQ-QUIC-RFC9297-0030",
+    "REQ-QUIC-RFC9297-0031",
+    "REQ-QUIC-RFC9297-0032",
+    "REQ-QUIC-RFC9297-0033",
+    "REQ-QUIC-RFC9297-0034",
+    "REQ-QUIC-RFC9297-0035",
+    "REQ-QUIC-RFC9297-0047",
+    "REQ-QUIC-RFC9297-0049",
+    "REQ-QUIC-RFC9297-0051",
+    "REQ-QUIC-RFC9297-0061",
+    "REQ-QUIC-RFC9297-0062",
+    "REQ-QUIC-RFC9297-0063",
+    "REQ-QUIC-RFC9297-0064",
+    "REQ-QUIC-RFC9297-0065",
+    "REQ-QUIC-RFC9297-0076",
+    "REQ-QUIC-RFC9297-0077",
+    "REQ-QUIC-RFC9297-0078",
+    "REQ-QUIC-RFC9297-0084"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Datagram.cs",
+    "src/Incursa.Quic.Http3/Http3DatagramSupport.cs",
+    "src/Incursa.Quic.Http3/Http3Capsule.cs",
+    "src/Incursa.Quic.Http3/Http3Settings.cs",
+    "src/Incursa.Quic.Http3/Http3SettingsParser.cs",
+    "tests/Incursa.Quic.Tests/Http3DatagramAndCapsuleTests.cs"
+  ],
+  "design_summary": "The foundation keeps RFC 9297 byte-level behavior in pure HTTP/3 helper types. `Http3Datagram` encodes and parses Quarter Stream ID followed by payload bytes, enforces the RFC 9297 Quarter Stream ID ceiling, maps malformed DATAGRAM payloads to H3_DATAGRAM_ERROR, and derives associated client-initiated bidirectional request stream IDs. `Http3DatagramSupport` models SETTINGS_H3_DATAGRAM defaults, 0/1 validation, local/peer send gating, 0-RTT nondecreasing validation, and uncreatable associated stream checks. `Http3Capsule` models Type, Length, Value entries, unknown-capsule skipping by caller policy, malformed truncation handling, and DATAGRAM Capsule type 0x00 payload carriage.",
+  "data_and_state_considerations": "The slice is allocation-bounded around explicit byte arrays and has no transport side effects. It does not send QUIC DATAGRAM frames, open streams, buffer live capsule streams, or perform CONNECT-UDP/IP routing.",
+  "edge_cases_and_constraints": [
+    "Empty HTTP Datagram payloads after the Quarter Stream ID are legal.",
+    "Quarter Stream IDs larger than 2^60-1 fail with H3_DATAGRAM_ERROR.",
+    "SETTINGS_H3_DATAGRAM values other than 0 or 1 fail with H3_SETTINGS_ERROR.",
+    "Accepted 0-RTT SETTINGS_H3_DATAGRAM values must not decrease from the stored value.",
+    "Truncated Capsule Type, Length, or Value bytes fail as malformed HTTP messages.",
+    "DATAGRAM Capsules use Capsule Type 0x00 and carry HTTP Datagram payload bytes directly after the Capsule Length."
+  ],
+  "risks": [
+    "Request support policy, Capsule-Protocol header validation, and intermediary conversion policy are intentionally left for later RFC 9297 slices.",
+    "CONNECT-UDP and CONNECT-IP semantics are intentionally left for RFC 9298 and RFC 9484 slices.",
+    "This slice does not wire the runtime QUIC DATAGRAM send/receive path into HTTP/3 request dispatch."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The foundation is intentionally reusable by later MASQUE work: RFC 9298 and RFC 9484 can call the HTTP Datagram and Capsule helpers without depending on request handler or proxy runtime state."
+    }
+  ]
+}
