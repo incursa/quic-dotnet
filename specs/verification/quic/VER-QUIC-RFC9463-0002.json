@@ -1,0 +1,60 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Discovery RFC 9463 DHCPv6 OPTION_V6_DNR Wire Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0002",
+    "WI-QUIC-RFC9463-0002"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9463 DHCPv6 OPTION_V6_DNR wire surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0021",
+    "REQ-QUIC-RFC9463-0022",
+    "REQ-QUIC-RFC9463-0023",
+    "REQ-QUIC-RFC9463-0024",
+    "REQ-QUIC-RFC9463-0025",
+    "REQ-QUIC-RFC9463-0026",
+    "REQ-QUIC-RFC9463-0027",
+    "REQ-QUIC-RFC9463-0028",
+    "REQ-QUIC-RFC9463-0029",
+    "REQ-QUIC-RFC9463-0030",
+    "REQ-QUIC-RFC9463-0031",
+    "REQ-QUIC-RFC9463-0032",
+    "REQ-QUIC-RFC9463-0033",
+    "REQ-QUIC-RFC9463-0034",
+    "REQ-QUIC-RFC9463-0035",
+    "REQ-QUIC-RFC9463-0036",
+    "REQ-QUIC-RFC9463-0037",
+    "REQ-QUIC-RFC9463-0038",
+    "REQ-QUIC-RFC9463-0039",
+    "REQ-QUIC-RFC9463-0040",
+    "REQ-QUIC-RFC9463-0041",
+    "REQ-QUIC-RFC9463-0042",
+    "REQ-QUIC-RFC9463-0043",
+    "REQ-QUIC-RFC9463-0044"
+  ],
+  "scope": "This verification covers OPTION_V6_DNR option code and length fields, service-priority storage, RFC 8415 authentication-domain-name wire formatting, IPv6 Addr Length and address-list encoding, SvcParams encoding and alpn preference, default port lookup when the port SvcParam is absent, computed SvcParams field length, ADN-only mode field omission, OPTION_ORO request data, multiple OPTION_V6_DNR instances, service-priority ordering, invalid-option discard, and loopback/multicast address discard behavior.",
+  "preconditions": [
+    "The RFC 9463 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9463.json`.",
+    "DHCPv6 wire support remains a pure TLV codec and does not implement a platform DHCP client."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsDiscoveryDhcpv6OptionTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused DHCPv6 option tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage reflects the DHCPv6 wire slice, diff hygiene passes, and the full solution test suite remains green.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv6Option.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs"
+  ],
+  "status_summary": "The RFC 9463 DHCPv6 OPTION_V6_DNR wire floor is trace-owned and verified. DHCPv4, Neighbor Discovery, PKIX validation, and resolver installation remain future work."
+}

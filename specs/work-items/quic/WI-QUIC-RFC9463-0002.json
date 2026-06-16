@@ -1,0 +1,56 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery RFC 9463 DHCPv6 OPTION_V6_DNR Wire Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0002",
+    "VER-QUIC-RFC9463-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0021",
+    "REQ-QUIC-RFC9463-0022",
+    "REQ-QUIC-RFC9463-0023",
+    "REQ-QUIC-RFC9463-0024",
+    "REQ-QUIC-RFC9463-0025",
+    "REQ-QUIC-RFC9463-0026",
+    "REQ-QUIC-RFC9463-0027",
+    "REQ-QUIC-RFC9463-0028",
+    "REQ-QUIC-RFC9463-0029",
+    "REQ-QUIC-RFC9463-0030",
+    "REQ-QUIC-RFC9463-0031",
+    "REQ-QUIC-RFC9463-0032",
+    "REQ-QUIC-RFC9463-0033",
+    "REQ-QUIC-RFC9463-0034",
+    "REQ-QUIC-RFC9463-0035",
+    "REQ-QUIC-RFC9463-0036",
+    "REQ-QUIC-RFC9463-0037",
+    "REQ-QUIC-RFC9463-0038",
+    "REQ-QUIC-RFC9463-0039",
+    "REQ-QUIC-RFC9463-0040",
+    "REQ-QUIC-RFC9463-0041",
+    "REQ-QUIC-RFC9463-0042",
+    "REQ-QUIC-RFC9463-0043",
+    "REQ-QUIC-RFC9463-0044"
+  ],
+  "summary": "Add trace-owned byte-level support for RFC 9463 DHCPv6 OPTION_V6_DNR.",
+  "planned_changes": "- Add `EncryptedDnsDiscoveryDhcpv6Option` for OPTION_V6_DNR TLV encode/decode.\n- Encode and decode RFC 8415 authentication-domain-name wire format.\n- Encode and validate IPv6 Addr Length and IPv6 resolver address lists.\n- Reuse RFC 9460 SvcParam key/value encoding and reject superseded address hints.\n- Support ADN-only mode and OPTION_ORO request data.\n- Decode multiple OPTION_V6_DNR instances as separate resolvers sorted by service priority.\n- Silently discard invalid OPTION_V6_DNR values when using the batch decoder.\n- Add focused positive and negative tests plus canonical xrefs.",
+  "verification_plan": "Run the DNS project build, focused DHCPv6 option tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0002"
+  ],
+  "out_of_scope": [
+    "DHCPv4 OPTION_V4_DNR wire encoding.",
+    "Neighbor Discovery encrypted DNS option encoding and padding.",
+    "Full DHCP client state and platform resolver configuration.",
+    "PKIX certificate validation and resolver connection establishment."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned DHCPv6 OPTION_V6_DNR wire floor that can feed future DHCP client, ProtocolLab, or resolver-selection integration."
+}

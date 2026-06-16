@@ -1,0 +1,69 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery RFC 9463 DHCPv6 OPTION_V6_DNR Wire Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9463 DHCPv6 OPTION_V6_DNR wire-format boundary for encrypted DNS discovery data.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0002",
+    "VER-QUIC-RFC9463-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0021",
+    "REQ-QUIC-RFC9463-0022",
+    "REQ-QUIC-RFC9463-0023",
+    "REQ-QUIC-RFC9463-0024",
+    "REQ-QUIC-RFC9463-0025",
+    "REQ-QUIC-RFC9463-0026",
+    "REQ-QUIC-RFC9463-0027",
+    "REQ-QUIC-RFC9463-0028",
+    "REQ-QUIC-RFC9463-0029",
+    "REQ-QUIC-RFC9463-0030",
+    "REQ-QUIC-RFC9463-0031",
+    "REQ-QUIC-RFC9463-0032",
+    "REQ-QUIC-RFC9463-0033",
+    "REQ-QUIC-RFC9463-0034",
+    "REQ-QUIC-RFC9463-0035",
+    "REQ-QUIC-RFC9463-0036",
+    "REQ-QUIC-RFC9463-0037",
+    "REQ-QUIC-RFC9463-0038",
+    "REQ-QUIC-RFC9463-0039",
+    "REQ-QUIC-RFC9463-0040",
+    "REQ-QUIC-RFC9463-0041",
+    "REQ-QUIC-RFC9463-0042",
+    "REQ-QUIC-RFC9463-0043",
+    "REQ-QUIC-RFC9463-0044"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv6Option.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningServiceParameter.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs"
+  ],
+  "design_summary": "The DHCPv6 slice adds a pure OPTION_V6_DNR TLV codec that writes and parses the RFC 9463 option-code, option-length, service-priority, RFC 8415 DNS-name, IPv6 address-length/address list, and RFC 9460 SvcParams fields. It also exposes ORO request data, ADN-only mode, ALPN default-port lookup, multiple OPTION_V6_DNR decoding, service-priority sorting, and invalid-option discard behavior.",
+  "data_and_state_considerations": "The helper is deterministic and allocation-light for control-plane option data. It does not own DHCP client state, network-interface selection, resolver installation, certificate validation, or DHCPv4/Neighbor Discovery codecs.",
+  "edge_cases_and_constraints": [
+    "Only DHCPv6 OPTION_V6_DNR TLVs are decoded by this helper.",
+    "ADN-only mode omits Addr Length, IPv6 addresses, and SvcParams.",
+    "Populated options require non-zero Addr Length that is a multiple of 16.",
+    "IPv6 loopback and multicast addresses are discarded during decode, and an option with no usable address is invalid.",
+    "SvcParams reuse the RFC 9460 key/value codec and reject ipv4hint/ipv6hint.",
+    "Multiple OPTION_V6_DNR instances remain separate and are returned in service-priority order."
+  ],
+  "risks": [
+    "This slice does not implement DHCPv4 OPTION_V4_DNR instance-data encoding.",
+    "This slice does not implement Neighbor Discovery encrypted DNS option padding or lifetime processing.",
+    "This slice does not implement an operating-system DHCP client or resolver selection policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The codec sits above the scalar RFC 9463 discovery option model and below any platform DHCP client integration. It gives ProtocolLab and future network adapters exact byte-level proof without moving DHCP state into the QUIC runtime."
+    }
+  ]
+}
