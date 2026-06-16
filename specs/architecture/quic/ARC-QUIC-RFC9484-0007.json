@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9484-0007",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "CONNECT-IP HTTP/2 and HTTP/3 Extended CONNECT Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define RFC 9484 HTTP/2 and HTTP/3 CONNECT-IP Extended CONNECT request and response policy.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "WI-QUIC-RFC9484-0007",
+    "VER-QUIC-RFC9484-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9484-0053",
+    "REQ-QUIC-RFC9484-0054",
+    "REQ-QUIC-RFC9484-0055",
+    "REQ-QUIC-RFC9484-0056",
+    "REQ-QUIC-RFC9484-0057",
+    "REQ-QUIC-RFC9484-0058",
+    "REQ-QUIC-RFC9484-0059",
+    "REQ-QUIC-RFC9484-0060",
+    "REQ-QUIC-RFC9484-0061",
+    "REQ-QUIC-RFC9484-0062",
+    "REQ-QUIC-RFC9484-0063",
+    "REQ-QUIC-RFC9484-0064"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ConnectIp.cs",
+    "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs"
+  ],
+  "design_summary": "`Http3ConnectIp` mirrors the existing CONNECT-UDP request-policy shape for RFC 9484: it builds Extended CONNECT request headers, exposes the server Extended CONNECT setting obligation, validates CONNECT and `connect-ip` pseudo-headers, validates proxy authority/scheme/path against URI Template expansion, enforces Capsule-Protocol no-content semantics, validates 2xx successful responses, and maps malformed or failed proxying attempts to an abort decision.",
+  "data_and_state_considerations": "The helper is stateless header/status policy. It does not own HTTP SETTINGS transport exchange or live tunnel I/O.",
+  "edge_cases_and_constraints": [
+    "A request with the wrong Extended CONNECT protocol token is malformed.",
+    "Empty `:scheme` or `:path` values are rejected.",
+    "Successful responses with HTTP content fields are rejected before proxying proceeds."
+  ],
+  "risks": [
+    "HTTP/2 adapter wiring remains outside this HTTP/3 helper surface.",
+    "Capsule payload handling and IP packet forwarding remain separate RFC 9484 slices."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9484-0007",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "CONNECT-IP HTTP/2 and HTTP/3 Extended CONNECT Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9484",
+    "ARC-QUIC-RFC9484-0007",
+    "VER-QUIC-RFC9484-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9484-0053",
+    "REQ-QUIC-RFC9484-0054",
+    "REQ-QUIC-RFC9484-0055",
+    "REQ-QUIC-RFC9484-0056",
+    "REQ-QUIC-RFC9484-0057",
+    "REQ-QUIC-RFC9484-0058",
+    "REQ-QUIC-RFC9484-0059",
+    "REQ-QUIC-RFC9484-0060",
+    "REQ-QUIC-RFC9484-0061",
+    "REQ-QUIC-RFC9484-0062",
+    "REQ-QUIC-RFC9484-0063",
+    "REQ-QUIC-RFC9484-0064"
+  ],
+  "summary": "Add HTTP/2 and HTTP/3 CONNECT-IP Extended CONNECT request/response policy helpers.",
+  "planned_changes": "- Add CONNECT-IP Extended CONNECT request builder and validator.\n- Add response validation and proceed/abort decision helpers.\n- Add focused tests and canonical xrefs.\n- Narrow RFC9484 blocked triage to the remaining requirements.",
+  "verification_plan": "Run focused HTTP/3 CONNECT-IP request-policy tests, RFC9484 requirement-filtered tests, SpecTrace JSON validation, coverage triage generation, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9484-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9484-0007"
+  ],
+  "out_of_scope": [
+    "Live HTTP SETTINGS exchange.",
+    "HTTP/2 adapter integration.",
+    "CONNECT-IP capsule payload and forwarding behavior."
+  ],
+  "completion_notes": "The RFC 9484 HTTP/2 and HTTP/3 Extended CONNECT request/response policy surface is implemented and verified locally."
+}
