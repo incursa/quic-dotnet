@@ -1649,6 +1649,56 @@
       "notes": [
         "RFC7619"
       ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9464-0077",
+      "title": "Model encrypted DNS Configuration Payload exchange locally",
+      "statement": "The encrypted DNS provisioning layer MUST provide a deterministic local Configuration Payload exchange planner that binds CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver planning before any live IKEv2 transport or platform resolver integration.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9464-0005"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9464-0005"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9464-0005"
+        ],
+        "related": [
+          "REQ-QUIC-RFC9464-0050",
+          "REQ-QUIC-RFC9464-0051",
+          "REQ-QUIC-RFC9464-0052",
+          "REQ-QUIC-RFC9464-0066",
+          "REQ-QUIC-RFC9464-0067"
+        ],
+        "upstream_refs": [
+          "RFC 9464 section 4",
+          "RFC 7296 section 2.21",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4",
+          "https://www.rfc-editor.org/rfc/rfc7296.html#section-2.21"
+        ],
+        "x_code_refs": [
+          "src/Incursa.Quic.Dns/EncryptedDnsProvisioningConfigurationPayload.cs",
+          "src/Incursa.Quic.Dns/EncryptedDnsProvisioningExchangePlanner.cs",
+          "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponder.cs",
+          "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPolicy.cs"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded"
+        ]
+      },
+      "notes": [
+        "This requirement models the local RFC 9464 Configuration Payload exchange boundary only. Live IKEv2 message parsing, IPsec state, host resolver installation, and encrypted DNS session establishment remain adapter work."
+      ]
     }
   ],
   "related_artifacts": [
@@ -1663,6 +1713,9 @@
     "VER-QUIC-RFC9464-0003",
     "ARC-QUIC-RFC9464-0004",
     "VER-QUIC-RFC9464-0004",
-    "WI-QUIC-RFC9464-0004"
+    "WI-QUIC-RFC9464-0004",
+    "ARC-QUIC-RFC9464-0005",
+    "WI-QUIC-RFC9464-0005",
+    "VER-QUIC-RFC9464-0005"
   ]
 }

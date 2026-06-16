@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9464-0005",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Provisioning RFC 9464 Exchange Planner Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "ARC-QUIC-RFC9464-0005",
+    "VER-QUIC-RFC9464-0005"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9464-0077"
+  ],
+  "summary": "Add a deterministic local RFC 9464 Configuration Payload exchange planner above the existing encrypted DNS provisioning codecs and policies.",
+  "planned_changes": "- Add a value model for RFC 9464 ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes carried inside a Configuration Payload.\n- Add a planner for CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver plan creation.\n- Validate payload-type mismatches and non-request reply planning before future IKEv2 adapters can consume the model.\n- Cover normal request/reply/client planning, mismatched payload rejection, non-request reply rejection, and responder-discard empty replies.\n- Update the encrypted DNS gap ledger to distinguish local exchange planning from live IKEv2/platform integration.",
+  "verification_plan": "Run the DNS package build, focused exchange planner tests, core SpecTrace validation, generated QUIC triage, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9464-0005"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9464-0005"
+  ],
+  "out_of_scope": [
+    "Live IKEv2 message parsing or transport.",
+    "IPsec session state.",
+    "Host resolver installation.",
+    "Encrypted DNS session establishment."
+  ],
+  "completion_notes": "The local exchange planner now composes RFC 9464 support advertisements, response selection, and client resolver planning while leaving live IKEv2 and platform integration as explicit future adapter work."
+}

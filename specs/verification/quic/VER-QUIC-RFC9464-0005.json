@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9464-0005",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Provisioning RFC 9464 Exchange Planner Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9464",
+    "ARC-QUIC-RFC9464-0005",
+    "WI-QUIC-RFC9464-0005"
+  ],
+  "verification_method": "Focused unit tests, DNS package build, SpecTrace core validation, generated coverage triage, and diff hygiene for the local RFC 9464 exchange planner.",
+  "verifies": [
+    "REQ-QUIC-RFC9464-0077"
+  ],
+  "scope": "This verification covers the local Configuration Payload value model and planner for CFG_REQUEST support advertisement, CFG_REPLY response selection, client plan creation, payload-type validation, non-request reply rejection, and empty reply behavior after request discard. It does not verify live IKEv2, IPsec, resolver installation, or encrypted DNS session establishment.",
+  "preconditions": [
+    "Existing RFC 9464 attribute codecs, responder policy, and client policy remain trace-owned.",
+    "The exchange planner is used only as a local deterministic model and not as a live IKEv2 transport claim."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~EncryptedDnsProvisioningExchangePlannerTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The DNS package builds, the exchange planner tests pass, the new requirement is trace-clean, generated triage remains fully clean, SpecTrace core validation passes, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningConfigurationPayload.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningExchangePlanner.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded"
+  ],
+  "status_summary": "On 2026-06-16, the DNS package built in Release and the focused RFC 9464 exchange planner tests passed locally. This is deterministic local exchange-model evidence only; live IKEv2 and platform resolver work remain external adapter blockers."
+}

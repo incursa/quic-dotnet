@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T17:45:48.6796971-06:00",
+  "generated_at": "2026-06-16T17:53:54.5473773-06:00",
   "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T17:45:48.6763301-06:00",
-    "total_requirements": 2647,
+    "generated_at": "2026-06-16T17:53:54.5047676-06:00",
+    "total_requirements": 2648,
     "by_state": {
-      "trace_clean": 2647
+      "trace_clean": 2648
     },
     "by_work_queue_tag": {
-      "clean": 2647
+      "clean": 2648
     },
     "by_rfc": [
       {
@@ -171,9 +171,9 @@
       },
       {
         "rfc": "RFC9464",
-        "total": 76,
+        "total": 77,
         "by_state": {
-          "trace_clean": 76
+          "trace_clean": 77
         }
       },
       {
@@ -438237,6 +438237,227 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9464-0076"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9464-0077",
+      "artifact_id": "SPEC-QUIC-RFC9464",
+      "rfc": "RFC9464",
+      "section_prefix": "unsectioned",
+      "title": "Model encrypted DNS Configuration Payload exchange locally",
+      "statement": "The encrypted DNS provisioning layer MUST provide a deterministic local Configuration Payload exchange planner that binds CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver planning before any live IKEv2 transport or platform resolver integration.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 4,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 8,
+        "focused": 8,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 4,
+          "edge": 2,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "method": "ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "method": "ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
+          "line": 64,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "method": "ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "method": "ExchangePlannerBuildsRequestReplyAndClientPlan",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "method": "ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "line": 78,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "method": "ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "line": 78,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "method": "ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+          "class": "EncryptedDnsProvisioningExchangePlannerTests",
+          "member": "EncryptedDnsProvisioningExchangePlannerTests.ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "method": "ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
           ],
           "requirement_tagged": true,
           "class_level_only": false
