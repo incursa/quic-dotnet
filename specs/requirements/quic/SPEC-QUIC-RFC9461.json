@@ -10,7 +10,10 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9461-0001",
     "WI-QUIC-RFC9461-0001",
-    "VER-QUIC-RFC9461-0001"
+    "VER-QUIC-RFC9461-0001",
+    "ARC-QUIC-RFC9461-0002",
+    "WI-QUIC-RFC9461-0002",
+    "VER-QUIC-RFC9461-0002"
   ],
   "requirements": [
     {
@@ -113,6 +116,10 @@
         "upstream_refs": [
           "RFC9461-S4-B2-P2-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectEndpointsTreatsRecordsWithoutAlpnAsIncompatible",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectEndpointsUsesSupportedAlpnProtocols"
         ]
       }
     },
@@ -130,6 +137,10 @@
         "upstream_refs": [
           "RFC9461-S4-B3-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpAlpnRequiresDohPathAndSelectsDoHEndpoint",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpAlpnWithoutDohPathIsNotSelected"
         ]
       }
     },
@@ -147,6 +158,10 @@
         "upstream_refs": [
           "RFC9461-S4-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsApplyToSelectedHttpConnection",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsDoNotApplyToNonHttpConnections"
         ]
       }
     },
@@ -164,6 +179,10 @@
         "upstream_refs": [
           "RFC9461-S4-B4-P4-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectionDoesNotCollapseDifferentDefaultPortsWhenPortIsOmitted",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectionSeparatesProtocolsByDefaultPortWhenPortIsOmitted"
         ]
       }
     },
@@ -183,9 +202,10 @@
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
           "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectionSeparatesProtocolsByDefaultPortWhenPortIsOmitted"
         ]
       }
     },
@@ -203,6 +223,10 @@
         "upstream_refs": [
           "RFC9461-S4-B7-P7-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::PortKeyCausesRecordToBeIgnoredWhenClientDoesNotRespectPortKey",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::PortKeyIsUsedWhenClientRespectsPortKey"
         ]
       }
     },
@@ -220,6 +244,10 @@
         "upstream_refs": [
           "RFC9461-S5-B1-P1-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathIsRelativeTemplateWithDnsVariable",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathRejectsAbsoluteOrVariableLessTemplates"
         ]
       },
       "notes": [
@@ -240,6 +268,10 @@
         "upstream_refs": [
           "RFC9461-S5-B1-P1-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpAlpnRequiresDohPathAndSelectsDoHEndpoint",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpAlpnWithoutDohPathIsNotSelected"
         ]
       },
       "notes": [
@@ -260,6 +292,10 @@
         "upstream_refs": [
           "RFC9461-S5-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathIsRelativeTemplateWithDnsVariable",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathRejectsAbsoluteOrVariableLessTemplates"
         ]
       }
     },
@@ -277,6 +313,10 @@
         "upstream_refs": [
           "RFC9461-S5-B1-P1-S3",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathExpansionProducesValidPathValue",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathExpansionRejectsEmptyDnsMessages"
         ]
       }
     },
@@ -294,6 +334,10 @@
         "upstream_refs": [
           "RFC9461-S5-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohEndpointRejectsInvalidPortOrigin",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohEndpointUsesHttpsOriginAuthenticationNameAndPort"
         ]
       },
       "notes": [
@@ -314,6 +358,10 @@
         "upstream_refs": [
           "RFC9461-S5-B2-P2-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathExpansionProducesValidPathValue",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohPathExpansionRejectsEmptyDnsMessages"
         ]
       },
       "notes": [
@@ -354,6 +402,10 @@
         "upstream_refs": [
           "RFC9461-S5-B3-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9461.html#section-5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsApplyToSelectedHttpConnection",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsDoNotApplyToNonHttpConnections"
         ]
       },
       "notes": [
@@ -656,6 +708,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohEndpointRejectsInvalidPortOrigin",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::DohEndpointUsesHttpsOriginAuthenticationNameAndPort"
         ]
       }
     },
@@ -673,6 +729,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectEndpointsTreatsRecordsWithoutAlpnAsIncompatible",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectEndpointsUsesSupportedAlpnProtocols"
         ]
       }
     },
@@ -712,6 +772,10 @@
         "upstream_refs": [
           "RFC 9461 Appendix A RFC9461-SA-B2-P2-S1",
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsApplyToSelectedHttpConnection",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::HttpsSvcParamsDoNotApplyToNonHttpConnections"
         ]
       }
     },
@@ -731,9 +795,10 @@
           "https://www.rfc-editor.org/rfc/rfc9461.html#appendix-A"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
           "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::CreateServiceNameCombinesPortPrefixAndAuthenticationHostname",
-          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport"
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortRejectsUnknownTransport",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingDefaultsTests.cs::GetDefaultPortReturnsPerTransportDefaults",
+          "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs::SelectionSeparatesProtocolsByDefaultPortWhenPortIsOmitted"
         ]
       }
     }

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9461-0002",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "DNS SVCB RFC 9461 Endpoint Selection Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the RFC 9461 DNS SVCB endpoint-selection boundary for ALPN, port, dohpath, HTTPS SvcParam carry-through, and DoH path expansion.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "WI-QUIC-RFC9461-0002",
+    "VER-QUIC-RFC9461-0002"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9461-0005",
+    "REQ-QUIC-RFC9461-0006",
+    "REQ-QUIC-RFC9461-0007",
+    "REQ-QUIC-RFC9461-0008",
+    "REQ-QUIC-RFC9461-0009",
+    "REQ-QUIC-RFC9461-0010",
+    "REQ-QUIC-RFC9461-0011",
+    "REQ-QUIC-RFC9461-0012",
+    "REQ-QUIC-RFC9461-0013",
+    "REQ-QUIC-RFC9461-0014",
+    "REQ-QUIC-RFC9461-0015",
+    "REQ-QUIC-RFC9461-0016",
+    "REQ-QUIC-RFC9461-0018",
+    "REQ-QUIC-RFC9461-0034",
+    "REQ-QUIC-RFC9461-0035",
+    "REQ-QUIC-RFC9461-0037",
+    "REQ-QUIC-RFC9461-0038"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingSelector.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingSelectionOptions.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingEndpoint.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingProtocol.cs",
+    "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+  ],
+  "design_summary": "The selection slice stays in `Incursa.Quic.Dns` as pure scalar helpers. `DnsServiceBindingRecord` holds normalized SVCB data for authentication name, ALPN protocols, optional `dohpath`, optional `port`, and HTTPS SvcParams. `DnsServiceBindingSelectionOptions` records client ALPN support and whether the client respects the port key. `DnsServiceBindingSelector` returns compatible DNS endpoints only when ALPN or an equivalent supported key is present, ignores records with unsupported port keys, requires `dohpath` for HTTP ALPNs, uses per-protocol defaults when port is omitted, carries HTTPS SvcParams only to HTTP endpoints, and leaves actual DNS resolution/network I/O outside this layer.",
+  "data_and_state_considerations": "The helpers do not query DNS, parse DNS wire RRs, create QUIC connections, or send DoH requests. They transform already-materialized SVCB scalar data into endpoint candidates and can be consumed later by resolver integration or ProtocolLab scenario adapters.",
+  "edge_cases_and_constraints": [
+    "Records with no `alpn` and no recognized equivalent protocol key are incompatible.",
+    "DoH endpoint candidates require a relative `dohpath` URI template containing a `dns` variable.",
+    "If a client does not respect the SVCB `port` key, records carrying `port` are ignored.",
+    "When no `port` is present, DoT and DoQ default to 853 while DoH defaults to 443, producing separate endpoint candidates."
+  ],
+  "risks": [
+    "This slice accepts materialized scalar SVCB data; DNS packet parsing and RRset ordering remain future work.",
+    "This slice validates and expands DoH path templates but does not send HTTP requests.",
+    "This slice does not implement SVCB AliasMode acceleration guidance or resolver fallback policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "Endpoint selection is kept separate from `DoqClient` and the core QUIC transport so future resolver integration can compose SVCB data with connection setup without moving DNS policy into packet, stream, or scheduler internals."
+    }
+  ]
+}

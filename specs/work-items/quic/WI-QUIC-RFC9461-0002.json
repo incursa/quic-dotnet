@@ -1,0 +1,49 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9461-0002",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "DNS SVCB RFC 9461 Endpoint Selection Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0002",
+    "VER-QUIC-RFC9461-0002"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9461-0005",
+    "REQ-QUIC-RFC9461-0006",
+    "REQ-QUIC-RFC9461-0007",
+    "REQ-QUIC-RFC9461-0008",
+    "REQ-QUIC-RFC9461-0009",
+    "REQ-QUIC-RFC9461-0010",
+    "REQ-QUIC-RFC9461-0011",
+    "REQ-QUIC-RFC9461-0012",
+    "REQ-QUIC-RFC9461-0013",
+    "REQ-QUIC-RFC9461-0014",
+    "REQ-QUIC-RFC9461-0015",
+    "REQ-QUIC-RFC9461-0016",
+    "REQ-QUIC-RFC9461-0018",
+    "REQ-QUIC-RFC9461-0034",
+    "REQ-QUIC-RFC9461-0035",
+    "REQ-QUIC-RFC9461-0037",
+    "REQ-QUIC-RFC9461-0038"
+  ],
+  "summary": "Add trace-owned RFC 9461 scalar SVCB endpoint selection for ALPN, port, dohpath, HTTPS SvcParams, and DoH path expansion.",
+  "planned_changes": "- Add scalar SVCB record, endpoint, options, protocol, and selector helpers under `Incursa.Quic.Dns`.\n- Treat records without ALPN or equivalent supported protocol keys as incompatible.\n- Require `dohpath` for HTTP ALPNs and validate relative URI templates with a `dns` variable.\n- Use per-protocol default ports unless a respected `port` key is present.\n- Carry HTTPS SvcParams to HTTP endpoints and expand DoH path templates for DNS messages.\n- Add focused positive and negative tests and canonical xrefs.\n- Narrow the encrypted DNS discovery/provisioning gap to reflect the implemented RFC 9461 selection floor.",
+  "verification_plan": "Run the DNS project build, focused RFC 9461 selection tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full solution test before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9461-0002"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9461-0002"
+  ],
+  "out_of_scope": [
+    "DNS wire-format SVCB RR parsing and resolver lookup.",
+    "SVCB AliasMode acceleration guidance and operator publication policy.",
+    "Sending HTTP requests or opening QUIC connections from selected endpoints.",
+    "Resolver fallback policy after invalid DNS query responses."
+  ],
+  "completion_notes": "The DNS adapter now has a trace-owned RFC 9461 endpoint-selection floor that future resolver and ProtocolLab integration can consume."
+}

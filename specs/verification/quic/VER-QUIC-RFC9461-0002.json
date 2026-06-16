@@ -1,0 +1,57 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9461-0002",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "DNS SVCB RFC 9461 Endpoint Selection Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9461",
+    "ARC-QUIC-RFC9461-0002",
+    "WI-QUIC-RFC9461-0002"
+  ],
+  "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9461 DNS SVCB endpoint-selection surface.",
+  "verifies": [
+    "REQ-QUIC-RFC9461-0005",
+    "REQ-QUIC-RFC9461-0006",
+    "REQ-QUIC-RFC9461-0007",
+    "REQ-QUIC-RFC9461-0008",
+    "REQ-QUIC-RFC9461-0009",
+    "REQ-QUIC-RFC9461-0010",
+    "REQ-QUIC-RFC9461-0011",
+    "REQ-QUIC-RFC9461-0012",
+    "REQ-QUIC-RFC9461-0013",
+    "REQ-QUIC-RFC9461-0014",
+    "REQ-QUIC-RFC9461-0015",
+    "REQ-QUIC-RFC9461-0016",
+    "REQ-QUIC-RFC9461-0018",
+    "REQ-QUIC-RFC9461-0034",
+    "REQ-QUIC-RFC9461-0035",
+    "REQ-QUIC-RFC9461-0037",
+    "REQ-QUIC-RFC9461-0038"
+  ],
+  "scope": "This verification covers SVCB incompatibility without ALPN or an equivalent supported protocol key, HTTP ALPN `dohpath` requirements, HTTPS SvcParam carry-through to HTTP connections, separate endpoint candidates by per-transport default port, respected versus ignored `port` keys, relative DoH URI-template validation with a `dns` variable, valid DoH path expansion, DoH origin host/port selection, and default-port behavior.",
+  "preconditions": [
+    "The RFC 9461 specification exists as canonical JSON at `specs/requirements/quic/SPEC-QUIC-RFC9461.json`.",
+    "SVCB endpoint selection remains in `Incursa.Quic.Dns` and does not perform DNS network I/O or QUIC connection setup."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~DnsServiceBindingSelectionTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`.",
+    "Run `dotnet test Incursa.Quic.slnx -c Release --no-restore`."
+  ],
+  "expected_result": "The focused RFC 9461 selection tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9461 artifacts, generated triage reflects the endpoint-selection slice, diff hygiene passes, and the full solution test suite remains green.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingSelector.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingSelectionOptions.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingEndpoint.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingProtocol.cs",
+    "tests/Incursa.Quic.Tests/DnsServiceBindingSelectionTests.cs"
+  ],
+  "status_summary": "The RFC 9461 DNS SVCB endpoint-selection floor is trace-owned and verified. DNS wire RR parsing, AliasMode operator guidance, HTTP request dispatch, and resolver fallback policy remain future work."
+}
