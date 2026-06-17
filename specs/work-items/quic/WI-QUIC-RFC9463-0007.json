@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9463-0117"
   ],
   "summary": "Add deterministic local DNSSEC policy for RFC 9463 ADN-only SVCB resolution.",
-  "planned_changes": "- Add DNSSEC validation status and ADN-only SVCB resolution status value types.\n- Add a pure policy helper that accepts only secure DNSSEC validation for ADN-only SVCB-derived resolver parameters.\n- Reject insecure, bogus, indeterminate, and missing DNSSEC validation outcomes.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to remove local DNSSEC policy modeling from the open future-work set.",
-  "verification_plan": "Run the DNS project build, focused DNSSEC policy tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "planned_changes": "- Add DNSSEC validation status and ADN-only SVCB resolution status value types.\n- Add a pure policy helper that accepts only secure DNSSEC validation for ADN-only SVCB-derived resolver parameters.\n- Add an explicit DNSSEC validator adapter contract and fake-backed policy proof.\n- Reject insecure, bogus, indeterminate, and missing DNSSEC validation outcomes.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to remove local DNSSEC policy modeling from the open future-work set.",
+  "verification_plan": "Run the DNS project build, focused DNSSEC policy tests, focused encrypted DNS adapter tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
   "verification_links": [
     "VER-QUIC-RFC9463-0007"
   ],

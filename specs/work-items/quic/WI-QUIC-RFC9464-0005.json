@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9464-0077"
   ],
   "summary": "Add a deterministic local RFC 9464 Configuration Payload exchange planner above the existing encrypted DNS provisioning codecs and policies.",
-  "planned_changes": "- Add a value model for RFC 9464 ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes carried inside a Configuration Payload.\n- Add a planner for CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver plan creation.\n- Validate payload-type mismatches and non-request reply planning before future IKEv2 adapters can consume the model.\n- Cover normal request/reply/client planning, mismatched payload rejection, non-request reply rejection, and responder-discard empty replies.\n- Update the encrypted DNS gap ledger to distinguish local exchange planning from live IKEv2/platform integration.",
-  "verification_plan": "Run the DNS package build, focused exchange planner tests, core SpecTrace validation, generated QUIC triage, and diff hygiene before commit.",
+  "planned_changes": "- Add a value model for RFC 9464 ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes carried inside a Configuration Payload.\n- Add a planner for CFG_REQUEST support advertisements, CFG_REPLY response selection, and client resolver plan creation.\n- Add an explicit IKEv2/IPsec provisioning transport adapter contract and fake-backed CFG_REQUEST/CFG_REPLY exchange proof.\n- Validate payload-type mismatches and non-request reply planning before future IKEv2 adapters can consume the model.\n- Cover normal request/reply/client planning, mismatched payload rejection, non-request reply rejection, and responder-discard empty replies.\n- Update the encrypted DNS gap ledger to distinguish local exchange planning from live IKEv2/platform integration.",
+  "verification_plan": "Run the DNS package build, focused exchange planner tests, focused encrypted DNS adapter tests, core SpecTrace validation, generated QUIC triage, and diff hygiene before commit.",
   "verification_links": [
     "VER-QUIC-RFC9464-0005"
   ],

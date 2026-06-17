@@ -11,11 +11,11 @@
     "ARC-QUIC-RFC9463-0007",
     "WI-QUIC-RFC9463-0007"
   ],
-  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for the RFC 9463 DNSSEC policy surface.",
+  "verification_method": "Focused unit tests, focused adapter tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for the RFC 9463 DNSSEC policy surface.",
   "verifies": [
     "REQ-QUIC-RFC9463-0117"
   ],
-  "scope": "This verification covers accepting secure DNSSEC validation for ADN-only SVCB-derived resolver parameters and rejecting insecure, bogus, indeterminate, or missing DNSSEC validation outcomes.",
+  "scope": "This verification covers accepting secure DNSSEC validation for ADN-only SVCB-derived resolver parameters, rejecting insecure, bogus, indeterminate, or missing DNSSEC validation outcomes, and consuming DNSSEC status from a deterministic validator adapter.",
   "preconditions": [
     "The caller supplies the DNSSEC validation status from a resolver stack outside Incursa.Quic.Dns.",
     "The policy is applied only to RFC 9463 ADN-only SVCB resolution."
@@ -30,9 +30,11 @@
   "expected_result": "The focused DNSSEC policy tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage remains trace-clean, and diff hygiene passes.",
   "evidence": [
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDnssecPolicy.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsDiscoveryDnssecValidator.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDnssecValidationStatus.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdnOnlySvcbResolutionStatus.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::DnssecPolicyConsumesDeterministicValidatorStatus"
   ],
   "status_summary": "The RFC 9463 ADN-only DNSSEC policy is trace-owned and verified. Live DNSSEC validation, provider publication/signing, host resolver installation, and encrypted DNS session establishment remain adapter or operational work."
 }

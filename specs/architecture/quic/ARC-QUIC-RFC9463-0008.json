@@ -21,10 +21,13 @@
     "src/Incursa.Quic.Dns/EncryptedDnsSessionAttempt.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsSessionAttemptSource.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsSessionPlanner.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs"
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsSessionConnector.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
   ],
-  "design_summary": "The session planner turns already-selected encrypted DNS inputs into immutable connection-attempt records. RFC 9461 service-binding plans preserve exact protocol, port, authentication name, DoH path, HTTPS metadata, and dependent fallback policy. RFC 9463 discovery plans preserve resolver address ordering, service priority, authentication domain name, service parameter keys, and Do53 fallback eligibility. RFC 9464 provisioning plans preserve resolver addresses, service priority, authentication domain name, service parameter keys, and cleartext resolver availability. The planner rejects port 53 so a locally generated encrypted attempt cannot silently become classic DNS.",
-  "data_and_state_considerations": "The planner is side-effect free and does not open sockets, perform DNS queries, install host resolver state, negotiate TLS/QUIC, send IKEv2 messages, or mutate platform routing state.",
+  "design_summary": "The session planner turns already-selected encrypted DNS inputs into immutable connection-attempt records. RFC 9461 service-binding plans preserve exact protocol, port, authentication name, DoH path, HTTPS metadata, and dependent fallback policy. RFC 9463 discovery plans preserve resolver address ordering, service priority, authentication domain name, service parameter keys, and Do53 fallback eligibility. RFC 9464 provisioning plans preserve resolver addresses, service priority, authentication domain name, service parameter keys, and cleartext resolver availability. The planner rejects port 53 so a locally generated encrypted attempt cannot silently become classic DNS. `EncryptedDnsSessionExecutor` consumes ordered attempts through an explicit connector adapter and stops on the first applied result.",
+  "data_and_state_considerations": "The planner is side-effect free. The executor invokes only the caller-supplied connector adapter and does not perform DNS queries, install host resolver state, negotiate TLS/QUIC itself, send IKEv2 messages, or mutate platform routing state.",
   "edge_cases_and_constraints": [
     "Discovery plans that explicitly prefer Do53 produce no encrypted DNS session attempts.",
     "Provisioning plans blocked by responder NULL authentication produce no encrypted DNS session attempts.",
@@ -33,7 +36,7 @@
   ],
   "risks": [
     "Discovery and provisioning endpoint models preserve service parameter keys rather than all SvcParam values, so protocol and port selection remain explicit planner inputs for those surfaces.",
-    "The slice does not prove live encrypted DNS session establishment or host resolver installation."
+    "The fake-backed connector proof covers attempt ordering and adapter result handling only; it does not prove live encrypted DNS session establishment or host resolver installation."
   ],
   "supplemental_sections": [
     {

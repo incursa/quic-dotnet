@@ -1051,6 +1051,9 @@
         ],
         "x_code_refs": [
           "src/Incursa.Quic.Dns/DnsServiceBindingPublicationPlan.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingPublicationExecutor.cs",
+          "src/Incursa.Quic.Dns/IDnsServiceBindingPublicationAdapter.cs",
+          "src/Incursa.Quic.Dns/DnsServiceBindingPublicationAdapterRequest.cs",
           "src/Incursa.Quic.Dns/DnsServiceBindingOperatorGuidance.cs",
           "src/Incursa.Quic.Dns/DnsServiceBindingDefaults.cs",
           "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs"
@@ -1058,7 +1061,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RendersSvcbAndEquivalentHttpsRecords",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RejectsInvalidTargetNamesAndTtls",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_OmitsEquivalentHttpsRecordWhenNoHttpProtocolIsPresent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_OmitsEquivalentHttpsRecordWhenNoHttpProtocolIsPresent",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::PublicationExecutorPassesSignedRecordPlanToProviderAdapter"
         ]
       },
       "notes": [

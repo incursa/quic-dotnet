@@ -17,13 +17,17 @@
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/DnsServiceBindingPublicationPlan.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingPublicationExecutor.cs",
+    "src/Incursa.Quic.Dns/IDnsServiceBindingPublicationAdapter.cs",
+    "src/Incursa.Quic.Dns/DnsServiceBindingPublicationAdapterRequest.cs",
     "src/Incursa.Quic.Dns/DnsServiceBindingOperatorGuidance.cs",
     "src/Incursa.Quic.Dns/DnsServiceBindingDefaults.cs",
     "src/Incursa.Quic.Dns/DnsServiceBindingRecord.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
   ],
-  "design_summary": "`DnsServiceBindingPublicationPlan` turns validated scalar `DnsServiceBindingRecord` values into deterministic presentation-format publication records. It derives the DNS SVCB owner name through RFC 9461 Port Prefix Naming, normalizes ServiceMode TargetName values, renders `alpn`, `port`, `dohpath`, and HTTPS SvcParams in stable order, and includes an equivalent HTTPS record only when operator guidance recommends one and the binding advertises an HTTP ALPN. Fast-resolution guidance is surfaced as `AvoidsAliasMode`; the planner emits ServiceMode records only.",
-  "data_and_state_considerations": "The planner is a pure value renderer. It does not contact DNS providers, mutate zone files, sign DNSSEC records, install host resolver configuration, or establish encrypted DNS sessions.",
+  "design_summary": "`DnsServiceBindingPublicationPlan` turns validated scalar `DnsServiceBindingRecord` values into deterministic presentation-format publication records. It derives the DNS SVCB owner name through RFC 9461 Port Prefix Naming, normalizes ServiceMode TargetName values, renders `alpn`, `port`, `dohpath`, and HTTPS SvcParams in stable order, and includes an equivalent HTTPS record only when operator guidance recommends one and the binding advertises an HTTP ALPN. Fast-resolution guidance is surfaced as `AvoidsAliasMode`; the planner emits ServiceMode records only. `DnsServiceBindingPublicationExecutor` passes ready plans plus DNSSEC-signing intent through an explicit DNS provider adapter contract for deterministic fake-backed proof.",
+  "data_and_state_considerations": "The planner is a pure value renderer. The executor invokes only the caller-supplied provider adapter. These components do not own provider credentials, live zone mutation, DNSSEC signing, host resolver configuration, or encrypted DNS sessions.",
   "edge_cases_and_constraints": [
     "TTL values must be positive.",
     "TargetName values must normalize as DNS names accepted by the local SVCB resolution helpers.",
@@ -33,7 +37,7 @@
   "risks": [
     "The planner does not validate provider-specific DNS master-file dialects.",
     "The planner does not publish or verify records in an authoritative DNS service.",
-    "The planner does not perform DNSSEC signing or DS/DNSKEY management."
+    "The planner and fake-backed adapter proof do not perform DNSSEC signing or DS/DNSKEY management."
   ],
   "supplemental_sections": [
     {

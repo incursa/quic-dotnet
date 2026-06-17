@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9463-0118"
   ],
   "summary": "Add deterministic local encrypted DNS session-attempt planning across SVCB, discovery, and provisioning inputs.",
-  "planned_changes": "- Add an immutable session-attempt model and source enum.\n- Add a planner for RFC 9461 service-binding plans, RFC 9463 discovery plans, and RFC 9464 provisioning plans.\n- Preserve protocol, address, port, authentication name, service priority, service metadata, HTTPS metadata, and cleartext fallback eligibility.\n- Reject attempts that target classic cleartext DNS port 53.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to distinguish local planning from live session establishment.",
-  "verification_plan": "Run the DNS project build, focused session planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "planned_changes": "- Add an immutable session-attempt model and source enum.\n- Add a planner for RFC 9461 service-binding plans, RFC 9463 discovery plans, and RFC 9464 provisioning plans.\n- Add an explicit encrypted DNS session connector adapter contract and fake-backed ordered-attempt proof.\n- Preserve protocol, address, port, authentication name, service priority, service metadata, HTTPS metadata, and cleartext fallback eligibility.\n- Reject attempts that target classic cleartext DNS port 53.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to distinguish local planning from live session establishment.",
+  "verification_plan": "Run the DNS project build, focused session planner tests, focused encrypted DNS adapter tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
   "verification_links": [
     "VER-QUIC-RFC9463-0008"
   ],

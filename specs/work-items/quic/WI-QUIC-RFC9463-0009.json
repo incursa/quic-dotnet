@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9463-0119"
   ],
   "summary": "Add deterministic host resolver installation plans for encrypted DNS inputs without calling platform resolver APIs.",
-  "planned_changes": "- Add host resolver installation status and plan models.\n- Add a planner that composes RFC 9461 service-binding, RFC 9463 discovery, and RFC 9464 provisioning client plans with encrypted DNS session attempts.\n- Preserve cleartext fallback resolver candidates and split-tunnel internal domains.\n- Return non-installable blocked plans for explicit Do53 preference and untrusted NULL-authenticated provisioning.\n- Add focused positive and negative tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local installation planning from OS resolver mutation.",
-  "verification_plan": "Run the DNS project build, focused host resolver installation planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "planned_changes": "- Add host resolver installation status and plan models.\n- Add a planner that composes RFC 9461 service-binding, RFC 9463 discovery, and RFC 9464 provisioning client plans with encrypted DNS session attempts.\n- Add an explicit platform resolver adapter contract and fake-backed ready/blocked executor proof.\n- Preserve cleartext fallback resolver candidates and split-tunnel internal domains.\n- Return non-installable blocked plans for explicit Do53 preference and untrusted NULL-authenticated provisioning.\n- Add focused positive and negative tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local installation planning from OS resolver mutation.",
+  "verification_plan": "Run the DNS project build, focused host resolver installation planner tests, focused encrypted DNS adapter tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
   "verification_links": [
     "VER-QUIC-RFC9463-0009"
   ],

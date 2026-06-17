@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9461-0042"
   ],
   "summary": "Add deterministic local publication-record generation for RFC 9461 DNS service bindings.",
-  "planned_changes": "- Add `DnsServiceBindingPublicationPlan` and publication-record rendering.\n- Use existing operator guidance to decide whether an equivalent HTTPS record should be emitted.\n- Render ServiceMode SVCB records through RFC 9461 Port Prefix Naming and validated scalar SvcParams.\n- Reject invalid TargetName and TTL inputs.\n- Add requirement-owned positive, negative, and edge tests.\n- Update RFC 9461 trace artifacts, generated triage, and the requirement gap ledger.",
-  "verification_plan": "Run the DNS project build, focused RFC 9461 publication planner requirement-home tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full local Release solution test before final goal completion.",
+  "planned_changes": "- Add `DnsServiceBindingPublicationPlan` and publication-record rendering.\n- Use existing operator guidance to decide whether an equivalent HTTPS record should be emitted.\n- Render ServiceMode SVCB records through RFC 9461 Port Prefix Naming and validated scalar SvcParams.\n- Reject invalid TargetName and TTL inputs.\n- Add an explicit DNS provider publication adapter contract and fake-backed executor proof for signed publication intent.\n- Add requirement-owned positive, negative, and edge tests.\n- Update RFC 9461 trace artifacts, generated triage, and the requirement gap ledger.",
+  "verification_plan": "Run the DNS project build, focused RFC 9461 publication planner requirement-home tests, focused encrypted DNS adapter tests, core SpecTrace JSON validation, QUIC requirement coverage triage generation, diff hygiene, and the full local Release solution test before final goal completion.",
   "verification_links": [
     "VER-QUIC-RFC9461-0007"
   ],

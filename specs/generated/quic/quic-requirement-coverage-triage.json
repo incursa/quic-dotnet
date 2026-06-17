@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T18:13:54.8744605-06:00",
+  "generated_at": "2026-06-16T18:47:05.9595238-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T18:13:54.8708658-06:00",
+    "generated_at": "2026-06-16T18:47:05.9563863-06:00",
     "total_requirements": 2651,
     "by_state": {
       "trace_clean": 2651
@@ -407567,19 +407567,20 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RendersSvcbAndEquivalentHttpsRecords",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_RejectsInvalidTargetNamesAndTtls",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_OmitsEquivalentHttpsRecordWhenNoHttpProtocolIsPresent"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9461/REQ-QUIC-RFC9461-0042.cs::CreatePublicationPlan_OmitsEquivalentHttpsRecordWhenNoHttpProtocolIsPresent",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::PublicationExecutorPassesSignedRecordPlanToProviderAdapter"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 4,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
@@ -407590,6 +407591,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0042",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.PublicationExecutorPassesSignedRecordPlanToProviderAdapter",
+          "method": "PublicationExecutorPassesSignedRecordPlanToProviderAdapter",
+          "line": 29,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9461-0042",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::PublicationExecutorPassesSignedRecordPlanToProviderAdapter",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.PublicationExecutorPassesSignedRecordPlanToProviderAdapter",
+          "method": "PublicationExecutorPassesSignedRecordPlanToProviderAdapter",
+          "line": 29,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9461-0042"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9461-0042",
           "source": "requirement_attribute",
@@ -426611,19 +426656,20 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::DnssecPolicyConsumesDeterministicValidatorStatus"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 4,
           "negative": 2,
           "edge": 2,
           "fuzz": 0,
@@ -426765,6 +426811,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.DnssecPolicyConsumesDeterministicValidatorStatus",
+          "method": "DnssecPolicyConsumesDeterministicValidatorStatus",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0117",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::DnssecPolicyConsumesDeterministicValidatorStatus",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.DnssecPolicyConsumesDeterministicValidatorStatus",
+          "method": "DnssecPolicyConsumesDeterministicValidatorStatus",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -426787,21 +426877,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 5,
+      "spec_test_ref_count": 6,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ServiceBindingEndpointBecomesEncryptedSessionAttempt",
         "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
         "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
         "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
-        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort"
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 12,
+        "focused": 12,
         "broad": 0,
         "by_kind": {
-          "positive": 4,
+          "positive": 6,
           "negative": 4,
           "edge": 2,
           "fuzz": 0,
@@ -426812,6 +426903,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds",
+          "method": "SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds",
+          "line": 84,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds",
+          "method": "SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds",
+          "line": 84,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9463-0118",
           "source": "requirement_attribute",
@@ -427053,22 +427188,24 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 5,
+      "spec_test_ref_count": 7,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::ServiceBindingPlanCreatesGlobalHostResolverInstallationPlan",
         "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanPreservesEncryptedAttemptsAndFallbackResolvers",
         "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanThatPrefersDo53BlocksEncryptedResolverInstallation",
         "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::ProvisioningSplitTunnelPlanScopesInstallationToInternalDomains",
-        "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::NullAuthenticatedProvisioningBlocksHostResolverInstallation"
+        "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::NullAuthenticatedProvisioningBlocksHostResolverInstallation",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 14,
+        "focused": 14,
         "broad": 0,
         "by_kind": {
-          "positive": 6,
-          "negative": 4,
+          "positive": 8,
+          "negative": 6,
           "edge": 0,
           "fuzz": 0,
           "benchmark": 0,
@@ -427297,6 +427434,94 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0119",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "method": "HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "line": 104,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0119",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "method": "HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "line": 104,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0119",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan",
+          "method": "HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan",
+          "line": 125,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0119",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan",
+          "method": "HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan",
+          "line": 125,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -427319,22 +427544,24 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 5,
+      "spec_test_ref_count": 7,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
         "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::PopulatedPlanWithoutUsableAddressesIsNotInstallable",
-        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan"
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 14,
+        "focused": 14,
         "broad": 0,
         "by_kind": {
-          "positive": 4,
-          "negative": 4,
+          "positive": 6,
+          "negative": 6,
           "edge": 2,
           "fuzz": 0,
           "benchmark": 0,
@@ -427551,6 +427778,94 @@
           "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.PopulatedPlanWithoutUsableAddressesIsNotInstallable",
           "method": "PopulatedPlanWithoutUsableAddressesIsNotInstallable",
           "line": 81,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "method": "AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "line": 144,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "method": "AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "line": 144,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan",
+          "method": "AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan",
+          "line": 164,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan",
+          "method": "AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan",
+          "line": 164,
           "kinds": [
             "negative"
           ],
@@ -439060,20 +439375,21 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 4,
+      "spec_test_ref_count": 5,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
         "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
         "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
-        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded"
+        "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+        "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 10,
+        "focused": 10,
         "broad": 0,
         "by_kind": {
-          "positive": 2,
+          "positive": 4,
           "negative": 4,
           "edge": 2,
           "fuzz": 0,
@@ -439084,6 +439400,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake",
+          "method": "ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9464-0077",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs",
+          "class": "EncryptedDnsIntegrationAdapterTests",
+          "member": "EncryptedDnsIntegrationAdapterTests.ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake",
+          "method": "ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake",
+          "line": 60,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9464-0077"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9464-0077",
           "source": "requirement_attribute",

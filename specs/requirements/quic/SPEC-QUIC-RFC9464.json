@@ -1686,6 +1686,8 @@
         "x_code_refs": [
           "src/Incursa.Quic.Dns/EncryptedDnsProvisioningConfigurationPayload.cs",
           "src/Incursa.Quic.Dns/EncryptedDnsProvisioningExchangePlanner.cs",
+          "src/Incursa.Quic.Dns/EncryptedDnsProvisioningTransportExecutor.cs",
+          "src/Incursa.Quic.Dns/IEncryptedDnsProvisioningTransport.cs",
           "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponder.cs",
           "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPolicy.cs"
         ],
@@ -1693,7 +1695,8 @@
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerBuildsRequestReplyAndClientPlan",
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerRejectsReplyPlanningFromNonRequestPayload",
           "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ConfigurationPayloadRejectsMismatchedAttributePayloadTypes",
-          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded"
+          "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs::ExchangePlannerProducesEmptyClientPlanWhenRequestIsDiscarded",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::ProvisioningTransportExecutorExchangesRequestThroughDeterministicFake"
         ]
       },
       "notes": [

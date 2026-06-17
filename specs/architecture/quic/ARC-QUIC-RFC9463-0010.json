@@ -18,11 +18,14 @@
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlan.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsDiscoveryAdvertisementPlatformAdapter.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementStatus.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
   ],
-  "design_summary": "The advertisement planner maps local router or forwarder configuration into DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS option payloads using the existing RFC 9463 codecs. It preserves service priority, lifetime, authentication domain name, default or supplied service parameters, address-family applicability, ADN-only publication, and non-ready statuses for no usable addresses or locally disabled advertisement surfaces.",
-  "data_and_state_considerations": "The planner is side-effect free. It does not configure DHCP servers, send Router Advertisements, write platform network state, publish DNS provider records, or open encrypted DNS sessions.",
+  "design_summary": "The advertisement planner maps local router or forwarder configuration into DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS option payloads using the existing RFC 9463 codecs. It preserves service priority, lifetime, authentication domain name, default or supplied service parameters, address-family applicability, ADN-only publication, and non-ready statuses for no usable addresses or locally disabled advertisement surfaces. `EncryptedDnsDiscoveryAdvertisementExecutor` applies only ready plans through an explicit platform adapter and blocks non-ready plans before adapter invocation.",
+  "data_and_state_considerations": "The planner is side-effect free. The executor invokes only the caller-supplied platform adapter for ready plans. Neither component configures DHCP servers directly, sends Router Advertisements directly, writes platform network state, publishes DNS provider records, or opens encrypted DNS sessions.",
   "edge_cases_and_constraints": [
     "Mixed IPv4 and IPv6 addresses produce DHCPv4, DHCPv6, and Router Advertisement payloads.",
     "ADN-only publication produces address-free DHCPv4, DHCPv6, and Router Advertisement payloads when those surfaces are requested.",
@@ -32,7 +35,7 @@
   ],
   "risks": [
     "The planner cannot verify that supplied addresses are actually LAN-facing interfaces on the host.",
-    "Actual DHCP server, router, and operating-system advertisement APIs remain platform-specific and outside this slice."
+    "Actual DHCP server, router, and operating-system advertisement APIs remain platform-specific and outside this slice and fake-backed adapter proof."
   ],
   "supplemental_sections": [
     {

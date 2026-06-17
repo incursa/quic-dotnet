@@ -18,12 +18,15 @@
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsProvisioningConfigurationPayload.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsProvisioningExchangePlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsProvisioningTransportExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsProvisioningTransport.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsProvisioningResponder.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPolicy.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsProvisioningExchangePlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
   ],
-  "design_summary": "The exchange planner models the RFC 9464 encrypted DNS attributes inside IKEv2 Configuration Payloads without implementing a live IKEv2 session. It validates that ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes match their Configuration Payload type, creates CFG_REQUEST support advertisements with optional digest algorithm lists, creates CFG_REPLY payloads from responder policy, and creates client resolver plans from CFG_REPLY or CFG_SET payloads.",
-  "data_and_state_considerations": "The planner is side-effect free and immutable. It consumes existing codec, responder, and client policy types and produces value objects that a future IKEv2 adapter can serialize, receive, or map to platform APIs. It does not own packet exchange, IPsec state, host resolver mutation, or encrypted DNS session establishment.",
+  "design_summary": "The exchange planner models the RFC 9464 encrypted DNS attributes inside IKEv2 Configuration Payloads without implementing a live IKEv2 session. It validates that ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes match their Configuration Payload type, creates CFG_REQUEST support advertisements with optional digest algorithm lists, creates CFG_REPLY payloads from responder policy, and creates client resolver plans from CFG_REPLY or CFG_SET payloads. `EncryptedDnsProvisioningTransportExecutor` exchanges CFG_REQUEST and CFG_REPLY payloads through an explicit transport adapter contract for deterministic fake-backed IKEv2 boundary proof.",
+  "data_and_state_considerations": "The planner is side-effect free and immutable. The executor invokes only the caller-supplied transport adapter. These components consume existing codec, responder, and client policy types and produce value objects that a future IKEv2 adapter can serialize, receive, or map to platform APIs. They do not own packet exchange, IPsec state, host resolver mutation, or encrypted DNS session establishment.",
   "edge_cases_and_constraints": [
     "A responder reply can only be planned from a CFG_REQUEST payload.",
     "Payload attributes and digest information must match the modeled Configuration Payload type.",
@@ -31,7 +34,7 @@
     "Client resolver planning accepts only CFG_REPLY or CFG_SET payloads."
   ],
   "risks": [
-    "Treating this planner as live IKEv2 support would overstate the implementation.",
+    "Treating this planner or fake-backed transport proof as live IKEv2 support would overstate the implementation.",
     "Skipping the local model would force each future IKEv2 or platform adapter to duplicate RFC 9464 request/reply validation.",
     "Adding platform resolver behavior here would couple DNS value policy to operating-system integration."
   ]

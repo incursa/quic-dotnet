@@ -11,11 +11,11 @@
     "ARC-QUIC-RFC9463-0009",
     "WI-QUIC-RFC9463-0009"
   ],
-  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic host resolver installation planning.",
+  "verification_method": "Focused unit tests, focused adapter tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic host resolver installation planning.",
   "verifies": [
     "REQ-QUIC-RFC9463-0119"
   ],
-  "scope": "This verification covers global installation planning from service-binding and discovery inputs, fallback resolver preservation, split-tunnel domain scoping from provisioning input, and blocked non-installable plans for explicit Do53 preference or untrusted NULL-authenticated provisioning.",
+  "scope": "This verification covers global installation planning from service-binding and discovery inputs, fallback resolver preservation, split-tunnel domain scoping from provisioning input, blocked non-installable plans for explicit Do53 preference or untrusted NULL-authenticated provisioning, and fake-backed ready/blocked platform adapter invocation.",
   "preconditions": [
     "The caller supplies already-validated SVCB, discovery, or provisioning client plans.",
     "A separate platform adapter is responsible for applying the resulting plan to the host resolver."
@@ -31,8 +31,12 @@
   "evidence": [
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlan.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsHostResolverPlatformAdapter.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationStatus.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan"
   ],
   "status_summary": "Host resolver installation is locally narrowed to deterministic planning. Platform resolver mutation remains external adapter work."
 }

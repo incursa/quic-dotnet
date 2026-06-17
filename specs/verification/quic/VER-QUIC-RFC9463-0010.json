@@ -11,11 +11,11 @@
     "ARC-QUIC-RFC9463-0010",
     "WI-QUIC-RFC9463-0010"
   ],
-  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic RFC 9463 advertisement planning.",
+  "verification_method": "Focused unit tests, focused adapter tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic RFC 9463 advertisement planning.",
   "verifies": [
     "REQ-QUIC-RFC9463-0120"
   ],
-  "scope": "This verification covers DHCPv4, DHCPv6, and Neighbor Discovery payload selection for mixed-address input, ADN-only publication without addresses, IPv4-only family scoping, no-usable-address handling, and policy-blocked handling when all advertisement surfaces are disabled.",
+  "scope": "This verification covers DHCPv4, DHCPv6, and Neighbor Discovery payload selection for mixed-address input, ADN-only publication without addresses, IPv4-only family scoping, no-usable-address handling, policy-blocked handling when all advertisement surfaces are disabled, and fake-backed ready/blocked platform adapter invocation.",
   "preconditions": [
     "The caller supplies local router or forwarder authentication domain name and optional LAN-facing resolver addresses.",
     "A separate platform adapter is responsible for applying DHCP or Router Advertisement state."
@@ -31,8 +31,12 @@
   "evidence": [
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlan.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsDiscoveryAdvertisementPlatformAdapter.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementStatus.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan"
   ],
   "status_summary": "Router and forwarder advertisement adapters are locally narrowed to deterministic DHCP and Router Advertisement payload planning. Live platform emission remains external adapter work."
 }

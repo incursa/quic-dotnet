@@ -11,11 +11,11 @@
     "ARC-QUIC-RFC9463-0008",
     "WI-QUIC-RFC9463-0008"
   ],
-  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic encrypted DNS session-attempt planning.",
+  "verification_method": "Focused unit tests, focused adapter tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic encrypted DNS session-attempt planning.",
   "verifies": [
     "REQ-QUIC-RFC9463-0118"
   ],
-  "scope": "This verification covers creating scalar encrypted DNS session attempts from RFC 9461 service-binding endpoint selection, RFC 9463 discovery client plans, and RFC 9464 provisioning client plans, plus rejecting Do53-port encrypted attempts and suppressing attempts for Do53-preferred discovery or NULL-authentication-blocked provisioning inputs.",
+  "scope": "This verification covers creating scalar encrypted DNS session attempts from RFC 9461 service-binding endpoint selection, RFC 9463 discovery client plans, and RFC 9464 provisioning client plans, rejecting Do53-port encrypted attempts, suppressing attempts for Do53-preferred discovery or NULL-authentication-blocked provisioning inputs, and fake-backed ordered connector invocation.",
   "preconditions": [
     "The caller supplies already-validated SVCB, discovery, or provisioning client plans.",
     "Discovery and provisioning callers supply the protocol and port when they need values other than the DoQ default."
@@ -32,7 +32,10 @@
     "src/Incursa.Quic.Dns/EncryptedDnsSessionAttempt.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsSessionAttemptSource.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsSessionPlanner.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs"
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsSessionConnector.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds"
   ],
   "status_summary": "Encrypted DNS session establishment is locally narrowed to deterministic attempt planning. Live encrypted DNS transport, IKEv2/IPsec integration, host resolver installation, and provider/platform integration remain external adapter work."
 }

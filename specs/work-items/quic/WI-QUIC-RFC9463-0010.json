@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9463-0120"
   ],
   "summary": "Add deterministic router and forwarder advertisement payload planning for RFC 9463 encrypted DNS discovery.",
-  "planned_changes": "- Add advertisement status and plan models.\n- Add a planner that selects DHCPv4, DHCPv6, and Neighbor Discovery payloads from local address-family inputs or ADN-only policy.\n- Preserve service priority, lifetime, authentication domain name, service parameter metadata, and family-specific applicability.\n- Return non-ready plans for no usable addresses or locally disabled advertisement surfaces.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local advertisement planning from platform emission.",
-  "verification_plan": "Run the DNS project build, focused advertisement planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "planned_changes": "- Add advertisement status and plan models.\n- Add a planner that selects DHCPv4, DHCPv6, and Neighbor Discovery payloads from local address-family inputs or ADN-only policy.\n- Add an explicit platform advertisement adapter contract and fake-backed ready/blocked executor proof.\n- Preserve service priority, lifetime, authentication domain name, service parameter metadata, and family-specific applicability.\n- Return non-ready plans for no usable addresses or locally disabled advertisement surfaces.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local advertisement planning from platform emission.",
+  "verification_plan": "Run the DNS project build, focused advertisement planner tests, focused encrypted DNS adapter tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
   "verification_links": [
     "VER-QUIC-RFC9463-0010"
   ],

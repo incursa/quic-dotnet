@@ -2610,7 +2610,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionAcceptsSecureDnssecValidation",
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsNonSecureDnssecValidation",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDnssecPolicyTests.cs::AdnOnlySvcbResolutionRejectsMissingDnssecValidation",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::DnssecPolicyConsumesDeterministicValidatorStatus"
         ]
       },
       "notes": [
@@ -2641,7 +2642,8 @@
           "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
           "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
           "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
-          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort"
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::SessionExecutorAttemptsPlannedEndpointsUntilConnectorSucceeds"
         ]
       },
       "notes": [
@@ -2671,7 +2673,9 @@
           "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanPreservesEncryptedAttemptsAndFallbackResolvers",
           "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanThatPrefersDo53BlocksEncryptedResolverInstallation",
           "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::ProvisioningSplitTunnelPlanScopesInstallationToInternalDomains",
-          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::NullAuthenticatedProvisioningBlocksHostResolverInstallation"
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::NullAuthenticatedProvisioningBlocksHostResolverInstallation",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorAppliesReadyPlanThroughPlatformAdapter",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::HostResolverExecutorDoesNotInvokeAdapterForBlockedPlan"
         ]
       },
       "notes": [
@@ -2704,7 +2708,9 @@
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
           "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::PopulatedPlanWithoutUsableAddressesIsNotInstallable",
-          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan"
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorAppliesReadyPayloadPlanThroughPlatformAdapter",
+          "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs::AdvertisementExecutorDoesNotInvokeAdapterForNonReadyPlan"
         ]
       },
       "notes": [

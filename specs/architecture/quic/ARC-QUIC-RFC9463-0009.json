@@ -20,11 +20,14 @@
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlan.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationExecutor.cs",
+    "src/Incursa.Quic.Dns/IEncryptedDnsHostResolverPlatformAdapter.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationStatus.cs",
-    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs"
+    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsIntegrationAdapterTests.cs"
   ],
-  "design_summary": "The installation planner composes the encrypted DNS session-attempt planner with existing RFC 9461, RFC 9463, and RFC 9464 client plans. It produces immutable resolver installation plans that record readiness status, encrypted session attempts, cleartext fallback resolver candidates, split-tunnel internal domains, global versus internal-only scope, and whether a platform resolver adapter is required. Policy-blocked inputs such as explicit Do53 preference and untrusted NULL-authenticated provisioning return blocked plans without encrypted attempts.",
-  "data_and_state_considerations": "The planner is side-effect free. It does not call Windows, Linux, or macOS resolver APIs; does not write system configuration; does not open network sockets; and does not mutate routing or DNS provider state.",
+  "design_summary": "The installation planner composes the encrypted DNS session-attempt planner with existing RFC 9461, RFC 9463, and RFC 9464 client plans. It produces immutable resolver installation plans that record readiness status, encrypted session attempts, cleartext fallback resolver candidates, split-tunnel internal domains, global versus internal-only scope, and whether a platform resolver adapter is required. Policy-blocked inputs such as explicit Do53 preference and untrusted NULL-authenticated provisioning return blocked plans without encrypted attempts. `EncryptedDnsHostResolverInstallationExecutor` applies only ready plans through an explicit platform adapter and blocks non-ready plans before adapter invocation.",
+  "data_and_state_considerations": "The planner is side-effect free. The executor invokes only the caller-supplied platform adapter for ready plans. Neither component calls Windows, Linux, or macOS resolver APIs directly, writes system configuration, opens network sockets, or mutates routing or DNS provider state.",
   "edge_cases_and_constraints": [
     "RFC 9461 service-binding plans produce global installation plans from selected encrypted endpoints.",
     "RFC 9463 discovery plans preserve Do53 fallback candidates only when encrypted connection failure fallback is allowed.",
@@ -32,7 +35,7 @@
     "Policy-blocked inputs produce non-installable plans with no platform adapter requirement."
   ],
   "risks": [
-    "Actual resolver installation semantics vary by operating system and remain outside this local plan.",
+    "Actual resolver installation semantics vary by operating system and remain outside this local plan and fake-backed adapter proof.",
     "The plan does not prove live encrypted DNS connectivity or certificate validation beyond already-modeled local policy."
   ],
   "supplemental_sections": [
