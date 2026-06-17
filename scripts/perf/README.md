@@ -56,6 +56,39 @@ The wrapper writes a report under:
 .artifacts/perf-lanes/{runIdPrefix}/summary.md
 ```
 
+## ProtocolLab Readiness Evidence
+
+Use `New-QuicProtocolLabReadinessEvidence.ps1` before handing the repo to a
+package-backed rack-lab run or live integration operator. It builds the HTTP/3
+and raw QUIC `.plabpkg` archives with stable readiness versions, records their
+SHA-256 hashes, discovers the latest local HTTP/3 runner proof, and writes the
+operator checklist under:
+
+```text
+.artifacts/protocol-lab/readiness/{runId}/README.md
+.artifacts/protocol-lab/readiness/{runId}/readiness-manifest.json
+```
+
+Create a full package-backed readiness bundle:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabReadinessEvidence.ps1 `
+  -ProtocolLabRoot C:\shared\src\incursa\protocol-lab
+```
+
+Create a checklist without rebuilding packages:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabReadinessEvidence.ps1 `
+  -SkipPackageBuild
+```
+
+The generated manifest separates local developer/regression evidence from live
+provider/platform execution. Live DNSSEC validation, provider publication,
+IKEv2/IPsec sessions, resolver application, DHCP/RA emission, and encrypted DNS
+establishment remain blocked until the corresponding credential, authority,
+endpoint, OS privilege, network infrastructure, or operator decision is present.
+
 Supported surfaces:
 
 - `RawQuicMultiplex`: ProtocolLab `quic.transport.multiplex.100x64kb` plus

@@ -317,6 +317,42 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.DoesNotContain("schemaVersion: protocol-lab-package-v1", agentGuidance);
     }
 
+    [Fact]
+    public void Readiness_evidence_script_records_packages_hashes_runner_and_external_blockers()
+    {
+        var repoRoot = FindRepoRoot();
+        var scriptPath = Path.Combine(repoRoot, "scripts", "perf", "New-QuicProtocolLabReadinessEvidence.ps1");
+        var script = File.ReadAllText(scriptPath);
+        var readme = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "README.md"));
+
+        Assert.Contains("quic-dotnet-protocol-lab-readiness-v1", script);
+        Assert.Contains("New-QuicDotNetProtocolLabPackage.ps1", script);
+        Assert.Contains("PackageTarget", script);
+        Assert.Contains("Http3", script);
+        Assert.Contains("RawQuic", script);
+        Assert.Contains("Get-FileHash", script);
+        Assert.Contains("SHA-256", script);
+        Assert.Contains("http3-local-live-current", script);
+        Assert.Contains("runner-report.json", script);
+        Assert.Contains("Raw QUIC multiplex smoke", script);
+        Assert.Contains("Raw QUIC duplex smoke", script);
+        Assert.Contains("Package-backed HTTP/3 rack lab smoke", script);
+        Assert.Contains("Package-backed raw QUIC rack lab smoke", script);
+        Assert.Contains("local-source-reference", script);
+        Assert.Contains("package-backed-controller", script);
+        Assert.Contains("live DNSSEC chain validation", script);
+        Assert.Contains("DNS provider publication", script);
+        Assert.Contains("IKEv2/IPsec session integration", script);
+        Assert.Contains("host resolver application", script);
+        Assert.Contains("DHCP and Router Advertisement emission", script);
+        Assert.Contains("live encrypted DNS establishment", script);
+        Assert.Contains("readiness-manifest.json", script);
+
+        Assert.Contains("ProtocolLab Readiness Evidence", readme);
+        Assert.Contains("New-QuicProtocolLabReadinessEvidence.ps1", readme);
+        Assert.Contains("credential, authority", readme);
+    }
+
     private static void AssertPackageEnvironment(JsonElement[] environments, string os, string arch)
     {
         var environment = Assert.Single(environments, value =>
