@@ -28,7 +28,10 @@
     "WI-QUIC-RFC9463-0006",
     "ARC-QUIC-RFC9463-0007",
     "VER-QUIC-RFC9463-0007",
-    "WI-QUIC-RFC9463-0007"
+    "WI-QUIC-RFC9463-0007",
+    "ARC-QUIC-RFC9463-0008",
+    "VER-QUIC-RFC9463-0008",
+    "WI-QUIC-RFC9463-0008"
   ],
   "requirements": [
     {
@@ -2606,6 +2609,37 @@
       },
       "notes": [
         "This requirement models the local decision boundary only. DNSSEC chain construction, live DNS queries, and resolver installation remain adapter work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0118",
+      "title": "Plan encrypted DNS session attempts deterministically",
+      "statement": "Before opening a network connection, the encrypted DNS client planning layer MUST produce deterministic encrypted DNS session attempts from RFC 9461 SVCB endpoint selection, RFC 9463 discovery plans, and RFC 9464 provisioning plans while preserving protocol, address when supplied, port, authentication name, service priority, service-parameter metadata, HTTPS metadata, and cleartext-fallback eligibility.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.3 RFC9463-S3P3-B2-P2-S1",
+          "RFC 9461 Section 3",
+          "RFC 9464 Section 4.3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.3",
+          "https://www.rfc-editor.org/rfc/rfc9461.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort"
+        ]
+      },
+      "notes": [
+        "This requirement covers local scalar planning only. Live DoT, DoQ, DoH, IKEv2, IPsec, DNS provider, and operating-system resolver integration remain adapter or operational work."
       ]
     }
   ]

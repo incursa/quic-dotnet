@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-16T17:53:54.5473773-06:00",
-  "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
+  "generated_at": "2026-06-16T18:02:13.2763679-06:00",
+  "repo_root": ".",
   "sources": {
     "spec_files": [
       "specs/requirements/quic/SPEC-QUIC-RFC8999.json",
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T17:53:54.5047676-06:00",
-    "total_requirements": 2648,
+    "generated_at": "2026-06-16T18:02:13.2730524-06:00",
+    "total_requirements": 2649,
     "by_state": {
-      "trace_clean": 2648
+      "trace_clean": 2649
     },
     "by_work_queue_tag": {
-      "clean": 2648
+      "clean": 2649
     },
     "by_rfc": [
       {
@@ -164,9 +164,9 @@
       },
       {
         "rfc": "RFC9463",
-        "total": 117,
+        "total": 118,
         "by_state": {
-          "trace_clean": 117
+          "trace_clean": 118
         }
       },
       {
@@ -426762,6 +426762,272 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0117"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9463-0118",
+      "artifact_id": "SPEC-QUIC-RFC9463",
+      "rfc": "RFC9463",
+      "section_prefix": "S3P3",
+      "title": "Plan encrypted DNS session attempts deterministically",
+      "statement": "Before opening a network connection, the encrypted DNS client planning layer MUST produce deterministic encrypted DNS session attempts from RFC 9461 SVCB endpoint selection, RFC 9463 discovery plans, and RFC 9464 provisioning plans while preserving protocol, address when supplied, port, authentication name, service priority, service-parameter metadata, HTTPS metadata, and cleartext-fallback eligibility.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+        "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 10,
+        "focused": 10,
+        "broad": 0,
+        "by_kind": {
+          "positive": 4,
+          "negative": 4,
+          "edge": 2,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "method": "DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "line": 48,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "method": "DiscoveryPlanCreatesPriorityOrderedEncryptedSessionAttempts",
+          "line": 48,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "method": "DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "line": 77,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "method": "DiscoveryPlanThatPrefersDo53DoesNotInventEncryptedSessionAttempts",
+          "line": 77,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "method": "EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "line": 105,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "method": "EncryptedSessionAttemptRejectsCleartextDnsPort",
+          "line": 105,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "method": "ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "method": "ProvisioningPlanBlockedByNullAuthenticationDoesNotCreateAttempts",
+          "line": 91,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "method": "ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0118",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs::ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs",
+          "class": "EncryptedDnsSessionPlannerTests",
+          "member": "EncryptedDnsSessionPlannerTests.ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "method": "ServiceBindingEndpointBecomesEncryptedSessionAttempt",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0118"
           ],
           "requirement_tagged": true,
           "class_level_only": false

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0008",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Session Attempt Planning Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0008",
+    "WI-QUIC-RFC9463-0008"
+  ],
+  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic encrypted DNS session-attempt planning.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0118"
+  ],
+  "scope": "This verification covers creating scalar encrypted DNS session attempts from RFC 9461 service-binding endpoint selection, RFC 9463 discovery client plans, and RFC 9464 provisioning client plans, plus rejecting Do53-port encrypted attempts and suppressing attempts for Do53-preferred discovery or NULL-authentication-blocked provisioning inputs.",
+  "preconditions": [
+    "The caller supplies already-validated SVCB, discovery, or provisioning client plans.",
+    "Discovery and provisioning callers supply the protocol and port when they need values other than the DoQ default."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsSessionPlannerTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused planner tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage remains trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionAttempt.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionAttemptSource.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionPlanner.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs"
+  ],
+  "status_summary": "Encrypted DNS session establishment is locally narrowed to deterministic attempt planning. Live encrypted DNS transport, IKEv2/IPsec integration, host resolver installation, and provider/platform integration remain external adapter work."
+}

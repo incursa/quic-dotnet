@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Session Attempt Planning Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0008",
+    "VER-QUIC-RFC9463-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0118"
+  ],
+  "summary": "Add deterministic local encrypted DNS session-attempt planning across SVCB, discovery, and provisioning inputs.",
+  "planned_changes": "- Add an immutable session-attempt model and source enum.\n- Add a planner for RFC 9461 service-binding plans, RFC 9463 discovery plans, and RFC 9464 provisioning plans.\n- Preserve protocol, address, port, authentication name, service priority, service metadata, HTTPS metadata, and cleartext fallback eligibility.\n- Reject attempts that target classic cleartext DNS port 53.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to distinguish local planning from live session establishment.",
+  "verification_plan": "Run the DNS project build, focused session planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0008"
+  ],
+  "out_of_scope": [
+    "Opening live DoT, DoQ, or DoH sessions.",
+    "TLS certificate chain construction.",
+    "Live DNSSEC validation.",
+    "Live IKEv2 or IPsec integration.",
+    "Host resolver installation.",
+    "Router or forwarder advertisement emission."
+  ],
+  "completion_notes": "The DNS package now has a trace-owned scalar session-attempt planner for encrypted DNS inputs."
+}

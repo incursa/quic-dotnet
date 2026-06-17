@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Session Attempt Planning Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the local encrypted DNS session planning boundary across RFC 9461, RFC 9463, and RFC 9464 inputs.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "SPEC-QUIC-RFC9461",
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9463-0008",
+    "VER-QUIC-RFC9463-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0118"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionAttempt.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionAttemptSource.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsSessionPlanner.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsSessionPlannerTests.cs"
+  ],
+  "design_summary": "The session planner turns already-selected encrypted DNS inputs into immutable connection-attempt records. RFC 9461 service-binding plans preserve exact protocol, port, authentication name, DoH path, HTTPS metadata, and dependent fallback policy. RFC 9463 discovery plans preserve resolver address ordering, service priority, authentication domain name, service parameter keys, and Do53 fallback eligibility. RFC 9464 provisioning plans preserve resolver addresses, service priority, authentication domain name, service parameter keys, and cleartext resolver availability. The planner rejects port 53 so a locally generated encrypted attempt cannot silently become classic DNS.",
+  "data_and_state_considerations": "The planner is side-effect free and does not open sockets, perform DNS queries, install host resolver state, negotiate TLS/QUIC, send IKEv2 messages, or mutate platform routing state.",
+  "edge_cases_and_constraints": [
+    "Discovery plans that explicitly prefer Do53 produce no encrypted DNS session attempts.",
+    "Provisioning plans blocked by responder NULL authentication produce no encrypted DNS session attempts.",
+    "Attempts preserve the service-priority ordering already established by discovery and provisioning policy.",
+    "Attempts targeting the classic cleartext DNS port are rejected."
+  ],
+  "risks": [
+    "Discovery and provisioning endpoint models preserve service parameter keys rather than all SvcParam values, so protocol and port selection remain explicit planner inputs for those surfaces.",
+    "The slice does not prove live encrypted DNS session establishment or host resolver installation."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The planner narrows encrypted DNS session establishment to deterministic target selection. Live DoT, DoQ, DoH, DNSSEC, DNS provider, IKEv2, IPsec, and OS resolver adapters remain outside this artifact."
+    }
+  ]
+}
