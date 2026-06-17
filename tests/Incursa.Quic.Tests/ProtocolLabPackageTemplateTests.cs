@@ -371,6 +371,31 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("throw \"ProtocolLab benchmark set script was not found in execution root: $protocolLabBenchmarkScript\"", script);
     }
 
+    [Fact]
+    public void Local_protocol_lab_benchmark_helper_resolves_internal_package_version_pins()
+    {
+        var repoRoot = FindRepoRoot();
+        var script = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "Invoke-ProtocolLabLocalQuicBenchmark.ps1"));
+
+        Assert.Contains("Directory.Packages.props", script);
+        Assert.Contains("Directory.Build.props", script);
+        Assert.Contains("IncursaQuicVersion", script);
+        Assert.Contains("IncursaQpackVersion", script);
+        Assert.Contains("IncursaQuicHttp3Version", script);
+        Assert.Contains("Pass -PackageVersion explicitly or align package pins", script);
+    }
+
+    [Fact]
+    public void Package_icon_metadata_is_conditional_on_asset_presence()
+    {
+        var repoRoot = FindRepoRoot();
+        var props = File.ReadAllText(Path.Combine(repoRoot, "Directory.Build.props"));
+        var targets = File.ReadAllText(Path.Combine(repoRoot, "Directory.Build.targets"));
+
+        Assert.Contains("PackageIcon Condition=\"Exists('$(MSBuildThisFileDirectory)assets\\package-icon.png')\"", props);
+        Assert.Contains("'$(IsPackable)' == 'true' And Exists('$(MSBuildThisFileDirectory)assets\\package-icon.png')", targets);
+    }
+
     private static void AssertPackageEnvironment(JsonElement[] environments, string os, string arch)
     {
         var environment = Assert.Single(environments, value =>

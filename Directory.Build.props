@@ -6,7 +6,7 @@
     <Authors>Incursa LLC</Authors>
     <Company>Incursa LLC</Company>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>package-icon.png</PackageIcon>
+    <PackageIcon Condition="Exists('$(MSBuildThisFileDirectory)assets\package-icon.png')">package-icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/incursa/quic-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/incursa/quic-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

@@ -181,7 +181,10 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabL
 ```
 
 Use local packages only when you explicitly need package restore compatibility
-coverage:
+coverage. By default the helper packs local `Incursa.Qpack`, `Incursa.Quic`,
+and `Incursa.Quic.Http3` packages using ProtocolLab's pinned Incursa package
+version from `Directory.Packages.props` or `Directory.Build.props`. Pass
+`-PackageVersion` when you need to override that local compatibility version.
 
 ```powershell
 pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 `

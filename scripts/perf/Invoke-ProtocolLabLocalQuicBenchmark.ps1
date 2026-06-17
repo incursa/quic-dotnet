@@ -394,20 +394,46 @@ function Get-ProtocolLabPackageVersion {
     param([Parameter(Mandatory = $true)][string] $ProtocolLabDirectory)
 
     $packagesPath = Join-Path $ProtocolLabDirectory "Directory.Packages.props"
-    if (-not (Test-Path -LiteralPath $packagesPath)) {
-        throw "ProtocolLab Directory.Packages.props was not found: $packagesPath"
+    if (Test-Path -LiteralPath $packagesPath) {
+        [xml] $packages = Get-Content -LiteralPath $packagesPath -Raw
+        $versionNode = $packages.Project.ItemGroup.PackageVersion |
+            Where-Object { $_.Include -eq "Incursa.Quic" } |
+            Select-Object -First 1
+
+        if ($null -ne $versionNode -and -not [string]::IsNullOrWhiteSpace($versionNode.Version)) {
+            return [string] $versionNode.Version
+        }
     }
 
-    [xml] $packages = Get-Content -LiteralPath $packagesPath -Raw
-    $versionNode = $packages.Project.ItemGroup.PackageVersion |
-        Where-Object { $_.Include -eq "Incursa.Quic" } |
-        Select-Object -First 1
+    $buildPropsPath = Join-Path $ProtocolLabDirectory "Directory.Build.props"
+    if (Test-Path -LiteralPath $buildPropsPath) {
+        [xml] $buildProps = Get-Content -LiteralPath $buildPropsPath -Raw
+        $propertyGroups = @($buildProps.Project.PropertyGroup)
+        $quicVersion = [string](
+            $propertyGroups |
+                ForEach-Object { $_.IncursaQuicVersion } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                Select-Object -First 1)
 
-    if ($null -eq $versionNode -or [string]::IsNullOrWhiteSpace($versionNode.Version)) {
-        throw "Could not determine ProtocolLab's Incursa.Quic package version from $packagesPath."
+        if (-not [string]::IsNullOrWhiteSpace($quicVersion)) {
+            $siblingVersions = @(
+                $propertyGroups |
+                    ForEach-Object { $_.IncursaQpackVersion; $_.IncursaQuicHttp3Version } |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
+                    ForEach-Object { [string]$_ }
+            )
+            $mismatchedSiblingVersion = $siblingVersions |
+                Where-Object { $_ -ne $quicVersion } |
+                Select-Object -First 1
+            if (-not [string]::IsNullOrWhiteSpace($mismatchedSiblingVersion)) {
+                throw "ProtocolLab pins Incursa package versions that do not match: Incursa.Quic=$quicVersion, sibling=$mismatchedSiblingVersion. Pass -PackageVersion explicitly or align package pins before using -UseLocalPackages."
+            }
+
+            return $quicVersion
+        }
     }
 
-    return [string] $versionNode.Version
+    throw "Could not determine ProtocolLab's Incursa.Quic package version. Checked $packagesPath and $buildPropsPath."
 }
 
 function Get-NormalizedSuites {
