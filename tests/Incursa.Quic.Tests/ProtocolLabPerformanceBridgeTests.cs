@@ -23,12 +23,14 @@ public sealed class ProtocolLabPerformanceBridgeTests
     {
         var repoRoot = FindRepoRoot();
         var protocolLabRoot = FindProtocolLabRoot(repoRoot);
+        var protocolLabExecutionRoot = FindProtocolLabExecutionRoot(protocolLabRoot);
         var runIdPrefix = $"xunit-protocol-lab-perf-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}";
         var runId = $"{runIdPrefix}-quic-transport-v1-comparison";
-        var runArtifactPath = Path.Combine(protocolLabRoot, ".artifacts", "runs", runId);
-        var publicationArtifactPath = Path.Combine(protocolLabRoot, ".artifacts", "publication", runId);
+        var runArtifactPath = Path.Combine(protocolLabExecutionRoot, ".artifacts", "runs", runId);
+        var publicationArtifactPath = Path.Combine(protocolLabExecutionRoot, ".artifacts", "publication", runId);
 
         _output.WriteLine($"ProtocolLab root: {protocolLabRoot}");
+        _output.WriteLine($"ProtocolLab execution root: {protocolLabExecutionRoot}");
         _output.WriteLine($"Run artifacts: {runArtifactPath}");
         _output.WriteLine($"Publication artifacts: {publicationArtifactPath}");
 
@@ -43,6 +45,8 @@ public sealed class ProtocolLabPerformanceBridgeTests
             scriptPath,
             "-ProtocolLabRoot",
             protocolLabRoot,
+            "-ProtocolLabExecutionRoot",
+            protocolLabExecutionRoot,
             "-UseProjectReferences",
             "-Suite",
             "quic-transport-v1-comparison",
@@ -135,6 +139,28 @@ public sealed class ProtocolLabPerformanceBridgeTests
         }
 
         throw new DirectoryNotFoundException("ProtocolLab root was not found. Set PROTOCOL_LAB_ROOT to the protocol-lab checkout.");
+    }
+
+    private static string FindProtocolLabExecutionRoot(string protocolLabRoot)
+    {
+        var environmentRoot = Environment.GetEnvironmentVariable("PROTOCOL_LAB_EXECUTION_ROOT");
+        if (!string.IsNullOrWhiteSpace(environmentRoot) && Directory.Exists(environmentRoot))
+        {
+            return Path.GetFullPath(environmentRoot);
+        }
+
+        var siblingRoot = Path.Combine(Directory.GetParent(protocolLabRoot)!.FullName, "protocol-lab-internal");
+        if (Directory.Exists(siblingRoot))
+        {
+            return Path.GetFullPath(siblingRoot);
+        }
+
+        if (File.Exists(Path.Combine(protocolLabRoot, "scripts", "benchmarking", "Invoke-ProtocolLabBenchmarkSet.ps1")))
+        {
+            return protocolLabRoot;
+        }
+
+        throw new DirectoryNotFoundException("ProtocolLab execution root was not found. Set PROTOCOL_LAB_EXECUTION_ROOT to the protocol-lab-internal checkout.");
     }
 
     private static string FindRepoRoot()

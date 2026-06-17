@@ -88,7 +88,8 @@ provider/platform execution. Live DNSSEC validation, provider publication,
 IKEv2/IPsec sessions, resolver application, DHCP/RA emission, and encrypted DNS
 establishment remain blocked until the corresponding credential, authority,
 endpoint, OS privilege, network infrastructure, or operator decision is present.
-It also records whether the sibling ProtocolLab checkout contains
+It also records the public ProtocolLab contract checkout and the runnable
+ProtocolLab execution checkout separately. The executable checkout must contain
 `scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1`, which is required
 for the source-reference performance lane.
 
@@ -108,6 +109,19 @@ The wrapper always uses ProtocolLab source/project references when ProtocolLab
 runs. It never packs NuGet packages, publishes packages, uploads R2 bundles, or
 changes ProtocolLab benchmark semantics.
 
+Current local raw QUIC execution status:
+
+- The source-reference loop reaches
+  `scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1` in
+  `protocol-lab-internal`.
+- The Incursa raw QUIC adapter validates and starts a local QUIC endpoint for
+  `quic.transport.multiplex.100x64kb`.
+- The remaining local blocker is the ProtocolLab `quic-go-raw-load` source
+  directory. Its manifest invokes `go -C src/Incursa.ProtocolLab.Adapters.QuicGo
+  run ./cmd/quic-go-raw-load`, but that directory is not present in the current
+  `protocol-lab-internal` checkout. Until that Go load generator is restored or
+  replaced, benchmark execution stops after validation with a load-tool failure.
+
 ## ProtocolLab Local QUIC Benchmark Loop
 
 Use `Invoke-ProtocolLabLocalQuicBenchmark.ps1` when you want ProtocolLab to run
@@ -118,6 +132,10 @@ The helper:
 
 - can run in fast source-reference mode against the current `quic-dotnet`
   working tree;
+- keeps `-ProtocolLabRoot` as the public contract checkout and resolves the
+  runnable checkout from `-ProtocolLabExecutionRoot`,
+  `PROTOCOL_LAB_EXECUTION_ROOT`, or a sibling `protocol-lab-internal`
+  checkout;
 - can still run in compatibility local-package mode, where it packs local
   `Incursa.Qpack`, `Incursa.Quic`, and `Incursa.Quic.Http3`;
 - runs the selected ProtocolLab suite with nested PowerShell script output
@@ -195,15 +213,23 @@ working tree directly. Use `-NoRestore` after the first successful source-mode
 restore. Do not use `-UploadAfterRun` for local performance iteration.
 
 ProtocolLab-owned scenario and suite files live in the sibling ProtocolLab
-checkout, not in this repo. For the standard shared Windows checkout, that is:
+checkouts, not in this repo. For the standard shared Windows checkout, the
+public contract root is:
 
 ```text
 C:\shared\src\incursa\protocol-lab
 ```
 
-If that path is not valid, pass `-ProtocolLabRoot <path>` to
-`Invoke-ProtocolLabLocalQuicBenchmark.ps1` or set `PROTOCOL_LAB_ROOT` before
-using the xUnit bridge.
+The local executable benchmark-set wrapper belongs to:
+
+```text
+C:\shared\src\incursa\protocol-lab-internal
+```
+
+If either path is not valid, pass `-ProtocolLabRoot <public-contract-root>` and
+`-ProtocolLabExecutionRoot <internal-runner-root>` to
+`Invoke-ProtocolLabLocalQuicBenchmark.ps1`, or set `PROTOCOL_LAB_ROOT` and
+`PROTOCOL_LAB_EXECUTION_ROOT` before using the xUnit bridge.
 
 To inspect or add a raw QUIC scenario, use these ProtocolLab files first:
 

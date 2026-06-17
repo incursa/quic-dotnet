@@ -8,6 +8,8 @@ param(
 
     [string] $ProtocolLabRoot = "C:\shared\src\incursa\protocol-lab",
 
+    [string] $ProtocolLabExecutionRoot,
+
     [switch] $NoRestore,
 
     [switch] $NoBuild,
@@ -74,6 +76,54 @@ function Get-RepoRoot {
     }
 
     return [System.IO.Path]::GetFullPath($candidate)
+}
+
+function Resolve-ProtocolLabExecutionRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ContractRoot,
+
+        [string] $RequestedExecutionRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $BasePath
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedExecutionRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $RequestedExecutionRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $environmentRoot = [Environment]::GetEnvironmentVariable("PROTOCOL_LAB_EXECUTION_ROOT")
+    if (-not [string]::IsNullOrWhiteSpace($environmentRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $environmentRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $candidates.Add($ContractRoot) | Out-Null
+    $candidates.Add((Join-Path (Split-Path -Parent $ContractRoot) "protocol-lab-internal")) | Out-Null
+
+    $checked = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in $candidates) {
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+
+        $resolvedCandidate = [System.IO.Path]::GetFullPath($candidate)
+        if ($checked.Contains($resolvedCandidate)) {
+            continue
+        }
+
+        $checked.Add($resolvedCandidate) | Out-Null
+        $benchmarkScript = Join-Path $resolvedCandidate "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+        $solutionPath = Join-Path $resolvedCandidate "Incursa.ProtocolLab.sln"
+        if ((Test-Path -LiteralPath $benchmarkScript -PathType Leaf) -and
+            (Test-Path -LiteralPath $solutionPath -PathType Leaf)) {
+            return $resolvedCandidate
+        }
+    }
+
+    throw "ProtocolLab benchmark execution root was not found. Checked: $($checked -join ', '). Expected scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1 and Incursa.ProtocolLab.sln. Keep public contracts in -ProtocolLabRoot and pass -ProtocolLabExecutionRoot for the runnable internal checkout."
 }
 
 function Get-SliceName {
@@ -215,8 +265,9 @@ $repetitions = if ($Lane -eq "Smoke") { 1 } else { 9 }
 $protocolLabSuite = "quic-transport-v1-comparison"
 $protocolLabImplementation = "incursa-raw-quic-adapter-v1"
 $resolvedProtocolLabRoot = Resolve-FullPath -Path $ProtocolLabRoot -BasePath $repoRoot
+$resolvedProtocolLabExecutionRoot = Resolve-ProtocolLabExecutionRoot -ContractRoot $resolvedProtocolLabRoot -RequestedExecutionRoot $ProtocolLabExecutionRoot -BasePath $repoRoot
 $protocolLabRunId = "$RunIdPrefix-$protocolLabSuite"
-$protocolLabRunRoot = Join-Path (Join-Path $resolvedProtocolLabRoot ".artifacts\runs") $protocolLabRunId
+$protocolLabRunRoot = Join-Path (Join-Path $resolvedProtocolLabExecutionRoot ".artifacts\runs") $protocolLabRunId
 $protocolLabAggregatePath = Join-Path $protocolLabRunRoot "aggregate-results.json"
 $protocolLabSummaryPath = Join-Path $protocolLabRunRoot "summary.md"
 $commands = New-Object System.Collections.Generic.List[object]
@@ -297,9 +348,10 @@ if ($shouldRunProtocolLab) {
     }
 
     $protocolLabScript = Join-Path $repoRoot "scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1"
-    $protocolLabBenchmarkScript = Join-Path $resolvedProtocolLabRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+    $protocolLabBenchmarkScript = Join-Path $resolvedProtocolLabExecutionRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
     $protocolLabArgs = @(
         "-ProtocolLabRoot", $resolvedProtocolLabRoot,
+        "-ProtocolLabExecutionRoot", $resolvedProtocolLabExecutionRoot,
         "-UseProjectReferences",
         "-Suite", $protocolLabSuite,
         "-Implementation", $protocolLabImplementation,
@@ -333,7 +385,7 @@ if ($shouldRunProtocolLab) {
     }) | Out-Null
 
     if (-not (Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf)) {
-        throw "ProtocolLab benchmark set script was not found: $protocolLabBenchmarkScript"
+        throw "ProtocolLab benchmark set script was not found in execution root: $protocolLabBenchmarkScript"
     }
 
     Invoke-LaneCommand -FileName $PowerShellPath -Arguments $protocolLabProcessArgs -WorkingDirectory $repoRoot -IsDryRun:$DryRun
@@ -401,6 +453,8 @@ if (-not $shouldRunProtocolLab) {
 }
 else {
     Add-SummaryLine $summary "- Suite: ``$protocolLabSuite``"
+    Add-SummaryLine $summary "- Contract root: ``$resolvedProtocolLabRoot``"
+    Add-SummaryLine $summary "- Execution root: ``$resolvedProtocolLabExecutionRoot``"
     Add-SummaryLine $summary "- Implementation: ``$protocolLabImplementation``"
     Add-SummaryLine $summary "- Scenario: ``$($surfaceConfig.ProtocolLabScenario)``"
     Add-SummaryLine $summary "- Duration seconds: ``$durationSeconds``"

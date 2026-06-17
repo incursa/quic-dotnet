@@ -2,6 +2,8 @@
 param(
     [string] $ProtocolLabRoot = "C:\shared\src\incursa\protocol-lab",
 
+    [string] $ProtocolLabExecutionRoot,
+
     [string] $OutputRoot = ".artifacts\protocol-lab\readiness",
 
     [string] $RunId = "protocol-lab-readiness-$((Get-Date -AsUTC).ToString('yyyyMMddTHHmmssZ'))",
@@ -39,6 +41,54 @@ function Get-RepoRoot {
     }
 
     return $candidate
+}
+
+function Resolve-ProtocolLabExecutionRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ContractRoot,
+
+        [string] $RequestedExecutionRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $BasePath
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedExecutionRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $RequestedExecutionRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $environmentRoot = [Environment]::GetEnvironmentVariable("PROTOCOL_LAB_EXECUTION_ROOT")
+    if (-not [string]::IsNullOrWhiteSpace($environmentRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $environmentRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $candidates.Add($ContractRoot) | Out-Null
+    $candidates.Add((Join-Path (Split-Path -Parent $ContractRoot) "protocol-lab-internal")) | Out-Null
+
+    $checked = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in $candidates) {
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+
+        $resolvedCandidate = [System.IO.Path]::GetFullPath($candidate)
+        if ($checked.Contains($resolvedCandidate)) {
+            continue
+        }
+
+        $checked.Add($resolvedCandidate) | Out-Null
+        $benchmarkScript = Join-Path $resolvedCandidate "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+        $solutionPath = Join-Path $resolvedCandidate "Incursa.ProtocolLab.sln"
+        if ((Test-Path -LiteralPath $benchmarkScript -PathType Leaf) -and
+            (Test-Path -LiteralPath $solutionPath -PathType Leaf)) {
+            return $resolvedCandidate
+        }
+    }
+
+    return $null
 }
 
 function Format-CommandLine {
@@ -231,7 +281,9 @@ $repoRoot = Get-RepoRoot
 $resolvedOutputRoot = Resolve-FullPath -Path $OutputRoot -BasePath $repoRoot
 $runRoot = Join-Path $resolvedOutputRoot $RunId
 $resolvedProtocolLabRoot = Resolve-FullPath -Path $ProtocolLabRoot -BasePath $repoRoot
-$protocolLabBenchmarkScript = Join-Path $resolvedProtocolLabRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+$resolvedProtocolLabExecutionRoot = Resolve-ProtocolLabExecutionRoot -ContractRoot $resolvedProtocolLabRoot -RequestedExecutionRoot $ProtocolLabExecutionRoot -BasePath $repoRoot
+$protocolLabBenchmarkRoot = if ([string]::IsNullOrWhiteSpace($resolvedProtocolLabExecutionRoot)) { $resolvedProtocolLabRoot } else { $resolvedProtocolLabExecutionRoot }
+$protocolLabBenchmarkScript = Join-Path $protocolLabBenchmarkRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
 
 if (-not (Test-Path -LiteralPath $resolvedProtocolLabRoot -PathType Container)) {
     throw "ProtocolLab root was not found: $resolvedProtocolLabRoot"
@@ -331,7 +383,8 @@ $performanceCommands = @(
 )
 
 $protocolLabPrerequisites = [ordered]@{
-    root = $resolvedProtocolLabRoot
+    contractRoot = $resolvedProtocolLabRoot
+    executionRoot = $resolvedProtocolLabExecutionRoot
     benchmarkSetScript = [ordered]@{
         path = $protocolLabBenchmarkScript
         present = Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf
@@ -372,6 +425,7 @@ $manifest = [ordered]@{
     createdUtc = (Get-Date -AsUTC).ToString("o")
     repoRoot = $repoRoot
     protocolLabRoot = $resolvedProtocolLabRoot
+    protocolLabExecutionRoot = $resolvedProtocolLabExecutionRoot
     git = [ordered]@{
         commit = $gitCommit
         state = $gitState
@@ -444,6 +498,8 @@ else {
 Add-Line $summary ""
 Add-Line $summary "## Performance And Controller Commands"
 Add-Line $summary ""
+Add-Line $summary "- ProtocolLab contract root: ``$($protocolLabPrerequisites.contractRoot)``"
+Add-Line $summary "- ProtocolLab execution root: ``$($protocolLabPrerequisites.executionRoot)``"
 Add-Line $summary "- ProtocolLab benchmark set script: ``$($protocolLabPrerequisites.benchmarkSetScript.path)``"
 Add-Line $summary "- ProtocolLab benchmark set script present: ``$($protocolLabPrerequisites.benchmarkSetScript.present)``"
 Add-Line $summary ""

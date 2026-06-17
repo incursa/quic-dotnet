@@ -2,6 +2,8 @@
 param(
     [string] $ProtocolLabRoot = "C:\shared\src\incursa\protocol-lab",
 
+    [string] $ProtocolLabExecutionRoot,
+
     [string[]] $Suite = @("h3-local-v1-comparison"),
 
     [ValidateSet("Quick", "Regression", "Comparison")]
@@ -141,6 +143,56 @@ function Assert-PathUnderRoot {
         -not $fullPath.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
         throw "Path '$fullPath' is outside expected root '$fullRoot'."
     }
+}
+
+function Resolve-ProtocolLabExecutionRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ContractRoot,
+
+        [string] $RequestedExecutionRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $BasePath
+    )
+
+    $candidates = New-Object System.Collections.Generic.List[string]
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedExecutionRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $RequestedExecutionRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $environmentRoot = [Environment]::GetEnvironmentVariable("PROTOCOL_LAB_EXECUTION_ROOT")
+    if (-not [string]::IsNullOrWhiteSpace($environmentRoot)) {
+        $candidates.Add((Resolve-FullPath -Path $environmentRoot -BasePath $BasePath)) | Out-Null
+    }
+
+    $candidates.Add($ContractRoot) | Out-Null
+
+    $siblingInternalRoot = Join-Path (Split-Path -Parent $ContractRoot) "protocol-lab-internal"
+    $candidates.Add($siblingInternalRoot) | Out-Null
+
+    $checked = New-Object System.Collections.Generic.List[string]
+    foreach ($candidate in $candidates) {
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+
+        $resolvedCandidate = [System.IO.Path]::GetFullPath($candidate)
+        if ($checked.Contains($resolvedCandidate)) {
+            continue
+        }
+
+        $checked.Add($resolvedCandidate) | Out-Null
+        $benchmarkScript = Join-Path $resolvedCandidate "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+        $solutionPath = Join-Path $resolvedCandidate "Incursa.ProtocolLab.sln"
+        if ((Test-Path -LiteralPath $benchmarkScript -PathType Leaf) -and
+            (Test-Path -LiteralPath $solutionPath -PathType Leaf)) {
+            return $resolvedCandidate
+        }
+    }
+
+    throw "ProtocolLab benchmark execution root was not found. Checked: $($checked -join ', '). Expected scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1 and Incursa.ProtocolLab.sln. Keep public contracts in -ProtocolLabRoot and pass -ProtocolLabExecutionRoot for the runnable internal checkout."
 }
 
 function Format-CommandLine {
@@ -611,9 +663,10 @@ if (-not (Test-Path -LiteralPath $resolvedProtocolLabRoot)) {
     throw "ProtocolLab root was not found: $resolvedProtocolLabRoot"
 }
 
-$benchmarkScript = Join-Path $resolvedProtocolLabRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+$resolvedProtocolLabExecutionRoot = Resolve-ProtocolLabExecutionRoot -ContractRoot $resolvedProtocolLabRoot -RequestedExecutionRoot $ProtocolLabExecutionRoot -BasePath $repoRoot
+$benchmarkScript = Join-Path $resolvedProtocolLabExecutionRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
 if (-not (Test-Path -LiteralPath $benchmarkScript)) {
-    throw "ProtocolLab benchmark set script was not found: $benchmarkScript"
+    throw "ProtocolLab benchmark set script was not found in execution root: $benchmarkScript"
 }
 
 if ($UseProjectReferences -and $UseLocalPackages) {
@@ -622,35 +675,35 @@ if ($UseProjectReferences -and $UseLocalPackages) {
 
 $useProjectReferenceMode = [bool]$UseProjectReferences
 $useLocalPackageMode = -not $useProjectReferenceMode
-$protocolLabArtifactsRoot = Join-Path $resolvedProtocolLabRoot ".artifacts"
+$protocolLabArtifactsRoot = Join-Path $resolvedProtocolLabExecutionRoot ".artifacts"
 $resolvedFeedRoot = $null
 $resolvedPackageCacheRoot = $null
 $resolvedNuGetConfigPath = $null
 
 if ($useLocalPackageMode) {
     if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
-        $PackageVersion = Get-ProtocolLabPackageVersion -ProtocolLabDirectory $resolvedProtocolLabRoot
+        $PackageVersion = Get-ProtocolLabPackageVersion -ProtocolLabDirectory $resolvedProtocolLabExecutionRoot
     }
 
     $resolvedFeedRoot = if ([string]::IsNullOrWhiteSpace($LocalFeedRoot)) {
         Join-Path $protocolLabArtifactsRoot "local-quic-feed"
     }
     else {
-        Resolve-FullPath -Path $LocalFeedRoot -BasePath $resolvedProtocolLabRoot
+        Resolve-FullPath -Path $LocalFeedRoot -BasePath $resolvedProtocolLabExecutionRoot
     }
 
     $resolvedPackageCacheRoot = if ([string]::IsNullOrWhiteSpace($LocalPackageCacheRoot)) {
         Join-Path $protocolLabArtifactsRoot "nuget-packages-local-quic"
     }
     else {
-        Resolve-FullPath -Path $LocalPackageCacheRoot -BasePath $resolvedProtocolLabRoot
+        Resolve-FullPath -Path $LocalPackageCacheRoot -BasePath $resolvedProtocolLabExecutionRoot
     }
 
     $resolvedNuGetConfigPath = if ([string]::IsNullOrWhiteSpace($LocalNuGetConfigPath)) {
         Join-Path $protocolLabArtifactsRoot "local-quic.NuGet.config"
     }
     else {
-        Resolve-FullPath -Path $LocalNuGetConfigPath -BasePath $resolvedProtocolLabRoot
+        Resolve-FullPath -Path $LocalNuGetConfigPath -BasePath $resolvedProtocolLabExecutionRoot
     }
 
     Assert-PathUnderRoot -Path $resolvedFeedRoot -Root $protocolLabArtifactsRoot
@@ -676,7 +729,8 @@ foreach ($packageProject in $packageProjects) {
 
 Write-Host "ProtocolLab local Incursa.Quic benchmark loop" -ForegroundColor Cyan
 Write-Host "  quic-dotnet: $repoRoot"
-Write-Host "  protocol-lab: $resolvedProtocolLabRoot"
+Write-Host "  protocol-lab contracts: $resolvedProtocolLabRoot"
+Write-Host "  protocol-lab execution: $resolvedProtocolLabExecutionRoot"
 Write-Host "  dependency mode: $(if ($useProjectReferenceMode) { 'project references' } else { 'local packages' })"
 if ($useLocalPackageMode) {
     Write-Host "  package version: $PackageVersion"
@@ -758,7 +812,7 @@ if ($useLocalPackageMode) {
     }
 }
 
-$restoreArgs = @("restore", (Join-Path $resolvedProtocolLabRoot "Incursa.ProtocolLab.sln"))
+$restoreArgs = @("restore", (Join-Path $resolvedProtocolLabExecutionRoot "Incursa.ProtocolLab.sln"))
 if ($useLocalPackageMode) {
     $restoreArgs += @(
         "--configfile",
@@ -781,7 +835,7 @@ try {
     }
 
     if (-not $NoRestore) {
-        Invoke-LoggedCommand -FileName $DotNetPath -Arguments $restoreArgs -WorkingDirectory $resolvedProtocolLabRoot
+        Invoke-LoggedCommand -FileName $DotNetPath -Arguments $restoreArgs -WorkingDirectory $resolvedProtocolLabExecutionRoot
     }
     else {
         Write-Host ""
@@ -890,7 +944,7 @@ try {
         $benchmarkArgs += "-DryRun"
     }
 
-    $benchmarkExitCode = Invoke-LoggedPowerShellScriptForExitCode -PowerShellDisplayName $PowerShellPath -ScriptPath $benchmarkScript -Arguments $benchmarkArgs -WorkingDirectory $resolvedProtocolLabRoot
+    $benchmarkExitCode = Invoke-LoggedPowerShellScriptForExitCode -PowerShellDisplayName $PowerShellPath -ScriptPath $benchmarkScript -Arguments $benchmarkArgs -WorkingDirectory $resolvedProtocolLabExecutionRoot
     if ($benchmarkExitCode -ne 0) {
         Write-Warning "ProtocolLab benchmark command exited with code $benchmarkExitCode."
         if (-not $UploadAfterRun) {
@@ -899,7 +953,7 @@ try {
     }
 
     if ($UploadAfterRun) {
-        $uploadScript = Join-Path $resolvedProtocolLabRoot "scripts\publication\Upload-ProtocolLabReportBundle.ps1"
+        $uploadScript = Join-Path $resolvedProtocolLabExecutionRoot "scripts\publication\Upload-ProtocolLabReportBundle.ps1"
         if (-not (Test-Path -LiteralPath $uploadScript)) {
             throw "ProtocolLab R2 upload script was not found: $uploadScript"
         }
@@ -909,7 +963,7 @@ try {
         }
 
         $runId = "$RunIdPrefix-$($selectedSuites[0])"
-        $bundleRoot = Resolve-FullPath -Path (Join-Path $PublicationOutputRoot $runId) -BasePath $resolvedProtocolLabRoot
+        $bundleRoot = Resolve-FullPath -Path (Join-Path $PublicationOutputRoot $runId) -BasePath $resolvedProtocolLabExecutionRoot
         if (-not $DryRun -and -not (Test-Path -LiteralPath $bundleRoot)) {
             throw "Publication bundle was not found after the run: $bundleRoot"
         }
@@ -941,7 +995,7 @@ try {
             $uploadArgs += "-DryRun"
         }
 
-        Invoke-LoggedPowerShellScript -PowerShellDisplayName $PowerShellPath -ScriptPath $uploadScript -Arguments $uploadArgs -WorkingDirectory $resolvedProtocolLabRoot
+        Invoke-LoggedPowerShellScript -PowerShellDisplayName $PowerShellPath -ScriptPath $uploadScript -Arguments $uploadArgs -WorkingDirectory $resolvedProtocolLabExecutionRoot
 
         if ($benchmarkExitCode -ne 0) {
             throw "Benchmark command failed with exit code $benchmarkExitCode after the publication bundle upload completed."

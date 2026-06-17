@@ -348,6 +348,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("live encrypted DNS establishment", script);
         Assert.Contains("readiness-manifest.json", script);
         Assert.Contains("protocolLabPrerequisites", script);
+        Assert.Contains("protocolLabExecutionRoot", script);
+        Assert.Contains("PROTOCOL_LAB_EXECUTION_ROOT", script);
         Assert.Contains("scripts\\benchmarking\\Invoke-ProtocolLabBenchmarkSet.ps1", script);
 
         Assert.Contains("ProtocolLab Readiness Evidence", readme);
@@ -362,9 +364,11 @@ public sealed class ProtocolLabPackageTemplateTests
         var script = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "Invoke-QuicPerformanceLane.ps1"));
 
         Assert.Contains("scripts\\benchmarking\\Invoke-ProtocolLabBenchmarkSet.ps1", script);
+        Assert.Contains("ProtocolLabExecutionRoot", script);
+        Assert.Contains("PROTOCOL_LAB_EXECUTION_ROOT", script);
         Assert.Contains("ProtocolLab benchmark set script was not found", script);
         Assert.Contains("Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf", script);
-        Assert.Contains("throw \"ProtocolLab benchmark set script was not found: $protocolLabBenchmarkScript\"", script);
+        Assert.Contains("throw \"ProtocolLab benchmark set script was not found in execution root: $protocolLabBenchmarkScript\"", script);
     }
 
     private static void AssertPackageEnvironment(JsonElement[] environments, string os, string arch)
