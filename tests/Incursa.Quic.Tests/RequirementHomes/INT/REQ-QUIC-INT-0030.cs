@@ -66,7 +66,8 @@ public sealed class REQ_QUIC_INT_0030
         Assert.Contains("broader HTTP/3", spec, StringComparison.Ordinal);
         Assert.Contains("must not be marketed as complete RFC 9114 or RFC 9204 coverage", architecture, StringComparison.Ordinal);
         Assert.Contains("broad all-upstream HTTP/3 peer matrix promotion", workItem, StringComparison.Ordinal);
-        Assert.Contains("A later runtime slice must close that live runner stall", verification, StringComparison.Ordinal);
+        Assert.Contains("the 2026-06-16 live local quic-go/quic-go `http3` runner cell", verification, StringComparison.Ordinal);
+        Assert.Contains("does not promote broad HTTP/3 production hosting", verification, StringComparison.Ordinal);
         Assert.Contains("broader HTTP/3 production hosting", currentStatus, StringComparison.Ordinal);
         Assert.DoesNotContain("complete RFC 9114 support", spec, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("complete RFC 9204 support", spec, StringComparison.OrdinalIgnoreCase);
