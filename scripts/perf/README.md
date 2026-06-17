@@ -116,11 +116,17 @@ Current local raw QUIC execution status:
   `protocol-lab-internal`.
 - The Incursa raw QUIC adapter validates and starts a local QUIC endpoint for
   `quic.transport.multiplex.100x64kb`.
-- The remaining local blocker is the ProtocolLab `quic-go-raw-load` source
-  directory. Its manifest invokes `go -C src/Incursa.ProtocolLab.Adapters.QuicGo
-  run ./cmd/quic-go-raw-load`, but that directory is not present in the current
-  `protocol-lab-internal` checkout. Until that Go load generator is restored or
-  replaced, benchmark execution stops after validation with a load-tool failure.
+- `protocol-lab-internal` includes the local `quic-go-raw-load` source
+  directory at `src\Incursa.ProtocolLab.Adapters.QuicGo`. Its manifest invokes
+  `go -C src/Incursa.ProtocolLab.Adapters.QuicGo run ./cmd/quic-go-raw-load`.
+- Local source-reference proof now reaches the raw QUIC load generator and
+  produces parseable metrics for `quic.transport.multiplex.100x64kb` and
+  `quic.transport.duplex-streams`.
+  Successful proof artifacts should show `validation=Passed`,
+  `benchmark=succeeded`, and `loadTool=quic-go-raw-load`.
+- This remains local shared-host evidence. It is useful for regression and
+  operator readiness, but not publishable benchmark evidence without isolated
+  runner resources and the live worker conditions listed in readiness evidence.
 
 ## ProtocolLab Local QUIC Benchmark Loop
 
