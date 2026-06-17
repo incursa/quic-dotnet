@@ -112,10 +112,12 @@ $runRoots = @(
 
 For each supplied run root, the manifest records `aggregate-results.json`
 identity, evidence class, claim level, per-cell local repeatability status,
-relative-range quality gates, publishability blockers, and a SHA-256 checksum
-inventory of retained run artifacts. Single-repetition shared-host runs remain
-useful local proof, but they are explicitly blocked from publishable benchmark
-claims.
+relative-range quality gates, isolated-local gate status, exact blocker details,
+and a SHA-256 checksum inventory of retained run artifacts. The per-cell
+environment gates classify host topology, CPU isolation, network isolation,
+target resource metrics, and load-generator saturation telemetry. Shared-host
+or loopback runs remain useful local proof, but they are explicitly blocked from
+isolated-local and publishable benchmark claims until those gates pass.
 
 The generated manifest separates local developer/regression evidence from live
 provider/platform execution. Live DNSSEC validation, provider publication,

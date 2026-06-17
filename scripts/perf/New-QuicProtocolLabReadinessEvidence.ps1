@@ -557,6 +557,188 @@ function Get-QualityGate {
     }
 }
 
+function Test-AnyTextMatch {
+    param(
+        [AllowNull()]
+        $Values,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Pattern
+    )
+
+    foreach ($value in @($Values)) {
+        if ([string]$value -match $Pattern) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function New-BlockerDetail {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Code,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Reason,
+
+        [Parameter(Mandatory = $true)]
+        [string] $LocalActionability
+    )
+
+    return [ordered]@{
+        code = $Code
+        reason = $Reason
+        localActionability = $LocalActionability
+    }
+}
+
+function Get-EnvironmentGateAssessment {
+    param($Cell)
+
+    $evidence = Get-ObjectValue -InputObject $Cell -Name "evidence"
+    $warnings = @(
+        @(Get-ObjectValue -InputObject $Cell -Name "warnings" -Default @())
+        @(Get-ObjectValue -InputObject $evidence -Name "comparabilityWarnings" -Default @())
+        @(Get-ObjectValue -InputObject $evidence -Name "evidenceReasons" -Default @())
+    ) | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    $executionProfile = [string](Get-ObjectValue -InputObject $Cell -Name "executionProfile" -Default "")
+    $targetExecutionMode = [string](Get-ObjectValue -InputObject $Cell -Name "targetExecutionMode" -Default "")
+    $loadToolMode = [string](Get-ObjectValue -InputObject $Cell -Name "loadToolMode" -Default "")
+    $loadToolCategory = [string](Get-ObjectValue -InputObject $Cell -Name "loadToolCategory" -Default "")
+    $targetMetricsCaptured = [int](Get-ObjectValue -InputObject $Cell -Name "targetProcessMetricsCapturedCount" -Default 0) +
+        [int](Get-ObjectValue -InputObject $Cell -Name "targetDockerMetricsCapturedCount" -Default 0)
+    $targetMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "targetProcessMetricsMissingCount" -Default 0) +
+        [int](Get-ObjectValue -InputObject $Cell -Name "targetDockerMetricsMissingCount" -Default 0)
+    $loadToolMetricsCaptured = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsCapturedCount" -Default 0)
+    $loadToolMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsMissingCount" -Default 0)
+    $targetMetricWarnings = @($warnings | Where-Object { $_ -match "target-process|target-resource|Target process metrics|adapter-derived" })
+    $loadSaturationWarnings = @(
+        @(Get-ObjectValue -InputObject $Cell -Name "saturationWarnings" -Default @())
+        @($warnings | Where-Object { $_ -match "load-generator|saturation|overload|connection-pressure" })
+    ) | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
+
+    $isLoopbackOrSameHost = Test-AnyTextMatch -Values $warnings -Pattern "localhost|127\.0\.0\.1|single-machine|shared-host|same local environment"
+    $hostClassification = if ($isLoopbackOrSameHost) {
+        "same-host-loopback"
+    }
+    elseif ($executionProfile -match "local" -or $targetExecutionMode -eq "process") {
+        "local-process"
+    }
+    else {
+        "unknown-or-separated"
+    }
+
+    $blockerDetails = New-Object System.Collections.ArrayList
+    if ($isLoopbackOrSameHost) {
+        $blockerDetails.Add((New-BlockerDetail `
+                    -Code "same-host-loopback-target-and-load-generator" `
+                    -Reason "The target URL/control plane uses localhost or the aggregate reports a single-machine/shared-host run." `
+                    -LocalActionability "Needs separate SUT/load-generator resources or an equivalent isolated lab topology.")) | Out-Null
+    }
+
+    $cpuIsolationStatus = "unknown"
+    $cpuIsolationReasons = New-Object System.Collections.Generic.List[string]
+    if (Test-AnyTextMatch -Values $warnings -Pattern "no-cpu-isolation") {
+        $cpuIsolationStatus = "not-proven"
+        $cpuIsolationReasons.Add("Aggregate reports no-cpu-isolation.") | Out-Null
+        $blockerDetails.Add((New-BlockerDetail `
+                    -Code "cpu-isolation-unattested-local-process" `
+                    -Reason "The run did not record cpuset/container CPU limits, bare-metal reservation policy, or equivalent CPU isolation attestation." `
+                    -LocalActionability "Needs privileged host/container configuration or an operator attestation captured with the run.")) | Out-Null
+    }
+
+    $networkIsolationStatus = "unknown"
+    $networkIsolationReasons = New-Object System.Collections.Generic.List[string]
+    if (Test-AnyTextMatch -Values $warnings -Pattern "no-network-isolation|localhost|127\.0\.0\.1|single-machine|shared-host|same local environment") {
+        $networkIsolationStatus = "not-proven"
+        $networkIsolationReasons.Add("Aggregate reports localhost/shared-host execution or no-network-isolation.") | Out-Null
+        $blockerDetails.Add((New-BlockerDetail `
+                    -Code "network-isolation-unattested-loopback" `
+                    -Reason "The run did not record a separated physical/virtual network path; loopback or same-host execution is present." `
+                    -LocalActionability "Needs a separated lab network path, NIC/virtual-network metadata, and no loopback target URL.")) | Out-Null
+    }
+
+    $targetResourceStatus = if ($targetMetricsCaptured -gt 0) {
+        if (Test-AnyTextMatch -Values $targetMetricWarnings -Pattern "adapter-derived") { "adapter-derived" } else { "captured" }
+    }
+    else {
+        "missing"
+    }
+    $targetUnavailableReasons = @()
+    if ($targetResourceStatus -eq "missing") {
+        $targetUnavailableReasons = @(
+            "No target process or target container resource samples were recorded in aggregate-results.json.",
+            "Adapter-backed or externally managed targets need adapter-derived metrics, direct process sampling, or container metrics."
+        )
+        $blockerDetails.Add((New-BlockerDetail `
+                    -Code "target-resource-metrics-missing" `
+                    -Reason "The aggregate reports zero captured target process/container metric repetitions." `
+                    -LocalActionability "Locally actionable by capturing adapter process metrics, direct process metrics, or target container stats.")) | Out-Null
+    }
+
+    $loadGeneratorStatus = if ($loadToolMetricsCaptured -gt 0) {
+        if (Test-AnyTextMatch -Values $loadSaturationWarnings -Pattern "saturation-not-detected") { "not-saturated" } else { "telemetry-captured" }
+    }
+    elseif ($loadToolMode -eq "process" -and -not (Test-AnyTextMatch -Values $loadSaturationWarnings -Pattern "overload|connection-pressure")) {
+        "process-heuristic-only"
+    }
+    else {
+        "not-proven"
+    }
+    $loadUnavailableReasons = @()
+    if ($loadGeneratorStatus -ne "not-saturated" -and $loadGeneratorStatus -ne "telemetry-captured") {
+        $loadUnavailableReasons = @(
+            "The selected load tool mode is '$loadToolMode' with category '$loadToolCategory'.",
+            "No load-generator CPU/memory samples were recorded, so saturation cannot be ruled out from telemetry."
+        )
+        $blockerDetails.Add((New-BlockerDetail `
+                    -Code "load-generator-process-telemetry-unavailable" `
+                    -Reason "The load generator ran without captured CPU/memory telemetry; stderr heuristics are not enough for isolated-local proof." `
+                    -LocalActionability "Needs docker stats, process sampling, or another retained load-generator telemetry source.")) | Out-Null
+    }
+
+    $isolatedLocalBlockers = @($blockerDetails | ForEach-Object { $_.code } | Sort-Object -Unique)
+    return [ordered]@{
+        hostClassification = [ordered]@{
+            status = $hostClassification
+            executionProfile = $executionProfile
+            targetExecutionMode = $targetExecutionMode
+            loadToolMode = $loadToolMode
+            loadToolCategory = $loadToolCategory
+        }
+        cpuIsolation = [ordered]@{
+            status = $cpuIsolationStatus
+            reasons = @($cpuIsolationReasons)
+        }
+        networkIsolation = [ordered]@{
+            status = $networkIsolationStatus
+            reasons = @($networkIsolationReasons)
+        }
+        targetResourceMetrics = [ordered]@{
+            status = $targetResourceStatus
+            capturedCount = $targetMetricsCaptured
+            missingCount = $targetMetricsMissing
+            warnings = @($targetMetricWarnings | Sort-Object -Unique)
+            unavailableReasons = @($targetUnavailableReasons)
+        }
+        loadGeneratorSaturation = [ordered]@{
+            status = $loadGeneratorStatus
+            dockerMetricsCapturedCount = $loadToolMetricsCaptured
+            dockerMetricsMissingCount = $loadToolMetricsMissing
+            warnings = @($loadSaturationWarnings)
+            unavailableReasons = @($loadUnavailableReasons)
+        }
+        isolatedLocalGate = [ordered]@{
+            status = if ($isolatedLocalBlockers.Count -eq 0) { "passed" } else { "blocked" }
+            blockers = @($isolatedLocalBlockers)
+            blockerDetails = @($blockerDetails)
+        }
+    }
+}
+
 function Read-ProtocolLabRunReadiness {
     param(
         [Parameter(Mandatory = $true)]
@@ -587,6 +769,7 @@ function Read-ProtocolLabRunReadiness {
     $cellReadiness = @()
     foreach ($cell in $aggregates) {
         $evidenceClass = Get-ReadinessEvidenceClass -Aggregate $cell
+        $environmentGates = Get-EnvironmentGateAssessment -Cell $cell
         $qualityGate = Get-QualityGate `
             -Aggregate $cell `
             -MinimumPublishableRepetitions $MinimumPublishableRepetitions `
@@ -600,19 +783,22 @@ function Read-ProtocolLabRunReadiness {
         if ($evidenceClass -ne "publishable") {
             $publishableBlockers.Add("evidence-class-is-$evidenceClass") | Out-Null
         }
+        foreach ($blocker in @($environmentGates.isolatedLocalGate.blockers)) {
+            $publishableBlockers.Add([string]$blocker) | Out-Null
+        }
         foreach ($warning in @($cell.warnings)) {
             $text = [string]$warning
             if ($text -match "localhost|single-machine|shared-host") {
-                $publishableBlockers.Add("shared-host-or-localhost") | Out-Null
+                $publishableBlockers.Add("same-host-loopback-target-and-load-generator") | Out-Null
             }
             elseif ($text -match "no-cpu-isolation") {
-                $publishableBlockers.Add("cpu-isolation-not-proven") | Out-Null
+                $publishableBlockers.Add("cpu-isolation-unattested-local-process") | Out-Null
             }
             elseif ($text -match "no-network-isolation") {
-                $publishableBlockers.Add("network-isolation-not-proven") | Out-Null
+                $publishableBlockers.Add("network-isolation-unattested-loopback") | Out-Null
             }
             elseif ($text -match "no-load-generator-saturation-check|load-generator-cpu-not-captured") {
-                $publishableBlockers.Add("load-generator-saturation-not-proven") | Out-Null
+                $publishableBlockers.Add("load-generator-process-telemetry-unavailable") | Out-Null
             }
             elseif ($text -match "no-target-resource-metrics") {
                 $publishableBlockers.Add("target-resource-metrics-missing") | Out-Null
@@ -630,10 +816,12 @@ function Read-ProtocolLabRunReadiness {
             evidenceClass = $evidenceClass
             protocolLabEvidenceClass = [string](Get-ObjectValue -InputObject (Get-ObjectValue -InputObject $cell -Name "evidence") -Name "evidenceClass" -Default "")
             comparabilityStatus = [string](Get-ObjectValue -InputObject (Get-ObjectValue -InputObject $cell -Name "evidence") -Name "comparabilityStatus" -Default "")
+            environmentGates = $environmentGates
             qualityGate = $qualityGate
             publishability = [ordered]@{
                 status = "blocked"
                 blockers = @($publishableBlockers | Sort-Object -Unique)
+                blockerDetails = @($environmentGates.isolatedLocalGate.blockerDetails)
             }
         }
     }
@@ -1052,6 +1240,14 @@ foreach ($runEvidence in @($protocolLabRunEvidence)) {
         }
         if (@($cell.publishability.blockers).Count -gt 0) {
             Add-Line $summary "    - Publishability blockers: ``$(@($cell.publishability.blockers) -join ', ')``"
+        }
+        Add-Line $summary "    - Host classification: ``$($cell.environmentGates.hostClassification.status)``"
+        Add-Line $summary "    - CPU isolation: ``$($cell.environmentGates.cpuIsolation.status)``"
+        Add-Line $summary "    - Network isolation: ``$($cell.environmentGates.networkIsolation.status)``"
+        Add-Line $summary "    - Target resource metrics: ``$($cell.environmentGates.targetResourceMetrics.status)`` (captured ``$($cell.environmentGates.targetResourceMetrics.capturedCount)``, missing ``$($cell.environmentGates.targetResourceMetrics.missingCount)``)"
+        Add-Line $summary "    - Load-generator saturation: ``$($cell.environmentGates.loadGeneratorSaturation.status)``"
+        if (@($cell.environmentGates.isolatedLocalGate.blockers).Count -gt 0) {
+            Add-Line $summary "    - Isolated-local blockers: ``$(@($cell.environmentGates.isolatedLocalGate.blockers) -join ', ')``"
         }
     }
 }

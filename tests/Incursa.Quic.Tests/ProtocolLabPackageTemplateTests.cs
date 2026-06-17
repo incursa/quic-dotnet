@@ -344,7 +344,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("checksumInventory", script);
         Assert.Contains("publishableRunbook", script);
         Assert.Contains("repeat-count-below-publishable-minimum", script);
-        Assert.Contains("shared-host-or-localhost", script);
+        Assert.Contains("environmentGates", script);
+        Assert.Contains("same-host-loopback-target-and-load-generator", script);
+        Assert.Contains("cpu-isolation-unattested-local-process", script);
+        Assert.Contains("network-isolation-unattested-loopback", script);
+        Assert.Contains("load-generator-process-telemetry-unavailable", script);
         Assert.Contains("http3-local-live-current", script);
         Assert.Contains("runner-report.json", script);
         Assert.Contains("Raw QUIC multiplex smoke", script);
@@ -369,6 +373,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("New-QuicProtocolLabReadinessEvidence.ps1", readme);
         Assert.Contains("credential, authority", readme);
         Assert.Contains("publishable benchmark evidence", readme);
+        Assert.Contains("isolated-local gate status", readme);
     }
 
     [Fact]
@@ -413,8 +418,13 @@ public sealed class ProtocolLabPackageTemplateTests
                   "executionProfile": "local-process",
                   "loadProfileId": "local-comparison",
                   "loadTool": "quic-go-raw-load",
+                  "loadToolMode": "process",
                   "loadToolCategory": "managed-lab",
                   "targetExecutionMode": "process",
+                  "targetProcessMetricsCapturedCount": 0,
+                  "targetProcessMetricsMissingCount": 3,
+                  "loadToolDockerMetricsCapturedCount": 0,
+                  "loadToolDockerMetricsMissingCount": 0,
                   "repetitions": 3,
                   "validation": { "passed": 3, "failed": 0, "unsupported": 0, "notApplicable": 0, "inconclusive": 0, "infrastructureFailure": 0 },
                   "failedRequests": 0,
@@ -481,7 +491,17 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.Equal("blocked", cell.GetProperty("publishability").GetProperty("status").GetString());
             Assert.Contains(
                 cell.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "same-host-loopback-target-and-load-generator");
+            Assert.DoesNotContain(
+                cell.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
                 blocker => blocker.GetString() == "shared-host-or-localhost");
+            var gates = cell.GetProperty("environmentGates");
+            Assert.Equal("same-host-loopback", gates.GetProperty("hostClassification").GetProperty("status").GetString());
+            Assert.Equal("not-proven", gates.GetProperty("cpuIsolation").GetProperty("status").GetString());
+            Assert.Equal("not-proven", gates.GetProperty("networkIsolation").GetProperty("status").GetString());
+            Assert.Equal("missing", gates.GetProperty("targetResourceMetrics").GetProperty("status").GetString());
+            Assert.Equal("process-heuristic-only", gates.GetProperty("loadGeneratorSaturation").GetProperty("status").GetString());
+            Assert.Equal("blocked", gates.GetProperty("isolatedLocalGate").GetProperty("status").GetString());
         }
         finally
         {
