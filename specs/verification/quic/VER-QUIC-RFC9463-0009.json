@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0009",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Host Resolver Installation Planning Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0009",
+    "WI-QUIC-RFC9463-0009"
+  ],
+  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic host resolver installation planning.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0119"
+  ],
+  "scope": "This verification covers global installation planning from service-binding and discovery inputs, fallback resolver preservation, split-tunnel domain scoping from provisioning input, and blocked non-installable plans for explicit Do53 preference or untrusted NULL-authenticated provisioning.",
+  "preconditions": [
+    "The caller supplies already-validated SVCB, discovery, or provisioning client plans.",
+    "A separate platform adapter is responsible for applying the resulting plan to the host resolver."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsHostResolverInstallationPlannerTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused planner tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage remains trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs"
+  ],
+  "status_summary": "Host resolver installation is locally narrowed to deterministic planning. Platform resolver mutation remains external adapter work."
+}

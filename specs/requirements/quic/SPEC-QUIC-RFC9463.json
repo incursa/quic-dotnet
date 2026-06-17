@@ -31,7 +31,10 @@
     "WI-QUIC-RFC9463-0007",
     "ARC-QUIC-RFC9463-0008",
     "VER-QUIC-RFC9463-0008",
-    "WI-QUIC-RFC9463-0008"
+    "WI-QUIC-RFC9463-0008",
+    "ARC-QUIC-RFC9463-0009",
+    "VER-QUIC-RFC9463-0009",
+    "WI-QUIC-RFC9463-0009"
   ],
   "requirements": [
     {
@@ -2640,6 +2643,36 @@
       },
       "notes": [
         "This requirement covers local scalar planning only. Live DoT, DoQ, DoH, IKEv2, IPsec, DNS provider, and operating-system resolver integration remain adapter or operational work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0119",
+      "title": "Plan host resolver installation without platform mutation",
+      "statement": "Before mutating operating-system resolver state, the encrypted DNS client planning layer MUST produce a deterministic host-resolver installation plan from RFC 9461 SVCB endpoint plans, RFC 9463 discovery plans, and RFC 9464 provisioning plans, preserving encrypted session attempts, cleartext fallback resolver candidates, split-tunnel internal domains, installation scope, and policy-blocked states without invoking platform resolver APIs.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.2 RFC9463-S3P2-B3-P3-S1",
+          "RFC 9463 Section 3.2 RFC9463-S3P2-B3-P3-S2",
+          "RFC 9464 Section 4.3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.2",
+          "https://www.rfc-editor.org/rfc/rfc9464.html#section-4.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::ServiceBindingPlanCreatesGlobalHostResolverInstallationPlan",
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanPreservesEncryptedAttemptsAndFallbackResolvers",
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::DiscoveryPlanThatPrefersDo53BlocksEncryptedResolverInstallation",
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::ProvisioningSplitTunnelPlanScopesInstallationToInternalDomains",
+          "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs::NullAuthenticatedProvisioningBlocksHostResolverInstallation"
+        ]
+      },
+      "notes": [
+        "This requirement covers the local installation plan only. Applying resolver state remains platform adapter work."
       ]
     }
   ]

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0009",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Host Resolver Installation Planning Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the local host-resolver installation planning boundary for encrypted DNS discovery and provisioning inputs.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "SPEC-QUIC-RFC9461",
+    "SPEC-QUIC-RFC9464",
+    "WI-QUIC-RFC9463-0009",
+    "VER-QUIC-RFC9463-0009"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0119"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsHostResolverInstallationStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsHostResolverInstallationPlannerTests.cs"
+  ],
+  "design_summary": "The installation planner composes the encrypted DNS session-attempt planner with existing RFC 9461, RFC 9463, and RFC 9464 client plans. It produces immutable resolver installation plans that record readiness status, encrypted session attempts, cleartext fallback resolver candidates, split-tunnel internal domains, global versus internal-only scope, and whether a platform resolver adapter is required. Policy-blocked inputs such as explicit Do53 preference and untrusted NULL-authenticated provisioning return blocked plans without encrypted attempts.",
+  "data_and_state_considerations": "The planner is side-effect free. It does not call Windows, Linux, or macOS resolver APIs; does not write system configuration; does not open network sockets; and does not mutate routing or DNS provider state.",
+  "edge_cases_and_constraints": [
+    "RFC 9461 service-binding plans produce global installation plans from selected encrypted endpoints.",
+    "RFC 9463 discovery plans preserve Do53 fallback candidates only when encrypted connection failure fallback is allowed.",
+    "RFC 9464 split-tunnel plans preserve normalized internal domains and scope encrypted installation to those domains.",
+    "Policy-blocked inputs produce non-installable plans with no platform adapter requirement."
+  ],
+  "risks": [
+    "Actual resolver installation semantics vary by operating system and remain outside this local plan.",
+    "The plan does not prove live encrypted DNS connectivity or certificate validation beyond already-modeled local policy."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The artifact converts host resolver installation from an unstructured future item into a deterministic platform-adapter input while keeping OS mutation explicitly external."
+    }
+  ]
+}

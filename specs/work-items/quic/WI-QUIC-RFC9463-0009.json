@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Host Resolver Installation Planning Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0009",
+    "VER-QUIC-RFC9463-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0119"
+  ],
+  "summary": "Add deterministic host resolver installation plans for encrypted DNS inputs without calling platform resolver APIs.",
+  "planned_changes": "- Add host resolver installation status and plan models.\n- Add a planner that composes RFC 9461 service-binding, RFC 9463 discovery, and RFC 9464 provisioning client plans with encrypted DNS session attempts.\n- Preserve cleartext fallback resolver candidates and split-tunnel internal domains.\n- Return non-installable blocked plans for explicit Do53 preference and untrusted NULL-authenticated provisioning.\n- Add focused positive and negative tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local installation planning from OS resolver mutation.",
+  "verification_plan": "Run the DNS project build, focused host resolver installation planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0009"
+  ],
+  "out_of_scope": [
+    "Calling operating-system resolver APIs.",
+    "Writing system DNS configuration.",
+    "Opening encrypted DNS sessions.",
+    "Live DNSSEC validation.",
+    "Router or forwarder advertisement emission."
+  ],
+  "completion_notes": "The DNS package now has a trace-owned platform-adapter input for host resolver installation."
+}
