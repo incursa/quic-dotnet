@@ -612,8 +612,12 @@ function Get-EnvironmentGateAssessment {
         [int](Get-ObjectValue -InputObject $Cell -Name "targetDockerMetricsCapturedCount" -Default 0)
     $targetMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "targetProcessMetricsMissingCount" -Default 0) +
         [int](Get-ObjectValue -InputObject $Cell -Name "targetDockerMetricsMissingCount" -Default 0)
-    $loadToolMetricsCaptured = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsCapturedCount" -Default 0)
-    $loadToolMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsMissingCount" -Default 0)
+    $loadToolDockerMetricsCaptured = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsCapturedCount" -Default 0)
+    $loadToolDockerMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolDockerMetricsMissingCount" -Default 0)
+    $loadToolProcessMetricsCaptured = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolProcessMetricsCapturedCount" -Default 0)
+    $loadToolProcessMetricsMissing = [int](Get-ObjectValue -InputObject $Cell -Name "loadToolProcessMetricsMissingCount" -Default 0)
+    $loadToolMetricsCaptured = $loadToolDockerMetricsCaptured + $loadToolProcessMetricsCaptured
+    $loadToolMetricsMissing = $loadToolDockerMetricsMissing + $loadToolProcessMetricsMissing
     $targetMetricWarnings = @($warnings | Where-Object { $_ -match "target-process|target-resource|Target process metrics|adapter-derived" })
     $loadSaturationWarnings = @(
         @(Get-ObjectValue -InputObject $Cell -Name "saturationWarnings" -Default @())
@@ -635,30 +639,30 @@ function Get-EnvironmentGateAssessment {
     if ($isLoopbackOrSameHost) {
         $blockerDetails.Add((New-BlockerDetail `
                     -Code "same-host-loopback-target-and-load-generator" `
-                    -Reason "The target URL/control plane uses localhost or the aggregate reports a single-machine/shared-host run." `
-                    -LocalActionability "Needs separate SUT/load-generator resources or an equivalent isolated lab topology.")) | Out-Null
+                    -Reason "This is a hard local-lab classifier: the target and load generator use loopback, localhost, or the same host resources." `
+                    -LocalActionability "Not clearable on this same-host run. Rerun with a non-loopback SUT endpoint and a separate load-generator host, VM, or container topology with retained route/NIC metadata.")) | Out-Null
     }
 
     $cpuIsolationStatus = "unknown"
     $cpuIsolationReasons = New-Object System.Collections.Generic.List[string]
     if (Test-AnyTextMatch -Values $warnings -Pattern "no-cpu-isolation") {
         $cpuIsolationStatus = "not-proven"
-        $cpuIsolationReasons.Add("Aggregate reports no-cpu-isolation.") | Out-Null
+        $cpuIsolationReasons.Add("Aggregate reports no-cpu-isolation; no cpuset, processor-group, CPU affinity, container CPU limit, or operator reservation attestation was retained with this run.") | Out-Null
         $blockerDetails.Add((New-BlockerDetail `
                     -Code "cpu-isolation-unattested-local-process" `
-                    -Reason "The run did not record cpuset/container CPU limits, bare-metal reservation policy, or equivalent CPU isolation attestation." `
-                    -LocalActionability "Needs privileged host/container configuration or an operator attestation captured with the run.")) | Out-Null
+                    -Reason "The run did not record cpuset/container CPU limits, processor affinity, processor-group placement, bare-metal reservation policy, or equivalent CPU isolation attestation." `
+                    -LocalActionability "Requires a new run with retained CPU isolation metadata, such as Docker cpuset/cpus, process affinity and processor group, or an operator-attested reserved host.")) | Out-Null
     }
 
     $networkIsolationStatus = "unknown"
     $networkIsolationReasons = New-Object System.Collections.Generic.List[string]
     if (Test-AnyTextMatch -Values $warnings -Pattern "no-network-isolation|localhost|127\.0\.0\.1|single-machine|shared-host|same local environment") {
         $networkIsolationStatus = "not-proven"
-        $networkIsolationReasons.Add("Aggregate reports localhost/shared-host execution or no-network-isolation.") | Out-Null
+        $networkIsolationReasons.Add("Aggregate reports localhost/shared-host execution, loopback routing, or no-network-isolation.") | Out-Null
         $blockerDetails.Add((New-BlockerDetail `
                     -Code "network-isolation-unattested-loopback" `
-                    -Reason "The run did not record a separated physical/virtual network path; loopback or same-host execution is present." `
-                    -LocalActionability "Needs a separated lab network path, NIC/virtual-network metadata, and no loopback target URL.")) | Out-Null
+                    -Reason "The run did not record a separated physical or virtual network path; loopback or same-host routing is present." `
+                    -LocalActionability "Requires a new run whose effective load-tool URL is not localhost/127.0.0.1 and whose manifest retains route, NIC, virtual switch, or container-network metadata.")) | Out-Null
     }
 
     $targetResourceStatus = if ($targetMetricsCaptured -gt 0) {
@@ -679,8 +683,11 @@ function Get-EnvironmentGateAssessment {
                     -LocalActionability "Locally actionable by capturing adapter process metrics, direct process metrics, or target container stats.")) | Out-Null
     }
 
-    $loadGeneratorStatus = if ($loadToolMetricsCaptured -gt 0) {
+    $loadGeneratorStatus = if ($loadToolDockerMetricsCaptured -gt 0) {
         if (Test-AnyTextMatch -Values $loadSaturationWarnings -Pattern "saturation-not-detected") { "not-saturated" } else { "telemetry-captured" }
+    }
+    elseif ($loadToolProcessMetricsCaptured -gt 0) {
+        "process-telemetry-captured"
     }
     elseif ($loadToolMode -eq "process" -and -not (Test-AnyTextMatch -Values $loadSaturationWarnings -Pattern "overload|connection-pressure")) {
         "process-heuristic-only"
@@ -689,15 +696,15 @@ function Get-EnvironmentGateAssessment {
         "not-proven"
     }
     $loadUnavailableReasons = @()
-    if ($loadGeneratorStatus -ne "not-saturated" -and $loadGeneratorStatus -ne "telemetry-captured") {
+    if ($loadGeneratorStatus -ne "not-saturated" -and $loadGeneratorStatus -ne "telemetry-captured" -and $loadGeneratorStatus -ne "process-telemetry-captured") {
         $loadUnavailableReasons = @(
             "The selected load tool mode is '$loadToolMode' with category '$loadToolCategory'.",
-            "No load-generator CPU/memory samples were recorded, so saturation cannot be ruled out from telemetry."
+            "No load-generator Docker metrics or process metrics were recorded, so saturation cannot be ruled out from retained telemetry."
         )
         $blockerDetails.Add((New-BlockerDetail `
                     -Code "load-generator-process-telemetry-unavailable" `
-                    -Reason "The load generator ran without captured CPU/memory telemetry; stderr heuristics are not enough for isolated-local proof." `
-                    -LocalActionability "Needs docker stats, process sampling, or another retained load-generator telemetry source.")) | Out-Null
+                    -Reason "The load generator ran without retained Docker stats or process CPU/memory snapshots; stderr heuristics are not enough for isolated-local proof." `
+                    -LocalActionability "Rerun with load-generator Docker stats or process-mode load-generator telemetry retained in aggregate-results.json.")) | Out-Null
     }
 
     $isolatedLocalBlockers = @($blockerDetails | ForEach-Object { $_.code } | Sort-Object -Unique)
@@ -726,8 +733,12 @@ function Get-EnvironmentGateAssessment {
         }
         loadGeneratorSaturation = [ordered]@{
             status = $loadGeneratorStatus
-            dockerMetricsCapturedCount = $loadToolMetricsCaptured
-            dockerMetricsMissingCount = $loadToolMetricsMissing
+            dockerMetricsCapturedCount = $loadToolDockerMetricsCaptured
+            dockerMetricsMissingCount = $loadToolDockerMetricsMissing
+            processMetricsCapturedCount = $loadToolProcessMetricsCaptured
+            processMetricsMissingCount = $loadToolProcessMetricsMissing
+            capturedCount = $loadToolMetricsCaptured
+            missingCount = $loadToolMetricsMissing
             warnings = @($loadSaturationWarnings)
             unavailableReasons = @($loadUnavailableReasons)
         }
@@ -797,7 +808,10 @@ function Read-ProtocolLabRunReadiness {
             elseif ($text -match "no-network-isolation") {
                 $publishableBlockers.Add("network-isolation-unattested-loopback") | Out-Null
             }
-            elseif ($text -match "no-load-generator-saturation-check|load-generator-cpu-not-captured") {
+            elseif (($text -match "no-load-generator-saturation-check|load-generator-cpu-not-captured") -and
+                $environmentGates.loadGeneratorSaturation.status -ne "process-telemetry-captured" -and
+                $environmentGates.loadGeneratorSaturation.status -ne "telemetry-captured" -and
+                $environmentGates.loadGeneratorSaturation.status -ne "not-saturated") {
                 $publishableBlockers.Add("load-generator-process-telemetry-unavailable") | Out-Null
             }
             elseif ($text -match "no-target-resource-metrics") {

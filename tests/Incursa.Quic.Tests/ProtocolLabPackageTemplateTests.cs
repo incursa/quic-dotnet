@@ -425,12 +425,15 @@ public sealed class ProtocolLabPackageTemplateTests
                   "targetProcessMetricsMissingCount": 3,
                   "loadToolDockerMetricsCapturedCount": 0,
                   "loadToolDockerMetricsMissingCount": 0,
+                  "loadToolProcessMetricsCapturedCount": 3,
+                  "loadToolProcessMetricsMissingCount": 0,
                   "repetitions": 3,
                   "validation": { "passed": 3, "failed": 0, "unsupported": 0, "notApplicable": 0, "inconclusive": 0, "infrastructureFailure": 0 },
                   "failedRequests": 0,
                   "timeoutRequests": 0,
                   "warnings": [
                     "Target URL is localhost; client and server share host resources.",
+                    "load-generator-process-metrics-captured",
                     "single-machine",
                     "no-cpu-isolation",
                     "no-network-isolation"
@@ -478,6 +481,9 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.Contains(
                 root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
                 blocker => blocker.GetString() == "overall-evidence-class-is-local-lab");
+            Assert.DoesNotContain(
+                root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "load-generator-process-telemetry-unavailable");
 
             var run = Assert.Single(root.GetProperty("protocolLabRuns").EnumerateArray());
             Assert.Equal("local-repeat", run.GetProperty("runId").GetString());
@@ -495,12 +501,16 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.DoesNotContain(
                 cell.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
                 blocker => blocker.GetString() == "shared-host-or-localhost");
+            Assert.DoesNotContain(
+                cell.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "load-generator-process-telemetry-unavailable");
             var gates = cell.GetProperty("environmentGates");
             Assert.Equal("same-host-loopback", gates.GetProperty("hostClassification").GetProperty("status").GetString());
             Assert.Equal("not-proven", gates.GetProperty("cpuIsolation").GetProperty("status").GetString());
             Assert.Equal("not-proven", gates.GetProperty("networkIsolation").GetProperty("status").GetString());
             Assert.Equal("missing", gates.GetProperty("targetResourceMetrics").GetProperty("status").GetString());
-            Assert.Equal("process-heuristic-only", gates.GetProperty("loadGeneratorSaturation").GetProperty("status").GetString());
+            Assert.Equal("process-telemetry-captured", gates.GetProperty("loadGeneratorSaturation").GetProperty("status").GetString());
+            Assert.Equal(3, gates.GetProperty("loadGeneratorSaturation").GetProperty("processMetricsCapturedCount").GetInt32());
             Assert.Equal("blocked", gates.GetProperty("isolatedLocalGate").GetProperty("status").GetString());
         }
         finally
