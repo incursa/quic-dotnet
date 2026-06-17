@@ -325,13 +325,26 @@ public sealed class ProtocolLabPackageTemplateTests
         var script = File.ReadAllText(scriptPath);
         var readme = File.ReadAllText(Path.Combine(repoRoot, "scripts", "perf", "README.md"));
 
-        Assert.Contains("quic-dotnet-protocol-lab-readiness-v1", script);
+        Assert.Contains("quic-dotnet-protocol-lab-readiness-v2", script);
         Assert.Contains("New-QuicDotNetProtocolLabPackage.ps1", script);
         Assert.Contains("PackageTarget", script);
         Assert.Contains("Http3", script);
         Assert.Contains("RawQuic", script);
         Assert.Contains("Get-FileHash", script);
         Assert.Contains("SHA-256", script);
+        Assert.Contains("ProtocolLabRunRoot", script);
+        Assert.Contains("evidenceClassDefinitions", script);
+        Assert.Contains("local-lab", script);
+        Assert.Contains("isolated-local", script);
+        Assert.Contains("external-reference", script);
+        Assert.Contains("publishable", script);
+        Assert.Contains("MinimumPublishableRepetitions", script);
+        Assert.Contains("LocalMaxRelativeRange", script);
+        Assert.Contains("PublishableMaxRelativeRange", script);
+        Assert.Contains("checksumInventory", script);
+        Assert.Contains("publishableRunbook", script);
+        Assert.Contains("repeat-count-below-publishable-minimum", script);
+        Assert.Contains("shared-host-or-localhost", script);
         Assert.Contains("http3-local-live-current", script);
         Assert.Contains("runner-report.json", script);
         Assert.Contains("Raw QUIC multiplex smoke", script);
@@ -355,6 +368,128 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("ProtocolLab Readiness Evidence", readme);
         Assert.Contains("New-QuicProtocolLabReadinessEvidence.ps1", readme);
         Assert.Contains("credential, authority", readme);
+        Assert.Contains("publishable benchmark evidence", readme);
+    }
+
+    [Fact]
+    public void Readiness_evidence_script_summarizes_protocol_lab_runs_and_quality_gates()
+    {
+        var repoRoot = FindRepoRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), "quic-readiness-test-" + Guid.NewGuid().ToString("N"));
+        var contractRoot = Path.Combine(temporaryRoot, "protocol-lab");
+        var executionRoot = Path.Combine(temporaryRoot, "protocol-lab-internal");
+        var benchmarkScriptDirectory = Path.Combine(executionRoot, "scripts", "benchmarking");
+        var runRoot = Path.Combine(temporaryRoot, "runs", "local-repeat");
+        var outputRoot = Path.Combine(temporaryRoot, "readiness");
+
+        Directory.CreateDirectory(contractRoot);
+        Directory.CreateDirectory(benchmarkScriptDirectory);
+        Directory.CreateDirectory(runRoot);
+        File.WriteAllText(Path.Combine(executionRoot, "Incursa.ProtocolLab.sln"), "");
+        File.WriteAllText(Path.Combine(benchmarkScriptDirectory, "Invoke-ProtocolLabBenchmarkSet.ps1"), "");
+        File.WriteAllText(Path.Combine(runRoot, "summary.md"), "# Synthetic run");
+        File.WriteAllText(Path.Combine(runRoot, "run.json"), "{}");
+        File.WriteAllText(Path.Combine(runRoot, "evidence-report.json"), "{}");
+        File.WriteAllText(Path.Combine(runRoot, "telemetry-bundle.json"), "{}");
+        File.WriteAllText(Path.Combine(runRoot, "aggregate-results.json"), """
+            {
+              "runId": "local-repeat",
+              "generatedAt": "2026-06-17T12:00:00+00:00",
+              "metadata": {
+                "hostName": "test-host",
+                "operatingSystem": "Windows",
+                "frameworkDescription": ".NET 10.0.0",
+                "processorCount": 8,
+                "executionProfile": "localProcess"
+              },
+              "totals": {
+                "validation": { "passed": 3, "failed": 0, "unsupported": 0, "notApplicable": 0, "inconclusive": 0, "infrastructureFailure": 0 }
+              },
+              "aggregates": [
+                {
+                  "implementationId": "incursa-raw-quic-adapter-v1",
+                  "scenarioId": "quic.transport.multiplex.100x64kb",
+                  "protocol": "quic",
+                  "executionProfile": "local-process",
+                  "loadProfileId": "local-comparison",
+                  "loadTool": "quic-go-raw-load",
+                  "loadToolCategory": "managed-lab",
+                  "targetExecutionMode": "process",
+                  "repetitions": 3,
+                  "validation": { "passed": 3, "failed": 0, "unsupported": 0, "notApplicable": 0, "inconclusive": 0, "infrastructureFailure": 0 },
+                  "failedRequests": 0,
+                  "timeoutRequests": 0,
+                  "warnings": [
+                    "Target URL is localhost; client and server share host resources.",
+                    "single-machine",
+                    "no-cpu-isolation",
+                    "no-network-isolation"
+                  ],
+                  "evidence": {
+                    "evidenceClass": "local-lab",
+                    "comparabilityStatus": "comparable-with-warnings",
+                    "comparabilityWarnings": ["single-machine"]
+                  },
+                  "requestsPerSecond": { "median": 100.0, "best": 103.0, "worst": 98.0 },
+                  "latencyMeanMs": { "median": 10.0, "best": 9.8, "worst": 10.2 },
+                  "throughputBytesPerSecond": { "median": 6553600.0, "best": 6750208.0, "worst": 6422528.0 }
+                }
+              ],
+              "claimLevel": "validation"
+            }
+            """);
+
+        try
+        {
+            var scriptPath = Path.Combine(repoRoot, "scripts", "perf", "New-QuicProtocolLabReadinessEvidence.ps1");
+            var result = RunPowerShellFile(
+                scriptPath,
+                "-ProtocolLabRoot",
+                contractRoot,
+                "-ProtocolLabExecutionRoot",
+                executionRoot,
+                "-OutputRoot",
+                outputRoot,
+                "-RunId",
+                "test-readiness",
+                "-SkipPackageBuild",
+                "-ProtocolLabRunRoot",
+                runRoot);
+
+            Assert.Equal(0, result.ExitCode);
+
+            var manifestPath = Path.Combine(outputRoot, "test-readiness", "readiness-manifest.json");
+            using var document = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var root = document.RootElement;
+
+            Assert.Equal("quic-dotnet-protocol-lab-readiness-v2", root.GetProperty("schemaVersion").GetString());
+            Assert.Equal("local-lab", root.GetProperty("readinessQuality").GetProperty("evidenceClass").GetString());
+            Assert.Equal("blocked", root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("status").GetString());
+            Assert.Contains(
+                root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "overall-evidence-class-is-local-lab");
+
+            var run = Assert.Single(root.GetProperty("protocolLabRuns").EnumerateArray());
+            Assert.Equal("local-repeat", run.GetProperty("runId").GetString());
+            Assert.Equal("local-lab", run.GetProperty("evidenceClass").GetString());
+            Assert.True(run.GetProperty("checksumInventoryCount").GetInt32() >= 4);
+
+            var cell = Assert.Single(run.GetProperty("cellReadiness").EnumerateArray());
+            Assert.Equal("passed", cell.GetProperty("qualityGate").GetProperty("localStatus").GetString());
+            Assert.Equal("none", cell.GetProperty("qualityGate").GetProperty("failureClass").GetString());
+            Assert.Equal(3, cell.GetProperty("qualityGate").GetProperty("repetitions").GetInt32());
+            Assert.Equal("blocked", cell.GetProperty("publishability").GetProperty("status").GetString());
+            Assert.Contains(
+                cell.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "shared-host-or-localhost");
+        }
+        finally
+        {
+            if (Directory.Exists(temporaryRoot))
+            {
+                Directory.Delete(temporaryRoot, recursive: true);
+            }
+        }
     }
 
     [Fact]

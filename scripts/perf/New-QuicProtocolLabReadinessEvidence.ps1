@@ -10,6 +10,14 @@ param(
 
     [string] $Http3RunnerArtifactRoot,
 
+    [string[]] $ProtocolLabRunRoot = @(),
+
+    [int] $MinimumPublishableRepetitions = 3,
+
+    [double] $LocalMaxRelativeRange = 0.25,
+
+    [double] $PublishableMaxRelativeRange = 0.05,
+
     [switch] $SkipPackageBuild,
 
     [switch] $DryRun
@@ -266,6 +274,414 @@ function Read-Http3RunnerEvidence {
     }
 }
 
+function Get-ObjectValue {
+    param(
+        [AllowNull()]
+        $InputObject,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name,
+
+        $Default = $null
+    )
+
+    if ($null -eq $InputObject) {
+        return $Default
+    }
+
+    $property = $InputObject.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $Default
+    }
+
+    if ($null -eq $property.Value) {
+        return $Default
+    }
+
+    return $property.Value
+}
+
+function Invoke-OptionalCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $FileName,
+
+        [string[]] $Arguments = @(),
+
+        [string] $WorkingDirectory
+    )
+
+    try {
+        if ([string]::IsNullOrWhiteSpace($WorkingDirectory)) {
+            $output = & $FileName @Arguments 2>$null
+        }
+        else {
+            $output = & $FileName @Arguments 2>$null
+        }
+
+        if ($LASTEXITCODE -ne 0) {
+            return $null
+        }
+
+        return (@($output) -join "`n").Trim()
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-RepositoryIdentity {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Name,
+
+        [string] $Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Container)) {
+        return [ordered]@{
+            name = $Name
+            path = $Path
+            present = $false
+        }
+    }
+
+    $commit = (& git -C $Path rev-parse HEAD 2>$null)
+    $status = @(& git -C $Path status --porcelain 2>$null)
+    return [ordered]@{
+        name = $Name
+        path = [System.IO.Path]::GetFullPath($Path)
+        present = $true
+        commit = if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($commit)) { $commit.Trim() } else { "unknown" }
+        state = if ($status.Count -eq 0) { "clean" } else { "dirty" }
+        statusPorcelain = @($status)
+    }
+}
+
+function Get-HostEnvironmentSnapshot {
+    $dotnetVersion = Invoke-OptionalCommand -FileName "dotnet" -Arguments @("--version")
+    $dockerVersion = Invoke-OptionalCommand -FileName "docker" -Arguments @("--version")
+
+    return [ordered]@{
+        hostName = [Environment]::MachineName
+        operatingSystem = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+        frameworkDescription = [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
+        processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+        operatingSystemArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString()
+        processorCount = [Environment]::ProcessorCount
+        is64BitProcess = [Environment]::Is64BitProcess
+        dotnetVersion = $dotnetVersion
+        dockerVersion = $dockerVersion
+        captureUtc = (Get-Date -AsUTC).ToString("o")
+    }
+}
+
+function Get-ChecksumInventory {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RootPath
+    )
+
+    if (-not (Test-Path -LiteralPath $RootPath -PathType Container)) {
+        return @()
+    }
+
+    $resolvedRoot = [System.IO.Path]::GetFullPath($RootPath).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+    $prefixLength = $resolvedRoot.Length + 1
+    $files = Get-ChildItem -LiteralPath $resolvedRoot -File -Recurse |
+        Sort-Object FullName
+
+    return @($files | ForEach-Object {
+            $relativePath = if ($_.FullName.Length -gt $prefixLength) { $_.FullName.Substring($prefixLength) } else { $_.Name }
+            [ordered]@{
+                relativePath = $relativePath.Replace("\", "/")
+                path = $_.FullName
+                length = $_.Length
+                sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            }
+        })
+}
+
+function Get-ReadinessEvidenceClass {
+    param($Aggregate)
+
+    $loadToolCategory = [string](Get-ObjectValue -InputObject $Aggregate -Name "loadToolCategory" -Default "")
+    $targetExecutionMode = [string](Get-ObjectValue -InputObject $Aggregate -Name "targetExecutionMode" -Default "")
+    $executionProfile = [string](Get-ObjectValue -InputObject $Aggregate -Name "executionProfile" -Default "")
+    $evidence = Get-ObjectValue -InputObject $Aggregate -Name "evidence"
+    $reportedClass = [string](Get-ObjectValue -InputObject $evidence -Name "evidenceClass" -Default "")
+    $warnings = @(
+        @(Get-ObjectValue -InputObject $Aggregate -Name "warnings" -Default @())
+        @(Get-ObjectValue -InputObject $evidence -Name "comparabilityWarnings" -Default @())
+        @(Get-ObjectValue -InputObject $evidence -Name "evidenceReasons" -Default @())
+    ) | ForEach-Object { [string]$_ }
+
+    $hasLocalWarning = $warnings |
+        Where-Object {
+            $_ -match "localhost|shared-host|single-machine|managed-lab|local-dev|load-tool-not-docker|no-cpu-isolation|no-network-isolation"
+        } |
+        Select-Object -First 1
+
+    if ($reportedClass -eq "publishable") {
+        return "publishable"
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($hasLocalWarning) -or
+        $reportedClass -eq "local-lab" -or
+        $loadToolCategory -eq "managed-lab" -or
+        $executionProfile -match "local") {
+        return "local-lab"
+    }
+
+    if ($loadToolCategory -eq "external-reference" -and $targetExecutionMode -eq "external") {
+        return "external-reference"
+    }
+
+    return "isolated-local"
+}
+
+function Get-MetricGate {
+    param(
+        $Aggregate,
+
+        [Parameter(Mandatory = $true)]
+        [string] $MetricName
+    )
+
+    $metric = Get-ObjectValue -InputObject $Aggregate -Name $MetricName
+    if ($null -eq $metric) {
+        return [ordered]@{
+            metric = $MetricName
+            present = $false
+        }
+    }
+
+    $median = [double](Get-ObjectValue -InputObject $metric -Name "median" -Default 0)
+    $best = [double](Get-ObjectValue -InputObject $metric -Name "best" -Default $median)
+    $worst = [double](Get-ObjectValue -InputObject $metric -Name "worst" -Default $median)
+    $relativeRange = if ($median -gt 0) { [Math]::Abs($best - $worst) / $median } else { $null }
+
+    return [ordered]@{
+        metric = $MetricName
+        present = $true
+        median = $median
+        best = $best
+        worst = $worst
+        relativeRange = $relativeRange
+    }
+}
+
+function Get-QualityGate {
+    param(
+        $Aggregate,
+
+        [Parameter(Mandatory = $true)]
+        [int] $MinimumPublishableRepetitions,
+
+        [Parameter(Mandatory = $true)]
+        [double] $LocalMaxRelativeRange,
+
+        [Parameter(Mandatory = $true)]
+        [double] $PublishableMaxRelativeRange
+    )
+
+    $validation = Get-ObjectValue -InputObject $Aggregate -Name "validation"
+    $failedValidation = [int](Get-ObjectValue -InputObject $validation -Name "failed" -Default 0)
+    $infraFailures = [int](Get-ObjectValue -InputObject $validation -Name "infrastructureFailure" -Default 0)
+    $failedRequests = [int](Get-ObjectValue -InputObject $Aggregate -Name "failedRequests" -Default 0)
+    $timeoutRequests = [int](Get-ObjectValue -InputObject $Aggregate -Name "timeoutRequests" -Default 0)
+    $repetitions = [int](Get-ObjectValue -InputObject $Aggregate -Name "repetitions" -Default 0)
+    $metricGates = @(
+        Get-MetricGate -Aggregate $Aggregate -MetricName "requestsPerSecond"
+        Get-MetricGate -Aggregate $Aggregate -MetricName "latencyMeanMs"
+        Get-MetricGate -Aggregate $Aggregate -MetricName "throughputBytesPerSecond"
+    )
+    $presentMetricGates = @($metricGates | Where-Object { $_.present -and $null -ne $_.relativeRange })
+    $maxRelativeRange = if ($presentMetricGates.Count -eq 0) {
+        $null
+    }
+    else {
+        (@($presentMetricGates | ForEach-Object { [double]$_.relativeRange }) | Measure-Object -Maximum).Maximum
+    }
+
+    $localStatus = "passed"
+    $failureClass = "none"
+    $reasons = New-Object System.Collections.Generic.List[string]
+    if ($failedValidation -gt 0 -or $infraFailures -gt 0) {
+        $localStatus = "failed"
+        $failureClass = "validation-or-infrastructure-failure"
+        $reasons.Add("validation-or-infrastructure-failure") | Out-Null
+    }
+    if ($failedRequests -gt 0 -or $timeoutRequests -gt 0) {
+        $localStatus = "failed"
+        $failureClass = "request-failures-or-timeouts"
+        $reasons.Add("request-failures-or-timeouts") | Out-Null
+    }
+    if ($repetitions -lt 2) {
+        $localStatus = "warning"
+        if ($failureClass -eq "none") {
+            $failureClass = "insufficient-local-repetitions"
+        }
+        $reasons.Add("insufficient-local-repetitions") | Out-Null
+    }
+    elseif ($null -ne $maxRelativeRange -and $maxRelativeRange -gt $LocalMaxRelativeRange) {
+        $localStatus = "failed"
+        $failureClass = "local-variance-threshold-exceeded"
+        $reasons.Add("local-variance-threshold-exceeded") | Out-Null
+    }
+
+    $publishableStatus = "blocked"
+    $publishableBlockers = New-Object System.Collections.Generic.List[string]
+    if ($repetitions -lt $MinimumPublishableRepetitions) {
+        $publishableBlockers.Add("repeat-count-below-publishable-minimum") | Out-Null
+    }
+    if ($failedValidation -gt 0 -or $infraFailures -gt 0 -or $failedRequests -gt 0 -or $timeoutRequests -gt 0) {
+        $publishableBlockers.Add("accepted-benchmark-failures-present") | Out-Null
+    }
+    if ($null -eq $maxRelativeRange -or $maxRelativeRange -gt $PublishableMaxRelativeRange) {
+        $publishableBlockers.Add("publishable-variance-threshold-not-met") | Out-Null
+    }
+
+    return [ordered]@{
+        localStatus = $localStatus
+        failureClass = $failureClass
+        reasons = @($reasons)
+        repetitions = $repetitions
+        minimumPublishableRepetitions = $MinimumPublishableRepetitions
+        maxRelativeRange = $maxRelativeRange
+        localMaxRelativeRange = $LocalMaxRelativeRange
+        publishableMaxRelativeRange = $PublishableMaxRelativeRange
+        metricGates = @($metricGates)
+        publishableStatus = $publishableStatus
+        publishableBlockers = @($publishableBlockers)
+    }
+}
+
+function Read-ProtocolLabRunReadiness {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RunRoot,
+
+        [Parameter(Mandatory = $true)]
+        [int] $MinimumPublishableRepetitions,
+
+        [Parameter(Mandatory = $true)]
+        [double] $LocalMaxRelativeRange,
+
+        [Parameter(Mandatory = $true)]
+        [double] $PublishableMaxRelativeRange
+    )
+
+    $resolvedRunRoot = [System.IO.Path]::GetFullPath($RunRoot)
+    $aggregatePath = Join-Path $resolvedRunRoot "aggregate-results.json"
+    if (-not (Test-Path -LiteralPath $aggregatePath -PathType Leaf)) {
+        return [ordered]@{
+            runRoot = $resolvedRunRoot
+            present = $false
+            blocker = "aggregate-results.json was not found"
+        }
+    }
+
+    $aggregate = Get-Content -LiteralPath $aggregatePath -Raw | ConvertFrom-Json
+    $aggregates = @($aggregate.aggregates | ForEach-Object { $_ })
+    $cellReadiness = @()
+    foreach ($cell in $aggregates) {
+        $evidenceClass = Get-ReadinessEvidenceClass -Aggregate $cell
+        $qualityGate = Get-QualityGate `
+            -Aggregate $cell `
+            -MinimumPublishableRepetitions $MinimumPublishableRepetitions `
+            -LocalMaxRelativeRange $LocalMaxRelativeRange `
+            -PublishableMaxRelativeRange $PublishableMaxRelativeRange
+
+        $publishableBlockers = New-Object System.Collections.Generic.List[string]
+        foreach ($blocker in @($qualityGate.publishableBlockers)) {
+            $publishableBlockers.Add($blocker) | Out-Null
+        }
+        if ($evidenceClass -ne "publishable") {
+            $publishableBlockers.Add("evidence-class-is-$evidenceClass") | Out-Null
+        }
+        foreach ($warning in @($cell.warnings)) {
+            $text = [string]$warning
+            if ($text -match "localhost|single-machine|shared-host") {
+                $publishableBlockers.Add("shared-host-or-localhost") | Out-Null
+            }
+            elseif ($text -match "no-cpu-isolation") {
+                $publishableBlockers.Add("cpu-isolation-not-proven") | Out-Null
+            }
+            elseif ($text -match "no-network-isolation") {
+                $publishableBlockers.Add("network-isolation-not-proven") | Out-Null
+            }
+            elseif ($text -match "no-load-generator-saturation-check|load-generator-cpu-not-captured") {
+                $publishableBlockers.Add("load-generator-saturation-not-proven") | Out-Null
+            }
+            elseif ($text -match "no-target-resource-metrics") {
+                $publishableBlockers.Add("target-resource-metrics-missing") | Out-Null
+            }
+        }
+
+        $cellReadiness += [ordered]@{
+            implementationId = [string](Get-ObjectValue -InputObject $cell -Name "implementationId" -Default "")
+            scenarioId = [string](Get-ObjectValue -InputObject $cell -Name "scenarioId" -Default "")
+            protocol = [string](Get-ObjectValue -InputObject $cell -Name "protocol" -Default "")
+            loadProfileId = [string](Get-ObjectValue -InputObject $cell -Name "loadProfileId" -Default "")
+            loadTool = [string](Get-ObjectValue -InputObject $cell -Name "loadTool" -Default "")
+            loadToolCategory = [string](Get-ObjectValue -InputObject $cell -Name "loadToolCategory" -Default "")
+            targetExecutionMode = [string](Get-ObjectValue -InputObject $cell -Name "targetExecutionMode" -Default "")
+            evidenceClass = $evidenceClass
+            protocolLabEvidenceClass = [string](Get-ObjectValue -InputObject (Get-ObjectValue -InputObject $cell -Name "evidence") -Name "evidenceClass" -Default "")
+            comparabilityStatus = [string](Get-ObjectValue -InputObject (Get-ObjectValue -InputObject $cell -Name "evidence") -Name "comparabilityStatus" -Default "")
+            qualityGate = $qualityGate
+            publishability = [ordered]@{
+                status = "blocked"
+                blockers = @($publishableBlockers | Sort-Object -Unique)
+            }
+        }
+    }
+
+    $evidenceClasses = @($cellReadiness | ForEach-Object { $_.evidenceClass } | Sort-Object -Unique)
+    $runEvidenceClass = if ($evidenceClasses -contains "local-lab") {
+        "local-lab"
+    }
+    elseif ($evidenceClasses -contains "isolated-local") {
+        "isolated-local"
+    }
+    elseif ($evidenceClasses -contains "external-reference") {
+        "external-reference"
+    }
+    elseif ($evidenceClasses -contains "publishable") {
+        "publishable"
+    }
+    else {
+        "unknown"
+    }
+
+    $allBlockers = @($cellReadiness | ForEach-Object { @($_.publishability.blockers) } | Sort-Object -Unique)
+    $checksumInventory = Get-ChecksumInventory -RootPath $resolvedRunRoot
+
+    return [ordered]@{
+        runRoot = $resolvedRunRoot
+        present = $true
+        runId = [string](Get-ObjectValue -InputObject $aggregate -Name "runId" -Default (Split-Path -Leaf $resolvedRunRoot))
+        generatedAt = [string](Get-ObjectValue -InputObject $aggregate -Name "generatedAt" -Default "")
+        aggregateResultsPath = $aggregatePath
+        aggregateResultsSha256 = (Get-FileHash -LiteralPath $aggregatePath -Algorithm SHA256).Hash.ToLowerInvariant()
+        evidenceReportPath = Join-Path $resolvedRunRoot "evidence-report.json"
+        summaryPath = Join-Path $resolvedRunRoot "summary.md"
+        claimLevel = [string](Get-ObjectValue -InputObject $aggregate -Name "claimLevel" -Default "")
+        protocolLabMetadata = Get-ObjectValue -InputObject $aggregate -Name "metadata"
+        totals = Get-ObjectValue -InputObject $aggregate -Name "totals"
+        evidenceClass = $runEvidenceClass
+        evidenceClassesSeen = $evidenceClasses
+        cellReadiness = @($cellReadiness)
+        publishability = [ordered]@{
+            status = if ($runEvidenceClass -eq "publishable" -and $allBlockers.Count -eq 0) { "publishable" } else { "blocked" }
+            blockers = $allBlockers
+        }
+        checksumInventory = @($checksumInventory)
+        checksumInventoryCount = @($checksumInventory).Count
+    }
+}
+
 function Add-Line {
     param(
         [System.Collections.Generic.List[string]] $Lines,
@@ -349,6 +765,66 @@ else {
     Read-Http3RunnerEvidence -ArtifactRoot (Resolve-FullPath -Path $Http3RunnerArtifactRoot -BasePath $repoRoot)
 }
 
+$protocolLabRunEvidence = @()
+foreach ($runRootInput in @($ProtocolLabRunRoot)) {
+    if ([string]::IsNullOrWhiteSpace($runRootInput)) {
+        continue
+    }
+
+    $protocolLabRunEvidence += Read-ProtocolLabRunReadiness `
+        -RunRoot (Resolve-FullPath -Path $runRootInput -BasePath $repoRoot) `
+        -MinimumPublishableRepetitions $MinimumPublishableRepetitions `
+        -LocalMaxRelativeRange $LocalMaxRelativeRange `
+        -PublishableMaxRelativeRange $PublishableMaxRelativeRange
+}
+
+$readinessEvidenceClasses = @($protocolLabRunEvidence |
+        Where-Object { $_.present } |
+        ForEach-Object { $_.evidenceClass } |
+        Sort-Object -Unique)
+$overallEvidenceClass = if ($readinessEvidenceClasses -contains "local-lab") {
+    "local-lab"
+}
+elseif ($readinessEvidenceClasses -contains "isolated-local") {
+    "isolated-local"
+}
+elseif ($readinessEvidenceClasses -contains "external-reference") {
+    "external-reference"
+}
+elseif ($readinessEvidenceClasses -contains "publishable") {
+    "publishable"
+}
+else {
+    "local-lab"
+}
+
+$publishabilityBlockers = New-Object System.Collections.Generic.List[string]
+if ($protocolLabRunEvidence.Count -eq 0) {
+    $publishabilityBlockers.Add("no-protocol-lab-run-roots-supplied") | Out-Null
+}
+foreach ($runEvidence in @($protocolLabRunEvidence)) {
+    foreach ($blocker in @($runEvidence.publishability.blockers)) {
+        $publishabilityBlockers.Add($blocker) | Out-Null
+    }
+}
+if ($overallEvidenceClass -ne "publishable") {
+    $publishabilityBlockers.Add("overall-evidence-class-is-$overallEvidenceClass") | Out-Null
+}
+
+$readinessQuality = [ordered]@{
+    thresholds = [ordered]@{
+        minimumPublishableRepetitions = $MinimumPublishableRepetitions
+        localMaxRelativeRange = $LocalMaxRelativeRange
+        publishableMaxRelativeRange = $PublishableMaxRelativeRange
+    }
+    runsEvaluated = @($protocolLabRunEvidence | Where-Object { $_.present }).Count
+    evidenceClass = $overallEvidenceClass
+    publishability = [ordered]@{
+        status = if ($overallEvidenceClass -eq "publishable" -and $publishabilityBlockers.Count -eq 0) { "publishable" } else { "blocked" }
+        blockers = @($publishabilityBlockers | Sort-Object -Unique)
+    }
+}
+
 $performanceCommands = @(
     [ordered]@{
         name = "Raw QUIC multiplex smoke"
@@ -381,6 +857,22 @@ $performanceCommands = @(
         publishable = $false
     }
 )
+
+$publishableRunbook = [ordered]@{
+    localRepeatabilityCommand = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $protocolLabBenchmarkRoot -Suite quic-transport-v1-comparison -Implementations incursa-raw-quic-adapter-v1 -Scenarios quic.transport.multiplex.100x64kb -DurationSeconds 15 -WarmupSeconds 5 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -RunIdPrefix quic-local-repeat"
+    externalReferenceCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite quic-transport-v1-comparison -ImplementationIds <publishable-implementation-id> -ScenarioIds quic.transport.multiplex.100x64kb -Protocol quic -LoadProfileId local-comparison -RunIdPrefix quic-publishable-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
+    prerequisites = @(
+        "separate SUT and load-generator hosts or equivalent isolated resources; no localhost or same-host client/server execution",
+        "pinned implementation identity: git commits, package ids, package versions, package SHA-256 values, and source checkout state",
+        "captured host metadata for SUT and load generator: CPU model/count, OS build, runtime version, memory, power profile, Docker/container details when used",
+        "CPU and memory isolation notes for SUT and load generator, including cpuset/container limits or bare-metal reservation policy",
+        "network isolation notes: physical or virtual network path, NIC details where available, no unrelated shared-host traffic, and no host.docker.internal rewrite",
+        "external-reference load generator identity and version, plus load-generator CPU/saturation telemetry",
+        "minimum repeated-run policy met with stable medians and relative range at or below the publishable threshold",
+        "artifact retention with checksum inventory for aggregate-results.json, evidence-report.json, telemetry-bundle.json, run.json, summary.md, and per-cell raw logs",
+        "explicit caveats and blockers recorded before any public claim is made"
+    )
+}
 
 $protocolLabPrerequisites = [ordered]@{
     contractRoot = $resolvedProtocolLabRoot
@@ -420,21 +912,36 @@ $externalBlockers = @(
 )
 
 $manifest = [ordered]@{
-    schemaVersion = "quic-dotnet-protocol-lab-readiness-v1"
+    schemaVersion = "quic-dotnet-protocol-lab-readiness-v2"
     runId = $RunId
     createdUtc = (Get-Date -AsUTC).ToString("o")
     repoRoot = $repoRoot
     protocolLabRoot = $resolvedProtocolLabRoot
     protocolLabExecutionRoot = $resolvedProtocolLabExecutionRoot
+    evidenceClassDefinitions = [ordered]@{
+        "local-lab" = "Developer or rack-local validation where SUT and load generation share host, localhost, local Docker, managed load tools, or otherwise non-isolated resources."
+        "isolated-local" = "Local/private lab run with stronger host or container controls, but without external-reference load generation and complete publishable provenance."
+        "external-reference" = "Run using external-reference load tooling and separated target/load resources, but still missing one or more publishable artifact, attestation, repetition, or environment gates."
+        "publishable" = "External-reference benchmark run with isolated resources, complete identity/environment metadata, retained checksum inventory, stable repeated runs, and no unresolved publishability blockers."
+    }
     git = [ordered]@{
         commit = $gitCommit
         state = $gitState
         statusPorcelain = @($gitStatus)
     }
+    repositoryIdentities = @(
+        Get-RepositoryIdentity -Name "quic-dotnet" -Path $repoRoot
+        Get-RepositoryIdentity -Name "protocol-lab" -Path $resolvedProtocolLabRoot
+        Get-RepositoryIdentity -Name "protocol-lab-internal" -Path $resolvedProtocolLabExecutionRoot
+    )
+    hostEnvironment = Get-HostEnvironmentSnapshot
     packageEvidence = @($packageEvidence)
     http3RunnerEvidence = $http3RunnerEvidence
+    protocolLabRuns = @($protocolLabRunEvidence)
+    readinessQuality = $readinessQuality
     protocolLabPrerequisites = $protocolLabPrerequisites
     performanceCommands = $performanceCommands
+    publishableRunbook = $publishableRunbook
     localMode = [ordered]@{
         description = "Local source-reference and smoke lanes are developer/regression evidence only."
         proofCommands = @(
@@ -462,6 +969,27 @@ Add-Line $summary "- Created UTC: ``$($manifest.createdUtc)``"
 Add-Line $summary "- Git commit: ``$gitCommit``"
 Add-Line $summary "- Git state: ``$gitState``"
 Add-Line $summary "- Manifest: ``$manifestPath``"
+Add-Line $summary ""
+Add-Line $summary "## Evidence Classification"
+Add-Line $summary ""
+Add-Line $summary "- Overall evidence class: ``$($readinessQuality.evidenceClass)``"
+Add-Line $summary "- Publishability status: ``$($readinessQuality.publishability.status)``"
+Add-Line $summary "- Runs evaluated: ``$($readinessQuality.runsEvaluated)``"
+Add-Line $summary "- Minimum publishable repetitions: ``$MinimumPublishableRepetitions``"
+Add-Line $summary "- Local max relative range: ``$LocalMaxRelativeRange``"
+Add-Line $summary "- Publishable max relative range: ``$PublishableMaxRelativeRange``"
+if (@($readinessQuality.publishability.blockers).Count -gt 0) {
+    Add-Line $summary ""
+    Add-Line $summary "Publishability blockers:"
+    foreach ($blocker in @($readinessQuality.publishability.blockers)) {
+        Add-Line $summary "- ``$blocker``"
+    }
+}
+Add-Line $summary ""
+Add-Line $summary "Evidence classes:"
+foreach ($definition in $manifest.evidenceClassDefinitions.GetEnumerator()) {
+    Add-Line $summary "- ``$($definition.Key)``: $($definition.Value)"
+}
 Add-Line $summary ""
 Add-Line $summary "## Package Evidence"
 Add-Line $summary ""
@@ -496,6 +1024,39 @@ else {
 }
 
 Add-Line $summary ""
+Add-Line $summary "## ProtocolLab Run Readiness"
+Add-Line $summary ""
+if ($protocolLabRunEvidence.Count -eq 0) {
+    Add-Line $summary "- No ProtocolLab run roots were supplied with ``-ProtocolLabRunRoot``."
+}
+foreach ($runEvidence in @($protocolLabRunEvidence)) {
+    if (-not $runEvidence.present) {
+        Add-Line $summary "- ``$($runEvidence.runRoot)``: blocked ($($runEvidence.blocker))."
+        continue
+    }
+
+    Add-Line $summary "- ``$($runEvidence.runId)``"
+    Add-Line $summary "  - Run root: ``$($runEvidence.runRoot)``"
+    Add-Line $summary "  - Evidence class: ``$($runEvidence.evidenceClass)``"
+    Add-Line $summary "  - Claim level: ``$($runEvidence.claimLevel)``"
+    Add-Line $summary "  - Aggregate SHA-256: ``$($runEvidence.aggregateResultsSha256)``"
+    Add-Line $summary "  - Checksum inventory entries: ``$($runEvidence.checksumInventoryCount)``"
+    Add-Line $summary "  - Publishability: ``$($runEvidence.publishability.status)``"
+    foreach ($cell in @($runEvidence.cellReadiness)) {
+        Add-Line $summary "  - Cell ``$($cell.implementationId)`` / ``$($cell.scenarioId)`` / ``$($cell.protocol)``"
+        Add-Line $summary "    - Load tool: ``$($cell.loadTool)`` (``$($cell.loadToolCategory)``)"
+        Add-Line $summary "    - Evidence: ``$($cell.evidenceClass)``; comparability: ``$($cell.comparabilityStatus)``"
+        Add-Line $summary "    - Local quality: ``$($cell.qualityGate.localStatus)``; failure class: ``$($cell.qualityGate.failureClass)``; repetitions: ``$($cell.qualityGate.repetitions)``"
+        if ($null -ne $cell.qualityGate.maxRelativeRange) {
+            Add-Line $summary "    - Max relative range: ``$([Math]::Round([double]$cell.qualityGate.maxRelativeRange, 6))``"
+        }
+        if (@($cell.publishability.blockers).Count -gt 0) {
+            Add-Line $summary "    - Publishability blockers: ``$(@($cell.publishability.blockers) -join ', ')``"
+        }
+    }
+}
+
+Add-Line $summary ""
 Add-Line $summary "## Performance And Controller Commands"
 Add-Line $summary ""
 Add-Line $summary "- ProtocolLab contract root: ``$($protocolLabPrerequisites.contractRoot)``"
@@ -507,6 +1068,26 @@ foreach ($command in $performanceCommands) {
     Add-Line $summary "- $($command.name): ``$($command.command)``"
     Add-Line $summary "  - Mode: ``$($command.mode)``"
     Add-Line $summary "  - Publishable: ``$($command.publishable)``"
+}
+
+Add-Line $summary ""
+Add-Line $summary "## Publishable Collection Runbook"
+Add-Line $summary ""
+Add-Line $summary "Local repeatability command:"
+Add-Line $summary ""
+Add-Line $summary '```powershell'
+Add-Line $summary $publishableRunbook.localRepeatabilityCommand
+Add-Line $summary '```'
+Add-Line $summary ""
+Add-Line $summary "External-reference command template:"
+Add-Line $summary ""
+Add-Line $summary '```powershell'
+Add-Line $summary $publishableRunbook.externalReferenceCommandTemplate
+Add-Line $summary '```'
+Add-Line $summary ""
+Add-Line $summary "Prerequisites:"
+foreach ($prerequisite in @($publishableRunbook.prerequisites)) {
+    Add-Line $summary "- $prerequisite."
 }
 
 Add-Line $summary ""
