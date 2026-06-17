@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-16T18:08:04.6167360-06:00",
+  "generated_at": "2026-06-16T18:13:54.8744605-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-16T18:08:04.6136503-06:00",
-    "total_requirements": 2650,
+    "generated_at": "2026-06-16T18:13:54.8708658-06:00",
+    "total_requirements": 2651,
     "by_state": {
-      "trace_clean": 2650
+      "trace_clean": 2651
     },
     "by_work_queue_tag": {
-      "clean": 2650
+      "clean": 2651
     },
     "by_rfc": [
       {
@@ -164,9 +164,9 @@
       },
       {
         "rfc": "RFC9463",
-        "total": 119,
+        "total": 120,
         "by_state": {
-          "trace_clean": 119
+          "trace_clean": 120
         }
       },
       {
@@ -427294,6 +427294,272 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0119"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9463-0120",
+      "artifact_id": "SPEC-QUIC-RFC9463",
+      "rfc": "RFC9463",
+      "section_prefix": "S3P1P3",
+      "title": "Plan router and forwarder advertisements without platform emission",
+      "statement": "Before mutating router, DHCP, or Neighbor Discovery state, the encrypted DNS discovery layer MUST produce a deterministic adapter-neutral advertisement plan for router or forwarder publication that selects DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS payloads from local LAN-facing resolver addresses or ADN-only publication policy while preserving service priority, lifetime, authentication domain name, service-parameter metadata, family-specific applicability, and blocked/no-address statuses without invoking platform advertisement APIs.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 5,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+        "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 10,
+        "focused": 10,
+        "broad": 0,
+        "by_kind": {
+          "positive": 4,
+          "negative": 4,
+          "edge": 2,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "method": "AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "line": 47,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "method": "AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "line": 47,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "method": "DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "line": 98,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "method": "DisabledAdvertisementSurfacesReturnPolicyBlockedPlan",
+          "line": 98,
+          "kinds": [
+            "edge"
+          ],
+          "categories": [
+            "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "method": "Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "line": 65,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "method": "Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "line": 65,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "method": "MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "method": "MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "method": "PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "line": 81,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9463-0120",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs",
+          "class": "EncryptedDnsDiscoveryAdvertisementPlannerTests",
+          "member": "EncryptedDnsDiscoveryAdvertisementPlannerTests.PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "method": "PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "line": 81,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9463-0120"
           ],
           "requirement_tagged": true,
           "class_level_only": false

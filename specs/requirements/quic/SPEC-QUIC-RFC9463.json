@@ -34,7 +34,10 @@
     "WI-QUIC-RFC9463-0008",
     "ARC-QUIC-RFC9463-0009",
     "VER-QUIC-RFC9463-0009",
-    "WI-QUIC-RFC9463-0009"
+    "WI-QUIC-RFC9463-0009",
+    "ARC-QUIC-RFC9463-0010",
+    "VER-QUIC-RFC9463-0010",
+    "WI-QUIC-RFC9463-0010"
   ],
   "requirements": [
     {
@@ -2673,6 +2676,39 @@
       },
       "notes": [
         "This requirement covers the local installation plan only. Applying resolver state remains platform adapter work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9463-0120",
+      "title": "Plan router and forwarder advertisements without platform emission",
+      "statement": "Before mutating router, DHCP, or Neighbor Discovery state, the encrypted DNS discovery layer MUST produce a deterministic adapter-neutral advertisement plan for router or forwarder publication that selects DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS payloads from local LAN-facing resolver addresses or ADN-only publication policy while preserving service priority, lifetime, authentication domain name, service-parameter metadata, family-specific applicability, and blocked/no-address statuses without invoking platform advertisement APIs.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9463 Section 3.1.3 RFC9463-S3P1P3-B2-P2-S2",
+          "RFC 9463 Section 3.1.6 RFC9463-S3P1P6-B1-P1-S1",
+          "RFC 9463 Section 5",
+          "RFC 9463 Section 6",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.3",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-3.1.6",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-5",
+          "https://www.rfc-editor.org/rfc/rfc9463.html#section-6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::MixedLanAddressesCreateDhcpAndRouterAdvertisementPayloads",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::AdnOnlyPlanPublishesAllRequestedSurfacesWithoutAddresses",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::Ipv4OnlyPlanDoesNotInventIpv6Advertisements",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::PopulatedPlanWithoutUsableAddressesIsNotInstallable",
+          "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs::DisabledAdvertisementSurfacesReturnPolicyBlockedPlan"
+        ]
+      },
+      "notes": [
+        "This requirement covers local advertisement payload planning only. DHCP server, router, and operating-system advertisement emission remain platform adapter work."
       ]
     }
   ]

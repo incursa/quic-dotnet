@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9463-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "Encrypted DNS Discovery Advertisement Planning Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0010",
+    "VER-QUIC-RFC9463-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9463-0120"
+  ],
+  "summary": "Add deterministic router and forwarder advertisement payload planning for RFC 9463 encrypted DNS discovery.",
+  "planned_changes": "- Add advertisement status and plan models.\n- Add a planner that selects DHCPv4, DHCPv6, and Neighbor Discovery payloads from local address-family inputs or ADN-only policy.\n- Preserve service priority, lifetime, authentication domain name, service parameter metadata, and family-specific applicability.\n- Return non-ready plans for no usable addresses or locally disabled advertisement surfaces.\n- Add focused positive, negative, and edge tests plus canonical xrefs.\n- Update the encrypted DNS gap ledger to separate local advertisement planning from platform emission.",
+  "verification_plan": "Run the DNS project build, focused advertisement planner tests, core SpecTrace validation, generated QUIC requirement coverage triage, and diff hygiene before commit.",
+  "verification_links": [
+    "VER-QUIC-RFC9463-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9463-0010"
+  ],
+  "out_of_scope": [
+    "Configuring DHCP servers.",
+    "Sending Router Advertisements.",
+    "Discovering actual LAN-facing operating-system interfaces.",
+    "DNS provider publication.",
+    "Host resolver installation."
+  ],
+  "completion_notes": "The DNS package now has a trace-owned adapter-neutral advertisement payload planner for router and forwarder publication."
+}

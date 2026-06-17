@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9463-0010",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "Encrypted DNS Discovery Advertisement Planning Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "ARC-QUIC-RFC9463-0010",
+    "WI-QUIC-RFC9463-0010"
+  ],
+  "verification_method": "Focused unit tests, DNS package build, SpecTrace validation, generated coverage triage, and diff hygiene for deterministic RFC 9463 advertisement planning.",
+  "verifies": [
+    "REQ-QUIC-RFC9463-0120"
+  ],
+  "scope": "This verification covers DHCPv4, DHCPv6, and Neighbor Discovery payload selection for mixed-address input, ADN-only publication without addresses, IPv4-only family scoping, no-usable-address handling, and policy-blocked handling when all advertisement surfaces are disabled.",
+  "preconditions": [
+    "The caller supplies local router or forwarder authentication domain name and optional LAN-facing resolver addresses.",
+    "A separate platform adapter is responsible for applying DHCP or Router Advertisement state."
+  ],
+  "procedure": [
+    "Run `dotnet build src/Incursa.Quic.Dns/Incursa.Quic.Dns.csproj -c Release --no-restore`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~EncryptedDnsDiscoveryAdvertisementPlannerTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused advertisement planner tests pass, the DNS package builds, core SpecTrace validation accepts the RFC 9463 artifacts, generated triage remains trace-clean, and diff hygiene passes.",
+  "evidence": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs"
+  ],
+  "status_summary": "Router and forwarder advertisement adapters are locally narrowed to deterministic DHCP and Router Advertisement payload planning. Live platform emission remains external adapter work."
+}

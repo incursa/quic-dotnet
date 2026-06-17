@@ -1,0 +1,43 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9463-0010",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "Encrypted DNS Discovery Advertisement Planning Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the adapter-neutral router and forwarder advertisement planning boundary for RFC 9463 encrypted DNS discovery.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9463",
+    "WI-QUIC-RFC9463-0010",
+    "VER-QUIC-RFC9463-0010"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9463-0120"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlan.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementPlanner.cs",
+    "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryAdvertisementStatus.cs",
+    "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryAdvertisementPlannerTests.cs"
+  ],
+  "design_summary": "The advertisement planner maps local router or forwarder configuration into DHCPv4 OPTION_V4_DNR, DHCPv6 OPTION_V6_DNR, and Neighbor Discovery encrypted DNS option payloads using the existing RFC 9463 codecs. It preserves service priority, lifetime, authentication domain name, default or supplied service parameters, address-family applicability, ADN-only publication, and non-ready statuses for no usable addresses or locally disabled advertisement surfaces.",
+  "data_and_state_considerations": "The planner is side-effect free. It does not configure DHCP servers, send Router Advertisements, write platform network state, publish DNS provider records, or open encrypted DNS sessions.",
+  "edge_cases_and_constraints": [
+    "Mixed IPv4 and IPv6 addresses produce DHCPv4, DHCPv6, and Router Advertisement payloads.",
+    "ADN-only publication produces address-free DHCPv4, DHCPv6, and Router Advertisement payloads when those surfaces are requested.",
+    "IPv4-only populated plans do not invent IPv6 DHCPv6 or Router Advertisement payloads.",
+    "Loopback or otherwise unusable resolver addresses produce a no-usable-addresses plan.",
+    "Disabling all publication surfaces produces a policy-blocked plan."
+  ],
+  "risks": [
+    "The planner cannot verify that supplied addresses are actually LAN-facing interfaces on the host.",
+    "Actual DHCP server, router, and operating-system advertisement APIs remain platform-specific and outside this slice."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Implementation Boundary",
+      "content": "The artifact converts router and forwarder advertisement work into deterministic payload planning while keeping live platform emission and network-interface ownership external."
+    }
+  ]
+}
