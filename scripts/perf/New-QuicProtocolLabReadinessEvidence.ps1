@@ -231,6 +231,7 @@ $repoRoot = Get-RepoRoot
 $resolvedOutputRoot = Resolve-FullPath -Path $OutputRoot -BasePath $repoRoot
 $runRoot = Join-Path $resolvedOutputRoot $RunId
 $resolvedProtocolLabRoot = Resolve-FullPath -Path $ProtocolLabRoot -BasePath $repoRoot
+$protocolLabBenchmarkScript = Join-Path $resolvedProtocolLabRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
 
 if (-not (Test-Path -LiteralPath $resolvedProtocolLabRoot -PathType Container)) {
     throw "ProtocolLab root was not found: $resolvedProtocolLabRoot"
@@ -329,6 +330,15 @@ $performanceCommands = @(
     }
 )
 
+$protocolLabPrerequisites = [ordered]@{
+    root = $resolvedProtocolLabRoot
+    benchmarkSetScript = [ordered]@{
+        path = $protocolLabBenchmarkScript
+        present = Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf
+        requiredFor = "source-reference ProtocolLab performance lane"
+    }
+}
+
 $externalBlockers = @(
     [ordered]@{
         area = "live DNSSEC chain validation"
@@ -369,6 +379,7 @@ $manifest = [ordered]@{
     }
     packageEvidence = @($packageEvidence)
     http3RunnerEvidence = $http3RunnerEvidence
+    protocolLabPrerequisites = $protocolLabPrerequisites
     performanceCommands = $performanceCommands
     localMode = [ordered]@{
         description = "Local source-reference and smoke lanes are developer/regression evidence only."
@@ -432,6 +443,9 @@ else {
 
 Add-Line $summary ""
 Add-Line $summary "## Performance And Controller Commands"
+Add-Line $summary ""
+Add-Line $summary "- ProtocolLab benchmark set script: ``$($protocolLabPrerequisites.benchmarkSetScript.path)``"
+Add-Line $summary "- ProtocolLab benchmark set script present: ``$($protocolLabPrerequisites.benchmarkSetScript.present)``"
 Add-Line $summary ""
 foreach ($command in $performanceCommands) {
     Add-Line $summary "- $($command.name): ``$($command.command)``"

@@ -297,6 +297,7 @@ if ($shouldRunProtocolLab) {
     }
 
     $protocolLabScript = Join-Path $repoRoot "scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1"
+    $protocolLabBenchmarkScript = Join-Path $resolvedProtocolLabRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
     $protocolLabArgs = @(
         "-ProtocolLabRoot", $resolvedProtocolLabRoot,
         "-UseProjectReferences",
@@ -330,6 +331,10 @@ if ($shouldRunProtocolLab) {
         Command = $protocolLabCommand
         Artifacts = $protocolLabRunRoot
     }) | Out-Null
+
+    if (-not (Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf)) {
+        throw "ProtocolLab benchmark set script was not found: $protocolLabBenchmarkScript"
+    }
 
     Invoke-LaneCommand -FileName $PowerShellPath -Arguments $protocolLabProcessArgs -WorkingDirectory $repoRoot -IsDryRun:$DryRun
 }

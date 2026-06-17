@@ -88,6 +88,9 @@ provider/platform execution. Live DNSSEC validation, provider publication,
 IKEv2/IPsec sessions, resolver application, DHCP/RA emission, and encrypted DNS
 establishment remain blocked until the corresponding credential, authority,
 endpoint, OS privilege, network infrastructure, or operator decision is present.
+It also records whether the sibling ProtocolLab checkout contains
+`scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1`, which is required
+for the source-reference performance lane.
 
 Supported surfaces:
 
