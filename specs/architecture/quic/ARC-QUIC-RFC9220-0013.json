@@ -12,6 +12,7 @@
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0006",
     "ARC-QUIC-RFC9220-0009",
+    "ARC-QUIC-RFC9220-0014",
     "WI-QUIC-RFC9220-0013",
     "VER-QUIC-RFC9220-0013"
   ],
@@ -23,12 +24,12 @@
     "src/Incursa.Quic.Http3/Http3Server.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
   ],
-  "design_summary": "`Http3ServerOptions.WebSocketHandlerExceptionCloseStatusCode` and `WebSocketHandlerExceptionCloseReason` let server owners configure the best-effort close frame used when an accepted RFC 9220 WebSocket tunnel handler throws an unexpected non-cancellation, non-QUIC exception. The server validates the configured close payload at startup and uses it in the existing handler-exception catch path after emitting diagnostics.",
+  "design_summary": "`Http3ServerOptions.WebSocketHandlerExceptionCloseStatusCode` and `WebSocketHandlerExceptionCloseReason` let server owners configure the best-effort fallback close frame used when an accepted RFC 9220 WebSocket tunnel handler throws an unexpected non-cancellation, non-QUIC exception. The server validates the configured close payload at startup and uses it in the existing handler-exception catch path after emitting diagnostics when no dynamic close-policy selector is configured or selected.",
   "data_and_state_considerations": "The policy is captured when the server starts and is request-stream scoped when applied. It does not inspect arbitrary exception types, mutate connection state, or change handlers that explicitly close their own tunnels.",
   "edge_cases_and_constraints": [
     "The default remains 1011 with reason `internal error`.",
     "Invalid close status codes or oversized reasons are rejected before the listener is exposed to callers.",
-    "Per-exception dynamic mapping remains outside this static policy."
+    "Per-exception dynamic mapping is trace-owned by `ARC-QUIC-RFC9220-0014`."
   ],
   "risks": [
     "Overly specific close reasons can expose application detail, so applications should choose configured reasons deliberately.",

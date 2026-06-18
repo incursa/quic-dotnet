@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0014",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Dynamic Handler Exception Close Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define exception-aware close policy selection for unexpected accepted WebSocket handler exceptions.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0009",
+    "ARC-QUIC-RFC9220-0013",
+    "WI-QUIC-RFC9220-0014",
+    "VER-QUIC-RFC9220-0014"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0028"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketClosePolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3ServerOptions.WebSocketHandlerExceptionClosePolicySelector` lets server owners map the unexpected exception observed from an accepted RFC 9220 WebSocket tunnel handler to a WebSocket close policy. `Http3Server` invokes the selector inside the existing handler-exception catch path, validates selected close payloads with the shared close-frame formatter, and falls back to the configured static handler-exception policy when the selector is absent, returns no policy, throws, or returns an invalid close payload.",
+  "data_and_state_considerations": "The selector is request-stream scoped when invoked and receives the actual handler exception. The selected policy is not cached across requests, and the fallback static policy remains server-owned configuration.",
+  "edge_cases_and_constraints": [
+    "The existing static 1011/internal-error default remains the final fallback.",
+    "Invalid selector output or selector failure emits diagnostics and uses the static fallback policy.",
+    "The selector does not replace handlers that explicitly close their own tunnels."
+  ],
+  "risks": [
+    "Application selectors can expose exception classification through close codes or reasons, so applications should avoid leaking sensitive details.",
+    "External peer behavior still needs live interoperability proof before promoting beyond local loopback evidence."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9220-0014",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 WebSocket Dynamic Handler Exception Close Policy Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0014",
+    "WI-QUIC-RFC9220-0014"
+  ],
+  "verification_method": "Focused HTTP/3 loopback test, adjacent RFC 9220 regression tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9220-0028"
+  ],
+  "scope": "This verification covers an accepted websocket Extended CONNECT tunnel whose application handler throws after the server sends a 200 response. The server is configured with an exception-aware close-policy selector that maps `InvalidOperationException` to status code 1012 and reason `mapped`, writes that close frame, and completes the writable side of the stream.",
+  "preconditions": [
+    "The WebSocket handler dispatch boundary remains trace-owned by `VER-QUIC-RFC9220-0003`.",
+    "Default handler-exception close behavior remains trace-owned by `VER-QUIC-RFC9220-0009`.",
+    "Static configured handler-exception close policy remains trace-owned by `VER-QUIC-RFC9220-0013`."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy|FullyQualifiedName~WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy|FullyQualifiedName~WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ConfiguredKeepAlive_UsesConfiguredPingPayload|FullyQualifiedName~WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData|FullyQualifiedName~WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho|FullyQualifiedName~WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong|FullyQualifiedName~WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ApplicationClose_WritesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel|FullyQualifiedName~WebSocketExtendedConnect_CloseFrame_EchoesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage|FullyQualifiedName~Http3WebSocketMessageReaderTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused dynamic close-policy and adjacent WebSocket regression tests pass, the new RFC 9220 dynamic handler-exception close-policy requirement is trace-clean, SpecTrace validation accepts the artifacts, and diff hygiene is clean.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3WebSocketClosePolicy.cs",
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy"
+  ],
+  "status_summary": "The HTTP/3 server handler path now has locally verified dynamic close status and reason selection for unexpected accepted WebSocket handler exceptions. Evidence class is local same-process loopback over the repository QUIC transport; it is not external peer interoperability, published ProtocolLab evidence, or isolated-host proof."
+}

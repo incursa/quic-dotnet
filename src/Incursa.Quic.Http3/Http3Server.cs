@@ -55,6 +55,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly byte[] webSocketKeepAlivePayload;
     private readonly ushort webSocketHandlerExceptionCloseStatusCode;
     private readonly string? webSocketHandlerExceptionCloseReason;
+    private readonly Func<Exception, Http3WebSocketClosePolicy?>? webSocketHandlerExceptionClosePolicySelector;
     // CONTEXT: Server shutdown ownership
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
@@ -93,6 +94,7 @@ public sealed class Http3Server : IAsyncDisposable
         webSocketKeepAlivePayload = options.WebSocketKeepAlivePayload.ToArray();
         webSocketHandlerExceptionCloseStatusCode = options.WebSocketHandlerExceptionCloseStatusCode;
         webSocketHandlerExceptionCloseReason = options.WebSocketHandlerExceptionCloseReason;
+        webSocketHandlerExceptionClosePolicySelector = options.WebSocketHandlerExceptionClosePolicySelector;
     }
 
     /// <summary>
@@ -587,10 +589,11 @@ public sealed class Http3Server : IAsyncDisposable
                         keepAliveTask = null;
                         Http3Metrics.RecordRequestFailed("server", "websocket", requestStartedTimestamp);
                         EmitError(exception);
+                        Http3WebSocketClosePolicy closePolicy = ResolveWebSocketHandlerExceptionClosePolicy(exception);
                         await TryCloseWebSocketTunnelAsync(
                             tunnelContext,
-                            webSocketHandlerExceptionCloseStatusCode,
-                            webSocketHandlerExceptionCloseReason,
+                            closePolicy.StatusCode,
+                            closePolicy.Reason,
                             cancellationToken).ConfigureAwait(false);
                         return;
                     }
@@ -912,6 +915,30 @@ public sealed class Http3Server : IAsyncDisposable
         {
             SuppressExpectedException(exception);
         }
+    }
+
+    private Http3WebSocketClosePolicy ResolveWebSocketHandlerExceptionClosePolicy(Exception handlerException)
+    {
+        if (webSocketHandlerExceptionClosePolicySelector is null)
+        {
+            return new Http3WebSocketClosePolicy(webSocketHandlerExceptionCloseStatusCode, webSocketHandlerExceptionCloseReason);
+        }
+
+        try
+        {
+            Http3WebSocketClosePolicy? selected = webSocketHandlerExceptionClosePolicySelector(handlerException);
+            if (selected is { } policy)
+            {
+                _ = Http3WebSocketCloseFrameParser.FormatPayload(policy.StatusCode, policy.Reason);
+                return policy;
+            }
+        }
+        catch (Exception exception)
+        {
+            EmitError(exception);
+        }
+
+        return new Http3WebSocketClosePolicy(webSocketHandlerExceptionCloseStatusCode, webSocketHandlerExceptionCloseReason);
     }
 
     private async Task RunWebSocketKeepAliveAsync(

@@ -51,4 +51,9 @@ public sealed class Http3ServerOptions
     /// Gets or sets the WebSocket close reason used for unexpected accepted tunnel handler exceptions.
     /// </summary>
     public string? WebSocketHandlerExceptionCloseReason { get; set; } = DefaultWebSocketHandlerExceptionCloseReason;
+
+    /// <summary>
+    /// Gets or sets an optional mapper that selects a WebSocket close policy from an unexpected accepted tunnel handler exception.
+    /// </summary>
+    public Func<Exception, Http3WebSocketClosePolicy?>? WebSocketHandlerExceptionClosePolicySelector { get; set; }
 }

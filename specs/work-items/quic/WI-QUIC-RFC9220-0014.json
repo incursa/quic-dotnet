@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0014",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Dynamic Handler Exception Close Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0014",
+    "VER-QUIC-RFC9220-0014"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0028"
+  ],
+  "summary": "Add exception-aware close policy selection for unexpected accepted WebSocket handler exceptions.",
+  "planned_changes": "- Add `Http3WebSocketClosePolicy` as the close status and reason value selected by HTTP/3 server policy.\n- Add `Http3ServerOptions.WebSocketHandlerExceptionClosePolicySelector`.\n- Resolve selector output in the existing accepted-tunnel handler-exception catch path with validation and static-policy fallback.\n- Add a loopback server test that maps a thrown handler exception to a distinct close status and reason.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket dynamic close-policy test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0014"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0014"
+  ],
+  "out_of_scope": [
+    "External live peer proof.",
+    "TCP proxy policy, backpressure, or stress coverage.",
+    "Automatic retry semantics based on close status.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Accepted WebSocket tunnel handler failures can now select close status and reason dynamically from the thrown exception while retaining the static fallback policy."
+}
