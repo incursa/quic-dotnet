@@ -324,6 +324,84 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0031")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_Http3Client_CarriesSubprotocolRequestAndAcceptResponseHeaders()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        string offeredSubprotocols = string.Empty;
+        EchoWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options =>
+            {
+                options.WebSocketHandler = webSocketHandler;
+                options.WebSocketAcceptResponseHeadersSelector = request =>
+                {
+                    offeredSubprotocols = Assert.Single(
+                        request.Headers,
+                        header => header.Name == "sec-websocket-protocol").Value;
+                    return [new QPackFieldLine("sec-websocket-protocol", "superchat")];
+                };
+            });
+        await using Http3Client client = await Http3Client.ConnectAsync(
+                context.CreateClientOptions(),
+                new Http3ClientOptions { Settings = new Http3Settings(enableConnectProtocol: 1) })
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        await using Http3WebSocketClientTunnelContext tunnel = await client
+            .OpenWebSocketAsync(
+                new Uri($"https://localhost:{context.Endpoint.Port}/socket"),
+                [new QPackFieldLine("sec-websocket-protocol", "chat, superchat")])
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        await tunnel.WriteMessageAsync(Http3WebSocketOpcode.Text, "metadata"u8.ToArray())
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage echoed = await tunnel.ReadMessageAsync()
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10))
+            ?? throw new InvalidOperationException("The WebSocket tunnel ended before the echo arrived.");
+
+        Assert.Equal("chat, superchat", offeredSubprotocols);
+        Assert.Contains(tunnel.ResponseHeaders, header => header.Name == "sec-websocket-protocol" && header.Value == "superchat");
+        Assert.Equal("echo:metadata", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0031")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task WebSocketExtendedConnect_Http3Client_RejectsAdditionalPseudoHeaders()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = new EchoWebSocketHandler());
+        await using Http3Client client = await Http3Client.ConnectAsync(
+                context.CreateClientOptions(),
+                new Http3ClientOptions { Settings = new Http3Settings(enableConnectProtocol: 1) })
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            async () => await client.OpenWebSocketAsync(
+                new Uri($"https://localhost:{context.Endpoint.Port}/socket"),
+                [new QPackFieldLine(":path", "/other")]));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9220-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -1743,7 +1821,7 @@ public sealed class Http3MinimalServerTests
     private static async Task<QPackFieldLine[]> ReadResponseHeadersAsync(QuicStream stream)
     {
         Http3FrameReader reader = new();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[1];
 
         while (true)
         {

@@ -200,6 +200,17 @@ public sealed class Http3Client : IAsyncDisposable
         Uri requestUri,
         CancellationToken cancellationToken = default)
     {
+        return await OpenWebSocketAsync(requestUri, additionalHeaders: null, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens an RFC 9220 WebSocket Extended CONNECT tunnel with additional non-pseudo request headers.
+    /// </summary>
+    public async ValueTask<Http3WebSocketClientTunnelContext> OpenWebSocketAsync(
+        Uri requestUri,
+        IEnumerable<QPackFieldLine>? additionalHeaders,
+        CancellationToken cancellationToken = default)
+    {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
         ArgumentNullException.ThrowIfNull(requestUri);
         if (!requestUri.IsAbsoluteUri)
@@ -243,7 +254,8 @@ public sealed class Http3Client : IAsyncDisposable
                 StreamKind = Http3StreamKind.Request,
             });
 
-            byte[] requestHeaders = QPackEncoder.EncodeFieldSection(BuildWebSocketConnectRequestHeaders(requestUri));
+            byte[] requestHeaders = QPackEncoder.EncodeFieldSection(
+                BuildWebSocketConnectRequestHeaders(requestUri, additionalHeaders));
             byte[] headersFrame = Http3FrameWriter.WriteHeaders(requestHeaders);
             await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length, cancellationToken).ConfigureAwait(false);
             EmitFrame(Http3DiagnosticKind.FrameSent, requestStream.Id, Http3FrameType.Headers, requestHeaders.Length);
@@ -741,7 +753,9 @@ public sealed class Http3Client : IAsyncDisposable
         return headers;
     }
 
-    private IReadOnlyList<QPackFieldLine> BuildWebSocketConnectRequestHeaders(Uri requestUri)
+    private IReadOnlyList<QPackFieldLine> BuildWebSocketConnectRequestHeaders(
+        Uri requestUri,
+        IEnumerable<QPackFieldLine>? additionalHeaders)
     {
         List<QPackFieldLine> headers =
         [
@@ -755,6 +769,19 @@ public sealed class Http3Client : IAsyncDisposable
         if (!string.IsNullOrWhiteSpace(userAgent))
         {
             headers.Add(new QPackFieldLine("user-agent", userAgent));
+        }
+
+        if (additionalHeaders is not null)
+        {
+            foreach (QPackFieldLine header in additionalHeaders)
+            {
+                if (header.Name.StartsWith(':'))
+                {
+                    throw new ArgumentException("Additional HTTP/3 WebSocket request headers cannot include pseudo-fields.", nameof(additionalHeaders));
+                }
+
+                headers.Add(header);
+            }
         }
 
         return headers;

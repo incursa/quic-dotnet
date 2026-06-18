@@ -51,6 +51,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly int readBufferSize;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private readonly IHttp3WebSocketHandler? webSocketHandler;
+    private readonly Func<Http3Request, IEnumerable<QPackFieldLine>>? webSocketAcceptResponseHeadersSelector;
     private readonly TimeSpan? webSocketKeepAliveInterval;
     private readonly byte[] webSocketKeepAlivePayload;
     private readonly ushort webSocketHandlerExceptionCloseStatusCode;
@@ -77,6 +78,7 @@ public sealed class Http3Server : IAsyncDisposable
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
         diagnosticsSink = options.DiagnosticsSink;
         webSocketHandler = options.WebSocketHandler;
+        webSocketAcceptResponseHeadersSelector = options.WebSocketAcceptResponseHeadersSelector;
         if (options.WebSocketKeepAliveInterval is { } keepAliveInterval && keepAliveInterval <= TimeSpan.Zero)
         {
             throw new ArgumentOutOfRangeException(nameof(options), "The WebSocket keepalive interval must be positive when configured.");
@@ -555,7 +557,10 @@ public sealed class Http3Server : IAsyncDisposable
                 EmitRequestStartedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path);
                 if (TryGetWebSocketHandler(request, out IHttp3WebSocketHandler? tunnelHandler))
                 {
-                    Http3ServerResponse acceptedResponse = new(200, ReadOnlyMemory<byte>.Empty);
+                    Http3ServerResponse acceptedResponse = new(
+                        200,
+                        ReadOnlyMemory<byte>.Empty,
+                        webSocketAcceptResponseHeadersSelector?.Invoke(request));
                     await WriteTunnelResponseHeadersAsync(stream, acceptedResponse, cancellationToken).ConfigureAwait(false);
                     Http3WebSocketTunnelContext tunnelContext = new(request, stream);
                     CancellationTokenSource? keepAliveCancellation = null;

@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using Incursa.Qpack;
+
 namespace Incursa.Quic.Http3;
 
 /// <summary>
@@ -31,6 +33,11 @@ public sealed class Http3ServerOptions
     /// Gets or sets an optional handler for accepted RFC 9220 WebSocket Extended CONNECT tunnels.
     /// </summary>
     public IHttp3WebSocketHandler? WebSocketHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional selector for response headers sent on accepted RFC 9220 WebSocket tunnels.
+    /// </summary>
+    public Func<Http3Request, IEnumerable<QPackFieldLine>>? WebSocketAcceptResponseHeadersSelector { get; set; }
 
     /// <summary>
     /// Gets or sets the optional interval for automatic server WebSocket ping frames on accepted tunnels.

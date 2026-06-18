@@ -24,6 +24,7 @@
     "ARC-QUIC-RFC9220-0014",
     "ARC-QUIC-RFC9220-0015",
     "ARC-QUIC-RFC9220-0016",
+    "ARC-QUIC-RFC9220-0017",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -40,6 +41,7 @@
     "WI-QUIC-RFC9220-0014",
     "WI-QUIC-RFC9220-0015",
     "WI-QUIC-RFC9220-0016",
+    "WI-QUIC-RFC9220-0017",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -55,7 +57,8 @@
     "VER-QUIC-RFC9220-0013",
     "VER-QUIC-RFC9220-0014",
     "VER-QUIC-RFC9220-0015",
-    "VER-QUIC-RFC9220-0016"
+    "VER-QUIC-RFC9220-0016",
+    "VER-QUIC-RFC9220-0017"
   ],
   "requirements": [
     {
@@ -845,6 +848,32 @@
       },
       "notes": [
         "This slice covers a local HTTP/3 client helper that opens an accepted RFC 9220 WebSocket tunnel and then exposes WebSocket message IO on the live request stream. External peer proof and production proxy policy remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0031",
+      "title": "Carry WebSocket tunnel negotiation headers",
+      "statement": "The HTTP/3 WebSocket tunnel helpers MUST let callers send additional non-pseudo request headers on RFC 9220 Extended CONNECT requests and let applications add response headers to accepted WebSocket tunnel responses before WebSocket bytes are exchanged.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 1.9",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-1.9"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_Http3Client_CarriesSubprotocolRequestAndAcceptResponseHeaders",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_Http3Client_RejectsAdditionalPseudoHeaders"
+        ]
+      },
+      "notes": [
+        "This slice covers subprotocol-style request and accepted-response metadata over the repository HTTP/3 WebSocket tunnel helpers. The helper still owns all Extended CONNECT pseudo-fields."
       ]
     }
   ]

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0017",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Tunnel Metadata Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0017",
+    "VER-QUIC-RFC9220-0017"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0031"
+  ],
+  "summary": "Add request and accepted-response metadata extension points for RFC 9220 WebSocket tunnel helpers.",
+  "planned_changes": "- Add an `Http3Client.OpenWebSocketAsync` overload that accepts additional non-pseudo request headers.\n- Add `Http3ServerOptions.WebSocketAcceptResponseHeadersSelector` for accepted tunnel response headers.\n- Add local HTTP/3 QUIC loopback tests for subprotocol-style metadata and additional pseudo-header rejection.",
+  "verification_plan": "Run the focused HTTP/3 WebSocket metadata tests, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0017"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0017"
+  ],
+  "out_of_scope": [
+    "Automatic subprotocol selection.",
+    "WebSocket extension negotiation.",
+    "External live peer proof.",
+    "Cross-host or isolated-host ProtocolLab evidence.",
+    "Production proxy target, timeout, or authorization policy."
+  ],
+  "completion_notes": "The HTTP/3 WebSocket helpers now carry application request metadata and accepted-response metadata while keeping Extended CONNECT pseudo-fields framework-owned."
+}

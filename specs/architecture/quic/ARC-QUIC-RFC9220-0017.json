@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0017",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Tunnel Metadata Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define request and response metadata extension points for accepted RFC 9220 WebSocket tunnels.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0016",
+    "WI-QUIC-RFC9220-0017",
+    "VER-QUIC-RFC9220-0017"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0031"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3Client.OpenWebSocketAsync` accepts additional non-pseudo request headers after the helper-owned Extended CONNECT pseudo-fields. `Http3ServerOptions.WebSocketAcceptResponseHeadersSelector` lets applications inspect the validated request and emit response headers on the accepted 2xx tunnel response before WebSocket bytes are exchanged.",
+  "data_and_state_considerations": "The client helper keeps pseudo-field construction centralized and rejects caller-supplied pseudo-fields. The server selector runs after request validation and before dispatching the accepted tunnel handler, so selected response headers are visible to the client while the live stream remains available for WebSocket messages.",
+  "edge_cases_and_constraints": [
+    "Additional client headers cannot include HTTP/3 pseudo-fields.",
+    "Response metadata selection is per accepted WebSocket request and does not affect unsupported Extended CONNECT responses.",
+    "The proof is local HTTP/3 QUIC loopback, not external WebSocket-over-H3 peer interoperability."
+  ],
+  "risks": [
+    "Applications remain responsible for choosing valid WebSocket subprotocol values.",
+    "The selector is intentionally synchronous and should not perform slow external policy lookups."
+  ]
+}
