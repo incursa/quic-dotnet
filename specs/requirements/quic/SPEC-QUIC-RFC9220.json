@@ -12,14 +12,17 @@
     "ARC-QUIC-RFC9220-0002",
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0004",
+    "ARC-QUIC-RFC9220-0005",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
     "WI-QUIC-RFC9220-0004",
+    "WI-QUIC-RFC9220-0005",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
-    "VER-QUIC-RFC9220-0004"
+    "VER-QUIC-RFC9220-0004",
+    "VER-QUIC-RFC9220-0005"
   ],
   "requirements": [
     {
@@ -475,6 +478,34 @@
       },
       "notes": [
         "This slice covers the accepted server tunnel helper path for close echo and orderly write completion. Broader application close-code selection and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0019",
+      "title": "Echo WebSocket ping frames as pong frames",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers reply to received ping control messages with unmasked pong control messages carrying the same payload while preserving the tunnel for subsequent messages.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.2",
+          "RFC 6455 section 5.5.3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_AllowsControlFrameBetweenFragments"
+        ]
+      },
+      "notes": [
+        "This slice covers the accepted server tunnel helper path for ping-to-pong responses and continued tunnel use. Automatic keepalive scheduling and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]

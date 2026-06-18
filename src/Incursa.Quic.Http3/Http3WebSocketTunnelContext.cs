@@ -91,6 +91,20 @@ public sealed class Http3WebSocketTunnelContext
     }
 
     /// <summary>
+    /// Echoes a received ping frame as an unmasked pong frame.
+    /// </summary>
+    public async ValueTask EchoPingAsync(Http3WebSocketMessage pingMessage, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(pingMessage);
+        if (pingMessage.Opcode != Http3WebSocketOpcode.Ping)
+        {
+            throw new ArgumentException("Only WebSocket ping messages can be echoed as pong frames.", nameof(pingMessage));
+        }
+
+        await WriteMessageAsync(Http3WebSocketOpcode.Pong, pingMessage.Payload, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Echoes a received close frame and completes the writable side of the tunnel stream.
     /// </summary>
     public async ValueTask EchoCloseAsync(Http3WebSocketMessage closeMessage, CancellationToken cancellationToken = default)

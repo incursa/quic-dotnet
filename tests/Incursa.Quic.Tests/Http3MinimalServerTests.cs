@@ -304,6 +304,58 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0019")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        PingPongWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = webSocketHandler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(enableConnectProtocol: 1),
+            []);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteWebSocketConnectHeadersAsync(requestStream, "/socket");
+
+        QPackFieldLine[] responseHeaders = await ReadResponseHeadersAsync(requestStream);
+        QPackFieldLine status = Assert.Single(responseHeaders, header => header.Name == ":status");
+        Assert.Equal("200", status.Value);
+
+        byte[] pingFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Ping,
+            "alive"u8,
+            [0x01, 0x02, 0x03, 0x04]);
+        await requestStream.WriteAsync(pingFrame, 0, pingFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage pong = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+
+        byte[] textFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            "after ping"u8,
+            [0x05, 0x06, 0x07, 0x08]);
+        await requestStream.WriteAsync(textFrame, 0, textFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage echoed = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+
+        Assert.Equal(Http3WebSocketOpcode.Pong, pong.Opcode);
+        Assert.Equal("alive", System.Text.Encoding.UTF8.GetString(pong.Payload.Span));
+        Assert.Equal(Http3WebSocketOpcode.Text, echoed.Opcode);
+        Assert.Equal("echo:after ping", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
+        Assert.True(webSocketHandler.ObservedPing);
+        Assert.Equal("after ping", System.Text.Encoding.UTF8.GetString(webSocketHandler.Payload));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9220-0017")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -1437,6 +1489,28 @@ public sealed class Http3MinimalServerTests
             StatusCode = status.StatusCode;
             Reason = status.Reason;
             await context.EchoCloseAsync(closeMessage, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        }
+    }
+
+    private sealed class PingPongWebSocketHandler : IHttp3WebSocketHandler
+    {
+        public bool ObservedPing { get; private set; }
+
+        public byte[] Payload { get; private set; } = [];
+
+        public async ValueTask HandleAsync(Http3WebSocketTunnelContext context, CancellationToken cancellationToken = default)
+        {
+            Http3WebSocketMessage pingMessage = await context.ReadMessageAsync(cancellationToken)
+                ?? throw new InvalidOperationException("The WebSocket tunnel ended before a ping frame arrived.");
+            ObservedPing = pingMessage.Opcode == Http3WebSocketOpcode.Ping;
+            await context.EchoPingAsync(pingMessage, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+            Http3WebSocketMessage dataMessage = await context.ReadMessageAsync(cancellationToken)
+                ?? throw new InvalidOperationException("The WebSocket tunnel ended before a data frame arrived.");
+            Payload = dataMessage.Payload.ToArray();
+            byte[] responsePayload = System.Text.Encoding.UTF8.GetBytes("echo:" + System.Text.Encoding.UTF8.GetString(dataMessage.Payload.Span));
+            await context.WriteMessageAsync(dataMessage.Opcode, responsePayload, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+            await context.Stream.CompleteWritesAsync(cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         }
     }
 }

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0005",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Tunnel Ping Pong Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the accepted WebSocket tunnel helper boundary for replying to ping control messages while preserving the tunnel for subsequent data messages.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0004",
+    "WI-QUIC-RFC9220-0005",
+    "VER-QUIC-RFC9220-0005"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0019"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketMessageReader.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3WebSocketTunnelContext` exposes `EchoPingAsync` for application handlers that receive a ping control message through the accepted RFC 9220 tunnel. The helper validates that the caller provided a ping message and writes an unmasked pong frame with the same payload. It does not complete, reset, or otherwise terminate the stream, so later WebSocket data messages remain available through the same context reader.",
+  "data_and_state_considerations": "Ping handling reuses the context's per-tunnel parser state and the existing unmasked server frame writer. No additional connection-level state is introduced and no HTTP/3 DATA framing is used after the tunnel response.",
+  "edge_cases_and_constraints": [
+    "Only ping messages can be echoed as pong frames through this helper.",
+    "The pong payload is byte-for-byte the received ping payload.",
+    "The helper writes an unmasked server frame and leaves stream lifetime under handler control.",
+    "The tunnel remains usable for subsequent data messages after the pong response."
+  ],
+  "risks": [
+    "This slice covers the server handler helper path only; it does not define a complete high-level WebSocket API.",
+    "Live external WebSocket-over-H3 peer proof remains future work."
+  ]
+}
