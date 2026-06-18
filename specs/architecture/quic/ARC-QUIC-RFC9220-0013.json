@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0013",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Handler Exception Close Policy Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define configurable close status and reason policy for unexpected accepted WebSocket handler exceptions.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0006",
+    "ARC-QUIC-RFC9220-0009",
+    "WI-QUIC-RFC9220-0013",
+    "VER-QUIC-RFC9220-0013"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0027"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3ServerOptions.WebSocketHandlerExceptionCloseStatusCode` and `WebSocketHandlerExceptionCloseReason` let server owners configure the best-effort close frame used when an accepted RFC 9220 WebSocket tunnel handler throws an unexpected non-cancellation, non-QUIC exception. The server validates the configured close payload at startup and uses it in the existing handler-exception catch path after emitting diagnostics.",
+  "data_and_state_considerations": "The policy is captured when the server starts and is request-stream scoped when applied. It does not inspect arbitrary exception types, mutate connection state, or change handlers that explicitly close their own tunnels.",
+  "edge_cases_and_constraints": [
+    "The default remains 1011 with reason `internal error`.",
+    "Invalid close status codes or oversized reasons are rejected before the listener is exposed to callers.",
+    "Per-exception dynamic mapping remains outside this static policy."
+  ],
+  "risks": [
+    "Overly specific close reasons can expose application detail, so applications should choose configured reasons deliberately.",
+    "External peer behavior still needs live interoperability proof before promoting beyond local loopback evidence."
+  ]
+}

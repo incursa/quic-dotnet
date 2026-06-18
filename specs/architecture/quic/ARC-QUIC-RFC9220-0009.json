@@ -12,6 +12,7 @@
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0006",
     "ARC-QUIC-RFC9220-0007",
+    "ARC-QUIC-RFC9220-0013",
     "WI-QUIC-RFC9220-0009",
     "VER-QUIC-RFC9220-0009"
   ],
@@ -23,12 +24,12 @@
     "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
   ],
-  "design_summary": "After a WebSocket Extended CONNECT tunnel is accepted with response headers, `Http3Server` catches unexpected non-cancellation, non-QUIC application handler exceptions, emits the server error diagnostic, writes a WebSocket close frame with status code 1011 and reason `internal error`, completes the writable side of the tunnel stream, and returns without escalating the exception to the connection loop.",
+  "design_summary": "After a WebSocket Extended CONNECT tunnel is accepted with response headers, `Http3Server` catches unexpected non-cancellation, non-QUIC application handler exceptions, emits the server error diagnostic, writes a WebSocket close frame with the configured close status and reason, completes the writable side of the tunnel stream, and returns without escalating the exception to the connection loop. The default policy remains status code 1011 with reason `internal error`.",
   "data_and_state_considerations": "The mapping is request-stream scoped and does not add scheduler or connection state. Application handlers that choose their own close codes still use `Http3WebSocketTunnelContext.CloseAsync` directly.",
   "edge_cases_and_constraints": [
     "Cancellation and QUIC transport exceptions remain delegated to the existing expected-exception paths.",
     "The close write is best effort because the peer might already have closed the accepted tunnel.",
-    "The policy is a generic 1011 fallback and does not infer application-specific close codes."
+    "The default policy is a generic 1011 fallback; configured close status and reason policy is trace-owned by `ARC-QUIC-RFC9220-0013`."
   ],
   "risks": [
     "A generic 1011 close could hide application detail from clients, so the server also emits the exception through existing diagnostics.",

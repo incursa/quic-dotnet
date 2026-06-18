@@ -20,6 +20,7 @@
     "ARC-QUIC-RFC9220-0010",
     "ARC-QUIC-RFC9220-0011",
     "ARC-QUIC-RFC9220-0012",
+    "ARC-QUIC-RFC9220-0013",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -32,6 +33,7 @@
     "WI-QUIC-RFC9220-0010",
     "WI-QUIC-RFC9220-0011",
     "WI-QUIC-RFC9220-0012",
+    "WI-QUIC-RFC9220-0013",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -43,7 +45,8 @@
     "VER-QUIC-RFC9220-0009",
     "VER-QUIC-RFC9220-0010",
     "VER-QUIC-RFC9220-0011",
-    "VER-QUIC-RFC9220-0012"
+    "VER-QUIC-RFC9220-0012",
+    "VER-QUIC-RFC9220-0013"
   ],
   "requirements": [
     {
@@ -640,7 +643,7 @@
         ]
       },
       "notes": [
-        "This slice covers framework-level mapping for unexpected application handler exceptions after the WebSocket tunnel has already been accepted. TCP socket forwarding, automatic keepalive scheduling, external WebSocket-over-H3 peer proof, and application-specific exception-to-close-code policy remain separate work."
+        "This slice covers default framework-level mapping for unexpected application handler exceptions after the WebSocket tunnel has already been accepted. Configurable exception close policy, TCP socket forwarding, automatic keepalive scheduling, and external WebSocket-over-H3 peer proof remain separate work."
       ]
     },
     {
@@ -724,6 +727,34 @@
       },
       "notes": [
         "This slice covers static keepalive ping payload policy for accepted tunnels. Dynamic per-ping payload selection, external WebSocket-over-H3 peer proof, and application-specific exception-to-close-code policy remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0027",
+      "title": "Configure WebSocket handler exception close policy",
+      "statement": "The HTTP/3 server MUST let application owners configure the WebSocket close status code and reason used for unexpected accepted RFC 9220 tunnel handler exceptions while preserving orderly tunnel write completion.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "RFC 6455 section 7.4",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose"
+        ]
+      },
+      "notes": [
+        "This slice covers static server-level close status and reason policy for unexpected accepted tunnel handler exceptions. Dynamic per-exception close-code mapping, external WebSocket-over-H3 peer proof, and TCP proxy stress/backpressure remain separate work."
       ]
     }
   ]

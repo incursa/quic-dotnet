@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0013",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Handler Exception Close Policy Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0013",
+    "VER-QUIC-RFC9220-0013"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0027"
+  ],
+  "summary": "Add configured status-code and reason policy for unexpected accepted WebSocket handler exceptions.",
+  "planned_changes": "- Add `Http3ServerOptions.WebSocketHandlerExceptionCloseStatusCode` and `WebSocketHandlerExceptionCloseReason` with close-payload validation.\n- Use the configured close status and reason in the accepted-tunnel handler-exception catch path.\n- Preserve the existing default 1011/internal-error behavior.\n- Add a loopback server test that configures a policy close frame and verifies the accepted tunnel receives it after handler failure.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket handler-exception close-policy test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0013"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0013"
+  ],
+  "out_of_scope": [
+    "Dynamic per-exception close-code mapping.",
+    "External live peer proof.",
+    "TCP proxy policy, backpressure, or stress coverage.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Accepted WebSocket tunnel handler failures can now use configured close status and reason policy while preserving the default 1011/internal-error behavior."
+}

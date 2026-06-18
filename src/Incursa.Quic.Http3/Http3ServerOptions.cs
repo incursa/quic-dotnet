@@ -9,6 +9,8 @@ namespace Incursa.Quic.Http3;
 public sealed class Http3ServerOptions
 {
     private const int DefaultReadBufferSize = 16 * 1024;
+    private const ushort DefaultWebSocketHandlerExceptionCloseStatusCode = 1011;
+    private const string DefaultWebSocketHandlerExceptionCloseReason = "internal error";
 
     /// <summary>
     /// Gets or sets the local HTTP/3 SETTINGS sent on the server control stream.
@@ -39,4 +41,14 @@ public sealed class Http3ServerOptions
     /// Gets or sets the payload sent with automatic server WebSocket ping frames on accepted tunnels.
     /// </summary>
     public ReadOnlyMemory<byte> WebSocketKeepAlivePayload { get; set; } = ReadOnlyMemory<byte>.Empty;
+
+    /// <summary>
+    /// Gets or sets the WebSocket close status used for unexpected accepted tunnel handler exceptions.
+    /// </summary>
+    public ushort WebSocketHandlerExceptionCloseStatusCode { get; set; } = DefaultWebSocketHandlerExceptionCloseStatusCode;
+
+    /// <summary>
+    /// Gets or sets the WebSocket close reason used for unexpected accepted tunnel handler exceptions.
+    /// </summary>
+    public string? WebSocketHandlerExceptionCloseReason { get; set; } = DefaultWebSocketHandlerExceptionCloseReason;
 }

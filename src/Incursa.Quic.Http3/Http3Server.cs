@@ -26,7 +26,6 @@ public sealed class Http3Server : IAsyncDisposable
     private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
-    private const ushort WebSocketInternalErrorCloseStatusCode = 1011;
     private const int MaxWebSocketControlPayloadLength = 125;
     private const int IndexedFieldPrefixBits = 6;
     private const byte StaticIndexedFieldPrefix = 0xC0;
@@ -54,6 +53,8 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly IHttp3WebSocketHandler? webSocketHandler;
     private readonly TimeSpan? webSocketKeepAliveInterval;
     private readonly byte[] webSocketKeepAlivePayload;
+    private readonly ushort webSocketHandlerExceptionCloseStatusCode;
+    private readonly string? webSocketHandlerExceptionCloseReason;
     // CONTEXT: Server shutdown ownership
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
@@ -85,8 +86,13 @@ public sealed class Http3Server : IAsyncDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "The WebSocket keepalive payload cannot exceed 125 bytes.");
         }
 
+        _ = Http3WebSocketCloseFrameParser.FormatPayload(
+            options.WebSocketHandlerExceptionCloseStatusCode,
+            options.WebSocketHandlerExceptionCloseReason);
         webSocketKeepAliveInterval = options.WebSocketKeepAliveInterval;
         webSocketKeepAlivePayload = options.WebSocketKeepAlivePayload.ToArray();
+        webSocketHandlerExceptionCloseStatusCode = options.WebSocketHandlerExceptionCloseStatusCode;
+        webSocketHandlerExceptionCloseReason = options.WebSocketHandlerExceptionCloseReason;
     }
 
     /// <summary>
@@ -581,7 +587,11 @@ public sealed class Http3Server : IAsyncDisposable
                         keepAliveTask = null;
                         Http3Metrics.RecordRequestFailed("server", "websocket", requestStartedTimestamp);
                         EmitError(exception);
-                        await TryCloseWebSocketTunnelAsync(tunnelContext, WebSocketInternalErrorCloseStatusCode, "internal error", cancellationToken).ConfigureAwait(false);
+                        await TryCloseWebSocketTunnelAsync(
+                            tunnelContext,
+                            webSocketHandlerExceptionCloseStatusCode,
+                            webSocketHandlerExceptionCloseReason,
+                            cancellationToken).ConfigureAwait(false);
                         return;
                     }
                     finally
@@ -887,7 +897,7 @@ public sealed class Http3Server : IAsyncDisposable
     private static async ValueTask TryCloseWebSocketTunnelAsync(
         Http3WebSocketTunnelContext tunnelContext,
         ushort statusCode,
-        string reason,
+        string? reason,
         CancellationToken cancellationToken)
     {
         try
