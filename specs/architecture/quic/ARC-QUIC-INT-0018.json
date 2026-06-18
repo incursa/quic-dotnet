@@ -10,8 +10,8 @@
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0017",
-    "WI-QUIC-INT-0017",
-    "VER-QUIC-INT-0017"
+    "WI-QUIC-INT-0018",
+    "VER-QUIC-INT-0018"
   ],
   "satisfies": [
     "REQ-QUIC-INT-0024"

@@ -32,8 +32,12 @@ public sealed class REQ_QUIC_INT_0024
         Assert.DoesNotContain("interop-msquic-peer-blocked-evidence", gapLedger, StringComparison.Ordinal);
         Assert.Contains("msquic Peer-Blocked Evidence Classification Architecture", architecture, StringComparison.Ordinal);
         Assert.Contains("peer-side blocked evidence", architecture, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("WI-QUIC-INT-0018", architecture, StringComparison.Ordinal);
+        Assert.Contains("VER-QUIC-INT-0018", architecture, StringComparison.Ordinal);
         Assert.Contains("msquic peer-side blocked evidence", workItem, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("REQ-QUIC-INT-0024", verification, StringComparison.Ordinal);
+        Assert.Contains("\"status\": \"complete\"", workItem, StringComparison.Ordinal);
+        Assert.Contains("\"status\": \"passed\"", verification, StringComparison.Ordinal);
 
         using JsonDocument reportDocument = JsonDocument.Parse(reportJson);
         JsonElement root = reportDocument.RootElement;

@@ -2,7 +2,7 @@
   "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
   "artifact_id": "VER-QUIC-INT-0018",
   "artifact_type": "verification",
-  "status": "planned",
+  "status": "passed",
   "title": "QUIC Advisory msquic Peer-Blocked Evidence Classification Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
@@ -36,7 +36,7 @@
     "specs/work-items/quic/WI-QUIC-INT-0018.json",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0024.cs"
   ],
-  "status_summary": "Planned. The slice is advisory classification only and does not change runtime transport behavior.",
+  "status_summary": "Passed for advisory classification only. `REQ-QUIC-INT-0024` is formalized in the INT specification, current-status note, generated major-peer evidence report, architecture artifact, completed work item, and focused requirement-home tests. The preserved msquic rows remain peer-side blocked evidence and do not change runtime transport behavior or the local candidate set.",
   "supplemental_sections": [
     {
       "heading": "Scope",
