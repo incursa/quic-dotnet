@@ -13,8 +13,11 @@ namespace Incursa.Quic.Http3;
 public sealed class Http3Client : IAsyncDisposable
 {
     private const int RequiredPeerUnidirectionalStreamCount = 3;
+    private const int MinimumSuccessfulStatusCode = 200;
+    private const int MaximumSuccessfulStatusCode = 299;
     private const ulong ClientInitiatedBidirectionalStreamIdMask = 0x03UL;
     private const ulong ClientInitiatedBidirectionalStreamIdStride = 4;
+    private const string MethodConnect = "CONNECT";
     private const string MethodGet = "GET";
     private readonly QuicConnection connection;
     private readonly Http3Settings localSettings;
@@ -183,6 +186,94 @@ public sealed class Http3Client : IAsyncDisposable
             if (requestStarted)
             {
                 Http3Metrics.RecordRequestFailed("client", Http3Metrics.NormalizeFailureReason(ex), requestStartedTimestamp);
+            }
+
+            EmitError(ex);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Opens an RFC 9220 WebSocket Extended CONNECT tunnel without ending the request stream.
+    /// </summary>
+    public async ValueTask<Http3WebSocketClientTunnelContext> OpenWebSocketAsync(
+        Uri requestUri,
+        CancellationToken cancellationToken = default)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref disposed) != 0, this);
+        ArgumentNullException.ThrowIfNull(requestUri);
+        if (!requestUri.IsAbsoluteUri)
+        {
+            throw new ArgumentException("The HTTP/3 WebSocket request URI must be absolute.", nameof(requestUri));
+        }
+
+        if (localSettings.EnableConnectProtocol != 1)
+        {
+            throw new Http3Exception(
+                Http3ErrorCode.SettingsError,
+                "HTTP/3 WebSocket Extended CONNECT requires local SETTINGS_ENABLE_CONNECT_PROTOCOL to be 1 before opening the tunnel.");
+        }
+
+        ThrowIfPeerGoAwayRejectsNextRequest();
+
+        long requestStartedTimestamp = 0;
+        bool requestStarted = false;
+        QuicStream? requestStream = null;
+        try
+        {
+            requestStartedTimestamp = Http3Metrics.GetTimestamp();
+            requestStarted = true;
+            Http3Metrics.RecordRequestStarted("client");
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestStarted)
+            {
+                Role = "client",
+                Method = MethodConnect,
+                Path = BuildPath(requestUri),
+            });
+
+            requestStream = await connection
+                .OpenOutboundStreamAsync(QuicStreamType.Bidirectional, cancellationToken)
+                .ConfigureAwait(false);
+            RecordOpenedClientRequestStream(checked((ulong)requestStream.Id));
+
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.StreamOpened)
+            {
+                Role = "client",
+                StreamId = requestStream.Id,
+                StreamKind = Http3StreamKind.Request,
+            });
+
+            byte[] requestHeaders = QPackEncoder.EncodeFieldSection(BuildWebSocketConnectRequestHeaders(requestUri));
+            byte[] headersFrame = Http3FrameWriter.WriteHeaders(requestHeaders);
+            await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length, cancellationToken).ConfigureAwait(false);
+            EmitFrame(Http3DiagnosticKind.FrameSent, requestStream.Id, Http3FrameType.Headers, requestHeaders.Length);
+
+            Http3WebSocketClientTunnelContext tunnel = await ReadWebSocketConnectResponseAsync(
+                requestStream,
+                cancellationToken).ConfigureAwait(false);
+            requestStream = null;
+
+            Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.RequestCompleted)
+            {
+                Role = "client",
+                StreamId = tunnel.Stream.Id,
+                Method = MethodConnect,
+                Path = BuildPath(requestUri),
+                StatusCode = tunnel.StatusCode,
+            });
+            Http3Metrics.RecordRequestCompleted("client", tunnel.StatusCode, requestStartedTimestamp);
+            return tunnel;
+        }
+        catch (Exception ex)
+        {
+            if (requestStarted)
+            {
+                Http3Metrics.RecordRequestFailed("client", Http3Metrics.NormalizeFailureReason(ex), requestStartedTimestamp);
+            }
+
+            if (requestStream is not null)
+            {
+                await requestStream.DisposeAsync().ConfigureAwait(false);
             }
 
             EmitError(ex);
@@ -648,6 +739,117 @@ public sealed class Http3Client : IAsyncDisposable
         }
 
         return headers;
+    }
+
+    private IReadOnlyList<QPackFieldLine> BuildWebSocketConnectRequestHeaders(Uri requestUri)
+    {
+        List<QPackFieldLine> headers =
+        [
+            new(":method", MethodConnect),
+            new(":protocol", Http3ExtendedConnect.WebSocketProtocol),
+            new(":scheme", requestUri.Scheme),
+            new(":authority", BuildAuthority(requestUri)),
+            new(":path", BuildPath(requestUri)),
+        ];
+
+        if (!string.IsNullOrWhiteSpace(userAgent))
+        {
+            headers.Add(new QPackFieldLine("user-agent", userAgent));
+        }
+
+        return headers;
+    }
+
+    private async ValueTask<Http3WebSocketClientTunnelContext> ReadWebSocketConnectResponseAsync(
+        QuicStream requestStream,
+        CancellationToken cancellationToken)
+    {
+        Http3FrameReader frameReader = new();
+        Http3ResponseSequenceValidator validator = new();
+        byte[] buffer = new byte[1];
+
+        while (true)
+        {
+            int bytesRead = await requestStream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+            if (bytesRead == 0)
+            {
+                foreach (Http3Frame frame in frameReader.Complete())
+                {
+                    await ProcessWebSocketConnectResponseFrameAsync(
+                        frame,
+                        validator,
+                        requestStream.Id,
+                        cancellationToken).ConfigureAwait(false);
+                    if (validator.FinalResponseSeen)
+                    {
+                        return CreateWebSocketTunnelOrThrow(requestStream, validator);
+                    }
+                }
+
+                throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 WebSocket Extended CONNECT response ended before final response headers.");
+            }
+
+            foreach (Http3Frame frame in frameReader.Read(buffer.AsSpan(0, bytesRead)))
+            {
+                await ProcessWebSocketConnectResponseFrameAsync(
+                    frame,
+                    validator,
+                    requestStream.Id,
+                    cancellationToken).ConfigureAwait(false);
+                if (validator.FinalResponseSeen)
+                {
+                    return CreateWebSocketTunnelOrThrow(requestStream, validator);
+                }
+            }
+        }
+    }
+
+    private Http3WebSocketClientTunnelContext CreateWebSocketTunnelOrThrow(
+        QuicStream requestStream,
+        Http3ResponseSequenceValidator validator)
+    {
+        IReadOnlyList<QPackFieldLine> headers = validator.FinalResponseHeaders
+            ?? throw new Http3Exception(Http3ErrorCode.MessageError, "The HTTP/3 WebSocket Extended CONNECT response did not contain final response headers.");
+        int statusCode = validator.FinalStatusCode!.Value;
+        if (statusCode is < MinimumSuccessfulStatusCode or > MaximumSuccessfulStatusCode)
+        {
+            throw new Http3Exception(
+                Http3ErrorCode.RequestRejected,
+                "The HTTP/3 WebSocket Extended CONNECT response was not successful.");
+        }
+
+        Emit(new Http3DiagnosticEvent(Http3DiagnosticKind.ResponseStarted)
+        {
+            Role = "client",
+            StreamId = requestStream.Id,
+        });
+        return new Http3WebSocketClientTunnelContext(requestStream, statusCode, headers, readBufferSize);
+    }
+
+    private async ValueTask ProcessWebSocketConnectResponseFrameAsync(
+        Http3Frame frame,
+        Http3ResponseSequenceValidator validator,
+        long streamId,
+        CancellationToken cancellationToken)
+    {
+        EmitFrame(Http3DiagnosticKind.FrameReceived, streamId, frame);
+        switch (frame)
+        {
+            case Http3HeadersFrame headersFrame:
+                IReadOnlyList<QPackFieldLine> fieldSection = await qpackState.DecodeResponseHeadersAsync(
+                        checked((ulong)streamId),
+                        headersFrame.EncodedFieldSection,
+                        cancellationToken).ConfigureAwait(false);
+                validator.ReceiveHeaders(fieldSection);
+                break;
+            case Http3DataFrame dataFrame:
+                validator.ReceiveData(checked((ulong)dataFrame.Data.Length));
+                break;
+            case Http3UnknownFrame:
+                break;
+            default:
+                throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The HTTP/3 response stream contained an invalid frame type.");
+        }
     }
 
     private async ValueTask<Http3Response> ReadResponseAsync(QuicStream requestStream, CancellationToken cancellationToken)

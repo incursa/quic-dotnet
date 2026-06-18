@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0016",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Client Tunnel Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the client-side helper for opening RFC 9220 WebSocket Extended CONNECT tunnels over the HTTP/3 client facade.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "WI-QUIC-RFC9220-0016",
+    "VER-QUIC-RFC9220-0016"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0030"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketClientTunnelContext.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3Client.OpenWebSocketAsync` validates that the client advertised `SETTINGS_ENABLE_CONNECT_PROTOCOL`, sends an Extended CONNECT request with `:protocol` `websocket`, reads only through the final response HEADERS frame, and returns a live `Http3WebSocketClientTunnelContext`. The client tunnel context applies client-side WebSocket framing rules by masking outbound client frames and reading unmasked server frames with the existing endpoint-role-aware WebSocket parser.",
+  "data_and_state_considerations": "The returned tunnel owns the request stream after the response HEADERS are accepted. The opener deliberately stops before stream FIN so subsequent bytes remain WebSocket tunnel bytes rather than HTTP/3 response DATA. Outbound WebSocket writes are serialized through a per-tunnel semaphore and each client frame receives a fresh masking key.",
+  "edge_cases_and_constraints": [
+    "The helper rejects attempts to open a WebSocket tunnel when the client did not advertise `SETTINGS_ENABLE_CONNECT_PROTOCOL = 1` before connection setup.",
+    "The helper treats non-2xx Extended CONNECT responses as request rejection and disposes the request stream.",
+    "The proof is local HTTP/3 QUIC loopback, not external WebSocket-over-H3 peer interoperability."
+  ],
+  "risks": [
+    "The minimal client helper does not negotiate WebSocket subprotocols or extension headers.",
+    "The response opener reads response frame bytes conservatively to avoid consuming tunnel bytes, which is acceptable for the minimal helper but not optimized for high-rate tunnel setup."
+  ]
+}

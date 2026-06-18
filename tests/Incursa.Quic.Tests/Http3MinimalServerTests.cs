@@ -258,6 +258,72 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0030")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_Http3Client_OpensClientTunnelAndEchoesMessage()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        EchoWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = webSocketHandler);
+        await using Http3Client client = await Http3Client.ConnectAsync(
+                context.CreateClientOptions(),
+                new Http3ClientOptions { Settings = new Http3Settings(enableConnectProtocol: 1) })
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        await using Http3WebSocketClientTunnelContext tunnel = await client
+            .OpenWebSocketAsync(new Uri($"https://localhost:{context.Endpoint.Port}/socket"))
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        await tunnel.WriteMessageAsync(Http3WebSocketOpcode.Binary, "client payload"u8.ToArray())
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage echoed = await tunnel.ReadMessageAsync()
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10))
+            ?? throw new InvalidOperationException("The WebSocket tunnel ended before the echo arrived.");
+
+        Assert.Equal(200, tunnel.StatusCode);
+        Assert.Contains(tunnel.ResponseHeaders, header => header.Name == ":status" && header.Value == "200");
+        Assert.Equal(Http3WebSocketOpcode.Binary, echoed.Opcode);
+        Assert.Equal("echo:client payload", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
+        Assert.Equal("/socket", webSocketHandler.Path);
+        Assert.Equal("client payload", System.Text.Encoding.UTF8.GetString(webSocketHandler.Payload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0030")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task WebSocketExtendedConnect_Http3Client_RequiresEnableConnectSetting()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = new EchoWebSocketHandler());
+        await using Http3Client client = await Http3Client.ConnectAsync(context.CreateClientOptions())
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3Exception exception = await Assert.ThrowsAsync<Http3Exception>(
+            async () => await client.OpenWebSocketAsync(new Uri($"https://localhost:{context.Endpoint.Port}/socket")));
+
+        Assert.Equal(Http3ErrorCode.SettingsError, exception.ErrorCode);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9220-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0016",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Client Tunnel Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0016",
+    "VER-QUIC-RFC9220-0016"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0030"
+  ],
+  "summary": "Add an HTTP/3 client helper that opens an RFC 9220 WebSocket Extended CONNECT tunnel and exposes masked client-to-server WebSocket message IO.",
+  "planned_changes": "- Add `Http3Client.OpenWebSocketAsync` for RFC 9220 WebSocket Extended CONNECT requests.\n- Add `Http3WebSocketClientTunnelContext` for client-side WebSocket message reads, masked writes, ping/pong, and close helpers.\n- Add local HTTP/3 QUIC loopback tests for successful client tunnel echo and the required local `SETTINGS_ENABLE_CONNECT_PROTOCOL` guard.",
+  "verification_plan": "Run the focused HTTP/3 WebSocket client tunnel tests, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0016"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0016"
+  ],
+  "out_of_scope": [
+    "WebSocket subprotocol or extension negotiation.",
+    "External live peer proof.",
+    "Cross-host or isolated-host ProtocolLab evidence.",
+    "Production proxy target, timeout, or authorization policy.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "The HTTP/3 client can now open a local RFC 9220 WebSocket tunnel, send masked client frames, receive unmasked server frames, and expose the accepted tunnel response headers without waiting for stream FIN."
+}

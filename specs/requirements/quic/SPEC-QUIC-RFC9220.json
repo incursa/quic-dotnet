@@ -23,6 +23,7 @@
     "ARC-QUIC-RFC9220-0013",
     "ARC-QUIC-RFC9220-0014",
     "ARC-QUIC-RFC9220-0015",
+    "ARC-QUIC-RFC9220-0016",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -38,6 +39,7 @@
     "WI-QUIC-RFC9220-0013",
     "WI-QUIC-RFC9220-0014",
     "WI-QUIC-RFC9220-0015",
+    "WI-QUIC-RFC9220-0016",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -52,7 +54,8 @@
     "VER-QUIC-RFC9220-0012",
     "VER-QUIC-RFC9220-0013",
     "VER-QUIC-RFC9220-0014",
-    "VER-QUIC-RFC9220-0015"
+    "VER-QUIC-RFC9220-0015",
+    "VER-QUIC-RFC9220-0016"
   ],
   "requirements": [
     {
@@ -816,6 +819,32 @@
       },
       "notes": [
         "This slice covers bounded local TCP response chunk forwarding and backpressure-sensitive write sequencing. TCP target policy and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0030",
+      "title": "Open client-side WebSocket Extended CONNECT tunnels",
+      "statement": "The HTTP/3 client WebSocket helper MUST send RFC 9220 Extended CONNECT request headers with `:protocol` `websocket`, require local SETTINGS_ENABLE_CONNECT_PROTOCOL advertisement before opening the tunnel, mask client-to-server WebSocket frames, read unmasked server-to-client WebSocket messages, and expose the successful tunnel response headers without waiting for stream FIN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_Http3Client_OpensClientTunnelAndEchoesMessage",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_Http3Client_RequiresEnableConnectSetting"
+        ]
+      },
+      "notes": [
+        "This slice covers a local HTTP/3 client helper that opens an accepted RFC 9220 WebSocket tunnel and then exposes WebSocket message IO on the live request stream. External peer proof and production proxy policy remain separate work."
       ]
     }
   ]
