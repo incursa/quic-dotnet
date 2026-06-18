@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T11:08:08.7622042-06:00",
+  "generated_at": "2026-06-18T11:17:48.4172476-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T11:08:08.7592232-06:00",
-    "total_requirements": 2671,
+    "generated_at": "2026-06-18T11:17:48.4144973-06:00",
+    "total_requirements": 2672,
     "by_state": {
-      "trace_clean": 2671
+      "trace_clean": 2672
     },
     "by_work_queue_tag": {
-      "clean": 2671
+      "clean": 2672
     },
     "by_rfc": [
       {
@@ -87,9 +87,9 @@
       },
       {
         "rfc": "RFC9220",
-        "total": 28,
+        "total": 29,
         "by_state": {
-          "trace_clean": 28
+          "trace_clean": 29
         }
       },
       {
@@ -311556,7 +311556,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1168,
+          "line": 1247,
           "kinds": [
             "positive"
           ],
@@ -311578,7 +311578,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1168,
+          "line": 1247,
           "kinds": [
             "positive"
           ],
@@ -314697,7 +314697,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1366,
+          "line": 1445,
           "kinds": [
             "edge"
           ],
@@ -314719,7 +314719,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1366,
+          "line": 1445,
           "kinds": [
             "edge"
           ],
@@ -314961,7 +314961,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1168,
+          "line": 1247,
           "kinds": [
             "positive"
           ],
@@ -315283,7 +315283,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 1087,
+          "line": 1166,
           "kinds": [
             "negative"
           ],
@@ -315305,7 +315305,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 1087,
+          "line": 1166,
           "kinds": [
             "negative"
           ],
@@ -315327,7 +315327,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 1049,
+          "line": 1128,
           "kinds": [
             "positive"
           ],
@@ -315349,7 +315349,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 1049,
+          "line": 1128,
           "kinds": [
             "positive"
           ],
@@ -320613,7 +320613,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 807,
+          "line": 886,
           "kinds": [
             "negative"
           ],
@@ -320635,7 +320635,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 807,
+          "line": 886,
           "kinds": [
             "negative"
           ],
@@ -321423,7 +321423,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 679,
+          "line": 758,
           "kinds": [
             "negative"
           ],
@@ -321445,7 +321445,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 679,
+          "line": 758,
           "kinds": [
             "negative"
           ],
@@ -321812,7 +321812,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
           "method": "WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
-          "line": 718,
+          "line": 797,
           "kinds": [
             "positive"
           ],
@@ -321834,7 +321834,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
           "method": "WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
-          "line": 718,
+          "line": 797,
           "kinds": [
             "positive"
           ],
@@ -321856,7 +321856,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 679,
+          "line": 758,
           "kinds": [
             "negative"
           ],
@@ -321922,7 +321922,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
           "method": "WebSocketExtendedConnect_HandlerException_UsesConfiguredClosePolicy",
-          "line": 718,
+          "line": 797,
           "kinds": [
             "positive"
           ],
@@ -321944,7 +321944,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy",
           "method": "WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy",
-          "line": 762,
+          "line": 841,
           "kinds": [
             "positive"
           ],
@@ -321966,7 +321966,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy",
           "method": "WebSocketExtendedConnect_HandlerException_UsesDynamicClosePolicy",
-          "line": 762,
+          "line": 841,
           "kinds": [
             "positive"
           ],
@@ -321988,7 +321988,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 679,
+          "line": 758,
           "kinds": [
             "negative"
           ],
@@ -321998,6 +321998,115 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9220-0023"
+          ],
+          "requirement_tagged": false,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9220-0029",
+      "artifact_id": "SPEC-QUIC-RFC9220",
+      "rfc": "RFC9220",
+      "section_prefix": "unsectioned",
+      "title": "Bound TCP response chunks for WebSocket TCP forwarding",
+      "statement": "The HTTP/3 WebSocket TCP forwarder MUST let application handlers configure a positive TCP read buffer size and return TCP response bytes as unmasked binary WebSocket messages no larger than that configured buffer while preserving orderly WebSocket close handling.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 3,
+        "broad": 0,
+        "by_kind": {
+          "positive": 3,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0029",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "method": "WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "line": 679,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0029"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0029",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "method": "WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "line": 679,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0029"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0029",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho",
+          "method": "WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho",
+          "line": 620,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0025"
           ],
           "requirement_tagged": false,
           "class_level_only": false

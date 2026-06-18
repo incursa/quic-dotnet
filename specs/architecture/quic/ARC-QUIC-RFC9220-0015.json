@@ -1,0 +1,36 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0015",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket TCP Forwarder Buffering Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define bounded TCP response chunk forwarding for accepted RFC 9220 WebSocket TCP tunnels.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0011",
+    "WI-QUIC-RFC9220-0015",
+    "VER-QUIC-RFC9220-0015"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0029"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTcpForwarderOptions.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketTcpForwarder.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3WebSocketTcpForwarderOptions.BufferSize` names the TCP read buffer used by `Http3WebSocketTcpForwarder` when returning TCP bytes as binary WebSocket messages. The forwarder awaits each WebSocket write before reading the next TCP chunk, so WebSocket stream backpressure limits TCP-to-WebSocket progression instead of buffering an unbounded TCP response in memory.",
+  "data_and_state_considerations": "The options object is read at forwarding start and converted to the existing positive buffer-size path. Each TCP read owns one reusable buffer, and each emitted WebSocket binary frame carries at most the configured chunk size.",
+  "edge_cases_and_constraints": [
+    "Non-positive buffer sizes are rejected before forwarding starts.",
+    "The helper does not implement TCP target authorization, DNS resolution, or production proxy routing policy.",
+    "The bounded chunk proof is local loopback stress proof, not external peer interoperability."
+  ],
+  "risks": [
+    "Very small buffers increase frame count and control overhead.",
+    "Very large buffers increase per-forwarder memory use, so callers should choose a value that fits their proxy workload."
+  ]
+}

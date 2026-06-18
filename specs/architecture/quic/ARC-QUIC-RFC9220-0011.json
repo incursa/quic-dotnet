@@ -13,6 +13,7 @@
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0004",
     "ARC-QUIC-RFC9220-0005",
+    "ARC-QUIC-RFC9220-0015",
     "WI-QUIC-RFC9220-0011",
     "VER-QUIC-RFC9220-0011"
   ],
@@ -24,7 +25,7 @@
     "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
   ],
-  "design_summary": "`Http3WebSocketTcpForwarder` runs paired forwarding tasks for an accepted WebSocket tunnel and a caller-provided connected TCP stream. Client binary WebSocket messages are written to the TCP stream, TCP bytes are emitted as unmasked binary WebSocket messages, ping/pong and close control frames keep their WebSocket semantics, malformed input can use the protocol-error close helper, and tunnel shutdown cancels the opposite forwarding direction.",
+  "design_summary": "`Http3WebSocketTcpForwarder` runs paired forwarding tasks for an accepted WebSocket tunnel and a caller-provided connected TCP stream. Client binary WebSocket messages are written to the TCP stream, TCP bytes are emitted as unmasked binary WebSocket messages, ping/pong and close control frames keep their WebSocket semantics, malformed input can use the protocol-error close helper, and tunnel shutdown cancels the opposite forwarding direction. Bounded TCP response chunking is trace-owned by `ARC-QUIC-RFC9220-0015`.",
   "data_and_state_considerations": "The helper does not own TCP connection establishment, target authorization, DNS policy, or proxy routing. WebSocket writes continue through the tunnel context write gate so TCP response frames, ping replies, and close frames cannot interleave bytes.",
   "edge_cases_and_constraints": [
     "Text messages are rejected with an application close because the helper models TCP as an opaque byte stream carried by binary WebSocket messages.",
@@ -32,7 +33,7 @@
     "The caller owns the TCP stream lifetime and any target selection policy."
   ],
   "risks": [
-    "High-volume production proxying still needs backpressure, timeout, and target-policy integration outside this helper.",
+    "Production proxying still needs timeout and target-policy integration outside this helper.",
     "External WebSocket-over-H3 peers still need live interoperability proof before promoting beyond local loopback evidence."
   ]
 }

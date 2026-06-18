@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0015",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket TCP Forwarder Buffering Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0015",
+    "VER-QUIC-RFC9220-0015"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0029"
+  ],
+  "summary": "Add an explicit TCP forwarder options surface and local proof that TCP response bytes are emitted as bounded binary WebSocket chunks.",
+  "planned_changes": "- Add `Http3WebSocketTcpForwarderOptions.BufferSize` and an options-based forwarding overload.\n- Keep the existing integer buffer-size overload and validation behavior.\n- Add a loopback WebSocket/TCP test that sends multiple client binary messages, verifies the TCP server receives the combined payload, and verifies a larger TCP response is returned in WebSocket binary frames no larger than the configured buffer.",
+  "verification_plan": "Run the focused HTTP/3 minimal server TCP forwarder chunking test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0015"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0015"
+  ],
+  "out_of_scope": [
+    "TCP target authorization, DNS resolution, or production proxy routing policy.",
+    "External live peer proof.",
+    "Cross-host or isolated-host ProtocolLab evidence.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "The TCP forwarder now has an explicit buffering options surface and local proof that TCP responses are returned as bounded binary WebSocket chunks while preserving close handling."
+}

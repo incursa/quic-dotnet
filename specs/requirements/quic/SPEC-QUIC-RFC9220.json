@@ -22,6 +22,7 @@
     "ARC-QUIC-RFC9220-0012",
     "ARC-QUIC-RFC9220-0013",
     "ARC-QUIC-RFC9220-0014",
+    "ARC-QUIC-RFC9220-0015",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -36,6 +37,7 @@
     "WI-QUIC-RFC9220-0012",
     "WI-QUIC-RFC9220-0013",
     "WI-QUIC-RFC9220-0014",
+    "WI-QUIC-RFC9220-0015",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -49,7 +51,8 @@
     "VER-QUIC-RFC9220-0011",
     "VER-QUIC-RFC9220-0012",
     "VER-QUIC-RFC9220-0013",
-    "VER-QUIC-RFC9220-0014"
+    "VER-QUIC-RFC9220-0014",
+    "VER-QUIC-RFC9220-0015"
   ],
   "requirements": [
     {
@@ -787,6 +790,32 @@
       },
       "notes": [
         "This slice covers dynamic exception-aware close status and reason selection for unexpected accepted tunnel handler exceptions. External WebSocket-over-H3 peer proof and TCP proxy stress/backpressure remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0029",
+      "title": "Bound TCP response chunks for WebSocket TCP forwarding",
+      "statement": "The HTTP/3 WebSocket TCP forwarder MUST let application handlers configure a positive TCP read buffer size and return TCP response bytes as unmasked binary WebSocket messages no larger than that configured buffer while preserving orderly WebSocket close handling.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.6",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_BoundsTcpResponseChunks",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho"
+        ]
+      },
+      "notes": [
+        "This slice covers bounded local TCP response chunk forwarding and backpressure-sensitive write sequencing. TCP target policy and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]

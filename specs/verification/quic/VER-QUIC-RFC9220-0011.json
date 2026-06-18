@@ -20,7 +20,8 @@
     "The WebSocket frame parser remains trace-owned by `VER-QUIC-RFC9220-0002`.",
     "The WebSocket handler dispatch boundary remains trace-owned by `VER-QUIC-RFC9220-0003`.",
     "Accepted tunnel message helpers remain trace-owned by `VER-QUIC-RFC9220-0004`.",
-    "Received ping/pong control handling remains trace-owned by `VER-QUIC-RFC9220-0005`."
+    "Received ping/pong control handling remains trace-owned by `VER-QUIC-RFC9220-0005`.",
+    "Bounded TCP response chunking remains trace-owned by `VER-QUIC-RFC9220-0015`."
   ],
   "procedure": [
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho|FullyQualifiedName~WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData|FullyQualifiedName~WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong|FullyQualifiedName~WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ApplicationClose_WritesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel|FullyQualifiedName~WebSocketExtendedConnect_CloseFrame_EchoesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage|FullyQualifiedName~Http3WebSocketMessageReaderTests\"`.",

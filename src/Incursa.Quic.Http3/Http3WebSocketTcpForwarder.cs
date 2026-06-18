@@ -29,6 +29,19 @@ public static class Http3WebSocketTcpForwarder
     public static async ValueTask ForwardAsync(
         Http3WebSocketTunnelContext context,
         Stream tcpStream,
+        Http3WebSocketTcpForwarderOptions? options,
+        CancellationToken cancellationToken = default)
+    {
+        options ??= new Http3WebSocketTcpForwarderOptions();
+        await ForwardAsync(context, tcpStream, options.BufferSize, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Forwards binary WebSocket tunnel messages to <paramref name="tcpStream" /> and returns TCP bytes as binary WebSocket messages.
+    /// </summary>
+    public static async ValueTask ForwardAsync(
+        Http3WebSocketTunnelContext context,
+        Stream tcpStream,
         int bufferSize,
         CancellationToken cancellationToken = default)
     {
