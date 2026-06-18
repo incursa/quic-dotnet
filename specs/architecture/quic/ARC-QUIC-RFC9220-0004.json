@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0004",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Tunnel Close Echo Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the server-side helper boundary for reading WebSocket tunnel messages and echoing a received close frame on accepted RFC 9220 streams.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "WI-QUIC-RFC9220-0004",
+    "VER-QUIC-RFC9220-0004"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0018"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketMessageReader.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseFrameParser.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "The accepted tunnel context now owns one server-side WebSocket message reader and exposes message read/write helpers above the raw QUIC stream. `ReadMessageAsync` incrementally consumes client bytes using the trace-owned parser, buffers any additional complete messages, and returns null on clean stream completion. `WriteMessageAsync` formats unmasked server-to-client frames. `EchoCloseAsync` validates a received close frame with the close parser, writes the same close payload back as an unmasked server close frame, and completes the writable side of the tunnel stream.",
+  "data_and_state_considerations": "Parser state is scoped to the accepted tunnel context so frame-split buffering and fragmented-message state remain isolated per request stream. The close echo helper does not close the QUIC connection and does not reset the stream; it uses the orderly stream FIN path after sending the WebSocket close frame.",
+  "edge_cases_and_constraints": [
+    "Client frames remain subject to server-side masking validation through `Http3WebSocketMessageReader`.",
+    "Invalid close payloads are rejected before the helper writes an echo frame.",
+    "The server close frame is emitted unmasked, matching RFC 6455 endpoint-role rules.",
+    "The helper completes only the writable side after the echoed close frame so the tunnel uses orderly FIN rather than H3_REQUEST_CANCELLED."
+  ],
+  "risks": [
+    "This slice proves close echo on the local server-handler path only; it does not claim a complete WebSocket API surface.",
+    "Live external WebSocket-over-H3 peer proof remains future work.",
+    "Application-specific close code selection beyond echoing a peer close payload remains handler policy."
+  ]
+}

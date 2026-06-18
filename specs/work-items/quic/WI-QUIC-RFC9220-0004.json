@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0004",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Tunnel Close Echo Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0004",
+    "VER-QUIC-RFC9220-0004"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0018"
+  ],
+  "summary": "Add server-side tunnel context helpers that let WebSocket handlers read messages, write unmasked server frames, and echo a received close frame before orderly write completion.",
+  "planned_changes": "- Add stateful message reading to `Http3WebSocketTunnelContext` using the existing server-side WebSocket parser.\n- Add a context write helper that formats unmasked server-to-client WebSocket frames.\n- Add a close echo helper that validates a received close frame, writes the echoed close frame, and completes the writable side with FIN.\n- Add a loopback HTTP/3 server test that sends a masked client close frame, observes an unmasked echoed close frame, and observes stream EOF.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket close echo test, the existing handler-dispatch regression, the RFC 9220 WebSocket parser tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0004"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0004"
+  ],
+  "out_of_scope": [
+    "TCP socket forwarding.",
+    "A full high-level WebSocket API.",
+    "External live peer proof.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "The accepted tunnel context now has a locally verified close echo path that reuses the parser and writer surfaces and completes the stream with an orderly FIN."
+}

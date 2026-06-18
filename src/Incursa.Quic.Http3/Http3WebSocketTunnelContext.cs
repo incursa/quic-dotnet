@@ -8,13 +8,30 @@ namespace Incursa.Quic.Http3;
 /// </summary>
 public sealed class Http3WebSocketTunnelContext
 {
+    private const int DefaultReadBufferSize = 4096;
+
+    private readonly Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
+    private readonly Queue<Http3WebSocketMessage> pendingMessages = [];
+    private readonly byte[] readBuffer;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Http3WebSocketTunnelContext" /> class.
     /// </summary>
     public Http3WebSocketTunnelContext(Http3Request request, QuicStream stream)
+        : this(request, stream, DefaultReadBufferSize)
+    {
+    }
+
+    internal Http3WebSocketTunnelContext(Http3Request request, QuicStream stream, int readBufferSize)
     {
         Request = request ?? throw new ArgumentNullException(nameof(request));
         Stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        if (readBufferSize <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(readBufferSize), "The WebSocket tunnel read buffer size must be positive.");
+        }
+
+        readBuffer = new byte[readBufferSize];
     }
 
     /// <summary>
@@ -26,4 +43,61 @@ public sealed class Http3WebSocketTunnelContext
     /// Gets the bidirectional HTTP/3 request stream carrying WebSocket bytes after the response headers.
     /// </summary>
     public QuicStream Stream { get; }
+
+    /// <summary>
+    /// Reads the next complete client-to-server WebSocket message from the tunnel stream.
+    /// </summary>
+    public async ValueTask<Http3WebSocketMessage?> ReadMessageAsync(CancellationToken cancellationToken = default)
+    {
+        if (pendingMessages.TryDequeue(out Http3WebSocketMessage? pending))
+        {
+            return pending;
+        }
+
+        while (true)
+        {
+            int bytesRead = await Stream.ReadAsync(readBuffer, 0, readBuffer.Length, cancellationToken).ConfigureAwait(false);
+            Http3WebSocketMessage[] messages = bytesRead == 0
+                ? reader.Complete()
+                : reader.Read(readBuffer.AsSpan(0, bytesRead));
+
+            if (messages.Length != 0)
+            {
+                for (int index = 1; index < messages.Length; index++)
+                {
+                    pendingMessages.Enqueue(messages[index]);
+                }
+
+                return messages[0];
+            }
+
+            if (bytesRead == 0)
+            {
+                return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Writes a server-to-client WebSocket message on the tunnel stream.
+    /// </summary>
+    public async ValueTask WriteMessageAsync(
+        Http3WebSocketOpcode opcode,
+        ReadOnlyMemory<byte> payload,
+        CancellationToken cancellationToken = default)
+    {
+        byte[] frame = Http3WebSocketFrameWriter.WriteUnmasked(opcode, payload.Span);
+        await Stream.WriteAsync(frame, 0, frame.Length, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Echoes a received close frame and completes the writable side of the tunnel stream.
+    /// </summary>
+    public async ValueTask EchoCloseAsync(Http3WebSocketMessage closeMessage, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(closeMessage);
+        _ = Http3WebSocketCloseFrameParser.Parse(closeMessage);
+        await WriteMessageAsync(Http3WebSocketOpcode.Close, closeMessage.Payload, cancellationToken).ConfigureAwait(false);
+        await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+    }
 }

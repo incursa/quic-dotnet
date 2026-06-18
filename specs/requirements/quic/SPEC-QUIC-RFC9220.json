@@ -11,12 +11,15 @@
     "ARC-QUIC-RFC9220-0001",
     "ARC-QUIC-RFC9220-0002",
     "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0004",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
+    "WI-QUIC-RFC9220-0004",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
-    "VER-QUIC-RFC9220-0003"
+    "VER-QUIC-RFC9220-0003",
+    "VER-QUIC-RFC9220-0004"
   ],
   "requirements": [
     {
@@ -417,7 +420,7 @@
         ]
       },
       "notes": [
-        "This slice parses close payloads but does not implement close-handshake orchestration."
+        "This slice parses close payloads for standalone validation and for the handler close echo helper."
       ]
     },
     {
@@ -443,7 +446,35 @@
         ]
       },
       "notes": [
-        "This slice connects the validated Extended CONNECT request path to an application handler that owns the tunnel stream. It does not implement TCP socket forwarding, close-handshake orchestration, or live external-peer proof."
+        "This slice connects the validated Extended CONNECT request path to an application handler that owns the tunnel stream. It does not implement TCP socket forwarding or live external-peer proof."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0018",
+      "title": "Echo WebSocket close frames on accepted tunnels",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers read client WebSocket messages, write unmasked server WebSocket messages, and echo a received close frame before completing the writable side of the stream with FIN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "RFC 6455 section 7.1.2",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_CloseFrame_EchoesCloseAndCompletesWrites",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage"
+        ]
+      },
+      "notes": [
+        "This slice covers the accepted server tunnel helper path for close echo and orderly write completion. Broader application close-code selection and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]
