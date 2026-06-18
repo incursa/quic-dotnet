@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0009",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Handler Exception Close Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0009",
+    "VER-QUIC-RFC9220-0009"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0023"
+  ],
+  "summary": "Map unexpected accepted WebSocket application handler exceptions to a WebSocket internal-error close frame and orderly write completion.",
+  "planned_changes": "- Catch unexpected handler exceptions inside the accepted WebSocket branch after response headers are written.\n- Write a best-effort 1011 `internal error` close frame and complete writes without escalating the failure to the connection loop.\n- Add a loopback HTTP/3 server test that observes the 1011 close frame and FIN after a synthetic handler exception.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket handler-exception test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0009"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0009"
+  ],
+  "out_of_scope": [
+    "TCP socket forwarding.",
+    "Automatic keepalive scheduling.",
+    "External live peer proof.",
+    "Application-specific exception-to-close-code mapping.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Unexpected accepted WebSocket handler exceptions now produce a best-effort 1011 close frame and do not tear down the HTTP/3 connection path through an uncaught application exception."
+}

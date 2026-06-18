@@ -26,6 +26,7 @@ public sealed class Http3Server : IAsyncDisposable
     private const int ResponseDataFrameChunkSize = 16 * 1024;
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
+    private const ushort WebSocketInternalErrorCloseStatusCode = 1011;
     private const int IndexedFieldPrefixBits = 6;
     private const byte StaticIndexedFieldPrefix = 0xC0;
     private const int StaticNameReferencePrefixBits = 4;
@@ -533,7 +534,27 @@ public sealed class Http3Server : IAsyncDisposable
                 {
                     Http3ServerResponse acceptedResponse = new(200, ReadOnlyMemory<byte>.Empty);
                     await WriteTunnelResponseHeadersAsync(stream, acceptedResponse, cancellationToken).ConfigureAwait(false);
-                    await tunnelHandler!.HandleAsync(new Http3WebSocketTunnelContext(request, stream), cancellationToken).ConfigureAwait(false);
+                    Http3WebSocketTunnelContext tunnelContext = new(request, stream);
+                    try
+                    {
+                        await tunnelHandler!.HandleAsync(tunnelContext, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                    {
+                        throw;
+                    }
+                    catch (QuicException)
+                    {
+                        throw;
+                    }
+                    catch (Exception exception)
+                    {
+                        Http3Metrics.RecordRequestFailed("server", "websocket", requestStartedTimestamp);
+                        EmitError(exception);
+                        await TryCloseWebSocketTunnelAsync(tunnelContext, WebSocketInternalErrorCloseStatusCode, "internal error", cancellationToken).ConfigureAwait(false);
+                        return;
+                    }
+
                     Http3Metrics.RecordRequestCompleted("server", acceptedResponse.StatusCode, requestStartedTimestamp);
                     EmitResponseCompletedDiagnostic(diagnosticsSink, "server", stream.Id, acceptedResponse.StatusCode, 0);
                     EmitRequestCompletedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path, acceptedResponse.StatusCode, 0);
@@ -818,6 +839,26 @@ public sealed class Http3Server : IAsyncDisposable
         try
         {
             await WriteResponseAsync(stream, response, cancellationToken).ConfigureAwait(false);
+        }
+        catch (QuicException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (ObjectDisposedException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+    }
+
+    private static async ValueTask TryCloseWebSocketTunnelAsync(
+        Http3WebSocketTunnelContext tunnelContext,
+        ushort statusCode,
+        string reason,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await tunnelContext.CloseAsync(statusCode, reason, cancellationToken).ConfigureAwait(false);
         }
         catch (QuicException exception)
         {

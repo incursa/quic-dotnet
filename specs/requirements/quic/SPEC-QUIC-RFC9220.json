@@ -16,6 +16,7 @@
     "ARC-QUIC-RFC9220-0006",
     "ARC-QUIC-RFC9220-0007",
     "ARC-QUIC-RFC9220-0008",
+    "ARC-QUIC-RFC9220-0009",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -24,6 +25,7 @@
     "WI-QUIC-RFC9220-0006",
     "WI-QUIC-RFC9220-0007",
     "WI-QUIC-RFC9220-0008",
+    "WI-QUIC-RFC9220-0009",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -31,7 +33,8 @@
     "VER-QUIC-RFC9220-0005",
     "VER-QUIC-RFC9220-0006",
     "VER-QUIC-RFC9220-0007",
-    "VER-QUIC-RFC9220-0008"
+    "VER-QUIC-RFC9220-0008",
+    "VER-QUIC-RFC9220-0009"
   ],
   "requirements": [
     {
@@ -601,6 +604,34 @@
       },
       "notes": [
         "This slice covers an explicit server ping helper for accepted tunnels and continued tunnel use after a pong and later data message. Automatic keepalive scheduling, TCP socket forwarding, and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0023",
+      "title": "Map WebSocket handler exceptions to internal-error close frames",
+      "statement": "The HTTP/3 server MUST map unexpected application handler exceptions on an accepted RFC 9220 WebSocket tunnel to an unmasked close control frame with status code 1011 before completing the writable side of the stream.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "RFC 6455 section 7.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ApplicationClose_WritesCloseAndCompletesWrites"
+        ]
+      },
+      "notes": [
+        "This slice covers framework-level mapping for unexpected application handler exceptions after the WebSocket tunnel has already been accepted. TCP socket forwarding, automatic keepalive scheduling, external WebSocket-over-H3 peer proof, and application-specific exception-to-close-code policy remain separate work."
       ]
     }
   ]
