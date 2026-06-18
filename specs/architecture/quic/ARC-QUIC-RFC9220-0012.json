@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0012",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Keepalive Payload Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the configured payload policy for automatic WebSocket keepalive ping frames on accepted RFC 9220 tunnels.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0005",
+    "ARC-QUIC-RFC9220-0008",
+    "ARC-QUIC-RFC9220-0010",
+    "WI-QUIC-RFC9220-0012",
+    "VER-QUIC-RFC9220-0012"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0026"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3ServerOptions.WebSocketKeepAlivePayload` lets the server owner configure a static ping payload for automatic keepalive frames. The server validates the payload against the RFC 6455 control-frame 125-byte limit at startup, copies it into server-owned storage, and passes it to the existing keepalive scheduler for each automatic ping.",
+  "data_and_state_considerations": "The payload is immutable from the server's perspective after listener creation because the server copies the configured memory. The scheduler remains disabled unless a positive keepalive interval is configured, and WebSocket writes still flow through the tunnel context write gate.",
+  "edge_cases_and_constraints": [
+    "The default payload remains empty to preserve existing behavior.",
+    "Payloads larger than 125 bytes are rejected before the listener is exposed to callers.",
+    "Dynamic per-ping payload selection remains outside this static payload policy."
+  ],
+  "risks": [
+    "Application-specific liveness semantics still need to choose payload contents carefully because peers are allowed to echo pong payloads.",
+    "External WebSocket-over-H3 peer behavior still needs live interoperability proof before promoting beyond local loopback evidence."
+  ]
+}

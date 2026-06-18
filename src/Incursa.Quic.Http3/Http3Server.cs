@@ -27,6 +27,7 @@ public sealed class Http3Server : IAsyncDisposable
     private const int FieldSectionRequiredInsertCountPrefixBits = 8;
     private const int FieldSectionBasePrefixBits = 7;
     private const ushort WebSocketInternalErrorCloseStatusCode = 1011;
+    private const int MaxWebSocketControlPayloadLength = 125;
     private const int IndexedFieldPrefixBits = 6;
     private const byte StaticIndexedFieldPrefix = 0xC0;
     private const int StaticNameReferencePrefixBits = 4;
@@ -52,6 +53,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private readonly IHttp3WebSocketHandler? webSocketHandler;
     private readonly TimeSpan? webSocketKeepAliveInterval;
+    private readonly byte[] webSocketKeepAlivePayload;
     // CONTEXT: Server shutdown ownership
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
@@ -78,7 +80,13 @@ public sealed class Http3Server : IAsyncDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "The WebSocket keepalive interval must be positive when configured.");
         }
 
+        if (options.WebSocketKeepAlivePayload.Length > MaxWebSocketControlPayloadLength)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), "The WebSocket keepalive payload cannot exceed 125 bytes.");
+        }
+
         webSocketKeepAliveInterval = options.WebSocketKeepAliveInterval;
+        webSocketKeepAlivePayload = options.WebSocketKeepAlivePayload.ToArray();
     }
 
     /// <summary>
@@ -549,7 +557,11 @@ public sealed class Http3Server : IAsyncDisposable
                         if (webSocketKeepAliveInterval is { } keepAliveInterval)
                         {
                             keepAliveCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                            keepAliveTask = RunWebSocketKeepAliveAsync(tunnelContext, keepAliveInterval, keepAliveCancellation.Token);
+                            keepAliveTask = RunWebSocketKeepAliveAsync(
+                                tunnelContext,
+                                keepAliveInterval,
+                                webSocketKeepAlivePayload,
+                                keepAliveCancellation.Token);
                         }
 
                         await tunnelHandler!.HandleAsync(tunnelContext, cancellationToken).ConfigureAwait(false);
@@ -895,6 +907,7 @@ public sealed class Http3Server : IAsyncDisposable
     private async Task RunWebSocketKeepAliveAsync(
         Http3WebSocketTunnelContext tunnelContext,
         TimeSpan interval,
+        ReadOnlyMemory<byte> payload,
         CancellationToken cancellationToken)
     {
         try
@@ -902,7 +915,7 @@ public sealed class Http3Server : IAsyncDisposable
             while (true)
             {
                 await Task.Delay(interval, cancellationToken).ConfigureAwait(false);
-                await tunnelContext.PingAsync(ReadOnlyMemory<byte>.Empty, cancellationToken).ConfigureAwait(false);
+                await tunnelContext.PingAsync(payload, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)

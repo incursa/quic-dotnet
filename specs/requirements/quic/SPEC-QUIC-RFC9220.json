@@ -19,6 +19,7 @@
     "ARC-QUIC-RFC9220-0009",
     "ARC-QUIC-RFC9220-0010",
     "ARC-QUIC-RFC9220-0011",
+    "ARC-QUIC-RFC9220-0012",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -30,6 +31,7 @@
     "WI-QUIC-RFC9220-0009",
     "WI-QUIC-RFC9220-0010",
     "WI-QUIC-RFC9220-0011",
+    "WI-QUIC-RFC9220-0012",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -40,7 +42,8 @@
     "VER-QUIC-RFC9220-0008",
     "VER-QUIC-RFC9220-0009",
     "VER-QUIC-RFC9220-0010",
-    "VER-QUIC-RFC9220-0011"
+    "VER-QUIC-RFC9220-0011",
+    "VER-QUIC-RFC9220-0012"
   ],
   "requirements": [
     {
@@ -665,7 +668,7 @@
         ]
       },
       "notes": [
-        "This slice covers the opt-in server keepalive scheduler for accepted tunnels. TCP socket forwarding, external WebSocket-over-H3 peer proof, and richer application-specific keepalive policy remain separate work."
+        "This slice covers the opt-in server keepalive scheduler for accepted tunnels. TCP socket forwarding, external WebSocket-over-H3 peer proof, and richer application-specific keepalive payload policy remain separate work."
       ]
     },
     {
@@ -693,6 +696,34 @@
       },
       "notes": [
         "This slice covers basic TCP stream forwarding through the accepted server tunnel helper. TCP target policy, forwarding stress, external WebSocket-over-H3 peer proof, and richer application-specific close-code or keepalive policy remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0026",
+      "title": "Send configured WebSocket keepalive ping payloads",
+      "statement": "The HTTP/3 server MUST send the configured WebSocket keepalive payload in automatic unmasked ping control frames on accepted RFC 9220 tunnels while preserving subsequent tunnel data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.2",
+          "RFC 6455 section 5.5.3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ConfiguredKeepAlive_UsesConfiguredPingPayload",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData"
+        ]
+      },
+      "notes": [
+        "This slice covers static keepalive ping payload policy for accepted tunnels. Dynamic per-ping payload selection, external WebSocket-over-H3 peer proof, and application-specific exception-to-close-code policy remain separate work."
       ]
     }
   ]

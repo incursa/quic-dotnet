@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0012",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Keepalive Payload Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0012",
+    "VER-QUIC-RFC9220-0012"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0026"
+  ],
+  "summary": "Add a configured static payload for automatic RFC 9220 WebSocket keepalive ping frames.",
+  "planned_changes": "- Add `Http3ServerOptions.WebSocketKeepAlivePayload` with RFC 6455 control-frame payload-size validation.\n- Copy the configured payload when the server is created so later caller mutations cannot alter active keepalive behavior.\n- Send the configured payload through the existing automatic keepalive scheduler.\n- Add a loopback server test that observes the configured ping payload, sends a pong, and verifies later tunnel data still flows.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket keepalive payload test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0012"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0012"
+  ],
+  "out_of_scope": [
+    "Dynamic per-ping payload selection.",
+    "External live peer proof.",
+    "Application-specific exception-to-close-code policy.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Automatic WebSocket keepalive pings can now carry a configured payload while preserving later tunnel data."
+}

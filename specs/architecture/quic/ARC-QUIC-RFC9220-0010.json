@@ -12,6 +12,7 @@
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0005",
     "ARC-QUIC-RFC9220-0008",
+    "ARC-QUIC-RFC9220-0012",
     "WI-QUIC-RFC9220-0010",
     "VER-QUIC-RFC9220-0010"
   ],
@@ -24,12 +25,12 @@
     "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
     "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
   ],
-  "design_summary": "`Http3ServerOptions.WebSocketKeepAliveInterval` enables an accepted-tunnel scheduler when configured with a positive interval. The server starts a linked keepalive task after writing the 200 Extended CONNECT response, sends empty unmasked ping frames through the shared tunnel context, and cancels the task when the application handler completes, fails, or the request is canceled.",
+  "design_summary": "`Http3ServerOptions.WebSocketKeepAliveInterval` enables an accepted-tunnel scheduler when configured with a positive interval. The server starts a linked keepalive task after writing the 200 Extended CONNECT response, sends unmasked ping frames through the shared tunnel context using the configured payload policy, and cancels the task when the application handler completes, fails, or the request is canceled.",
   "data_and_state_considerations": "The tunnel context serializes WebSocket writes so keepalive ping frames cannot interleave bytes with application frames or close+FIN writes. The scheduler has no connection-wide state and is disabled by default.",
   "edge_cases_and_constraints": [
     "Non-positive intervals are rejected when constructing the server.",
     "Keepalive shutdown is best effort because peers may close the tunnel concurrently.",
-    "The scheduler sends empty ping payloads and does not implement application-specific ping payload policy."
+    "The default scheduler payload remains empty; configured ping payload policy is trace-owned by `ARC-QUIC-RFC9220-0012`."
   ],
   "risks": [
     "Short intervals can add avoidable control traffic, so the feature is opt-in.",

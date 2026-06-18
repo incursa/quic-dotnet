@@ -555,6 +555,65 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0026")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_ConfiguredKeepAlive_UsesConfiguredPingPayload()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        KeepAliveObservedWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options =>
+            {
+                options.WebSocketHandler = webSocketHandler;
+                options.WebSocketKeepAliveInterval = TimeSpan.FromMilliseconds(25);
+                options.WebSocketKeepAlivePayload = "ka:socket"u8.ToArray();
+            });
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(enableConnectProtocol: 1),
+            []);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteWebSocketConnectHeadersAsync(requestStream, "/socket");
+
+        QPackFieldLine[] responseHeaders = await ReadResponseHeadersAsync(requestStream);
+        QPackFieldLine status = Assert.Single(responseHeaders, header => header.Name == ":status");
+        Assert.Equal("200", status.Value);
+
+        Http3WebSocketMessage ping = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+        Assert.Equal(Http3WebSocketOpcode.Ping, ping.Opcode);
+        Assert.Equal("ka:socket", System.Text.Encoding.UTF8.GetString(ping.Payload.Span));
+
+        byte[] pongFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Pong,
+            ping.Payload.Span,
+            [0x01, 0x02, 0x03, 0x04]);
+        await requestStream.WriteAsync(pongFrame, 0, pongFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        byte[] textFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            "after keepalive payload"u8,
+            [0x05, 0x06, 0x07, 0x08]);
+        await requestStream.WriteAsync(textFrame, 0, textFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage echoed = await ReadUntilWebSocketMessageAsync(
+            requestStream,
+            message => message.Opcode == Http3WebSocketOpcode.Text,
+            Http3EndpointRole.Client);
+
+        Assert.Equal("echo:after keepalive payload", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
+        Assert.True(webSocketHandler.ObservedPong);
+        Assert.Equal("after keepalive payload", System.Text.Encoding.UTF8.GetString(webSocketHandler.Payload));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9220-0025")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

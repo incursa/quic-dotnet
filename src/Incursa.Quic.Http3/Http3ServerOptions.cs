@@ -34,4 +34,9 @@ public sealed class Http3ServerOptions
     /// Gets or sets the optional interval for automatic server WebSocket ping frames on accepted tunnels.
     /// </summary>
     public TimeSpan? WebSocketKeepAliveInterval { get; set; }
+
+    /// <summary>
+    /// Gets or sets the payload sent with automatic server WebSocket ping frames on accepted tunnels.
+    /// </summary>
+    public ReadOnlyMemory<byte> WebSocketKeepAlivePayload { get; set; } = ReadOnlyMemory<byte>.Empty;
 }
