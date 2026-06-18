@@ -11,7 +11,7 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2651 |
+| trace_clean | 2657 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
 | covered_but_proof_too_broad | 0 |
@@ -21,7 +21,7 @@
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2651 |
+| clean | 2657 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
 | restructure_needed | 0 |
@@ -46,7 +46,7 @@
 | RFC9002 | 224 | 224 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9114 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9204 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9220 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
+| RFC9220 | 14 | 14 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9221 | 33 | 33 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9250 | 141 | 141 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9287 | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 0 |

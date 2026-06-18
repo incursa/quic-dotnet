@@ -9,8 +9,11 @@
   "purpose": "Capture QUIC RFC 9220 requirements.",
   "related_artifacts": [
     "ARC-QUIC-RFC9220-0001",
+    "ARC-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0001",
-    "VER-QUIC-RFC9220-0001"
+    "WI-QUIC-RFC9220-0002",
+    "VER-QUIC-RFC9220-0001",
+    "VER-QUIC-RFC9220-0002"
   ],
   "requirements": [
     {
@@ -204,6 +207,162 @@
       },
       "notes": [
         "Default selection is independently testable from the registry value."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0009",
+      "title": "Parse WebSocket tunnel messages",
+      "statement": "The HTTP/3 WebSocket tunnel parser MUST expose complete unmasked text, binary, and control messages from WebSocket frames carried on an RFC9220 Extended CONNECT stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.2",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.2"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_UnmasksMaskedClientTextMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ClientReader_AcceptsUnmaskedServerBinaryMessage"
+        ]
+      },
+      "notes": [
+        "This parser is the first reusable WebSocket-over-HTTP/3 tunnel component and does not dispatch application handlers."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0010",
+      "title": "Reject unmasked client WebSocket frames",
+      "statement": "The server-side HTTP/3 WebSocket tunnel parser MUST reject unmasked client frames.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_UnmasksMaskedClientTextMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsUnmaskedClientFrame"
+        ]
+      },
+      "notes": [
+        "Masking enforcement is endpoint-role dependent; this requirement covers the server receiving client bytes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0011",
+      "title": "Reject masked server WebSocket frames",
+      "statement": "The client-side HTTP/3 WebSocket tunnel parser MUST reject masked server frames.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ClientReader_AcceptsUnmaskedServerBinaryMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ClientReader_RejectsMaskedServerFrame"
+        ]
+      },
+      "notes": [
+        "Masking enforcement is endpoint-role dependent; this requirement covers the client receiving server bytes."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0012",
+      "title": "Reassemble fragmented WebSocket data messages",
+      "statement": "The HTTP/3 WebSocket tunnel parser MUST reassemble fragmented text and binary messages across continuation frames before surfacing them to callers.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.4",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_ReassemblesFragmentedClientBinaryMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_BuffersFrameSplitAcrossReads"
+        ]
+      },
+      "notes": [
+        "Frame split buffering and message fragmentation are both covered because HTTP/3 stream reads can split either boundary."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0013",
+      "title": "Reject invalid WebSocket continuation state",
+      "statement": "The HTTP/3 WebSocket tunnel parser MUST reject invalid continuation state, including orphan continuations and incomplete fragmented messages at stream end.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.4",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsContinuationWithoutOpenMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsIncompleteFragmentedMessageAtEndOfStream"
+        ]
+      },
+      "notes": [
+        "The parser maps invalid WebSocket message sequencing to HTTP/3 message errors for the tunnel stream."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0014",
+      "title": "Validate WebSocket control-frame constraints",
+      "statement": "The HTTP/3 WebSocket tunnel parser MUST enforce control-frame finality and payload-size constraints while permitting control messages between fragmented data frames.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_AllowsControlFrameBetweenFragments",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::FrameWriter_RejectsFragmentedControlFrame"
+        ]
+      },
+      "notes": [
+        "This requirement keeps control-frame validation in the tunnel parser rather than the QUIC transport runtime."
       ]
     }
   ]
