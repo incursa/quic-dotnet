@@ -32,6 +32,7 @@ public static class Program
 
         TryReadWebSocketMessages(packet, Http3EndpointRole.Client);
         TryReadWebSocketMessages(packet, Http3EndpointRole.Server);
+        TryParseWebSocketClosePayload(packet);
     }
 
     private static void TryReadWebSocketMessages(ReadOnlySpan<byte> packet, Http3EndpointRole receivingEndpointRole)
@@ -58,5 +59,21 @@ public static class Program
     private static void ConsumeExpectedFuzzException(Exception exception)
     {
         _ = exception.Message;
+    }
+
+    private static void TryParseWebSocketClosePayload(ReadOnlySpan<byte> packet)
+    {
+        try
+        {
+            Http3WebSocketCloseFrameParser.ParsePayload(packet);
+        }
+        catch (Http3Exception exception)
+        {
+            ConsumeExpectedFuzzException(exception);
+        }
+        catch (ArgumentException exception)
+        {
+            ConsumeExpectedFuzzException(exception);
+        }
     }
 }

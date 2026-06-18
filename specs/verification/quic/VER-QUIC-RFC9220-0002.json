@@ -18,9 +18,11 @@
     "REQ-QUIC-RFC9220-0011",
     "REQ-QUIC-RFC9220-0012",
     "REQ-QUIC-RFC9220-0013",
-    "REQ-QUIC-RFC9220-0014"
+    "REQ-QUIC-RFC9220-0014",
+    "REQ-QUIC-RFC9220-0015",
+    "REQ-QUIC-RFC9220-0016"
   ],
-  "scope": "This verification covers WebSocket frame parsing on RFC 9220 Extended CONNECT streams, masking enforcement by receiving endpoint role, unmasked message surfacing, fragmented data-message reassembly, split-input buffering, invalid continuation rejection, incomplete fragmented message rejection at end-of-stream, and control-frame finality and payload-size validation.",
+  "scope": "This verification covers WebSocket frame parsing on RFC 9220 Extended CONNECT streams, masking enforcement by receiving endpoint role, unmasked message surfacing, fragmented data-message reassembly, split-input buffering, invalid continuation rejection, incomplete fragmented message rejection at end-of-stream, control-frame finality and payload-size validation, complete text-message UTF-8 validation, and close status/reason payload parsing.",
   "preconditions": [
     "The RFC 9220 Extended CONNECT foundation remains trace-owned by `VER-QUIC-RFC9220-0001`.",
     "The WebSocket parser remains in `Incursa.Quic.Http3` and does not mutate QUIC transport runtime state."
@@ -35,6 +37,8 @@
   ],
   "expected_result": "The focused parser tests pass, fuzz and benchmark projects build or dry-run successfully, core SpecTrace validation accepts the RFC 9220 artifacts, generated triage reflects the trace-owned WebSocket parser requirements, and no whitespace hygiene issues are introduced.",
   "evidence": [
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseFrameParser.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseStatus.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketOpcode.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketFrame.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
@@ -44,5 +48,5 @@
     "fuzz/Program.cs",
     "benchmarks/Http3WebSocketMessageReaderBenchmarks.cs"
   ],
-  "status_summary": "The RFC 9220 WebSocket tunnel parser and message reassembler are trace-owned and locally verified. Application handler integration, tunnel forwarding, UTF-8 validation, close status-code policy, and live peer proof remain future local slices."
+  "status_summary": "The RFC 9220 WebSocket tunnel parser, message reassembler, text UTF-8 validation, and close payload parser are trace-owned and locally verified. Application handler integration, tunnel forwarding, close-handshake policy, and live peer proof remain future local slices."
 }

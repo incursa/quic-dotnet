@@ -15,7 +15,9 @@ public class Http3WebSocketMessageReaderBenchmarks
     private static readonly byte[] MaskingKey = [0x11, 0x22, 0x33, 0x44];
 
     private byte[] maskedTextFrame = [];
+    private byte[] maskedUtf8TextFrame = [];
     private byte[] fragmentedBinaryFrames = [];
+    private byte[] closePayload = [];
 
     /// <summary>
     /// Prepares deterministic WebSocket tunnel payloads.
@@ -26,6 +28,10 @@ public class Http3WebSocketMessageReaderBenchmarks
         maskedTextFrame = Http3WebSocketFrameWriter.WriteMasked(
             Http3WebSocketOpcode.Text,
             "benchmark-message"u8,
+            MaskingKey);
+        maskedUtf8TextFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            "benchmark-message-\u2713"u8,
             MaskingKey);
         fragmentedBinaryFrames = Concat(
             Http3WebSocketFrameWriter.WriteMasked(
@@ -38,6 +44,7 @@ public class Http3WebSocketMessageReaderBenchmarks
                 CreateDeterministicBytes(128),
                 MaskingKey,
                 final: true));
+        closePayload = [0x03, 0xE8, .. "normal"u8.ToArray()];
     }
 
     /// <summary>
@@ -60,6 +67,27 @@ public class Http3WebSocketMessageReaderBenchmarks
         Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
         Http3WebSocketMessage[] messages = reader.Read(fragmentedBinaryFrames);
         return CountPayloadBytes(messages) ^ reader.PendingByteCount;
+    }
+
+    /// <summary>
+    /// Measures parsing and UTF-8 validation for a masked client text message.
+    /// </summary>
+    [Benchmark]
+    public int ReadMaskedClientUtf8TextMessage()
+    {
+        Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
+        Http3WebSocketMessage[] messages = reader.Read(maskedUtf8TextFrame);
+        return CountPayloadBytes(messages) ^ reader.PendingByteCount;
+    }
+
+    /// <summary>
+    /// Measures parsing a WebSocket close status and UTF-8 reason payload.
+    /// </summary>
+    [Benchmark]
+    public int ParseClosePayloadWithReason()
+    {
+        Http3WebSocketCloseStatus status = Http3WebSocketCloseFrameParser.ParsePayload(closePayload);
+        return (status.StatusCode ?? 0) ^ (status.Reason?.Length ?? 0);
     }
 
     private static int CountPayloadBytes(ReadOnlySpan<Http3WebSocketMessage> messages)

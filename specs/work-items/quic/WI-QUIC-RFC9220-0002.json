@@ -17,10 +17,12 @@
     "REQ-QUIC-RFC9220-0011",
     "REQ-QUIC-RFC9220-0012",
     "REQ-QUIC-RFC9220-0013",
-    "REQ-QUIC-RFC9220-0014"
+    "REQ-QUIC-RFC9220-0014",
+    "REQ-QUIC-RFC9220-0015",
+    "REQ-QUIC-RFC9220-0016"
   ],
   "summary": "Add a reusable RFC 9220 WebSocket-over-HTTP/3 frame parser and message reassembler without opening application handler dispatch.",
-  "planned_changes": "- Add typed WebSocket opcodes, frame records, message records, deterministic frame formatting, and an incremental message reader under `Incursa.Quic.Http3`.\n- Enforce endpoint-role masking policy for client-to-server and server-to-client frames.\n- Reassemble fragmented text and binary messages across continuation frames.\n- Validate continuation ordering, end-of-stream completeness, and control-frame finality and payload-size constraints.\n- Add focused requirement-home tests, fuzz-harness coverage, and BenchmarkDotNet parser coverage.",
+  "planned_changes": "- Add typed WebSocket opcodes, frame records, message records, deterministic frame formatting, and an incremental message reader under `Incursa.Quic.Http3`.\n- Enforce endpoint-role masking policy for client-to-server and server-to-client frames.\n- Reassemble fragmented text and binary messages across continuation frames.\n- Validate continuation ordering, end-of-stream completeness, and control-frame finality and payload-size constraints.\n- Validate complete text-message UTF-8 and parse close status/reason payloads.\n- Add focused requirement-home tests, fuzz-harness coverage, and BenchmarkDotNet parser coverage.",
   "verification_plan": "Run the focused WebSocket message-reader tests, build the fuzz project to prove harness wiring, run a BenchmarkDotNet dry run for the WebSocket parser benchmarks, validate SpecTrace JSON, regenerate QUIC requirement triage, and confirm diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9220-0002"
@@ -32,8 +34,7 @@
     "Application-level WebSocket handler registration.",
     "Bidirectional tunnel forwarding between HTTP/3 streams and application code.",
     "TCP socket forwarding.",
-    "UTF-8 validation for text messages.",
-    "Close status-code parsing and close-handshake policy.",
+    "Close-handshake policy.",
     "QUIC transport runtime, packet protection, ACK, recovery, or stream-state changes."
   ],
   "completion_notes": "The HTTP/3 adapter now has a trace-owned WebSocket frame parser and message reassembler that can be consumed by later handler-integration work."

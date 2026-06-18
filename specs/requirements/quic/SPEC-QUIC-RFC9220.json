@@ -364,6 +364,58 @@
       "notes": [
         "This requirement keeps control-frame validation in the tunnel parser rather than the QUIC transport runtime."
       ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0015",
+      "title": "Validate WebSocket text message UTF-8",
+      "statement": "The HTTP/3 WebSocket tunnel parser MUST reject complete text messages that are not valid UTF-8.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 8.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-8.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_AcceptsValidUtf8TextMessage",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsInvalidUtf8TextMessage"
+        ]
+      },
+      "notes": [
+        "UTF-8 validation runs when a complete text message is surfaced, including fragmented messages after reassembly."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0016",
+      "title": "Parse WebSocket close status payloads",
+      "statement": "The HTTP/3 WebSocket tunnel close parser MUST validate transmitted close status codes and UTF-8 close reasons.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::CloseFrameParser_ParsesStatusCodeAndReason",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::CloseFrameParser_RejectsInvalidClosePayload"
+        ]
+      },
+      "notes": [
+        "This slice parses close payloads but does not implement close-handshake orchestration."
+      ]
     }
   ]
 }

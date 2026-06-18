@@ -3,6 +3,7 @@
 
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Text;
 
 namespace Incursa.Quic.Http3;
 
@@ -24,6 +25,8 @@ public sealed class Http3WebSocketMessageReader
     private const int Payload64LengthBytes = 8;
     private const int MaskingKeyLength = 4;
     private const int MaskingKeyIndexMask = 0x03;
+
+    private static readonly Encoding StrictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     private readonly Http3EndpointRole receivingEndpointRole;
     private byte[] pending = [];
@@ -261,7 +264,9 @@ public sealed class Http3WebSocketMessageReader
             fragmentedPayload.Write(frame.Payload.Span);
             if (frame.IsFinal)
             {
-                messages.Add(new Http3WebSocketMessage(fragmentedOpcode.Value, fragmentedPayload.WrittenMemory.ToArray()));
+                byte[] messagePayload = fragmentedPayload.WrittenMemory.ToArray();
+                ValidateCompleteDataMessage(fragmentedOpcode.Value, messagePayload);
+                messages.Add(new Http3WebSocketMessage(fragmentedOpcode.Value, messagePayload));
                 fragmentedOpcode = null;
                 fragmentedPayload = null;
             }
@@ -276,6 +281,7 @@ public sealed class Http3WebSocketMessageReader
 
         if (frame.IsFinal)
         {
+            ValidateCompleteDataMessage(frame.Opcode, frame.Payload.Span);
             messages.Add(new Http3WebSocketMessage(frame.Opcode, frame.Payload));
             return;
         }
@@ -283,6 +289,24 @@ public sealed class Http3WebSocketMessageReader
         fragmentedOpcode = frame.Opcode;
         fragmentedPayload = new ArrayBufferWriter<byte>(frame.Payload.Length);
         fragmentedPayload.Write(frame.Payload.Span);
+    }
+
+    private static void ValidateCompleteDataMessage(Http3WebSocketOpcode opcode, ReadOnlySpan<byte> payload)
+    {
+        if (opcode != Http3WebSocketOpcode.Text)
+        {
+            return;
+        }
+
+        try
+        {
+            _ = StrictUtf8.GetCharCount(payload);
+        }
+        catch (DecoderFallbackException exception)
+        {
+            _ = exception.Message;
+            throw new Http3Exception(Http3ErrorCode.MessageError, "A WebSocket text message carried invalid UTF-8.");
+        }
     }
 
     private static byte[] Append(byte[] pendingBytes, ReadOnlySpan<byte> source)

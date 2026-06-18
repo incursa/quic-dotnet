@@ -235,15 +235,160 @@ public sealed class Http3WebSocketMessageReaderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9220-0009")]
-    [Requirement("REQ-QUIC-RFC9220-0010")]
-    [Requirement("REQ-QUIC-RFC9220-0011")]
-    [Requirement("REQ-QUIC-RFC9220-0012")]
-    [Requirement("REQ-QUIC-RFC9220-0013")]
-    [Requirement("REQ-QUIC-RFC9220-0014")]
+    [Requirement("REQ-QUIC-RFC9220-0015")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ServerReader_AcceptsValidUtf8TextMessage()
+    {
+        byte[] encoded = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            Encoding.UTF8.GetBytes("hello \u2713"),
+            MaskingKey);
+        Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
+
+        Http3WebSocketMessage message = Assert.Single(reader.Read(encoded));
+
+        Assert.Equal("hello \u2713", Encoding.UTF8.GetString(message.Payload.Span));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0015")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void ServerReader_RejectsInvalidUtf8TextMessage()
+    {
+        byte[] encoded = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            [0xC3, 0x28],
+            MaskingKey);
+        Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
+
+        Http3Exception exception = Assert.Throws<Http3Exception>(() => reader.Read(encoded));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+        Assert.Contains("invalid UTF-8", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0016")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CloseFrameParser_ParsesStatusCodeAndReason()
+    {
+        byte[] payload = [0x03, 0xE8, .. Encoding.UTF8.GetBytes("normal")];
+        Http3WebSocketCloseStatus status = Http3WebSocketCloseFrameParser.ParsePayload(payload);
+
+        Assert.Equal((ushort)1000, status.StatusCode);
+        Assert.Equal("normal", status.Reason);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0016")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CloseFrameParser_ParsesEmptyClosePayload()
+    {
+        Http3WebSocketCloseStatus status = Http3WebSocketCloseFrameParser.ParsePayload([]);
+
+        Assert.Null(status.StatusCode);
+        Assert.Null(status.Reason);
+    }
+
+    [Theory]
+    [Requirement("REQ-QUIC-RFC9220-0016")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    [InlineData(new byte[] { 0x03 })]
+    [InlineData(new byte[] { 0x03, 0xED })]
+    [InlineData(new byte[] { 0x03, 0xE8, 0xC3, 0x28 })]
+    public void CloseFrameParser_RejectsInvalidClosePayload(byte[] payload)
+    {
+        Http3Exception exception = Assert.Throws<Http3Exception>(() => Http3WebSocketCloseFrameParser.ParsePayload(payload));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void WebSocketTunnelParser_FuzzHarnessAcceptsArbitraryBytesAsProtocolInput()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0009")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzMessageParsing()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0010")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzServerMaskingPolicy()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0011")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzClientMaskingPolicy()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0012")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzFragmentReassembly()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0013")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzContinuationState()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0014")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzControlFramePolicy()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0015")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzTextUtf8Validation()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0016")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void WebSocketTunnelParser_FuzzClosePayloadParsing()
+    {
+        ConsumeFuzzCorpus();
+    }
+
+    private static void ConsumeFuzzCorpus()
     {
         byte[][] corpus =
         [
@@ -253,6 +398,7 @@ public sealed class Http3WebSocketMessageReaderTests
             [0x81, 0x80, 0x11, 0x22, 0x33],
             Http3WebSocketFrameWriter.WriteMasked(Http3WebSocketOpcode.Text, "fuzz"u8, MaskingKey),
             Http3WebSocketFrameWriter.WriteUnmasked(Http3WebSocketOpcode.Pong, "!"u8),
+            [0x03, 0xE8, 0xC3, 0x28],
         ];
 
         foreach (byte[] sample in corpus)
@@ -268,6 +414,15 @@ public sealed class Http3WebSocketMessageReaderTests
         {
             Http3WebSocketMessageReader reader = new(receivingEndpointRole);
             reader.Read(sample, endOfStream: true);
+        }
+        catch (Http3Exception exception)
+        {
+            Assert.True(exception.ErrorCode == Http3ErrorCode.MessageError, exception.Message);
+        }
+
+        try
+        {
+            Http3WebSocketCloseFrameParser.ParsePayload(sample);
         }
         catch (Http3Exception exception)
         {

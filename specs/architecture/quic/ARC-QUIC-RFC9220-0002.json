@@ -18,9 +18,13 @@
     "REQ-QUIC-RFC9220-0011",
     "REQ-QUIC-RFC9220-0012",
     "REQ-QUIC-RFC9220-0013",
-    "REQ-QUIC-RFC9220-0014"
+    "REQ-QUIC-RFC9220-0014",
+    "REQ-QUIC-RFC9220-0015",
+    "REQ-QUIC-RFC9220-0016"
   ],
   "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseFrameParser.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseStatus.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketOpcode.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketFrame.cs",
     "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
@@ -30,19 +34,21 @@
     "fuzz/Program.cs",
     "benchmarks/Http3WebSocketMessageReaderBenchmarks.cs"
   ],
-  "design_summary": "The WebSocket tunnel parser stays in `Incursa.Quic.Http3` above the QUIC transport runtime and below any future application handler dispatch. `Http3WebSocketMessageReader` incrementally consumes bytes from an RFC 9220 Extended CONNECT stream, validates RSV bits, opcodes, endpoint-role masking policy, payload length encodings, continuation sequencing, and control-frame constraints, and surfaces complete unmasked messages. `Http3WebSocketFrameWriter` provides deterministic frame formatting for local tests, benchmarks, and later adapter work without opening a live tunnel API in this slice.",
+  "design_summary": "The WebSocket tunnel parser stays in `Incursa.Quic.Http3` above the QUIC transport runtime and below any future application handler dispatch. `Http3WebSocketMessageReader` incrementally consumes bytes from an RFC 9220 Extended CONNECT stream, validates RSV bits, opcodes, endpoint-role masking policy, payload length encodings, continuation sequencing, control-frame constraints, and complete text-message UTF-8, and surfaces complete unmasked messages. `Http3WebSocketCloseFrameParser` validates transmitted close status codes and UTF-8 close reasons. `Http3WebSocketFrameWriter` provides deterministic frame formatting for local tests, benchmarks, and later adapter work without opening a live tunnel API in this slice.",
   "data_and_state_considerations": "The reader owns only per-stream parser state: pending partial frame bytes, an optional fragmented data opcode, and accumulated fragmented payload bytes. It does not create sockets, dispatch application handlers, mutate QUIC stream state, or change HTTP/3 request routing. Payload bytes are copied into completed message records so callers receive stable unmasked data independent of the input buffer lifetime.",
   "edge_cases_and_constraints": [
     "The server-side reader requires masked client frames.",
     "The client-side reader rejects masked server frames.",
     "Control frames must be final and no larger than 125 bytes.",
     "Continuation frames require an open fragmented data message.",
-    "A stream end with a partial frame or incomplete fragmented message is rejected as malformed tunnel data."
+    "A stream end with a partial frame or incomplete fragmented message is rejected as malformed tunnel data.",
+    "Invalid UTF-8 text messages and close reasons are rejected.",
+    "Reserved or partial close status payloads are rejected."
   ],
   "risks": [
     "This slice does not add application-level WebSocket handler registration or dispatch.",
     "This slice does not forward tunnel bytes between HTTP/3 streams and TCP sockets.",
-    "This slice does not validate text message UTF-8 or implement close status-code semantics.",
+    "This slice does not implement close-handshake orchestration.",
     "This slice does not move WebSocket behavior into the QUIC packet, TLS, recovery, or stream runtime."
   ],
   "supplemental_sections": [
