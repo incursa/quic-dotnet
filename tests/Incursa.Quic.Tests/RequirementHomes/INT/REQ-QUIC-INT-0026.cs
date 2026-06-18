@@ -18,6 +18,7 @@ public sealed class REQ_QUIC_INT_0026
         string architecture = ReadRepositoryFile("specs/architecture/quic/ARC-QUIC-INT-0020.json");
         string workItem = ReadRepositoryFile("specs/work-items/quic/WI-QUIC-INT-0020.json");
         string verification = ReadRepositoryFile("specs/verification/quic/VER-QUIC-INT-0020.json");
+        string interopStatusMatrix = ReadRepositoryFile("docs/interop-status-matrix.md");
         string helper = ReadRepositoryFile("scripts/interop/Invoke-QuicNetworkSimulatorScenario.ps1");
 
         Assert.Contains("REQ-QUIC-INT-0026", spec, StringComparison.Ordinal);
@@ -38,6 +39,9 @@ public sealed class REQ_QUIC_INT_0026
         Assert.Contains("NetworkSimulatorScenarioScriptTests", verification, StringComparison.Ordinal);
         Assert.Contains("accepts those preserved baseline and deterministic-loss execution bundles", verification, StringComparison.Ordinal);
         Assert.Contains("closes the `interop-network-simulator-backed-test-surface` gap", verification, StringComparison.Ordinal);
+        Assert.Contains("| `SIM-QUIC-LOSS-0001` deterministic simulator loss | Green |", interopStatusMatrix, StringComparison.Ordinal);
+        Assert.Contains("bounded deterministic-loss proof for the mapped RFC 9002 requirements", interopStatusMatrix, StringComparison.Ordinal);
+        Assert.DoesNotContain("| `SIM-QUIC-LOSS-0001` deterministic simulator loss | Still open |", interopStatusMatrix, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-BASE-0001", helper, StringComparison.Ordinal);
         Assert.Contains("SIM-QUIC-LOSS-0001", helper, StringComparison.Ordinal);
         Assert.Contains("Copy-SimulatorLogs", helper, StringComparison.Ordinal);
