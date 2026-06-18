@@ -49,6 +49,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly Http3Settings localSettings;
     private readonly int readBufferSize;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
+    private readonly IHttp3WebSocketHandler? webSocketHandler;
     // CONTEXT: Server shutdown ownership
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
@@ -69,6 +70,7 @@ public sealed class Http3Server : IAsyncDisposable
             ? options.ReadBufferSize
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
         diagnosticsSink = options.DiagnosticsSink;
+        webSocketHandler = options.WebSocketHandler;
     }
 
     /// <summary>
@@ -527,6 +529,17 @@ public sealed class Http3Server : IAsyncDisposable
                 requestStarted = true;
                 Http3Metrics.RecordRequestStarted("server");
                 EmitRequestStartedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path);
+                if (TryGetWebSocketHandler(request, out IHttp3WebSocketHandler? tunnelHandler))
+                {
+                    Http3ServerResponse acceptedResponse = new(200, ReadOnlyMemory<byte>.Empty);
+                    await WriteTunnelResponseHeadersAsync(stream, acceptedResponse, cancellationToken).ConfigureAwait(false);
+                    await tunnelHandler!.HandleAsync(new Http3WebSocketTunnelContext(request, stream), cancellationToken).ConfigureAwait(false);
+                    Http3Metrics.RecordRequestCompleted("server", acceptedResponse.StatusCode, requestStartedTimestamp);
+                    EmitResponseCompletedDiagnostic(diagnosticsSink, "server", stream.Id, acceptedResponse.StatusCode, 0);
+                    EmitRequestCompletedDiagnostic(diagnosticsSink, "server", stream.Id, request.Method, request.Path, acceptedResponse.StatusCode, 0);
+                    return;
+                }
+
                 Http3ServerResponse response = request.Protocol is not null && !Http3ExtendedConnect.IsSupportedProtocol(request.Protocol)
                     ? Http3ExtendedConnect.CreateUnsupportedProtocolResponse(request.Protocol)
                     : await handler.HandleAsync(request, cancellationToken).ConfigureAwait(false);
@@ -600,6 +613,18 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
+    private bool TryGetWebSocketHandler(Http3Request request, out IHttp3WebSocketHandler? tunnelHandler)
+    {
+        tunnelHandler = null;
+        if (!Http3ExtendedConnect.IsSupportedProtocol(request.Protocol) || webSocketHandler is null)
+        {
+            return false;
+        }
+
+        tunnelHandler = webSocketHandler;
+        return true;
+    }
+
     private async ValueTask<Http3Request> ReadRequestAsync(
         QuicStream stream,
         ConnectionQPackState qpackState,
@@ -639,7 +664,7 @@ public sealed class Http3Server : IAsyncDisposable
                     body = await ProcessRequestFrameAsync(frame, validator, body, stream.Id, qpackState, cancellationToken).ConfigureAwait(false);
                 }
 
-                if (TryCreateNoBodyGetRequest(validator.Headers, out Http3Request request))
+                if (TryCreateHeadersOnlyRequest(validator.Headers, out Http3Request request))
                 {
                     return request;
                 }
@@ -660,7 +685,7 @@ public sealed class Http3Server : IAsyncDisposable
         }
     }
 
-    private static bool TryCreateNoBodyGetRequest(
+    private static bool TryCreateHeadersOnlyRequest(
         IReadOnlyList<QPackFieldLine>? headers,
         out Http3Request request)
     {
@@ -676,12 +701,12 @@ public sealed class Http3Server : IAsyncDisposable
         }
 
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, validateContentLength: false);
-        if (result.Method != "GET")
+        if (result.Method != "GET" && !Http3ExtendedConnect.IsExtendedConnect(result))
         {
             return false;
         }
 
-        request = new Http3Request(result.Method, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, ReadOnlyMemory<byte>.Empty);
+        request = new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, ReadOnlyMemory<byte>.Empty);
         return true;
     }
 
@@ -843,6 +868,18 @@ public sealed class Http3Server : IAsyncDisposable
         {
             EmitResponseDataFrames(stream, response.Body, response.DataFramePayloadSize);
         }
+    }
+
+    private async ValueTask WriteTunnelResponseHeadersAsync(
+        QuicStream stream,
+        Http3ServerResponse response,
+        CancellationToken cancellationToken)
+    {
+        byte[] encodedFieldSection = EncodeResponseFieldSection(BuildResponseHeaders(response));
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encodedFieldSection);
+        await WriteFrameBytesAsync(stream, headersFrame, cancellationToken).ConfigureAwait(false);
+        EmitFrame(Http3DiagnosticKind.FrameSent, stream.Id, Http3FrameType.Headers, headersFrame.Length);
+        EmitResponseStartedDiagnostic(diagnosticsSink, "server", stream.Id, response.StatusCode);
     }
 
     private static async ValueTask WriteBufferedResponseFramesAsync(

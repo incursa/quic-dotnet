@@ -10,10 +10,13 @@
   "related_artifacts": [
     "ARC-QUIC-RFC9220-0001",
     "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
+    "WI-QUIC-RFC9220-0003",
     "VER-QUIC-RFC9220-0001",
-    "VER-QUIC-RFC9220-0002"
+    "VER-QUIC-RFC9220-0002",
+    "VER-QUIC-RFC9220-0003"
   ],
   "requirements": [
     {
@@ -415,6 +418,32 @@
       },
       "notes": [
         "This slice parses close payloads but does not implement close-handshake orchestration."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0017",
+      "title": "Dispatch accepted WebSocket tunnels to application handlers",
+      "statement": "The HTTP/3 server MUST dispatch validated RFC9220 WebSocket Extended CONNECT request streams to an application WebSocket tunnel handler after sending a successful tunnel response without ending the stream.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 1.7",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-1.7"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch"
+        ]
+      },
+      "notes": [
+        "This slice connects the validated Extended CONNECT request path to an application handler that owns the tunnel stream. It does not implement TCP socket forwarding, close-handshake orchestration, or live external-peer proof."
       ]
     }
   ]

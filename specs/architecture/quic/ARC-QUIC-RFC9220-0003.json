@@ -1,0 +1,41 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Tunnel Handler Dispatch Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the server-side boundary that hands accepted RFC 9220 WebSocket Extended CONNECT tunnel streams to application code.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0001",
+    "ARC-QUIC-RFC9220-0002",
+    "WI-QUIC-RFC9220-0003",
+    "VER-QUIC-RFC9220-0003"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0017"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/IHttp3WebSocketHandler.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3ServerOptions.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "The HTTP/3 server now treats validated `CONNECT` requests with `:protocol = websocket` as tunnel candidates when `Http3ServerOptions.WebSocketHandler` is configured. After the HEADERS frame is decoded and validated, the server sends a 200 response HEADERS frame without a stream FIN and then calls the configured handler with a `Http3WebSocketTunnelContext` that contains the decoded request and the live bidirectional stream. The handler owns WebSocket frame parsing, message handling, response bytes, and tunnel completion. Normal HTTP requests, unsupported Extended CONNECT protocols, and servers without a WebSocket handler retain the existing request-handler path.",
+  "data_and_state_considerations": "The tunnel context intentionally exposes the existing `QuicStream` instead of introducing another buffering layer. This preserves bidirectional tunnel semantics and lets the already trace-owned WebSocket parser consume bytes directly after the HTTP/3 response headers. The server does not buffer tunnel bytes as HTTP DATA frames and does not finish the stream when writing the successful tunnel response.",
+  "edge_cases_and_constraints": [
+    "The server dispatches only validated Extended CONNECT requests whose protocol token is `websocket`.",
+    "The successful tunnel response writes response HEADERS without FIN so application code can continue using the stream.",
+    "Unsupported Extended CONNECT protocols still receive the RFC 9220 unsupported-protocol response.",
+    "Servers without a configured WebSocket handler continue to route websocket Extended CONNECT requests through the existing request handler path.",
+    "The handler is responsible for tunnel shutdown, WebSocket close handling, and any application-level forwarding."
+  ],
+  "risks": [
+    "Exposing the raw tunnel stream is intentionally low-level and requires handlers to apply the RFC 6455/RFC 9220 parser correctly.",
+    "This slice proves same-process loopback behavior only; live external WebSocket-over-H3 peer proof remains future work.",
+    "Close-handshake policy is still above this dispatch boundary."
+  ]
+}

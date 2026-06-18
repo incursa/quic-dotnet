@@ -24,4 +24,9 @@ public sealed class Http3ServerOptions
     /// Gets or sets an optional diagnostics sink for HTTP/3 and QPACK stream events.
     /// </summary>
     public IHttp3DiagnosticsSink? DiagnosticsSink { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional handler for accepted RFC 9220 WebSocket Extended CONNECT tunnels.
+    /// </summary>
+    public IHttp3WebSocketHandler? WebSocketHandler { get; set; }
 }

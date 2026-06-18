@@ -214,6 +214,80 @@ public sealed class Http3MinimalServerTests
         Assert.Equal("response before fin", System.Text.Encoding.UTF8.GetString(response.Body));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0017")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        EchoWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = webSocketHandler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(enableConnectProtocol: 1),
+            []);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteWebSocketConnectHeadersAsync(requestStream, "/socket");
+
+        QPackFieldLine[] responseHeaders = await ReadResponseHeadersAsync(requestStream);
+        QPackFieldLine status = Assert.Single(responseHeaders, header => header.Name == ":status");
+        Assert.Equal("200", status.Value);
+
+        byte[] clientFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            "hello tunnel"u8,
+            [0x10, 0x20, 0x30, 0x40]);
+        await requestStream.WriteAsync(clientFrame, 0, clientFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage echoed = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+
+        Assert.Equal(Http3WebSocketOpcode.Text, echoed.Opcode);
+        Assert.Equal("echo:hello tunnel", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
+        Assert.Equal("/socket", webSocketHandler.Path);
+        Assert.Equal("hello tunnel", System.Text.Encoding.UTF8.GetString(webSocketHandler.Payload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0017")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        EchoWebSocketHandler webSocketHandler = new();
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = webSocketHandler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(enableConnectProtocol: 1),
+            []);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteExtendedConnectHeadersAsync(requestStream, "/unsupported", "webtransport");
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3Response response = await ReadResponseAsync(requestStream);
+
+        Assert.Equal(Http3ExtendedConnect.UnsupportedProtocolStatusCode, response.StatusCode);
+        Assert.Equal(string.Empty, webSocketHandler.Path);
+        Assert.Empty(webSocketHandler.Payload);
+    }
+
     [Theory]
     [InlineData("/plaintext")]
     [InlineData("/json")]
@@ -927,6 +1001,25 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(frame, 0, frame.Length).WaitAsync(TimeSpan.FromSeconds(10));
     }
 
+    private static async Task WriteWebSocketConnectHeadersAsync(QuicStream requestStream, string path)
+    {
+        await WriteExtendedConnectHeadersAsync(requestStream, path, Http3ExtendedConnect.WebSocketProtocol);
+    }
+
+    private static async Task WriteExtendedConnectHeadersAsync(QuicStream requestStream, string path, string protocol)
+    {
+        byte[] encoded = QPackEncoder.EncodeFieldSection(
+        [
+            new QPackFieldLine(":method", "CONNECT"),
+            new QPackFieldLine(":protocol", protocol),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", path),
+        ]);
+        byte[] frame = Http3FrameWriter.WriteHeaders(encoded);
+        await requestStream.WriteAsync(frame, 0, frame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+    }
+
     private static async Task<Http3Response> ReadResponseAsync(QuicStream stream)
     {
         Http3FrameReader reader = new();
@@ -956,6 +1049,49 @@ public sealed class Http3MinimalServerTests
         Assert.NotNull(headers);
         QPackFieldLine status = Assert.Single(headers, header => header.Name == ":status");
         return new Http3Response(int.Parse(status.Value), headers, [.. body], streamCompleted: true);
+    }
+
+    private static async Task<QPackFieldLine[]> ReadResponseHeadersAsync(QuicStream stream)
+    {
+        Http3FrameReader reader = new();
+        byte[] buffer = new byte[1024];
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.NotEqual(0, bytesRead);
+            foreach (Http3Frame frame in reader.Read(buffer.AsSpan(0, bytesRead)))
+            {
+                if (frame is Http3HeadersFrame headersFrame)
+                {
+                    return QPackDecoder.DecodeFieldSection(headersFrame.EncodedFieldSection);
+                }
+            }
+        }
+    }
+
+    private static async Task<Http3WebSocketMessage> ReadOneWebSocketMessageAsync(
+        QuicStream stream,
+        Http3EndpointRole receivingEndpointRole)
+    {
+        Http3WebSocketMessageReader reader = new(receivingEndpointRole);
+        byte[] buffer = new byte[1024];
+
+        while (true)
+        {
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length).WaitAsync(TimeSpan.FromSeconds(10));
+            if (bytesRead == 0)
+            {
+                Http3WebSocketMessage[] completed = reader.Complete();
+                return Assert.Single(completed);
+            }
+
+            Http3WebSocketMessage[] messages = reader.Read(buffer.AsSpan(0, bytesRead));
+            if (messages.Length != 0)
+            {
+                return Assert.Single(messages);
+            }
+        }
     }
 
     private static void ProcessFrame(Http3Frame frame, ref QPackFieldLine[]? headers, List<byte> body)
@@ -1044,7 +1180,8 @@ public sealed class Http3MinimalServerTests
         internal static async ValueTask<TestServerContext> StartAsync(
             IHttp3RequestHandler handler,
             IHttp3DiagnosticsSink? diagnosticsSink = null,
-            Action<QuicServerConnectionOptions>? configureServerOptions = null)
+            Action<QuicServerConnectionOptions>? configureServerOptions = null,
+            Action<Http3ServerOptions>? configureHttp3Options = null)
         {
             X509Certificate2 certificate = QuicLoopbackEstablishmentTestSupport.CreateServerCertificate("localhost");
             IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -1057,14 +1194,16 @@ public sealed class Http3MinimalServerTests
                 ListenBacklog = 1,
                 ConnectionOptionsCallback = (_, _, _) => ValueTask.FromResult(serverOptions),
             };
+            Http3ServerOptions http3Options = new()
+            {
+                DiagnosticsSink = diagnosticsSink,
+            };
+            configureHttp3Options?.Invoke(http3Options);
 
             Http3Server server = await Http3Server.ListenAsync(
                 listenerOptions,
                 handler,
-                new Http3ServerOptions
-                {
-                    DiagnosticsSink = diagnosticsSink,
-                }).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                http3Options).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
             return new TestServerContext(server, listenEndPoint, certificate);
         }
 
@@ -1215,6 +1354,25 @@ public sealed class Http3MinimalServerTests
             yield return "line 1\n"u8.ToArray();
             await Task.Delay(10, cancellationToken);
             yield return "line 2\n"u8.ToArray();
+        }
+    }
+
+    private sealed class EchoWebSocketHandler : IHttp3WebSocketHandler
+    {
+        public string Path { get; private set; } = string.Empty;
+
+        public byte[] Payload { get; private set; } = [];
+
+        public async ValueTask HandleAsync(Http3WebSocketTunnelContext context, CancellationToken cancellationToken = default)
+        {
+            Path = context.Request.Path;
+            Http3WebSocketMessage message = await ReadOneWebSocketMessageAsync(context.Stream, Http3EndpointRole.Server);
+            Payload = message.Payload.ToArray();
+
+            byte[] responsePayload = System.Text.Encoding.UTF8.GetBytes("echo:" + System.Text.Encoding.UTF8.GetString(message.Payload.Span));
+            byte[] responseFrame = Http3WebSocketFrameWriter.WriteUnmasked(message.Opcode, responsePayload);
+            await context.Stream.WriteAsync(responseFrame, 0, responseFrame.Length, cancellationToken).WaitAsync(TimeSpan.FromSeconds(10));
+            await context.Stream.CompleteWritesAsync(cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         }
     }
 }
