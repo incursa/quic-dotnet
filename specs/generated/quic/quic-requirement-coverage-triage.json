@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T08:54:19.4022984-06:00",
+  "generated_at": "2026-06-18T09:14:53.5361457-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T08:54:19.3995299-06:00",
+    "generated_at": "2026-06-18T09:14:53.5320797-06:00",
     "total_requirements": 2662,
     "by_state": {
       "trace_clean": 2662
