@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0007",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Protocol Error Close Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the accepted WebSocket tunnel helper boundary for converting malformed WebSocket frame parser failures into protocol-error close frames.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0006",
+    "WI-QUIC-RFC9220-0007",
+    "VER-QUIC-RFC9220-0007"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0021"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseFrameParser.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs"
+  ],
+  "design_summary": "`Http3WebSocketTunnelContext.ReadMessageOrCloseOnProtocolErrorAsync` wraps the existing parser-backed `ReadMessageAsync` path. If the parser raises an HTTP/3 `MESSAGE_ERROR` for malformed WebSocket bytes, the helper writes a valid unmasked close frame with status code 1002, completes the writable side of the stream, and then rethrows the parser failure so the handler can account for the protocol error.",
+  "data_and_state_considerations": "The helper reuses the per-tunnel parser state and close-frame writer. It does not consume or suppress non-WebSocket HTTP/3 errors, and it does not introduce connection-level state or automatic exception policy.",
+  "edge_cases_and_constraints": [
+    "Only parser failures surfaced as `Http3ErrorCode.MessageError` are converted to a WebSocket protocol-error close frame.",
+    "The parser failure is rethrown after the close frame is written.",
+    "The helper is opt-in for application handlers and does not change the default `ReadMessageAsync` behavior."
+  ],
+  "risks": [
+    "Application callers can overread this helper as full exception-to-close-code mapping if the opt-in boundary is not kept explicit.",
+    "Live external WebSocket-over-H3 peer proof remains future work."
+  ]
+}

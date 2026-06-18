@@ -9,6 +9,7 @@ namespace Incursa.Quic.Http3;
 public sealed class Http3WebSocketTunnelContext
 {
     private const int DefaultReadBufferSize = 4096;
+    private const ushort ProtocolErrorCloseStatusCode = 1002;
 
     private readonly Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
     private readonly Queue<Http3WebSocketMessage> pendingMessages = [];
@@ -75,6 +76,24 @@ public sealed class Http3WebSocketTunnelContext
             {
                 return null;
             }
+        }
+    }
+
+    /// <summary>
+    /// Reads the next message, writing a protocol-error close frame before rethrowing malformed WebSocket input.
+    /// </summary>
+    public async ValueTask<Http3WebSocketMessage?> ReadMessageOrCloseOnProtocolErrorAsync(
+        string? reason = "protocol error",
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await ReadMessageAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Http3Exception exception) when (exception.ErrorCode == Http3ErrorCode.MessageError)
+        {
+            await CloseAsync(ProtocolErrorCloseStatusCode, reason, cancellationToken).ConfigureAwait(false);
+            throw;
         }
     }
 

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T09:31:00.7864534-06:00",
+  "generated_at": "2026-06-18T09:37:34.0301078-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T09:31:00.7837469-06:00",
-    "total_requirements": 2663,
+    "generated_at": "2026-06-18T09:37:34.0273531-06:00",
+    "total_requirements": 2664,
     "by_state": {
-      "trace_clean": 2663
+      "trace_clean": 2664
     },
     "by_work_queue_tag": {
-      "clean": 2663
+      "clean": 2664
     },
     "by_rfc": [
       {
@@ -87,9 +87,9 @@
       },
       {
         "rfc": "RFC9220",
-        "total": 20,
+        "total": 21,
         "by_state": {
-          "trace_clean": 20
+          "trace_clean": 21
         }
       },
       {
@@ -311556,7 +311556,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 768,
+          "line": 811,
           "kinds": [
             "positive"
           ],
@@ -311578,7 +311578,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 768,
+          "line": 811,
           "kinds": [
             "positive"
           ],
@@ -314697,7 +314697,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 966,
+          "line": 1009,
           "kinds": [
             "edge"
           ],
@@ -314719,7 +314719,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 966,
+          "line": 1009,
           "kinds": [
             "edge"
           ],
@@ -314961,7 +314961,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 768,
+          "line": 811,
           "kinds": [
             "positive"
           ],
@@ -315283,7 +315283,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 687,
+          "line": 730,
           "kinds": [
             "negative"
           ],
@@ -315305,7 +315305,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 687,
+          "line": 730,
           "kinds": [
             "negative"
           ],
@@ -315327,7 +315327,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 649,
+          "line": 692,
           "kinds": [
             "positive"
           ],
@@ -315349,7 +315349,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 649,
+          "line": 692,
           "kinds": [
             "positive"
           ],
@@ -320613,7 +320613,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 407,
+          "line": 450,
           "kinds": [
             "negative"
           ],
@@ -320635,7 +320635,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 407,
+          "line": 450,
           "kinds": [
             "negative"
           ],
@@ -321130,6 +321130,115 @@
             "REQ-QUIC-RFC9220-0020"
           ],
           "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9220-0021",
+      "artifact_id": "SPEC-QUIC-RFC9220",
+      "rfc": "RFC9220",
+      "section_prefix": "unsectioned",
+      "title": "Map malformed WebSocket tunnel frames to protocol-error close frames",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers opt into reading the next client message such that WebSocket parser `MESSAGE_ERROR` failures write an unmasked close frame with status code 1002 before completing the writable side of the stream with FIN and rethrowing the parser failure.",
+      "coverage_expectations": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+        "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsUnmaskedClientFrame"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 3,
+        "broad": 0,
+        "by_kind": {
+          "positive": 0,
+          "negative": 3,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "method": "WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "line": 407,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "method": "WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "line": 407,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0021"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0021",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsUnmaskedClientFrame",
+          "file": "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs",
+          "class": "Http3WebSocketMessageReaderTests",
+          "member": "Http3WebSocketMessageReaderTests.ServerReader_RejectsUnmaskedClientFrame",
+          "method": "ServerReader_RejectsUnmaskedClientFrame",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0010"
+          ],
+          "requirement_tagged": false,
           "class_level_only": false
         }
       ]

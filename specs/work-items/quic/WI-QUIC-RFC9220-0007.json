@@ -1,0 +1,34 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0007",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Protocol Error Close Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0007",
+    "VER-QUIC-RFC9220-0007"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0021"
+  ],
+  "summary": "Add an opt-in server-side tunnel context helper that converts malformed WebSocket parser failures into protocol-error close frames before rethrowing.",
+  "planned_changes": "- Add `Http3WebSocketTunnelContext.ReadMessageOrCloseOnProtocolErrorAsync` to wrap parser-backed reads.\n- On `Http3ErrorCode.MessageError`, write close status 1002 with a protocol-error reason, complete writes, and rethrow the parser failure.\n- Add a loopback HTTP/3 server test that sends an unmasked client frame, verifies the client receives a 1002 close frame and FIN, and verifies the handler observed the parser failure.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket protocol-error test, adjacent WebSocket regression tests, the RFC 9220 WebSocket parser tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0007"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0007"
+  ],
+  "out_of_scope": [
+    "Automatic close-code mapping for arbitrary handler exceptions.",
+    "TCP socket forwarding.",
+    "Automatic ping scheduling.",
+    "External live peer proof.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "The accepted tunnel context can now convert malformed WebSocket frame parser failures to explicit 1002 close frames when handlers opt into the helper."
+}

@@ -14,18 +14,21 @@
     "ARC-QUIC-RFC9220-0004",
     "ARC-QUIC-RFC9220-0005",
     "ARC-QUIC-RFC9220-0006",
+    "ARC-QUIC-RFC9220-0007",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
     "WI-QUIC-RFC9220-0004",
     "WI-QUIC-RFC9220-0005",
     "WI-QUIC-RFC9220-0006",
+    "WI-QUIC-RFC9220-0007",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
     "VER-QUIC-RFC9220-0004",
     "VER-QUIC-RFC9220-0005",
-    "VER-QUIC-RFC9220-0006"
+    "VER-QUIC-RFC9220-0006",
+    "VER-QUIC-RFC9220-0007"
   ],
   "requirements": [
     {
@@ -539,6 +542,34 @@
       },
       "notes": [
         "This slice covers the accepted server tunnel helper path for explicit application close frames and orderly write completion. Automatic close-code mapping for handler exceptions, TCP socket forwarding, keepalive scheduling, and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0021",
+      "title": "Map malformed WebSocket tunnel frames to protocol-error close frames",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers opt into reading the next client message such that WebSocket parser `MESSAGE_ERROR` failures write an unmasked close frame with status code 1002 before completing the writable side of the stream with FIN and rethrowing the parser failure.",
+      "coverage": {
+        "positive": "optional",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "RFC 6455 section 7.4.1",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::ServerReader_RejectsUnmaskedClientFrame"
+        ]
+      },
+      "notes": [
+        "This slice covers an explicit handler opt-in helper for malformed WebSocket frame handling after the tunnel is accepted. Automatic close-code mapping for arbitrary handler exceptions, TCP socket forwarding, keepalive scheduling, and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]
