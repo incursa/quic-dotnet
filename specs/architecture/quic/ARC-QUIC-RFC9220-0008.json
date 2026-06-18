@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0008",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Server Ping Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the accepted WebSocket tunnel helper boundary for server-sent ping control frames that keep the tunnel available for pong and later data messages.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0005",
+    "WI-QUIC-RFC9220-0008",
+    "VER-QUIC-RFC9220-0008"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0022"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs"
+  ],
+  "design_summary": "`Http3WebSocketTunnelContext.PingAsync` writes an unmasked server-to-client WebSocket ping control frame using the existing frame writer. The helper does not complete, reset, or otherwise terminate the stream; the application handler remains responsible for reading any pong and later tunnel data.",
+  "data_and_state_considerations": "The helper introduces no scheduler or connection-level state. Payload size and control-frame finality remain enforced by the shared WebSocket frame writer.",
+  "edge_cases_and_constraints": [
+    "The helper leaves stream lifetime under handler control.",
+    "The same tunnel remains available for a pong response and later data messages.",
+    "Automatic keepalive scheduling remains out of scope."
+  ],
+  "risks": [
+    "Application callers can overread the helper as automatic keepalive policy if the manual boundary is not kept explicit.",
+    "Live external WebSocket-over-H3 peer proof remains future work."
+  ]
+}

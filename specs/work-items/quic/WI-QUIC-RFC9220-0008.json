@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0008",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Server Ping Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0008",
+    "VER-QUIC-RFC9220-0008"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0022"
+  ],
+  "summary": "Add a server-side tunnel context helper that writes ping control frames while preserving the accepted RFC 9220 tunnel for pong and later data messages.",
+  "planned_changes": "- Add `Http3WebSocketTunnelContext.PingAsync` to write unmasked server ping frames through the accepted tunnel.\n- Add a loopback HTTP/3 server test that receives a server ping, sends a masked pong with the same payload, sends a later text message, and verifies the tunnel remains usable for the handler response.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket server-ping test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0008"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0008"
+  ],
+  "out_of_scope": [
+    "Automatic keepalive scheduling.",
+    "TCP socket forwarding.",
+    "External live peer proof.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "The accepted tunnel context can now send explicit server ping frames and preserve the tunnel for pong and later data."
+}

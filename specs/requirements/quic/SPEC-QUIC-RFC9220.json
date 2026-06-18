@@ -15,6 +15,7 @@
     "ARC-QUIC-RFC9220-0005",
     "ARC-QUIC-RFC9220-0006",
     "ARC-QUIC-RFC9220-0007",
+    "ARC-QUIC-RFC9220-0008",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -22,13 +23,15 @@
     "WI-QUIC-RFC9220-0005",
     "WI-QUIC-RFC9220-0006",
     "WI-QUIC-RFC9220-0007",
+    "WI-QUIC-RFC9220-0008",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
     "VER-QUIC-RFC9220-0004",
     "VER-QUIC-RFC9220-0005",
     "VER-QUIC-RFC9220-0006",
-    "VER-QUIC-RFC9220-0007"
+    "VER-QUIC-RFC9220-0007",
+    "VER-QUIC-RFC9220-0008"
   ],
   "requirements": [
     {
@@ -570,6 +573,34 @@
       },
       "notes": [
         "This slice covers an explicit handler opt-in helper for malformed WebSocket frame handling after the tunnel is accepted. Automatic close-code mapping for arbitrary handler exceptions, TCP socket forwarding, keepalive scheduling, and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0022",
+      "title": "Send server WebSocket ping frames on accepted tunnels",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers write an unmasked ping control frame with a caller-supplied payload while preserving the accepted tunnel for a later pong response and subsequent data messages.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.2",
+          "RFC 6455 section 5.5.3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel"
+        ]
+      },
+      "notes": [
+        "This slice covers an explicit server ping helper for accepted tunnels and continued tunnel use after a pong and later data message. Automatic keepalive scheduling, TCP socket forwarding, and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]

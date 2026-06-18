@@ -124,6 +124,14 @@ public sealed class Http3WebSocketTunnelContext
     }
 
     /// <summary>
+    /// Writes a server-to-client ping frame while leaving the tunnel open for subsequent messages.
+    /// </summary>
+    public async ValueTask PingAsync(ReadOnlyMemory<byte> payload, CancellationToken cancellationToken = default)
+    {
+        await WriteMessageAsync(Http3WebSocketOpcode.Ping, payload, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Echoes a received close frame and completes the writable side of the tunnel stream.
     /// </summary>
     public async ValueTask EchoCloseAsync(Http3WebSocketMessage closeMessage, CancellationToken cancellationToken = default)
