@@ -1,0 +1,37 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9220-0011",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 WebSocket TCP Forwarder Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0011",
+    "WI-QUIC-RFC9220-0011"
+  ],
+  "verification_method": "Focused HTTP/3 WebSocket loopback test with a local TCP echo server, adjacent RFC 9220 regression tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9220-0025"
+  ],
+  "scope": "This verification covers an accepted RFC 9220 WebSocket Extended CONNECT tunnel whose application handler connects to a local TCP echo server, forwards a masked client binary WebSocket payload into TCP, returns the TCP response as an unmasked binary WebSocket message, and echoes a WebSocket close frame before FIN.",
+  "preconditions": [
+    "The WebSocket frame parser remains trace-owned by `VER-QUIC-RFC9220-0002`.",
+    "The WebSocket handler dispatch boundary remains trace-owned by `VER-QUIC-RFC9220-0003`.",
+    "Accepted tunnel message helpers remain trace-owned by `VER-QUIC-RFC9220-0004`.",
+    "Received ping/pong control handling remains trace-owned by `VER-QUIC-RFC9220-0005`."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho|FullyQualifiedName~WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData|FullyQualifiedName~WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong|FullyQualifiedName~WebSocketExtendedConnect_MalformedFrame_WritesProtocolErrorClose|FullyQualifiedName~WebSocketExtendedConnect_ApplicationClose_WritesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_PingFrame_EchoesPongAndContinuesTunnel|FullyQualifiedName~WebSocketExtendedConnect_CloseFrame_EchoesCloseAndCompletesWrites|FullyQualifiedName~WebSocketExtendedConnect_DispatchesTunnelHandlerAndEchoesMessage|FullyQualifiedName~Http3WebSocketMessageReaderTests\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The focused TCP forwarder and adjacent WebSocket regression tests pass, the new RFC 9220 TCP forwarder requirement is trace-clean, SpecTrace validation accepts the artifacts, and diff hygiene is clean.",
+  "evidence": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTcpForwarder.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho"
+  ],
+  "status_summary": "The HTTP/3 WebSocket handler surface now has locally verified binary tunnel forwarding through a caller-supplied TCP stream. Evidence class is local same-process HTTP/3 QUIC loopback plus local loopback TCP; it is not external peer interoperability, published ProtocolLab evidence, or isolated-host proof."
+}

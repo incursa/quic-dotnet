@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0011",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket TCP Forwarder Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0011",
+    "VER-QUIC-RFC9220-0011"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0025"
+  ],
+  "summary": "Add a reusable accepted-tunnel helper that forwards binary RFC 9220 WebSocket messages to a connected TCP stream and returns TCP bytes as binary WebSocket messages.",
+  "planned_changes": "- Add `Http3WebSocketTcpForwarder` with bidirectional WebSocket/TCP forwarding and WebSocket control-frame handling.\n- Preserve protocol-error, ping/pong, close echo, and normal TCP EOF behavior through existing tunnel context helpers.\n- Add a local HTTP/3 WebSocket loopback test that connects the helper to a loopback TCP echo server and verifies binary payload forwarding in both directions.",
+  "verification_plan": "Run the focused TCP forwarder loopback test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0011"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0011"
+  ],
+  "out_of_scope": [
+    "TCP target authorization, DNS resolution, or proxy routing policy.",
+    "High-volume forwarding stress, timeout policy, and backpressure tuning.",
+    "External live WebSocket-over-H3 peer proof.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Accepted WebSocket tunnels can now bridge binary tunnel payloads to a caller-supplied TCP stream with local loopback proof."
+}

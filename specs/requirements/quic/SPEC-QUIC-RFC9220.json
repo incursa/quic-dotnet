@@ -18,6 +18,7 @@
     "ARC-QUIC-RFC9220-0008",
     "ARC-QUIC-RFC9220-0009",
     "ARC-QUIC-RFC9220-0010",
+    "ARC-QUIC-RFC9220-0011",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -28,6 +29,7 @@
     "WI-QUIC-RFC9220-0008",
     "WI-QUIC-RFC9220-0009",
     "WI-QUIC-RFC9220-0010",
+    "WI-QUIC-RFC9220-0011",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -37,7 +39,8 @@
     "VER-QUIC-RFC9220-0007",
     "VER-QUIC-RFC9220-0008",
     "VER-QUIC-RFC9220-0009",
-    "VER-QUIC-RFC9220-0010"
+    "VER-QUIC-RFC9220-0010",
+    "VER-QUIC-RFC9220-0011"
   ],
   "requirements": [
     {
@@ -663,6 +666,33 @@
       },
       "notes": [
         "This slice covers the opt-in server keepalive scheduler for accepted tunnels. TCP socket forwarding, external WebSocket-over-H3 peer proof, and richer application-specific keepalive policy remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0025",
+      "title": "Forward WebSocket binary tunnels through TCP streams",
+      "statement": "The HTTP/3 server MUST let application handlers forward accepted RFC 9220 WebSocket tunnel binary messages to a connected TCP stream and return TCP response bytes as unmasked binary WebSocket messages while preserving WebSocket close handling.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 1.7",
+          "RFC 6455 section 5.6",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-1.7",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.6"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho"
+        ]
+      },
+      "notes": [
+        "This slice covers basic TCP stream forwarding through the accepted server tunnel helper. TCP target policy, forwarding stress, external WebSocket-over-H3 peer proof, and richer application-specific close-code or keepalive policy remain separate work."
       ]
     }
   ]

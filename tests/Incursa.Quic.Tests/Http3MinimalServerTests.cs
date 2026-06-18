@@ -3,6 +3,7 @@
 
 using System.Net;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
@@ -551,6 +552,65 @@ public sealed class Http3MinimalServerTests
         Assert.Equal("echo:after keepalive", System.Text.Encoding.UTF8.GetString(echoed.Payload.Span));
         Assert.True(webSocketHandler.ObservedPong);
         Assert.Equal("after keepalive", System.Text.Encoding.UTF8.GetString(webSocketHandler.Payload));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0025")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public async Task WebSocketExtendedConnect_TcpForwarder_ForwardsBinaryPayloadThroughTcpEcho()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        byte[] clientPayload = "from websocket"u8.ToArray();
+        await using TcpEchoServerContext tcpContext = TcpEchoServerContext.Start(clientPayload.Length);
+        TcpForwardingWebSocketHandler webSocketHandler = new(tcpContext.Endpoint);
+        await using TestServerContext context = await TestServerContext.StartAsync(
+            new Http3InMemoryRouteHandler().MapGetText("/fallback", "fallback"),
+            configureHttp3Options: options => options.WebSocketHandler = webSocketHandler);
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(
+            connection,
+            new Http3Settings(enableConnectProtocol: 1),
+            []);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteWebSocketConnectHeadersAsync(requestStream, "/socket");
+
+        QPackFieldLine[] responseHeaders = await ReadResponseHeadersAsync(requestStream);
+        QPackFieldLine status = Assert.Single(responseHeaders, header => header.Name == ":status");
+        Assert.Equal("200", status.Value);
+
+        byte[] binaryFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Binary,
+            clientPayload,
+            [0x01, 0x02, 0x03, 0x04]);
+        await requestStream.WriteAsync(binaryFrame, 0, binaryFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage forwarded = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+        byte[] observedTcpPayload = await tcpContext.ObservedPayloadAsync.WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(Http3WebSocketOpcode.Binary, forwarded.Opcode);
+        Assert.Equal("tcp:from websocket", System.Text.Encoding.UTF8.GetString(forwarded.Payload.Span));
+        Assert.Equal(clientPayload, observedTcpPayload);
+
+        byte[] closePayload = Http3WebSocketCloseFrameParser.FormatPayload(1000, null);
+        byte[] closeFrame = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Close,
+            closePayload,
+            [0x05, 0x06, 0x07, 0x08]);
+        await requestStream.WriteAsync(closeFrame, 0, closeFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Http3WebSocketMessage close = await ReadOneWebSocketMessageAsync(requestStream, Http3EndpointRole.Client);
+        int eof = await requestStream.ReadAsync(new byte[1], 0, 1).WaitAsync(TimeSpan.FromSeconds(10));
+
+        Assert.Equal(Http3WebSocketOpcode.Close, close.Opcode);
+        Assert.Equal(0, eof);
+        await webSocketHandler.CompletionAsync.WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.True(webSocketHandler.Completed);
     }
 
     [Fact]
@@ -1851,6 +1911,113 @@ public sealed class Http3MinimalServerTests
             byte[] responsePayload = System.Text.Encoding.UTF8.GetBytes("echo:" + System.Text.Encoding.UTF8.GetString(dataMessage.Payload.Span));
             await context.WriteMessageAsync(dataMessage.Opcode, responsePayload, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
             await context.Stream.CompleteWritesAsync(cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        }
+    }
+
+    private sealed class TcpForwardingWebSocketHandler(IPEndPoint endpoint) : IHttp3WebSocketHandler
+    {
+        private readonly TaskCompletionSource completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public bool Completed { get; private set; }
+
+        public Task CompletionAsync => completion.Task;
+
+        public async ValueTask HandleAsync(Http3WebSocketTunnelContext context, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                using TcpClient client = new();
+                await client.ConnectAsync(endpoint.Address, endpoint.Port, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+                await Http3WebSocketTcpForwarder.ForwardAsync(context, client.GetStream(), cancellationToken)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(10));
+                Completed = true;
+                completion.SetResult();
+            }
+            catch (Exception exception)
+            {
+                completion.SetException(exception);
+                throw;
+            }
+        }
+    }
+
+    private sealed class TcpEchoServerContext : IAsyncDisposable
+    {
+        private readonly CancellationTokenSource cancellation = new();
+        private readonly TcpListener listener;
+        private readonly Task serverTask;
+        private readonly TaskCompletionSource<byte[]> observedPayload = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly int expectedPayloadLength;
+
+        private TcpEchoServerContext(TcpListener listener, int expectedPayloadLength)
+        {
+            this.listener = listener;
+            this.expectedPayloadLength = expectedPayloadLength;
+            Endpoint = (IPEndPoint)listener.LocalEndpoint;
+            serverTask = RunAsync();
+        }
+
+        internal IPEndPoint Endpoint { get; }
+
+        internal Task<byte[]> ObservedPayloadAsync => observedPayload.Task;
+
+        internal static TcpEchoServerContext Start(int expectedPayloadLength)
+        {
+            TcpListener listener = new(IPAddress.Loopback, 0);
+            listener.Start();
+            return new TcpEchoServerContext(listener, expectedPayloadLength);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            cancellation.Cancel();
+            listener.Stop();
+            await SuppressExpectedShutdownAsync(serverTask);
+            cancellation.Dispose();
+        }
+
+        private async Task RunAsync()
+        {
+            using TcpClient client = await listener.AcceptTcpClientAsync(cancellation.Token);
+            await using NetworkStream stream = client.GetStream();
+            byte[] payload = new byte[expectedPayloadLength];
+            int totalBytesRead = 0;
+            while (totalBytesRead < expectedPayloadLength)
+            {
+                int bytesRead = await stream.ReadAsync(
+                    payload.AsMemory(totalBytesRead, expectedPayloadLength - totalBytesRead),
+                    cancellation.Token);
+                if (bytesRead == 0)
+                {
+                    observedPayload.TrySetResult(payload.AsSpan(0, totalBytesRead).ToArray());
+                    return;
+                }
+
+                totalBytesRead += bytesRead;
+            }
+
+            observedPayload.TrySetResult(payload);
+            byte[] response = System.Text.Encoding.UTF8.GetBytes("tcp:" + System.Text.Encoding.UTF8.GetString(payload));
+            await stream.WriteAsync(response, cancellation.Token);
+            await stream.FlushAsync(cancellation.Token);
+
+            byte[] drainBuffer = new byte[256];
+            while (await stream.ReadAsync(drainBuffer, cancellation.Token) > 0)
+            {
+            }
+        }
+
+        private static async Task SuppressExpectedShutdownAsync(Task task)
+        {
+            try
+            {
+                await task.WaitAsync(TimeSpan.FromSeconds(10));
+            }
+            catch (Exception exception) when (exception is OperationCanceledException or SocketException or ObjectDisposedException)
+            {
+                GC.KeepAlive(exception);
+            }
         }
     }
 
