@@ -289,6 +289,15 @@ function Get-ObjectValue {
         return $Default
     }
 
+    if ($InputObject -is [System.Collections.IDictionary] -and $InputObject.Contains($Name)) {
+        $dictionaryValue = $InputObject[$Name]
+        if ($null -eq $dictionaryValue) {
+            return $Default
+        }
+
+        return $dictionaryValue
+    }
+
     $property = $InputObject.PSObject.Properties[$Name]
     if ($null -eq $property) {
         return $Default
@@ -594,8 +603,169 @@ function New-BlockerDetail {
     }
 }
 
+function Read-JsonFileOrNull {
+    param([string] $Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $null
+    }
+
+    try {
+        return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
+    }
+    catch {
+        return $null
+    }
+}
+
+function Test-LoopbackHost {
+    param([string] $HostName)
+
+    if ([string]::IsNullOrWhiteSpace($HostName)) {
+        return $false
+    }
+
+    $normalized = $HostName.Trim().Trim("[", "]").ToLowerInvariant()
+    if ($normalized -eq "localhost" -or $normalized -eq "::1" -or $normalized -match "^127\.") {
+        return $true
+    }
+
+    $address = [System.Net.IPAddress]::None
+    if ([System.Net.IPAddress]::TryParse($normalized, [ref]$address)) {
+        return [System.Net.IPAddress]::IsLoopback($address)
+    }
+
+    return $false
+}
+
+function Get-UrlHost {
+    param([string] $Url)
+
+    if ([string]::IsNullOrWhiteSpace($Url)) {
+        return ""
+    }
+
+    try {
+        return ([Uri]$Url).Host
+    }
+    catch {
+        return ""
+    }
+}
+
+function Get-HostAddressFamily {
+    param([string] $HostName)
+
+    if ([string]::IsNullOrWhiteSpace($HostName)) {
+        return "unknown"
+    }
+
+    $normalized = $HostName.Trim().Trim("[", "]")
+    $address = [System.Net.IPAddress]::None
+    if ([System.Net.IPAddress]::TryParse($normalized, [ref]$address)) {
+        if ($address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork) {
+            return "ipv4"
+        }
+
+        if ($address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetworkV6) {
+            return "ipv6"
+        }
+    }
+
+    return "dns"
+}
+
+function Get-CellArtifactFacts {
+    param(
+        [string] $RunRoot,
+
+        [AllowNull()]
+        $Cell
+    )
+
+    $cellDirectory = ""
+    $qlogDirectory = [string](Get-ObjectValue -InputObject $Cell -Name "qlogDirectory" -Default "")
+    if (-not [string]::IsNullOrWhiteSpace($qlogDirectory)) {
+        $cellDirectory = Split-Path -Parent $qlogDirectory
+    }
+
+    if ([string]::IsNullOrWhiteSpace($cellDirectory)) {
+        $artifact = @((Get-ObjectValue -InputObject $Cell -Name "loadToolProcessMetricsArtifacts" -Default @())) | Select-Object -First 1
+        if (-not [string]::IsNullOrWhiteSpace([string]$artifact) -and -not [string]::IsNullOrWhiteSpace($RunRoot)) {
+            $cellDirectory = Split-Path -Parent (Join-Path $RunRoot ([string]$artifact))
+        }
+    }
+
+    $targetExecution = $null
+    $loadToolExecution = $null
+    $adapterEndpoints = $null
+    $sourceArtifacts = New-Object System.Collections.Generic.List[string]
+    if (-not [string]::IsNullOrWhiteSpace($cellDirectory) -and (Test-Path -LiteralPath $cellDirectory -PathType Container)) {
+        $targetExecutionPath = Join-Path $cellDirectory "target-execution.json"
+        $loadToolExecutionPath = Join-Path $cellDirectory "load-tool-execution.json"
+        $adapterEndpointsPath = Join-Path $cellDirectory "adapter-endpoints.json"
+        $targetExecution = Read-JsonFileOrNull -Path $targetExecutionPath
+        $loadToolExecution = Read-JsonFileOrNull -Path $loadToolExecutionPath
+        $adapterEndpoints = Read-JsonFileOrNull -Path $adapterEndpointsPath
+        foreach ($path in @($targetExecutionPath, $loadToolExecutionPath, $adapterEndpointsPath)) {
+            if (Test-Path -LiteralPath $path -PathType Leaf) {
+                $sourceArtifacts.Add($path) | Out-Null
+            }
+        }
+    }
+
+    $endpoint = @((Get-ObjectValue -InputObject $adapterEndpoints -Name "endpoints" -Default @())) | Select-Object -First 1
+    $targetUrl = [string](Get-ObjectValue -InputObject $targetExecution -Name "targetEffectiveBaseUrl" -Default "")
+    if ([string]::IsNullOrWhiteSpace($targetUrl)) {
+        $targetUrl = [string](Get-ObjectValue -InputObject $Cell -Name "targetEffectiveBaseUrl" -Default "")
+    }
+
+    $loadToolEffectiveUrl = [string](Get-ObjectValue -InputObject $loadToolExecution -Name "effectiveUrl" -Default "")
+    $loadToolRequestedUrl = [string](Get-ObjectValue -InputObject $loadToolExecution -Name "requestedUrl" -Default "")
+    $endpointHost = [string](Get-ObjectValue -InputObject $endpoint -Name "host" -Default (Get-UrlHost -Url $targetUrl))
+    $loadToolUrlHost = Get-UrlHost -Url $loadToolEffectiveUrl
+    if ([string]::IsNullOrWhiteSpace($loadToolUrlHost)) {
+        $loadToolUrlHost = Get-UrlHost -Url $loadToolRequestedUrl
+    }
+
+    return [ordered]@{
+        cellDirectory = $cellDirectory
+        sourceArtifacts = @($sourceArtifacts)
+        target = [ordered]@{
+            effectiveBaseUrl = $targetUrl
+            endpointHost = $endpointHost
+            endpointPort = Get-ObjectValue -InputObject $endpoint -Name "port"
+            endpointScheme = Get-ObjectValue -InputObject $endpoint -Name "scheme"
+            endpointNetworkMode = Get-ObjectValue -InputObject $endpoint -Name "networkMode"
+            endpointBindMode = Get-ObjectValue -InputObject $endpoint -Name "bindMode"
+            addressFamily = Get-HostAddressFamily -HostName $endpointHost
+            isLoopback = (Test-LoopbackHost -HostName $endpointHost)
+            diagnosticProcessId = Get-ObjectValue -InputObject $Cell -Name "diagnosticProcessId"
+        }
+        loadGenerator = [ordered]@{
+            effectiveUrl = $loadToolEffectiveUrl
+            requestedUrl = $loadToolRequestedUrl
+            urlHost = $loadToolUrlHost
+            addressFamily = Get-HostAddressFamily -HostName $loadToolUrlHost
+            isLoopbackUrl = (Test-LoopbackHost -HostName $loadToolUrlHost)
+            executablePath = Get-ObjectValue -InputObject $loadToolExecution -Name "executablePath"
+            workingDirectory = Get-ObjectValue -InputObject $loadToolExecution -Name "workingDirectory"
+            processIds = @((Get-ObjectValue -InputObject $Cell -Name "loadToolProcessMetricsSummaries" -Default @()) |
+                ForEach-Object { Get-ObjectValue -InputObject $_ -Name "processId" } |
+                Where-Object { $null -ne $_ })
+        }
+    }
+}
+
 function Get-EnvironmentGateAssessment {
-    param($Cell)
+    param(
+        $Cell,
+
+        [string] $RunRoot,
+
+        [AllowNull()]
+        $RunMetadata
+    )
 
     $evidence = Get-ObjectValue -InputObject $Cell -Name "evidence"
     $warnings = @(
@@ -707,6 +877,90 @@ function Get-EnvironmentGateAssessment {
                     -LocalActionability "Rerun with load-generator Docker stats or process-mode load-generator telemetry retained in aggregate-results.json.")) | Out-Null
     }
 
+    $artifactFacts = Get-CellArtifactFacts -RunRoot $RunRoot -Cell $Cell
+    $runHostName = [string](Get-ObjectValue -InputObject $RunMetadata -Name "hostName" -Default "")
+    $runProcessorCount = Get-ObjectValue -InputObject $RunMetadata -Name "processorCount"
+    $artifactTargetFacts = Get-ObjectValue -InputObject $artifactFacts -Name "target"
+    $artifactLoadGeneratorFacts = Get-ObjectValue -InputObject $artifactFacts -Name "loadGenerator"
+    $targetEndpointIsLoopback = [bool](Get-ObjectValue -InputObject $artifactTargetFacts -Name "isLoopback" -Default $false)
+    $loadToolUrlIsLoopback = [bool](Get-ObjectValue -InputObject $artifactLoadGeneratorFacts -Name "isLoopbackUrl" -Default $false)
+    $targetProcessIds = @((Get-ObjectValue -InputObject $artifactTargetFacts -Name "diagnosticProcessId") | Where-Object { $null -ne $_ })
+    $loadGeneratorProcessIds = @((Get-ObjectValue -InputObject $artifactLoadGeneratorFacts -Name "processIds" -Default @()) | Where-Object { $null -ne $_ })
+    $targetHostIdentity = if ($targetExecutionMode -eq "process" -or $targetEndpointIsLoopback) { $runHostName } else { "unknown" }
+    $loadGeneratorHostIdentity = if ($loadToolMode -eq "process" -or $loadToolUrlIsLoopback) { $runHostName } else { "unknown" }
+    $separateHostObserved = -not [string]::IsNullOrWhiteSpace($targetHostIdentity) -and
+        -not [string]::IsNullOrWhiteSpace($loadGeneratorHostIdentity) -and
+        $targetHostIdentity -ne "unknown" -and
+        $loadGeneratorHostIdentity -ne "unknown" -and
+        -not [string]::Equals($targetHostIdentity, $loadGeneratorHostIdentity, [StringComparison]::OrdinalIgnoreCase)
+    $sameProcessNamespace = $targetExecutionMode -eq "process" -and $loadToolMode -eq "process"
+    $placementStatus = if ($separateHostObserved) {
+        "separate-host-observed"
+    }
+    elseif ($sameProcessNamespace -or $isLoopbackOrSameHost -or $targetEndpointIsLoopback -or $loadToolUrlIsLoopback) {
+        "same-host-observed"
+    }
+    else {
+        "unknown"
+    }
+
+    $nonLoopbackNetworkObserved = -not $targetEndpointIsLoopback -and -not $loadToolUrlIsLoopback -and -not $isLoopbackOrSameHost -and
+        -not [string]::IsNullOrWhiteSpace([string](Get-ObjectValue -InputObject $artifactTargetFacts -Name "endpointHost" -Default ""))
+    $networkPathStatus = if ($targetEndpointIsLoopback -or $loadToolUrlIsLoopback -or $isLoopbackOrSameHost) {
+        "loopback-observed"
+    }
+    elseif ($nonLoopbackNetworkObserved) {
+        "non-loopback-observed"
+    }
+    else {
+        "unknown"
+    }
+
+    $targetTelemetryStatus = if ($targetMetricsCaptured -gt 0) { if ($targetResourceStatus -eq "adapter-derived") { "captured-adapter-derived" } else { "captured" } } else { "missing" }
+    $loadGeneratorTelemetryStatus = if ($loadToolMetricsCaptured -gt 0) { $loadGeneratorStatus } else { "missing" }
+    $cpuAttestationStatus = if ($cpuIsolationStatus -eq "not-proven") { "not-attested" } else { "unknown" }
+    $networkAttestationStatus = if ($networkIsolationStatus -eq "not-proven") { "not-attested" } else { "unknown" }
+    $placementAttestationStatus = if ($placementStatus -eq "same-host-observed") { "not-attested" } elseif ($placementStatus -eq "separate-host-observed") { "observed-not-attested" } else { "unknown" }
+
+    $isolatedLocalRequirements = @(
+        [ordered]@{
+            requirement = "separate-target-and-load-generator-host"
+            status = if ($separateHostObserved) { "satisfied" } else { "blocked" }
+            blocker = if ($separateHostObserved) { $null } else { "same-host-loopback-target-and-load-generator" }
+            upgradeInstruction = "Run the SUT on a separate host, VM, or isolated container host from the load generator and retain both host identities in the run artifacts."
+        },
+        [ordered]@{
+            requirement = "non-loopback-network-path"
+            status = if ($nonLoopbackNetworkObserved) { "satisfied" } else { "blocked" }
+            blocker = if ($nonLoopbackNetworkObserved) { $null } else { "network-isolation-unattested-loopback" }
+            upgradeInstruction = "Use a non-localhost SUT URL and retain endpoint, route, NIC, virtual switch, or container-network metadata showing that traffic did not use loopback or host.docker.internal."
+        },
+        [ordered]@{
+            requirement = "cpu-isolation-or-reservation-attestation"
+            status = if ($cpuAttestationStatus -eq "attested") { "satisfied" } else { "blocked" }
+            blocker = if ($cpuAttestationStatus -eq "attested") { $null } else { "cpu-isolation-unattested-local-process" }
+            upgradeInstruction = "Retain CPU isolation evidence for target and load-generator resources: cpuset/cpus, processor affinity and processor group, VM vCPU reservation, or an operator-attested reserved host policy."
+        },
+        [ordered]@{
+            requirement = "target-resource-telemetry-retained"
+            status = if ($targetMetricsCaptured -gt 0) { "satisfied" } else { "blocked" }
+            blocker = if ($targetMetricsCaptured -gt 0) { $null } else { "target-resource-metrics-missing" }
+            upgradeInstruction = "Retain target process, adapter-derived endpoint, or target container CPU/memory telemetry for every repetition."
+        },
+        [ordered]@{
+            requirement = "load-generator-telemetry-retained"
+            status = if ($loadToolMetricsCaptured -gt 0) { "satisfied" } else { "blocked" }
+            blocker = if ($loadToolMetricsCaptured -gt 0) { $null } else { "load-generator-process-telemetry-unavailable" }
+            upgradeInstruction = "Retain load-generator process or container CPU/memory telemetry for every repetition so saturation can be assessed from artifacts."
+        },
+        [ordered]@{
+            requirement = "isolated-local-evidence-class"
+            status = if ($placementStatus -ne "same-host-observed" -and $nonLoopbackNetworkObserved -and $cpuAttestationStatus -eq "attested") { "satisfied" } else { "blocked" }
+            blocker = if ($placementStatus -ne "same-host-observed" -and $nonLoopbackNetworkObserved -and $cpuAttestationStatus -eq "attested") { $null } else { "evidence-class-remains-local-lab" }
+            upgradeInstruction = "After the topology and attestation gates are satisfied, rerun the readiness proof against the new ProtocolLab run root; keep the evidence class local-lab until those artifacts exist."
+        }
+    )
+
     $isolatedLocalBlockers = @($blockerDetails | ForEach-Object { $_.code } | Sort-Object -Unique)
     return [ordered]@{
         hostClassification = [ordered]@{
@@ -723,6 +977,63 @@ function Get-EnvironmentGateAssessment {
         networkIsolation = [ordered]@{
             status = $networkIsolationStatus
             reasons = @($networkIsolationReasons)
+        }
+        measuredTopology = [ordered]@{
+            hostCpuTopology = [ordered]@{
+                status = if ($null -ne $runProcessorCount) { "measured" } else { "unavailable" }
+                hostName = $runHostName
+                processorCount = $runProcessorCount
+                source = "aggregate-results.metadata"
+                attestationStatus = $cpuAttestationStatus
+            }
+            processPlacement = [ordered]@{
+                status = $placementStatus
+                targetHostIdentity = $targetHostIdentity
+                loadGeneratorHostIdentity = $loadGeneratorHostIdentity
+                targetExecutionMode = $targetExecutionMode
+                loadToolMode = $loadToolMode
+                targetProcessIds = @($targetProcessIds)
+                loadGeneratorProcessIds = @($loadGeneratorProcessIds)
+                separateHostObserved = $separateHostObserved
+                sameProcessNamespaceObserved = $sameProcessNamespace
+                attestationStatus = $placementAttestationStatus
+            }
+            networkPath = [ordered]@{
+                status = $networkPathStatus
+                targetEffectiveBaseUrl = Get-ObjectValue -InputObject $artifactTargetFacts -Name "effectiveBaseUrl"
+                loadGeneratorEffectiveUrl = Get-ObjectValue -InputObject $artifactLoadGeneratorFacts -Name "effectiveUrl"
+                targetEndpointHost = Get-ObjectValue -InputObject $artifactTargetFacts -Name "endpointHost"
+                loadGeneratorUrlHost = Get-ObjectValue -InputObject $artifactLoadGeneratorFacts -Name "urlHost"
+                targetAddressFamily = Get-ObjectValue -InputObject $artifactTargetFacts -Name "addressFamily"
+                loadGeneratorAddressFamily = Get-ObjectValue -InputObject $artifactLoadGeneratorFacts -Name "addressFamily"
+                targetEndpointIsLoopback = $targetEndpointIsLoopback
+                loadGeneratorUrlIsLoopback = $loadToolUrlIsLoopback
+                nonLoopbackNetworkObserved = $nonLoopbackNetworkObserved
+                sourceArtifacts = @((Get-ObjectValue -InputObject $artifactFacts -Name "sourceArtifacts" -Default @()))
+                attestationStatus = $networkAttestationStatus
+            }
+        }
+        attestations = [ordered]@{
+            cpuIsolation = [ordered]@{
+                status = $cpuAttestationStatus
+                distinction = "Host CPU topology can be measured without proving exclusive CPU isolation, affinity, processor-group placement, container CPU limits, or host reservation."
+                requiredEvidence = @("target CPU affinity/cpuset/cpus or VM vCPU reservation", "load-generator CPU affinity/cpuset/cpus or VM vCPU reservation", "operator attestation when bare-metal reservation is used")
+            }
+            networkIsolation = [ordered]@{
+                status = $networkAttestationStatus
+                distinction = "A reachable endpoint and a passing local benchmark do not prove a separated network path when loopback or same-host routing is present."
+                requiredEvidence = @("non-loopback SUT endpoint", "route/NIC/virtual-switch/container-network metadata", "absence of localhost, 127.0.0.1, ::1, and host.docker.internal rewrites")
+            }
+            hostPlacement = [ordered]@{
+                status = $placementAttestationStatus
+                distinction = "Process ids prove local process execution, not separate target/load-generator host placement."
+                requiredEvidence = @("target host identity", "load-generator host identity", "evidence that the identities are different or resources are otherwise isolated")
+            }
+            evidenceClass = [ordered]@{
+                current = Get-ReadinessEvidenceClass -Aggregate $Cell
+                requiredForIsolatedLocal = "isolated-local"
+                status = if ($placementStatus -ne "same-host-observed" -and $nonLoopbackNetworkObserved -and $cpuAttestationStatus -eq "attested") { "satisfied" } else { "blocked" }
+            }
         }
         targetResourceMetrics = [ordered]@{
             status = $targetResourceStatus
@@ -747,6 +1058,7 @@ function Get-EnvironmentGateAssessment {
             blockers = @($isolatedLocalBlockers)
             blockerDetails = @($blockerDetails)
         }
+        isolatedLocalRequirements = @($isolatedLocalRequirements)
     }
 }
 
@@ -780,7 +1092,7 @@ function Read-ProtocolLabRunReadiness {
     $cellReadiness = @()
     foreach ($cell in $aggregates) {
         $evidenceClass = Get-ReadinessEvidenceClass -Aggregate $cell
-        $environmentGates = Get-EnvironmentGateAssessment -Cell $cell
+        $environmentGates = Get-EnvironmentGateAssessment -Cell $cell -RunRoot $resolvedRunRoot -RunMetadata (Get-ObjectValue -InputObject $aggregate -Name "metadata")
         $qualityGate = Get-QualityGate `
             -Aggregate $cell `
             -MinimumPublishableRepetitions $MinimumPublishableRepetitions `
@@ -1062,6 +1374,16 @@ $performanceCommands = @(
 
 $publishableRunbook = [ordered]@{
     localRepeatabilityCommand = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $protocolLabBenchmarkRoot -Suite quic-transport-v1-comparison -Implementations incursa-raw-quic-adapter-v1 -Scenarios quic.transport.multiplex.100x64kb -DurationSeconds 15 -WarmupSeconds 5 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -RunIdPrefix quic-local-repeat"
+    isolatedLocalCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite quic-transport-v1-comparison -ImplementationIds <isolated-local-implementation-id> -ScenarioIds quic.transport.multiplex.100x64kb -Protocol quic -LoadProfileId local-comparison -RunIdPrefix quic-isolated-local-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <non-loopback-sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
+    readinessProofCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabReadinessEvidence.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ProtocolLabRunRoot <new-isolated-local-run-root> -RunId protocol-lab-readiness-isolated-local-<yyyymmddTHHmmssZ> -SkipPackageBuild"
+    isolatedLocalUpgradeRequirements = @(
+        "run the SUT and load generator on separate hosts, VMs, or isolated container hosts and retain both host identities",
+        "use a non-loopback SUT endpoint; do not use localhost, 127.0.0.1, ::1, or host.docker.internal",
+        "retain CPU isolation or reservation evidence for both sides: cpuset/cpus, processor affinity and processor group, VM vCPU reservation, or an operator-attested reserved-host policy",
+        "retain target resource telemetry for every repetition, either direct process/container metrics or adapter-derived endpoint metrics when direct sampling is impossible",
+        "retain load-generator process/container telemetry for every repetition and record saturation warnings",
+        "rerun New-QuicProtocolLabReadinessEvidence.ps1 against the new run root; keep the evidence class local-lab until these artifacts are present"
+    )
     externalReferenceCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite quic-transport-v1-comparison -ImplementationIds <publishable-implementation-id> -ScenarioIds quic.transport.multiplex.100x64kb -Protocol quic -LoadProfileId local-comparison -RunIdPrefix quic-publishable-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
     prerequisites = @(
         "separate SUT and load-generator hosts or equivalent isolated resources; no localhost or same-host client/server execution",
@@ -1258,10 +1580,17 @@ foreach ($runEvidence in @($protocolLabRunEvidence)) {
         Add-Line $summary "    - Host classification: ``$($cell.environmentGates.hostClassification.status)``"
         Add-Line $summary "    - CPU isolation: ``$($cell.environmentGates.cpuIsolation.status)``"
         Add-Line $summary "    - Network isolation: ``$($cell.environmentGates.networkIsolation.status)``"
+        Add-Line $summary "    - Measured CPU topology: host ``$($cell.environmentGates.measuredTopology.hostCpuTopology.hostName)``, processors ``$($cell.environmentGates.measuredTopology.hostCpuTopology.processorCount)``, attestation ``$($cell.environmentGates.measuredTopology.hostCpuTopology.attestationStatus)``"
+        Add-Line $summary "    - Placement topology: ``$($cell.environmentGates.measuredTopology.processPlacement.status)``; target host ``$($cell.environmentGates.measuredTopology.processPlacement.targetHostIdentity)``; load-generator host ``$($cell.environmentGates.measuredTopology.processPlacement.loadGeneratorHostIdentity)``"
+        Add-Line $summary "    - Network topology: ``$($cell.environmentGates.measuredTopology.networkPath.status)``; target host ``$($cell.environmentGates.measuredTopology.networkPath.targetEndpointHost)`` (``$($cell.environmentGates.measuredTopology.networkPath.targetAddressFamily)``); load-generator URL host ``$($cell.environmentGates.measuredTopology.networkPath.loadGeneratorUrlHost)``"
         Add-Line $summary "    - Target resource metrics: ``$($cell.environmentGates.targetResourceMetrics.status)`` (captured ``$($cell.environmentGates.targetResourceMetrics.capturedCount)``, missing ``$($cell.environmentGates.targetResourceMetrics.missingCount)``)"
         Add-Line $summary "    - Load-generator saturation: ``$($cell.environmentGates.loadGeneratorSaturation.status)``"
+        Add-Line $summary "    - Attestation gates: CPU ``$($cell.environmentGates.attestations.cpuIsolation.status)``, network ``$($cell.environmentGates.attestations.networkIsolation.status)``, placement ``$($cell.environmentGates.attestations.hostPlacement.status)``"
         if (@($cell.environmentGates.isolatedLocalGate.blockers).Count -gt 0) {
             Add-Line $summary "    - Isolated-local blockers: ``$(@($cell.environmentGates.isolatedLocalGate.blockers) -join ', ')``"
+        }
+        foreach ($requirement in @($cell.environmentGates.isolatedLocalRequirements)) {
+            Add-Line $summary "      - ``$($requirement.requirement)``: ``$($requirement.status)``; $($requirement.upgradeInstruction)"
         }
     }
 }
@@ -1288,6 +1617,26 @@ Add-Line $summary ""
 Add-Line $summary '```powershell'
 Add-Line $summary $publishableRunbook.localRepeatabilityCommand
 Add-Line $summary '```'
+Add-Line $summary ""
+Add-Line $summary "## Isolated-Local Upgrade Runbook"
+Add-Line $summary ""
+Add-Line $summary "Isolated-local command template:"
+Add-Line $summary ""
+Add-Line $summary '```powershell'
+Add-Line $summary $publishableRunbook.isolatedLocalCommandTemplate
+Add-Line $summary '```'
+Add-Line $summary ""
+Add-Line $summary "Rerun readiness proof after collecting the new ProtocolLab run:"
+Add-Line $summary ""
+Add-Line $summary '```powershell'
+Add-Line $summary $publishableRunbook.readinessProofCommandTemplate
+Add-Line $summary '```'
+Add-Line $summary ""
+Add-Line $summary "Upgrade requirements:"
+foreach ($requirement in @($publishableRunbook.isolatedLocalUpgradeRequirements)) {
+    Add-Line $summary "- $requirement."
+}
+
 Add-Line $summary ""
 Add-Line $summary "External-reference command template:"
 Add-Line $summary ""

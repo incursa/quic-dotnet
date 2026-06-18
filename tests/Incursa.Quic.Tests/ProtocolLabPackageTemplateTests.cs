@@ -343,8 +343,16 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("PublishableMaxRelativeRange", script);
         Assert.Contains("checksumInventory", script);
         Assert.Contains("publishableRunbook", script);
+        Assert.Contains("isolatedLocalUpgradeRequirements", script);
+        Assert.Contains("readinessProofCommandTemplate", script);
         Assert.Contains("repeat-count-below-publishable-minimum", script);
         Assert.Contains("environmentGates", script);
+        Assert.Contains("measuredTopology", script);
+        Assert.Contains("attestations", script);
+        Assert.Contains("isolatedLocalRequirements", script);
+        Assert.Contains("separate-target-and-load-generator-host", script);
+        Assert.Contains("non-loopback-network-path", script);
+        Assert.Contains("cpu-isolation-or-reservation-attestation", script);
         Assert.Contains("same-host-loopback-target-and-load-generator", script);
         Assert.Contains("cpu-isolation-unattested-local-process", script);
         Assert.Contains("network-isolation-unattested-loopback", script);
@@ -512,6 +520,52 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.Equal("process-telemetry-captured", gates.GetProperty("loadGeneratorSaturation").GetProperty("status").GetString());
             Assert.Equal(3, gates.GetProperty("loadGeneratorSaturation").GetProperty("processMetricsCapturedCount").GetInt32());
             Assert.Equal("blocked", gates.GetProperty("isolatedLocalGate").GetProperty("status").GetString());
+
+            var measuredTopology = gates.GetProperty("measuredTopology");
+            Assert.Equal("measured", measuredTopology.GetProperty("hostCpuTopology").GetProperty("status").GetString());
+            Assert.Equal("test-host", measuredTopology.GetProperty("hostCpuTopology").GetProperty("hostName").GetString());
+            Assert.Equal(8, measuredTopology.GetProperty("hostCpuTopology").GetProperty("processorCount").GetInt32());
+            Assert.Equal("not-attested", measuredTopology.GetProperty("hostCpuTopology").GetProperty("attestationStatus").GetString());
+            Assert.Equal("same-host-observed", measuredTopology.GetProperty("processPlacement").GetProperty("status").GetString());
+            Assert.False(measuredTopology.GetProperty("processPlacement").GetProperty("separateHostObserved").GetBoolean());
+            Assert.True(measuredTopology.GetProperty("processPlacement").GetProperty("sameProcessNamespaceObserved").GetBoolean());
+            Assert.Equal("loopback-observed", measuredTopology.GetProperty("networkPath").GetProperty("status").GetString());
+
+            var attestations = gates.GetProperty("attestations");
+            Assert.Equal("not-attested", attestations.GetProperty("cpuIsolation").GetProperty("status").GetString());
+            Assert.Equal("not-attested", attestations.GetProperty("networkIsolation").GetProperty("status").GetString());
+            Assert.Equal("not-attested", attestations.GetProperty("hostPlacement").GetProperty("status").GetString());
+            Assert.Equal("local-lab", attestations.GetProperty("evidenceClass").GetProperty("current").GetString());
+            Assert.Equal("isolated-local", attestations.GetProperty("evidenceClass").GetProperty("requiredForIsolatedLocal").GetString());
+
+            var requirements = gates.GetProperty("isolatedLocalRequirements").EnumerateArray().ToArray();
+            Assert.Contains(requirements, requirement =>
+                requirement.GetProperty("requirement").GetString() == "separate-target-and-load-generator-host" &&
+                requirement.GetProperty("status").GetString() == "blocked");
+            Assert.Contains(requirements, requirement =>
+                requirement.GetProperty("requirement").GetString() == "non-loopback-network-path" &&
+                requirement.GetProperty("blocker").GetString() == "network-isolation-unattested-loopback");
+            Assert.Contains(requirements, requirement =>
+                requirement.GetProperty("requirement").GetString() == "cpu-isolation-or-reservation-attestation" &&
+                requirement.GetProperty("blocker").GetString() == "cpu-isolation-unattested-local-process");
+            Assert.Contains(requirements, requirement =>
+                requirement.GetProperty("requirement").GetString() == "target-resource-telemetry-retained" &&
+                requirement.GetProperty("status").GetString() == "blocked");
+            Assert.Contains(requirements, requirement =>
+                requirement.GetProperty("requirement").GetString() == "load-generator-telemetry-retained" &&
+                requirement.GetProperty("status").GetString() == "satisfied");
+
+            var runbook = root.GetProperty("publishableRunbook");
+            Assert.Contains("TargetMode external", runbook.GetProperty("isolatedLocalCommandTemplate").GetString());
+            Assert.Contains("New-QuicProtocolLabReadinessEvidence.ps1", runbook.GetProperty("readinessProofCommandTemplate").GetString());
+            Assert.Contains(
+                runbook.GetProperty("isolatedLocalUpgradeRequirements").EnumerateArray(),
+                requirement => requirement.GetString()!.Contains("non-loopback SUT endpoint", StringComparison.Ordinal));
+
+            var generatedReadme = File.ReadAllText(Path.Combine(outputRoot, "test-readiness", "README.md"));
+            Assert.Contains("## Isolated-Local Upgrade Runbook", generatedReadme);
+            Assert.Contains("separate-target-and-load-generator-host", generatedReadme);
+            Assert.Contains("Rerun readiness proof", generatedReadme);
         }
         finally
         {
