@@ -12,6 +12,7 @@ namespace Incursa.Quic.Http3;
 public static class Http3WebSocketCloseFrameParser
 {
     private const int CloseStatusCodeLength = 2;
+    private const int MaxClosePayloadLength = 125;
     private const ushort MinimumValidCloseStatusCode = 1000;
     private const ushort MaximumValidCloseStatusCode = 4999;
     private const ushort ReservedNoStatusReceived = 1005;
@@ -70,6 +71,37 @@ public static class Http3WebSocketCloseFrameParser
             _ = exception.Message;
             throw new Http3Exception(Http3ErrorCode.MessageError, "A WebSocket close reason carried invalid UTF-8.");
         }
+    }
+
+    /// <summary>
+    /// Formats a WebSocket close payload from an optional status code and reason.
+    /// </summary>
+    public static byte[] FormatPayload(ushort? statusCode, string? reason)
+    {
+        if (statusCode is null)
+        {
+            if (!string.IsNullOrEmpty(reason))
+            {
+                throw new ArgumentException("A WebSocket close reason requires a close status code.", nameof(reason));
+            }
+
+            return [];
+        }
+
+        byte[] reasonBytes = string.IsNullOrEmpty(reason)
+            ? []
+            : StrictUtf8.GetBytes(reason);
+        int payloadLength = CloseStatusCodeLength + reasonBytes.Length;
+        if (payloadLength > MaxClosePayloadLength)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reason), "A WebSocket close payload cannot exceed 125 bytes.");
+        }
+
+        byte[] payload = new byte[payloadLength];
+        BinaryPrimitives.WriteUInt16BigEndian(payload, statusCode.Value);
+        reasonBytes.CopyTo(payload.AsSpan(CloseStatusCodeLength));
+        _ = ParsePayload(payload);
+        return payload;
     }
 
     private static bool IsValidCloseStatusCode(ushort statusCode)

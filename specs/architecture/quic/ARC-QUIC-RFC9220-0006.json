@@ -1,0 +1,40 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0006",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Application Close Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define the accepted WebSocket tunnel helper boundary for application-selected close frames and orderly write completion.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0002",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0004",
+    "WI-QUIC-RFC9220-0006",
+    "VER-QUIC-RFC9220-0006"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0020"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketCloseFrameParser.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketFrameWriter.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs"
+  ],
+  "design_summary": "`Http3WebSocketTunnelContext.CloseAsync` lets an accepted RFC 9220 tunnel handler select a valid WebSocket close status code and optional UTF-8 reason, format the close payload, write an unmasked close control frame, and complete the writable side of the stream. Close payload formatting is centralized beside parsing so invalid transmitted status codes, missing status codes for reasons, and oversized control payloads fail before bytes are written.",
+  "data_and_state_considerations": "The helper does not introduce connection-level state. It writes one WebSocket close control frame on the existing tunnel stream and then completes writes, leaving read-side lifecycle and higher-level close-code mapping to the application handler.",
+  "edge_cases_and_constraints": [
+    "A close reason requires a transmitted close status code.",
+    "Close payloads remain subject to the WebSocket control-frame 125-byte limit.",
+    "The helper writes an unmasked server frame and completes the writable side with FIN.",
+    "The slice does not map arbitrary handler exceptions to close codes."
+  ],
+  "risks": [
+    "Application callers can overread this helper as a full WebSocket API if the explicit handler-owned boundary is not maintained.",
+    "Live external WebSocket-over-H3 peer proof remains future work."
+  ]
+}

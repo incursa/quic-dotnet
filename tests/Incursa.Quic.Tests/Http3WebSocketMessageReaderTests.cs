@@ -294,6 +294,44 @@ public sealed class Http3WebSocketMessageReaderTests
         Assert.Null(status.Reason);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0020")]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void CloseFrameParser_FormatsStatusCodeAndReason()
+    {
+        byte[] payload = Http3WebSocketCloseFrameParser.FormatPayload(1003, "unsupported");
+
+        Assert.Equal([0x03, 0xEB, .. Encoding.UTF8.GetBytes("unsupported")], payload);
+        Http3WebSocketCloseStatus status = Http3WebSocketCloseFrameParser.ParsePayload(payload);
+        Assert.Equal((ushort)1003, status.StatusCode);
+        Assert.Equal("unsupported", status.Reason);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0020")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CloseFrameParser_RejectsReasonWithoutStatusCode()
+    {
+        ArgumentException exception = Assert.Throws<ArgumentException>(
+            () => Http3WebSocketCloseFrameParser.FormatPayload(null, "unsupported"));
+
+        Assert.Contains("requires a close status code", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0020")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public void CloseFrameParser_RejectsInvalidFormattedStatusCode()
+    {
+        Http3Exception exception = Assert.Throws<Http3Exception>(
+            () => Http3WebSocketCloseFrameParser.FormatPayload(1005, null));
+
+        Assert.Equal(Http3ErrorCode.MessageError, exception.ErrorCode);
+    }
+
     [Theory]
     [Requirement("REQ-QUIC-RFC9220-0016")]
     [CoverageType(RequirementCoverageType.Negative)]

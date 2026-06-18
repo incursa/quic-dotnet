@@ -13,16 +13,19 @@
     "ARC-QUIC-RFC9220-0003",
     "ARC-QUIC-RFC9220-0004",
     "ARC-QUIC-RFC9220-0005",
+    "ARC-QUIC-RFC9220-0006",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
     "WI-QUIC-RFC9220-0004",
     "WI-QUIC-RFC9220-0005",
+    "WI-QUIC-RFC9220-0006",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
     "VER-QUIC-RFC9220-0004",
-    "VER-QUIC-RFC9220-0005"
+    "VER-QUIC-RFC9220-0005",
+    "VER-QUIC-RFC9220-0006"
   ],
   "requirements": [
     {
@@ -506,6 +509,36 @@
       },
       "notes": [
         "This slice covers the accepted server tunnel helper path for ping-to-pong responses and continued tunnel use. Automatic keepalive scheduling and external WebSocket-over-H3 peer proof remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0020",
+      "title": "Write application-selected WebSocket close frames on accepted tunnels",
+      "statement": "The HTTP/3 server WebSocket tunnel context MUST let application handlers write an unmasked close control frame with an application-selected valid close status and optional UTF-8 reason before completing the writable side of the stream with FIN.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.1",
+          "RFC 6455 section 7.4",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.1",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ApplicationClose_WritesCloseAndCompletesWrites",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::CloseFrameParser_FormatsStatusCodeAndReason",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::CloseFrameParser_RejectsReasonWithoutStatusCode",
+          "tests/Incursa.Quic.Tests/Http3WebSocketMessageReaderTests.cs::CloseFrameParser_RejectsInvalidFormattedStatusCode"
+        ]
+      },
+      "notes": [
+        "This slice covers the accepted server tunnel helper path for explicit application close frames and orderly write completion. Automatic close-code mapping for handler exceptions, TCP socket forwarding, keepalive scheduling, and external WebSocket-over-H3 peer proof remain separate work."
       ]
     }
   ]

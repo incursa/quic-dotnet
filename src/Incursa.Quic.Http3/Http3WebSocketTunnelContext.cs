@@ -114,4 +114,14 @@ public sealed class Http3WebSocketTunnelContext
         await WriteMessageAsync(Http3WebSocketOpcode.Close, closeMessage.Payload, cancellationToken).ConfigureAwait(false);
         await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Writes an application-selected close frame and completes the writable side of the tunnel stream.
+    /// </summary>
+    public async ValueTask CloseAsync(ushort? statusCode = null, string? reason = null, CancellationToken cancellationToken = default)
+    {
+        byte[] payload = Http3WebSocketCloseFrameParser.FormatPayload(statusCode, reason);
+        await WriteMessageAsync(Http3WebSocketOpcode.Close, payload, cancellationToken).ConfigureAwait(false);
+        await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+    }
 }
