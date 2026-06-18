@@ -29,4 +29,9 @@ public sealed class Http3ServerOptions
     /// Gets or sets an optional handler for accepted RFC 9220 WebSocket Extended CONNECT tunnels.
     /// </summary>
     public IHttp3WebSocketHandler? WebSocketHandler { get; set; }
+
+    /// <summary>
+    /// Gets or sets the optional interval for automatic server WebSocket ping frames on accepted tunnels.
+    /// </summary>
+    public TimeSpan? WebSocketKeepAliveInterval { get; set; }
 }

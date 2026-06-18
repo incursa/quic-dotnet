@@ -51,6 +51,7 @@ public sealed class Http3Server : IAsyncDisposable
     private readonly int readBufferSize;
     private readonly IHttp3DiagnosticsSink? diagnosticsSink;
     private readonly IHttp3WebSocketHandler? webSocketHandler;
+    private readonly TimeSpan? webSocketKeepAliveInterval;
     // CONTEXT: Server shutdown ownership
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#ServeAsync
     // SEE: code:src/Incursa.Quic.Http3/Http3Server.cs#HandleConnectionAsync
@@ -72,6 +73,12 @@ public sealed class Http3Server : IAsyncDisposable
             : throw new ArgumentOutOfRangeException(nameof(options), "The HTTP/3 read buffer size must be positive.");
         diagnosticsSink = options.DiagnosticsSink;
         webSocketHandler = options.WebSocketHandler;
+        if (options.WebSocketKeepAliveInterval is { } keepAliveInterval && keepAliveInterval <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), "The WebSocket keepalive interval must be positive when configured.");
+        }
+
+        webSocketKeepAliveInterval = options.WebSocketKeepAliveInterval;
     }
 
     /// <summary>
@@ -535,8 +542,16 @@ public sealed class Http3Server : IAsyncDisposable
                     Http3ServerResponse acceptedResponse = new(200, ReadOnlyMemory<byte>.Empty);
                     await WriteTunnelResponseHeadersAsync(stream, acceptedResponse, cancellationToken).ConfigureAwait(false);
                     Http3WebSocketTunnelContext tunnelContext = new(request, stream);
+                    CancellationTokenSource? keepAliveCancellation = null;
+                    Task? keepAliveTask = null;
                     try
                     {
+                        if (webSocketKeepAliveInterval is { } keepAliveInterval)
+                        {
+                            keepAliveCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                            keepAliveTask = RunWebSocketKeepAliveAsync(tunnelContext, keepAliveInterval, keepAliveCancellation.Token);
+                        }
+
                         await tunnelHandler!.HandleAsync(tunnelContext, cancellationToken).ConfigureAwait(false);
                     }
                     catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -549,10 +564,17 @@ public sealed class Http3Server : IAsyncDisposable
                     }
                     catch (Exception exception)
                     {
+                        await StopWebSocketKeepAliveAsync(keepAliveCancellation, keepAliveTask).ConfigureAwait(false);
+                        keepAliveCancellation = null;
+                        keepAliveTask = null;
                         Http3Metrics.RecordRequestFailed("server", "websocket", requestStartedTimestamp);
                         EmitError(exception);
                         await TryCloseWebSocketTunnelAsync(tunnelContext, WebSocketInternalErrorCloseStatusCode, "internal error", cancellationToken).ConfigureAwait(false);
                         return;
+                    }
+                    finally
+                    {
+                        await StopWebSocketKeepAliveAsync(keepAliveCancellation, keepAliveTask).ConfigureAwait(false);
                     }
 
                     Http3Metrics.RecordRequestCompleted("server", acceptedResponse.StatusCode, requestStartedTimestamp);
@@ -867,6 +889,57 @@ public sealed class Http3Server : IAsyncDisposable
         catch (ObjectDisposedException exception)
         {
             SuppressExpectedException(exception);
+        }
+    }
+
+    private async Task RunWebSocketKeepAliveAsync(
+        Http3WebSocketTunnelContext tunnelContext,
+        TimeSpan interval,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (true)
+            {
+                await Task.Delay(interval, cancellationToken).ConfigureAwait(false);
+                await tunnelContext.PingAsync(ReadOnlyMemory<byte>.Empty, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (QuicException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (ObjectDisposedException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (Exception exception)
+        {
+            EmitError(exception);
+        }
+    }
+
+    private static async ValueTask StopWebSocketKeepAliveAsync(
+        CancellationTokenSource? cancellation,
+        Task? keepAliveTask)
+    {
+        if (cancellation is null || keepAliveTask is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await cancellation.CancelAsync().ConfigureAwait(false);
+            await keepAliveTask.ConfigureAwait(false);
+        }
+        finally
+        {
+            cancellation.Dispose();
         }
     }
 

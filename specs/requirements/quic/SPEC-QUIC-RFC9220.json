@@ -17,6 +17,7 @@
     "ARC-QUIC-RFC9220-0007",
     "ARC-QUIC-RFC9220-0008",
     "ARC-QUIC-RFC9220-0009",
+    "ARC-QUIC-RFC9220-0010",
     "WI-QUIC-RFC9220-0001",
     "WI-QUIC-RFC9220-0002",
     "WI-QUIC-RFC9220-0003",
@@ -26,6 +27,7 @@
     "WI-QUIC-RFC9220-0007",
     "WI-QUIC-RFC9220-0008",
     "WI-QUIC-RFC9220-0009",
+    "WI-QUIC-RFC9220-0010",
     "VER-QUIC-RFC9220-0001",
     "VER-QUIC-RFC9220-0002",
     "VER-QUIC-RFC9220-0003",
@@ -34,7 +36,8 @@
     "VER-QUIC-RFC9220-0006",
     "VER-QUIC-RFC9220-0007",
     "VER-QUIC-RFC9220-0008",
-    "VER-QUIC-RFC9220-0009"
+    "VER-QUIC-RFC9220-0009",
+    "VER-QUIC-RFC9220-0010"
   ],
   "requirements": [
     {
@@ -632,6 +635,34 @@
       },
       "notes": [
         "This slice covers framework-level mapping for unexpected application handler exceptions after the WebSocket tunnel has already been accepted. TCP socket forwarding, automatic keepalive scheduling, external WebSocket-over-H3 peer proof, and application-specific exception-to-close-code policy remain separate work."
+      ]
+    },
+    {
+      "id": "REQ-QUIC-RFC9220-0024",
+      "title": "Send configured WebSocket keepalive pings on accepted tunnels",
+      "statement": "The HTTP/3 server MUST send automatic unmasked WebSocket ping control frames on accepted RFC 9220 tunnels when a positive keepalive interval is configured, without blocking subsequent application tunnel data.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "upstream_refs": [
+          "RFC 9220 section 3",
+          "RFC 6455 section 5.5.2",
+          "RFC 6455 section 5.5.3",
+          "https://www.rfc-editor.org/rfc/rfc9220.html#section-3",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.2",
+          "https://www.rfc-editor.org/rfc/rfc6455.html#section-5.5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong"
+        ]
+      },
+      "notes": [
+        "This slice covers the opt-in server keepalive scheduler for accepted tunnels. TCP socket forwarding, external WebSocket-over-H3 peer proof, and richer application-specific keepalive policy remain separate work."
       ]
     }
   ]

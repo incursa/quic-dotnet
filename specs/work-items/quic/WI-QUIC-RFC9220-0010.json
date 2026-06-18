@@ -1,0 +1,33 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0010",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Keepalive Scheduler Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0010",
+    "VER-QUIC-RFC9220-0010"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0024"
+  ],
+  "summary": "Add an opt-in HTTP/3 server WebSocket keepalive interval that sends ping frames without blocking later tunnel data.",
+  "planned_changes": "- Add `Http3ServerOptions.WebSocketKeepAliveInterval` with positive-interval validation.\n- Start and stop a per-tunnel keepalive task for accepted WebSocket tunnels.\n- Serialize WebSocket tunnel writes so keepalive, application writes, and close frames cannot interleave.\n- Add a loopback server test that observes a configured keepalive ping, sends a pong, and verifies later data still echoes.",
+  "verification_plan": "Run the focused HTTP/3 minimal server WebSocket keepalive test, adjacent WebSocket regression tests, core SpecTrace validation, regenerated QUIC requirement triage, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0010"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0010"
+  ],
+  "out_of_scope": [
+    "TCP socket forwarding.",
+    "External live peer proof.",
+    "Application-specific keepalive payload policy.",
+    "QUIC transport runtime, ACK, recovery, pacing, or packet-protection changes."
+  ],
+  "completion_notes": "Accepted WebSocket tunnels can now opt into automatic server ping frames, with serialized writes preserving later tunnel data."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T10:02:24.7440250-06:00",
+  "generated_at": "2026-06-18T10:09:51.8815856-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,13 +34,13 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T10:02:24.7410324-06:00",
-    "total_requirements": 2666,
+    "generated_at": "2026-06-18T10:09:51.8787485-06:00",
+    "total_requirements": 2667,
     "by_state": {
-      "trace_clean": 2666
+      "trace_clean": 2667
     },
     "by_work_queue_tag": {
-      "clean": 2666
+      "clean": 2667
     },
     "by_rfc": [
       {
@@ -87,9 +87,9 @@
       },
       {
         "rfc": "RFC9220",
-        "total": 23,
+        "total": 24,
         "by_state": {
-          "trace_clean": 23
+          "trace_clean": 24
         }
       },
       {
@@ -311556,7 +311556,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 902,
+          "line": 960,
           "kinds": [
             "positive"
           ],
@@ -311578,7 +311578,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 902,
+          "line": 960,
           "kinds": [
             "positive"
           ],
@@ -314697,7 +314697,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1100,
+          "line": 1158,
           "kinds": [
             "edge"
           ],
@@ -314719,7 +314719,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1100,
+          "line": 1158,
           "kinds": [
             "edge"
           ],
@@ -314961,7 +314961,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 902,
+          "line": 960,
           "kinds": [
             "positive"
           ],
@@ -315283,7 +315283,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 821,
+          "line": 879,
           "kinds": [
             "negative"
           ],
@@ -315305,7 +315305,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 821,
+          "line": 879,
           "kinds": [
             "negative"
           ],
@@ -315327,7 +315327,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 783,
+          "line": 841,
           "kinds": [
             "positive"
           ],
@@ -315349,7 +315349,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 783,
+          "line": 841,
           "kinds": [
             "positive"
           ],
@@ -320613,7 +320613,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 541,
+          "line": 599,
           "kinds": [
             "negative"
           ],
@@ -320635,7 +320635,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
           "method": "UnsupportedExtendedConnect_WithWebSocketHandler_Returns501WithoutDispatch",
-          "line": 541,
+          "line": 599,
           "kinds": [
             "negative"
           ],
@@ -321423,7 +321423,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 502,
+          "line": 560,
           "kinds": [
             "negative"
           ],
@@ -321445,7 +321445,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
           "method": "WebSocketExtendedConnect_HandlerException_WritesInternalErrorClose",
-          "line": 502,
+          "line": 560,
           "kinds": [
             "negative"
           ],
@@ -321457,6 +321457,115 @@
             "REQ-QUIC-RFC9220-0023"
           ],
           "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-QUIC-RFC9220-0024",
+      "artifact_id": "SPEC-QUIC-RFC9220",
+      "rfc": "RFC9220",
+      "section_prefix": "unsectioned",
+      "title": "Send configured WebSocket keepalive pings on accepted tunnels",
+      "statement": "The HTTP/3 server MUST send automatic unmasked WebSocket ping control frames on accepted RFC 9220 tunnels when a positive keepalive interval is configured, without blocking subsequent application tunnel data.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+        "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 3,
+        "focused": 3,
+        "broad": 0,
+        "by_kind": {
+          "positive": 3,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0024",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "method": "WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "line": 502,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0024"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0024",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "method": "WebSocketExtendedConnect_ConfiguredKeepAlive_PingsWithoutBlockingTunnelData",
+          "line": 502,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0024"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9220-0024",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong",
+          "method": "WebSocketExtendedConnect_ServerPing_PreservesTunnelAfterPong",
+          "line": 450,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9220-0022"
+          ],
+          "requirement_tagged": false,
           "class_level_only": false
         }
       ]

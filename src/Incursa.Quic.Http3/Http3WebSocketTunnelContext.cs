@@ -13,6 +13,7 @@ public sealed class Http3WebSocketTunnelContext
 
     private readonly Http3WebSocketMessageReader reader = new(Http3EndpointRole.Server);
     private readonly Queue<Http3WebSocketMessage> pendingMessages = [];
+    private readonly SemaphoreSlim writeGate = new(1, 1);
     private readonly byte[] readBuffer;
 
     /// <summary>
@@ -105,6 +106,22 @@ public sealed class Http3WebSocketTunnelContext
         ReadOnlyMemory<byte> payload,
         CancellationToken cancellationToken = default)
     {
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await WriteMessageCoreAsync(opcode, payload, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
+    }
+
+    private async ValueTask WriteMessageCoreAsync(
+        Http3WebSocketOpcode opcode,
+        ReadOnlyMemory<byte> payload,
+        CancellationToken cancellationToken)
+    {
         byte[] frame = Http3WebSocketFrameWriter.WriteUnmasked(opcode, payload.Span);
         await Stream.WriteAsync(frame, 0, frame.Length, cancellationToken).ConfigureAwait(false);
     }
@@ -138,8 +155,16 @@ public sealed class Http3WebSocketTunnelContext
     {
         ArgumentNullException.ThrowIfNull(closeMessage);
         _ = Http3WebSocketCloseFrameParser.Parse(closeMessage);
-        await WriteMessageAsync(Http3WebSocketOpcode.Close, closeMessage.Payload, cancellationToken).ConfigureAwait(false);
-        await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await WriteMessageCoreAsync(Http3WebSocketOpcode.Close, closeMessage.Payload, cancellationToken).ConfigureAwait(false);
+            await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
     }
 
     /// <summary>
@@ -148,7 +173,15 @@ public sealed class Http3WebSocketTunnelContext
     public async ValueTask CloseAsync(ushort? statusCode = null, string? reason = null, CancellationToken cancellationToken = default)
     {
         byte[] payload = Http3WebSocketCloseFrameParser.FormatPayload(statusCode, reason);
-        await WriteMessageAsync(Http3WebSocketOpcode.Close, payload, cancellationToken).ConfigureAwait(false);
-        await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+        await writeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await WriteMessageCoreAsync(Http3WebSocketOpcode.Close, payload, cancellationToken).ConfigureAwait(false);
+            await Stream.CompleteWritesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            writeGate.Release();
+        }
     }
 }
