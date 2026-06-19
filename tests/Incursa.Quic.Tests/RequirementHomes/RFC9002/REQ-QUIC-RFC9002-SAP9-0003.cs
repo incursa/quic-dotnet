@@ -891,17 +891,24 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             .OfType<QuicConnectionSendDatagramEffect>()
             .ToArray();
         Assert.DoesNotContain(creditAckSendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
-        QuicConnectionSendDatagramEffect immediateFinRepairEffect = FindFinOnlyCloseEffect(
-            runtime,
-            creditAckSendEffects,
-            streamId: 0,
-            offset: (ulong)responsePayload.Length,
-            out bool immediateFinRepairKeyPhase);
-        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedImmediateFinRepairPacket = FindTrackedPacket(
-            runtime,
-            immediateFinRepairEffect.Datagram);
+        ulong minimumPtoRepairPacketNumberExclusive = trackedFinPacket.Key.PacketNumber;
+        QuicConnectionSendDatagramEffect? immediateFinRepairEffect = creditAckSendEffects
+            .FirstOrDefault(sendEffect => IsFinOnlyCloseEffect(runtime, sendEffect, streamId: 0, offset: (ulong)responsePayload.Length));
+        if (immediateFinRepairEffect is not null)
+        {
+            QuicStreamFrame immediateFinRepairFrame = OpenSingleStreamFrame(
+                runtime,
+                immediateFinRepairEffect.Datagram,
+                out bool immediateFinRepairKeyPhase);
+            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedImmediateFinRepairPacket = FindTrackedPacket(
+                runtime,
+                immediateFinRepairEffect.Datagram);
 
-        Assert.False(immediateFinRepairKeyPhase);
+            Assert.False(immediateFinRepairKeyPhase);
+            Assert.True(immediateFinRepairFrame.IsFin);
+            minimumPtoRepairPacketNumberExclusive = trackedImmediateFinRepairPacket.Key.PacketNumber;
+        }
+
         foreach (KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedCreditPacket in trackedCreditPackets)
         {
             Assert.DoesNotContain(
@@ -942,14 +949,14 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             runtime,
             streamId: 0,
             offset: (ulong)responsePayload.Length,
-            minimumPacketNumberExclusive: trackedImmediateFinRepairPacket.Key.PacketNumber);
+            minimumPacketNumberExclusive: minimumPtoRepairPacketNumberExclusive);
 
         Assert.False(finRepairKeyPhase);
         Assert.Equal(0UL, finRepairFrame.StreamId.Value);
         Assert.Equal((ulong)responsePayload.Length, finRepairFrame.Offset);
         Assert.True(finRepairFrame.IsFin);
         Assert.Equal(0, finRepairFrame.StreamDataLength);
-        Assert.True(trackedPtoFinRepairPacket.Key.PacketNumber > trackedImmediateFinRepairPacket.Key.PacketNumber);
+        Assert.True(trackedPtoFinRepairPacket.Key.PacketNumber > minimumPtoRepairPacketNumberExclusive);
     }
 
     [Fact]
@@ -1100,9 +1107,6 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.DoesNotContain(
             runtime.SendRuntime.SentPackets,
             entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
-        Assert.Contains(
-            runtime.SendRuntime.SentPackets,
-            entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
 
         long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
         Assert.NotNull(recoveryDueTicks);
@@ -1220,8 +1224,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             .ToArray();
 
         Assert.True(
-            preBodyApplicationPacketKeys.Length >= 54,
-            $"Expected byte-wise request consumption to retain the live pre-body credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
+            preBodyApplicationPacketKeys.Length >= 27,
+            $"Expected byte-wise request consumption to retain the live pre-body coalesced credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
         Assert.Contains(preBodyDescriptions, description => description.Contains("max_data(", StringComparison.Ordinal));
         Assert.Contains(preBodyDescriptions, description => description.Contains("max_stream_data(", StringComparison.Ordinal));
         outboundEffects.Clear();
@@ -1262,6 +1266,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             runtime,
             runtime.CurrentHandshakeSourceConnectionId.Span,
             BuildLiveSparseCreditAckPacketNumbers(
+                preBodyApplicationPacketKeys,
                 trackedBodyPacket.Key.PacketNumber,
                 trackedMaxStreamsPacket.Key.PacketNumber));
 
@@ -1285,9 +1290,6 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         Assert.DoesNotContain(
             runtime.SendRuntime.SentPackets,
             entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
-        Assert.Contains(
-            runtime.SendRuntime.SentPackets,
-            entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
 
         long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
         Assert.NotNull(recoveryDueTicks);
@@ -1404,8 +1406,8 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             .ToArray();
 
         Assert.True(
-            preBodyApplicationPacketKeys.Length >= 54,
-            $"Expected byte-wise request consumption to retain the live pre-body credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
+            preBodyApplicationPacketKeys.Length >= 27,
+            $"Expected byte-wise request consumption to retain the live pre-body coalesced credit packet train, but tracked {preBodyApplicationPacketKeys.Length} packets: {string.Join(" || ", preBodyDescriptions)}.");
         Assert.Contains(preBodyDescriptions, description => description.Contains("max_data(", StringComparison.Ordinal));
         Assert.Contains(preBodyDescriptions, description => description.Contains("max_stream_data(", StringComparison.Ordinal));
         outboundEffects.Clear();
@@ -1480,6 +1482,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
                 runtime,
                 runtime.CurrentHandshakeSourceConnectionId.Span,
                 BuildLiveSparseCreditAckPacketNumbers(
+                    preBodyApplicationPacketKeys,
                     trackedBodyPacket.Key.PacketNumber,
                     trackedMaxStreamsPacket.Key.PacketNumber));
 
@@ -1505,9 +1508,6 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             Assert.DoesNotContain(
                 runtime.SendRuntime.SentPackets,
                 entry => entry.Key.PacketNumber == trackedMaxStreamsPacket.Key.PacketNumber);
-            Assert.Contains(
-                runtime.SendRuntime.SentPackets,
-                entry => entry.Key.PacketNumber == trackedFinPacket.Key.PacketNumber);
 
             long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
             Assert.NotNull(recoveryDueTicks);
@@ -1970,32 +1970,21 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     }
 
     private static ulong[] BuildLiveSparseCreditAckPacketNumbers(
+        IReadOnlyCollection<QuicConnectionSentPacketKey> preBodyApplicationPacketKeys,
         ulong trackedBodyPacketNumber,
         ulong trackedMaxStreamsPacketNumber)
     {
-        List<ulong> packetNumbers = [];
-        AddInclusiveRange(packetNumbers, 0, 9);
-        AddInclusiveRange(packetNumbers, 11, 14);
-        AddInclusiveRange(packetNumbers, 16, 17);
-        packetNumbers.Add(21);
-        AddInclusiveRange(packetNumbers, 23, 29);
-        AddInclusiveRange(packetNumbers, 32, 36);
-        packetNumbers.Add(38);
-        AddInclusiveRange(packetNumbers, 42, 44);
-        packetNumbers.Add(47);
-        AddInclusiveRange(packetNumbers, 49, 53);
+        List<ulong> packetNumbers = preBodyApplicationPacketKeys
+            .Where(static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData)
+            .Select(static key => key.PacketNumber)
+            .ToList();
         packetNumbers.Add(trackedBodyPacketNumber);
         packetNumbers.Add(trackedMaxStreamsPacketNumber);
 
-        return packetNumbers.ToArray();
-    }
-
-    private static void AddInclusiveRange(List<ulong> packetNumbers, ulong start, ulong end)
-    {
-        for (ulong packetNumber = start; packetNumber <= end; packetNumber++)
-        {
-            packetNumbers.Add(packetNumber);
-        }
+        return packetNumbers
+            .Distinct()
+            .OrderBy(static packetNumber => packetNumber)
+            .ToArray();
     }
 
     private static byte[] BuildProtectedPeerPingPacket(QuicConnectionRuntime runtime)

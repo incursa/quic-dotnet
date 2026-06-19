@@ -1478,6 +1478,16 @@ internal sealed partial class QuicConnectionRuntime
     {
         bool stateChanged = false;
 
+        if (maxDataFrame.HasValue && maxStreamDataFrame.HasValue)
+        {
+            return TrySendFlowControlCreditUpdate(
+                maxDataFrame.Value,
+                maxStreamDataFrame.Value,
+                "The connection runtime could not protect the combined flow-control credit packet.",
+                "The connection cannot send the combined flow-control credit packet.",
+                ref effects);
+        }
+
         if (maxDataFrame.HasValue)
         {
             stateChanged |= TrySendFlowControlCreditUpdate(
@@ -1506,6 +1516,43 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects)
     {
         if (!TryBuildOutboundMaxDataPayload(frame, out byte[] payload))
+        {
+            return false;
+        }
+
+        if (!TryProtectAndAccountApplicationPayload(
+            payload,
+            protectFailureMessage,
+            amplificationFailureMessage,
+            ref effects,
+            out QuicConnectionActivePathRecord currentPath,
+            out QuicConnectionPathAmplificationState updatedAmplificationState,
+            out ReadOnlyMemory<byte> protectedPacket,
+            out Exception? exception))
+        {
+            _ = exception;
+            return false;
+        }
+
+        activePath = currentPath with
+        {
+            AmplificationState = updatedAmplificationState,
+        };
+
+        AppendEffect(ref effects, new QuicConnectionSendDatagramEffect(
+            currentPath.Identity,
+            protectedPacket));
+        return true;
+    }
+
+    private bool TrySendFlowControlCreditUpdate(
+        QuicMaxDataFrame maxDataFrame,
+        QuicMaxStreamDataFrame maxStreamDataFrame,
+        string protectFailureMessage,
+        string amplificationFailureMessage,
+        ref QuicConnectionEffectAccumulator effects)
+    {
+        if (!TryBuildOutboundFlowControlCreditPayload(maxDataFrame, maxStreamDataFrame, out byte[] payload))
         {
             return false;
         }
@@ -4740,6 +4787,32 @@ internal sealed partial class QuicConnectionRuntime
         }
 
         return TryCreatePaddedApplicationPayload(frameBuffer[..frameBytesWritten], out payload);
+    }
+
+    private bool TryBuildOutboundFlowControlCreditPayload(
+        QuicMaxDataFrame maxDataFrame,
+        QuicMaxStreamDataFrame maxStreamDataFrame,
+        out byte[] payload)
+    {
+        payload = [];
+
+        Span<byte> frameBuffer = stackalloc byte[128];
+        if (!QuicFrameCodec.TryFormatMaxDataFrame(maxDataFrame, frameBuffer, out int maxDataBytesWritten))
+        {
+            return false;
+        }
+
+        if (!QuicFrameCodec.TryFormatMaxStreamDataFrame(
+            maxStreamDataFrame,
+            frameBuffer[maxDataBytesWritten..],
+            out int maxStreamDataBytesWritten))
+        {
+            return false;
+        }
+
+        return TryCreatePaddedApplicationPayload(
+            frameBuffer[..(maxDataBytesWritten + maxStreamDataBytesWritten)],
+            out payload);
     }
 
     private bool TryBuildOutboundDataBlockedPayload(

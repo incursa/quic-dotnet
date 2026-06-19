@@ -107,45 +107,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
 
         Assert.Equal(2, bytesRead);
         Assert.True(readBuffer.AsSpan().SequenceEqual(new byte[] { 0x11, 0x22 }));
-        Assert.Equal(2, outboundEffects.Count);
-
-        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
-        bool sawMaxData = false;
-        bool sawMaxStreamData = false;
-
-        foreach (QuicConnectionEffect effect in outboundEffects)
-        {
-            QuicConnectionSendDatagramEffect sendEffect = Assert.IsType<QuicConnectionSendDatagramEffect>(effect);
-            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
-                sendEffect.Datagram.Span,
-                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
-                out byte[] openedPacket,
-                out int payloadOffset,
-                out int payloadLength));
-
-            ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-            if (QuicFrameCodec.TryParseMaxDataFrame(payload, out QuicMaxDataFrame maxDataFrame, out int maxDataBytesConsumed))
-            {
-                sawMaxData = true;
-                Assert.True(maxDataBytesConsumed > 0);
-                Assert.Equal(66UL, maxDataFrame.MaximumData);
-                continue;
-            }
-
-            if (QuicFrameCodec.TryParseMaxStreamDataFrame(payload, out QuicMaxStreamDataFrame maxStreamDataFrame, out int maxStreamDataBytesConsumed))
-            {
-                sawMaxStreamData = true;
-                Assert.True(maxStreamDataBytesConsumed > 0);
-                Assert.Equal((ulong)stream.Id, maxStreamDataFrame.StreamId);
-                Assert.Equal(10UL, maxStreamDataFrame.MaximumStreamData);
-                continue;
-            }
-
-            Assert.Fail("Unexpected flow-control datagram.");
-        }
-
-        Assert.True(sawMaxData);
-        Assert.True(sawMaxStreamData);
+        AssertFlowControlCreditEffects(outboundEffects, runtime, stream.Id, expectedMaxData: 66, expectedMaxStreamData: 10);
     }
 
     [Fact]
@@ -376,7 +338,7 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
         ulong expectedMaxData,
         ulong expectedMaxStreamData)
     {
-        Assert.Equal(2, outboundEffects.Count);
+        Assert.InRange(outboundEffects.Count, 1, 2);
 
         QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
         bool sawMaxData = false;
@@ -393,24 +355,33 @@ public sealed class REQ_QUIC_RFC9000_S13P3_0018
                 out int payloadLength));
 
             ReadOnlySpan<byte> payload = openedPacket.AsSpan(payloadOffset, payloadLength);
-            if (QuicFrameCodec.TryParseMaxDataFrame(payload, out QuicMaxDataFrame maxDataFrame, out int maxDataBytesConsumed))
+            while (!payload.IsEmpty)
             {
-                sawMaxData = true;
-                Assert.Equal(expectedMaxData, maxDataFrame.MaximumData);
-                AssertOnlyPadding(payload[maxDataBytesConsumed..]);
-                continue;
-            }
+                if (QuicFrameCodec.TryParsePaddingFrame(payload, out int paddingBytesConsumed))
+                {
+                    payload = payload[paddingBytesConsumed..];
+                    continue;
+                }
 
-            if (QuicFrameCodec.TryParseMaxStreamDataFrame(payload, out QuicMaxStreamDataFrame maxStreamDataFrame, out int maxStreamDataBytesConsumed))
-            {
-                sawMaxStreamData = true;
-                Assert.Equal((ulong)streamId, maxStreamDataFrame.StreamId);
-                Assert.Equal(expectedMaxStreamData, maxStreamDataFrame.MaximumStreamData);
-                AssertOnlyPadding(payload[maxStreamDataBytesConsumed..]);
-                continue;
-            }
+                if (QuicFrameCodec.TryParseMaxDataFrame(payload, out QuicMaxDataFrame maxDataFrame, out int maxDataBytesConsumed))
+                {
+                    sawMaxData = true;
+                    Assert.Equal(expectedMaxData, maxDataFrame.MaximumData);
+                    payload = payload[maxDataBytesConsumed..];
+                    continue;
+                }
 
-            Assert.Fail("Unexpected flow-control datagram.");
+                if (QuicFrameCodec.TryParseMaxStreamDataFrame(payload, out QuicMaxStreamDataFrame maxStreamDataFrame, out int maxStreamDataBytesConsumed))
+                {
+                    sawMaxStreamData = true;
+                    Assert.Equal((ulong)streamId, maxStreamDataFrame.StreamId);
+                    Assert.Equal(expectedMaxStreamData, maxStreamDataFrame.MaximumStreamData);
+                    payload = payload[maxStreamDataBytesConsumed..];
+                    continue;
+                }
+
+                Assert.Fail("Unexpected flow-control frame.");
+            }
         }
 
         Assert.True(sawMaxData);
