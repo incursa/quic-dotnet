@@ -13,6 +13,19 @@ namespace Incursa.Quic;
 /// </summary>
 internal static class QuicSocketEcnControl
 {
+    private const string ReceiveMetadataUnsupportedReason =
+        "The managed socket receive path uses Socket.ReceiveMessageFromAsync and SocketReceiveMessageFromResult " +
+        "packet information, which do not expose IP_TOS or IPV6_TCLASS ancillary ECN bits. Receive-side ECN count " +
+        "promotion needs a native or control-message receive path before local interop proof can claim received IP " +
+        "packet ECN metadata.";
+
+    internal static QuicReceiveEcnMetadataCapability GetReceiveEcnMetadataCapability()
+    {
+        return new QuicReceiveEcnMetadataCapability(
+            IsSupported: false,
+            Reason: ReceiveMetadataUnsupportedReason);
+    }
+
     internal static bool TrySetEcnMarkingIfPossible(Socket socket, QuicEcnMarking ecnMarking)
     {
         ArgumentNullException.ThrowIfNull(socket);
@@ -58,3 +71,5 @@ internal static class QuicSocketEcnControl
         }
     }
 }
+
+internal readonly record struct QuicReceiveEcnMetadataCapability(bool IsSupported, string Reason);

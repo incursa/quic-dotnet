@@ -573,6 +573,18 @@ warnings/errors, full Release no-build suite 4,852/4,852, regenerated QUIC
 requirement coverage triage, and `git diff --check` with only generated-triage
 CRLF normalization warnings.
 
+## 2026-06-19 ECN Receive-Metadata Audit Note
+
+The ECN receive-side promotion audit remains platform-blocked rather than
+promoted. The runtime already accepts explicit `QuicEcnCounts` for ACK_ECN
+emission and validation proof, and send-side marking still uses best-effort
+socket `TypeOfService` configuration. The current managed receive loops use
+`Socket.ReceiveMessageFromAsync` and `SocketReceiveMessageFromResult`, which do
+not expose the IP_TOS or IPV6_TCLASS ancillary ECN bits needed to count received
+ECT(0), ECT(1), or ECN-CE packets. `QuicSocketEcnControl` now exposes that exact
+capability blocker as a guardrail so future ECN interop promotion requires a
+native/control-message receive path or equivalent platform-specific proof.
+
 ## 2026-05-08 S13 ECN Continuation-After-Success Topoff Closure Note
 
 `REQ-QUIC-RFC9000-S13P4P2P2-0004` is now `trace_clean` under the existing
