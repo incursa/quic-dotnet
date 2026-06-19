@@ -178,7 +178,7 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("GetAsync_StaticRoute_ReturnsSuccess", serverTests, StringComparison.Ordinal);
         Assert.Contains("DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess", serverTests, StringComparison.Ordinal);
         Assert.Contains("InMemoryRouteHandler_MissingGet_Returns404", serverTests, StringComparison.Ordinal);
-        Assert.Contains("MalformedRequestHeaders_Returns400", serverTests, StringComparison.Ordinal);
+        Assert.Contains("MalformedRequestHeaders_ClosesConnectionWithMessageError", serverTests, StringComparison.Ordinal);
         Assert.Contains("GetWithoutRequestStreamFin_DispatchesAfterHeaders", serverTests, StringComparison.Ordinal);
         Assert.Contains("PeerControlStream_BundledSettingsFrame_IsObserved", serverTests, StringComparison.Ordinal);
         Assert.Contains("AbruptStreamReset_DoesNotStopLaterRequest", serverTests, StringComparison.Ordinal);
@@ -211,7 +211,7 @@ public sealed class REQ_QUIC_RFC9114_0002
         Assert.Contains("CompleteResponseOnContentLength = true", clientTests, StringComparison.Ordinal);
         Assert.Contains("RepeatedLargeResponses_CompleteWithExactBodyAndFin", serverTests, StringComparison.Ordinal);
         Assert.Contains("PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler", serverTests, StringComparison.Ordinal);
-        Assert.Contains("PostDataRequest_WithIncompleteContentLength_Returns400", serverTests, StringComparison.Ordinal);
+        Assert.Contains("PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError", serverTests, StringComparison.Ordinal);
         Assert.Contains("FrameReceived", serverTests, StringComparison.Ordinal);
         Assert.Contains("PayloadLength", serverTests, StringComparison.Ordinal);
         Assert.Contains("AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide", apiTests, StringComparison.Ordinal);

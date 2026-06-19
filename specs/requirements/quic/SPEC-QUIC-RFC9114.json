@@ -371,7 +371,7 @@
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::GetAsync_StaticRoute_ReturnsSuccess",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::DynamicQpackRequest_UsesPeerEncoderStreamAndReturnsSuccess",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::InMemoryRouteHandler_MissingGet_Returns404",
-          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::MalformedRequestHeaders_Returns400",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::MalformedRequestHeaders_ClosesConnectionWithMessageError",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::GetWithoutRequestStreamFin_DispatchesAfterHeaders",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PeerControlStream_BundledSettingsFrame_IsObserved",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::AbruptStreamReset_DoesNotStopLaterRequest"
@@ -425,7 +425,7 @@
           "tests/Incursa.Quic.Tests/Http3MinimalClientTests.cs::GetAsync_WithShortResponseBodyAndFin_RejectsContentLengthMismatch",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::RepeatedLargeResponses_CompleteWithExactBodyAndFin",
           "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithIncompleteContentLength_Returns400",
+          "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError",
           "tests/Incursa.Quic.Tests/RequirementHomes/QUIC/REQ-QUIC-API-0010.cs::AcceptedBidirectionalStreamCanReturnResponseBytesAfterTheRequesterCompletesOnlyItsWriteSide",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs::Http3LargeBodyCompletionTestsCoverDataAccountingAndFin"
         ]

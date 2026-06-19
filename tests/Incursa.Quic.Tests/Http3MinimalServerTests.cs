@@ -350,7 +350,7 @@ public sealed class Http3MinimalServerTests
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public async Task MalformedRequestHeaders_Returns400()
+    public async Task MalformedRequestHeaders_ClosesConnectionWithMessageError()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
         {
@@ -373,9 +373,10 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        Http3Response response = await ReadResponseAsync(requestStream);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
-        Assert.Equal(400, response.StatusCode);
+        Assert.Equal((ulong)Http3ErrorCode.MessageError, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.MessageError);
     }
 
     [Fact]
@@ -1674,7 +1675,7 @@ public sealed class Http3MinimalServerTests
     [Requirement("REQ-QUIC-RFC9114-S9-0002")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    public async Task PostDataRequest_WithIncompleteContentLength_Returns400()
+    public async Task PostDataRequest_WithIncompleteContentLength_ClosesConnectionWithMessageError()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
         {
@@ -1696,10 +1697,10 @@ public sealed class Http3MinimalServerTests
             includeContentLength: true,
             coalesceHeadersAndData: true);
 
-        Http3Response response = await ReadResponseAsync(requestStream);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
-        Assert.Equal(400, response.StatusCode);
-        Assert.True(response.StreamCompleted);
+        Assert.Equal((ulong)Http3ErrorCode.MessageError, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.MessageError);
         Assert.Empty(handler.Body);
         Assert.Contains(
             diagnostics.Events,
