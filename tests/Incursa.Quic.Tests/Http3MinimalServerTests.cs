@@ -187,6 +187,61 @@ public sealed class Http3MinimalServerTests
         Assert.Equal((ulong)Http3ErrorCode.ClosedCriticalStream, terminalState.Close.ApplicationErrorCode);
     }
 
+    [Theory]
+    [InlineData((ulong)Http3FrameType.Data)]
+    [InlineData((ulong)Http3FrameType.Headers)]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PeerControlStream_InvalidFrame_ClosesConnectionWithFrameUnexpected(ulong frameType)
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteStreamTypeAsync(controlStream, Http3StreamType.Control);
+        byte[] invalidFrame = Http3FrameWriter.WriteFrame(frameType, []);
+        await controlStream.WriteAsync(invalidFrame, 0, invalidFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await controlStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PeerControlStream_SecondSettingsFrame_ClosesConnectionWithFrameUnexpected()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] settingsBytes = Http3SettingsWriter.WriteInitialControlStream(new Http3Settings());
+        await controlStream.WriteAsync(settingsBytes, 0, settingsBytes.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] secondSettings = Http3SettingsWriter.WriteSettingsFrame(new Http3Settings());
+        await controlStream.WriteAsync(secondSettings, 0, secondSettings.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await controlStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
+    }
+
     [Fact]
     [Requirement("REQ-QUIC-RFC9204-S6-0001")]
     [CoverageType(RequirementCoverageType.Negative)]
