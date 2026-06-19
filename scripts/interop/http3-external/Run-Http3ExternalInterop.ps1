@@ -238,7 +238,7 @@ function Write-PeerToolManifest {
                 -SupportedScenarios $staticGetScenarios `
                 -CommandLineTemplates @(
                     "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
-                    "wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
+                    "mkdir -p /logs/qlog /logs/sslkeylog && wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
                 ) `
                 -KnownLimitations @("The interop image default entrypoint is bypassed for server rows.", "The image does not expose a stable no-argument --version output; pin by image ID/repo digest.", "Header-heavy and split-response behavior are not wired for ngtcp2-server rows.")
         }
@@ -808,6 +808,7 @@ function Invoke-IncursaClientPeerServerScenario {
         $serverCommandLine = "docker $($serverArgs -join ' ')"
     }
     else {
+        $ngtcp2ServerCommand = "mkdir -p /logs/qlog /logs/sslkeylog && /usr/local/bin/wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
         $serverArgs = @(
             "run", "-d",
             "--name", $containerName,
@@ -817,17 +818,10 @@ function Invoke-IncursaClientPeerServerScenario {
             "-v", "${peerLogRoot}:/logs",
             "-e", "QLOGDIR=/logs/qlog",
             "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
-            "--entrypoint", "/usr/local/bin/wsslserver",
+            "--entrypoint", "/bin/sh",
             $peerImage,
-            "--htdocs=/www",
-            "--qlog-dir=/logs/qlog",
-            "--no-http-dump",
-            "--timeout=15s",
-            "--handshake-timeout=10s",
-            "0.0.0.0",
-            "4433",
-            "/certs/priv.key",
-            "/certs/cert.pem"
+            "-lc",
+            $ngtcp2ServerCommand
         )
         $serverCommandLine = "docker $($serverArgs -join ' ')"
     }
