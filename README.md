@@ -5,6 +5,11 @@
 
 `Incursa.Quic` is the managed QUIC library set in this repository. The NuGet release surface here is the core transport package plus sibling packages for DNS over QUIC, a diagnostics-to-qlog adapter, standalone QPACK, and HTTP/3. The separate qlog repository owns the `Incursa.Qlog.*` model and vocabulary packages; this repo’s qlog package is `Incursa.Quic.Diagnostics.Qlog`, a transport-specific adapter that maps Incursa.Quic diagnostics into that model layer.
 
+Source documentation lives in [`docs/`](docs/) and is mirrored into the central
+`incursa-docs` site through [`docs.site.json`](docs.site.json) and
+[`.github/workflows/sync-docs.yml`](.github/workflows/sync-docs.yml). Edit the
+source docs here; do not edit mirrored output in the central docs repository.
+
 ## Packages
 
 - [`Incursa.Quic`](src/Incursa.Quic/README.md): core QUIC transport primitives, connection management, stream handling, and public client/listener entry points
@@ -38,13 +43,24 @@ dotnet add package Incursa.Quic.Http3
 dotnet restore Incursa.Quic.slnx
 dotnet build Incursa.Quic.slnx -c Release
 dotnet test Incursa.Quic.slnx -c Release
+git diff --check
 ```
+
+For traceability and repository-owned validation, also use the docs and scripts
+under [`docs/requirements-workflow.md`](docs/requirements-workflow.md),
+[`docs/spec-trace-prep.md`](docs/spec-trace-prep.md), and
+[`scripts/`](scripts/). ProtocolLab package and run helpers live under
+[`eng/protocol-lab/`](eng/protocol-lab/).
 
 ## Release
 
 - Tag a release commit as `vX.Y.Z` and push it.
 - [`.github/workflows/publish-nuget-packages.yml`](.github/workflows/publish-nuget-packages.yml) runs on version tags, validates public API versioning, packs the public packages, and pushes them to nuget.org.
 - The same workflow can also be run manually with an explicit `version` input when you need a non-tagged publish rehearsal.
+
+Package versioning follows the public NuGet/API surface. Keep package metadata,
+public API baselines, release scripts, and compatibility notes aligned with any
+behavior or surface change.
 
 ## Start Here
 
@@ -69,6 +85,24 @@ dotnet test Incursa.Quic.slnx -c Release
 - `specs/architecture/quic`: architecture artifacts
 - `specs/work-items/quic`: implementation planning artifacts
 - `specs/verification/quic`: verification artifacts
+
+## Security And Credentials
+
+- Use [`SECURITY.md`](SECURITY.md) for vulnerability reporting.
+- Do not commit NuGet tokens, docs sync tokens, contributor-agreement tokens,
+  local auth state, private transcripts, or private artifact paths.
+- GitHub workflows read credentials from repository secrets; local validation
+  does not prove those secrets or branch protections are configured.
+
+## Readiness And Known Gaps
+
+- [`docs/current-status.md`](docs/current-status.md) is the date-stamped status
+  snapshot for local and hosted evidence.
+- Implementation changes should remain traceable through `specs/` before
+  behavior changes are reviewed.
+- Broader production hosting, MASQUE, CONNECT-UDP, trailers, server push, and
+  other future HTTP/3 work remain outside the stable documented surface until
+  the owning requirements and verification artifacts close.
 
 ## License
 

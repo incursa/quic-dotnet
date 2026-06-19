@@ -11,6 +11,11 @@ latest local build, test, trace, and benchmark baseline from hosted CI/CodeQL
 status, manual quality and interop workflow status, and the advisory hosted
 interop handshake plus supported-subset profile evidence.
 
+The source repository is authoritative for these pages. The central docs site
+mirrors this tree through [`../docs.site.json`](../docs.site.json) and
+[`.github/workflows/sync-docs.yml`](../.github/workflows/sync-docs.yml). Do not
+edit mirrored output in the central docs repository.
+
 ## Core Guides
 
 - [Quickstart](quickstart.md)
@@ -36,6 +41,9 @@ interop handshake plus supported-subset profile evidence.
 - [Benchmarks](../benchmarks/README.md)
 - [Quality scripts](../scripts/quality/README.md)
 - [Release scripts](../scripts/release/README.md)
+- [ProtocolLab package guide](protocol-lab/lab-package.md)
+- [ProtocolLab controller guide](protocol-lab/rack-lab-controller.md)
+- [Security policy](../SECURITY.md)
 
 ## Suggested Reading Order
 
@@ -50,3 +58,10 @@ interop handshake plus supported-subset profile evidence.
 9. [Operations and manageability](operations-and-manageability.md)
 10. [QUIC troubleshooting](troubleshooting-quic.md)
 11. [RFC 9308 / RFC 9312 coverage report](rfc9308-rfc9312-coverage.md)
+
+## Maintenance Notes
+
+- Pages in `docs/` are source-authored and should be updated here first.
+- Generated or mirrored documentation should stay clearly labeled as derived.
+- Use the status page for evidence snapshots, not as a substitute for the
+  owning requirement or verification artifact.
