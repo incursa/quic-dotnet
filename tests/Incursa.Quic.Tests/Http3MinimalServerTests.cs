@@ -266,6 +266,63 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S5-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RequestInvalidQPackStaticIndex_ClosesConnectionWithDecompressionFailed()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] invalidFieldSection = [0x00, 0x00, .. QPackInteger.Encode(99, 6, 0xC0)];
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(invalidFieldSection);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)QPackErrorCode.DecompressionFailed, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, QPackErrorCode.DecompressionFailed);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PeerQPackEncoderStream_CapacityAbovePeerSetting_ClosesConnectionWithEncoderStreamError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] settingsBytes = Http3SettingsWriter.WriteInitialControlStream(new Http3Settings());
+        await controlStream.WriteAsync(settingsBytes, 0, settingsBytes.Length).WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream encoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteStreamTypeAsync(encoderStream, Http3StreamType.QPackEncoder);
+        byte[] capacityInstruction = QPackInteger.Encode(1, 5, 0x20);
+        await encoderStream.WriteAsync(capacityInstruction, 0, capacityInstruction.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await encoderStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)QPackErrorCode.EncoderStreamError, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, QPackErrorCode.EncoderStreamError);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
@@ -2115,13 +2172,19 @@ public sealed class Http3MinimalServerTests
     }
 
     private static async Task AssertPeerConnectionClosedAsync(QuicConnection connection, Http3ErrorCode expectedErrorCode)
+        => await AssertPeerConnectionClosedAsync(connection, checked((long)expectedErrorCode));
+
+    private static async Task AssertPeerConnectionClosedAsync(QuicConnection connection, QPackErrorCode expectedErrorCode)
+        => await AssertPeerConnectionClosedAsync(connection, checked((long)expectedErrorCode));
+
+    private static async Task AssertPeerConnectionClosedAsync(QuicConnection connection, long expectedErrorCode)
     {
         QuicException exception = await Assert.ThrowsAsync<QuicException>(async () =>
             await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
                 .AsTask()
                 .WaitAsync(TimeSpan.FromSeconds(10)));
 
-        Assert.Equal((long)expectedErrorCode, exception.ApplicationErrorCode);
+        Assert.Equal(expectedErrorCode, exception.ApplicationErrorCode);
     }
 
     private static async Task<QPackFieldLine[]> ReadResponseHeadersAsync(QuicStream stream)
