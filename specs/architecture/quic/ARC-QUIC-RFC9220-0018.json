@@ -3,10 +3,10 @@
   "artifact_id": "ARC-QUIC-RFC9220-0018",
   "artifact_type": "architecture",
   "status": "implemented",
-  "title": "HTTP/3 WebSocket Local Peer Proof Harness Architecture",
+  "title": "HTTP/3 WebSocket Peer Proof Harness Architecture",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "purpose": "Define a repeatable local-loopback peer proof for the existing RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
+  "purpose": "Define repeatable local-loopback, local cross-process, and local external aioquic peer proof for the existing RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
   "related_artifacts": [
     "SPEC-QUIC-RFC9220",
     "ARC-QUIC-RFC9220-0003",
@@ -32,18 +32,21 @@
     "samples/Incursa.Quic.Http3.Client/Program.cs",
     "samples/Incursa.Quic.Http3.FileServer/Program.cs",
     "scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1",
-    "scripts/proofs/Invoke-Rfc9220WebSocketCrossProcessProof.ps1"
+    "scripts/proofs/Invoke-Rfc9220WebSocketCrossProcessProof.ps1",
+    "scripts/proofs/Invoke-Rfc9220WebSocketExternalAioquicProof.ps1",
+    "scripts/interop/http3-external/docker/aioquic_http3_websocket_client.py"
   ],
-  "design_summary": "The local peer proof keeps the production `Http3Client` and `Http3Server` APIs in the test path and drives accepted WebSocket Extended CONNECT tunnels through request/response metadata, server ping and client pong helper behavior, client ping/server pong behavior, text exchange, a buffered 6000-byte binary exchange, client close, and server close echo. The xUnit proof wrapper stores TRX/stdout/stderr under `.artifacts/http3-websocket-local-peer/<run-id>`. The cross-process wrapper starts the sample HTTP/3 file server with an opt-in WebSocket proof handler, drives the sample HTTP/3 client in `--websocket-proof` mode, and stores process stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-cross-process/<run-id>`.",
-  "data_and_state_considerations": "The proof remains local peer evidence, not external-peer interoperability. The original local-loopback proof keeps client and server in the same test process while using public QUIC and HTTP/3 APIs. The cross-process proof separates the in-repo sample client and server into distinct OS processes, preserving local loopback transport while proving process-boundary startup, SETTINGS negotiation, Extended CONNECT, WebSocket message exchange, and close behavior through executable sample binaries.",
+  "design_summary": "The local peer proof keeps the production `Http3Client` and `Http3Server` APIs in the test path and drives accepted WebSocket Extended CONNECT tunnels through request/response metadata, server ping and client pong helper behavior, client ping/server pong behavior, text exchange, a buffered 6000-byte binary exchange, client close, and server close echo. The xUnit proof wrapper stores TRX/stdout/stderr under `.artifacts/http3-websocket-local-peer/<run-id>`. The cross-process wrapper starts the sample HTTP/3 file server with an opt-in WebSocket proof handler, drives the sample HTTP/3 client in `--websocket-proof` mode, and stores process stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-cross-process/<run-id>`. The external aioquic wrapper starts the Incursa sample server process and drives it from the repo-local aioquic 1.3.0 HTTP/3 client container using Extended CONNECT and masked WebSocket frames, recording peer image identity, client qlog, TLS key log, server qlog, stdout/stderr, and hashed JSON/Markdown manifests under `.artifacts/http3-websocket-external-aioquic/<run-id>`.",
+  "data_and_state_considerations": "The original local-loopback proof keeps client and server in the same test process while using public QUIC and HTTP/3 APIs. The cross-process proof separates the in-repo sample client and server into distinct OS processes, preserving local loopback transport while proving process-boundary startup, SETTINGS negotiation, Extended CONNECT, WebSocket message exchange, and close behavior through executable sample binaries. The aioquic proof uses an independent QUIC/HTTP/3/QPACK peer implementation in a Docker container while retaining a repo-local WebSocket frame proof driver for the RFC 9220 tunnel byte exchange. That evidence class is local-external-aioquic-peer, not isolated-host, ProtocolLab publishable, browser, or broad production proxy evidence.",
   "edge_cases_and_constraints": [
     "The proof requires platform QUIC listener and connection support; unsupported local platforms return from the xUnit test consistently with the existing loopback tests.",
     "The 6000-byte binary payload crosses the default WebSocket tunnel read-buffer size to exercise buffered frame assembly.",
     "The cross-process proof uses throwaway local TLS materials and permissive sample-client certificate validation consistent with the existing local HTTP/3 interop samples.",
-    "The generated artifacts are local evidence, not external peer, isolated-host, ProtocolLab publishable, or remote CI evidence."
+    "The external aioquic proof depends on Docker host-to-container UDP reachability through host.docker.internal on the local machine.",
+    "The generated aioquic artifacts are local external-peer evidence, not isolated-host, ProtocolLab publishable, browser, or remote CI evidence."
   ],
   "risks": [
-    "The harness can only prove the in-repo client/server pair until an external WebSocket-over-H3 peer is wired.",
+    "The aioquic proof corroborates the exercised client-to-server Extended CONNECT and WebSocket frame exchange, but it is still one external HTTP/3 implementation and one local topology.",
     "The proof does not cover production proxy target, authorization, timeout, or deployment policy."
   ]
 }

@@ -3,7 +3,7 @@
   "artifact_id": "WI-QUIC-RFC9220-0018",
   "artifact_type": "work_item",
   "status": "complete",
-  "title": "HTTP/3 WebSocket Local Peer Proof Harness Work Item",
+  "title": "HTTP/3 WebSocket Peer Proof Harness Work Item",
   "owner": "quic-maintainers",
   "domain": "quic",
   "related_artifacts": [
@@ -19,9 +19,9 @@
     "REQ-QUIC-RFC9220-0030",
     "REQ-QUIC-RFC9220-0031"
   ],
-  "summary": "Add repeatable local-loopback and local cross-process peer proof for the RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
-  "planned_changes": "- Add an aggregate HTTP/3 loopback test that opens a client WebSocket tunnel through the public client/server APIs.\n- Exercise accepted response metadata, server ping with client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo in one peer-style flow.\n- Add a proof script that stores TRX/stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-local-peer/<run-id>`.\n- Add opt-in sample server/client WebSocket proof modes and a cross-process proof script that starts the sample server process, drives the sample client process, and stores stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-cross-process/<run-id>`.",
-  "verification_plan": "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId <run-id>`, run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketCrossProcessProof.ps1 -RunId <run-id>`, core SpecTrace validation, regenerated QUIC requirement triage when trace artifacts change, focused WebSocket tests, and diff hygiene.",
+  "summary": "Add repeatable local-loopback, local cross-process, and local external aioquic peer proof for the RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
+  "planned_changes": "- Add an aggregate HTTP/3 loopback test that opens a client WebSocket tunnel through the public client/server APIs.\n- Exercise accepted response metadata, server ping with client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo in one peer-style flow.\n- Add a proof script that stores TRX/stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-local-peer/<run-id>`.\n- Add opt-in sample server/client WebSocket proof modes and a cross-process proof script that starts the sample server process, drives the sample client process, and stores stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-cross-process/<run-id>`.\n- Add an aioquic 1.3.0 HTTP/3 client proof driver and PowerShell wrapper that starts the Incursa sample server, runs the aioquic client container over Extended CONNECT, records qlog/key-log/process artifacts, and hashes the resulting local external-peer evidence under `.artifacts/http3-websocket-external-aioquic/<run-id>`.",
+  "verification_plan": "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId <run-id>`, run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketCrossProcessProof.ps1 -RunId <run-id>`, run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketExternalAioquicProof.ps1 -RunId <run-id>`, core SpecTrace validation, regenerated QUIC requirement triage when trace artifacts change, focused WebSocket/proof-harness tests, and diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9220-0018"
   ],
@@ -29,10 +29,10 @@
     "ARC-QUIC-RFC9220-0018"
   ],
   "out_of_scope": [
-    "External WebSocket-over-H3 peer interoperability.",
     "Cross-host or isolated-host ProtocolLab evidence.",
+    "Browser or production proxy interoperability.",
     "Production proxy target, timeout, authorization, or deployment policy.",
     "New RFC 9220 requirement ownership beyond the already trace-owned behavior."
   ],
-  "completion_notes": "The local-loopback peer proof passed under `.artifacts/http3-websocket-local-peer/20260619T0825Z-local-peer-fragmented-control`. The local cross-process sample proof passed under `.artifacts/http3-websocket-cross-process/20260619T-cross-process-001`. Both remain explicitly narrower than external-peer or isolated-host proof."
+  "completion_notes": "The local-loopback peer proof passed under `.artifacts/http3-websocket-local-peer/20260619T0825Z-local-peer-fragmented-control`. The local cross-process sample proof passed under `.artifacts/http3-websocket-cross-process/20260619T-cross-process-001`. The local external aioquic peer proof passed under `.artifacts/http3-websocket-external-aioquic/20260619T-rfc9220-aioquic-001` using the `incursa-http3-external-interop-aioquic:latest` image at `sha256:b022b70e9f351326bf2951c5a56c5a00808b9f0b226a363d8b1b27014352d975`. These proofs remain explicitly narrower than isolated-host, browser, ProtocolLab publishable, or production proxy evidence."
 }
