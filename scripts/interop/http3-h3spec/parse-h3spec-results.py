@@ -16,6 +16,7 @@ SUMMARY_LINE = re.compile(r"(?P<total>\d+)\s+examples?,\s+(?P<failures>\d+)\s+fa
 SECTION_TOKEN = re.compile(r"\[(?P<family>HTTP/3|QPACK|Transport|TLS)\s+(?P<section>[^\]]+)]")
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
 CASE_MARKER_SUFFIX = re.compile(r"\s+\[[xv]]\s*$")
+RERUN_LINE = re.compile(r"^\s*To rerun use:\s+(?P<rerun>.+)$")
 
 RFC_BY_FAMILY = {
     "HTTP/3": "RFC 9114",
@@ -79,7 +80,9 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         stripped = line.strip()
 
         if current_failure is not None:
-            if stripped.startswith("To rerun use:"):
+            rerun_match = RERUN_LINE.match(line)
+            if rerun_match:
+                current_failure["rerun"] = rerun_match.group("rerun").strip()
                 current_failure = None
             elif stripped and not FAILURE_LINE.match(line):
                 detail = current_failure.get("detail", "")
@@ -127,12 +130,14 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         if failure_id in failures_by_id:
             case["status"] = "fail"
             case["failureDetail"] = failures_by_id[failure_id].get("detail", "")
+            case["rerun"] = failures_by_id[failure_id].get("rerun", "")
             continue
 
         failure = failures_by_name.get((case["suite"], normalize_case_name(case["name"])))
         if failure is not None:
             case["status"] = "fail"
             case["failureDetail"] = failure.get("detail", "")
+            case["rerun"] = failure.get("rerun", "")
 
     if summary["total"] == 0 and cases:
         summary["total"] = len(cases)
@@ -150,8 +155,17 @@ def load_metadata(path: Path | None) -> dict[str, Any]:
 def build_result(stdout: str, stderr: str, metadata: dict[str, Any]) -> dict[str, Any]:
     cases, summary = parse_stdout(stdout)
     exit_code = metadata.get("exitCode")
+    requested_matches = metadata.get("match", [])
+    requested_skips = metadata.get("skip", [])
+    selected_cases = len(cases)
+    selection_status = "unfiltered"
+    if requested_matches:
+        selection_status = "filtered" if selected_cases else "no-selected-cases"
+
     if exit_code is None:
         status = "not-run"
+    elif selection_status == "no-selected-cases":
+        status = "no-selected-cases"
     elif int(exit_code) == 0 and summary["failures"] == 0:
         status = "pass"
     else:
@@ -161,6 +175,11 @@ def build_result(stdout: str, stderr: str, metadata: dict[str, Any]) -> dict[str
         {
             "status": status,
             "exitCode": exit_code,
+            "selectedCases": selected_cases,
+            "selectionStatus": selection_status,
+            "requestedMatchCount": len(requested_matches),
+            "requestedSkipCount": len(requested_skips),
+            "rerunSuggestions": sum(1 for case in cases if case.get("rerun")),
             "http3OrQpackFailures": sum(
                 1
                 for case in cases
@@ -192,14 +211,33 @@ def render_markdown(result: dict[str, Any]) -> str:
         f"- Status: {summary['status']}",
         f"- Exit code: {summary['exitCode']}",
         f"- Cases: {summary['total']}",
+        f"- Selected cases: {summary['selectedCases']}",
+        f"- Selection status: {summary['selectionStatus']}",
         f"- Failures: {summary['failures']}",
         f"- RFC 9114/RFC 9204 failures: {summary['http3OrQpackFailures']}",
         f"- Host: {metadata.get('host', '')}",
         f"- Port: {metadata.get('port', '')}",
         "",
-        "## Failing Cases",
-        "",
     ]
+
+    requested_matches = metadata.get("match", [])
+    if requested_matches:
+        lines.extend(["## Requested Matches", ""])
+        for item in requested_matches:
+            lines.append(f"- `{item}`")
+        lines.append("")
+
+    if summary["selectionStatus"] == "no-selected-cases":
+        lines.extend(
+            [
+                "## Selection Warning",
+                "",
+                "The requested match filters selected no h3spec cases. Treat this run as tooling evidence only, not conformance evidence.",
+                "",
+            ]
+        )
+
+    lines.extend(["## Failing Cases", ""])
 
     failures = result["failures"]
     if failures:

@@ -101,6 +101,10 @@ public sealed class REQ_QUIC_INT_0032
         Assert.Contains("TODO: {todo}", parser, StringComparison.Ordinal);
         Assert.Contains("normalize_case_name", parser, StringComparison.Ordinal);
         Assert.Contains("failureDetail", parser, StringComparison.Ordinal);
+        Assert.Contains("selectionStatus", parser, StringComparison.Ordinal);
+        Assert.Contains("no-selected-cases", parser, StringComparison.Ordinal);
+        Assert.Contains("requestedMatchCount", parser, StringComparison.Ordinal);
+        Assert.Contains("rerunSuggestions", parser, StringComparison.Ordinal);
         Assert.Contains("RFC 9114/RFC 9204 failures", parser, StringComparison.Ordinal);
         Assert.Contains("Create or update a protocol-owned requirement/test", parser, StringComparison.Ordinal);
     }

@@ -86,6 +86,11 @@ Each run writes:
 - `logs/server.stdout.log`
 - `logs/server.stderr.log`
 
+Filtered runs also record the requested `--match` and `--skip` values in
+`h3spec-metadata.json`. If requested matches select no cases, the parser marks
+the run as `no-selected-cases`; treat that as tooling evidence, not conformance
+evidence.
+
 ## Failure Mapping
 
 The parser maps h3spec case suffixes:

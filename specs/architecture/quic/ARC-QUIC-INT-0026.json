@@ -25,11 +25,12 @@
     "docs/h3spec-failure-triage-report.md",
     ".github/workflows/http3-h3spec.yml"
   ],
-  "design_summary": "The h3spec pipeline is split into server lifecycle, repo-local tool acquisition, tool invocation, result normalization, and CI dispatch. The server script creates temporary content and TLS materials, starts the local HTTP/3 file server, and writes a server context. The acquisition script downloads the upstream h3spec release under `.artifacts/tools` and emits a Docker wrapper when the host platform cannot run the release binary directly. The runner invokes a configured or acquired h3spec command, captures stdout and stderr, writes metadata, and calls the parser. The parser extracts cases, failures, summary counts, RFC 9114/RFC 9204 section references, and TODO rows. CI runs plan-only by default on pull requests and supports opt-in live execution through workflow dispatch.",
+  "design_summary": "The h3spec pipeline is split into server lifecycle, repo-local tool acquisition, tool invocation, result normalization, and CI dispatch. The server script creates temporary content and TLS materials, starts the local HTTP/3 file server, and writes a server context. The acquisition script downloads the upstream h3spec release under `.artifacts/tools` and emits a Docker wrapper when the host platform cannot run the release binary directly. The runner invokes a configured or acquired h3spec command, captures stdout and stderr, writes metadata including requested match/skip filters, and calls the parser. The parser extracts cases, failures, summary counts, selected-case counts, filtered zero-selection status, rerun suggestions, RFC 9114/RFC 9204 section references, and TODO rows. CI runs plan-only by default on pull requests and supports opt-in live execution through workflow dispatch.",
   "edge_cases_and_constraints": [
     "The h3spec executable and wrapper arguments must remain configurable because local and hosted environments may install the tool differently.",
     "The repo-local acquisition path must stay under `.artifacts/tools` and must not require global PATH setup.",
     "Parser output must keep raw stdout and stderr as artifacts so parser drift can be diagnosed.",
+    "Filtered runs that select no h3spec cases are classified as tooling evidence and must not be read as conformance passes.",
     "HTTP/3 failures map to RFC 9114 and the `http3-adapter-boundary` gap until narrower protocol-owned requirements exist.",
     "QPACK failures map to RFC 9204 and the `qpack-stream-state-boundary` gap until narrower protocol-owned requirements exist.",
     "Plan-only CI evidence proves the harness shape, not live h3spec conformance."

@@ -110,6 +110,10 @@ $metadata = [ordered]@{
     serverContext = $ServerContextPath
     executable = $H3SpecExecutable
     arguments = $h3specArguments
+    match = $Match
+    skip = $Skip
+    timeoutMilliseconds = $TimeoutMilliseconds
+    noValidateCertificate = [bool]$NoValidateCertificate
     host = $HostName
     h3specTargetHost = $h3specTargetHostName
     port = $Port
@@ -159,6 +163,10 @@ Write-Host "h3spec report:  $reportPath"
 
 if ($FailOnH3SpecFailures -and -not $PlanOnly) {
     $parsed = Get-Content -Raw -LiteralPath $resultsPath | ConvertFrom-Json
+    if ([string]$parsed.summary.selectionStatus -eq "no-selected-cases") {
+        throw "h3spec selected no cases for the requested match filters. See $reportPath."
+    }
+
     if ([int]$parsed.summary.failures -gt 0 -or ([int]$parsed.summary.exitCode) -ne 0) {
         throw "h3spec reported failures. See $reportPath."
     }

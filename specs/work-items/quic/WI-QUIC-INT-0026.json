@@ -21,12 +21,12 @@
   "addresses": [
     "REQ-QUIC-INT-0032"
   ],
-  "planned_changes": "- Add a server lifecycle script for the local HTTP/3 sample server.\n- Add a repo-local h3spec acquisition path under `.artifacts/tools` for hosts without a global h3spec binary.\n- Add an h3spec runner script that captures stdout, stderr, metadata, parsed JSON, and Markdown.\n- Add a parser that maps h3spec HTTP/3 failures to RFC 9114 and QPACK failures to RFC 9204.\n- Add an opt-in CI workflow that runs plan-only by default and supports manual live h3spec execution.\n- Add a checked-in triage report template and requirement-home proof.",
+  "planned_changes": "- Add a server lifecycle script for the local HTTP/3 sample server.\n- Add a repo-local h3spec acquisition path under `.artifacts/tools` for hosts without a global h3spec binary.\n- Add an h3spec runner script that captures stdout, stderr, metadata, requested match/skip filters, parsed JSON, and Markdown.\n- Add a parser that maps h3spec HTTP/3 failures to RFC 9114 and QPACK failures to RFC 9204.\n- Add selected-case and no-selected-cases classification so focused match runs cannot be mistaken for conformance passes when the tool selects zero cases.\n- Add an opt-in CI workflow that runs plan-only by default and supports manual live h3spec execution.\n- Add a checked-in triage report template and requirement-home proof.",
   "out_of_scope": [
     "fixing protocol failures discovered by h3spec",
     "making h3spec a required pull-request gate",
     "claiming complete RFC 9114 or RFC 9204 support from h3spec output alone",
     "owning protocol requirements inside the INT harness lane"
   ],
-  "verification_plan": "Run solution build, run the requirement-home tests for REQ-QUIC-INT-0032, run the h3spec runner in plan-only mode, run the parser against a sample failing h3spec stdout file, run the repo-local acquisition path where the platform supports it, run PowerShell parser checks where available, and run core SpecTrace validation."
+  "verification_plan": "Run solution build, run the requirement-home tests for REQ-QUIC-INT-0032, run the h3spec runner in plan-only mode, run the parser against sample failing and no-selected-cases h3spec stdout files, run the repo-local acquisition path where the platform supports it, run focused live h3spec match probes where locally available, run PowerShell parser checks where available, and run core SpecTrace validation."
 }
