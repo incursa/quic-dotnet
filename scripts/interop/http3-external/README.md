@@ -62,6 +62,7 @@ Each run writes:
 
 - `results.jsonl`: machine-readable per-target/per-scenario rows.
 - `report.md`: Markdown pass/fail/skip matrix.
+- `peer-tool-manifest.json`: Docker, Compose, peer image, and pinned aioquic acquisition metadata.
 - `scenarios/<target>-<scenario>/command.txt`: exact command line.
 - `scenarios/<target>-<scenario>/stdout.log`: scenario stdout.
 - `scenarios/<target>-<scenario>/stderr.log`: scenario stderr.
@@ -70,6 +71,8 @@ Each run writes:
 - `logs/<service>/sslkeylog/keys.log`: TLS secrets when the peer honors `SSLKEYLOGFILE`.
 - `pcaps/`: copied packet captures when `-PcapSource` or `--pcap-source` is supplied.
 - `server.stdout.log` and `server.stderr.log`: Incursa server container logs captured before shutdown.
+
+The PowerShell runner accepts either repeated/space-separated array values or comma-separated values for `-Targets` and `-Scenarios`; both forms are normalized before execution.
 
 Default output root:
 

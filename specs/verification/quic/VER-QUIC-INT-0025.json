@@ -6,7 +6,7 @@
   "title": "External HTTP/3 Peer Harness Verification",
   "owner": "quic-maintainers",
   "domain": "quic",
-  "verification_method": "Build, requirement-home tests, plan-only harness run, parser smoke test, and SpecTrace validation.",
+  "verification_method": "Build, requirement-home tests, plan-only harness run, live focused external-peer harness run, parser smoke test, and SpecTrace validation.",
   "related_artifacts": [
     "SPEC-QUIC-INT",
     "ARC-QUIC-INT-0025",
@@ -20,10 +20,11 @@
     "Run `dotnet build Incursa.Quic.slnx -c Release --no-restore`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0031\"`.",
     "Run `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -PlanOnly`.",
+    "Run a focused live subset such as `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -Targets incursa-client__incursa-server,aioquic-client__incursa-server,incursa-client__aioquic-server -Scenarios get-small,not-found`.",
     "Run `python scripts/interop/http3-external/parse-http3-results.py <run-root>/results.jsonl --output <run-root>/report.md` if re-parsing is needed.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`."
   ],
-  "expected_result": "The build and requirement-home tests pass, plan-only execution emits rows for every requested target/scenario pair, the parser emits a Markdown matrix, scenario artifact directories contain command/stdout/stderr/summary files, service qlog and key-log directories are mounted for peers, optional pcaps are retained when supplied, and skipped rows stay visible. Status \"skip\" is a first-class result and must not be converted into support claims.",
+  "expected_result": "The build and requirement-home tests pass, plan-only execution emits rows for every requested target/scenario pair, the focused live subset passes or preserves concrete fail/skip evidence, the parser emits a Markdown matrix, scenario artifact directories contain command/stdout/stderr/summary files, peer-tool-manifest.json records Docker, Compose, image, and pinned aioquic acquisition metadata, service qlog and key-log directories are mounted for peers, optional pcaps are retained when supplied, and skipped rows stay visible. Status \"skip\" is a first-class result and must not be converted into support claims.",
   "evidence": [
     "2026-05-25: `dotnet build Incursa.Quic.slnx -c Release --no-restore` passed with 0 warnings and 0 errors after restore generated assets for the new sample client.",
     "2026-05-25: `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --no-build --filter \"FullyQualifiedName~REQ_QUIC_INT_0031\"` passed 2/2.",
@@ -31,6 +32,8 @@
     "2026-05-25: `bash -n scripts/interop/http3-external/run-http3-external-interop.sh` passed.",
     "2026-05-25: `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -PlanOnly -ArtifactsRoot .artifacts/http3-external-plan-qlog3` produced `.artifacts/http3-external-plan-qlog3/20260525T221604Z/results.jsonl`, `report.md`, and per-executable-scenario `command.txt`, `stdout.log`, `stderr.log`, and `http3-summary.json` files.",
     "2026-05-25: `bash scripts/interop/http3-external/run-http3-external-interop.sh --plan-only --artifacts-root .artifacts/http3-external-plan-qlog-bash` produced `.artifacts/http3-external-plan-qlog-bash/20260525T221450Z/results.jsonl` and `report.md`.",
+    "2026-06-19: `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -PlanOnly -Targets incursa-client__incursa-server,curl__incursa-server,aioquic-client__incursa-server,quiche-client__incursa-server,ngtcp2-client__incursa-server,incursa-client__aioquic-server,incursa-client__quiche-server,incursa-client__ngtcp2-server -Scenarios get-small,get-large,not-found` produced `.artifacts/http3-external/20260619T055646Z/results.jsonl`, `report.md`, and `peer-tool-manifest.json` with 24 explicit plan-only rows after comma-separated array normalization.",
+    "2026-06-19: `pwsh -NoProfile -File scripts/interop/http3-external/Run-Http3ExternalInterop.ps1 -Targets incursa-client__incursa-server,aioquic-client__incursa-server,incursa-client__aioquic-server -Scenarios get-small,not-found` produced `.artifacts/http3-external/20260619T055801Z/results.jsonl`, `report.md`, `udp-reachability-report.md`, and `peer-tool-manifest.json`; the focused live Docker subset passed 6/6 across Incursa control, aioquic-client to Incursa-server, and Incursa-client to aioquic-server static GET-style rows.",
     "scripts/interop/http3-external/docker-compose.yml",
     "scripts/interop/http3-external/Run-Http3ExternalInterop.ps1",
     "scripts/interop/http3-external/run-http3-external-interop.sh",
@@ -39,5 +42,5 @@
     "docs/http3-external-interop-report.md",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0031.cs"
   ],
-  "status_summary": "Complete for the advisory harness/reporting slice. The generated plan-only evidence proves the matrix and parser surface only; live peer interoperability remains a separate execution and protocol-claim concern."
+  "status_summary": "Complete for the advisory harness/reporting slice. The generated plan-only evidence proves the matrix and parser surface, and the focused live Docker evidence characterizes the static aioquic/Incursa GET-style rows as passing. This remains external-peer characterization, not broad HTTP/3 or QPACK support promotion."
 }

@@ -6,7 +6,11 @@ title: "External HTTP/3 Interop Report"
 
 This is the checked-in report template for the external HTTP/3 interop harness. Run the harness to generate a current report under `.artifacts/http3-external/<run-id>/report.md`.
 
-Last refreshed from local Docker evidence on 2026-05-26.
+Last refreshed from local Docker evidence on 2026-06-19.
+
+- Focused pinned aioquic static GET-style run: `.artifacts/http3-external/20260619T055801Z`
+- Plan-only normalized matrix run: `.artifacts/http3-external/20260619T055646Z`
+- The focused 2026-06-19 run records Docker `29.3.0`, Docker Compose `v5.1.0`, and `aioquic` pinned to `1.3.0` in `peer-tool-manifest.json`.
 
 - Default matrix run: `.artifacts/http3-default-with-aioquic-server/20260526T042753Z`
 - Focused Incursa advanced run: `.artifacts/http3-all-advanced-default/20260526T033718Z`
@@ -32,6 +36,8 @@ Last refreshed from local Docker evidence on 2026-05-26.
 
 - `incursa-client__incursa-server` passes `get-small`, `get-empty`, `get-large`, `multiple-concurrent-get`, `not-found`, `many-headers`, `split-data`, `request-cancellation`, `goaway`, and `connection-close-in-flight` in Docker with qlog capture and preserved stdout/stderr.
 - Latest default matrix result: `22 pass`, `0 fail`, `58 skip`.
+- Latest focused pinned aioquic static subset result: `6 pass`, `0 fail`, `0 skip` across `incursa-client__incursa-server`, `aioquic-client__incursa-server`, and `incursa-client__aioquic-server` for `get-small` and `not-found`.
+- The 2026-06-19 plan-only normalized matrix run records 24 explicit rows for comma-separated PowerShell target/scenario arguments instead of collapsing them into a single skip row.
 - The checked-in RFC 9114 and RFC 9204 floors are now traced in the repo; the remaining skip rows are interop/harness gaps, not a claim that the protocol floor is missing.
 - `aioquic-client__incursa-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `incursa-client__aioquic-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.

@@ -37,6 +37,7 @@ $script:Http3ExternalClientHost = "incursa-server"
 $script:Http3ExternalClientPort = 4433
 $script:Http3ExternalServerConnectTo = ""
 $script:Http3ExternalDockerNetworkName = ""
+$script:Http3ExternalAioquicVersion = "1.3.0"
 
 function Resolve-RepoRoot {
     $current = (Resolve-Path (Join-Path $PSScriptRoot "../../..")).Path
@@ -75,6 +76,114 @@ function Write-Result {
     }
 
     ($row | ConvertTo-Json -Compress) | Add-Content -LiteralPath $script:ResultsPath
+}
+
+function Normalize-MatrixValues {
+    param([string[]]$Values)
+
+    $normalized = [System.Collections.Generic.List[string]]::new()
+    foreach ($value in $Values) {
+        foreach ($part in ($value -split ",")) {
+            $trimmed = $part.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $normalized.Add($trimmed)
+            }
+        }
+    }
+
+    return $normalized.ToArray()
+}
+
+function Get-CommandOutputText {
+    param([scriptblock]$Command)
+
+    try {
+        $output = & $Command 2>&1
+        if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
+            return $null
+        }
+
+        return (($output | ForEach-Object { $_.ToString() }) -join "`n").Trim()
+    }
+    catch {
+        return $null
+    }
+}
+
+function Get-DockerImageInfo {
+    param([string]$Image)
+
+    $imageId = Get-CommandOutputText { docker image inspect $Image --format "{{.Id}}" }
+    $repoDigestsText = Get-CommandOutputText { docker image inspect $Image --format "{{json .RepoDigests}}" }
+    $repoDigests = @()
+    if (-not [string]::IsNullOrWhiteSpace($repoDigestsText) -and $repoDigestsText -ne "null") {
+        try {
+            $repoDigests = @($repoDigestsText | ConvertFrom-Json)
+        }
+        catch {
+            $repoDigests = @()
+        }
+    }
+
+    return [ordered]@{
+        image = $Image
+        resolvedImageId = $imageId
+        repoDigests = $repoDigests
+    }
+}
+
+function Write-PeerToolManifest {
+    param([string]$Path)
+
+    $curlImage = if ([string]::IsNullOrWhiteSpace($env:HTTP3_CURL_IMAGE)) { "ghcr.io/macbre/curl-http3" } else { $env:HTTP3_CURL_IMAGE }
+    $quicheImage = if ([string]::IsNullOrWhiteSpace($env:HTTP3_QUICHE_IMAGE)) { "cloudflare/quiche:latest" } else { $env:HTTP3_QUICHE_IMAGE }
+    $ngtcp2Image = if ([string]::IsNullOrWhiteSpace($env:HTTP3_NGTCP2_IMAGE)) { "ghcr.io/ngtcp2/ngtcp2-interop:latest" } else { $env:HTTP3_NGTCP2_IMAGE }
+    $aioquicImage = "incursa-http3-external-interop-aioquic:latest"
+
+    $manifest = [ordered]@{
+        schemaVersion = "http3-external-peer-tools-v1"
+        runId = Split-Path -Leaf $script:RunRoot
+        generatedUtc = (Get-Date).ToUniversalTime().ToString("o")
+        planOnly = [bool]$PlanOnly
+        composeFile = $script:ComposeFilePath
+        targets = @($Targets)
+        scenarios = @($Scenarios)
+        docker = [ordered]@{
+            version = Get-CommandOutputText { docker --version }
+            composeVersion = Get-CommandOutputText { docker compose version }
+        }
+        acquisition = [ordered]@{
+            aioquic = [ordered]@{
+                type = "repo-local Docker build"
+                dockerfile = "scripts/interop/http3-external/docker/aioquic.Dockerfile"
+                package = "aioquic"
+                packageVersion = $script:Http3ExternalAioquicVersion
+                image = Get-DockerImageInfo -Image $aioquicImage
+            }
+            curl = [ordered]@{
+                type = "Docker image"
+                environmentVariable = "HTTP3_CURL_IMAGE"
+                image = Get-DockerImageInfo -Image $curlImage
+            }
+            quiche = [ordered]@{
+                type = "Docker image"
+                environmentVariable = "HTTP3_QUICHE_IMAGE"
+                image = Get-DockerImageInfo -Image $quicheImage
+            }
+            ngtcp2 = [ordered]@{
+                type = "Docker image"
+                environmentVariable = "HTTP3_NGTCP2_IMAGE"
+                image = Get-DockerImageInfo -Image $ngtcp2Image
+            }
+        }
+        evidenceClass = "external-peer-characterization"
+        notes = @(
+            "Resolved image IDs and repo digests are present only after Docker has pulled or built the image locally.",
+            "Skipped rows remain evidence of missing peer command or scenario wiring, not support proof."
+        )
+    }
+
+    $manifest | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $Path
 }
 
 function New-Fixtures {
@@ -799,6 +908,8 @@ function Invoke-TargetScenario {
 }
 
 $repoRoot = Resolve-RepoRoot
+$Targets = Normalize-MatrixValues $Targets
+$Scenarios = Normalize-MatrixValues $Scenarios
 if ([string]::IsNullOrWhiteSpace($ComposeFile)) {
     $script:ComposeFilePath = Join-Path $repoRoot "scripts/interop/http3-external/docker-compose.yml"
 }
@@ -816,6 +927,7 @@ $script:ScenarioRoot = Join-Path $script:RunRoot "scenarios"
 $script:PcapRoot = Join-Path $script:RunRoot "pcaps"
 $script:ResultsPath = Join-Path $script:RunRoot "results.jsonl"
 $reportPath = Join-Path $script:RunRoot "report.md"
+$peerToolManifestPath = Join-Path $script:RunRoot "peer-tool-manifest.json"
 
 New-Item -ItemType Directory -Force -Path $script:RunRoot, $downloadsRoot, $script:LogsRoot, $script:ScenarioRoot, $script:PcapRoot | Out-Null
 New-Fixtures -WwwRoot $wwwRoot
@@ -873,9 +985,11 @@ finally {
 }
 
 Copy-PcapArtifacts
+Write-PeerToolManifest -Path $peerToolManifestPath
 python (Join-Path $PSScriptRoot "parse-http3-results.py") $script:ResultsPath --output $reportPath
 $udpReportPath = Join-Path $script:RunRoot "udp-reachability-report.md"
 Write-UdpReachabilityReport -ReportPath $udpReportPath
 Write-Host "Results: $script:ResultsPath"
 Write-Host "Report:  $reportPath"
 Write-Host "UDP:     $udpReportPath"
+Write-Host "Tools:   $peerToolManifestPath"

@@ -90,6 +90,9 @@ public sealed class REQ_QUIC_INT_0031
         Assert.Contains("QLOGDIR", compose, StringComparison.Ordinal);
         Assert.Contains("SSLKEYLOGFILE", compose, StringComparison.Ordinal);
         Assert.Contains("PcapSource", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("Normalize-MatrixValues", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("peer-tool-manifest.json", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("aioquic==${AIOQUIC_VERSION}", ReadRepositoryFile("scripts/interop/http3-external/docker/aioquic.Dockerfile"), StringComparison.Ordinal);
         Assert.Contains("parse-http3-results.py", windowsScript, StringComparison.Ordinal);
         Assert.Contains("results.jsonl", posixScript, StringComparison.Ordinal);
         Assert.Contains("report.md", posixScript, StringComparison.Ordinal);
@@ -131,6 +134,7 @@ public sealed class REQ_QUIC_INT_0031
         Assert.Contains("Wireshark and qvis", readme, StringComparison.Ordinal);
         Assert.Contains("Failed-Case Triage Checklist", readme, StringComparison.Ordinal);
         Assert.Contains("pcaps/", readme, StringComparison.Ordinal);
+        Assert.Contains("peer-tool-manifest.json", readme, StringComparison.Ordinal);
         Assert.Contains("must not be used to claim broad RFC 9114/RFC 9204 completeness", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("complete RFC 9114 support", spec, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("complete RFC 9204 support", spec, StringComparison.OrdinalIgnoreCase);
