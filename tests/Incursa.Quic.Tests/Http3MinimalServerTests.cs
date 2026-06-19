@@ -164,6 +164,53 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PeerControlStream_ClosedAfterSettings_ClosesConnectionWithClosedCriticalStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream controlStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] settingsBytes = Http3SettingsWriter.WriteInitialControlStream(new Http3Settings());
+        await controlStream.WriteAsync(settingsBytes, 0, settingsBytes.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await controlStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.ClosedCriticalStream, terminalState.Close.ApplicationErrorCode);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9204-S6-0001")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task PeerQPackDecoderStream_Closed_ClosesConnectionWithClosedCriticalStream()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicStream decoderStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Unidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await WriteStreamTypeAsync(decoderStream, Http3StreamType.QPackDecoder);
+        await decoderStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.ClosedCriticalStream, terminalState.Close.ApplicationErrorCode);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9114-S9-0001")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]

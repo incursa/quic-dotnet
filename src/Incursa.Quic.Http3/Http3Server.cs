@@ -492,7 +492,7 @@ public sealed class Http3Server : IAsyncDisposable
             if (bytesRead == 0)
             {
                 ProcessPeerControlFrames(frameReader.Complete(), stream.Id, dispatcher, dispatcherGate, qpackState);
-                return;
+                throw new Http3Exception(Http3ErrorCode.ClosedCriticalStream, "The HTTP/3 control stream was closed.");
             }
 
             ProcessPeerControlBytes(frameReader, buffer.AsSpan(0, bytesRead), stream.Id, dispatcher, dispatcherGate, qpackState);
@@ -522,7 +522,16 @@ public sealed class Http3Server : IAsyncDisposable
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
             if (bytesRead == 0)
             {
-                return;
+                if (streamKind == Http3StreamKind.QPackEncoder)
+                {
+                    qpackState.CompletePeerEncoderStream();
+                }
+                else
+                {
+                    qpackState.CompletePeerDecoderStream();
+                }
+
+                throw new Http3Exception(Http3ErrorCode.ClosedCriticalStream, "The QPACK unidirectional stream was closed.");
             }
 
             EmitQPackBytesReceived(stream.Id, streamKind, bytesRead);
@@ -1816,6 +1825,27 @@ public sealed class Http3Server : IAsyncDisposable
             lock (gate)
             {
                 encoder.DecodeDecoderStream(bytes);
+            }
+        }
+
+        public void CompletePeerEncoderStream()
+        {
+            lock (gate)
+            {
+                if (decoder is null)
+                {
+                    EnsureDecoder(new Http3Settings());
+                }
+
+                CompleteUnblockedRequests(decoder!.CompleteEncoderStream());
+            }
+        }
+
+        public void CompletePeerDecoderStream()
+        {
+            lock (gate)
+            {
+                encoder.CompleteDecoderStream();
             }
         }
 
