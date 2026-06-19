@@ -718,7 +718,7 @@ public sealed class Http3Server : IAsyncDisposable
         ConnectionQPackState qpackState,
         CancellationToken cancellationToken)
     {
-        Http3FrameReader frameReader = new();
+        Http3FrameReader frameReader = new(ValidateRequestStreamFrameType);
         Http3RequestMessageValidator validator = new();
         ArrayBufferWriter<byte>? body = null;
         // CONTEXT: Request read buffering
@@ -839,6 +839,22 @@ public sealed class Http3Server : IAsyncDisposable
             default:
                 throw new Http3Exception(Http3ErrorCode.FrameUnexpected, "The request stream contained an invalid frame type.");
         }
+    }
+
+    private static Http3Exception? ValidateRequestStreamFrameType(ulong frameType)
+    {
+        return frameType switch
+        {
+            (ulong)Http3FrameType.Data or (ulong)Http3FrameType.Headers => null,
+            (ulong)Http3FrameType.CancelPush
+                or (ulong)Http3FrameType.Settings
+                or (ulong)Http3FrameType.PushPromise
+                or (ulong)Http3FrameType.GoAway
+                or (ulong)Http3FrameType.MaxPushId => new Http3Exception(
+                    Http3ErrorCode.FrameUnexpected,
+                    "The request stream contained an invalid frame type."),
+            _ => null,
+        };
     }
 
     private void ProcessPeerControlBytes(

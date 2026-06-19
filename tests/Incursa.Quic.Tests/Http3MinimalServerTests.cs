@@ -1351,6 +1351,31 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RequestCancelPushFrame_ClosesConnectionWithFrameUnexpectedBeforePayloadParsing()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] cancelPushFrame = Http3FrameWriter.WriteFrame((ulong)Http3FrameType.CancelPush, []);
+        await requestStream.WriteAsync(cancelPushFrame, 0, cancelPushFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
+    }
+
+    [Fact]
     public async Task PostDataRequest_WithContentLengthAndCoalescedData_DeliversBodyToHandler()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)

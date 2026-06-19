@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18T20:24:34.5190654-06:00",
+  "generated_at": "2026-06-18T20:34:06.5108208-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T20:24:34.5159659-06:00",
+    "generated_at": "2026-06-18T20:34:06.5077380-06:00",
     "total_requirements": 2674,
     "by_state": {
       "trace_clean": 2674
@@ -310555,12 +310555,12 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 38,
-        "focused": 32,
+        "total": 39,
+        "focused": 33,
         "broad": 6,
         "by_kind": {
           "positive": 16,
-          "negative": 12,
+          "negative": 13,
           "edge": 10,
           "fuzz": 0,
           "benchmark": 0,
@@ -311278,6 +311278,28 @@
           "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
           "source": "requirement_attribute",
           "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+          "class": "Http3MinimalServerTests",
+          "member": "Http3MinimalServerTests.RequestCancelPushFrame_ClosesConnectionWithFrameUnexpectedBeforePayloadParsing",
+          "method": "RequestCancelPushFrame_ClosesConnectionWithFrameUnexpectedBeforePayloadParsing",
+          "line": 1357,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9114-S4-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9114-S4-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9114/REQ-QUIC-RFC9114-0002.cs",
           "class": "REQ_QUIC_RFC9114_0002",
           "member": "REQ_QUIC_RFC9114_0002.Http3CoreFloorIsTraceLinkedAcrossCanonicalArtifacts",
@@ -311556,7 +311578,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1508,
+          "line": 1533,
           "kinds": [
             "positive"
           ],
@@ -311578,7 +311600,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1508,
+          "line": 1533,
           "kinds": [
             "positive"
           ],
@@ -314697,7 +314719,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1706,
+          "line": 1731,
           "kinds": [
             "edge"
           ],
@@ -314719,7 +314741,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.AbruptStreamReset_DoesNotStopLaterRequest",
           "method": "AbruptStreamReset_DoesNotStopLaterRequest",
-          "line": 1706,
+          "line": 1731,
           "kinds": [
             "edge"
           ],
@@ -314961,7 +314983,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PeerControlStream_BundledSettingsFrame_IsObserved",
           "method": "PeerControlStream_BundledSettingsFrame_IsObserved",
-          "line": 1508,
+          "line": 1533,
           "kinds": [
             "positive"
           ],
@@ -315283,7 +315305,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 1427,
+          "line": 1452,
           "kinds": [
             "negative"
           ],
@@ -315305,7 +315327,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithIncompleteContentLength_Returns400",
           "method": "PostDataRequest_WithIncompleteContentLength_Returns400",
-          "line": 1427,
+          "line": 1452,
           "kinds": [
             "negative"
           ],
@@ -315327,7 +315349,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 1389,
+          "line": 1414,
           "kinds": [
             "positive"
           ],
@@ -315349,7 +315371,7 @@
           "class": "Http3MinimalServerTests",
           "member": "Http3MinimalServerTests.PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
           "method": "PostDataRequest_WithOneMegabyteBody_DeliversBodyToHandler",
-          "line": 1389,
+          "line": 1414,
           "kinds": [
             "positive"
           ],

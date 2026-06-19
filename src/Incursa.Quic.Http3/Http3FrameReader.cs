@@ -8,7 +8,16 @@ namespace Incursa.Quic.Http3;
 /// </summary>
 public sealed class Http3FrameReader
 {
+    private readonly Func<ulong, Http3Exception?>? frameTypeValidator;
     private byte[] pending = [];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Http3FrameReader" /> class.
+    /// </summary>
+    public Http3FrameReader(Func<ulong, Http3Exception?>? frameTypeValidator = null)
+    {
+        this.frameTypeValidator = frameTypeValidator;
+    }
 
     /// <summary>
     /// Gets the number of buffered bytes that have not yet formed a complete frame.
@@ -59,6 +68,11 @@ public sealed class Http3FrameReader
             {
                 index = frameStart;
                 break;
+            }
+
+            if (frameTypeValidator?.Invoke(frameType) is { } exception)
+            {
+                throw exception;
             }
 
             byte[] payload = readable.Slice(index, (int)payloadLength).ToArray();
