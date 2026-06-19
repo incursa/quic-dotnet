@@ -4,6 +4,12 @@ param(
 
     [string] $ProtocolLabExecutionRoot,
 
+    [string] $ComponentPackageDirectory,
+
+    [string[]] $ComponentPackage = @(),
+
+    [string] $ComponentPackageMaterializationRoot,
+
     [string[]] $Suite = @("h3-local-v1-comparison"),
 
     [ValidateSet("Quick", "Regression", "Comparison")]
@@ -757,6 +763,9 @@ Write-Host "ProtocolLab local Incursa.Quic benchmark loop" -ForegroundColor Cyan
 Write-Host "  quic-dotnet: $repoRoot"
 Write-Host "  protocol-lab contracts: $resolvedProtocolLabRoot"
 Write-Host "  protocol-lab execution: $resolvedProtocolLabExecutionRoot"
+if (-not [string]::IsNullOrWhiteSpace($ComponentPackageDirectory)) {
+    Write-Host "  component package directory: $ComponentPackageDirectory"
+}
 Write-Host "  dependency mode: $(if ($useProjectReferenceMode) { 'project references' } else { 'local packages' })"
 if ($useLocalPackageMode) {
     Write-Host "  package version: $PackageVersion"
@@ -960,6 +969,18 @@ try {
 
     if ($PSBoundParameters.ContainsKey("BaseUrl") -and -not [string]::IsNullOrWhiteSpace($BaseUrl)) {
         $benchmarkArgs += @("-BaseUrl", $BaseUrl)
+    }
+
+    if ($PSBoundParameters.ContainsKey("ComponentPackageDirectory") -and -not [string]::IsNullOrWhiteSpace($ComponentPackageDirectory)) {
+        $benchmarkArgs += @("-ComponentPackageDirectory", $ComponentPackageDirectory)
+    }
+
+    if ($PSBoundParameters.ContainsKey("ComponentPackage") -and $ComponentPackage.Count -gt 0) {
+        $benchmarkArgs += @("-ComponentPackage", ($ComponentPackage -join ","))
+    }
+
+    if ($PSBoundParameters.ContainsKey("ComponentPackageMaterializationRoot") -and -not [string]::IsNullOrWhiteSpace($ComponentPackageMaterializationRoot)) {
+        $benchmarkArgs += @("-ComponentPackageMaterializationRoot", $ComponentPackageMaterializationRoot)
     }
 
     if ($FailOnError) {

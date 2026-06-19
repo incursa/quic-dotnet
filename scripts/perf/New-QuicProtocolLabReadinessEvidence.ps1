@@ -4,6 +4,10 @@ param(
 
     [string] $ProtocolLabExecutionRoot,
 
+    [string] $ComponentPackageDirectory,
+
+    [string[]] $ComponentPackage = @(),
+
     [string] $OutputRoot = ".artifacts\protocol-lab\readiness",
 
     [string] $RunId = "protocol-lab-readiness-$((Get-Date -AsUTC).ToString('yyyyMMddTHHmmssZ'))",
@@ -409,6 +413,140 @@ function Get-ChecksumInventory {
                 sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             }
         })
+}
+
+function Resolve-ComponentPackageDirectory {
+    param(
+        [string] $RequestedDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string] $RepoRoot,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ProtocolLabRoot
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedDirectory)) {
+        return Resolve-FullPath -Path $RequestedDirectory -BasePath $RepoRoot
+    }
+
+    $environmentDirectory = [Environment]::GetEnvironmentVariable("PROTOCOL_LAB_COMPONENT_PACKAGE_DIRECTORY")
+    if (-not [string]::IsNullOrWhiteSpace($environmentDirectory)) {
+        return Resolve-FullPath -Path $environmentDirectory -BasePath $RepoRoot
+    }
+
+    $siblingDirectory = Join-Path (Split-Path -Parent $ProtocolLabRoot) "protocol-lab-components\artifacts\packages"
+    if (Test-Path -LiteralPath $siblingDirectory -PathType Container) {
+        return [System.IO.Path]::GetFullPath($siblingDirectory)
+    }
+
+    return ""
+}
+
+function Get-ComponentPackageSelectors {
+    param([string[]] $Selectors)
+
+    return @(
+        foreach ($selector in @($Selectors)) {
+            foreach ($entry in @([string]$selector -split ",")) {
+                $trimmed = $entry.Trim()
+                if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                    $trimmed
+                }
+            }
+        }
+    )
+}
+
+function Get-ComponentPackageManifest {
+    param([Parameter(Mandatory = $true)][string] $PackagePath)
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($PackagePath)
+    try {
+        $entry = $archive.GetEntry("protocol-lab-package.json")
+        if ($null -eq $entry) {
+            return $null
+        }
+
+        $reader = [System.IO.StreamReader]::new($entry.Open())
+        try {
+            return ($reader.ReadToEnd() | ConvertFrom-Json)
+        }
+        finally {
+            $reader.Dispose()
+        }
+    }
+    finally {
+        $archive.Dispose()
+    }
+}
+
+function Get-ComponentPackageEvidence {
+    param(
+        [string] $Directory,
+
+        [string[]] $Selectors
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Directory)) {
+        return [ordered]@{
+            directory = ""
+            present = $false
+            packages = @()
+            blocker = "No component package directory was supplied and no default directory was found."
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $Directory -PathType Container)) {
+        return [ordered]@{
+            directory = $Directory
+            present = $false
+            packages = @()
+            blocker = "Component package directory was not found."
+        }
+    }
+
+    $packageSelectors = @(Get-ComponentPackageSelectors -Selectors $Selectors)
+    $archives = if ($packageSelectors.Count -gt 0) {
+        foreach ($selector in $packageSelectors) {
+            $candidate = if ([System.IO.Path]::IsPathRooted($selector)) { $selector } else { Join-Path $Directory $selector }
+            if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                Get-Item -LiteralPath $candidate
+            }
+            else {
+                Get-ChildItem -LiteralPath $Directory -File -Filter "*.plabpkg" |
+                    Where-Object { $_.BaseName -like "$selector*" -or $_.Name -like "$selector*" }
+            }
+        }
+    }
+    else {
+        Get-ChildItem -LiteralPath $Directory -File -Filter "*.plabpkg"
+    }
+
+    $packages = @(
+        foreach ($archive in @($archives | Sort-Object FullName -Unique)) {
+            $manifest = Get-ComponentPackageManifest -PackagePath $archive.FullName
+            [ordered]@{
+                packageId = if ($null -eq $manifest) { [System.IO.Path]::GetFileNameWithoutExtension($archive.Name) } else { [string]$manifest.packageId }
+                packageVersion = if ($null -eq $manifest) { "" } else { [string]$manifest.packageVersion }
+                kind = if ($null -eq $manifest) { "" } else { [string]$manifest.kind }
+                path = $archive.FullName
+                length = $archive.Length
+                sha256 = (Get-FileHash -LiteralPath $archive.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+                entryManifests = if ($null -eq $manifest) { @() } else { @($manifest.entryManifests | ForEach-Object { [string]$_ }) }
+            }
+        }
+    )
+
+    return [ordered]@{
+        directory = $Directory
+        present = $true
+        selectedPackages = @($packageSelectors)
+        packageCount = $packages.Count
+        packages = @($packages)
+        blocker = if ($packages.Count -eq 0) { "No .plabpkg archives matched the selected component package inputs." } else { "" }
+    }
 }
 
 function Get-ReadinessEvidenceClass {
@@ -1084,6 +1222,15 @@ function Read-ProtocolLabRunReadiness {
             runRoot = $resolvedRunRoot
             present = $false
             blocker = "aggregate-results.json was not found"
+            evidenceClass = "unknown"
+            evidenceClassesSeen = @()
+            cellReadiness = @()
+            publishability = [ordered]@{
+                status = "blocked"
+                blockers = @("aggregate-results-json-missing")
+            }
+            checksumInventory = @()
+            checksumInventoryCount = 0
         }
     }
 
@@ -1214,6 +1361,26 @@ $resolvedProtocolLabRoot = Resolve-FullPath -Path $ProtocolLabRoot -BasePath $re
 $resolvedProtocolLabExecutionRoot = Resolve-ProtocolLabExecutionRoot -ContractRoot $resolvedProtocolLabRoot -RequestedExecutionRoot $ProtocolLabExecutionRoot -BasePath $repoRoot
 $protocolLabBenchmarkRoot = if ([string]::IsNullOrWhiteSpace($resolvedProtocolLabExecutionRoot)) { $resolvedProtocolLabRoot } else { $resolvedProtocolLabExecutionRoot }
 $protocolLabBenchmarkScript = Join-Path $protocolLabBenchmarkRoot "scripts\benchmarking\Invoke-ProtocolLabBenchmarkSet.ps1"
+$resolvedComponentPackageDirectory = Resolve-ComponentPackageDirectory -RequestedDirectory $ComponentPackageDirectory -RepoRoot $repoRoot -ProtocolLabRoot $resolvedProtocolLabRoot
+$componentPackageEvidence = Get-ComponentPackageEvidence -Directory $resolvedComponentPackageDirectory -Selectors $ComponentPackage
+$componentPackageArgumentSuffix = if (-not [string]::IsNullOrWhiteSpace($resolvedComponentPackageDirectory)) {
+    " -ComponentPackageDirectory $resolvedComponentPackageDirectory"
+}
+else {
+    ""
+}
+if (@($ComponentPackage).Count -gt 0) {
+    $componentPackageArgumentSuffix += " -ComponentPackage $($ComponentPackage -join ',')"
+}
+$readinessComponentPackageArgumentSuffix = if (-not [string]::IsNullOrWhiteSpace($resolvedComponentPackageDirectory)) {
+    " -ComponentPackageDirectory $resolvedComponentPackageDirectory"
+}
+else {
+    ""
+}
+if (@($ComponentPackage).Count -gt 0) {
+    $readinessComponentPackageArgumentSuffix += " -ComponentPackage $($ComponentPackage -join ',')"
+}
 
 if (-not (Test-Path -LiteralPath $resolvedProtocolLabRoot -PathType Container)) {
     throw "ProtocolLab root was not found: $resolvedProtocolLabRoot"
@@ -1360,22 +1527,22 @@ $performanceCommands = @(
     },
     [ordered]@{
         name = "Package-backed HTTP/3 rack lab smoke"
-        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget Http3 -SuiteId h3-local-v1 -ScenarioId http3.payload.bytes.64kb -Protocol h3 -LoadProfileId smoke"
+        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget Http3 -SuiteId h3-local-v1 -ScenarioId http3.payload.bytes.64kb -Protocol h3 -LoadProfileId smoke"
         mode = "package-backed-controller"
         publishable = $false
     },
     [ordered]@{
         name = "Package-backed raw QUIC rack lab smoke"
-        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget RawQuic -SuiteId quic-transport-v1-comparison -ScenarioId quic.transport.multiplex.100x64kb,quic.transport.duplex-streams -Protocol quic -LoadProfileId smoke"
+        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget RawQuic -SuiteId quic-transport-v1-comparison -ScenarioId quic.transport.stream-throughput.1mb -Protocol quic -LoadProfileId smoke"
         mode = "package-backed-controller"
         publishable = $false
     }
 )
 
 $publishableRunbook = [ordered]@{
-    localRepeatabilityCommand = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $protocolLabBenchmarkRoot -Suite quic-transport-v1-comparison -Implementations incursa-raw-quic-adapter-v1 -Scenarios quic.transport.multiplex.100x64kb -DurationSeconds 15 -WarmupSeconds 5 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -RunIdPrefix quic-local-repeat"
-    isolatedLocalCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite quic-transport-v1-comparison -ImplementationIds <isolated-local-implementation-id> -ScenarioIds quic.transport.multiplex.100x64kb -Protocol quic -LoadProfileId local-comparison -RunIdPrefix quic-isolated-local-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <non-loopback-sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
-    readinessProofCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabReadinessEvidence.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ProtocolLabRunRoot <new-isolated-local-run-root> -RunId protocol-lab-readiness-isolated-local-<yyyymmddTHHmmssZ> -SkipPackageBuild"
+    localRepeatabilityCommand = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\Invoke-ProtocolLabLocalQuicBenchmark.ps1 -UseProjectReferences -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $protocolLabBenchmarkRoot$componentPackageArgumentSuffix -Suite raw-quic-transport-v1-smoke -Implementations incursa-raw-quic-adapter-v1 -Scenarios quic.transport.stream-throughput.1mb -DurationSeconds 15 -WarmupSeconds 5 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -RunIdPrefix quic-local-repeat"
+    isolatedLocalCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite raw-quic-transport-v1-smoke -ImplementationIds <isolated-local-implementation-id> -ScenarioIds quic.transport.stream-throughput.1mb -Protocol quic -LoadProfileId local-comparison$componentPackageArgumentSuffix -RunIdPrefix quic-isolated-local-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <non-loopback-sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
+    readinessProofCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\scripts\perf\New-QuicProtocolLabReadinessEvidence.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot$readinessComponentPackageArgumentSuffix -ProtocolLabRunRoot <new-isolated-local-run-root> -RunId protocol-lab-readiness-isolated-local-<yyyymmddTHHmmssZ> -SkipPackageBuild"
     isolatedLocalUpgradeRequirements = @(
         "run the SUT and load generator on separate hosts, VMs, or isolated container hosts and retain both host identities",
         "use a non-loopback SUT endpoint; do not use localhost, 127.0.0.1, ::1, or host.docker.internal",
@@ -1384,7 +1551,7 @@ $publishableRunbook = [ordered]@{
         "retain load-generator process/container telemetry for every repetition and record saturation warnings",
         "rerun New-QuicProtocolLabReadinessEvidence.ps1 against the new run root; keep the evidence class local-lab until these artifacts are present"
     )
-    externalReferenceCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite quic-transport-v1-comparison -ImplementationIds <publishable-implementation-id> -ScenarioIds quic.transport.multiplex.100x64kb -Protocol quic -LoadProfileId local-comparison -RunIdPrefix quic-publishable-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
+    externalReferenceCommandTemplate = "pwsh -NoProfile -ExecutionPolicy Bypass -File $protocolLabBenchmarkScript -WorkflowProfile Comparison -Suite raw-quic-transport-v1-smoke -ImplementationIds <publishable-implementation-id> -ScenarioIds quic.transport.stream-throughput.1mb -Protocol quic -LoadProfileId local-comparison$componentPackageArgumentSuffix -RunIdPrefix quic-publishable-<yyyymmdd> -Output .artifacts\runs -Configuration Release -TargetMode external -BaseUrl <sut-endpoint-url> -DurationSeconds 30 -WarmupSeconds 10 -Repetitions $MinimumPublishableRepetitions -Connections 1 -StreamsPerConnection 1 -FailOnError"
     prerequisites = @(
         "separate SUT and load-generator hosts or equivalent isolated resources; no localhost or same-host client/server execution",
         "pinned implementation identity: git commits, package ids, package versions, package SHA-256 values, and source checkout state",
@@ -1401,6 +1568,7 @@ $publishableRunbook = [ordered]@{
 $protocolLabPrerequisites = [ordered]@{
     contractRoot = $resolvedProtocolLabRoot
     executionRoot = $resolvedProtocolLabExecutionRoot
+    componentPackageDirectory = $resolvedComponentPackageDirectory
     benchmarkSetScript = [ordered]@{
         path = $protocolLabBenchmarkScript
         present = Test-Path -LiteralPath $protocolLabBenchmarkScript -PathType Leaf
@@ -1460,6 +1628,7 @@ $manifest = [ordered]@{
     )
     hostEnvironment = Get-HostEnvironmentSnapshot
     packageEvidence = @($packageEvidence)
+    componentPackageEvidence = $componentPackageEvidence
     http3RunnerEvidence = $http3RunnerEvidence
     protocolLabRuns = @($protocolLabRunEvidence)
     readinessQuality = $readinessQuality
@@ -1530,6 +1699,21 @@ foreach ($package in $packageEvidence) {
     Add-Line $summary "  - Path: ``$($package.path)``"
     Add-Line $summary "  - SHA-256: ``$($package.sha256)``"
     Add-Line $summary "  - Command: ``$($package.command)``"
+}
+
+Add-Line $summary ""
+Add-Line $summary "## Component Package Evidence"
+Add-Line $summary ""
+Add-Line $summary "- Directory: ``$($componentPackageEvidence.directory)``"
+Add-Line $summary "- Present: ``$($componentPackageEvidence.present)``"
+if (-not [string]::IsNullOrWhiteSpace([string]$componentPackageEvidence.blocker)) {
+    Add-Line $summary "- Blocker: $($componentPackageEvidence.blocker)"
+}
+foreach ($package in @($componentPackageEvidence.packages)) {
+    Add-Line $summary "- ``$($package.packageId)`` version ``$($package.packageVersion)``"
+    Add-Line $summary "  - Kind: ``$($package.kind)``"
+    Add-Line $summary "  - Path: ``$($package.path)``"
+    Add-Line $summary "  - SHA-256: ``$($package.sha256)``"
 }
 
 Add-Line $summary ""

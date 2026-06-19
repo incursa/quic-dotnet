@@ -8,6 +8,8 @@ param(
 
     [string] $ProtocolLabRoot = "../protocol-lab",
 
+    [string] $ProtocolLabExecutionRoot,
+
     [string] $Project,
 
     [string] $Configuration = "Release",
@@ -56,6 +58,31 @@ function Resolve-PathOrThrow {
     return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Path).Path)
 }
 
+function Resolve-OptionalProtocolLabExecutionRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ContractRoot,
+
+        [string] $RequestedExecutionRoot
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($RequestedExecutionRoot)) {
+        return Resolve-PathOrThrow -Path $RequestedExecutionRoot -Description "ProtocolLab execution root"
+    }
+
+    $environmentRoot = [Environment]::GetEnvironmentVariable("PROTOCOL_LAB_EXECUTION_ROOT")
+    if (-not [string]::IsNullOrWhiteSpace($environmentRoot) -and (Test-Path -LiteralPath $environmentRoot)) {
+        return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $environmentRoot).Path)
+    }
+
+    $siblingInternalRoot = Join-Path (Split-Path -Parent $ContractRoot) "protocol-lab-internal"
+    if (Test-Path -LiteralPath $siblingInternalRoot) {
+        return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $siblingInternalRoot).Path)
+    }
+
+    return $ContractRoot
+}
+
 function Get-PackageTargetConfig {
     param(
         [Parameter(Mandatory = $true)]
@@ -82,9 +109,9 @@ function Get-PackageTargetConfig {
                 DefaultProject = "eng/protocol-lab/src/Incursa.ProtocolLab.Adapters.IncursaRawQuic/Incursa.ProtocolLab.Adapters.IncursaRawQuic.csproj"
                 ImplementationId = "quic-dotnet-raw-dev"
                 SuiteId = "quic-transport-v1-comparison"
-                ScenarioIds = @("quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
+                ScenarioIds = @("quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
                 SupportedSuiteIds = @("quic-transport-v1-comparison")
-                SupportedScenarioIds = @("quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
+                SupportedScenarioIds = @("quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
                 Protocol = "quic"
                 TestExecutorId = "quic-go-raw-load"
                 RequiredCapabilities = @("quicTransport", "quicStreams")
@@ -188,18 +215,21 @@ Assert-RunSelection `
     -RequiredCapabilities $RequiredCapability
 
 $protocolLabRootFullPath = Resolve-PathOrThrow -Path $ProtocolLabRoot -Description "ProtocolLab root"
+$protocolLabExecutionRootFullPath = Resolve-OptionalProtocolLabExecutionRoot `
+    -ContractRoot $protocolLabRootFullPath `
+    -RequestedExecutionRoot $ProtocolLabExecutionRoot
 
-$rawComponentPackageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabRawQuicComponentPackages.ps1"
+$rawComponentPackageBuilder = Join-Path $protocolLabExecutionRootFullPath "scripts/lab/New-ProtocolLabRawQuicComponentPackages.ps1"
 $rawComponentPackageBuilderExists = Test-Path -LiteralPath $rawComponentPackageBuilder -PathType Leaf
 
-$h3ComponentPackageBuilder = Join-Path $protocolLabRootFullPath "scripts/lab/New-ProtocolLabH3ComponentPackages.ps1"
+$h3ComponentPackageBuilder = Join-Path $protocolLabExecutionRootFullPath "scripts/lab/New-ProtocolLabH3ComponentPackages.ps1"
 $h3ComponentPackageBuilderExists = Test-Path -LiteralPath $h3ComponentPackageBuilder -PathType Leaf
 if ($PackageTarget -eq "RawQuic" -and -not $rawComponentPackageBuilderExists -and $PackageReference.Count -eq 0) {
-    throw "ProtocolLab raw QUIC component package builder was not found: $rawComponentPackageBuilder. Pass -PackageReference entries as 'packageId|packageVersion|sha256' for already-installed raw QUIC scenario and test-executor packages."
+    throw "ProtocolLab raw QUIC component package builder was not found: $rawComponentPackageBuilder. Package-backed raw QUIC jobs require package-provided scenario and test-executor inventory; pass -PackageReference entries as 'packageId|packageVersion|sha256' or set -ProtocolLabExecutionRoot to protocol-lab-internal."
 }
 
-if ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and -not $h3ComponentPackageBuilderExists -and $PackageReference.Count -eq 0) {
-    throw "ProtocolLab H3 component package builder was not found: $h3ComponentPackageBuilder. Pass -PackageReference entries as 'packageId|packageVersion|sha256' for already-installed H3 scenario and test-executor packages."
+if ($PackageTarget -eq "Http3" -and -not $h3ComponentPackageBuilderExists -and $PackageReference.Count -eq 0) {
+    throw "ProtocolLab H3 component package builder was not found: $h3ComponentPackageBuilder. Package-backed H3 jobs require package-provided scenario and test-executor inventory; pass -PackageReference entries as 'packageId|packageVersion|sha256' or set -ProtocolLabExecutionRoot to protocol-lab-internal."
 }
 
 function ConvertTo-LabPackageReference {
@@ -335,7 +365,7 @@ if ($PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
 
     $componentPackageResultJson = & pwsh @componentArgs
     if ($LASTEXITCODE -ne 0) {
-        throw "H3 component package creation failed."
+        throw "Raw QUIC component package creation failed."
     }
 
     $componentPackageResult = $componentPackageResultJson | ConvertFrom-Json
@@ -345,7 +375,7 @@ if ($PackageTarget -eq "RawQuic" -and $rawComponentPackageBuilderExists) {
         [string]$componentPackageResult.scenarioPackage.path
     )
 }
-elseif ($PackageTarget -eq "Http3" -and [string]::Equals($SuiteId, "h3-large-body-v1", [StringComparison]::OrdinalIgnoreCase) -and $h3ComponentPackageBuilderExists) {
+elseif ($PackageTarget -eq "Http3" -and $h3ComponentPackageBuilderExists) {
     $componentOutputRoot = Join-Path (Get-Location) "artifacts/protocol-lab/component-packages/$($packageResult.packageVersion)"
     $componentArgs = @(
         "-NoLogo",
@@ -425,6 +455,8 @@ $jobResultJson | Set-Content -LiteralPath $jobResultPath
     componentPackages = $componentPackageResult
     componentPackageReferences = $componentPackageReferences
     packageReferences = $PackageReference
+    protocolLabRoot = $protocolLabRootFullPath
+    protocolLabExecutionRoot = $protocolLabExecutionRootFullPath
     uploadedPackages = $uploadedPackages
     artifactOutputPath = $artifactPath
     job = $jobResult

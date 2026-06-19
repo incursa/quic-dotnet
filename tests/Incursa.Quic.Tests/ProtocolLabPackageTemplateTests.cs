@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -11,6 +12,7 @@ public sealed class ProtocolLabPackageTemplateTests
 {
     private static readonly string[] RawQuicScenarioIds =
     [
+        "quic.transport.stream-throughput.1mb",
         "quic.transport.multiplex.100x64kb",
         "quic.transport.duplex-streams",
     ];
@@ -76,6 +78,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("IncursaRawQuicServer", implementationYaml);
         Assert.Contains("quic", ReadYamlList(implementationYaml, "supportedProtocols"));
         Assert.Contains("quic.transport", ReadYamlList(implementationYaml, "supportedWorkloadFamilies"));
+        Assert.Contains("quic.transport.stream-throughput.1mb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.multiplex.100x64kb", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Contains("quic.transport.duplex-streams", ReadYamlList(implementationYaml, "supportedScenarios"));
         Assert.Equal(RawQuicScenarioIds, ReadYamlList(implementationYaml, "supportedScenarios"));
@@ -139,6 +142,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Test-NoRestoreRuntimeAssetFailure", builderScript);
         Assert.Contains("Rerun the package build once without -NoRestore", builderScript);
         Assert.Contains("Remove-Item -LiteralPath $publishRoot", builderScript);
+        Assert.Contains("Join-Path $PSScriptRoot \"..\\..\"", builderScript);
+        Assert.DoesNotContain("(Get-Location).Path", builderScript, StringComparison.Ordinal);
         Assert.DoesNotContain("$manifest.environments = @($executionManifest.environments)", builderScript);
         Assert.DoesNotContain("$manifest.dependencies = $executionManifest.dependencies", builderScript);
         Assert.Contains("$executionManifest.environments = @(", builderScript);
@@ -202,10 +207,19 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("TestExecutorId = \"quic-go-raw-load\"", helperScript);
         Assert.Contains("-TestExecutorId", helperScript);
         Assert.Contains("SupportedScenarioIds", helperScript);
+        Assert.Contains("quic.transport.stream-throughput.1mb", helperScript);
         Assert.Contains("quic.transport.multiplex.100x64kb", helperScript);
         Assert.Contains("quic.transport.duplex-streams", helperScript);
         Assert.Contains("New-ProtocolLabRawQuicComponentPackages.ps1", helperScript);
         Assert.Contains("New-ProtocolLabH3ComponentPackages.ps1", helperScript);
+        Assert.Contains("Package-backed raw QUIC jobs require package-provided scenario and test-executor inventory", helperScript);
+        Assert.Contains("Package-backed H3 jobs require package-provided scenario and test-executor inventory", helperScript);
+        Assert.Contains("set -ProtocolLabExecutionRoot to protocol-lab-internal", helperScript);
+        Assert.DoesNotContain("Continuing with the implementation package and the worker catalog", helperScript);
+        Assert.Contains("ProtocolLabExecutionRoot", helperScript);
+        Assert.Contains("PROTOCOL_LAB_EXECUTION_ROOT", helperScript);
+        Assert.Contains("$protocolLabExecutionRootFullPath", helperScript);
+        Assert.Contains("protocolLabExecutionRoot = $protocolLabExecutionRootFullPath", helperScript);
         Assert.Contains("h3-large-body-v1", helperScript);
         Assert.Contains("http3.payload.bytes.64kb", helperScript);
         Assert.Contains("http3.payload.bytes.1mb", helperScript);
@@ -342,6 +356,11 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("LocalMaxRelativeRange", script);
         Assert.Contains("PublishableMaxRelativeRange", script);
         Assert.Contains("checksumInventory", script);
+        Assert.Contains("ComponentPackageDirectory", script);
+        Assert.Contains("PROTOCOL_LAB_COMPONENT_PACKAGE_DIRECTORY", script);
+        Assert.Contains("componentPackageEvidence", script);
+        Assert.Contains("Component Package Evidence", script);
+        Assert.Contains("Get-ComponentPackageEvidence", script);
         Assert.Contains("publishableRunbook", script);
         Assert.Contains("isolatedLocalUpgradeRequirements", script);
         Assert.Contains("readinessProofCommandTemplate", script);
@@ -392,14 +411,23 @@ public sealed class ProtocolLabPackageTemplateTests
         var contractRoot = Path.Combine(temporaryRoot, "protocol-lab");
         var executionRoot = Path.Combine(temporaryRoot, "protocol-lab-internal");
         var benchmarkScriptDirectory = Path.Combine(executionRoot, "scripts", "benchmarking");
+        var componentPackageDirectory = Path.Combine(temporaryRoot, "protocol-lab-components", "artifacts", "packages");
         var runRoot = Path.Combine(temporaryRoot, "runs", "local-repeat");
+        var missingAggregateRunRoot = Path.Combine(temporaryRoot, "runs", "missing-aggregate");
         var outputRoot = Path.Combine(temporaryRoot, "readiness");
 
         Directory.CreateDirectory(contractRoot);
         Directory.CreateDirectory(benchmarkScriptDirectory);
+        Directory.CreateDirectory(componentPackageDirectory);
         Directory.CreateDirectory(runRoot);
+        Directory.CreateDirectory(missingAggregateRunRoot);
         File.WriteAllText(Path.Combine(executionRoot, "Incursa.ProtocolLab.sln"), "");
         File.WriteAllText(Path.Combine(benchmarkScriptDirectory, "Invoke-ProtocolLabBenchmarkSet.ps1"), "");
+        CreateComponentPackage(
+            Path.Combine(componentPackageDirectory, "org.protocol-lab.components.executor.quic-go-raw-load.0.1.0.win-x64.plabpkg"),
+            "org.protocol-lab.components.executor.quic-go-raw-load",
+            "0.1.0",
+            "test-executor");
         File.WriteAllText(Path.Combine(runRoot, "summary.md"), "# Synthetic run");
         File.WriteAllText(Path.Combine(runRoot, "run.json"), "{}");
         File.WriteAllText(Path.Combine(runRoot, "evidence-report.json"), "{}");
@@ -469,6 +497,10 @@ public sealed class ProtocolLabPackageTemplateTests
                 contractRoot,
                 "-ProtocolLabExecutionRoot",
                 executionRoot,
+                "-ComponentPackageDirectory",
+                componentPackageDirectory,
+                "-ComponentPackage",
+                "org.protocol-lab.components.executor.quic-go-raw-load",
                 "-OutputRoot",
                 outputRoot,
                 "-RunId",
@@ -484,6 +516,12 @@ public sealed class ProtocolLabPackageTemplateTests
             var root = document.RootElement;
 
             Assert.Equal("quic-dotnet-protocol-lab-readiness-v2", root.GetProperty("schemaVersion").GetString());
+            var componentEvidence = root.GetProperty("componentPackageEvidence");
+            Assert.True(componentEvidence.GetProperty("present").GetBoolean());
+            var componentPackage = Assert.Single(componentEvidence.GetProperty("packages").EnumerateArray());
+            Assert.Equal("org.protocol-lab.components.executor.quic-go-raw-load", componentPackage.GetProperty("packageId").GetString());
+            Assert.Equal("0.1.0", componentPackage.GetProperty("packageVersion").GetString());
+            Assert.Equal(64, componentPackage.GetProperty("sha256").GetString()!.Length);
             Assert.Equal("local-lab", root.GetProperty("readinessQuality").GetProperty("evidenceClass").GetString());
             Assert.Equal("blocked", root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("status").GetString());
             Assert.Contains(
@@ -566,6 +604,33 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.Contains("## Isolated-Local Upgrade Runbook", generatedReadme);
             Assert.Contains("separate-target-and-load-generator-host", generatedReadme);
             Assert.Contains("Rerun readiness proof", generatedReadme);
+
+            var missingResult = RunPowerShellFile(
+                scriptPath,
+                "-ProtocolLabRoot",
+                contractRoot,
+                "-ProtocolLabExecutionRoot",
+                executionRoot,
+                "-ComponentPackageDirectory",
+                componentPackageDirectory,
+                "-OutputRoot",
+                outputRoot,
+                "-RunId",
+                "test-readiness-missing-aggregate",
+                "-SkipPackageBuild",
+                "-ProtocolLabRunRoot",
+                missingAggregateRunRoot);
+
+            Assert.Equal(0, missingResult.ExitCode);
+            var missingManifestPath = Path.Combine(outputRoot, "test-readiness-missing-aggregate", "readiness-manifest.json");
+            using var missingDocument = JsonDocument.Parse(File.ReadAllText(missingManifestPath));
+            var missingRun = Assert.Single(missingDocument.RootElement.GetProperty("protocolLabRuns").EnumerateArray());
+            Assert.False(missingRun.GetProperty("present").GetBoolean());
+            Assert.Equal("aggregate-results.json was not found", missingRun.GetProperty("blocker").GetString());
+            Assert.Equal("blocked", missingRun.GetProperty("publishability").GetProperty("status").GetString());
+            Assert.Contains(
+                missingRun.GetProperty("publishability").GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "aggregate-results-json-missing");
         }
         finally
         {
@@ -601,6 +666,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("IncursaQuicVersion", script);
         Assert.Contains("IncursaQpackVersion", script);
         Assert.Contains("IncursaQuicHttp3Version", script);
+        Assert.Contains("ComponentPackageDirectory", script);
+        Assert.Contains("-ComponentPackageDirectory", script);
+        Assert.Contains("-ComponentPackageMaterializationRoot", script);
         Assert.Contains("Pass -PackageVersion explicitly or align package pins", script);
     }
 
@@ -686,6 +754,30 @@ public sealed class ProtocolLabPackageTemplateTests
         }
 
         return new ProcessResult(process.ExitCode, output + error);
+    }
+
+    private static void CreateComponentPackage(string packagePath, string packageId, string packageVersion, string kind)
+    {
+        using var archive = ZipFile.Open(packagePath, ZipArchiveMode.Create);
+        var manifest = JsonSerializer.Serialize(new
+        {
+            schemaVersion = "protocol-lab-package-v2",
+            packageId,
+            packageVersion,
+            kind,
+            displayName = packageId,
+            entryManifests = new[] { "test-executors/fixture.yaml" },
+        });
+        AddZipEntry(archive, "protocol-lab-package.json", manifest);
+        AddZipEntry(archive, "test-executors/fixture.yaml", "schemaVersion: protocol-lab-test-executor-v1");
+    }
+
+    private static void AddZipEntry(ZipArchive archive, string entryName, string content)
+    {
+        var entry = archive.CreateEntry(entryName);
+        using var stream = entry.Open();
+        using var writer = new StreamWriter(stream);
+        writer.Write(content);
     }
 
     private static ProcessResult RunPowerShellFile(string scriptPath, params string[] arguments)

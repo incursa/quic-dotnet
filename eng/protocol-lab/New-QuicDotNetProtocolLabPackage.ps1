@@ -227,7 +227,7 @@ function Invoke-DotNetPublish {
     }
 }
 
-$repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path)
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $targetConfig = Get-PackageTargetConfig -Target $PackageTarget
 if ([string]::IsNullOrWhiteSpace($Project)) {
     $Project = $targetConfig.DefaultProject
