@@ -341,11 +341,12 @@ public sealed class Http3Server : IAsyncDisposable
             EmitStreamOpenedDiagnostic(diagnosticsSink, "server", stream.Id, streamKind);
             _ = stream.Type == QuicStreamType.Bidirectional
                 ? HandleRequestStreamAsync(connection, stream, controlStream, qpackState, cancellationToken)
-                : ObservePeerUnidirectionalStreamAsync(stream, dispatcher, dispatcherGate, qpackState, cancellationToken);
+                : ObservePeerUnidirectionalStreamAsync(connection, stream, dispatcher, dispatcherGate, qpackState, cancellationToken);
         }
     }
 
     private async Task ObservePeerUnidirectionalStreamAsync(
+        QuicConnection connection,
         QuicStream stream,
         Http3StreamDispatcher dispatcher,
         object dispatcherGate,
@@ -419,9 +420,15 @@ public sealed class Http3Server : IAsyncDisposable
             {
                 SuppressExpectedException(exception);
             }
+            catch (QPackException exception)
+            {
+                EmitError(exception);
+                await TryCloseConnectionAsync(connection, checked((long)exception.ErrorCode), cancellationToken).ConfigureAwait(false);
+            }
             catch (Http3Exception exception)
             {
                 EmitError(exception);
+                await TryCloseConnectionAsync(connection, checked((long)exception.ErrorCode), cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -657,7 +664,7 @@ public sealed class Http3Server : IAsyncDisposable
                 }
 
                 EmitError(exception);
-                await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
+                await TryCloseConnectionAsync(connection, checked((long)exception.ErrorCode), cancellationToken).ConfigureAwait(false);
             }
             catch (Http3Exception exception)
             {
@@ -667,7 +674,7 @@ public sealed class Http3Server : IAsyncDisposable
                 }
 
                 EmitError(exception);
-                await TryWriteResponseAsync(stream, CreateBadRequestResponse(), cancellationToken).ConfigureAwait(false);
+                await TryCloseConnectionAsync(connection, checked((long)exception.ErrorCode), cancellationToken).ConfigureAwait(false);
             }
             catch (ArgumentException exception)
             {
@@ -881,6 +888,33 @@ public sealed class Http3Server : IAsyncDisposable
     {
         Http3HeaderValidationResult result = Http3HeaderValidator.ValidateRequestHeaders(headers, checked((ulong)body.Length));
         return new Http3Request(result.Method!, result.Scheme ?? string.Empty, result.Authority ?? string.Empty, result.Path ?? string.Empty, result.Protocol, headers, body);
+    }
+
+    private static async ValueTask TryCloseConnectionAsync(
+        QuicConnection connection,
+        long errorCode,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await connection.CloseAsync(errorCode, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException exception) when (cancellationToken.IsCancellationRequested)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (QuicException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (ObjectDisposedException exception)
+        {
+            SuppressExpectedException(exception);
+        }
+        catch (InvalidOperationException exception)
+        {
+            SuppressExpectedException(exception);
+        }
     }
 
     private async ValueTask TryWriteResponseAsync(

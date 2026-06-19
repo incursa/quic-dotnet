@@ -1300,7 +1300,7 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
-    public async Task RequestDataBeforeHeaders_Returns400()
+    public async Task RequestDataBeforeHeaders_ClosesConnectionWithFrameUnexpected()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
         {
@@ -1314,12 +1314,11 @@ public sealed class Http3MinimalServerTests
         await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
         byte[] dataFrame = Http3FrameWriter.WriteData("before headers"u8);
         await requestStream.WriteAsync(dataFrame, 0, dataFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
-        await WriteGetRequestHeadersAsync(requestStream, "/upload");
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        Http3Response response = await ReadResponseAsync(requestStream);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
-        Assert.Equal(400, response.StatusCode);
+        Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
     }
 
     [Fact]
@@ -1430,7 +1429,7 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
-    public async Task TruncatedRequestFrame_Returns400()
+    public async Task TruncatedRequestFrame_ClosesConnectionWithFrameError()
     {
         if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
         {
@@ -1447,9 +1446,9 @@ public sealed class Http3MinimalServerTests
         await requestStream.WriteAsync(truncatedHeadersFrame, 0, truncatedHeadersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
         await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
-        Http3Response response = await ReadResponseAsync(requestStream);
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
-        Assert.Equal(400, response.StatusCode);
+        Assert.Equal((ulong)Http3ErrorCode.FrameError, terminalState.Close.ApplicationErrorCode);
         Assert.Contains(
             diagnostics.Events,
             diagnostic => diagnostic.Kind == Http3DiagnosticKind.Error
@@ -1905,6 +1904,22 @@ public sealed class Http3MinimalServerTests
         Assert.NotNull(headers);
         QPackFieldLine status = Assert.Single(headers, header => header.Name == ":status");
         return new Http3Response(int.Parse(status.Value), headers, [.. body], streamCompleted: true);
+    }
+
+    private static async Task<QuicConnectionTerminalState> WaitForConnectionCloseAsync(QuicConnection connection)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(10);
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            if (connection.Runtime.TerminalState is QuicConnectionTerminalState terminalState)
+            {
+                return terminalState;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(25));
+        }
+
+        throw new TimeoutException("Timed out waiting for the peer HTTP/3 connection close.");
     }
 
     private static async Task<QPackFieldLine[]> ReadResponseHeadersAsync(QuicStream stream)
