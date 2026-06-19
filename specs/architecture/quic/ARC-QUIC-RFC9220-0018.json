@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9220-0018",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "HTTP/3 WebSocket Local Peer Proof Harness Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Define a repeatable local-loopback peer proof for the existing RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0003",
+    "ARC-QUIC-RFC9220-0016",
+    "ARC-QUIC-RFC9220-0017",
+    "WI-QUIC-RFC9220-0018",
+    "VER-QUIC-RFC9220-0018"
+  ],
+  "satisfies": [
+    "REQ-QUIC-RFC9220-0017",
+    "REQ-QUIC-RFC9220-0018",
+    "REQ-QUIC-RFC9220-0019",
+    "REQ-QUIC-RFC9220-0022",
+    "REQ-QUIC-RFC9220-0030",
+    "REQ-QUIC-RFC9220-0031"
+  ],
+  "key_components": [
+    "src/Incursa.Quic.Http3/Http3Client.cs",
+    "src/Incursa.Quic.Http3/Http3Server.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketClientTunnelContext.cs",
+    "src/Incursa.Quic.Http3/Http3WebSocketTunnelContext.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs",
+    "scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1"
+  ],
+  "design_summary": "The local peer proof keeps the production `Http3Client` and `Http3Server` APIs in the test path and drives a single accepted WebSocket Extended CONNECT tunnel through request/response metadata, server ping and client pong helper behavior, text exchange, a buffered 6000-byte binary exchange, client close, and server close echo. The PowerShell proof wrapper runs only that aggregate test, stores TRX/stdout/stderr under `.artifacts/http3-websocket-local-peer/<run-id>`, and emits JSON/Markdown manifests with SHA256 hashes.",
+  "data_and_state_considerations": "The proof is intentionally local-loopback peer evidence: client and server run in the same test process but communicate over the public QUIC and HTTP/3 APIs rather than direct parser helpers. The aggregate test complements the existing requirement-home tests without changing WebSocket support scope or claiming external interoperability.",
+  "edge_cases_and_constraints": [
+    "The proof requires platform QUIC listener and connection support; unsupported local platforms return from the xUnit test consistently with the existing loopback tests.",
+    "The 6000-byte binary payload crosses the default WebSocket tunnel read-buffer size to exercise buffered frame assembly.",
+    "The generated artifacts are local evidence, not external peer, isolated-host, ProtocolLab publishable, or remote CI evidence."
+  ],
+  "risks": [
+    "The harness can only prove the in-repo client/server pair until an external WebSocket-over-H3 peer is wired.",
+    "The proof does not cover production proxy target, authorization, timeout, or deployment policy."
+  ]
+}

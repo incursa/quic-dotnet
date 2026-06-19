@@ -1,0 +1,45 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9220-0018",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "HTTP/3 WebSocket Local Peer Proof Harness Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0018",
+    "WI-QUIC-RFC9220-0018"
+  ],
+  "verification_method": "Focused local-loopback peer proof script, aggregate HTTP/3 WebSocket xUnit test, TRX/stdout/stderr capture, artifact hashing, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "REQ-QUIC-RFC9220-0017",
+    "REQ-QUIC-RFC9220-0018",
+    "REQ-QUIC-RFC9220-0019",
+    "REQ-QUIC-RFC9220-0022",
+    "REQ-QUIC-RFC9220-0030",
+    "REQ-QUIC-RFC9220-0031"
+  ],
+  "scope": "This verification covers a local-loopback peer proof for the already trace-owned RFC 9220 WebSocket-over-HTTP/3 tunnel surface: Extended CONNECT setup, accepted metadata, server ping/client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo.",
+  "preconditions": [
+    "Platform QUIC client and listener support are available locally.",
+    "The existing RFC 9220 unit and loopback requirement homes remain the source of detailed behavior coverage.",
+    "External WebSocket-over-H3 peer proof remains out of scope for this local-loopback artifact."
+  ],
+  "procedure": [
+    "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId 20260619T0124Z-local-peer`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~WebSocketExtendedConnect_LocalPeerHarness_ExercisesClientServerLifecycle\"`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -Profiles core`.",
+    "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "The proof script and aggregate test pass, the manifest records one passed test, the artifact hashes are stable for the run, SpecTrace validation accepts the new artifacts, and diff hygiene is clean.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::WebSocketExtendedConnect_LocalPeerHarness_ExercisesClientServerLifecycle",
+    "scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1",
+    ".artifacts/http3-websocket-local-peer/20260619T0124Z-local-peer/rfc9220-local-peer-proof.json",
+    ".artifacts/http3-websocket-local-peer/20260619T0124Z-local-peer/rfc9220-local-peer-proof.md",
+    ".artifacts/http3-websocket-local-peer/20260619T0124Z-local-peer/rfc9220-local-peer.trx"
+  ],
+  "status_summary": "The 2026-06-19 local-loopback peer proof passed one aggregate RFC 9220 WebSocket-over-HTTP/3 test. Manifest SHA256: EA455456126832B995F2B6C7D06B3610A346675D0CDEC145FE927264B6AC4640. Report SHA256: 8C7D4C836D66D6C7DFEEA3AAF67367EFFD282DC13ED77485D6E1270B27B075B3. TRX SHA256: 362E45D69E541EF7AF10CB23DCAD0E7E514F44E4B1E8BE7FCA48292256A42ADD. Evidence class is local-loopback-peer; it is not external peer, isolated-host, publishable, or remote CI evidence."
+}

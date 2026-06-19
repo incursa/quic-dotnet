@@ -1,0 +1,38 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9220-0018",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "HTTP/3 WebSocket Local Peer Proof Harness Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9220",
+    "ARC-QUIC-RFC9220-0018",
+    "VER-QUIC-RFC9220-0018"
+  ],
+  "addresses": [
+    "REQ-QUIC-RFC9220-0017",
+    "REQ-QUIC-RFC9220-0018",
+    "REQ-QUIC-RFC9220-0019",
+    "REQ-QUIC-RFC9220-0022",
+    "REQ-QUIC-RFC9220-0030",
+    "REQ-QUIC-RFC9220-0031"
+  ],
+  "summary": "Add a repeatable local-loopback peer proof for the RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
+  "planned_changes": "- Add an aggregate HTTP/3 loopback test that opens a client WebSocket tunnel through the public client/server APIs.\n- Exercise accepted response metadata, server ping with client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo in one peer-style flow.\n- Add a proof script that stores TRX/stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-local-peer/<run-id>`.",
+  "verification_plan": "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId <run-id>`, core SpecTrace validation, regenerated QUIC requirement triage when trace artifacts change, focused WebSocket tests, and diff hygiene.",
+  "verification_links": [
+    "VER-QUIC-RFC9220-0018"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9220-0018"
+  ],
+  "out_of_scope": [
+    "External WebSocket-over-H3 peer interoperability.",
+    "Cross-host or isolated-host ProtocolLab evidence.",
+    "Production proxy target, timeout, authorization, or deployment policy.",
+    "New RFC 9220 requirement ownership beyond the already trace-owned behavior."
+  ],
+  "completion_notes": "The local-loopback peer proof passed under `.artifacts/http3-websocket-local-peer/20260619T0124Z-local-peer` and remains explicitly narrower than external peer proof."
+}
