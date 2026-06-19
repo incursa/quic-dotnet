@@ -227,7 +227,7 @@ public sealed class Http3Server : IAsyncDisposable
                     });
                 }
 
-                ConnectionQPackState qpackState = new();
+                ConnectionQPackState qpackState = new(localSettings);
                 QuicStream controlStream = await OpenRequiredUnidirectionalStreamsAsync(connection, cancellationToken).ConfigureAwait(false);
                 await AcceptStreamsAsync(connection, controlStream, qpackState, cancellationToken).ConfigureAwait(false);
             }
@@ -512,6 +512,10 @@ public sealed class Http3Server : IAsyncDisposable
         {
             qpackState.ProcessPeerEncoderStreamBytes(initialPayload);
         }
+        else
+        {
+            qpackState.ProcessPeerDecoderStreamBytes(initialPayload);
+        }
 
         while (true)
         {
@@ -525,6 +529,10 @@ public sealed class Http3Server : IAsyncDisposable
             if (streamKind == Http3StreamKind.QPackEncoder)
             {
                 qpackState.ProcessPeerEncoderStreamBytes(buffer.AsSpan(0, bytesRead));
+            }
+            else
+            {
+                qpackState.ProcessPeerDecoderStreamBytes(buffer.AsSpan(0, bytesRead));
             }
         }
     }
@@ -1714,8 +1722,18 @@ public sealed class Http3Server : IAsyncDisposable
         private readonly TaskCompletionSource<Http3Settings> peerSettings =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly Dictionary<ulong, TaskCompletionSource<QPackFieldLine[]>> blockedRequests = [];
+        private readonly QPackEncoder encoder;
         private QPackDecoder? decoder;
         private byte[] pendingEncoderStreamBytes = [];
+
+        internal ConnectionQPackState(Http3Settings localSettings)
+        {
+            ArgumentNullException.ThrowIfNull(localSettings);
+
+            encoder = new QPackEncoder(
+                checked((int)localSettings.QPackMaxTableCapacity),
+                checked((int)localSettings.QPackBlockedStreams));
+        }
 
         public void SetPeerSettings(Http3Settings settings)
         {
@@ -1769,6 +1787,19 @@ public sealed class Http3Server : IAsyncDisposable
                 }
 
                 CompleteUnblockedRequests(decoder.DecodeEncoderStream(bytes));
+            }
+        }
+
+        public void ProcessPeerDecoderStreamBytes(ReadOnlySpan<byte> bytes)
+        {
+            if (bytes.IsEmpty)
+            {
+                return;
+            }
+
+            lock (gate)
+            {
+                encoder.DecodeDecoderStream(bytes);
             }
         }
 

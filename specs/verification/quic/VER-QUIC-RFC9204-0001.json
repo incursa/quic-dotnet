@@ -11,7 +11,7 @@
     "ARC-QUIC-RFC9204-0001",
     "WI-QUIC-RFC9204-0001"
   ],
-  "verification_method": "Focused requirement-home tests, QPACK milestone and instruction-stream tests, HTTP/3 QPACK error-matrix tests, QPACK primitive benchmark Dry validation, SpecTrace JSON validation, and diff hygiene for the standalone RFC 9204 QPACK floor.",
+  "verification_method": "Focused requirement-home tests, QPACK milestone and instruction-stream tests, HTTP/3 QPACK error-matrix and integration tests, advisory local h3spec subset evidence, QPACK primitive benchmark Dry validation, SpecTrace JSON validation, and diff hygiene for the RFC 9204 QPACK floor.",
   "verifies": [
     "REQ-QUIC-RFC9204-S2-0001",
     "REQ-QUIC-RFC9204-S5-0001",
@@ -24,7 +24,7 @@
   ],
   "procedure": [
     "Run `dotnet build Incursa.Quic.slnx --no-restore`.",
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~QPackMilestoneTests|FullyQualifiedName~QPackInstructionStreamTests|FullyQualifiedName~Http3QPackErrorHandlingMatrixTests|FullyQualifiedName~REQ_QUIC_RFC9204\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-build --filter \"FullyQualifiedName~QPackMilestoneTests|FullyQualifiedName~QPackInstructionStreamTests|FullyQualifiedName~Http3QPackErrorHandlingMatrixTests|FullyQualifiedName~Http3MinimalServerTests.PeerQPackDecoderStream_ZeroInsertCountIncrement|FullyQualifiedName~REQ_QUIC_RFC9204\"`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `git diff --check`."
   ],
@@ -33,9 +33,12 @@
     "tests/Incursa.Quic.Tests/QPackMilestoneTests.cs",
     "tests/Incursa.Quic.Tests/QPackInstructionStreamTests.cs",
     "tests/Incursa.Quic.Tests/Http3QPackErrorHandlingMatrixTests.cs",
+    "tests/Incursa.Quic.Tests/Http3MinimalServerTests.cs::PeerQPackDecoderStream_ZeroInsertCountIncrement_ClosesConnectionWithDecoderStreamError",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9204/REQ-QUIC-RFC9204-0001.cs",
     "benchmarks/QPackPrimitiveBenchmarks.cs",
     "benchmarks/QPackFieldSectionBenchmarks.cs",
+    ".artifacts/http3-h3spec/20260619T0340Z-slice2-http3-qlog/h3spec-results.json",
+    ".artifacts/http3-h3spec/20260619T0340Z-slice2-http3-qlog/h3spec-report.md",
     ".artifacts/bdn-qpack-primitives-dry/results/Incursa.Quic.Benchmarks.QPackPrimitiveBenchmarks-report-github.md",
     ".artifacts/bdn-qpack-field-sections-dry/results/Incursa.Quic.Benchmarks.QPackFieldSectionBenchmarks-report-github.md",
     "src/Incursa.Qpack/QPackInteger.cs",
@@ -45,5 +48,5 @@
     "src/Incursa.Qpack/QPackDecoder.cs",
     "src/Incursa.Qpack/QPackDynamicTable.cs"
   ],
-  "status_summary": "The standalone QPACK implementation is trace-owned by canonical RFC 9204 artifacts and is covered by focused milestone, instruction-stream, and error-matrix tests. The primitive proof for `REQ-QUIC-RFC9204-S2-0001` directly covers classified positive raw and Huffman string literal decoding, negative malformed prefixed-integer and string-literal encodings, and edge coverage for boundary prefixed integers plus static-table first/last/out-of-range lookups; `QPackPrimitiveBenchmarks` provides a permanent BenchmarkDotNet surface for integer, string-literal, and static-table hot paths. The field-section proof for `REQ-QUIC-RFC9204-S5-0001` now explicitly classifies positive static/literal-name encode/decode cases, negative truncated literal field-line decoding, and edge cases for duplicate field-line preservation plus deterministic output. The dynamic-state proof for `REQ-QUIC-RFC9204-S6-0001` now explicitly classifies positive dynamic table insertion, blocking, unblocking, instruction-stream synchronization, negative malformed dynamic references/instructions, and edge capacity, eviction, partial-buffer, and blocked-stream-limit behavior. On 2026-06-10, BenchmarkDotNet Dry validation for `*QPackPrimitiveBenchmarks*` completed successfully with six cases and `*QPackFieldSectionBenchmarks*` completed successfully with five cases; those Dry runs prove the benchmark surfaces compile and execute but are not performance evidence or a public benchmark claim. Runtime HTTP/3 stream-state capture and restore work remains a separate layer concern."
+  "status_summary": "The standalone QPACK implementation is trace-owned by canonical RFC 9204 artifacts and is covered by focused milestone, instruction-stream, error-matrix, and HTTP/3 integration tests. The primitive proof for `REQ-QUIC-RFC9204-S2-0001` directly covers classified positive raw and Huffman string literal decoding, negative malformed prefixed-integer and string-literal encodings, and edge coverage for boundary prefixed integers plus static-table first/last/out-of-range lookups; `QPackPrimitiveBenchmarks` provides a permanent BenchmarkDotNet surface for integer, string-literal, and static-table hot paths. The field-section proof for `REQ-QUIC-RFC9204-S5-0001` now explicitly classifies positive static/literal-name encode/decode cases, negative truncated literal field-line decoding, and edge cases for duplicate field-line preservation plus deterministic output. The dynamic-state proof for `REQ-QUIC-RFC9204-S6-0001` now explicitly classifies positive dynamic table insertion, blocking, unblocking, instruction-stream synchronization, negative malformed dynamic references/instructions, peer QPACK decoder-stream parsing in the HTTP/3 server adapter, and edge capacity, eviction, partial-buffer, and blocked-stream-limit behavior. On 2026-06-19, focused local verification passed `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~Http3MinimalServerTests.PeerQPackDecoderStream_ZeroInsertCountIncrement|FullyQualifiedName~QPackInstructionStreamTests|FullyQualifiedName~Http3QPackErrorHandlingMatrixTests\"` with 35/35 tests, and the advisory local h3spec subset run `.artifacts/http3-h3spec/20260619T0340Z-slice2-http3-qlog` reported the QPACK decoder Insert Count Increment zero case passing while preserving two remaining mapped failures; the report SHA256 is `319619DE246B7EE294B8ED04A2FB954408F119CA9161680CC09068146E4F21D6` and the results SHA256 is `229870729898F80F1B21F2412C19397B40C2FCD7D7C1CFACD445B85A3FB99165`. On 2026-06-10, BenchmarkDotNet Dry validation for `*QPackPrimitiveBenchmarks*` completed successfully with six cases and `*QPackFieldSectionBenchmarks*` completed successfully with five cases; those Dry runs prove the benchmark surfaces compile and execute but are not performance evidence or a public benchmark claim. Runtime HTTP/3 stream-state capture and restore work remains a separate layer concern."
 }
