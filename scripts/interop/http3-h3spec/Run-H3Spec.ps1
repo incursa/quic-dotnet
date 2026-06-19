@@ -10,6 +10,8 @@ param(
     [string[]]$Skip = @(),
     [int]$TimeoutMilliseconds = 5000,
     [string]$Configuration = "Release",
+    [switch]$AcquireH3Spec,
+    [string]$AcquireH3SpecVersion = "v0.1.13",
     [switch]$NoBuild,
     [switch]$NoValidateCertificate,
     [switch]$NoStartServer,
@@ -42,6 +44,21 @@ function Resolve-RepoRoot {
 $repoRoot = Resolve-RepoRoot
 if ([string]::IsNullOrWhiteSpace($RunId)) {
     $RunId = (Get-Date).ToUniversalTime().ToString("yyyyMMddTHHmmssZ")
+}
+
+$h3specTargetHostName = $HostName
+if ($AcquireH3Spec) {
+    $installOutput = & (Join-Path $PSScriptRoot "Install-H3SpecTool.ps1") `
+        -Version $AcquireH3SpecVersion `
+        -PassThruJson
+
+    $tool = $installOutput | ConvertFrom-Json
+    $H3SpecExecutable = [string]$tool.executable
+    $H3SpecPrefixArguments = @($tool.prefixArguments)
+    $loopbackHostNames = @("127.0.0.1", "localhost", "::1")
+    if ([bool]$tool.usesDockerWrapper -and $loopbackHostNames -contains $HostName) {
+        $h3specTargetHostName = [string]$tool.recommendedHostName
+    }
 }
 
 $runRoot = Join-Path (Join-Path $repoRoot $ArtifactsRoot) $RunId
@@ -84,7 +101,7 @@ foreach ($item in $Skip) {
 }
 $h3specArguments += "--timeout"
 $h3specArguments += "$TimeoutMilliseconds"
-$h3specArguments += $HostName
+$h3specArguments += $h3specTargetHostName
 $h3specArguments += "$Port"
 
 $metadata = [ordered]@{
@@ -94,6 +111,7 @@ $metadata = [ordered]@{
     executable = $H3SpecExecutable
     arguments = $h3specArguments
     host = $HostName
+    h3specTargetHost = $h3specTargetHostName
     port = $Port
     planOnly = [bool]$PlanOnly
     stdout = $stdoutPath

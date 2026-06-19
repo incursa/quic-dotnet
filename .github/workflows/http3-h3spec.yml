@@ -64,7 +64,7 @@ jobs:
           sudo apt-get update
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends cabal-install ghc
           cabal update
-          cabal install h3spec-0.1.12 --installdir "$HOME/.local/bin" --overwrite-policy=always
+          cabal install h3spec-0.1.13 --installdir "$HOME/.local/bin" --overwrite-policy=always
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run h3spec harness

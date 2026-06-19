@@ -18,6 +18,7 @@ public sealed class REQ_QUIC_INT_0032
         string workItem = ReadRepositoryFile("specs/work-items/quic/WI-QUIC-INT-0026.json");
         string verification = ReadRepositoryFile("specs/verification/quic/VER-QUIC-INT-0026.json");
         string startScript = ReadRepositoryFile("scripts/interop/http3-h3spec/Start-H3SpecServer.ps1");
+        string installScript = ReadRepositoryFile("scripts/interop/http3-h3spec/Install-H3SpecTool.ps1");
         string runScript = ReadRepositoryFile("scripts/interop/http3-h3spec/Run-H3Spec.ps1");
         string stopScript = ReadRepositoryFile("scripts/interop/http3-h3spec/Stop-H3SpecServer.ps1");
         string parser = ReadRepositoryFile("scripts/interop/http3-h3spec/parse-h3spec-results.py");
@@ -41,6 +42,10 @@ public sealed class REQ_QUIC_INT_0032
         Assert.Contains("Incursa.Quic.Http3.FileServer.csproj", startScript, StringComparison.Ordinal);
         Assert.Contains("openssl", startScript, StringComparison.Ordinal);
         Assert.Contains("server-context.json", startScript, StringComparison.Ordinal);
+        Assert.Contains("v0.1.13", installScript, StringComparison.Ordinal);
+        Assert.Contains("host.docker.internal", installScript, StringComparison.Ordinal);
+        Assert.Contains("Invoke-H3SpecDocker.ps1", installScript, StringComparison.Ordinal);
+        Assert.Contains("AcquireH3Spec", runScript, StringComparison.Ordinal);
         Assert.Contains("RedirectStandardOutput", runScript, StringComparison.Ordinal);
         Assert.Contains("RedirectStandardError", runScript, StringComparison.Ordinal);
         Assert.Contains("h3spec-results.json", runScript, StringComparison.Ordinal);
@@ -50,7 +55,7 @@ public sealed class REQ_QUIC_INT_0032
         Assert.Contains("RFC 9204", parser, StringComparison.Ordinal);
         Assert.Contains("http3-adapter-boundary", parser, StringComparison.Ordinal);
         Assert.Contains("qpack-stream-state-boundary", parser, StringComparison.Ordinal);
-        Assert.Contains("h3spec-0.1.12", workflow, StringComparison.Ordinal);
+        Assert.Contains("h3spec-0.1.13", workflow, StringComparison.Ordinal);
         Assert.Contains("workflow_dispatch", workflow, StringComparison.Ordinal);
         Assert.Contains("plan-only", workflow, StringComparison.Ordinal);
         Assert.Contains("Run-H3Spec.ps1", workflow, StringComparison.Ordinal);
@@ -94,6 +99,8 @@ public sealed class REQ_QUIC_INT_0032
         Assert.Contains("\"RFC 9114\": \"http3-adapter-boundary\"", parser, StringComparison.Ordinal);
         Assert.Contains("\"RFC 9204\": \"qpack-stream-state-boundary\"", parser, StringComparison.Ordinal);
         Assert.Contains("TODO: {todo}", parser, StringComparison.Ordinal);
+        Assert.Contains("normalize_case_name", parser, StringComparison.Ordinal);
+        Assert.Contains("failureDetail", parser, StringComparison.Ordinal);
         Assert.Contains("RFC 9114/RFC 9204 failures", parser, StringComparison.Ordinal);
         Assert.Contains("Create or update a protocol-owned requirement/test", parser, StringComparison.Ordinal);
     }

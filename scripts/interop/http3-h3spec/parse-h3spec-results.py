@@ -15,6 +15,7 @@ FAILURE_LINE = re.compile(r"^\s*(?P<failure_id>\d+)\)\s+(?P<suite>.+?)\s+(?P<nam
 SUMMARY_LINE = re.compile(r"(?P<total>\d+)\s+examples?,\s+(?P<failures>\d+)\s+failures?")
 SECTION_TOKEN = re.compile(r"\[(?P<family>HTTP/3|QPACK|Transport|TLS)\s+(?P<section>[^\]]+)]")
 ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+CASE_MARKER_SUFFIX = re.compile(r"\s+\[[xv]]\s*$")
 
 RFC_BY_FAMILY = {
     "HTTP/3": "RFC 9114",
@@ -58,9 +59,15 @@ def parse_case_reference(name: str) -> dict[str, str]:
     }
 
 
+def normalize_case_name(name: str) -> str:
+    return CASE_MARKER_SUFFIX.sub("", name).strip()
+
+
 def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     cases: list[dict[str, Any]] = []
     failures_by_id: dict[str, dict[str, str]] = {}
+    failures_by_name: dict[tuple[str, str], dict[str, str]] = {}
+    current_failure: dict[str, str] | None = None
     current_suite = ""
     summary: dict[str, Any] = {
         "total": 0,
@@ -70,6 +77,14 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     for line in stdout.splitlines():
         line = ANSI_ESCAPE.sub("", line)
         stripped = line.strip()
+
+        if current_failure is not None:
+            if stripped.startswith("To rerun use:"):
+                current_failure = None
+            elif stripped and not FAILURE_LINE.match(line):
+                detail = current_failure.get("detail", "")
+                current_failure["detail"] = f"{detail}\n{stripped}".strip()
+
         if stripped and not line.startswith(" ") and not stripped.startswith("Finished") and "examples," not in stripped:
             current_suite = stripped
 
@@ -90,10 +105,16 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
 
         failure_match = FAILURE_LINE.match(line)
         if failure_match:
-            failures_by_id[failure_match.group("failure_id")] = {
+            failure = {
                 "suite": failure_match.group("suite").strip(),
                 "name": failure_match.group("name").strip(),
+                "detail": "",
             }
+            failures_by_id[failure_match.group("failure_id")] = failure
+            failures_by_name[
+                (failure["suite"], normalize_case_name(failure["name"]))
+            ] = failure
+            current_failure = failure
             continue
 
         summary_match = SUMMARY_LINE.search(line)
@@ -105,6 +126,13 @@ def parse_stdout(stdout: str) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         failure_id = case.get("failureId", "")
         if failure_id in failures_by_id:
             case["status"] = "fail"
+            case["failureDetail"] = failures_by_id[failure_id].get("detail", "")
+            continue
+
+        failure = failures_by_name.get((case["suite"], normalize_case_name(case["name"])))
+        if failure is not None:
+            case["status"] = "fail"
+            case["failureDetail"] = failure.get("detail", "")
 
     if summary["total"] == 0 and cases:
         summary["total"] = len(cases)
@@ -181,7 +209,8 @@ def render_markdown(result: dict[str, Any]) -> str:
             mapping = case["requirement"]
             gap = case["gap"] or "outside RFC 9114/RFC 9204 mapping"
             todo = f"Create or update a protocol-owned requirement/test for `{case['name']}`."
-            lines.append(f"| {case['name']} | {mapping} | {gap} | TODO: {todo} |")
+            detail = case.get("failureDetail", "").replace("|", "\\|")
+            lines.append(f"| {case['name']} | {mapping} | {gap}: {detail} | TODO: {todo} |")
     else:
         lines.append("No failing cases were parsed.")
 

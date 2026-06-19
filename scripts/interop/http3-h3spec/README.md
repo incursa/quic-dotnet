@@ -19,7 +19,28 @@ pwsh -NoProfile -File scripts\interop\http3-h3spec\Run-H3Spec.ps1 -PlanOnly
 
 ## Live Local Run
 
-Install `h3spec` or provide a wrapper command.
+Install `h3spec`, provide a wrapper command, or let the repo acquire the upstream
+Linux release under `.artifacts/tools` and run it through Docker without changing
+global `PATH`.
+
+```powershell
+pwsh -NoProfile -File scripts\interop\http3-h3spec\Run-H3Spec.ps1 `
+  -AcquireH3Spec `
+  -NoValidateCertificate `
+  -TimeoutMilliseconds 5000
+```
+
+To acquire only the local tool/wrapper:
+
+```powershell
+pwsh -NoProfile -File scripts\interop\http3-h3spec\Install-H3SpecTool.ps1
+```
+
+The Windows acquisition path downloads the upstream `h3spec-linux-x86_64` release
+binary and generates a Docker-backed wrapper under `.artifacts/tools/h3spec-v0.1.13/`.
+When `Run-H3Spec.ps1 -AcquireH3Spec` uses that wrapper with a loopback host, the
+h3spec target host is rewritten to `host.docker.internal` while the local server
+still binds on the requested port.
 
 ```powershell
 pwsh -NoProfile -File scripts\interop\http3-h3spec\Run-H3Spec.ps1 `

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-18T11:39:11.1323631-06:00",
-  "repo_root": ".",
+  "generated_at": "2026-06-18T18:35:16.8822868-06:00",
+  "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
   "sources": {
     "spec_files": [
       "specs/requirements/quic/SPEC-QUIC-RFC8999.json",
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-06-18T11:39:11.1294721-06:00",
+    "generated_at": "2026-06-18T18:35:16.8793449-06:00",
     "total_requirements": 2674,
     "by_state": {
       "trace_clean": 2674

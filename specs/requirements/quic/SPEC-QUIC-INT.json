@@ -1204,6 +1204,7 @@
         ],
         "x_code_refs": [
           "scripts/interop/http3-h3spec/Start-H3SpecServer.ps1",
+          "scripts/interop/http3-h3spec/Install-H3SpecTool.ps1",
           "scripts/interop/http3-h3spec/Stop-H3SpecServer.ps1",
           "scripts/interop/http3-h3spec/Run-H3Spec.ps1",
           "scripts/interop/http3-h3spec/parse-h3spec-results.py",
