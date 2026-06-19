@@ -1,3 +1,7 @@
+---
+title: "Incursa QUIC and HTTP/3 Metrics"
+---
+
 # Incursa QUIC and HTTP/3 Metrics
 
 Incursa exposes standard `System.Diagnostics.Metrics` instruments. The library does not add OpenTelemetry package dependencies, exporters, ETW, EventSource, or EventCounters. Collectors can subscribe to the meters by name.

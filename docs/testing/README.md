@@ -1,3 +1,7 @@
+---
+title: "Testing Docs"
+---
+
 # Testing Docs
 
 This folder documents the testing strategy and generated inventory outputs for `Incursa.Quic`.

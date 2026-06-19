@@ -1,3 +1,7 @@
+---
+title: "RFC 9114 HTTP/3 Stream Mapping"
+---
+
 # RFC 9114 HTTP/3 Stream Mapping
 
 This slice adds transport-agnostic HTTP/3 stream mapping and stream-type validation to `Incursa.Quic.Http3`.

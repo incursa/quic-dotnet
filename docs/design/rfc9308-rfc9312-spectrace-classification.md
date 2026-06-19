@@ -1,3 +1,7 @@
+---
+title: "RFC 9308 and RFC 9312 SpecTrace Classification"
+---
+
 # RFC 9308 and RFC 9312 SpecTrace Classification
 
 RFC 9308 and RFC 9312 are informational. The classifications below preserve the SpecTrace IDs while separating actual implementation obligations from application guidance, operational guidance, documentation boundaries, and no-action items.

@@ -1,3 +1,7 @@
+---
+title: "Incursa.Quic Handshake-Floor Stabilization"
+---
+
 # Incursa.Quic Handshake-Floor Stabilization
 
 This note scopes the narrow managed handshake-floor slice under active work. It does not widen the supported public promise, and it does not claim the remaining red tail is closed yet.

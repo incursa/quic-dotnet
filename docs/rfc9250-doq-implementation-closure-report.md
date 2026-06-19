@@ -1,3 +1,7 @@
+---
+title: "RFC 9250 DoQ Implementation Closure Report"
+---
+
 # RFC 9250 DoQ Implementation Closure Report
 
 Timestamp: `2026-05-30 15:34:27 -06:00`

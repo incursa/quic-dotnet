@@ -1,3 +1,7 @@
+---
+title: "RFC 9312 Manageability Diagnostics"
+---
+
 # RFC 9312 Manageability Diagnostics
 
 RFC 9312 is informational guidance about what operators and managed networks can infer from QUIC. This implementation treats it as an observability and documentation surface, not as a reason to change the QUIC wire image.

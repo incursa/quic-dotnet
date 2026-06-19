@@ -1,3 +1,7 @@
+---
+title: "Operations And Manageability"
+---
+
 # Operations And Manageability
 
 This guide is for operators deploying services that use `Incursa.Quic` and for

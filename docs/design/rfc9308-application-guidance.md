@@ -1,3 +1,7 @@
+---
+title: "RFC 9308 Application Guidance"
+---
+
 # RFC 9308 Application Guidance
 
 This note records how application protocols should use the current Incursa QUIC and HTTP/3 surfaces in light of RFC 9308. RFC 9308 is informational guidance, so this document does not create new transport features by itself.

@@ -1,3 +1,7 @@
+---
+title: "External HTTP/3 Interop Report"
+---
+
 # External HTTP/3 Interop Report
 
 This is the checked-in report template for the external HTTP/3 interop harness. Run the harness to generate a current report under `.artifacts/http3-external/<run-id>/report.md`.

@@ -1,0 +1,8 @@
+{
+  "slug": "quic-dotnet",
+  "title": "Incursa.Quic",
+  "section": "open-source",
+  "sourcePath": "docs",
+  "targetPath": "src/content/docs/open-source/quic-dotnet",
+  "publish": true
+}

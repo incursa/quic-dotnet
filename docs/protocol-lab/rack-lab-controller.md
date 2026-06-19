@@ -1,3 +1,7 @@
+---
+title: "ProtocolLab Rack Lab Controller"
+---
+
 # ProtocolLab Rack Lab Controller
 
 This repo can send trusted development builds to the internal ProtocolLab rack lab for cleaner benchmark and regression feedback.

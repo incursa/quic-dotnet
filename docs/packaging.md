@@ -1,3 +1,7 @@
+---
+title: "Packaging"
+---
+
 # Packaging
 
 This repository centralizes common package metadata in [`Directory.Build.props`](../Directory.Build.props) and dependency versions in [`Directory.Packages.props`](../Directory.Packages.props).

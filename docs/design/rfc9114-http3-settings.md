@@ -1,3 +1,7 @@
+---
+title: "RFC 9114 HTTP/3 SETTINGS Handling"
+---
+
 # RFC 9114 HTTP/3 SETTINGS Handling
 
 This slice adds semantic SETTINGS handling above the transport-agnostic HTTP/3 frame and stream layers.

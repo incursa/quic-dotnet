@@ -1,3 +1,7 @@
+---
+title: "Incursa.Quic Public API Surface"
+---
+
 # Incursa.Quic Public API Surface
 
 This note is the maintainer-facing companion to the public surface slice defined by `SPEC-QUIC-API`, `ARC-QUIC-API-0001`, `WI-QUIC-API-0001`, and `VER-QUIC-API-0001`.

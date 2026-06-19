@@ -1,3 +1,7 @@
+---
+title: "RFC 9114 HTTP/3 Frame Layer"
+---
+
 # RFC 9114 HTTP/3 Frame Layer
 
 This slice establishes a transport-agnostic HTTP/3 frame layer in `Incursa.Quic.Http3`.

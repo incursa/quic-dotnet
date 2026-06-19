@@ -1,3 +1,7 @@
+---
+title: "Documentation"
+---
+
 # Documentation
 
 This folder contains the main repository guides for building, packaging,

@@ -1,3 +1,7 @@
+---
+title: "Incursa HTTP/3 Sample App"
+---
+
 # Incursa HTTP/3 Sample App
 
 The ObjectStore sample is a small console app that hosts the repository HTTP/3 layer directly on top of the Incursa QUIC transport. It is meant to prove a realistic application shape without introducing ASP.NET Core as the server.

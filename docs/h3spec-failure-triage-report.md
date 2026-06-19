@@ -1,3 +1,7 @@
+---
+title: "h3spec Failure Triage Report Template"
+---
+
 # h3spec Failure Triage Report Template
 
 This template records h3spec failures against the local Incursa HTTP/3 server. Generated reports are written under `.artifacts/http3-h3spec/<run-id>/h3spec-report.md`.

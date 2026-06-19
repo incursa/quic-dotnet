@@ -1,3 +1,7 @@
+---
+title: "RFC 9204 QPACK First Milestone"
+---
+
 # RFC 9204 QPACK First Milestone
 
 This note tracks the standalone `Incursa.Qpack` package milestone. The first slice established the static, no-dynamic-table field-section floor. The second slice adds bounded dynamic-table state and blocked-stream handling without coupling QPACK to HTTP/3 hosting or QUIC transport internals. The third slice makes the QPACK encoder and decoder unidirectional instruction streams incremental so callers can feed network-sized buffers without assuming instruction alignment.

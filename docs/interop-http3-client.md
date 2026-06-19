@@ -1,3 +1,7 @@
+---
+title: "Minimal HTTP/3 client interop"
+---
+
 # Minimal HTTP/3 client interop
 
 This note covers the initial `Incursa.Quic.Http3.Http3Client` slice. The client opens QUIC with ALPN `h3`, creates the HTTP/3 control stream plus QPACK encoder and decoder streams, sends SETTINGS, and sends one GET request with QPACK static/literal field section encoding.

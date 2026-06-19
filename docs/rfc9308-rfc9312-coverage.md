@@ -1,3 +1,7 @@
+---
+title: "RFC 9308 / RFC 9312 Coverage Report"
+---
+
 # RFC 9308 / RFC 9312 Coverage Report
 
 This report records the final RFC 9308 and RFC 9312 coverage state for the

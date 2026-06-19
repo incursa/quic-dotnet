@@ -1,3 +1,7 @@
+---
+title: "ProtocolLab Lab Package"
+---
+
 # ProtocolLab Lab Package
 
 This repo can produce trusted internal ProtocolLab package v2 implementation archives (`.plabpkg`) from the current working tree and submit them to a lab controller.

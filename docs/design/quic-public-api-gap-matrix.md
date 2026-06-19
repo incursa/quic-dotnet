@@ -1,3 +1,7 @@
+---
+title: "Incursa.Quic Public API Gap Matrix"
+---
+
 # Incursa.Quic Public API Gap Matrix
 
 This note maps the current `Incursa.Quic` implementation against the public surface defined by:

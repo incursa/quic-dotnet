@@ -1,3 +1,7 @@
+---
+title: "QUIC/TLS Handshake Seam Walkthrough"
+---
+
 # QUIC/TLS Handshake Seam Walkthrough
 
 This is a reviewer aid for the code as it exists today. It is not a requirement artifact and it does not rewrite the architecture. Read it as a map of the current seam, the current ownership boundaries, and the current proof/commit split.

@@ -1,3 +1,7 @@
+---
+title: "QUIC Network Simulator Correctness Plan"
+---
+
 # QUIC Network Simulator Correctness Plan
 
 This page defines how simulator-backed network-condition tests should be tracked before they become implementation work.

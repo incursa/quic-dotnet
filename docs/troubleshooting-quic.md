@@ -1,3 +1,7 @@
+---
+title: "Troubleshooting QUIC"
+---
+
 # Troubleshooting QUIC
 
 This guide gives maintainers and operators a starting point for diagnosing

@@ -1,3 +1,7 @@
+---
+title: "SpecTrace Prep"
+---
+
 # SpecTrace Prep
 
 This note defines how `Incursa.Quic` moves from RFC text to traceable implementation work. It is repository guidance, not protocol design.

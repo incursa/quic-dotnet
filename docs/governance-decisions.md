@@ -1,3 +1,7 @@
+---
+title: "Governance Decisions"
+---
+
 # Governance Decisions
 
 This page records repository governance decisions for `quic-dotnet`.

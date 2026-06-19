@@ -1,3 +1,7 @@
+---
+title: "HTTP/3 and QPACK Error-Handling Matrix"
+---
+
 # HTTP/3 and QPACK Error-Handling Matrix
 
 This matrix records the expected protocol outcome for focused HTTP/3 and QPACK

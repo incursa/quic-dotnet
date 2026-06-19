@@ -1,3 +1,7 @@
+---
+title: "RFC 9221 QUIC DATAGRAM SpecTrace Plan"
+---
+
 # RFC 9221 QUIC DATAGRAM SpecTrace Plan
 
 This plan describes the trace-first path used to add RFC 9221 QUIC DATAGRAM support.
