@@ -564,6 +564,13 @@ public sealed class Http3MinimalServerTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9220-0017")]
+    [Requirement("REQ-QUIC-RFC9220-0018")]
+    [Requirement("REQ-QUIC-RFC9220-0019")]
+    [Requirement("REQ-QUIC-RFC9220-0022")]
+    [Requirement("REQ-QUIC-RFC9220-0030")]
+    [Requirement("REQ-QUIC-RFC9220-0031")]
+    [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "InteropProof")]
     public async Task WebSocketExtendedConnect_LocalPeerHarness_ExercisesClientServerLifecycle()
     {
@@ -606,10 +613,30 @@ public sealed class Http3MinimalServerTests
             .WaitAsync(TimeSpan.FromSeconds(10))
             ?? throw new InvalidOperationException("The WebSocket tunnel ended before the server ping arrived.");
         await tunnel.EchoPingAsync(serverPing).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-        await tunnel.WriteMessageAsync(Http3WebSocketOpcode.Text, "peer text"u8.ToArray())
-            .AsTask()
+        byte[] fragmentedTextFirst = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Text,
+            "frag"u8,
+            [0x21, 0x22, 0x23, 0x24],
+            final: false);
+        byte[] interleavedPing = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Ping,
+            "client-proof"u8,
+            [0x31, 0x32, 0x33, 0x34]);
+        byte[] fragmentedTextFinal = Http3WebSocketFrameWriter.WriteMasked(
+            Http3WebSocketOpcode.Continuation,
+            "mented text"u8,
+            [0x41, 0x42, 0x43, 0x44]);
+        await tunnel.Stream.WriteAsync(fragmentedTextFirst, 0, fragmentedTextFirst.Length)
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        await tunnel.Stream.WriteAsync(interleavedPing, 0, interleavedPing.Length)
+            .WaitAsync(TimeSpan.FromSeconds(10));
+        await tunnel.Stream.WriteAsync(fragmentedTextFinal, 0, fragmentedTextFinal.Length)
             .WaitAsync(TimeSpan.FromSeconds(10));
 
+        Http3WebSocketMessage clientPingPong = await tunnel.ReadMessageAsync()
+            .AsTask()
+            .WaitAsync(TimeSpan.FromSeconds(10))
+            ?? throw new InvalidOperationException("The WebSocket tunnel ended before the client ping pong arrived.");
         Http3WebSocketMessage textEcho = await tunnel.ReadMessageAsync()
             .AsTask()
             .WaitAsync(TimeSpan.FromSeconds(10))
@@ -636,8 +663,10 @@ public sealed class Http3MinimalServerTests
         Assert.Contains(tunnel.ResponseHeaders, header => header.Name == "sec-websocket-protocol" && header.Value == "proof.v1");
         Assert.Equal(Http3WebSocketOpcode.Ping, serverPing.Opcode);
         Assert.Equal("server-proof", System.Text.Encoding.UTF8.GetString(serverPing.Payload.Span));
+        Assert.Equal(Http3WebSocketOpcode.Pong, clientPingPong.Opcode);
+        Assert.Equal("client-proof", System.Text.Encoding.UTF8.GetString(clientPingPong.Payload.Span));
         Assert.Equal(Http3WebSocketOpcode.Text, textEcho.Opcode);
-        Assert.Equal("echo:peer text", System.Text.Encoding.UTF8.GetString(textEcho.Payload.Span));
+        Assert.Equal("echo:fragmented text", System.Text.Encoding.UTF8.GetString(textEcho.Payload.Span));
         Assert.Equal(Http3WebSocketOpcode.Binary, binaryEcho.Opcode);
         Assert.Equal(bufferedPayload, binaryEcho.Payload.ToArray());
         Assert.Equal(Http3WebSocketOpcode.Close, closeEcho.Opcode);
@@ -646,7 +675,8 @@ public sealed class Http3MinimalServerTests
         Assert.Equal("/socket?proof=local", webSocketHandler.Path);
         Assert.Equal("proof.v1, fallback", webSocketHandler.RequestSubprotocols);
         Assert.True(webSocketHandler.ObservedPong);
-        Assert.Equal("peer text", System.Text.Encoding.UTF8.GetString(webSocketHandler.TextPayload));
+        Assert.True(webSocketHandler.ObservedClientPing);
+        Assert.Equal("fragmented text", System.Text.Encoding.UTF8.GetString(webSocketHandler.TextPayload));
         Assert.Equal(bufferedPayload.Length, webSocketHandler.BinaryPayloadLength);
         Assert.Equal((ushort)1000, webSocketHandler.CloseStatusCode);
         Assert.Equal("done", webSocketHandler.CloseReason);
@@ -2666,6 +2696,8 @@ public sealed class Http3MinimalServerTests
 
         public bool ObservedPong { get; private set; }
 
+        public bool ObservedClientPing { get; private set; }
+
         public byte[] TextPayload { get; private set; } = [];
 
         public int BinaryPayloadLength { get; private set; }
@@ -2691,6 +2723,12 @@ public sealed class Http3MinimalServerTests
                     ?? throw new InvalidOperationException("The WebSocket tunnel ended before a pong frame arrived.");
                 ObservedPong = pongMessage.Opcode == Http3WebSocketOpcode.Pong
                     && System.Text.Encoding.UTF8.GetString(pongMessage.Payload.Span) == "server-proof";
+
+                Http3WebSocketMessage clientPingMessage = await context.ReadMessageAsync(cancellationToken)
+                    ?? throw new InvalidOperationException("The WebSocket tunnel ended before a client ping frame arrived.");
+                ObservedClientPing = clientPingMessage.Opcode == Http3WebSocketOpcode.Ping
+                    && System.Text.Encoding.UTF8.GetString(clientPingMessage.Payload.Span) == "client-proof";
+                await context.EchoPingAsync(clientPingMessage, cancellationToken).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
 
                 Http3WebSocketMessage textMessage = await context.ReadMessageAsync(cancellationToken)
                     ?? throw new InvalidOperationException("The WebSocket tunnel ended before a text frame arrived.");

@@ -131,7 +131,7 @@ $manifest = [ordered]@{
         "HTTP/3 Extended CONNECT setup",
         "accepted response metadata",
         "server ping and client pong helper",
-        "text frame exchange",
+        "fragmented client text frame exchange with an interleaved ping control frame",
         "buffered binary frame exchange across a 6000-byte payload",
         "client close and server close echo"
     )
