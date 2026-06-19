@@ -3,6 +3,8 @@
 
 namespace Incursa.Quic.Tests;
 
+using System.Net.Sockets;
+
 public sealed class QuicSocketEcnControlTests
 {
     [Fact]
@@ -17,5 +19,18 @@ public sealed class QuicSocketEcnControlTests
         Assert.Contains("IP_TOS", capability.Reason, StringComparison.Ordinal);
         Assert.Contains("IPV6_TCLASS", capability.Reason, StringComparison.Ordinal);
         Assert.Contains("native or control-message receive path", capability.Reason, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Trait("Category", "Guardrail")]
+    public void TryGetReceivedEcnCounts_ReturnsFalseForManagedReceiveResult()
+    {
+        SocketReceiveMessageFromResult receiveResult = new()
+        {
+            ReceivedBytes = 1,
+        };
+
+        Assert.False(QuicSocketEcnControl.TryGetReceivedEcnCounts(receiveResult, out QuicEcnCounts ecnCounts));
+        Assert.Equal(default, ecnCounts);
     }
 }

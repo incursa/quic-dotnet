@@ -26,6 +26,15 @@ internal static class QuicSocketEcnControl
             Reason: ReceiveMetadataUnsupportedReason);
     }
 
+    internal static bool TryGetReceivedEcnCounts(
+        SocketReceiveMessageFromResult receiveResult,
+        out QuicEcnCounts ecnCounts)
+    {
+        ecnCounts = default;
+        _ = receiveResult;
+        return false;
+    }
+
     internal static bool TrySetEcnMarkingIfPossible(Socket socket, QuicEcnMarking ecnMarking)
     {
         ArgumentNullException.ThrowIfNull(socket);

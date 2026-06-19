@@ -233,9 +233,15 @@ internal sealed class QuicConnectionEndpointHost : IAsyncDisposable, IDisposable
                 EmitSocketDatagramReceived(currentPathIdentity, receiveResult.ReceivedBytes);
                 byte[] datagramBuffer = datagramLease.Buffer;
                 ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
+                QuicEcnCounts? ecnCounts = QuicSocketEcnControl.TryGetReceivedEcnCounts(
+                    receiveResult,
+                    out QuicEcnCounts receivedEcnCounts)
+                    ? receivedEcnCounts
+                    : null;
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
                     datagram,
                     currentPathIdentity,
+                    ecnCounts,
                     ownedDatagramBuffer: datagramBuffer,
                     ownedDatagramBufferOwnership: datagramLease.Ownership);
                 ReadOnlyMemory<byte> observerDatagram = datagram;

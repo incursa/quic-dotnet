@@ -425,9 +425,15 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 EmitSocketDatagramReceived(pathIdentity, receiveResult.ReceivedBytes);
                 byte[] datagramBuffer = datagramLease.Buffer;
                 ReadOnlyMemory<byte> datagram = datagramBuffer.AsMemory(0, receiveResult.ReceivedBytes);
+                QuicEcnCounts? ecnCounts = QuicSocketEcnControl.TryGetReceivedEcnCounts(
+                    receiveResult,
+                    out QuicEcnCounts receivedEcnCounts)
+                    ? receivedEcnCounts
+                    : null;
                 QuicConnectionIngressResult ingressResult = endpoint.ReceiveDatagram(
                     datagram,
                     pathIdentity,
+                    ecnCounts,
                     ownedDatagramBuffer: datagramBuffer,
                     ownedDatagramBufferOwnership: datagramLease.Ownership);
                 EmitListenerIngressClassified(pathIdentity, ingressResult);
