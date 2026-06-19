@@ -106,6 +106,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads"

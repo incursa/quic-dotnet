@@ -84,6 +84,32 @@ public sealed class REQ_QUIC_RFC9287_S3_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Requirement("REQ-QUIC-RFC9000-S5P2-0002")]
+    [Trait("Category", "Positive")]
+    public void EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection()
+    {
+        var scenario = QuicS5P2PacketAssociationTestSupport.CreateRegisteredEndpoint(
+            QuicS5P2PacketAssociationTestSupport.RouteConnectionId);
+        using QuicConnectionRuntime runtime = scenario.Runtime;
+        using QuicConnectionRuntimeEndpoint endpoint = scenario.Endpoint;
+
+        byte[] datagram = QuicS5P2PacketAssociationTestSupport.BuildHandshakeDatagram(
+            QuicS5P2PacketAssociationTestSupport.RouteConnectionId);
+        datagram[0] = (byte)(datagram[0] & ~QuicPacketHeaderBits.FixedBitMask);
+
+        Assert.False(QuicPacketParser.TryParseLongHeader(datagram, out _));
+        Assert.True(QuicPacketParser.TryParseLongHeader(datagram, allowClearedFixedBit: true, out _));
+
+        QuicConnectionIngressResult result = endpoint.ReceiveDatagram(
+            datagram,
+            QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity());
+
+        Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, result.Disposition);
+        Assert.Equal(scenario.Handle, result.Handle);
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void RuntimeDispatchAcceptsClearedFixedBitWhenLocalEndpointAdvertisedGreaseQuicBit()

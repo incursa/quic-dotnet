@@ -842,6 +842,11 @@ function Invoke-IncursaClientPeerServerScenario {
         $DownloadPath,
         "--expect-status", "$ExpectedStatus"
     )
+    if (-not [string]::IsNullOrWhiteSpace($env:INCURSA_QUIC_DEBUG_APP_RX)) {
+        $clientArgs = @($clientArgs[0..13]) +
+            @("-e", "INCURSA_QUIC_DEBUG_APP_RX=$env:INCURSA_QUIC_DEBUG_APP_RX") +
+            @($clientArgs[14..($clientArgs.Length - 1)])
+    }
     $clientCommandLine = "docker $($clientArgs -join ' ')"
     Set-Content -LiteralPath $CommandPath -Value "$serverCommandLine`n$clientCommandLine"
 

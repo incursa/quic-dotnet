@@ -511,7 +511,7 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 null);
         }
 
-        if (!QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket longHeader))
+        if (!QuicPacketParser.TryParseLongHeader(packet, allowClearedFixedBit: true, out QuicLongHeaderPacket longHeader))
         {
             if (TryDispatchStatelessReset(datagram, pathIdentity, out QuicConnectionIngressResult parseFailureResetResult))
             {
@@ -539,6 +539,14 @@ internal sealed class QuicConnectionRuntimeEndpoint : IAsyncDisposable, IDisposa
                 out QuicLongPacketType packetType)
             && packetType == QuicLongPacketType.Retry)
         {
+            if (!longHeader.FixedBit)
+            {
+                return new QuicConnectionIngressResult(
+                    QuicConnectionIngressDisposition.Malformed,
+                    QuicConnectionEndpointHandlingKind.None,
+                    null);
+            }
+
             return new QuicConnectionIngressResult(
                 QuicConnectionIngressDisposition.EndpointHandling,
                 QuicConnectionEndpointHandlingKind.Retry,

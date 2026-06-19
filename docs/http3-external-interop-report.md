@@ -12,6 +12,7 @@ Last refreshed from local Docker evidence on 2026-06-19.
 - Focused empty/split-data breadth run: `.artifacts/http3-external/20260619T130112Z`
 - Focused quiche/ngtcp2 server run: `.artifacts/http3-external/20260619T124926Z`
 - Focused ngtcp2 server qlog-startup rerun: `.artifacts/http3-external/20260619T130437Z`
+- Focused ngtcp2 server RFC 9287 greased fixed-bit rerun: `.artifacts/http3-external/20260619T184808Z`
 - Focused quiche server large-response row: `.artifacts/http3-external/20260619T125037Z`
 - Focused pinned aioquic static GET-style run: `.artifacts/http3-external/20260619T055801Z`
 - Plan-only normalized matrix run: `.artifacts/http3-external/20260619T055646Z`
@@ -35,7 +36,7 @@ Last refreshed from local Docker evidence on 2026-06-19.
 | ngtcp2-client__incursa-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
 | incursa-client__aioquic-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
 | incursa-client__quiche-server | pass | pass | pass | skip | pass | skip | skip | skip | skip | skip |
-| incursa-client__ngtcp2-server | pass | pass | fail | skip | fail | skip | skip | skip | skip | skip |
+| incursa-client__ngtcp2-server | pass | pass | pass | skip | pass | skip | skip | skip | skip | skip |
 
 ## Current Findings
 
@@ -44,14 +45,14 @@ Last refreshed from local Docker evidence on 2026-06-19.
 - Latest focused pinned aioquic static subset result: `6 pass`, `0 fail`, `0 skip` across `incursa-client__incursa-server`, `aioquic-client__incursa-server`, and `incursa-client__aioquic-server` for `get-small` and `not-found`.
 - Latest focused external-client subset result: `12 pass`, `0 fail`, `0 skip` across `curl__incursa-server`, `quiche-client__incursa-server`, and `ngtcp2-client__incursa-server` for `get-small`, `not-found`, `get-large`, and `many-headers`.
 - Latest focused empty/split-data breadth result: `7 pass`, `0 fail`, `1 skip`; curl, quiche client, and ngtcp2/nghttp3 client all pass `get-empty` and `split-data`, and quiche-server passes `get-empty` while its `split-data` row remains explicitly unwired.
-- Latest focused external-server subset result: `incursa-client__quiche-server` passes `get-small`, `not-found`, and `get-large`; after creating the ngtcp2 qlog and sslkeylog directories before `wsslserver` starts, `incursa-client__ngtcp2-server` passes `get-small` and `get-empty` but still fails `not-found` and `get-large` with an Incursa client handshake timeout after the peer server starts.
+- Latest focused external-server subset result: `incursa-client__quiche-server` passes `get-small`, `not-found`, and `get-large`; after routing and opening RFC 9287 greased fixed-bit long-header packets through the Incursa endpoint/runtime, `incursa-client__ngtcp2-server` passes `get-small`, `get-empty`, `not-found`, and `get-large` against the local `ngtcp2/nghttp3` `wsslserver` container.
 - The 2026-06-19 plan-only normalized matrix run records 24 explicit rows for comma-separated PowerShell target/scenario arguments instead of collapsing them into a single skip row.
 - The checked-in RFC 9114 and RFC 9204 floors are now traced in the repo; the remaining skip rows are interop/harness gaps, not a claim that the protocol floor is missing.
 - `aioquic-client__incursa-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `incursa-client__aioquic-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `curl__incursa-server`, `quiche-client__incursa-server`, and `ngtcp2-client__incursa-server` are executable for the static client rows listed above with pinned local Docker images.
 - `incursa-client__quiche-server` starts a fresh quiche server container per scenario and passes the static rows listed above.
-- `incursa-client__ngtcp2-server` starts a fresh `wsslserver` container per scenario and now passes the smallest static rows; treat the remaining `not-found` and `get-large` timeouts as executable failing peer evidence, not skipped or blocked coverage.
+- `incursa-client__ngtcp2-server` starts a fresh `wsslserver` container per scenario and now passes the executable static rows listed above; the remaining ngtcp2-server skip rows are unwired advanced HTTP/3 scenarios, not current failing peer evidence.
 
 ## Commands
 

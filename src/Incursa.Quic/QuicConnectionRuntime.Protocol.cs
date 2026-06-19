@@ -382,7 +382,10 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects)
     {
         ReadOnlyMemory<byte> datagram = packetReceivedEvent.Datagram;
-        if (!QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
+        if (!QuicPacketParser.TryGetPacketNumberSpace(
+                datagram.Span,
+                CanReceiveGreasedQuicBitPackets,
+                out QuicPacketNumberSpace packetNumberSpace)
             || packetNumberSpace != QuicPacketNumberSpace.Initial
             || !QuicPacketParsing.TryParseLongHeaderMemoryFields(
                 datagram,
@@ -410,7 +413,7 @@ internal sealed partial class QuicConnectionRuntime
                 datagram.Span,
                 packetProtection,
                 requireZeroTokenLength: tlsState.Role == QuicTlsRole.Client,
-                allowClearedFixedBit: false,
+                allowClearedFixedBit: CanReceiveGreasedQuicBitPackets,
                 out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
@@ -604,7 +607,10 @@ internal sealed partial class QuicConnectionRuntime
         ref QuicConnectionEffectAccumulator effects)
     {
         ReadOnlyMemory<byte> datagram = packetReceivedEvent.Datagram;
-        if (!QuicPacketParser.TryGetPacketNumberSpace(datagram.Span, out QuicPacketNumberSpace packetNumberSpace)
+        if (!QuicPacketParser.TryGetPacketNumberSpace(
+                datagram.Span,
+                CanReceiveGreasedQuicBitPackets,
+                out QuicPacketNumberSpace packetNumberSpace)
             || packetNumberSpace != QuicPacketNumberSpace.Handshake
             || !QuicPacketParsing.TryParseLongHeaderMemoryFields(
                 datagram,
@@ -655,6 +661,7 @@ internal sealed partial class QuicConnectionRuntime
         if (!handshakeFlowCoordinator.TryOpenHandshakePacketLease(
                 datagram.Span,
                 packetProtectionMaterial,
+                allowClearedFixedBit: CanReceiveGreasedQuicBitPackets,
                 out QuicBufferLease openedPacket,
                 out int payloadOffset,
                 out int payloadLength))
