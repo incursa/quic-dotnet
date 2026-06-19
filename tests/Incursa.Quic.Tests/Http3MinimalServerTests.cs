@@ -1395,6 +1395,41 @@ public sealed class Http3MinimalServerTests
         QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
         Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9114-S4-0002")]
+    [CoverageType(RequirementCoverageType.Negative)]
+    [Trait("Category", "Negative")]
+    public async Task RequestDuplicatePseudoHeader_ClosesConnectionWithMessageError()
+    {
+        if (!QuicConnection.IsSupported || !QuicListener.IsSupported)
+        {
+            return;
+        }
+
+        await using TestServerContext context = await TestServerContext.StartAsync(new CaptureBodyHandler());
+        await using QuicConnection connection = await QuicConnection.ConnectAsync(context.CreateClientOptions()).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        await OpenClientUnidirectionalStreamsAsync(connection);
+
+        await using QuicStream requestStream = await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional).AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+        byte[] encoded = QPackEncoder.EncodeFieldSection(
+        [
+            new QPackFieldLine(":method", "GET"),
+            new QPackFieldLine(":method", "POST"),
+            new QPackFieldLine(":scheme", "https"),
+            new QPackFieldLine(":authority", "localhost"),
+            new QPackFieldLine(":path", "/duplicate-pseudo-header"),
+        ]);
+        byte[] headersFrame = Http3FrameWriter.WriteHeaders(encoded);
+        await requestStream.WriteAsync(headersFrame, 0, headersFrame.Length).WaitAsync(TimeSpan.FromSeconds(10));
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
+
+        QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
+
+        Assert.Equal((ulong)Http3ErrorCode.MessageError, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.MessageError);
     }
 
     [Fact]
@@ -1420,6 +1455,7 @@ public sealed class Http3MinimalServerTests
         QuicConnectionTerminalState terminalState = await WaitForConnectionCloseAsync(connection);
 
         Assert.Equal((ulong)Http3ErrorCode.FrameUnexpected, terminalState.Close.ApplicationErrorCode);
+        await AssertPeerConnectionClosedAsync(connection, Http3ErrorCode.FrameUnexpected);
     }
 
     [Fact]
@@ -2021,6 +2057,16 @@ public sealed class Http3MinimalServerTests
         }
 
         throw new TimeoutException("Timed out waiting for the peer HTTP/3 connection close.");
+    }
+
+    private static async Task AssertPeerConnectionClosedAsync(QuicConnection connection, Http3ErrorCode expectedErrorCode)
+    {
+        QuicException exception = await Assert.ThrowsAsync<QuicException>(async () =>
+            await connection.OpenOutboundStreamAsync(QuicStreamType.Bidirectional)
+                .AsTask()
+                .WaitAsync(TimeSpan.FromSeconds(10)));
+
+        Assert.Equal((long)expectedErrorCode, exception.ApplicationErrorCode);
     }
 
     private static async Task<QPackFieldLine[]> ReadResponseHeadersAsync(QuicStream stream)
