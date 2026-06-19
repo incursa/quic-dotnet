@@ -12,6 +12,7 @@ from pathlib import Path
 STATUS_MARKS = {
     "pass": "PASS",
     "fail": "FAIL",
+    "blocked": "BLOCKED",
     "skip": "SKIP",
     "error": "ERROR",
 }

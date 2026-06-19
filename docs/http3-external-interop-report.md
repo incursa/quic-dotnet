@@ -8,9 +8,12 @@ This is the checked-in report template for the external HTTP/3 interop harness. 
 
 Last refreshed from local Docker evidence on 2026-06-19.
 
+- Focused curl/quiche/ngtcp2 client run: `.artifacts/http3-external/20260619T125600Z`
+- Focused quiche/ngtcp2 server run: `.artifacts/http3-external/20260619T124926Z`
+- Focused quiche server large-response row: `.artifacts/http3-external/20260619T125037Z`
 - Focused pinned aioquic static GET-style run: `.artifacts/http3-external/20260619T055801Z`
 - Plan-only normalized matrix run: `.artifacts/http3-external/20260619T055646Z`
-- The focused 2026-06-19 run records Docker `29.3.0`, Docker Compose `v5.1.0`, and `aioquic` pinned to `1.3.0` in `peer-tool-manifest.json`.
+- The focused 2026-06-19 runs record Docker `29.3.0`, Docker Compose `v5.1.0`, `aioquic` pinned to `1.3.0`, and resolved image IDs/digests plus roles, supported scenarios, command templates, and known limitations in `peer-tool-manifest.json`.
 
 - Default matrix run: `.artifacts/http3-default-with-aioquic-server/20260526T042753Z`
 - Focused Incursa advanced run: `.artifacts/http3-all-advanced-default/20260526T033718Z`
@@ -24,25 +27,28 @@ Last refreshed from local Docker evidence on 2026-06-19.
 | Target | get-small | get-empty | get-large | multiple-concurrent-get | not-found | many-headers | split-data | request-cancellation | goaway | connection-close-in-flight |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | incursa-client__incursa-server | pass | pass | pass | pass | pass | pass | pass | pass | pass | pass |
-| curl__incursa-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
+| curl__incursa-server | pass | skip | pass | skip | pass | pass | skip | skip | skip | skip |
 | aioquic-client__incursa-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
-| quiche-client__incursa-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
-| ngtcp2-client__incursa-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
+| quiche-client__incursa-server | pass | skip | pass | skip | pass | pass | skip | skip | skip | skip |
+| ngtcp2-client__incursa-server | pass | skip | pass | skip | pass | pass | skip | skip | skip | skip |
 | incursa-client__aioquic-server | pass | pass | pass | skip | pass | pass | pass | skip | skip | skip |
-| incursa-client__quiche-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
-| incursa-client__ngtcp2-server | skip | skip | skip | skip | skip | skip | skip | skip | skip | skip |
+| incursa-client__quiche-server | pass | skip | pass | skip | pass | skip | skip | skip | skip | skip |
+| incursa-client__ngtcp2-server | fail | skip | skip | skip | fail | skip | skip | skip | skip | skip |
 
 ## Current Findings
 
 - `incursa-client__incursa-server` passes `get-small`, `get-empty`, `get-large`, `multiple-concurrent-get`, `not-found`, `many-headers`, `split-data`, `request-cancellation`, `goaway`, and `connection-close-in-flight` in Docker with qlog capture and preserved stdout/stderr.
 - Latest default matrix result: `22 pass`, `0 fail`, `58 skip`.
 - Latest focused pinned aioquic static subset result: `6 pass`, `0 fail`, `0 skip` across `incursa-client__incursa-server`, `aioquic-client__incursa-server`, and `incursa-client__aioquic-server` for `get-small` and `not-found`.
+- Latest focused external-client subset result: `12 pass`, `0 fail`, `0 skip` across `curl__incursa-server`, `quiche-client__incursa-server`, and `ngtcp2-client__incursa-server` for `get-small`, `not-found`, `get-large`, and `many-headers`.
+- Latest focused external-server subset result: `incursa-client__quiche-server` passes `get-small`, `not-found`, and `get-large`; `incursa-client__ngtcp2-server` fails `get-small` and `not-found` with an Incursa client handshake timeout after the peer server starts.
 - The 2026-06-19 plan-only normalized matrix run records 24 explicit rows for comma-separated PowerShell target/scenario arguments instead of collapsing them into a single skip row.
 - The checked-in RFC 9114 and RFC 9204 floors are now traced in the repo; the remaining skip rows are interop/harness gaps, not a claim that the protocol floor is missing.
 - `aioquic-client__incursa-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
 - `incursa-client__aioquic-server` is now executable for static GET-style rows and passes `get-small`, `get-empty`, `get-large`, `not-found`, `many-headers`, and `split-data`.
-- `curl__incursa-server` rows are `skip` with the default `curlimages/curl:latest` image because that image does not support `--http3-only`. Set `HTTP3_CURL_IMAGE` to a curl build with HTTP/3 support to make these rows executable.
-- `quiche`, `ngtcp2`, and Incursa-client-to-quiche/ngtcp2 server rows remain `skip` until their command/server wiring is pinned.
+- `curl__incursa-server`, `quiche-client__incursa-server`, and `ngtcp2-client__incursa-server` are executable for the static client rows listed above with pinned local Docker images.
+- `incursa-client__quiche-server` starts a fresh quiche server container per scenario and passes the static rows listed above.
+- `incursa-client__ngtcp2-server` starts a fresh `wsslserver` container per scenario, but the Incursa client currently times out during the QUIC handshake; treat those rows as executable failing peer evidence, not skipped or blocked coverage.
 
 ## Commands
 

@@ -90,6 +90,7 @@ SCENARIO_ROOT="$RUN_ROOT/scenarios"
 PCAP_ROOT="$RUN_ROOT/pcaps"
 RESULTS_PATH="$RUN_ROOT/results.jsonl"
 REPORT_PATH="$RUN_ROOT/report.md"
+PEER_TOOL_MANIFEST_PATH="$RUN_ROOT/peer-tool-manifest.json"
 
 mkdir -p "$WWW_ROOT" "$DOWNLOADS_ROOT" "$CERT_ROOT" "$LOGS_ROOT" "$SCENARIO_ROOT" "$PCAP_ROOT"
 printf "small http3 fixture" > "$WWW_ROOT/small.txt"
@@ -158,6 +159,133 @@ row = {
     },
 }
 path.write_text(json.dumps(row, indent=2), encoding="utf-8")
+PY
+}
+
+write_peer_tool_manifest() {
+  HTTP3_MANIFEST_RUN_ID="$RUN_ID" \
+  HTTP3_MANIFEST_PATH="$PEER_TOOL_MANIFEST_PATH" \
+  HTTP3_MANIFEST_COMPOSE_FILE="$COMPOSE_FILE" \
+  HTTP3_MANIFEST_PLAN_ONLY="$PLAN_ONLY" \
+  HTTP3_MANIFEST_TARGETS="$(printf "%s\n" "${TARGETS[@]}")" \
+  HTTP3_MANIFEST_SCENARIOS="$(printf "%s\n" "${SCENARIOS[@]}")" \
+  "$PYTHON_BIN" <<'PY'
+import json
+import os
+import pathlib
+import subprocess
+from datetime import datetime, timezone
+
+def command_text(args):
+    try:
+        completed = subprocess.run(args, check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+def image_info(image):
+    image_id = command_text(["docker", "image", "inspect", image, "--format", "{{.Id}}"])
+    digests_raw = command_text(["docker", "image", "inspect", image, "--format", "{{json .RepoDigests}}"])
+    try:
+        repo_digests = json.loads(digests_raw) if digests_raw and digests_raw != "null" else []
+    except json.JSONDecodeError:
+        repo_digests = []
+    return {"image": image, "resolvedImageId": image_id, "repoDigests": repo_digests}
+
+def tool(tool, kind, env_var, image, roles, scenarios, commands, limitations, package=None):
+    return {
+        "tool": tool,
+        "type": kind,
+        "environmentVariable": env_var,
+        "package": package or {},
+        "image": image_info(image),
+        "roles": roles,
+        "supportedScenarios": scenarios,
+        "commandLineTemplates": commands,
+        "knownLimitations": limitations,
+    }
+
+static_get = ["get-small", "get-empty", "get-large", "not-found"]
+static_with_headers = ["get-small", "get-empty", "get-large", "not-found", "many-headers", "split-data"]
+curl_image = os.environ.get("HTTP3_CURL_IMAGE") or "ghcr.io/macbre/curl-http3"
+quiche_image = os.environ.get("HTTP3_QUICHE_IMAGE") or "cloudflare/quiche:latest"
+ngtcp2_image = os.environ.get("HTTP3_NGTCP2_IMAGE") or "ghcr.io/ngtcp2/ngtcp2-interop:latest"
+aioquic_image = "incursa-http3-external-interop-aioquic:latest"
+
+manifest = {
+    "schemaVersion": "http3-external-peer-tools-v1",
+    "runId": os.environ["HTTP3_MANIFEST_RUN_ID"],
+    "generatedUtc": datetime.now(timezone.utc).isoformat(),
+    "planOnly": os.environ["HTTP3_MANIFEST_PLAN_ONLY"] == "1",
+    "composeFile": os.environ["HTTP3_MANIFEST_COMPOSE_FILE"],
+    "targets": [item for item in os.environ["HTTP3_MANIFEST_TARGETS"].splitlines() if item],
+    "scenarios": [item for item in os.environ["HTTP3_MANIFEST_SCENARIOS"].splitlines() if item],
+    "docker": {
+        "version": command_text(["docker", "--version"]),
+        "composeVersion": command_text(["docker", "compose", "version"]),
+    },
+    "acquisition": {
+        "aioquic": tool(
+            "aioquic",
+            "repo-local Docker build",
+            "AIOQUIC_VERSION",
+            aioquic_image,
+            ["client", "server"],
+            static_with_headers,
+            [
+                "aioquic-http3-client <url> <download-path> --expect-status <status>",
+                "aioquic-http3-server /www /certs/cert.pem /certs/priv.key 4433",
+            ],
+            ["Repo-local wrapper around aioquic 1.3.0."],
+            {"name": "aioquic", "version": "1.3.0", "dockerfile": "scripts/interop/http3-external/docker/aioquic.Dockerfile"},
+        ),
+        "curl": tool(
+            "curl",
+            "Docker image",
+            "HTTP3_CURL_IMAGE",
+            curl_image,
+            ["client"],
+            static_with_headers,
+            ["curl --http3-only --max-time 15 --insecure --silent --show-error <url>"],
+            ["Requires a curl build with --http3-only support.", "Client-only in this harness."],
+        ),
+        "quiche": tool(
+            "quiche",
+            "Docker image",
+            "HTTP3_QUICHE_IMAGE",
+            quiche_image,
+            ["client", "server"],
+            static_get,
+            [
+                "quiche-client --http-version HTTP/3 --no-verify --connect-to <ip:port> --dump-responses <dir> <url>",
+                "quiche-server --listen 0.0.0.0:4433 --cert /certs/cert.pem --key /certs/priv.key --root /www --http-version HTTP/3",
+            ],
+            ["The image does not expose a --version flag; pin by image ID/repo digest.", "Header-heavy and split-response behavior are not wired for quiche-server rows."],
+        ),
+        "ngtcp2": tool(
+            "ngtcp2/nghttp3",
+            "Docker image",
+            "HTTP3_NGTCP2_IMAGE",
+            ngtcp2_image,
+            ["client", "server"],
+            static_get,
+            [
+                "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
+                "wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem",
+            ],
+            ["The interop image default entrypoint is bypassed for server rows.", "The image does not expose a stable no-argument --version output; pin by image ID/repo digest.", "Header-heavy and split-response behavior are not wired for ngtcp2-server rows."],
+        ),
+    },
+    "evidenceClass": "external-peer-characterization",
+    "notes": [
+        "Resolved image IDs and repo digests are present only after Docker has pulled or built the image locally.",
+        "Skipped rows remain evidence of missing peer command or scenario wiring, not support proof.",
+    ],
+}
+path = pathlib.Path(os.environ["HTTP3_MANIFEST_PATH"])
+path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 PY
 }
 
@@ -531,6 +659,8 @@ for target in "${TARGETS[@]}"; do
 done
 
 copy_pcaps
+write_peer_tool_manifest
 "$PYTHON_BIN" "$SCRIPT_DIR/parse-http3-results.py" "$RESULTS_PATH" --output "$REPORT_PATH"
 echo "Results: $RESULTS_PATH"
 echo "Report:  $REPORT_PATH"
+echo "Tools:   $PEER_TOOL_MANIFEST_PATH"

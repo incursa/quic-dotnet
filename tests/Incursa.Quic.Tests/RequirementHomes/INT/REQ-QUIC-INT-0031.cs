@@ -92,6 +92,12 @@ public sealed class REQ_QUIC_INT_0031
         Assert.Contains("PcapSource", windowsScript, StringComparison.Ordinal);
         Assert.Contains("Normalize-MatrixValues", windowsScript, StringComparison.Ordinal);
         Assert.Contains("peer-tool-manifest.json", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("roles", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("supportedScenarios", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("knownLimitations", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("incursa-client__quiche-server", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("incursa-client__ngtcp2-server", windowsScript, StringComparison.Ordinal);
+        Assert.Contains("blocked", windowsScript, StringComparison.Ordinal);
         Assert.Contains("aioquic==${AIOQUIC_VERSION}", ReadRepositoryFile("scripts/interop/http3-external/docker/aioquic.Dockerfile"), StringComparison.Ordinal);
         Assert.Contains("parse-http3-results.py", windowsScript, StringComparison.Ordinal);
         Assert.Contains("results.jsonl", posixScript, StringComparison.Ordinal);
@@ -102,6 +108,7 @@ public sealed class REQ_QUIC_INT_0031
         Assert.Contains("pcap-source", posixScript, StringComparison.Ordinal);
         Assert.Contains("parse-http3-results.py", posixScript, StringComparison.Ordinal);
         Assert.Contains("External HTTP/3 Interop Report", parser, StringComparison.Ordinal);
+        Assert.Contains("\"blocked\": \"BLOCKED\"", parser, StringComparison.Ordinal);
         Assert.Contains("--expect-status", client, StringComparison.Ordinal);
         Assert.Contains("IPAddress.Any", server, StringComparison.Ordinal);
     }

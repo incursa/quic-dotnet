@@ -13,7 +13,7 @@ This harness is an advisory HTTP/3 peer matrix outside the upstream QUIC interop
 - `incursa-client__quiche-server`
 - `incursa-client__ngtcp2-server`
 
-The Incursa-to-Incursa lane executes all ten configured scenarios. The curl, aioquic, quiche, and ngtcp2 client lanes execute the static GET-style scenarios against the Incursa server. The Incursa client lane executes the same static GET-style scenarios against the aioquic server wrapper. Quiche/ngtcp2 server lanes are represented in the result matrix and reported as `skip` until their exact server wiring is pinned.
+The Incursa-to-Incursa lane executes all ten configured scenarios. The curl, aioquic, quiche, and ngtcp2 client lanes execute the static GET-style scenarios against the Incursa server. The Incursa client lane executes the same static GET-style scenarios against the aioquic server wrapper. The PowerShell runner also executes clean per-scenario Incursa-client rows against quiche and ngtcp2/nghttp3 server binaries for static file and 404 paths; failed rows in those lanes are peer evidence, not skipped matrix coverage.
 
 The default curl image is `ghcr.io/macbre/curl-http3`. If a substituted image does not include HTTP/3 support, curl rows are reported as `skip`; set `HTTP3_CURL_IMAGE` to a curl build that supports `--http3-only` to execute them.
 
@@ -41,6 +41,8 @@ Current coverage notes:
 - `curl__incursa-server` requires an HTTP/3-capable curl image. Keep using `--http3-only` so the row fails rather than silently falling back to HTTP/1.1 or HTTP/2.
 - `aioquic-client__incursa-server` uses a bounded response timeout so large-transfer stalls fail cleanly instead of hanging the run.
 - `quiche-client__incursa-server` and `ngtcp2-client__incursa-server` are wired as executable rows; failures in these rows are real peer-specific evidence, not skipped coverage.
+- `incursa-client__quiche-server` and `incursa-client__ngtcp2-server` start a fresh peer server container per scenario. Peer server startup failures are reported as `blocked`; completed Incursa client attempts are reported as `pass` or `fail`.
+- `blocked` is reserved for local prerequisite/tooling blockers such as an unavailable image or a peer server that cannot be started. Protocol exchanges that start and then fail stay `fail`.
 
 ## Windows
 
@@ -62,7 +64,7 @@ Each run writes:
 
 - `results.jsonl`: machine-readable per-target/per-scenario rows.
 - `report.md`: Markdown pass/fail/skip matrix.
-- `peer-tool-manifest.json`: Docker, Compose, peer image, and pinned aioquic acquisition metadata.
+- `peer-tool-manifest.json`: Docker, Compose, peer image IDs/digests, roles, supported scenarios, command templates, package metadata where available, and known limitations.
 - `scenarios/<target>-<scenario>/command.txt`: exact command line.
 - `scenarios/<target>-<scenario>/stdout.log`: scenario stdout.
 - `scenarios/<target>-<scenario>/stderr.log`: scenario stderr.

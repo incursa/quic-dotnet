@@ -132,13 +132,55 @@ function Get-DockerImageInfo {
     }
 }
 
+function Get-PeerImageName {
+    param(
+        [string]$EnvironmentVariable,
+        [string]$DefaultImage
+    )
+
+    $value = [Environment]::GetEnvironmentVariable($EnvironmentVariable)
+    if ([string]::IsNullOrWhiteSpace($value)) {
+        return $DefaultImage
+    }
+
+    return $value
+}
+
+function New-PeerToolInfo {
+    param(
+        [string]$Tool,
+        [string]$Type,
+        [string]$EnvironmentVariable,
+        [string]$Image,
+        [string[]]$Roles,
+        [string[]]$SupportedScenarios,
+        [string[]]$CommandLineTemplates,
+        [string[]]$KnownLimitations,
+        [hashtable]$Package = @{}
+    )
+
+    return [ordered]@{
+        tool = $Tool
+        type = $Type
+        environmentVariable = $EnvironmentVariable
+        package = $Package
+        image = Get-DockerImageInfo -Image $Image
+        roles = @($Roles)
+        supportedScenarios = @($SupportedScenarios)
+        commandLineTemplates = @($CommandLineTemplates)
+        knownLimitations = @($KnownLimitations)
+    }
+}
+
 function Write-PeerToolManifest {
     param([string]$Path)
 
-    $curlImage = if ([string]::IsNullOrWhiteSpace($env:HTTP3_CURL_IMAGE)) { "ghcr.io/macbre/curl-http3" } else { $env:HTTP3_CURL_IMAGE }
-    $quicheImage = if ([string]::IsNullOrWhiteSpace($env:HTTP3_QUICHE_IMAGE)) { "cloudflare/quiche:latest" } else { $env:HTTP3_QUICHE_IMAGE }
-    $ngtcp2Image = if ([string]::IsNullOrWhiteSpace($env:HTTP3_NGTCP2_IMAGE)) { "ghcr.io/ngtcp2/ngtcp2-interop:latest" } else { $env:HTTP3_NGTCP2_IMAGE }
+    $curlImage = Get-PeerImageName -EnvironmentVariable "HTTP3_CURL_IMAGE" -DefaultImage "ghcr.io/macbre/curl-http3"
+    $quicheImage = Get-PeerImageName -EnvironmentVariable "HTTP3_QUICHE_IMAGE" -DefaultImage "cloudflare/quiche:latest"
+    $ngtcp2Image = Get-PeerImageName -EnvironmentVariable "HTTP3_NGTCP2_IMAGE" -DefaultImage "ghcr.io/ngtcp2/ngtcp2-interop:latest"
     $aioquicImage = "incursa-http3-external-interop-aioquic:latest"
+    $staticGetScenarios = @("get-small", "get-empty", "get-large", "not-found")
+    $staticGetWithHeaderScenario = @("get-small", "get-empty", "get-large", "not-found", "many-headers", "split-data")
 
     $manifest = [ordered]@{
         schemaVersion = "http3-external-peer-tools-v1"
@@ -153,28 +195,52 @@ function Write-PeerToolManifest {
             composeVersion = Get-CommandOutputText { docker compose version }
         }
         acquisition = [ordered]@{
-            aioquic = [ordered]@{
-                type = "repo-local Docker build"
-                dockerfile = "scripts/interop/http3-external/docker/aioquic.Dockerfile"
-                package = "aioquic"
-                packageVersion = $script:Http3ExternalAioquicVersion
-                image = Get-DockerImageInfo -Image $aioquicImage
-            }
-            curl = [ordered]@{
-                type = "Docker image"
-                environmentVariable = "HTTP3_CURL_IMAGE"
-                image = Get-DockerImageInfo -Image $curlImage
-            }
-            quiche = [ordered]@{
-                type = "Docker image"
-                environmentVariable = "HTTP3_QUICHE_IMAGE"
-                image = Get-DockerImageInfo -Image $quicheImage
-            }
-            ngtcp2 = [ordered]@{
-                type = "Docker image"
-                environmentVariable = "HTTP3_NGTCP2_IMAGE"
-                image = Get-DockerImageInfo -Image $ngtcp2Image
-            }
+            aioquic = New-PeerToolInfo `
+                -Tool "aioquic" `
+                -Type "repo-local Docker build" `
+                -EnvironmentVariable "AIOQUIC_VERSION" `
+                -Image $aioquicImage `
+                -Package @{ name = "aioquic"; version = $script:Http3ExternalAioquicVersion; dockerfile = "scripts/interop/http3-external/docker/aioquic.Dockerfile" } `
+                -Roles @("client", "server") `
+                -SupportedScenarios $staticGetWithHeaderScenario `
+                -CommandLineTemplates @(
+                    "aioquic-http3-client <url> <download-path> --expect-status <status>",
+                    "aioquic-http3-server /www /certs/cert.pem /certs/priv.key 4433"
+                ) `
+                -KnownLimitations @("Repo-local wrapper around aioquic 1.3.0.", "Large-body rows may be skipped if peer response completion stalls are observed.")
+            curl = New-PeerToolInfo `
+                -Tool "curl" `
+                -Type "Docker image" `
+                -EnvironmentVariable "HTTP3_CURL_IMAGE" `
+                -Image $curlImage `
+                -Roles @("client") `
+                -SupportedScenarios $staticGetWithHeaderScenario `
+                -CommandLineTemplates @("curl --http3-only --max-time 15 --insecure --silent --show-error <url>") `
+                -KnownLimitations @("Requires a curl build with --http3-only support.", "Client-only in this harness.")
+            quiche = New-PeerToolInfo `
+                -Tool "quiche" `
+                -Type "Docker image" `
+                -EnvironmentVariable "HTTP3_QUICHE_IMAGE" `
+                -Image $quicheImage `
+                -Roles @("client", "server") `
+                -SupportedScenarios $staticGetScenarios `
+                -CommandLineTemplates @(
+                    "quiche-client --http-version HTTP/3 --no-verify --connect-to <ip:port> --dump-responses <dir> <url>",
+                    "quiche-server --listen 0.0.0.0:4433 --cert /certs/cert.pem --key /certs/priv.key --root /www --http-version HTTP/3"
+                ) `
+                -KnownLimitations @("The image does not expose a --version flag; pin by image ID/repo digest.", "Header-heavy and split-response behavior are not wired for quiche-server rows.")
+            ngtcp2 = New-PeerToolInfo `
+                -Tool "ngtcp2/nghttp3" `
+                -Type "Docker image" `
+                -EnvironmentVariable "HTTP3_NGTCP2_IMAGE" `
+                -Image $ngtcp2Image `
+                -Roles @("client", "server") `
+                -SupportedScenarios $staticGetScenarios `
+                -CommandLineTemplates @(
+                    "wsslclient --download=/downloads --exit-on-all-streams-close --timeout=15s --handshake-timeout=10s --no-http-dump --qlog-dir=/logs/qlog <host> 4433 <url>",
+                    "wsslserver --htdocs=/www --qlog-dir=/logs/qlog --no-http-dump --timeout=15s --handshake-timeout=10s 0.0.0.0 4433 /certs/priv.key /certs/cert.pem"
+                ) `
+                -KnownLimitations @("The interop image default entrypoint is bypassed for server rows.", "The image does not expose a stable no-argument --version output; pin by image ID/repo digest.", "Header-heavy and split-response behavior are not wired for ngtcp2-server rows.")
         }
         evidenceClass = "external-peer-characterization"
         notes = @(
@@ -289,6 +355,7 @@ function Test-ExecutableTarget {
         "connection-close-in-flight"
     )
     $curlScenarios = @("get-small", "get-empty", "get-large", "not-found", "many-headers", "split-data")
+    $staticPeerServerScenarios = @("get-small", "get-empty", "get-large", "not-found")
     $aioquicStableScenarios = @("get-small", "get-empty", "not-found", "many-headers")
     $aioquicLargeBodySkipScenarios = @("get-large", "split-data")
 
@@ -321,6 +388,11 @@ function Test-ExecutableTarget {
     }
 
     if ($Target -eq "incursa-client__aioquic-server" -and $Scenario -in $curlScenarios) {
+        return ""
+    }
+
+    if (($Target -eq "incursa-client__quiche-server" -or $Target -eq "incursa-client__ngtcp2-server") -and
+        $Scenario -in $staticPeerServerScenarios) {
         return ""
     }
 
@@ -688,6 +760,151 @@ function Invoke-IncursaConcurrentGetScenario {
     Write-Result -Target $Target -Scenario $Scenario -Status "fail" -Detail "one or more concurrent clients failed: $([string]::Join(',', $exitCodes))" -Artifact $ArtifactDirectory
 }
 
+function Invoke-IncursaClientPeerServerScenario {
+    param(
+        [string]$Target,
+        [string]$Scenario,
+        [string]$Path,
+        [int]$ExpectedStatus,
+        [string]$ArtifactDirectory,
+        [string]$CommandPath,
+        [string]$StdoutPath,
+        [string]$StderrPath,
+        [string]$DownloadPath
+    )
+
+    $peerName = if ($Target -eq "incursa-client__quiche-server") { "quiche" } else { "ngtcp2" }
+    $peerImage = if ($peerName -eq "quiche") {
+        Get-PeerImageName -EnvironmentVariable "HTTP3_QUICHE_IMAGE" -DefaultImage "cloudflare/quiche:latest"
+    }
+    else {
+        Get-PeerImageName -EnvironmentVariable "HTTP3_NGTCP2_IMAGE" -DefaultImage "ghcr.io/ngtcp2/ngtcp2-interop:latest"
+    }
+
+    $containerName = "incursa-http3-external-$peerName-server-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
+    $peerLogRoot = Join-Path $script:LogsRoot "$peerName-server"
+    New-Item -ItemType Directory -Force -Path $peerLogRoot | Out-Null
+    $peerStdoutPath = Join-Path $ArtifactDirectory "peer-server.stdout.log"
+    $peerStderrPath = Join-Path $ArtifactDirectory "peer-server.stderr.log"
+    $peerStartPath = Join-Path $ArtifactDirectory "peer-server-start.stdout.log"
+    $peerStartErrorPath = Join-Path $ArtifactDirectory "peer-server-start.stderr.log"
+
+    if ($peerName -eq "quiche") {
+        $quicheServerCommand = "mkdir -p /logs/qlog /logs/sslkeylog && quiche-server --listen 0.0.0.0:4433 --cert /certs/cert.pem --key /certs/priv.key --root /www --http-version HTTP/3"
+        $serverArgs = @(
+            "run", "-d",
+            "--name", $containerName,
+            "--network", $script:Http3ExternalDockerNetworkName,
+            "-v", "${wwwRoot}:/www:ro",
+            "-v", "${certRoot}:/certs:ro",
+            "-v", "${peerLogRoot}:/logs",
+            "-e", "QLOGDIR=/logs/qlog",
+            "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
+            "--entrypoint", "/bin/sh",
+            $peerImage,
+            "-lc",
+            $quicheServerCommand
+        )
+        $serverCommandLine = "docker $($serverArgs -join ' ')"
+    }
+    else {
+        $serverArgs = @(
+            "run", "-d",
+            "--name", $containerName,
+            "--network", $script:Http3ExternalDockerNetworkName,
+            "-v", "${wwwRoot}:/www:ro",
+            "-v", "${certRoot}:/certs:ro",
+            "-v", "${peerLogRoot}:/logs",
+            "-e", "QLOGDIR=/logs/qlog",
+            "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
+            "--entrypoint", "/usr/local/bin/wsslserver",
+            $peerImage,
+            "--htdocs=/www",
+            "--qlog-dir=/logs/qlog",
+            "--no-http-dump",
+            "--timeout=15s",
+            "--handshake-timeout=10s",
+            "0.0.0.0",
+            "4433",
+            "/certs/priv.key",
+            "/certs/cert.pem"
+        )
+        $serverCommandLine = "docker $($serverArgs -join ' ')"
+    }
+
+    $clientLogRoot = Join-Path $script:LogsRoot "incursa-client-peer-server"
+    New-Item -ItemType Directory -Force -Path $clientLogRoot | Out-Null
+    $clientUrl = "https://${containerName}:4433$Path"
+    $clientArgs = @(
+        "run", "--rm",
+        "--network", $script:Http3ExternalDockerNetworkName,
+        "-v", "${downloadsRoot}:/downloads",
+        "-v", "${certRoot}:/certs:ro",
+        "-v", "${clientLogRoot}:/logs",
+        "-e", "QLOGDIR=/logs/qlog",
+        "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
+        "incursa-http3-external-interop-incursa-client:latest",
+        $clientUrl,
+        $DownloadPath,
+        "--expect-status", "$ExpectedStatus"
+    )
+    $clientCommandLine = "docker $($clientArgs -join ' ')"
+    Set-Content -LiteralPath $CommandPath -Value "$serverCommandLine`n$clientCommandLine"
+
+    if ($PlanOnly) {
+        New-Item -ItemType File -Force -Path $StdoutPath, $StderrPath, $peerStdoutPath, $peerStderrPath | Out-Null
+        Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "skip" -Detail "plan-only" -ExitCode 0 -CommandLine "$serverCommandLine; $clientCommandLine"
+        Write-Result -Target $Target -Scenario $Scenario -Status "skip" -Detail "plan-only: $serverCommandLine; $clientCommandLine" -Artifact $ArtifactDirectory
+        return
+    }
+
+    & docker @serverArgs > $peerStartPath 2> $peerStartErrorPath
+    $serverExitCode = $LASTEXITCODE
+    if ($serverExitCode -ne 0) {
+        Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "blocked" -Detail "peer server failed to start with exit code $serverExitCode" -ExitCode $serverExitCode -CommandLine "$serverCommandLine; $clientCommandLine"
+        Write-Result -Target $Target -Scenario $Scenario -Status "blocked" -Detail "peer server failed to start with exit code $serverExitCode" -Artifact $ArtifactDirectory
+        return
+    }
+
+    try {
+        Start-Sleep -Seconds 2
+        $isRunning = (& docker inspect --format "{{.State.Running}}" $containerName 2> $null).Trim()
+        if ($isRunning -ne "true") {
+            & docker logs $containerName > $peerStdoutPath 2> $peerStderrPath
+            Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "blocked" -Detail "peer server exited before client run" -ExitCode $serverExitCode -CommandLine "$serverCommandLine; $clientCommandLine"
+            Write-Result -Target $Target -Scenario $Scenario -Status "blocked" -Detail "peer server exited before client run" -Artifact $ArtifactDirectory
+            return
+        }
+
+        & docker @clientArgs > $StdoutPath 2> $StderrPath
+        $clientExitCode = $LASTEXITCODE
+        & docker logs $containerName > $peerStdoutPath 2> $peerStderrPath
+
+        $stderrText = if (Test-Path -LiteralPath $StderrPath) {
+            Get-Content -LiteralPath $StderrPath -Raw
+        }
+        else {
+            ""
+        }
+
+        if ($stderrText -match "handshake timed out|handshake timeout") {
+            Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "fail" -Detail "handshake timeout" -ExitCode $clientExitCode -CommandLine "$serverCommandLine; $clientCommandLine"
+            Write-Result -Target $Target -Scenario $Scenario -Status "fail" -Detail "handshake timeout" -Artifact $ArtifactDirectory
+        }
+        elseif ($clientExitCode -eq 0) {
+            Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "pass" -Detail "exit code 0" -ExitCode 0 -CommandLine "$serverCommandLine; $clientCommandLine"
+            Write-Result -Target $Target -Scenario $Scenario -Status "pass" -Detail "exit code 0" -Artifact $ArtifactDirectory
+        }
+        else {
+            Write-Http3Summary -ArtifactDirectory $ArtifactDirectory -Target $Target -Scenario $Scenario -Status "fail" -Detail "exit code $clientExitCode" -ExitCode $clientExitCode -CommandLine "$serverCommandLine; $clientCommandLine"
+            Write-Result -Target $Target -Scenario $Scenario -Status "fail" -Detail "exit code $clientExitCode" -Artifact $ArtifactDirectory
+        }
+    }
+    finally {
+        & docker rm -f $containerName > $null 2> $null
+    }
+}
+
 function Invoke-TargetScenario {
     param([string]$Target, [string]$Scenario)
 
@@ -768,6 +985,7 @@ function Invoke-TargetScenario {
     elseif ($Target -eq "quiche-client__incursa-server") {
         $quicheContainerName = "incursa-http3-external-interop-quiche-$([Guid]::NewGuid().ToString('N').Substring(0, 12))"
         $quicheDumpDirectory = "/downloads/$safeName"
+        $quicheImage = Get-PeerImageName -EnvironmentVariable "HTTP3_QUICHE_IMAGE" -DefaultImage "cloudflare/quiche:latest"
         $quicheCommand = "mkdir -p $quicheDumpDirectory /logs/qlog /logs/sslkeylog && quiche-client --http-version HTTP/3 --no-verify --connect-to $script:Http3ExternalServerConnectTo --dump-responses $quicheDumpDirectory --dump-json --max-json-payload 0 https://incursa-server:4433$path"
         $args = @(
             "run",
@@ -776,7 +994,7 @@ function Invoke-TargetScenario {
             "-e", "QLOGDIR=/logs/qlog",
             "-e", "SSLKEYLOGFILE=/logs/sslkeylog/keys.log",
             "--entrypoint", "/bin/sh",
-            "cloudflare/quiche:latest",
+            $quicheImage,
             "-lc",
             $quicheCommand
         )
@@ -822,13 +1040,26 @@ function Invoke-TargetScenario {
         }
 
     }
+    elseif ($Target -eq "incursa-client__quiche-server" -or $Target -eq "incursa-client__ngtcp2-server") {
+        Invoke-IncursaClientPeerServerScenario `
+            -Target $Target `
+            -Scenario $Scenario `
+            -Path $path `
+            -ExpectedStatus $expectedStatus `
+            -ArtifactDirectory $artifactDirectory `
+            -CommandPath $commandPath `
+            -StdoutPath $stdoutPath `
+            -StderrPath $stderrPath `
+            -DownloadPath $downloadPath
+        return
+    }
     else {
         Write-Result -Target $Target -Scenario $Scenario -Status "skip" -Detail "target command is not wired"
         return
     }
 
     if ($Target -eq "quiche-client__incursa-server") {
-        $commandLine = "docker run --name $quicheContainerName --network $script:Http3ExternalDockerNetworkName -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh cloudflare/quiche:latest -lc `"$quicheCommand`""
+        $commandLine = "docker run --name $quicheContainerName --network $script:Http3ExternalDockerNetworkName -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh $quicheImage -lc `"$quicheCommand`""
     }
     elseif ($Target -eq "ngtcp2-client__incursa-server") {
         $commandLine = "docker run --rm --name $ngtcp2ContainerName --network $script:Http3ExternalDockerNetworkName -v `"$(${wwwRoot}):/www:ro`" -v `"$(${downloadsRoot}):/downloads`" -v `"$(${certRoot}):/certs:ro`" -v `"$(${ngtcp2LogRoot}):/logs`" -e QLOGDIR=/logs/qlog -e SSLKEYLOGFILE=/logs/sslkeylog/keys.log --entrypoint /bin/sh $ngtcp2Image -lc `"$ngtcp2Command`""
