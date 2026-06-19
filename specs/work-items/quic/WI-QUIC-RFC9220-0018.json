@@ -19,9 +19,9 @@
     "REQ-QUIC-RFC9220-0030",
     "REQ-QUIC-RFC9220-0031"
   ],
-  "summary": "Add a repeatable local-loopback peer proof for the RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
-  "planned_changes": "- Add an aggregate HTTP/3 loopback test that opens a client WebSocket tunnel through the public client/server APIs.\n- Exercise accepted response metadata, server ping with client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo in one peer-style flow.\n- Add a proof script that stores TRX/stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-local-peer/<run-id>`.",
-  "verification_plan": "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId <run-id>`, core SpecTrace validation, regenerated QUIC requirement triage when trace artifacts change, focused WebSocket tests, and diff hygiene.",
+  "summary": "Add repeatable local-loopback and local cross-process peer proof for the RFC 9220 WebSocket-over-HTTP/3 tunnel surface.",
+  "planned_changes": "- Add an aggregate HTTP/3 loopback test that opens a client WebSocket tunnel through the public client/server APIs.\n- Exercise accepted response metadata, server ping with client pong helper behavior, text exchange, buffered binary exchange, client close, and server close echo in one peer-style flow.\n- Add a proof script that stores TRX/stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-local-peer/<run-id>`.\n- Add opt-in sample server/client WebSocket proof modes and a cross-process proof script that starts the sample server process, drives the sample client process, and stores stdout/stderr plus JSON and Markdown manifests under `.artifacts/http3-websocket-cross-process/<run-id>`.",
+  "verification_plan": "Run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketLocalPeerProof.ps1 -RunId <run-id>`, run `pwsh -NoProfile -File scripts/proofs/Invoke-Rfc9220WebSocketCrossProcessProof.ps1 -RunId <run-id>`, core SpecTrace validation, regenerated QUIC requirement triage when trace artifacts change, focused WebSocket tests, and diff hygiene.",
   "verification_links": [
     "VER-QUIC-RFC9220-0018"
   ],
@@ -34,5 +34,5 @@
     "Production proxy target, timeout, authorization, or deployment policy.",
     "New RFC 9220 requirement ownership beyond the already trace-owned behavior."
   ],
-  "completion_notes": "The local-loopback peer proof passed under `.artifacts/http3-websocket-local-peer/20260619T0124Z-local-peer` and remains explicitly narrower than external peer proof."
+  "completion_notes": "The local-loopback peer proof passed under `.artifacts/http3-websocket-local-peer/20260619T0825Z-local-peer-fragmented-control`. The local cross-process sample proof passed under `.artifacts/http3-websocket-cross-process/20260619T-cross-process-001`. Both remain explicitly narrower than external-peer or isolated-host proof."
 }

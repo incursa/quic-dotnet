@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Incursa.Qpack;
 using Incursa.Quic;
 using Incursa.Quic.Http3;
@@ -25,7 +26,7 @@ internal static class Program
     {
         if (args.Length < 3)
         {
-            await Console.Error.WriteLineAsync("Usage: Incursa.Quic.Http3.FileServer <root-directory> <certificate-pem> <private-key-pem> [port]");
+            await Console.Error.WriteLineAsync("Usage: Incursa.Quic.Http3.FileServer <root-directory> <certificate-pem> <private-key-pem> [port] [--websocket-proof]");
             return InvalidArgumentsExitCode;
         }
 
@@ -39,10 +40,12 @@ internal static class Program
         string certificatePath = Path.GetFullPath(args[1]);
         string privateKeyPath = Path.GetFullPath(args[2]);
         int port = args.Length >= 4 && int.TryParse(args[3], out int parsedPort) ? parsedPort : DefaultPort;
+        bool enableWebSocketProof = args.Any(static arg => string.Equals(arg, "--websocket-proof", StringComparison.Ordinal));
 
         using X509Certificate2 certificate = X509Certificate2.CreateFromPemFile(certificatePath, privateKeyPath);
         FileRouteHandler handler = new(rootDirectory);
         QuicListenerOptions listenerOptions = CreateListenerOptions(port, certificate);
+        Http3ServerOptions http3Options = CreateHttp3Options(enableWebSocketProof);
         await Console.Out.WriteLineAsync(
             $"http3-server-diagnostic runningInDocker={IsRunningInDocker().ToString().ToLowerInvariant()} configuredListenEndPoint={listenerOptions.ListenEndPoint} address={listenerOptions.ListenEndPoint.Address} port={listenerOptions.ListenEndPoint.Port} addressFamily={listenerOptions.ListenEndPoint.AddressFamily}");
         if (IsRunningInDocker() && IPAddress.IsLoopback(listenerOptions.ListenEndPoint.Address))
@@ -54,14 +57,11 @@ internal static class Program
         using Timer? qlogSnapshotTimer = CreateQlogSnapshotTimer(qlogCapture, "server-http3");
 
         await using Http3Server server = qlogCapture is null
-            ? await Http3Server.ListenAsync(listenerOptions, handler)
+            ? await Http3Server.ListenAsync(listenerOptions, handler, http3Options)
             : Http3Server.Attach(
                 await qlogCapture.ListenAsync(listenerOptions),
                 handler,
-                new Http3ServerOptions
-                {
-                    DiagnosticsSink = new QuicQlogHttp3DiagnosticsSink(qlogCapture, isServer: true),
-                });
+                AttachDiagnostics(http3Options, new QuicQlogHttp3DiagnosticsSink(qlogCapture, isServer: true)));
         using CancellationTokenSource shutdown = new();
         Console.CancelKeyPress += (_, eventArgs) =>
         {
@@ -80,6 +80,32 @@ internal static class Program
         }
 
         return 0;
+    }
+
+    private static Http3ServerOptions CreateHttp3Options(bool enableWebSocketProof)
+    {
+        Http3ServerOptions options = new();
+        if (!enableWebSocketProof)
+        {
+            return options;
+        }
+
+        options.Settings = new Http3Settings(enableConnectProtocol: 1);
+        options.WebSocketHandler = new ProofWebSocketHandler();
+        options.WebSocketAcceptResponseHeadersSelector = static request =>
+        {
+            string offered = request.Headers.FirstOrDefault(static header => header.Name == "sec-websocket-protocol").Value;
+            return string.IsNullOrWhiteSpace(offered)
+                ? []
+                : [new QPackFieldLine("sec-websocket-protocol", "proof.v1")];
+        };
+        return options;
+    }
+
+    private static Http3ServerOptions AttachDiagnostics(Http3ServerOptions source, IHttp3DiagnosticsSink diagnosticsSink)
+    {
+        source.DiagnosticsSink = diagnosticsSink;
+        return source;
     }
 
     private static QuicQlogCapture? CreateQlogCapture(string title)
@@ -167,6 +193,46 @@ internal static class Program
         return string.Equals(dotnetContainer, "true", StringComparison.OrdinalIgnoreCase)
             || string.Equals(dotnetContainer, "1", StringComparison.Ordinal)
             || File.Exists("/.dockerenv");
+    }
+}
+
+internal sealed class ProofWebSocketHandler : IHttp3WebSocketHandler
+{
+    public async ValueTask HandleAsync(Http3WebSocketTunnelContext context, CancellationToken cancellationToken = default)
+    {
+        await context.PingAsync("server-proof"u8.ToArray(), cancellationToken).ConfigureAwait(false);
+
+        while (true)
+        {
+            Http3WebSocketMessage? message = await context.ReadMessageAsync(cancellationToken).ConfigureAwait(false);
+            if (message is null)
+            {
+                return;
+            }
+
+            switch (message.Opcode)
+            {
+                case Http3WebSocketOpcode.Text:
+                    string text = Encoding.UTF8.GetString(message.Payload.Span);
+                    await context.WriteMessageAsync(
+                        Http3WebSocketOpcode.Text,
+                        Encoding.UTF8.GetBytes("echo:" + text),
+                        cancellationToken).ConfigureAwait(false);
+                    break;
+                case Http3WebSocketOpcode.Binary:
+                    await context.WriteMessageAsync(
+                        Http3WebSocketOpcode.Binary,
+                        message.Payload,
+                        cancellationToken).ConfigureAwait(false);
+                    break;
+                case Http3WebSocketOpcode.Ping:
+                    await context.EchoPingAsync(message, cancellationToken).ConfigureAwait(false);
+                    break;
+                case Http3WebSocketOpcode.Close:
+                    await context.EchoCloseAsync(message, cancellationToken).ConfigureAwait(false);
+                    return;
+            }
+        }
     }
 }
 
