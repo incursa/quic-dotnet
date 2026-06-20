@@ -24,6 +24,15 @@ public sealed class ProtocolLabPackageTemplateTests
         "http3.payload.bytes.1mb",
     ];
 
+    private static readonly string[] Http3LoadProfileIds =
+    [
+        "smoke",
+        "local-regression",
+        "local-comparison",
+        "h3-small-payload-c32",
+        "h3-small-payload-c128",
+    ];
+
     [Fact]
     public void Raw_quic_package_template_advertises_transport_contract()
     {
@@ -102,6 +111,7 @@ public sealed class ProtocolLabPackageTemplateTests
     {
         var repoRoot = FindRepoRoot();
         var packageTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "protocol-lab-package.json");
+        var internalTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "protocol-lab.internal.json");
         var implementationTemplatePath = Path.Combine(repoRoot, "eng", "protocol-lab", "templates", "implementations", "quic-dotnet-dev.yaml");
 
         using var packageDocument = JsonDocument.Parse(File.ReadAllText(packageTemplatePath));
@@ -113,6 +123,14 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Equal(Http3ScenarioIds, ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("quic.transport.multiplex.100x64kb", ReadJsonStringArray(providedImplementation, "scenarios"));
         Assert.DoesNotContain("quic.transport.duplex-streams", ReadJsonStringArray(providedImplementation, "scenarios"));
+        Assert.False(providedImplementation.TryGetProperty("loadProfileIds", out _));
+
+        using var internalDocument = JsonDocument.Parse(File.ReadAllText(internalTemplatePath));
+        var internalImplementation = Assert.Single(internalDocument.RootElement.GetProperty("providedImplementations").EnumerateArray());
+        Assert.Equal("quic-dotnet-dev", internalImplementation.GetProperty("implementationId").GetString());
+        Assert.Equal(["h3"], ReadJsonStringArray(internalImplementation, "protocols"));
+        Assert.Equal(Http3ScenarioIds, ReadJsonStringArray(internalImplementation, "scenarios"));
+        Assert.Equal(Http3LoadProfileIds, ReadJsonStringArray(internalImplementation, "loadProfileIds"));
 
         var implementationYaml = File.ReadAllText(implementationTemplatePath);
         Assert.Contains("id: quic-dotnet-dev", implementationYaml);
@@ -225,6 +243,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("http3.payload.bytes.1kb", helperScript);
         Assert.Contains("http3.payload.bytes.64kb", helperScript);
         Assert.Contains("http3.payload.bytes.1mb", helperScript);
+        Assert.Contains("h3-small-payload-c32", helperScript);
+        Assert.Contains("h3-small-payload-c128", helperScript);
         Assert.Contains("($ScenarioId -join \",\")", helperScript);
         Assert.Contains("SourceBackedTestExecutor", helperScript);
         Assert.Contains("packageReferences", helperScript);
@@ -233,6 +253,8 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Upload-LabPackage", helperScript);
         Assert.Contains("Invoke-ControllerJson", helperScript);
         Assert.Contains("Wait-LabJob", helperScript);
+        Assert.Contains("[int] $Repetitions", helperScript);
+        Assert.Contains("$jobRequest.repetitions = $Repetitions", helperScript);
         Assert.Contains("$allPackageReferences = @()", helperScript);
         Assert.Contains("$allPackageReferences += @($PackageReference", helperScript);
         Assert.Contains("packages = $allPackageReferences", helperScript);

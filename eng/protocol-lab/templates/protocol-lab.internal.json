@@ -27,5 +27,25 @@
     "requiresDocker": false,
     "requiresPwsh": true,
     "requiresBash": true
-  }
+  },
+  "providedImplementations": [
+    {
+      "implementationId": "quic-dotnet-dev",
+      "protocols": [
+        "h3"
+      ],
+      "scenarios": [
+        "http3.payload.bytes.1kb",
+        "http3.payload.bytes.64kb",
+        "http3.payload.bytes.1mb"
+      ],
+      "loadProfileIds": [
+        "smoke",
+        "local-regression",
+        "local-comparison",
+        "h3-small-payload-c32",
+        "h3-small-payload-c128"
+      ]
+    }
+  ]
 }

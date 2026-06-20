@@ -26,6 +26,8 @@ param(
 
     [string] $LoadProfileId = "smoke",
 
+    [int] $Repetitions,
+
     [string[]] $RequiredCapability,
 
     [string[]] $PackageReference = @(),
@@ -98,6 +100,7 @@ function Get-PackageTargetConfig {
                 ScenarioIds = @("http3.payload.bytes.1kb")
                 SupportedSuiteIds = @("h3-local-v1", "h3-large-body-v1")
                 SupportedScenarioIds = @("http3.payload.bytes.1kb", "http3.payload.bytes.64kb", "http3.payload.bytes.1mb")
+                SupportedLoadProfileIds = @("smoke", "local-regression", "local-comparison", "h3-small-payload-c32", "h3-small-payload-c128")
                 Protocol = "h3"
                 TestExecutorId = "managed-httpclient-h3-load"
                 RequiredCapabilities = @()
@@ -112,6 +115,7 @@ function Get-PackageTargetConfig {
                 ScenarioIds = @("quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
                 SupportedSuiteIds = @("quic-transport-v1-comparison")
                 SupportedScenarioIds = @("quic.transport.stream-throughput.1mb", "quic.transport.multiplex.100x64kb", "quic.transport.duplex-streams")
+                SupportedLoadProfileIds = @()
                 Protocol = "quic"
                 TestExecutorId = "quic-go-raw-load"
                 RequiredCapabilities = @("quicTransport", "quicStreams")
@@ -137,6 +141,9 @@ function Assert-RunSelection {
 
         [Parameter(Mandatory = $true)]
         [string[]] $ScenarioIds,
+
+        [Parameter(Mandatory = $true)]
+        [string] $LoadProfileId,
 
         [Parameter(Mandatory = $true)]
         [string] $Protocol,
@@ -169,6 +176,11 @@ function Assert-RunSelection {
     $unsupportedScenarioIds = @($ScenarioIds | Where-Object { $supportedScenarioIds -notcontains $_ })
     if ($unsupportedScenarioIds.Count -gt 0) {
         throw "$Target package target scenario(s) are not declared by the package template: $($unsupportedScenarioIds -join ', ')."
+    }
+
+    $supportedLoadProfileIds = @($TargetConfig.SupportedLoadProfileIds)
+    if ($supportedLoadProfileIds.Count -gt 0 -and $supportedLoadProfileIds -notcontains $LoadProfileId) {
+        throw "$Target package target load profile '$LoadProfileId' is not declared by the package template. Supported profiles: $($supportedLoadProfileIds -join ', ')."
     }
 
     $supportedCapabilities = @($TargetConfig.SupportedCapabilities)
@@ -204,12 +216,16 @@ if (-not $PSBoundParameters.ContainsKey("TestExecutorId")) {
 if (-not $PSBoundParameters.ContainsKey("RequiredCapability")) {
     $RequiredCapability = $targetConfig.RequiredCapabilities
 }
+if ($PSBoundParameters.ContainsKey("Repetitions") -and $Repetitions -lt 1) {
+    throw "Repetitions must be greater than zero when specified."
+}
 
 Assert-RunSelection `
     -Target $PackageTarget `
     -TargetConfig $targetConfig `
     -SuiteId $SuiteId `
     -ScenarioIds $ScenarioId `
+    -LoadProfileId $LoadProfileId `
     -Protocol $Protocol `
     -TestExecutorId $TestExecutorId `
     -RequiredCapabilities $RequiredCapability
@@ -437,6 +453,9 @@ $jobRequest = [ordered]@{
     packages = $allPackageReferences
     requiredCapabilities = $requiredCapabilities
 }
+if ($PSBoundParameters.ContainsKey("Repetitions")) {
+    $jobRequest.repetitions = $Repetitions
+}
 
 $submittedJob = Invoke-ControllerJson -Uri "$ControllerUri/api/lab/jobs" -Method "POST" -Body $jobRequest
 $jobResult = if ($NoWait) {
@@ -461,4 +480,5 @@ $jobResultJson | Set-Content -LiteralPath $jobResultPath
     artifactOutputPath = $artifactPath
     job = $jobResult
     jobResultPath = $jobResultPath
+    repetitions = $(if ($PSBoundParameters.ContainsKey("Repetitions")) { $Repetitions } else { $null })
 } | ConvertTo-Json -Depth 32
