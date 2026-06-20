@@ -71,6 +71,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
     private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = [];
+    private readonly Dictionary<ulong, QuicMaxStreamDataFrame> pendingFlowControlStreamCreditFrames = [];
     private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
@@ -86,6 +87,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly QuicTlsTransportBridgeDriver tlsBridgeDriver;
     private readonly Action<QuicTlsKeyLogSecret>? tlsKeyLogSecretObserver;
     private readonly bool enableInitialPeerUsableConnectionId;
+    private QuicMaxDataFrame? pendingFlowControlConnectionCreditFrame;
     private QuicConnectionVersionProfile versionProfile;
     private readonly QuicAddressValidationTokenProtector addressValidationTokenProtector;
     private readonly bool allowClientPeerInitialReplacementBeforeTranscript;

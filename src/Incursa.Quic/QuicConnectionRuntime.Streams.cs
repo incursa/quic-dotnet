@@ -1315,6 +1315,7 @@ internal sealed partial class QuicConnectionRuntime
             }
         }
 
+        stateChanged |= TryFlushPendingFlowControlCreditUpdates(ref effects);
         stateChanged |= TryFlushPendingPeerStreamCapacityReleases(ref effects);
         return stateChanged;
     }
@@ -1472,39 +1473,86 @@ internal sealed partial class QuicConnectionRuntime
             ref effects);
     }
 
-    private bool TryEmitFlowControlCreditUpdate(
+    private bool TryDeferFlowControlCreditUpdate(
         QuicMaxDataFrame? maxDataFrame,
-        QuicMaxStreamDataFrame? maxStreamDataFrame,
-        ref QuicConnectionEffectAccumulator effects)
+        QuicMaxStreamDataFrame? maxStreamDataFrame)
     {
+        bool deferred = false;
+        if (maxDataFrame is { } connectionCredit
+            && (!pendingFlowControlConnectionCreditFrame.HasValue
+                || connectionCredit.MaximumData > pendingFlowControlConnectionCreditFrame.Value.MaximumData))
+        {
+            pendingFlowControlConnectionCreditFrame = connectionCredit;
+            deferred = true;
+        }
+
+        if (maxStreamDataFrame is { } streamCredit
+            && (!pendingFlowControlStreamCreditFrames.TryGetValue(streamCredit.StreamId, out QuicMaxStreamDataFrame pendingStreamCredit)
+                || streamCredit.MaximumStreamData > pendingStreamCredit.MaximumStreamData))
+        {
+            pendingFlowControlStreamCreditFrames[streamCredit.StreamId] = streamCredit;
+            deferred = true;
+        }
+
+        return deferred;
+    }
+
+    private bool TryFlushPendingFlowControlCreditUpdates(ref QuicConnectionEffectAccumulator effects)
+    {
+        if (!pendingFlowControlConnectionCreditFrame.HasValue
+            && pendingFlowControlStreamCreditFrames.Count == 0)
+        {
+            return false;
+        }
+
         bool stateChanged = false;
-
-        if (maxDataFrame.HasValue && maxStreamDataFrame.HasValue)
+        if (pendingFlowControlConnectionCreditFrame is { } connectionCredit
+            && pendingFlowControlStreamCreditFrames.Count > 0)
         {
-            return TrySendFlowControlCreditUpdate(
-                maxDataFrame.Value,
-                maxStreamDataFrame.Value,
-                "The connection runtime could not protect the combined flow-control credit packet.",
-                "The connection cannot send the combined flow-control credit packet.",
-                ref effects);
+            KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit = pendingFlowControlStreamCreditFrames.First();
+            if (!TrySendFlowControlCreditUpdate(
+                    connectionCredit,
+                    streamCredit.Value,
+                    "The connection runtime could not protect the combined flow-control credit packet.",
+                    "The connection cannot send the combined flow-control credit packet.",
+                    ref effects))
+            {
+                return stateChanged;
+            }
+
+            pendingFlowControlConnectionCreditFrame = null;
+            pendingFlowControlStreamCreditFrames.Remove(streamCredit.Key);
+            stateChanged = true;
         }
 
-        if (maxDataFrame.HasValue)
+        if (pendingFlowControlConnectionCreditFrame is { } remainingConnectionCredit)
         {
-            stateChanged |= TrySendFlowControlCreditUpdate(
-                maxDataFrame.Value,
-                "The connection runtime could not protect the MAX_DATA packet.",
-                "The connection cannot send the MAX_DATA packet.",
-                ref effects);
+            if (!TrySendFlowControlCreditUpdate(
+                    remainingConnectionCredit,
+                    "The connection runtime could not protect the MAX_DATA packet.",
+                    "The connection cannot send the MAX_DATA packet.",
+                    ref effects))
+            {
+                return stateChanged;
+            }
+
+            pendingFlowControlConnectionCreditFrame = null;
+            stateChanged = true;
         }
 
-        if (maxStreamDataFrame.HasValue)
+        foreach (KeyValuePair<ulong, QuicMaxStreamDataFrame> streamCredit in pendingFlowControlStreamCreditFrames.ToArray())
         {
-            stateChanged |= TrySendFlowControlCreditUpdate(
-                maxStreamDataFrame.Value,
-                "The connection runtime could not protect the MAX_STREAM_DATA packet.",
-                "The connection cannot send the MAX_STREAM_DATA packet.",
-                ref effects);
+            if (!TrySendFlowControlCreditUpdate(
+                    streamCredit.Value,
+                    "The connection runtime could not protect the MAX_STREAM_DATA packet.",
+                    "The connection cannot send the MAX_STREAM_DATA packet.",
+                    ref effects))
+            {
+                break;
+            }
+
+            pendingFlowControlStreamCreditFrames.Remove(streamCredit.Key);
+            stateChanged = true;
         }
 
         return stateChanged;
@@ -1888,10 +1936,10 @@ internal sealed partial class QuicConnectionRuntime
         QuicConnectionFlowControlCreditUpdatedEvent flowControlCreditUpdatedEvent,
         ref QuicConnectionEffectAccumulator effects)
     {
-        return TryEmitFlowControlCreditUpdate(
+        _ = TryDeferFlowControlCreditUpdate(
             flowControlCreditUpdatedEvent.MaxDataFrame,
-            flowControlCreditUpdatedEvent.MaxStreamDataFrame,
-            ref effects);
+            flowControlCreditUpdatedEvent.MaxStreamDataFrame);
+        return TryFlushPendingFlowControlCreditUpdates(ref effects);
     }
 
     private bool TryValidateStreamSendBoundary(out Exception? exception)
@@ -5059,7 +5107,8 @@ internal sealed partial class QuicConnectionRuntime
 
         if (maxDataFrame.MaximumData != 0)
         {
-            _ = TryEmitFlowControlCreditUpdate(maxDataFrame, default, ref effects);
+            _ = TryDeferFlowControlCreditUpdate(maxDataFrame, default);
+            _ = TryFlushPendingFlowControlCreditUpdates(ref effects);
         }
 
         if (streamRegistry.Bookkeeping.TryGetStreamSnapshot(resetStreamFrame.StreamId, out QuicConnectionStreamSnapshot snapshot)

@@ -90,6 +90,59 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public void FlowControlCreditUpdate_RetriesAfterCongestionBlocksInitialEmission()
+    {
+        using QuicConnectionRuntime runtime =
+            QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        congestion.RegisterPacketSent(congestion.CongestionWindowBytes);
+        Assert.False(congestion.CanSend(1));
+
+        QuicMaxDataFrame maxDataFrame = new(128);
+        QuicMaxStreamDataFrame maxStreamDataFrame = new(1, 64);
+        QuicConnectionTransitionResult blockedResult = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(
+                ObservedAtTicks: 10,
+                maxDataFrame,
+                maxStreamDataFrame),
+            nowTicks: 10);
+
+        Assert.Empty(blockedResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+
+        congestion.Reset();
+        QuicConnectionTransitionResult retryResult = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(ObservedAtTicks: 11),
+            nowTicks: 11);
+
+        QuicConnectionSendDatagramEffect sendEffect =
+            Assert.Single(retryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+        byte[] payload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+        ReadOnlySpan<byte> creditPayload = SkipAckAndPadding(payload);
+
+        Assert.True(QuicFrameCodec.TryParseMaxDataFrame(
+            creditPayload,
+            out QuicMaxDataFrame parsedMaxDataFrame,
+            out int maxDataBytesConsumed));
+        Assert.Equal(maxDataFrame, parsedMaxDataFrame);
+
+        Assert.True(QuicFrameCodec.TryParseMaxStreamDataFrame(
+            creditPayload[maxDataBytesConsumed..],
+            out QuicMaxStreamDataFrame parsedMaxStreamDataFrame,
+            out int maxStreamDataBytesConsumed));
+        Assert.Equal(maxStreamDataFrame, parsedMaxStreamDataFrame);
+        Assert.True(maxStreamDataBytesConsumed > 0);
+
+        QuicConnectionTransitionResult duplicateRetryResult = runtime.Transition(
+            new QuicConnectionFlowControlCreditUpdatedEvent(ObservedAtTicks: 12),
+            nowTicks: 12);
+        Assert.Empty(duplicateRetryResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S4P2-0003")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReadStreamData_DoesNotCreateCreditFramesWhenNoApplicationBytesAreRead()

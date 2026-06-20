@@ -1864,6 +1864,21 @@ internal sealed partial class QuicConnectionRuntime
                 out QuicConnectionStreamSnapshot previousStreamSnapshot);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
             {
+                if (ApplicationReceiveDebugEnabled)
+                {
+                    _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
+                        streamFrame.StreamId.Value,
+                        out QuicConnectionStreamSnapshot rejectedStreamSnapshot);
+                    ulong rejectedFrameEndOffset = streamFrame.Offset + (ulong)streamFrame.StreamDataLength;
+                    Console.Error.WriteLine(
+                        $"app-rx stream-rejected role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} " +
+                        $"offset={streamFrame.Offset} length={streamFrame.StreamDataLength} end={rejectedFrameEndOffset} fin={streamFrame.IsFin} " +
+                        $"error={errorCode} streamReceiveLimit={rejectedStreamSnapshot.ReceiveLimit} streamReadOffset={rejectedStreamSnapshot.ReadOffset} " +
+                        $"streamAccounted={rejectedStreamSnapshot.AccountedBytesReceived} streamBuffered={rejectedStreamSnapshot.BufferedReadableBytes} " +
+                        $"connectionReceiveLimit={streamRegistry.Bookkeeping.ConnectionReceiveLimit} " +
+                        $"connectionAccounted={streamRegistry.Bookkeeping.ConnectionAccountedBytesReceived}.");
+                }
+
                 return TryHandleApplicationDataFrameError(
                     nowTicks,
                     streamFrame.FrameType,
