@@ -1315,6 +1315,7 @@ internal sealed partial class QuicConnectionRuntime
             }
         }
 
+        stateChanged |= TryFlushPendingPeerStreamCapacityReleases(ref effects);
         return stateChanged;
     }
 
@@ -1874,7 +1875,13 @@ internal sealed partial class QuicConnectionRuntime
         ulong streamId,
         ref QuicConnectionEffectAccumulator effects)
     {
-        return TryReleasePeerStreamCapacity(streamId, ref effects);
+        pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
+        if (TryReleasePeerStreamCapacity(streamId, ref effects))
+        {
+            return true;
+        }
+
+        return TryDeferPeerStreamCapacityRelease(streamId);
     }
 
     private bool HandleFlowControlCreditUpdated(
@@ -1990,6 +1997,46 @@ internal sealed partial class QuicConnectionRuntime
             protectedPacket));
 
         return true;
+    }
+
+    private bool TryDeferPeerStreamCapacityRelease(ulong streamId)
+    {
+        if (IsDisposed
+            || terminalState is not null
+            || !streamRegistry.Bookkeeping.TryPeekPeerStreamCapacityRelease(streamId, out _))
+        {
+            return false;
+        }
+
+        pendingPeerStreamCapacityReleaseStreamIds.Add(streamId);
+        return true;
+    }
+
+    private bool TryFlushPendingPeerStreamCapacityReleases(ref QuicConnectionEffectAccumulator effects)
+    {
+        if (pendingPeerStreamCapacityReleaseStreamIds.Count == 0)
+        {
+            return false;
+        }
+
+        bool stateChanged = false;
+        ulong[] streamIds = pendingPeerStreamCapacityReleaseStreamIds.ToArray();
+        foreach (ulong streamId in streamIds)
+        {
+            pendingPeerStreamCapacityReleaseStreamIds.Remove(streamId);
+            if (TryReleasePeerStreamCapacity(streamId, ref effects))
+            {
+                stateChanged = true;
+                continue;
+            }
+
+            if (TryDeferPeerStreamCapacityRelease(streamId))
+            {
+                break;
+            }
+        }
+
+        return stateChanged;
     }
 
     private bool TrySendRetireConnectionIdFrame(

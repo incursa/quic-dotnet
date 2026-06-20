@@ -1832,6 +1832,109 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Edge")]
+    public async Task RecoveryProgress_RetriesPeerStreamCapacityReleaseBlockedByCongestion()
+    {
+        using QuicConnectionRuntime runtime = CreateFinishedServerRuntimeWithActivePath(
+            connectionFlowControlLimit: 64 * 1024,
+            streamFlowControlLimit: 64 * 1024,
+            validateActivePath: true);
+        List<QuicConnectionEffect> outboundEffects = [];
+
+        runtime.SetLocalApiEventDispatcher(connectionEvent =>
+        {
+            QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+            outboundEffects.AddRange(transition.Effects);
+            return true;
+        });
+
+        AcknowledgeTrackedPackets(runtime, static key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+        outboundEffects.Clear();
+
+        byte[] requestPayload = CreateSequentialPayload(0x60, 256);
+        byte[] requestPacket = BuildProtectedPeerStreamPacket(
+            runtime,
+            streamId: 0,
+            streamData: requestPayload,
+            offset: 0,
+            fin: true);
+
+        QuicConnectionTransitionResult requestResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 10,
+                runtime.ActivePath!.Value.Identity,
+                requestPacket),
+            nowTicks: 10);
+        Assert.True(requestResult.StateChanged);
+
+        await using QuicStream requestStream = new(runtime.StreamRegistry.Bookkeeping, 0, runtime);
+        byte[] readBuffer = new byte[requestPayload.Length];
+        int totalRead = 0;
+        int bytesRead;
+        do
+        {
+            bytesRead = await requestStream.ReadAsync(readBuffer, 0, readBuffer.Length).WaitAsync(TimeSpan.FromSeconds(5));
+            totalRead += bytesRead;
+        }
+        while (bytesRead > 0);
+
+        Assert.Equal(requestPayload.Length, totalRead);
+        outboundEffects.Clear();
+
+        byte[] responsePayload = CreateSequentialPayload(0x70, 1024);
+        await requestStream.WriteAsync(responsePayload, 0, responsePayload.Length).WaitAsync(TimeSpan.FromSeconds(5));
+        QuicConnectionSendDatagramEffect bodyEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+        KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedBodyPacket = FindTrackedPacket(runtime, bodyEffect.Datagram);
+        outboundEffects.Clear();
+
+        QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+        if (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+        {
+            congestion.RegisterPacketSent(congestion.CongestionWindowBytes - congestion.BytesInFlightBytes);
+        }
+
+        Assert.False(congestion.CanSend(1));
+
+        await requestStream.CompleteWritesAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5));
+        string[] blockedCompletionDescriptions = outboundEffects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+        Assert.DoesNotContain(
+            blockedCompletionDescriptions,
+            description => description.Contains("max_streams(", StringComparison.Ordinal));
+        Assert.True(runtime.StreamRegistry.Bookkeeping.TryPeekPeerStreamCapacityRelease(0, out _));
+        outboundEffects.Clear();
+
+        congestion.Reset();
+        byte[] protectedAckPacket = BuildProtectedAckPacketForAcknowledgedPackets(
+            runtime,
+            runtime.CurrentHandshakeSourceConnectionId.Span,
+            trackedBodyPacket.Key.PacketNumber);
+
+        QuicConnectionTransitionResult ackResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: 100,
+                runtime.ActivePath.Value.Identity,
+                protectedAckPacket),
+            nowTicks: 100);
+
+        QuicConnectionSendDatagramEffect[] ackSendEffects = ackResult.Effects
+            .OfType<QuicConnectionSendDatagramEffect>()
+            .ToArray();
+        string[] ackSendDescriptions = ackSendEffects
+            .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+            .ToArray();
+
+        Assert.Contains(
+            ackSendDescriptions,
+            description => description.Contains("max_streams(bidi=True", StringComparison.Ordinal));
+        Assert.False(runtime.StreamRegistry.Bookkeeping.TryPeekPeerStreamCapacityRelease(0, out _));
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable()

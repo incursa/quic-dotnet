@@ -70,6 +70,7 @@ internal sealed partial class QuicConnectionRuntime : IAsyncDisposable, IDisposa
     private readonly ConcurrentQueue<object> completionSourcePool = new();
     private readonly object pendingStreamActionRequestsGate = new();
     private readonly QuicApplicationSendQueue applicationSendQueue = new();
+    private readonly HashSet<ulong> pendingPeerStreamCapacityReleaseStreamIds = [];
     private readonly QuicStreamObserverDirectory streamObservers = new();
     private readonly QuicConnectionIssuedConnectionIdState issuedConnectionIdState = new();
     private readonly Dictionary<string, QuicConnectionNewTokenEmissionRecord> newTokenEmissionsByRemoteAddress = new(StringComparer.Ordinal);
