@@ -59,7 +59,7 @@ Public package manifest fields:
       "implementationId": "quic-dotnet-dev",
       "displayName": "QUIC.NET development build",
       "protocols": ["h3"],
-      "scenarios": ["http3.core.status", "http3.payload.bytes.64kb"]
+      "scenarios": ["http3.payload.bytes.1kb", "http3.payload.bytes.64kb"]
     }
   ]
 }
@@ -93,7 +93,7 @@ Internal execution manifest fields:
 
 Implementation manifests live inside the package, normally under `implementations/*.yaml`. Paths inside those manifests are package-relative; the worker resolves them into the per-attempt package workspace before invoking the ProtocolLab runner.
 
-The default QUIC.NET template creates `quic-dotnet-dev` for `samples/Incursa.Http3.Samples.TechEmpower` and advertises HTTP/3 scenarios only. Raw QUIC is supported only by the separate `quic-dotnet-raw-dev` target, which packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and advertises `quic` protocol support, workload family `quic.transport`, and only `quic.transport.multiplex.100x64kb` plus `quic.transport.duplex-streams`. The raw QUIC package requires worker-installed `dotnet` and `pwsh`, does not require `bash`, and still declares `libmsquic` as a worker environment prerequisite.
+The default QUIC.NET template creates `quic-dotnet-dev` for `samples/Incursa.Http3.Samples.TechEmpower` and advertises HTTP/3 scenarios only, including the deterministic 1KB byte-payload lane. Raw QUIC is supported only by the separate `quic-dotnet-raw-dev` target, which packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and advertises `quic` protocol support, workload family `quic.transport`, and only `quic.transport.multiplex.100x64kb` plus `quic.transport.duplex-streams`. The raw QUIC package requires worker-installed `dotnet` and `pwsh`, does not require `bash`, and still declares `libmsquic` as a worker environment prerequisite.
 
 ## API Workflow
 
@@ -159,7 +159,7 @@ Build and submit through the current compatibility helper:
 pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -ProtocolLabRoot ../protocol-lab `
   -ControllerUri http://10.10.99.176:5088 `
-  -ScenarioId http3.core.status `
+  -ScenarioId http3.payload.bytes.1kb `
   -Protocol h3 `
   -LoadProfileId smoke
 ```

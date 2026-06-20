@@ -25,6 +25,7 @@ supportedProtocols:
 supportedWorkloadFamilies:
   - http.application
 supportedScenarios:
+  - http3.payload.bytes.1kb
   - http3.payload.bytes.64kb
   - http3.payload.bytes.1mb
 ports:
@@ -56,4 +57,4 @@ artifactExports:
   - server.stderr.txt
 qlogSupport: false
 sslKeyLogSupport: false
-notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports core plus deterministic large-body HTTP application scenarios.
+notes: Trusted lab package execution only. This package uses the TechEmpower-shaped HTTP/3 sample and supports deterministic small- and large-body HTTP application scenarios.

@@ -19,6 +19,7 @@ public sealed class ProtocolLabPackageTemplateTests
 
     private static readonly string[] Http3ScenarioIds =
     [
+        "http3.payload.bytes.1kb",
         "http3.payload.bytes.64kb",
         "http3.payload.bytes.1mb",
     ];
@@ -221,6 +222,7 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("$protocolLabExecutionRootFullPath", helperScript);
         Assert.Contains("protocolLabExecutionRoot = $protocolLabExecutionRootFullPath", helperScript);
         Assert.Contains("h3-large-body-v1", helperScript);
+        Assert.Contains("http3.payload.bytes.1kb", helperScript);
         Assert.Contains("http3.payload.bytes.64kb", helperScript);
         Assert.Contains("http3.payload.bytes.1mb", helperScript);
         Assert.Contains("($ScenarioId -join \",\")", helperScript);
@@ -292,7 +294,7 @@ public sealed class ProtocolLabPackageTemplateTests
     [Theory]
     [InlineData("h3-large-body-v1", "http3.payload.stream.100x16kb", "scenario(s) are not declared by the package template")]
     [InlineData("h3-large-body-v1", "quic.transport.multiplex.100x64kb", "scenario(s) are not declared by the package template")]
-    [InlineData("quic-transport-v1-comparison", "http3.payload.bytes.64kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
+    [InlineData("quic-transport-v1-comparison", "http3.payload.bytes.1kb", "only supports suite(s): h3-local-v1, h3-large-body-v1")]
     public void Run_helper_rejects_http3_undeclared_package_arguments(string suiteId, string scenarioId, string expectedError)
     {
         var repoRoot = FindRepoRoot();

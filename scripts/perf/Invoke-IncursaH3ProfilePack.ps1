@@ -38,6 +38,7 @@ function Resolve-RootedPath([string] $Path, [string] $BasePath) {
 function Resolve-ScenarioId([string] $Value) {
     switch -Regex ($Value) {
         '^(status|http3\.core\.status)$' { return "http3.core.status" }
+        '^(bytes1|bytes1kb|bytes-1kb|http3\.payload\.bytes\.1kb)$' { return "http3.payload.bytes.1kb" }
         '^(bytes64|bytes-64kb|http3\.payload\.bytes\.64kb)$' { return "http3.payload.bytes.64kb" }
         '^(bytes1mb|bytes-1mb|http3\.payload\.bytes\.1mb)$' { return "http3.payload.bytes.1mb" }
         default { return $Value }

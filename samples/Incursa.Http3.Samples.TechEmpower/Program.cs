@@ -195,6 +195,11 @@ public sealed class TechEmpowerHandler : IHttp3RequestHandler
             return Payload(TechEmpowerPayloads.Bytes64Kb, "application/octet-stream");
         }
 
+        if (path == "/bytes/1024")
+        {
+            return Payload(TechEmpowerPayloads.Bytes1Kb, "application/octet-stream");
+        }
+
         if (path == "/bytes/1048576")
         {
             return Payload(TechEmpowerPayloads.Bytes1Mb, "application/octet-stream");
@@ -258,6 +263,8 @@ public static class TechEmpowerPayloads
 
     private static readonly byte[] JsonBytes = """{"message":"Hello, World!"}"""u8.ToArray();
 
+    private static readonly byte[] Bytes1KbBytes = TechEmpowerHandler.CreateDeterministicBytes(1024);
+
     private static readonly byte[] Bytes64KbBytes = TechEmpowerHandler.CreateDeterministicBytes(64 * 1024);
 
     private static readonly byte[] Bytes1MbBytes = TechEmpowerHandler.CreateDeterministicBytes(1024 * 1024);
@@ -265,6 +272,8 @@ public static class TechEmpowerPayloads
     public static ReadOnlyMemory<byte> Plaintext => PlaintextBytes;
 
     public static ReadOnlyMemory<byte> Json => JsonBytes;
+
+    public static ReadOnlyMemory<byte> Bytes1Kb => Bytes1KbBytes;
 
     public static ReadOnlyMemory<byte> Bytes64Kb => Bytes64KbBytes;
 

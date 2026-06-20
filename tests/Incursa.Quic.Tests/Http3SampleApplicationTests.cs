@@ -143,6 +143,7 @@ public sealed class Http3SampleApplicationTests
     }
 
     [Theory]
+    [InlineData("/bytes/1024", 1024)]
     [InlineData("/bytes/65536", 64 * 1024)]
     [InlineData("/bytes/1048576", 1024 * 1024)]
     public async Task TechEmpowerBytesRoutes_ReturnDeterministicPayloads(string path, int expectedLength)

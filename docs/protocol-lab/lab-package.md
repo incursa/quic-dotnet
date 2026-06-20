@@ -6,7 +6,7 @@ title: "ProtocolLab Lab Package"
 
 This repo can produce trusted internal ProtocolLab package v2 implementation archives (`.plabpkg`) from the current working tree and submit them to a lab controller.
 
-The default package target is `samples/Incursa.Http3.Samples.TechEmpower`. It is staged as the ProtocolLab implementation `quic-dotnet-dev` and supports HTTP/3 application scenarios only.
+The default package target is `samples/Incursa.Http3.Samples.TechEmpower`. It is staged as the ProtocolLab implementation `quic-dotnet-dev` and supports HTTP/3 application scenarios only, including deterministic 1KB, 64KB, and 1MB byte-payload downloads.
 
 Raw QUIC uses a separate package target, `quic-dotnet-raw-dev`. It packages framework-dependent Linux x64 and Windows x64 raw QUIC adapter/server payloads owned under `eng/protocol-lab` and built against this working tree, then launches the right payload through a package-local PowerShell entrypoint. Do not use `quic-dotnet-dev` for raw QUIC validation.
 
@@ -44,7 +44,7 @@ The raw target builds both `linux-x64` and `win-x64` payloads by default. Pass `
 pwsh ./eng/protocol-lab/Invoke-QuicDotNetProtocolLabRun.ps1 `
   -ProtocolLabRoot ../protocol-lab `
   -ControllerUri http://10.10.99.176:5088 `
-  -ScenarioId http3.core.status `
+  -ScenarioId http3.payload.bytes.1kb `
   -LoadProfileId smoke
 ```
 
@@ -74,5 +74,5 @@ For raw QUIC, the run helper also builds and uploads the public ProtocolLab raw 
 - The worker must support ProtocolLab package v2 and resolve package-relative implementation manifest paths into the per-attempt workspace before invoking the ProtocolLab runner.
 - Scenario packs and test-executor packages are supplied separately by public ProtocolLab package tooling or another package producer; quic-dotnet only produces implementation packages.
 - The `-ProtocolLabRoot` argument is still required for neutral package tooling, submission scripts, schemas, and shared public contract/model projects. Raw QUIC implementation source is local to quic-dotnet and is not resolved from public production adapter projects. Package project paths must resolve under the quic-dotnet repository root.
-- `quic-dotnet-dev` advertises HTTP/3 only.
+- `quic-dotnet-dev` advertises HTTP/3 only, including `http3.payload.bytes.1kb`.
 - `quic-dotnet-raw-dev` is the only package target for raw QUIC lab validation. Its default package carries `linux-x64` and `win-x64` framework-dependent payloads without duplicate self-contained .NET runtime trees.

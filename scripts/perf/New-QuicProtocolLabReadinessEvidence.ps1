@@ -1736,7 +1736,7 @@ $performanceCommands = @(
     },
     [ordered]@{
         name = "Package-backed HTTP/3 rack lab smoke"
-        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget Http3 -SuiteId h3-local-v1 -ScenarioId http3.payload.bytes.64kb -Protocol h3 -LoadProfileId smoke"
+        command = "pwsh -NoProfile -ExecutionPolicy Bypass -File .\eng\protocol-lab\Invoke-QuicDotNetProtocolLabRun.ps1 -ProtocolLabRoot $resolvedProtocolLabRoot -ProtocolLabExecutionRoot $resolvedProtocolLabExecutionRoot -ControllerUri http://10.10.99.176:5088 -PackageTarget Http3 -SuiteId h3-local-v1 -ScenarioId http3.payload.bytes.1kb -Protocol h3 -LoadProfileId smoke"
         mode = "package-backed-controller"
         publishable = $false
     },
