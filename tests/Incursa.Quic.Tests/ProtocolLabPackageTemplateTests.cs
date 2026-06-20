@@ -347,6 +347,9 @@ public sealed class ProtocolLabPackageTemplateTests
         Assert.Contains("Get-FileHash", script);
         Assert.Contains("SHA-256", script);
         Assert.Contains("ProtocolLabRunRoot", script);
+        Assert.Contains("LabControllerEvidencePath", script);
+        Assert.Contains("labControllerEvidence", script);
+        Assert.Contains("Lab Controller Topology Evidence", script);
         Assert.Contains("evidenceClassDefinitions", script);
         Assert.Contains("local-lab", script);
         Assert.Contains("isolated-local", script);
@@ -415,6 +418,7 @@ public sealed class ProtocolLabPackageTemplateTests
         var runRoot = Path.Combine(temporaryRoot, "runs", "local-repeat");
         var missingAggregateRunRoot = Path.Combine(temporaryRoot, "runs", "missing-aggregate");
         var outputRoot = Path.Combine(temporaryRoot, "readiness");
+        var labControllerEvidencePath = Path.Combine(temporaryRoot, "lab-controller-evidence.json");
 
         Directory.CreateDirectory(contractRoot);
         Directory.CreateDirectory(benchmarkScriptDirectory);
@@ -487,6 +491,44 @@ public sealed class ProtocolLabPackageTemplateTests
               "claimLevel": "validation"
             }
             """);
+        File.WriteAllText(labControllerEvidencePath, """
+            {
+              "controllerUrl": "http://10.10.99.176:5088",
+              "capturedUtc": "2026-06-20T00:00:00Z",
+              "nodes": [
+                {
+                  "nodeId": "plab-worker-sut-01",
+                  "status": "Ready",
+                  "labels": {
+                    "role": "sut",
+                    "workerKind": "server-under-test",
+                    "host": "r920",
+                    "evidenceTier": "lab-vm-single-host",
+                    "benchmarkAddress": "10.50.0.11"
+                  }
+                },
+                {
+                  "nodeId": "plab-worker-load-01",
+                  "status": "Ready",
+                  "labels": {
+                    "role": "load",
+                    "workerKind": "load-generator",
+                    "host": "r920",
+                    "evidenceTier": "lab-vm-single-host",
+                    "benchmarkAddress": "10.50.0.12"
+                  }
+                }
+              ],
+              "isolatedPairPreview": {
+                "canSubmit": true,
+                "blockers": [],
+                "roles": [
+                  { "name": "sut", "matchedNodeIds": [ "plab-worker-sut-01" ] },
+                  { "name": "load", "matchedNodeIds": [ "plab-worker-load-01" ] }
+                ]
+              }
+            }
+            """);
 
         try
         {
@@ -507,7 +549,9 @@ public sealed class ProtocolLabPackageTemplateTests
                 "test-readiness",
                 "-SkipPackageBuild",
                 "-ProtocolLabRunRoot",
-                runRoot);
+                runRoot,
+                "-LabControllerEvidencePath",
+                labControllerEvidencePath);
 
             Assert.Equal(0, result.ExitCode);
 
@@ -522,6 +566,18 @@ public sealed class ProtocolLabPackageTemplateTests
             Assert.Equal("org.protocol-lab.components.executor.quic-go-raw-load", componentPackage.GetProperty("packageId").GetString());
             Assert.Equal("0.1.0", componentPackage.GetProperty("packageVersion").GetString());
             Assert.Equal(64, componentPackage.GetProperty("sha256").GetString()!.Length);
+            var labControllerEvidence = root.GetProperty("labControllerEvidence");
+            Assert.True(labControllerEvidence.GetProperty("present").GetBoolean());
+            Assert.Equal("http://10.10.99.176:5088", labControllerEvidence.GetProperty("controllerUrl").GetString());
+            Assert.Equal(64, labControllerEvidence.GetProperty("sha256").GetString()!.Length);
+            var labControllerSummary = labControllerEvidence.GetProperty("summary");
+            Assert.Equal(2, labControllerSummary.GetProperty("nodeCount").GetInt32());
+            Assert.True(labControllerSummary.GetProperty("separateRolesAvailable").GetBoolean());
+            Assert.True(labControllerSummary.GetProperty("samePhysicalHostObserved").GetBoolean());
+            Assert.Contains(
+                labControllerSummary.GetProperty("blockers").EnumerateArray(),
+                blocker => blocker.GetString() == "physical-host-isolation-unattested:r920");
+            Assert.True(labControllerSummary.GetProperty("isolatedPairPreview").GetProperty("canSubmit").GetBoolean());
             Assert.Equal("local-lab", root.GetProperty("readinessQuality").GetProperty("evidenceClass").GetString());
             Assert.Equal("blocked", root.GetProperty("readinessQuality").GetProperty("publishability").GetProperty("status").GetString());
             Assert.Contains(
@@ -601,6 +657,9 @@ public sealed class ProtocolLabPackageTemplateTests
                 requirement => requirement.GetString()!.Contains("non-loopback SUT endpoint", StringComparison.Ordinal));
 
             var generatedReadme = File.ReadAllText(Path.Combine(outputRoot, "test-readiness", "README.md"));
+            Assert.Contains("## Lab Controller Topology Evidence", generatedReadme);
+            Assert.Contains("plab-worker-sut-01", generatedReadme);
+            Assert.Contains("physical-host-isolation-unattested:r920", generatedReadme);
             Assert.Contains("## Isolated-Local Upgrade Runbook", generatedReadme);
             Assert.Contains("separate-target-and-load-generator-host", generatedReadme);
             Assert.Contains("Rerun readiness proof", generatedReadme);

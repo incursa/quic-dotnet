@@ -16,6 +16,8 @@ param(
 
     [string[]] $ProtocolLabRunRoot = @(),
 
+    [string] $LabControllerEvidencePath,
+
     [int] $MinimumPublishableRepetitions = 3,
 
     [double] $LocalMaxRelativeRange = 0.25,
@@ -756,6 +758,211 @@ function Read-JsonFileOrNull {
     }
 }
 
+function Get-LabNodeLabel {
+    param(
+        [AllowNull()]
+        $Node,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Name
+    )
+
+    $labels = Get-ObjectValue -InputObject $Node -Name "labels"
+    if ($null -eq $labels) {
+        $capabilities = Get-ObjectValue -InputObject $Node -Name "capabilities"
+        $labels = Get-ObjectValue -InputObject $capabilities -Name "labels"
+    }
+
+    if ($null -eq $labels) {
+        return ""
+    }
+
+    return [string](Get-ObjectValue -InputObject $labels -Name $Name -Default "")
+}
+
+function Get-LabNodeName {
+    param(
+        [AllowNull()]
+        $Node
+    )
+
+    foreach ($propertyName in @("nodeId", "id", "name", "displayName")) {
+        $value = [string](Get-ObjectValue -InputObject $Node -Name $propertyName -Default "")
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            return $value
+        }
+    }
+
+    return "unknown"
+}
+
+function Test-LabNodeReady {
+    param(
+        [AllowNull()]
+        $Node
+    )
+
+    $ready = Get-ObjectValue -InputObject $Node -Name "ready"
+    if ($ready -is [bool]) {
+        return $ready
+    }
+
+    foreach ($propertyName in @("status", "state")) {
+        $value = [string](Get-ObjectValue -InputObject $Node -Name $propertyName -Default "")
+        if ($value -eq "Ready" -or $value -eq "ready") {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Read-LabControllerEvidence {
+    param([string] $Path)
+
+    $emptySummary = [ordered]@{
+        nodeCount = 0
+        readyNodeCount = 0
+        sutNodes = @()
+        loadNodes = @()
+        benchmarkAddresses = @()
+        physicalHostLabels = @()
+        separateRolesAvailable = $false
+        samePhysicalHostObserved = $false
+        isolatedPairPreview = [ordered]@{
+            present = $false
+            canSubmit = $false
+            roles = @()
+            blockers = @()
+        }
+        blockers = @()
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return [ordered]@{
+            present = $false
+            path = ""
+            sha256 = ""
+            blocker = "LabControllerEvidencePath was not supplied"
+            summary = $emptySummary
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return [ordered]@{
+            present = $false
+            path = [System.IO.Path]::GetFullPath($Path)
+            sha256 = ""
+            blocker = "Lab controller evidence file was not found"
+            summary = $emptySummary
+        }
+    }
+
+    $resolvedPath = [System.IO.Path]::GetFullPath($Path)
+    $document = Read-JsonFileOrNull -Path $resolvedPath
+    if ($null -eq $document) {
+        return [ordered]@{
+            present = $false
+            path = $resolvedPath
+            sha256 = (Get-FileHash -LiteralPath $resolvedPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            blocker = "Lab controller evidence file could not be parsed as JSON"
+            summary = $emptySummary
+        }
+    }
+
+    $rawNodes = Get-ObjectValue -InputObject $document -Name "nodes" -Default @()
+    $nodes = @($rawNodes | ForEach-Object { $_ })
+    $nodeFacts = @(
+        foreach ($node in $nodes) {
+            $nodeName = Get-LabNodeName -Node $node
+            [ordered]@{
+                nodeId = $nodeName
+                ready = Test-LabNodeReady -Node $node
+                role = Get-LabNodeLabel -Node $node -Name "role"
+                workerKind = Get-LabNodeLabel -Node $node -Name "workerKind"
+                host = Get-LabNodeLabel -Node $node -Name "host"
+                evidenceTier = Get-LabNodeLabel -Node $node -Name "evidenceTier"
+                benchmarkAddress = Get-LabNodeLabel -Node $node -Name "benchmarkAddress"
+            }
+        }
+    )
+
+    $sutNodes = @($nodeFacts | Where-Object { $_.role -eq "sut" } | ForEach-Object { $_.nodeId })
+    $loadNodes = @($nodeFacts | Where-Object { $_.role -eq "load" } | ForEach-Object { $_.nodeId })
+    $sutHostLabels = @($nodeFacts | Where-Object { $_.role -eq "sut" -and -not [string]::IsNullOrWhiteSpace($_.host) } | ForEach-Object { $_.host } | Select-Object -Unique)
+    $loadHostLabels = @($nodeFacts | Where-Object { $_.role -eq "load" -and -not [string]::IsNullOrWhiteSpace($_.host) } | ForEach-Object { $_.host } | Select-Object -Unique)
+    $sharedHostLabels = @($sutHostLabels | Where-Object { $loadHostLabels -contains $_ })
+    $benchmarkAddresses = @($nodeFacts | Where-Object { -not [string]::IsNullOrWhiteSpace($_.benchmarkAddress) } | ForEach-Object { $_.benchmarkAddress } | Select-Object -Unique)
+
+    $preview = Get-ObjectValue -InputObject $document -Name "isolatedPairPreview"
+    $previewRoles = @()
+    $previewBlockers = @()
+    $previewCanSubmit = $false
+    $previewPresent = $false
+    if ($null -ne $preview) {
+        $previewPresent = $true
+        $previewCanSubmitValue = Get-ObjectValue -InputObject $preview -Name "canSubmit" -Default $false
+        if ($previewCanSubmitValue -is [bool]) {
+            $previewCanSubmit = $previewCanSubmitValue
+        }
+
+        $previewBlockers = @((Get-ObjectValue -InputObject $preview -Name "blockers" -Default @()) | ForEach-Object { [string]$_ })
+        $previewRoles = @(
+            (Get-ObjectValue -InputObject $preview -Name "roles" -Default @()) | ForEach-Object {
+                $matchedNodeIds = @((Get-ObjectValue -InputObject $_ -Name "matchedNodeIds" -Default @()) | ForEach-Object { [string]$_ })
+                [ordered]@{
+                    name = [string](Get-ObjectValue -InputObject $_ -Name "name" -Default (Get-ObjectValue -InputObject $_ -Name "role" -Default ""))
+                    matchedNodeIds = $matchedNodeIds
+                    matchedNodeCount = $matchedNodeIds.Count
+                }
+            }
+        )
+    }
+
+    $blockers = New-Object System.Collections.Generic.List[string]
+    if ($sutNodes.Count -eq 0) {
+        $blockers.Add("no-ready-sut-worker-observed") | Out-Null
+    }
+
+    if ($loadNodes.Count -eq 0) {
+        $blockers.Add("no-ready-load-worker-observed") | Out-Null
+    }
+
+    if ($sharedHostLabels.Count -gt 0) {
+        $blockers.Add("physical-host-isolation-unattested:$($sharedHostLabels -join ',')") | Out-Null
+    }
+
+    if ($previewPresent -and -not $previewCanSubmit) {
+        $blockers.Add("isolated-pair-preview-not-submittable") | Out-Null
+    }
+
+    return [ordered]@{
+        present = $true
+        path = $resolvedPath
+        sha256 = (Get-FileHash -LiteralPath $resolvedPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        capturedUtc = [string](Get-ObjectValue -InputObject $document -Name "capturedUtc" -Default "")
+        controllerUrl = [string](Get-ObjectValue -InputObject $document -Name "controllerUrl" -Default "")
+        blocker = ""
+        summary = [ordered]@{
+            nodeCount = $nodeFacts.Count
+            readyNodeCount = @($nodeFacts | Where-Object { $_.ready }).Count
+            sutNodes = $sutNodes
+            loadNodes = $loadNodes
+            benchmarkAddresses = $benchmarkAddresses
+            physicalHostLabels = @($nodeFacts | Where-Object { -not [string]::IsNullOrWhiteSpace($_.host) } | ForEach-Object { $_.host } | Select-Object -Unique)
+            separateRolesAvailable = ($sutNodes.Count -gt 0 -and $loadNodes.Count -gt 0)
+            samePhysicalHostObserved = ($sharedHostLabels.Count -gt 0)
+            isolatedPairPreview = [ordered]@{
+                present = $previewPresent
+                canSubmit = $previewCanSubmit
+                roles = $previewRoles
+                blockers = $previewBlockers
+            }
+            blockers = @($blockers)
+        }
+    }
+}
+
 function Test-LoopbackHost {
     param([string] $HostName)
 
@@ -1459,6 +1666,8 @@ foreach ($runRootInput in @($ProtocolLabRunRoot)) {
         -PublishableMaxRelativeRange $PublishableMaxRelativeRange
 }
 
+$labControllerEvidence = Read-LabControllerEvidence -Path $LabControllerEvidencePath
+
 $readinessEvidenceClasses = @($protocolLabRunEvidence |
         Where-Object { $_.present } |
         ForEach-Object { $_.evidenceClass } |
@@ -1630,6 +1839,7 @@ $manifest = [ordered]@{
     packageEvidence = @($packageEvidence)
     componentPackageEvidence = $componentPackageEvidence
     http3RunnerEvidence = $http3RunnerEvidence
+    labControllerEvidence = $labControllerEvidence
     protocolLabRuns = @($protocolLabRunEvidence)
     readinessQuality = $readinessQuality
     protocolLabPrerequisites = $protocolLabPrerequisites
@@ -1682,6 +1892,33 @@ Add-Line $summary ""
 Add-Line $summary "Evidence classes:"
 foreach ($definition in $manifest.evidenceClassDefinitions.GetEnumerator()) {
     Add-Line $summary "- ``$($definition.Key)``: $($definition.Value)"
+}
+Add-Line $summary ""
+Add-Line $summary "## Lab Controller Topology Evidence"
+Add-Line $summary ""
+Add-Line $summary "- Present: ``$($labControllerEvidence.present)``"
+if ($labControllerEvidence.present) {
+    Add-Line $summary "- Controller: ``$($labControllerEvidence.controllerUrl)``"
+    Add-Line $summary "- Snapshot path: ``$($labControllerEvidence.path)``"
+    Add-Line $summary "- Snapshot SHA-256: ``$($labControllerEvidence.sha256)``"
+    Add-Line $summary "- Ready nodes: ``$($labControllerEvidence.summary.readyNodeCount)`` / ``$($labControllerEvidence.summary.nodeCount)``"
+    Add-Line $summary "- SUT nodes: ``$(@($labControllerEvidence.summary.sutNodes) -join ', ')``"
+    Add-Line $summary "- Load nodes: ``$(@($labControllerEvidence.summary.loadNodes) -join ', ')``"
+    Add-Line $summary "- Benchmark addresses: ``$(@($labControllerEvidence.summary.benchmarkAddresses) -join ', ')``"
+    Add-Line $summary "- Physical host labels: ``$(@($labControllerEvidence.summary.physicalHostLabels) -join ', ')``"
+    Add-Line $summary "- Separate roles available: ``$($labControllerEvidence.summary.separateRolesAvailable)``"
+    Add-Line $summary "- Same physical host observed: ``$($labControllerEvidence.summary.samePhysicalHostObserved)``"
+    Add-Line $summary "- Isolated-pair preview can submit: ``$($labControllerEvidence.summary.isolatedPairPreview.canSubmit)``"
+    if (@($labControllerEvidence.summary.blockers).Count -gt 0) {
+        Add-Line $summary ""
+        Add-Line $summary "Topology blockers:"
+        foreach ($blocker in @($labControllerEvidence.summary.blockers)) {
+            Add-Line $summary "- ``$blocker``"
+        }
+    }
+}
+else {
+    Add-Line $summary "- Blocker: $($labControllerEvidence.blocker)"
 }
 Add-Line $summary ""
 Add-Line $summary "## Package Evidence"
