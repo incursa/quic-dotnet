@@ -100,6 +100,18 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
             si.Environment["PROTOCOL_LAB_INCURSA_RAW_QUIC_QLOG_PATH"] = qlogPath;
         }
 
+        var bindAddress = Environment.GetEnvironmentVariable("PROTOCOL_LAB_TARGET_BIND_ADDRESS");
+        if (!string.IsNullOrWhiteSpace(bindAddress))
+        {
+            si.Environment["PROTOCOL_LAB_TARGET_BIND_ADDRESS"] = bindAddress;
+        }
+
+        var advertisedHost = Environment.GetEnvironmentVariable("PROTOCOL_LAB_TARGET_ADVERTISE_HOST");
+        if (!string.IsNullOrWhiteSpace(advertisedHost))
+        {
+            si.Environment["PROTOCOL_LAB_TARGET_ADVERTISE_HOST"] = advertisedHost;
+        }
+
         var cl = BuildCommandLine(si.FileName, [.. si.ArgumentList]);
         await File.WriteAllTextAsync(session.CommandLinePath, cl, ct);
 
@@ -107,14 +119,43 @@ internal static class IncursaRawQuicProtocolEndpointLauncher
         var stdoutTask = CopyToFileAsync(process.StandardOutput, session.StdoutPath, ct);
         var stderrTask = CopyToFileAsync(process.StandardError, session.StderrPath, ct);
 
+        advertisedHost = ResolveAdvertisedHost(advertisedHost, bindAddress);
+        var endpointIsLoopback = IsLoopbackHost(advertisedHost);
+
         return new IncursaRawQuicEndpointProcess(process, stdoutTask, stderrTask, new AdapterEndpoint
         {
             EndpointId = "endpoint-quic-001", Purpose = "server", Scheme = "quic", Protocol = "quic",
-            Host = "127.0.0.1", Port = port, Authority = $"127.0.0.1:{port}", SocketAddress = $"127.0.0.1:{port}",
-            NetworkMode = "process-local", BindMode = "loopback",
+            Host = advertisedHost, Port = port, Authority = $"{advertisedHost}:{port}", SocketAddress = $"{advertisedHost}:{port}",
+            NetworkMode = endpointIsLoopback ? "process-local" : "lab-routed", BindMode = endpointIsLoopback ? "loopback" : "lab-address",
             Tls = new AdapterTlsNotes { CertificateMode = "incursa-raw-quic-self-signed", CertificateNotes = $"Incursa raw QUIC server self-signed certificate subject '{plan.CertificateSubject}'.", Sni = "localhost", VerificationNotes = "Loopback certificate validation bypassed." },
             Extensions = new Dictionary<string, JsonElement> { ["alpn"] = ProtocolLabAdapterJson.SerializeValue(new[] { plan.Alpn }), ["sni"] = ProtocolLabAdapterJson.SerializeValue("localhost"), ["transport"] = ProtocolLabAdapterJson.SerializeValue("udp"), ["streamBehavior"] = ProtocolLabAdapterJson.SerializeValue("bidirectional"), ["supportedStreamDirections"] = ProtocolLabAdapterJson.SerializeValue(new[] { "bidirectional" }), ["datagramSupported"] = ProtocolLabAdapterJson.SerializeValue(false), ["zeroRttSupported"] = ProtocolLabAdapterJson.SerializeValue(false) }
         }, cl, session.StdoutPath, session.StderrPath, port);
+    }
+
+    private static string ResolveAdvertisedHost(string? advertisedHost, string? bindAddress)
+    {
+        if (!string.IsNullOrWhiteSpace(advertisedHost))
+        {
+            return advertisedHost;
+        }
+
+        if (!string.IsNullOrWhiteSpace(bindAddress) &&
+            IPAddress.TryParse(bindAddress, out var parsedBindAddress) &&
+            !IPAddress.IsLoopback(parsedBindAddress) &&
+            !parsedBindAddress.Equals(IPAddress.Any) &&
+            !parsedBindAddress.Equals(IPAddress.IPv6Any))
+        {
+            return parsedBindAddress.ToString();
+        }
+
+        return "127.0.0.1";
+    }
+
+    private static bool IsLoopbackHost(string host)
+    {
+        return IPAddress.TryParse(host, out var address)
+            ? IPAddress.IsLoopback(address)
+            : string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string? ResolveBuiltServerExecutable(string projectDirectory, string assemblyName)

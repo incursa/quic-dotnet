@@ -12,6 +12,18 @@ using Incursa.Quic;
 
 var port = args.Length > 0 && int.TryParse(args[0], out var parsedPort) ? parsedPort : 0;
 var listenPort = port > 0 ? port : GetFreePort();
+var bindAddressText = Environment.GetEnvironmentVariable("PROTOCOL_LAB_TARGET_BIND_ADDRESS") ?? "127.0.0.1";
+if (!IPAddress.TryParse(bindAddressText, out var bindAddress))
+{
+    throw new InvalidOperationException($"PROTOCOL_LAB_TARGET_BIND_ADDRESS is not a valid IP address: {bindAddressText}");
+}
+
+var advertisedHost = Environment.GetEnvironmentVariable("PROTOCOL_LAB_TARGET_ADVERTISE_HOST");
+if (string.IsNullOrWhiteSpace(advertisedHost))
+{
+    advertisedHost = bindAddress.Equals(IPAddress.Any) ? "127.0.0.1" : bindAddress.ToString();
+}
+
 var alpn = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_ALPN") ?? "plab-raw-quic";
 var certSubject = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_CERT_SUBJECT") ?? "CN=Incursa-RawQuic-Local";
 var payloadDirection = Environment.GetEnvironmentVariable("PROTOCOL_LAB_INCURSA_RAW_QUIC_PAYLOAD_DIRECTION") ?? "bidirectional";
@@ -28,7 +40,7 @@ var connectionCount = 0;
 
 var listenerOptions = new QuicListenerOptions
 {
-    ListenEndPoint = new IPEndPoint(IPAddress.Loopback, listenPort),
+    ListenEndPoint = new IPEndPoint(bindAddress, listenPort),
     ApplicationProtocols = [alpnProtocol],
     ConnectionOptionsCallback = (_, _, _) =>
     {
@@ -62,8 +74,8 @@ var listenerOptions = new QuicListenerOptions
 
 var listener = await QuicListener.ListenAsync(listenerOptions);
 
-Console.Error.WriteLine($"IncursaRawQuicServer listening on 127.0.0.1:{listenPort} with ALPN '{alpn}'");
-Console.WriteLine($"QUIC_ENDPOINT=127.0.0.1:{listenPort}");
+Console.Error.WriteLine($"IncursaRawQuicServer listening on {bindAddress}:{listenPort} with ALPN '{alpn}'");
+Console.WriteLine($"QUIC_ENDPOINT={advertisedHost}:{listenPort}");
 Console.WriteLine($"QUIC_PORT={listenPort}");
 Console.WriteLine($"QUIC_ALPN={alpn}");
 Console.WriteLine($"QUIC_IMPLEMENTATION=incursa-raw-quic");
