@@ -61,6 +61,7 @@ public sealed class REQ_QUIC_RFC9250_0021
         string tests = ReadRepositoryFile("tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0021.cs");
 
         Assert.Contains("TryReceiveStreamFrame(", streamState, StringComparison.Ordinal);
+        Assert.Contains("TryApplyInitialReceiveLimits(", streamState, StringComparison.Ordinal);
         Assert.Contains("TryOpenLocalStream(", streamState, StringComparison.Ordinal);
         Assert.Contains("FlowControlError", streamState, StringComparison.Ordinal);
         Assert.Contains("StreamLimitError", streamState, StringComparison.Ordinal);
@@ -70,6 +71,7 @@ public sealed class REQ_QUIC_RFC9250_0021
         Assert.Contains("InitialMaxStreamsBidi = (ulong)Math.Max(0, options.MaxInboundBidirectionalStreams)", clientHost, StringComparison.Ordinal);
         Assert.Contains("InitialMaxStreamsUni = (ulong)Math.Max(0, options.MaxInboundUnidirectionalStreams)", clientHost, StringComparison.Ordinal);
         Assert.Contains("InitialMaxData = (ulong)Math.Max(0, receiveWindowSizes.Connection)", listenerHost, StringComparison.Ordinal);
+        Assert.Contains("ApplyReturnedInitialReceiveLimits(runtime, selectedOptions)", listenerHost, StringComparison.Ordinal);
         Assert.Contains("TryApplyPeerInitialMaxData(", runtimeProtocol, StringComparison.Ordinal);
         Assert.Contains("TryApplyPeerTransportParameterSendLimits(", runtimeProtocol, StringComparison.Ordinal);
         Assert.Contains("TryApplyMaxStreamsFrame(new QuicMaxStreamsFrame(true", runtimeProtocol, StringComparison.Ordinal);
@@ -77,6 +79,7 @@ public sealed class REQ_QUIC_RFC9250_0021
         Assert.Contains("CreateRememberedTransportParametersForClientZeroRtt", zeroRttPolicy, StringComparison.Ordinal);
         Assert.Contains("EvaluateServerZeroRttAcceptance", zeroRttPolicy, StringComparison.Ordinal);
         Assert.Contains("ConnectionAndPerStreamReceiveLimitsRejectOverflow", tests, StringComparison.Ordinal);
+        Assert.Contains("ReturnedServerReceiveWindowsUpdateRuntimeStreamReceiveLimits", tests, StringComparison.Ordinal);
         Assert.Contains("StreamCreationLimitsAreEnforced", tests, StringComparison.Ordinal);
         Assert.Contains("PeerTransportParameterCommitAppliesFlowControlLimitsToRuntimeBookkeeping", tests, StringComparison.Ordinal);
         Assert.Contains("TransportParametersRoundTripFlowControlLimits", tests, StringComparison.Ordinal);
@@ -125,6 +128,43 @@ public sealed class REQ_QUIC_RFC9250_0021
         Assert.True(TryParseStreamFrame(0x0A, localStreamId.Value, [0x30, 0x31], out QuicStreamFrame localOverLimitFrame));
         Assert.False(clientReceiveState.TryReceiveStreamFrame(localOverLimitFrame, out errorCode));
         Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    [Trait("Category", "Positive")]
+    public void ReturnedServerReceiveWindowsUpdateRuntimeStreamReceiveLimits()
+    {
+        const ulong DefaultStreamReceiveLimit = 64 * 1024;
+        const ulong RawLabStreamReceiveLimit = 16 * 1024 * 1024;
+
+        QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+            isServer: true,
+            connectionReceiveLimit: DefaultStreamReceiveLimit,
+            peerBidirectionalReceiveLimit: DefaultStreamReceiveLimit);
+
+        Assert.True(TryParseStreamFrame(
+            0x0E,
+            streamId: 0,
+            [0x42],
+            out QuicStreamFrame frame,
+            offset: DefaultStreamReceiveLimit + 1));
+
+        Assert.False(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+        Assert.Equal(QuicTransportErrorCode.FlowControlError, errorCode);
+
+        Assert.True(state.TryApplyInitialReceiveLimits(
+            connectionReceiveLimit: RawLabStreamReceiveLimit,
+            localBidirectionalReceiveLimit: DefaultStreamReceiveLimit,
+            peerBidirectionalReceiveLimit: RawLabStreamReceiveLimit,
+            peerUnidirectionalReceiveLimit: RawLabStreamReceiveLimit));
+
+        Assert.True(state.TryReceiveStreamFrame(frame, out errorCode));
+        Assert.Equal(default, errorCode);
+
+        Assert.True(state.TryGetStreamSnapshot(frame.StreamId.Value, out QuicConnectionStreamSnapshot snapshot));
+        Assert.Equal(RawLabStreamReceiveLimit, snapshot.ReceiveLimit);
+        Assert.Equal(1UL, state.ConnectionAccountedBytesReceived);
     }
 
     [Fact]

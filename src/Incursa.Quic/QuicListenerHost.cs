@@ -1320,6 +1320,7 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
                 applicationProtocols);
 
             ApplyReturnedOptions(selectedOptions, returnedOptions);
+            ApplyReturnedInitialReceiveLimits(runtime, selectedOptions);
             connection.UpdateStreamCapacityCallback(selectedOptions.StreamCapacityCallback);
 
             if (!runtime.TryConfigureServerResumptionTicketIssuance(validatedOptions.EnableResumptionTickets)
@@ -2111,6 +2112,18 @@ internal sealed class QuicListenerHost : IAsyncDisposable, IDisposable
             RemotelyInitiatedBidirectionalStream = returnedWindowSizes.RemotelyInitiatedBidirectionalStream,
             UnidirectionalStream = returnedWindowSizes.UnidirectionalStream,
         };
+    }
+
+    private static void ApplyReturnedInitialReceiveLimits(
+        QuicConnectionRuntime runtime,
+        QuicServerConnectionOptions selectedOptions)
+    {
+        QuicReceiveWindowSizes receiveWindowSizes = selectedOptions.InitialReceiveWindowSizes;
+        _ = runtime.StreamRegistry.Bookkeeping.TryApplyInitialReceiveLimits(
+            connectionReceiveLimit: (ulong)Math.Max(0, receiveWindowSizes.Connection),
+            localBidirectionalReceiveLimit: (ulong)Math.Max(0, receiveWindowSizes.LocallyInitiatedBidirectionalStream),
+            peerBidirectionalReceiveLimit: (ulong)Math.Max(0, receiveWindowSizes.RemotelyInitiatedBidirectionalStream),
+            peerUnidirectionalReceiveLimit: (ulong)Math.Max(0, receiveWindowSizes.UnidirectionalStream));
     }
 
     private void ThrowIfDisposed()

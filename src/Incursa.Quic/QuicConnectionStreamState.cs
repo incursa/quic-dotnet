@@ -17,9 +17,9 @@ internal sealed class QuicConnectionStreamState
     private readonly Dictionary<ulong, StreamState> streams = [];
     private readonly Dictionary<QuicStreamType, ulong> highestCreatedIncomingStreamIndexes = [];
 
-    private readonly ulong initialLocalBidirectionalReceiveLimit;
-    private readonly ulong initialPeerBidirectionalReceiveLimit;
-    private readonly ulong initialPeerUnidirectionalReceiveLimit;
+    private ulong initialLocalBidirectionalReceiveLimit;
+    private ulong initialPeerBidirectionalReceiveLimit;
+    private ulong initialPeerUnidirectionalReceiveLimit;
     private ulong localBidirectionalSendLimit;
     private ulong localUnidirectionalSendLimit;
     private ulong peerBidirectionalSendLimit;
@@ -323,6 +323,67 @@ internal sealed class QuicConnectionStreamState
                 }
 
                 entry.Value.SendLimit = updatedSendLimit;
+                stateChanged = true;
+            }
+
+            return stateChanged;
+        }
+    }
+
+    public bool TryApplyInitialReceiveLimits(
+        ulong connectionReceiveLimit,
+        ulong localBidirectionalReceiveLimit,
+        ulong peerBidirectionalReceiveLimit,
+        ulong peerUnidirectionalReceiveLimit)
+    {
+        lock (syncRoot)
+        {
+            ValidateFlowControlLimit(connectionReceiveLimit);
+            ValidateFlowControlLimit(localBidirectionalReceiveLimit);
+            ValidateFlowControlLimit(peerBidirectionalReceiveLimit);
+            ValidateFlowControlLimit(peerUnidirectionalReceiveLimit);
+
+            bool stateChanged = false;
+
+            if (ConnectionReceiveLimit != connectionReceiveLimit)
+            {
+                ConnectionReceiveLimit = connectionReceiveLimit;
+                stateChanged = true;
+            }
+
+            if (initialLocalBidirectionalReceiveLimit != localBidirectionalReceiveLimit)
+            {
+                initialLocalBidirectionalReceiveLimit = localBidirectionalReceiveLimit;
+                stateChanged = true;
+            }
+
+            if (initialPeerBidirectionalReceiveLimit != peerBidirectionalReceiveLimit)
+            {
+                initialPeerBidirectionalReceiveLimit = peerBidirectionalReceiveLimit;
+                stateChanged = true;
+            }
+
+            if (initialPeerUnidirectionalReceiveLimit != peerUnidirectionalReceiveLimit)
+            {
+                initialPeerUnidirectionalReceiveLimit = peerUnidirectionalReceiveLimit;
+                stateChanged = true;
+            }
+
+            foreach (KeyValuePair<ulong, StreamState> entry in streams)
+            {
+                if (!entry.Value.HasReceivePart)
+                {
+                    continue;
+                }
+
+                QuicStreamId streamId = new(entry.Key);
+                ulong updatedReceiveLimit = ResolveCurrentReceiveLimit(streamId);
+                if (entry.Value.ReceiveLimit == updatedReceiveLimit)
+                {
+                    continue;
+                }
+
+                entry.Value.ReceiveLimit = updatedReceiveLimit;
                 stateChanged = true;
             }
 
@@ -1165,6 +1226,20 @@ internal sealed class QuicConnectionStreamState
         return streamId.IsBidirectional
             ? peerBidirectionalSendLimit
             : 0;
+    }
+
+    private ulong ResolveCurrentReceiveLimit(QuicStreamId streamId)
+    {
+        if (IsLocalInitiated(streamId))
+        {
+            return streamId.IsBidirectional
+                ? initialLocalBidirectionalReceiveLimit
+                : 0;
+        }
+
+        return streamId.IsBidirectional
+            ? initialPeerBidirectionalReceiveLimit
+            : initialPeerUnidirectionalReceiveLimit;
     }
 
     private static bool ViolatesKnownReceiveFinalSize(StreamState state, ulong offset, ulong endExclusive, int length, bool fin)

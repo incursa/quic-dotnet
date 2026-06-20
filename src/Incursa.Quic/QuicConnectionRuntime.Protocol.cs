@@ -13,6 +13,12 @@ internal sealed partial class QuicConnectionRuntime
             Environment.GetEnvironmentVariable("INCURSA_QUIC_DEBUG_APP_RX"),
             "1",
             StringComparison.Ordinal);
+    private static readonly bool ApplicationReceiveRejectDiagnosticsEnabled =
+        ApplicationReceiveDebugEnabled
+        || string.Equals(
+            Environment.GetEnvironmentVariable("INCURSA_QUIC_DIAG_APP_RX_REJECTS"),
+            "1",
+            StringComparison.Ordinal);
 
     private bool CanReceiveGreasedQuicBitPackets =>
         tlsState.LocalTransportParameters?.GreaseQuicBit == true;
@@ -1864,16 +1870,24 @@ internal sealed partial class QuicConnectionRuntime
                 out QuicConnectionStreamSnapshot previousStreamSnapshot);
             if (!streamRegistry.Bookkeeping.TryReceiveStreamFrame(streamFrame, out QuicTransportErrorCode errorCode, QuicApplicationDataEpoch.OneRtt))
             {
-                if (ApplicationReceiveDebugEnabled)
+                if (ApplicationReceiveRejectDiagnosticsEnabled)
                 {
                     _ = streamRegistry.Bookkeeping.TryGetStreamSnapshot(
                         streamFrame.StreamId.Value,
                         out QuicConnectionStreamSnapshot rejectedStreamSnapshot);
                     ulong rejectedFrameEndOffset = streamFrame.Offset + (ulong)streamFrame.StreamDataLength;
+                    string rejectionReason = ClassifyStreamFrameRejection(
+                        streamFrame,
+                        rejectedFrameEndOffset,
+                        errorCode,
+                        rejectedStreamSnapshot,
+                        streamRegistry.Bookkeeping.ConnectionReceiveLimit,
+                        streamRegistry.Bookkeeping.ConnectionAccountedBytesReceived);
                     Console.Error.WriteLine(
                         $"app-rx stream-rejected role={tlsState.Role} packet={packetNumber} stream={streamFrame.StreamId.Value} " +
                         $"offset={streamFrame.Offset} length={streamFrame.StreamDataLength} end={rejectedFrameEndOffset} fin={streamFrame.IsFin} " +
-                        $"error={errorCode} streamReceiveLimit={rejectedStreamSnapshot.ReceiveLimit} streamReadOffset={rejectedStreamSnapshot.ReadOffset} " +
+                        $"error={errorCode} reason={rejectionReason} streamReceiveLimit={rejectedStreamSnapshot.ReceiveLimit} " +
+                        $"streamReadOffset={rejectedStreamSnapshot.ReadOffset} " +
                         $"streamAccounted={rejectedStreamSnapshot.AccountedBytesReceived} streamBuffered={rejectedStreamSnapshot.BufferedReadableBytes} " +
                         $"connectionReceiveLimit={streamRegistry.Bookkeeping.ConnectionReceiveLimit} " +
                         $"connectionAccounted={streamRegistry.Bookkeeping.ConnectionAccountedBytesReceived}.");
@@ -3917,6 +3931,37 @@ internal sealed partial class QuicConnectionRuntime
             new QuicConnectionLocalCloseRequestedEvent(nowTicks, closeMetadata),
             nowTicks,
             ref effects);
+    }
+
+    private static string ClassifyStreamFrameRejection(
+        QuicStreamFrame streamFrame,
+        ulong streamFrameEndOffset,
+        QuicTransportErrorCode errorCode,
+        QuicConnectionStreamSnapshot streamSnapshot,
+        ulong connectionReceiveLimit,
+        ulong connectionAccountedBytesReceived)
+    {
+        if (errorCode != QuicTransportErrorCode.FlowControlError)
+        {
+            return errorCode.ToString();
+        }
+
+        if (streamFrame.IsFin && streamFrameEndOffset > streamSnapshot.ReceiveLimit)
+        {
+            return "stream-final-size-receive-limit";
+        }
+
+        if (streamFrameEndOffset > streamSnapshot.ReceiveLimit)
+        {
+            return "stream-receive-limit";
+        }
+
+        ulong availableConnectionCredit = connectionReceiveLimit > connectionAccountedBytesReceived
+            ? connectionReceiveLimit - connectionAccountedBytesReceived
+            : 0;
+        return availableConnectionCredit == 0
+            ? "connection-receive-limit-exhausted"
+            : "connection-receive-limit";
     }
 
     private bool TryFlushNewTokenEmissions(long nowTicks, ref QuicConnectionEffectAccumulator effects)
