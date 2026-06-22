@@ -27,12 +27,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -139,12 +139,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -224,12 +224,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -308,12 +308,12 @@ jobs:
             runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -427,12 +427,12 @@ jobs:
             runner_timeout_seconds: 240
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -645,12 +645,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -720,7 +720,7 @@ jobs:
 
     steps:
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
@@ -787,12 +787,12 @@ jobs:
 
     steps:
       - name: Checkout quic-dotnet
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: quic-dotnet
 
       - name: Checkout quic-interop-runner
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: quic-interop/quic-interop-runner
           path: quic-interop-runner
