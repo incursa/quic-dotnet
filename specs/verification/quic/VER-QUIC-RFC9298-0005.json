@@ -29,7 +29,7 @@
     "REQ-QUIC-RFC9298-0112",
     "REQ-QUIC-RFC9298-0113",
     "RFC9298-S6-2-P3-R01",
-    "REQ-QUIC-RFC9298-0115"
+    "RFC9298-S6-2-P3-R02"
   ],
   "scope": "This verification covers burstiness and batching guidance, congestion-control disablement preconditions, ECN signaling and Not-ECT policy, HTTP/3 preference, QUIC DATAGRAM frame use and payload limits, oversized target payload drop and ICMP Packet Too Big recommendation, inner IP header prohibition, and UDP proxy ECN ownership.",
   "preconditions": [

@@ -25,7 +25,7 @@
     "REQ-QUIC-RFC9297-0052",
     "REQ-QUIC-RFC9297-0053",
     "RFC9297-S3-4-P1-S1-R02",
-    "REQ-QUIC-RFC9297-0055",
+    "RFC9297-S3-4-P1-S3-R01",
     "REQ-QUIC-RFC9297-0056",
     "REQ-QUIC-RFC9297-0057",
     "RFC9297-S3-4-P3-R01",
@@ -35,7 +35,7 @@
     "RFC9297-S5-4-P1-S3-R01",
     "REQ-QUIC-RFC9297-0081",
     "REQ-QUIC-RFC9297-0082",
-    "REQ-QUIC-RFC9297-0083"
+    "RFC9297-S5-4-P3-S2-R02"
   ],
   "summary": "Add trace-owned Capsule Protocol response/header policy and registry metadata for RFC 9297.",
   "planned_changes": "- Add Capsule Protocol policy helpers for CONNECT-only HTTP/3 use, allowed response status, no-content restrictions, and malformed-message mapping.\n- Add Capsule-Protocol structured-field Boolean parsing, false/non-Boolean absence behavior, unknown-parameter ignoring, intermediary processing, and recommended emission helpers.\n- Add Capsule-Protocol field-name and Capsule Type registry constants and reservation helpers.\n- Add focused positive and negative tests plus canonical xrefs.",

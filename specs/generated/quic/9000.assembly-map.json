@@ -2407,7 +2407,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0008",
+      "requirement_id": "RFC9000-S3-5-P5-S1-R01",
       "title": "Copy STOP_SENDING error codes when sending RESET_STREAM",
       "source_batches": [
         "2-5"
@@ -3580,7 +3580,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0201",
+      "requirement_id": "RFC9000-S4-6-P3-S1-R01",
       "title": "Treat over-limit stream IDs as STREAM_LIMIT_ERROR",
       "source_batches": [
         "2-5"
@@ -7238,7 +7238,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0001",
+      "requirement_id": "RFC9000-S7-4-1-P3-S1-R01",
       "title": "The definition of a new transport parameter (Section 7",
       "source_batches": [
         "6-10"
@@ -7353,7 +7353,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+      "requirement_id": "RFC9000-S7-4-1-P6-S1-R01",
       "title": "In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18",
       "source_batches": [
         "6-10"
@@ -8395,7 +8395,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0002",
+      "requirement_id": "RFC9000-S8-1-4-P2-S2-R01",
       "title": "For this design to work, the token MUST be covered by integrity protection against modification or falsification by clients",
       "source_batches": [
         "6-10"
@@ -10131,7 +10131,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0002",
+      "requirement_id": "RFC9000-S9-4-P2-S1-R01",
       "title": "Use updated congestion state only after confirming the peer address",
       "source_batches": [
         "6-10",
@@ -17056,7 +17056,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0001",
+      "requirement_id": "RFC9000-S13-2-6-P1-S1-R01",
       "title": "Carry ACK frames only in the same packet number space",
       "source_batches": [
         "11-15"
@@ -17079,7 +17079,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P6-0002",
+      "requirement_id": "RFC9000-S13-2-6-P1-S2-R01",
       "title": "Use 1-RTT for acknowledging 1-RTT packets",
       "source_batches": [
         "11-15"
@@ -24928,7 +24928,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1091",
+      "requirement_id": "RFC9000-S17-4-P5-R02",
       "title": "Ignore any incoming spin value when disabled",
       "source_batches": [
         "16-20"
@@ -26418,7 +26418,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0004",
+      "requirement_id": "RFC9000-S19-3-P1-S1-R02",
       "title": "Use ECN information to manage congestion state",
       "source_batches": [
         "16-20"
@@ -31803,7 +31803,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1380",
+      "requirement_id": "RFC9000-S19-21-P4-S1-R01",
       "title": "Congestion control extension frames",
       "source_batches": [
         "16-20"
@@ -31826,7 +31826,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1381",
+      "requirement_id": "RFC9000-S19-21-P4-S1-R02",
       "title": "Extension frames MUST cause ACK generation",
       "source_batches": [
         "16-20"
@@ -32263,7 +32263,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P5-0002",
+      "requirement_id": "RFC9000-S21-5-P7-S2-R01",
       "title": "QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]...",
       "source_batches": [
         "21-end"
@@ -34318,9 +34318,9 @@
     {
       "draftId": "REQ-RFC9000-S9.4-0002",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S9P4-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into RFC9000-S9-4-P2-S1-R01 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S9P4-0002"
+        "RFC9000-S9-4-P2-S1-R01"
       ]
     },
     {

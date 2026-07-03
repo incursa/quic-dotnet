@@ -97,7 +97,7 @@
     "RFC9000-S17-4-P4-S1-R01",
     "REQ-QUIC-RFC9000-S17P4-0005",
     "RFC9000-S17-4-P5-R01",
-    "REQ-QUIC-RFC9000-1091",
+    "RFC9000-S17-4-P5-R02",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
     "RFC9000-S17-4-P8-S1-R01"
@@ -1674,7 +1674,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1091",
+      "requirement_id": "RFC9000-S17-4-P5-R02",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],

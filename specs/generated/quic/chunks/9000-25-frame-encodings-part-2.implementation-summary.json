@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9000-S19P1-0003",
     "REQ-QUIC-RFC9000-S19P2-0001",
     "REQ-QUIC-RFC9000-S19P2-0004",
-    "REQ-QUIC-RFC9000-S19P3-0004",
+    "RFC9000-S19-3-P1-S1-R02",
     "REQ-QUIC-RFC9000-S19P3-0005",
     "REQ-QUIC-RFC9000-S19P3-0006",
     "REQ-QUIC-RFC9000-1177",
@@ -345,7 +345,7 @@
       "notes": "The ACK codec covers frame types 0x02 and 0x03, varint field encoding, range decoding, and ECN counter handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0004",
+      "requirement_id": "RFC9000-S19-3-P1-S1-R02",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "specs/generated/quic/chunks/9000-25-frame-encodings-part-2.implementation-summary.md",

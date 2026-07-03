@@ -1031,7 +1031,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0050",
+      "id": "RFC9297-S3-3-P2-S2-R01",
       "title": "Verify redundant Capsule length encodings are self-consistent",
       "statement": "Redundant length encodings MUST be verified to be self-consistent.",
       "coverage": {
@@ -1137,7 +1137,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0055",
+      "id": "RFC9297-S3-4-P1-S3-R01",
       "title": "Ignore unknown Capsule-Protocol parameters",
       "statement": "Receivers MUST ignore unknown parameters.",
       "coverage": {
@@ -1766,7 +1766,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0083",
+      "id": "RFC9297-S5-4-P3-S2-R02",
       "title": "Listing as assigned values is prohibited",
       "statement": "These values MUST NOT appear in the listing of assigned values.",
       "coverage": {

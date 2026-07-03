@@ -95,7 +95,7 @@
       "REQ-QUIC-RFC9000-S3P5-0005",
       "RFC9000-S3-5-P4-S3-R01",
       "RFC9000-S3-5-P4-S4-R01",
-      "REQ-QUIC-RFC9000-S3P5-0008",
+      "RFC9000-S3-5-P5-S1-R01",
       "RFC9000-S3-5-P5-S2-R01",
       "RFC9000-S3-5-P6-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0011",
@@ -169,7 +169,7 @@
       "REQ-QUIC-RFC9000-S3P5-0005",
       "RFC9000-S3-5-P4-S3-R01",
       "RFC9000-S3-5-P4-S4-R01",
-      "REQ-QUIC-RFC9000-S3P5-0008",
+      "RFC9000-S3-5-P5-S1-R01",
       "RFC9000-S3-5-P5-S2-R01",
       "RFC9000-S3-5-P6-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0011",
@@ -241,7 +241,7 @@
       "REQ-QUIC-RFC9000-S3P5-0005",
       "RFC9000-S3-5-P4-S3-R01",
       "RFC9000-S3-5-P4-S4-R01",
-      "REQ-QUIC-RFC9000-S3P5-0008",
+      "RFC9000-S3-5-P5-S1-R01",
       "RFC9000-S3-5-P5-S2-R01",
       "RFC9000-S3-5-P6-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0011",
@@ -324,7 +324,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S4-R01.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P6-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs",
@@ -504,7 +504,7 @@
       "reason": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0008",
+      "requirement_id": "RFC9000-S3-5-P5-S1-R01",
       "reason": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {

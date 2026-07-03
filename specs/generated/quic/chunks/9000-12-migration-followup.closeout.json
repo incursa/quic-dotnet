@@ -58,7 +58,7 @@
       "status": "partially_implemented",
       "requirement_ids": [
         "RFC9000-S9-4-P1-S2-R01",
-        "REQ-QUIC-RFC9000-S9P4-0002",
+        "RFC9000-S9-4-P2-S1-R01",
         "REQ-QUIC-RFC9000-S9P4-0003",
         "REQ-QUIC-RFC9000-S9P4-0004",
         "REQ-QUIC-RFC9000-S9P4-0005",
@@ -75,7 +75,7 @@
       ],
       "blocked_requirement_ids": [
         "RFC9000-S9-4-P1-S2-R01",
-        "REQ-QUIC-RFC9000-S9P4-0002",
+        "RFC9000-S9-4-P2-S1-R01",
         "REQ-QUIC-RFC9000-S9P4-0003",
         "REQ-QUIC-RFC9000-S9P4-0005",
         "REQ-QUIC-RFC9000-S9P4-0007",

@@ -3,13 +3,13 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0201")]
+[Requirement("RFC9000-S4-6-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0201
 {
     [Theory]
     [InlineData(true, 1UL)]
     [InlineData(false, 3UL)]
-    [Requirement("REQ-QUIC-RFC9000-0201")]
+    [Requirement("RFC9000-S4-6-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStreamFrame_AcceptsStreamIdsWithinTheAdvertisedLimit(
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_0201
     [Theory]
     [InlineData(true, 1UL)]
     [InlineData(false, 3UL)]
-    [Requirement("REQ-QUIC-RFC9000-0201")]
+    [Requirement("RFC9000-S4-6-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveStreamFrame_RejectsFirstIncomingStreamWhenAdvertisedLimitIsZero(
@@ -52,7 +52,7 @@ public sealed class REQ_QUIC_RFC9000_0201
     }
 
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0201">An endpoint that receives a frame with a stream ID exceeding the limit it has sent MUST treat this as a connection error of type STREAM_LIMIT_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S4-6-P3-S1-R01">An endpoint that receives a frame with a stream ID exceeding the limit it has sent MUST treat this as a connection error of type STREAM_LIMIT_ERROR.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]

@@ -16,7 +16,7 @@
   ],
   "satisfies": [
     "RFC9000-S7-4-1-P6-R01",
-    "REQ-QUIC-RFC9000-S7P4P1-0006",
+    "RFC9000-S7-4-1-P6-S1-R01",
     "REQ-QUIC-RFC9000-0348",
     "REQ-QUIC-RFC9000-0350",
     "REQ-QUIC-RFC9000-0351"
@@ -25,7 +25,7 @@
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0350.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0351.cs"

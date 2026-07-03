@@ -4371,7 +4371,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0205",
+      "id": "RFC9484-S11-P3-S4-R01",
       "title": "Follow BCP38 to prevent source address spoofing",
       "statement": "In such scenarios, endpoints MUST follow the recommendations from [BCP38] to prevent source address spoofing.",
       "coverage": {

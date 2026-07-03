@@ -2838,7 +2838,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "id": "RFC9002-S6-2-4-P6-R01",
       "title": "Allow declaring in-flight packets lost instead of probing",
       "statement": "Instead of sending an ack-eliciting packet, the sender MAY mark any packets still in flight as lost.",
       "coverage": {
@@ -2862,8 +2862,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_AllowsMarkingAnInFlightPacketLostInsteadOfSendingAnotherProbe",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0009.cs::TryRegisterLoss_RejectsPacketsThatAreNotInFlightWhenNoAckOnlyLossSignalIsAllowed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P6-R01.cs::TryRegisterLoss_AllowsMarkingAnInFlightPacketLostInsteadOfSendingAnotherProbe",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P6-R01.cs::TryRegisterLoss_RejectsPacketsThatAreNotInFlightWhenNoAckOnlyLossSignalIsAllowed"
         ]
       }
     },

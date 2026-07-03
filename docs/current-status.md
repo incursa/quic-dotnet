@@ -261,7 +261,7 @@ The request-forgery guidance proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P5-0001`.
 
 The ingress-filtering deployment guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P5-0002`.
+`RFC9000-S21-5-P7-S2-R01`.
 
 The future server-migration forgery-countermeasures guidance proof surface is
 now closed for `RFC9000-S21-5-P8-S2-R01`.
@@ -794,7 +794,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 Packet-Number-Space ACK Separation Closure Note
 
-`REQ-QUIC-RFC9000-S13P2P6-0001` is now `trace_clean` under the existing
+`RFC9000-S13-2-6-P1-S1-R01` is now `trace_clean` under the existing
 `ARC-QUIC-RFC9000-0001`, `WI-QUIC-RFC9000-0001`, and
 `VER-QUIC-RFC9000-0001` ownership. The closure adds direct positive,
 negative, and edge proof that ACK-generation state builds ACK frames from only
@@ -1187,7 +1187,7 @@ expectation.
 
 Follow-on S4P6 stream-limit enforcement and blocked-open tail closure on
 2026-05-06 closes `RFC9000-S4-6-P3-R01`,
-`REQ-QUIC-RFC9000-0201`, and
+`RFC9000-S4-6-P3-S1-R01`, and
 `REQ-QUIC-RFC9000-0203` under `ARC-QUIC-RFC9000-0076`,
 `WI-QUIC-RFC9000-0076`, and `VER-QUIC-RFC9000-0076`. The proof covers local
 bidirectional and unidirectional opens staying within the peer's current stream
@@ -1336,7 +1336,7 @@ application-data delivery, or updated-value-in-0-RTT protocol-violation
 enforcement.
 
 Follow-on S7P4P1 client 0-RTT remembered transport-parameter policy closure
-on 2026-05-06 closes `REQ-QUIC-RFC9000-S7P4P1-0001`,
+on 2026-05-06 closes `RFC9000-S7-4-1-P3-S1-R01`,
 `REQ-QUIC-RFC9000-S7P4P1-0002`, and
 `RFC9000-S7-4-1-P5-R01` under `ARC-QUIC-RFC9000-0068`,
 `WI-QUIC-RFC9000-0068`, and `VER-QUIC-RFC9000-0068`. The proof covers an

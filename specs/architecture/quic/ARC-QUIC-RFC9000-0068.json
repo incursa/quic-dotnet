@@ -14,14 +14,14 @@
     "VER-QUIC-RFC9000-0068"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S7P4P1-0001",
+    "RFC9000-S7-4-1-P3-S1-R01",
     "REQ-QUIC-RFC9000-S7P4P1-0002",
     "RFC9000-S7-4-1-P5-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "src/Incursa.Quic/QuicDetachedResumptionTicketSnapshot.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P5-R01.cs"
   ],
@@ -41,7 +41,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the client remembered-transport-parameter policy floor for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and RFC9000-S7-4-1-P5-R01 only. The remaining S7P4P1 server acceptance, restored-value support, and updated-value violation requirements remain separate follow-on work."
+      "content": "This design closes the client remembered-transport-parameter policy floor for RFC9000-S7-4-1-P3-S1-R01, REQ-QUIC-RFC9000-S7P4P1-0002, and RFC9000-S7-4-1-P5-R01 only. The remaining S7P4P1 server acceptance, restored-value support, and updated-value violation requirements remain separate follow-on work."
     }
   ]
 }

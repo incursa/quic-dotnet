@@ -203,7 +203,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P3-0004",
+      "requirement_id": "RFC9000-S19-3-P1-S1-R02",
       "section": "S19P3",
       "title": "Use ECN information to manage congestion state",
       "status": "not implemented",

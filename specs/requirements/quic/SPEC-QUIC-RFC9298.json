@@ -2384,7 +2384,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0115",
+      "id": "RFC9298-S6-2-P3-R02",
       "title": "Set ECN bits to Not-ECT on outbound UDP packets",
       "statement": "A UDP proxy MUST set the ECN bits to Not-ECT on UDP packets it sends to the target.",
       "coverage": {

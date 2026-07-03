@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1091">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R02">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1091")]
+[Requirement("RFC9000-S17-4-P5-R02")]
 public sealed class REQ_QUIC_RFC9000_1091
 {
     [Theory]
@@ -15,9 +15,9 @@ public sealed class REQ_QUIC_RFC9000_1091
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1091">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R02">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1091")]
+    [Requirement("RFC9000-S17-4-P5-R02")]
     public void TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenDisabled(bool incomingSpinBit)
     {
         QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
@@ -73,9 +73,9 @@ public sealed class REQ_QUIC_RFC9000_1091
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1091">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R02">When the spin bit is disabled, endpoints MUST ignore any incoming value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1091")]
+    [Requirement("RFC9000-S17-4-P5-R02")]
     public void RuntimeWithSpinBitEnabled_DoesNotIgnoreTheIncomingSpinBitForThePath()
     {
         using QuicConnectionRuntime runtime = QuicS17P4SpinBitTestSupport.CreateActiveOneRttRuntime(

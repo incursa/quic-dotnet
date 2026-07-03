@@ -1885,12 +1885,12 @@
       "id": "REQ-QUIC-RFC9000-S4P6-0009",
       "title": "Treat excessive stream IDs as stream limit errors",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0201"
+        "RFC9000-S4-6-P3-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0201 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S4-6-P3-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P10-0004",
@@ -2523,23 +2523,23 @@
       "id": "REQ-QUIC-RFC9000-S19P21-0008",
       "title": "Extension frames are congestion controlled",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-1380"
+        "RFC9000-S19-21-P4-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-1380 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S19-21-P4-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P21-0009",
       "title": "Extension frames trigger ACK generation",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-1381"
+        "RFC9000-S19-21-P4-S1-R02"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-1381 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S19-21-P4-S1-R02 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P21-0010",
@@ -4250,12 +4250,12 @@
       "id": "REQ-QUIC-RFC9000-S17P4-0007",
       "title": "Ignore incoming spin-bit value when disabled",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-1091"
+        "RFC9000-S17-4-P5-R02"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-1091 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S17-4-P5-R02 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S15-0010",

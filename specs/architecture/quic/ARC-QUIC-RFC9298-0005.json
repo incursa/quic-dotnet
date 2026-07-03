@@ -29,7 +29,7 @@
     "REQ-QUIC-RFC9298-0112",
     "REQ-QUIC-RFC9298-0113",
     "RFC9298-S6-2-P3-R01",
-    "REQ-QUIC-RFC9298-0115"
+    "RFC9298-S6-2-P3-R02"
   ],
   "key_components": [
     "src/Incursa.Quic.Http3/Http3ConnectUdpForwardingPolicy.cs",

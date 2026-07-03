@@ -26,7 +26,7 @@
     "REQ-QUIC-RFC9297-0052",
     "REQ-QUIC-RFC9297-0053",
     "RFC9297-S3-4-P1-S1-R02",
-    "REQ-QUIC-RFC9297-0055",
+    "RFC9297-S3-4-P1-S3-R01",
     "REQ-QUIC-RFC9297-0056",
     "REQ-QUIC-RFC9297-0057",
     "RFC9297-S3-4-P3-R01",
@@ -36,7 +36,7 @@
     "RFC9297-S5-4-P1-S3-R01",
     "REQ-QUIC-RFC9297-0081",
     "REQ-QUIC-RFC9297-0082",
-    "REQ-QUIC-RFC9297-0083"
+    "RFC9297-S5-4-P3-S2-R02"
   ],
   "scope": "This verification covers Capsule Protocol response status preconditions, no-content constraints, HTTP/3 CONNECT-only use, malformed-message mapping, Capsule-Protocol structured-field Boolean parsing, false/non-Boolean absence behavior, unknown parameter ignoring, intermediary processing, recommended emission, Capsule-Protocol field-name registration, Capsule Type registration labels, and reserved Capsule Type values.",
   "preconditions": [

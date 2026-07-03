@@ -498,7 +498,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0022",
+      "id": "RFC9461-S8-1-P2-R01",
       "title": "Authenticate to the server's authentication name",
       "statement": "During secure transport establishment, clients MUST authenticate the server to its authentication name.",
       "coverage": {

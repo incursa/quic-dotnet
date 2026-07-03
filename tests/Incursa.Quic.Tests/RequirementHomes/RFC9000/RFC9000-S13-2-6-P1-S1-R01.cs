@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P6-0001">ACK frames MUST only be carried in a packet that has the same packet number space as the packet being acknowledged.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-6-P1-S1-R01">ACK frames MUST only be carried in a packet that has the same packet number space as the packet being acknowledged.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P6-0001")]
+[Requirement("RFC9000-S13-2-6-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S13P2P6_0001
 {
     [Fact]

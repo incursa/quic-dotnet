@@ -29,7 +29,7 @@
 - Result: 223 passed, 0 failed, 0 skipped
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S7P4P1-0001` through `REQ-QUIC-RFC9000-0356`
+- `RFC9000-S7-4-1-P3-S1-R01` through `REQ-QUIC-RFC9000-0356`
 
 ## Risks / Follow-up Notes
 - The S7P4P1 0-RTT requirements remain blocked because this repository slice does not yet expose the handshake/session/ticket transport-state surface needed to remember and compare transport parameters across resumptions.

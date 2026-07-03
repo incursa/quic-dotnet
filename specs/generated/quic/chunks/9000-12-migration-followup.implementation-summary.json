@@ -44,7 +44,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0002",
+      "requirement_id": "RFC9000-S9-4-P2-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

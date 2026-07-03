@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P1P4-0002")]
+[Requirement("RFC9000-S8-1-4-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1P4_0002
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P4-0002")]
+    [Requirement("RFC9000-S8-1-4-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ValidateNewToken_AcceptsIntegrityProtectedToken()
@@ -22,7 +22,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P4_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P4-0002")]
+    [Requirement("RFC9000-S8-1-4-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ValidateNewToken_RejectsModifiedTokenBytes()
@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P4_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P4-0002")]
+    [Requirement("RFC9000-S8-1-4-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void FuzzNewTokenValidation_RejectsTruncationAndSingleByteMutation()

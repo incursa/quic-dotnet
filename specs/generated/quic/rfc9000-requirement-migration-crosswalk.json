@@ -891,12 +891,12 @@
       "statement": "When the measured acknowledgment delay is larger than its max_ack_delay, an endpoint SHOULD report the measured delay."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P6-0001",
+      "id": "RFC9000-S13-2-6-P1-S1-R01",
       "title": "Carry ACK frames only in the same packet number space",
       "statement": "ACK frames MUST only be carried in a packet that has the same packet number space as the packet being acknowledged."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P6-0002",
+      "id": "RFC9000-S13-2-6-P1-S2-R01",
       "title": "Use 1-RTT for acknowledging 1-RTT packets",
       "statement": "Packets that are protected with 1-RTT keys MUST be acknowledged in packets that are also protected with 1-RTT keys."
     },
@@ -2911,7 +2911,7 @@
       "statement": "If the frame type is 0x03, ACK frames also MUST contain the cumulative count of QUIC packets with associated ECN marks received on the connection up until this point."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P3-0004",
+      "id": "RFC9000-S19-3-P1-S1-R02",
       "title": "Use ECN information to manage congestion state",
       "statement": "If they have enabled ECN for packets they send, QUIC implementations SHOULD use the information in the ECN section to manage their congestion state."
     },
@@ -3461,7 +3461,7 @@
       "statement": "For request forgery to be effective, an attacker MUST be able to influence what packets the peer sends and where these packets are sent."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P5-0002",
+      "id": "RFC9000-S21-5-P7-S2-R01",
       "title": "QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]...",
       "statement": "QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38] and also have inadequately secured UDP endpoints."
     },
@@ -4091,7 +4091,7 @@
       "statement": "If any outstanding data is declared lost, the endpoint SHOULD send a RESET_STREAM frame instead of retransmitting the data."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P5-0008",
+      "id": "RFC9000-S3-5-P5-S1-R01",
       "title": "Copy STOP_SENDING error codes when sending RESET_STREAM",
       "statement": "An endpoint SHOULD copy the error code from the STOP_SENDING frame to the RESET_STREAM frame it sends."
     },
@@ -4741,7 +4741,7 @@
       "statement": "An endpoint MUST treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION:"
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P4P1-0001",
+      "id": "RFC9000-S7-4-1-P3-S1-R01",
       "title": "The definition of a new transport parameter (Section 7",
       "statement": "The definition of a new transport parameter (Section 7.4.2) MUST specify whether storing the transport parameter for 0-RTT is mandatory, optional, or prohibited."
     },
@@ -4756,7 +4756,7 @@
       "statement": "If 0-RTT data is accepted by the server, the server MUST NOT reduce any limits or alter any values that might be violated by the client with its 0-RTT data."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P4P1-0006",
+      "id": "RFC9000-S7-4-1-P6-S1-R01",
       "title": "In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18",
       "statement": "In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18.2) that are smaller than the remembered values of the parameters."
     },
@@ -4901,7 +4901,7 @@
       "statement": "Clients MAY use tokens obtained on one connection for any connection attempt using the same version."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P4-0002",
+      "id": "RFC9000-S8-1-4-P2-S2-R01",
       "title": "For this design to work, the token MUST be covered by integrity protection against modification or falsification by clients",
       "statement": "For this design to work, the token MUST be covered by integrity protection against modification or falsification by clients."
     },
@@ -5146,7 +5146,7 @@
       "statement": "Packets sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0002",
+      "id": "RFC9000-S9-4-P2-S1-R01",
       "title": "Use updated congestion state only after confirming the peer address",
       "statement": "On confirming a peer's ownership of its new address, an endpoint MUST immediately reset the congestion controller and round-trip time estimator for the new path to initial values unless the only change in the peer's address is its port number."
     },

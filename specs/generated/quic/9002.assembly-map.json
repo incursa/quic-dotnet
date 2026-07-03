@@ -2130,7 +2130,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0009",
+      "requirement_id": "RFC9002-S6-2-4-P6-R01",
       "title": "Allow declaring in-flight packets lost instead of probing",
       "source_batches": [
         "5-8"

@@ -131,7 +131,7 @@
       "REQ-QUIC-RFC9000-S3P5-0005",
       "RFC9000-S3-5-P4-S3-R01",
       "RFC9000-S3-5-P4-S4-R01",
-      "REQ-QUIC-RFC9000-S3P5-0008",
+      "RFC9000-S3-5-P5-S1-R01",
       "RFC9000-S3-5-P5-S2-R01",
       "RFC9000-S3-5-P6-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0011",
@@ -211,7 +211,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S4-R01.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P6-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs",
@@ -1237,7 +1237,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0008",
+      "requirement_id": "RFC9000-S3-5-P5-S1-R01",
       "section": "S3P5",
       "title": "Copy STOP_SENDING error codes when sending RESET_STREAM",
       "status": "blocked",
@@ -1245,7 +1245,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S1-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1375,7 +1375,7 @@
     "REQ-QUIC-RFC9000-S3P5-0005",
     "RFC9000-S3-5-P4-S3-R01",
     "RFC9000-S3-5-P4-S4-R01",
-    "REQ-QUIC-RFC9000-S3P5-0008",
+    "RFC9000-S3-5-P5-S1-R01",
     "RFC9000-S3-5-P5-S2-R01",
     "RFC9000-S3-5-P6-S1-R01",
     "REQ-QUIC-RFC9000-S3P5-0011",

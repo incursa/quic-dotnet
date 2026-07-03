@@ -19,7 +19,7 @@
     "RFC9000-S8-1-3-P10-S2-R01",
     "RFC9000-S8-1-3-P10-S4-R01",
     "RFC9000-S8-1-4-P1-S1-R01",
-    "REQ-QUIC-RFC9000-S8P1P4-0002",
+    "RFC9000-S8-1-4-P2-S2-R01",
     "RFC9000-S8-1-4-P4-S1-R01",
     "REQ-QUIC-RFC9000-S8P1P4-0010"
   ],
@@ -49,7 +49,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S4-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P1-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P2-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P4-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0010.cs",
     "benchmarks/QuicAddressValidationTokenBenchmarks.cs",

@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P5-0002">QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38] and also have inadequately secured UDP endpoints.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-P7-S2-R01">QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38] and also have inadequately secured UDP endpoints.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P5-0002")]
+[Requirement("RFC9000-S21-5-P7-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P5_0002
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P5_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P5-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-5-P7-S2-R01");
 
         Assert.Equal("QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38] and also have inadequately secured UDP endpoints.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.5 RFC9000-S21.5-B8-P7-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S21P5_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P5-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-5-P7-S2-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S21P5_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P5-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-5-P7-S2-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

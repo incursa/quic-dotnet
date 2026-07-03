@@ -202,8 +202,8 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P2P5-0001` | Measure intentional acknowledgment delays |
 | `REQ-QUIC-RFC9000-S13P2P5-0002` | Encode acknowledgment delay in ACK Delay |
 | `REQ-QUIC-RFC9000-S13P2P5-0005` | Report measured delay when it exceeds max_ack_delay |
-| `REQ-QUIC-RFC9000-S13P2P6-0001` | Carry ACK frames only in the same packet number space |
-| `REQ-QUIC-RFC9000-S13P2P6-0002` | Use 1-RTT for acknowledging 1-RTT packets |
+| `RFC9000-S13-2-6-P1-S1-R01` | Carry ACK frames only in the same packet number space |
+| `RFC9000-S13-2-6-P1-S2-R01` | Use 1-RTT for acknowledging 1-RTT packets |
 | `REQ-QUIC-RFC9000-S13P2P6-0003` | Acknowledge client 0-RTT packets with 1-RTT packets |
 | `REQ-QUIC-RFC9000-S13P2P6-0004` | This can mean that the client is unable to use these acknowledgments if the server cryptographic handshake messages are delayed or lost |
 | `RFC9000-S13-2-7-P1-S3-R01` | Send non-PADDING frames periodically to elicit acknowledgments |
@@ -606,7 +606,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S19P3-0001` | Handle ACK frame types 0x02 and 0x03 |
 | `REQ-QUIC-RFC9000-S19P3-0002` | The ACK frame MUST contain one or more ACK Ranges |
 | `REQ-QUIC-RFC9000-S19P3-0003` | If the frame type is 0x03, ACK frames also MUST contain the cumulative count of QUIC packets... |
-| `REQ-QUIC-RFC9000-S19P3-0004` | Use ECN information to manage congestion state |
+| `RFC9000-S19-3-P1-S1-R02` | Use ECN information to manage congestion state |
 | `REQ-QUIC-RFC9000-S19P3-0005` | Once acknowledged, a packet MUST remain acknowledged, even if it does not appear in a future... |
 | `REQ-QUIC-RFC9000-S19P3-0006` | Packets from different packet number spaces MAY be identified using the same numeric value |
 | `REQ-QUIC-RFC9000-S19P3-0009` | The Type field MUST be encoded as a variable-length integer with value 0x02..0x03 |
@@ -716,7 +716,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S21P3-0001` | Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of addr... |
 | `RFC9000-S21-4-P1-S2-R01` | An endpoint MAY skip packet numbers when sending packets to detect this behavior |
 | `REQ-QUIC-RFC9000-S21P5-0001` | For request forgery to be effective, an attacker MUST be able to influence what packets the p... |
-| `REQ-QUIC-RFC9000-S21P5-0002` | QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]... |
+| `RFC9000-S21-5-P7-S2-R01` | QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]... |
 | `RFC9000-S21-5-3-P2-R01` | A client MUST NOT send non-probing frames to a preferred address prior to validating that add... |
 | `RFC9000-S21-5-6-P4-S1-R01` | Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_T... |
 | `REQ-QUIC-RFC9000-S21P5P6-0005` | Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat... |
@@ -842,7 +842,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S3P5-0005` | Send RESET_STREAM after receiving STOP_SENDING in Ready or Send |
 | `RFC9000-S3-5-P4-S3-R01` | Permit deferred RESET_STREAM in Data Sent |
 | `RFC9000-S3-5-P4-S4-R01` | Prefer RESET_STREAM over retransmission after loss |
-| `REQ-QUIC-RFC9000-S3P5-0008` | Copy STOP_SENDING error codes when sending RESET_STREAM |
+| `RFC9000-S3-5-P5-S1-R01` | Copy STOP_SENDING error codes when sending RESET_STREAM |
 | `RFC9000-S3-5-P5-S2-R01` | Allow ignoring later RESET_STREAM error codes |
 | `REQ-QUIC-RFC9000-S3P5-0011` | Repeat STOP_SENDING after loss |
 | `REQ-QUIC-RFC9000-S3P5-0012` | Allow RESET_STREAM to terminate one direction of a bidirectional stream |
@@ -972,10 +972,10 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S7-3-P3-S1-R01` | The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers) |
 | `RFC9000-S7-3-P4-S1-R01` | Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR |
 | `REQ-QUIC-RFC9000-S7P3-0008` | Treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION: |
-| `REQ-QUIC-RFC9000-S7P4P1-0001` | The definition of a new transport parameter (Section 7 |
+| `RFC9000-S7-4-1-P3-S1-R01` | The definition of a new transport parameter (Section 7 |
 | `REQ-QUIC-RFC9000-S7P4P1-0002` | Use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token |
 | `RFC9000-S7-4-1-P6-R01` | If 0-RTT data is accepted by the server, the server MUST NOT reduce any limits or alter any values that might be violated by the client with its 0-RTT data |
-| `REQ-QUIC-RFC9000-S7P4P1-0006` | In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18 |
+| `RFC9000-S7-4-1-P6-S1-R01` | In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18 |
 | `REQ-QUIC-RFC9000-S7P4P1-0010` | Do not use updated transport-parameter values in 0-RTT |
 | `REQ-QUIC-RFC9000-S7P4P1-0012` | Allow 0-RTT only with remembered transport parameters |
 | `RFC9000-S7-5-P2-S2-R01` | Choose to allow more data to be buffered during the handshake |
@@ -1004,7 +1004,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S8-1-3-P10-S1-R01` | When a server receives an Initial packet with an address validation token, it MUST attempt to validate the token, unless it has already completed address validation |
 | `RFC9000-S8-1-3-P10-S2-R01` | If the token is invalid, then the server SHOULD proceed as if the client did not have a validated address, including potentially sending a Retry packet |
 | `REQ-QUIC-RFC9000-S8P1P3-0017` | Clients MAY use tokens obtained on one connection for any connection attempt using the same version |
-| `REQ-QUIC-RFC9000-S8P1P4-0002` | For this design to work, the token MUST be covered by integrity protection against modification or falsification by clients |
+| `RFC9000-S8-1-4-P2-S2-R01` | For this design to work, the token MUST be covered by integrity protection against modification or falsification by clients |
 | `REQ-QUIC-RFC9000-S8P1P4-0005` | If the client IP address has changed, the server MUST adhere to the anti-amplification limit |
 | `REQ-QUIC-RFC9000-S8P1P4-0006` | To protect against such attacks, servers MUST ensure that replay of tokens is prevented or limited |
 | `RFC9000-S8-1-4-P5-S3-R01` | Servers SHOULD ensure that tokens sent in Retry packets are only accepted for a short time, as they are returned immediately by clients |
@@ -1053,7 +1053,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S9P3P2-0005` | Allow Stateless Reset After Silent Close |
 | `REQ-QUIC-RFC9000-S9P3P3-0004` | Use Heuristics for Attack Detection |
 | `RFC9000-S9-4-P1-S2-R01` | Sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path |
-| `REQ-QUIC-RFC9000-S9P4-0002` | Use updated congestion state only after confirming the peer address |
+| `RFC9000-S9-4-P2-S1-R01` | Use updated congestion state only after confirming the peer address |
 | `REQ-QUIC-RFC9000-S9P4-0003` | Retain congestion state for port-only changes |
 | `REQ-QUIC-RFC9000-S9P4-0004` | Keep ACK coverage across multiple paths |
 | `REQ-QUIC-RFC9000-S9P4-0005` | Retain State for Port-Only Peer Changes |

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0009">Instead of sending an ack-eliciting packet, the sender MAY mark any packets still in flight as lost.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P6-R01">Instead of sending an ack-eliciting packet, the sender MAY mark any packets still in flight as lost.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0009")]
+[Requirement("RFC9002-S6-2-4-P6-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0009
 {
     [Fact]

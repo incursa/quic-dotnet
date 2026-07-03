@@ -109,7 +109,7 @@
 | `RFC9000-S17-4-P4-S1-R01` | Implementations MUST allow administrators of clients and servers to disable the spin bit eith... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0005` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `RFC9000-S17-4-P5-R01` | Allow any spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-1091` | Ignore any incoming spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P5-R02` | Ignore any incoming spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0008` | If the spin bit is enabled for the connection, the endpoint maintains a spin value for each n... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0009` | When a server receives a 1-RTT packet that increases the highest packet number seen by the se... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `RFC9000-S17-4-P8-S1-R01` | When a client receives a 1-RTT packet that increases the highest packet number seen by the cl... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
@@ -201,7 +201,7 @@
 - `RFC9000-S17-4-P4-S1-R01`
 - `REQ-QUIC-RFC9000-S17P4-0005`
 - `RFC9000-S17-4-P5-R01`
-- `REQ-QUIC-RFC9000-1091`
+- `RFC9000-S17-4-P5-R02`
 - `REQ-QUIC-RFC9000-S17P4-0008`
 - `REQ-QUIC-RFC9000-S17P4-0009`
 - `RFC9000-S17-4-P8-S1-R01`

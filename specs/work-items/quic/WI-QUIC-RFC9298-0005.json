@@ -28,7 +28,7 @@
     "REQ-QUIC-RFC9298-0112",
     "REQ-QUIC-RFC9298-0113",
     "RFC9298-S6-2-P3-R01",
-    "REQ-QUIC-RFC9298-0115"
+    "RFC9298-S6-2-P3-R02"
   ],
   "summary": "Add forwarding, congestion, QUIC DATAGRAM, and ECN policy helpers for CONNECT-UDP.",
   "planned_changes": "- Add allocation-free policy constants and helpers for burstiness, batching, congestion-control disablement, ECN, HTTP/3 preference, QUIC DATAGRAM limits, oversized target payloads, ICMP Packet Too Big recommendation, and inner IP header prohibition.\n- Add focused tests and canonical xrefs.",

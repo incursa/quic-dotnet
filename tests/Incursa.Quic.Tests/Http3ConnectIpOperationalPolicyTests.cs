@@ -352,7 +352,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0205")]
+    [Requirement("RFC9484-S11-P3-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_FollowsBcp38SourceSpoofingPrevention()
@@ -361,7 +361,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0205")]
+    [Requirement("RFC9484-S11-P3-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotDisableBcp38SourceSpoofingPrevention()

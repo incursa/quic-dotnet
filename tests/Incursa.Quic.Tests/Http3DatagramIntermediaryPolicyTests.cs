@@ -29,7 +29,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
 
     [Fact]
     [Requirement("RFC9297-S3-3-P2-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0050")]
+    [Requirement("RFC9297-S3-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IntermediaryPolicy_AcceptsExactCapsulePayloadFieldsAndConsistentRedundantLength()
@@ -39,7 +39,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
 
     [Theory]
     [Requirement("RFC9297-S3-3-P2-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0050")]
+    [Requirement("RFC9297-S3-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [InlineData(3UL, 2UL, 2UL)]

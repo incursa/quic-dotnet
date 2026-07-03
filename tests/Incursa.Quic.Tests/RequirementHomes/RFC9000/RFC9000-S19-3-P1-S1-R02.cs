@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S19P3-0004")]
+[Requirement("RFC9000-S19-3-P1-S1-R02")]
 public sealed class REQ_QUIC_RFC9000_S19P3_0004
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S19P3-0004")]
+    [Requirement("RFC9000-S19-3-P1-S1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryProcessAckFrame_ValidatedEcnCeFeedbackReducesCongestionWindow()

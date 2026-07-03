@@ -470,8 +470,8 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-1377',
                 'REQ-QUIC-RFC9000-1378',
                 'REQ-QUIC-RFC9000-1379',
-                'REQ-QUIC-RFC9000-1380',
-                'REQ-QUIC-RFC9000-1381',
+                'RFC9000-S19-21-P4-S1-R01',
+                'RFC9000-S19-21-P4-S1-R02',
                 'REQ-QUIC-RFC9000-1383',
                 'REQ-QUIC-RFC9000-S19P21-0011'
             )
@@ -489,7 +489,7 @@ function Get-RequirementGapMappings {
             RequirementIds     = @(
                 'RFC9000-S21-4-P1-S2-R01',
                 'REQ-QUIC-RFC9000-S21P5-0001',
-                'REQ-QUIC-RFC9000-S21P5-0002',
+                'RFC9000-S21-5-P7-S2-R01',
                 'RFC9000-S21-5-P8-S2-R01',
                 'RFC9000-S21-5-6-P2-S2-R01',
                 'RFC9000-S21-5-6-P3-S3-R01',

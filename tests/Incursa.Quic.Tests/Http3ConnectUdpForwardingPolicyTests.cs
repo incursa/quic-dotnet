@@ -300,7 +300,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0115")]
+    [Requirement("RFC9298-S6-2-P3-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_SetsOutboundUdpEcnToNotEct()
@@ -309,7 +309,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0115")]
+    [Requirement("RFC9298-S6-2-P3-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotExposeAlternateOutboundUdpEcnCodepoint()
