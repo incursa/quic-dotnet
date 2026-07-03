@@ -246,7 +246,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0011",
+      "id": "RFC9461-S5-P1-R01",
       "title": "Define dohpath as a single-valued UTF-8 relative URI template",
       "statement": "The single-valued `dohpath` SvcParamKey MUST have a value that is a relative URI Template encoded in UTF-8.",
       "coverage": {
@@ -270,7 +270,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0012",
+      "id": "RFC9461-S5-P1-S1-R01",
       "title": "Require dohpath when ALPN indicates HTTP",
       "statement": "If the `alpn` SvcParam indicates HTTP support, `dohpath` MUST be present.",
       "coverage": {
@@ -522,7 +522,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0023",
+      "id": "RFC9461-S8-1-2-P3-R01",
       "title": "Do not identify or authenticate during DNS queries",
       "statement": "A client of this SVCB mapping MUST NOT identify or authenticate itself when performing DNS queries, except to servers that it specifically knows are not vulnerable to such attacks.",
       "coverage": {
@@ -543,7 +543,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0024",
+      "id": "RFC9461-S8-1-2-P3-S1-R01",
       "title": "Avoid further queries after an invalid response",
       "statement": "If an endpoint sends an invalid response to a DNS query, the client SHOULD NOT send more queries to that endpoint.",
       "coverage": {
@@ -564,7 +564,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0025",
+      "id": "RFC9461-S8-1-2-P3-S1-R02",
       "title": "Optionally log invalid DNS query responses",
       "statement": "If an endpoint sends an invalid response to a DNS query, the client MAY log this error.",
       "coverage": {

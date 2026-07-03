@@ -43,7 +43,7 @@ public sealed class DnsServiceBindingSelectionTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9461-0006")]
-    [Requirement("REQ-QUIC-RFC9461-0012")]
+    [Requirement("RFC9461-S5-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void HttpAlpnRequiresDohPathAndSelectsDoHEndpoint()
@@ -64,7 +64,7 @@ public sealed class DnsServiceBindingSelectionTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9461-0006")]
-    [Requirement("REQ-QUIC-RFC9461-0012")]
+    [Requirement("RFC9461-S5-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void HttpAlpnWithoutDohPathIsNotSelected()
@@ -207,7 +207,7 @@ public sealed class DnsServiceBindingSelectionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0011")]
+    [Requirement("RFC9461-S5-P1-R01")]
     [Requirement("REQ-QUIC-RFC9461-0013")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -225,7 +225,7 @@ public sealed class DnsServiceBindingSelectionTests
     [InlineData("https://resolver.example/dns-query{?dns}")]
     [InlineData("/dns-query")]
     [InlineData("")]
-    [Requirement("REQ-QUIC-RFC9461-0011")]
+    [Requirement("RFC9461-S5-P1-R01")]
     [Requirement("REQ-QUIC-RFC9461-0013")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

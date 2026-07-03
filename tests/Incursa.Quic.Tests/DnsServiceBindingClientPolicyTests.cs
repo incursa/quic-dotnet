@@ -65,7 +65,7 @@ public sealed class DnsServiceBindingClientPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9461-0022")]
-    [Requirement("REQ-QUIC-RFC9461-0023")]
+    [Requirement("RFC9461-S8-1-2-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void SecurePlanAuthenticatesServerNameAndSuppressesDnsQueryIdentity()
@@ -81,7 +81,7 @@ public sealed class DnsServiceBindingClientPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9461-0022")]
-    [Requirement("REQ-QUIC-RFC9461-0023")]
+    [Requirement("RFC9461-S8-1-2-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void KnownSafeEndpointCanAllowDnsQueryClientIdentity()
@@ -95,8 +95,8 @@ public sealed class DnsServiceBindingClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0024")]
-    [Requirement("REQ-QUIC-RFC9461-0025")]
+    [Requirement("RFC9461-S8-1-2-P3-S1-R01")]
+    [Requirement("RFC9461-S8-1-2-P3-S1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void InvalidResponseStopsFurtherQueriesAndMayBeLogged()
@@ -110,8 +110,8 @@ public sealed class DnsServiceBindingClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0024")]
-    [Requirement("REQ-QUIC-RFC9461-0025")]
+    [Requirement("RFC9461-S8-1-2-P3-S1-R01")]
+    [Requirement("RFC9461-S8-1-2-P3-S1-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EndpointWithoutInvalidResponseCanContinueWithoutErrorLog()
