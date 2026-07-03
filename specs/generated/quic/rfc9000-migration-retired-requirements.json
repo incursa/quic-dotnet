@@ -2666,12 +2666,12 @@
       "id": "REQ-QUIC-RFC9000-S7P5-0003",
       "title": "Close when handshake CRYPTO buffering is exceeded",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0365"
+        "RFC9000-S7-5-P3-S3-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0365 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S7-5-P3-S3-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S9P3P2-0002",
@@ -3128,12 +3128,12 @@
       "id": "REQ-QUIC-RFC9000-S14P2P1-0002",
       "title": "Validate ICMP messages against packet injection",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-1422"
+        "RFC9000-S14-2-1-P4-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-1422 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S14-2-1-P4-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P21-0001",

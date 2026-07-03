@@ -246,7 +246,7 @@ closed for `REQ-QUIC-RFC9000-S22P4-0001`, `REQ-QUIC-RFC9000-S22P4-0002`, and
 rest of the blocked tail is still policy, registry, and deployment heavy.
 
 The bounded deployment-policy proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P11-0001` and `RFC9000-S21-11-P3-R01`.
+`RFC9000-S21-11-P2-R01` and `RFC9000-S21-11-P3-R01`.
 
 The stream-fragmentation guidance proof surface is now closed for
 `RFC9000-S21-7-P4-R01`.
@@ -1209,7 +1209,7 @@ deferred S4P6-0009 fuzz expectation.
 
 Follow-on S5P1P1 Retry sequencing and migration pool tail closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-S5P1P1-0007` and
-`REQ-QUIC-RFC9000-S5P1P1-0019` under `ARC-QUIC-RFC9000-0075`,
+`RFC9000-S5-1-1-P7-S1-R01` under `ARC-QUIC-RFC9000-0075`,
 `WI-QUIC-RFC9000-0075`, and `VER-QUIC-RFC9000-0075`. The proof covers
 first client-selected Destination Connection IDs and Retry Source Connection
 IDs not consuming peer CID sequence numbers, the observed peer Initial Source
@@ -1240,7 +1240,7 @@ CID supply after peer retirement. Regenerated coverage triage marks those eight
 requirements as `trace_clean` and reports 1,294 of 1,771 QUIC requirements
 trace-clean overall, leaving 477 non-clean. `S5P1P1` then had two remaining
 non-clean requirements: `REQ-QUIC-RFC9000-S5P1P1-0007` and
-`REQ-QUIC-RFC9000-S5P1P1-0019`; the later S5P1P1 tail closure under
+`RFC9000-S5-1-1-P7-S1-R01`; the later S5P1P1 tail closure under
 `ARC-QUIC-RFC9000-0075` now closes that generated triage tail. This closure
 does not claim Retry integrity validation changes, public API widening, or
 hosted interop readiness.
@@ -1337,7 +1337,7 @@ enforcement.
 
 Follow-on S7P4P1 client 0-RTT remembered transport-parameter policy closure
 on 2026-05-06 closes `RFC9000-S7-4-1-P3-S1-R01`,
-`REQ-QUIC-RFC9000-S7P4P1-0002`, and
+`RFC9000-S7-4-1-P4-S1-R01`, and
 `RFC9000-S7-4-1-P5-R01` under `ARC-QUIC-RFC9000-0068`,
 `WI-QUIC-RFC9000-0068`, and `VER-QUIC-RFC9000-0068`. The proof covers an
 internal 0-RTT transport-parameter storage classification table, exclusion of

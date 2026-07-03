@@ -116,7 +116,7 @@
       "reason": "Skipping the token check after another packet succeeds requires a datagram-processing pipeline."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0005",
+      "requirement_id": "RFC9000-S10-3-1-P2-S2-R02",
       "reason": "Always checking the first unprocessable packet is blocked by the missing datagram-processing pipeline."
     },
     {

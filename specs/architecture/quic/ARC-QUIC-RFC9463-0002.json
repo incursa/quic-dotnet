@@ -36,7 +36,7 @@
     "REQ-QUIC-RFC9463-0041",
     "RFC9463-S4-2-P2-S1-R01",
     "REQ-QUIC-RFC9463-0043",
-    "REQ-QUIC-RFC9463-0044"
+    "RFC9463-S4-2-P4-R01"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryDhcpv6Option.cs",

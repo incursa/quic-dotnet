@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S22P2-0003")]
+[Requirement("RFC9000-S22-2-P4-S1-R02")]
 public sealed class REQ_QUIC_RFC9000_S22P2_0003
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S22P2-0003")]
+    [Requirement("RFC9000-S22-2-P4-S1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ReservedVersionPattern_IsExcludedFromAssignedVersionValues()

@@ -4594,7 +4594,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0017",
+      "requirement_id": "RFC9000-S5-1-1-P6-S3-R01",
       "title": "Allow limiting the total number of issued CIDs",
       "source_batches": [
         "2-5"
@@ -4640,7 +4640,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0019",
+      "requirement_id": "RFC9000-S5-1-1-P7-S1-R01",
       "title": "Keep enough peer-usable CIDs for migration",
       "source_batches": [
         "2-5"
@@ -7261,7 +7261,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0002",
+      "requirement_id": "RFC9000-S7-4-1-P4-S1-R01",
       "title": "Use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token",
       "source_batches": [
         "6-10"
@@ -7606,7 +7606,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0365",
+      "requirement_id": "RFC9000-S7-5-P3-S3-R01",
       "title": "If an endpoint does not expand its buffer, it MUST close the connection with a CRYPTO_BUFFER_EXCEEDED error code",
       "source_batches": [
         "6-10"
@@ -11870,7 +11870,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2-0002",
+      "requirement_id": "RFC9000-S10-2-P6-S2-R01",
       "title": "That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery",
       "source_batches": [
         "6-10",
@@ -13601,7 +13601,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P1-0005",
+      "requirement_id": "RFC9000-S10-3-1-P2-S2-R02",
       "title": "Always check when the first packet cannot be processed",
       "source_batches": [
         "6-10",
@@ -19402,7 +19402,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1422",
+      "requirement_id": "RFC9000-S14-2-1-P4-S1-R01",
       "title": "Validate ICMP messages when using PMTUD",
       "source_batches": [
         "11-15"
@@ -32585,7 +32585,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P11-0001",
+      "requirement_id": "RFC9000-S21-11-P2-R01",
       "title": "To defend against this style of denial of service, endpoints that share a static key for stat...",
       "source_batches": [
         "21-end"
@@ -33482,7 +33482,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S22P2-0003",
+      "requirement_id": "RFC9000-S22-2-P4-S1-R02",
       "title": "Exclude reserved version-pattern codepoints from listings",
       "source_batches": [
         "21-end"
@@ -33911,9 +33911,9 @@
     {
       "draftId": "REQ-RFC9000-S102-0009",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P2-0002 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into RFC9000-S10-2-P6-S2-R01 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P2-0002"
+        "RFC9000-S10-2-P6-S2-R01"
       ]
     },
     {

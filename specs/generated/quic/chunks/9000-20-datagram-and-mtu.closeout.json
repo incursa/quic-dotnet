@@ -104,7 +104,7 @@
     ],
     "S14P2P1": [
       "RFC9000-S14-2-1-P2-S1-R01",
-      "REQ-QUIC-RFC9000-1422",
+      "RFC9000-S14-2-1-P4-S1-R01",
       "REQ-QUIC-RFC9000-S14P2P1-0003",
       "REQ-QUIC-RFC9000-S14P2P1-0004",
       "RFC9000-S14-2-1-P4-S4-R01",
@@ -326,7 +326,7 @@
         "section_token": "S14P2P1",
         "requirements": [
           "RFC9000-S14-2-1-P2-S1-R01",
-          "REQ-QUIC-RFC9000-1422",
+          "RFC9000-S14-2-1-P4-S1-R01",
           "REQ-QUIC-RFC9000-S14P2P1-0003",
           "REQ-QUIC-RFC9000-S14P2P1-0004",
           "RFC9000-S14-2-1-P4-S4-R01",

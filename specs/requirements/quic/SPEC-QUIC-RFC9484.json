@@ -4020,7 +4020,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0189",
+      "id": "RFC9484-S10-P2-S2-R01",
       "title": "Disable congestion control for DATAGRAM-only packets",
       "statement": "The outer HTTP connection MAY disable congestion control for packets that contain only QUIC DATAGRAM frames encapsulating IP packets.",
       "coverage": {

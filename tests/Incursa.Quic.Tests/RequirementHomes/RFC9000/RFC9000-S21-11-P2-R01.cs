@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P11-0001">To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-11-P2-R01">To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P11-0001")]
+[Requirement("RFC9000-S21-11-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P11_0001
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-11-P2-R01");
 
         Assert.Equal("To defend against this style of denial of service, endpoints that share a static key for stat...", requirement.GetProperty("title").GetString());
         Assert.Equal("To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active.", requirement.GetProperty("statement").GetString());
@@ -42,7 +42,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-11-P2-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

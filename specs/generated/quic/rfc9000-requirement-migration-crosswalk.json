@@ -136,7 +136,7 @@
       "statement": "These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY]."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2-0002",
+      "id": "RFC9000-S10-2-P6-S2-R01",
       "title": "That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery",
       "statement": "Endpoints that have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery."
     },
@@ -411,7 +411,7 @@
       "statement": "Endpoints MAY skip this check if any packet from a datagram is successfully processed."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P1-0005",
+      "id": "RFC9000-S10-3-1-P2-S2-R02",
       "title": "Always check when the first packet cannot be processed",
       "statement": "However, the comparison MUST be performed when the first packet in an incoming datagram either cannot be associated with a connection or cannot be decrypted."
     },
@@ -3411,7 +3411,7 @@
       "statement": "If duplicate packets are discarded by a receiver, an attacker will MUST race the duplicate packet against the original to be successful in this attack."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P11-0001",
+      "id": "RFC9000-S21-11-P2-R01",
       "title": "To defend against this style of denial of service, endpoints that share a static key for stat...",
       "statement": "To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active."
     },
@@ -3626,7 +3626,7 @@
       "statement": "The codepoint of 0x00000001 for the protocol MUST be assigned with permanent status to the protocol defined in this document."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P2-0003",
+      "id": "RFC9000-S22-2-P4-S1-R02",
       "title": "Exclude reserved version-pattern codepoints from listings",
       "statement": "All codepoints that follow the pattern 0x?a?a?a?a MUST NOT appear in the listing of assigned values."
     },
@@ -4386,7 +4386,7 @@
       "statement": "After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0017",
+      "id": "RFC9000-S5-1-1-P6-S3-R01",
       "title": "Allow limiting the total number of issued CIDs",
       "statement": "An endpoint MAY limit the total number of connection IDs issued for each connection to avoid the risk of running out of connection IDs."
     },
@@ -4396,7 +4396,7 @@
       "statement": "An endpoint MAY also limit the issuance of connection IDs to reduce the amount of per-path state it maintains."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0019",
+      "id": "RFC9000-S5-1-1-P7-S1-R01",
       "title": "Keep enough peer-usable CIDs for migration",
       "statement": "An endpoint that initiates migration and requires non-zero-length connection IDs SHOULD ensure that the pool of connection IDs available to its peer allows the peer to use a new connection ID on migration."
     },
@@ -4746,7 +4746,7 @@
       "statement": "The definition of a new transport parameter (Section 7.4.2) MUST specify whether storing the transport parameter for 0-RTT is mandatory, optional, or prohibited."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P4P1-0002",
+      "id": "RFC9000-S7-4-1-P4-S1-R01",
       "title": "Use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token",
       "statement": "A client MUST NOT use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token."
     },

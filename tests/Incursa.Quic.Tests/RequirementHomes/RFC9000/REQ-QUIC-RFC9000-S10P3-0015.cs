@@ -8,7 +8,7 @@ namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
 ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3-0015">An endpoint MAY send a Stateless Reset in response to a packet with a long header.</workbench-requirement>
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0005">However, the comparison MUST be performed when the first packet in an incoming datagram either cannot be associated with a connection or cannot be decrypted.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-1-P2-S2-R02">However, the comparison MUST be performed when the first packet in an incoming datagram either cannot be associated with a connection or cannot be decrypted.</workbench-requirement>
 /// </workbench-requirements>
 [Requirement("REQ-QUIC-RFC9000-S10P3-0015")]
 public sealed class REQ_QUIC_RFC9000_S10P3_0015

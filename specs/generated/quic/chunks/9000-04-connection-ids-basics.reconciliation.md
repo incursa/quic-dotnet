@@ -63,9 +63,9 @@ Section tokens: `S5, S5P1, S5P1P1`
 - `RFC9000-S5-1-1-P5-S2-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `RFC9000-S5-1-1-P6-S1-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `RFC9000-S5-1-1-P6-S2-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0017` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `RFC9000-S5-1-1-P6-S3-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0018` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-S5P1P1-0019` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
+- `RFC9000-S5-1-1-P7-S1-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-0238` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-0239` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 

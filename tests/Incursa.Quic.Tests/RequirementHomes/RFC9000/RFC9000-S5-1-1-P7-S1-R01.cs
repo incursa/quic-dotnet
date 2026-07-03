@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S5P1P1-0019")]
+[Requirement("RFC9000-S5-1-1-P7-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S5P1P1_0019
 {
     private static readonly byte[] IssuedConnectionId =

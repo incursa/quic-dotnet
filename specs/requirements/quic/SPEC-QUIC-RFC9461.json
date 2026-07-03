@@ -336,7 +336,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0015",
+      "id": "RFC9461-S5-P2-S1-R01",
       "title": "Send DoH requests to the HTTPS origin from the SVCB record",
       "statement": "When using this SVCB record, the client MUST send DoH requests to the HTTPS origin identified by the `https` scheme, the authentication name, and the port from the `port` SvcParam if present.",
       "coverage": {

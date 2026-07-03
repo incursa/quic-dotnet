@@ -983,7 +983,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0044",
+      "id": "RFC9463-S4-2-P4-R01",
       "title": "Silently discard multicast and loopback addresses",
       "statement": "The DHCPv6 client MUST silently discard multicast and host loopback addresses in OPTION_V6_DNR.",
       "coverage": {

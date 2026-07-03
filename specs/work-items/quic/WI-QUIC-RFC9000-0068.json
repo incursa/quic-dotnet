@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "RFC9000-S7-4-1-P3-S1-R01",
-    "REQ-QUIC-RFC9000-S7P4P1-0002",
+    "RFC9000-S7-4-1-P4-S1-R01",
     "RFC9000-S7-4-1-P5-R01"
   ],
   "summary": "Close the bounded RFC 9000 Section 7.4.1 client remembered transport-parameter policy floor by classifying known transport parameters, deriving a sanitized 0-RTT remembered subset, and gating dormant early-data readiness on that subset.",
@@ -32,5 +32,5 @@
     "TLS early_data extension emission or acceptance.",
     "Server anti-replay or application-data delivery."
   ],
-  "completion_notes": "Completed as a focused client remembered-transport-parameter policy and requirement-home proof for RFC9000-S7-4-1-P3-S1-R01, REQ-QUIC-RFC9000-S7P4P1-0002, and RFC9000-S7-4-1-P5-R01."
+  "completion_notes": "Completed as a focused client remembered-transport-parameter policy and requirement-home proof for RFC9000-S7-4-1-P3-S1-R01, RFC9000-S7-4-1-P4-S1-R01, and RFC9000-S7-4-1-P5-R01."
 }

@@ -499,7 +499,7 @@ function Get-RequirementGapMappings {
                 'RFC9000-S21-7-P4-R01',
                 'RFC9000-S21-9-P4-R01',
                 'REQ-QUIC-RFC9000-S21P9-0002',
-                'REQ-QUIC-RFC9000-S21P11-0001',
+                'RFC9000-S21-11-P2-R01',
                 'RFC9000-S21-11-P3-R01'
             )
         },

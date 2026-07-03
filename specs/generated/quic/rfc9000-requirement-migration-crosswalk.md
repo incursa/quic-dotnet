@@ -51,7 +51,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P1P1-0001` | Allow liveness probes |
 | `REQ-QUIC-RFC9000-S10P1P2-0002` | Allow deferring idle timeout |
 | `REQ-QUIC-RFC9000-S10P2-0001` | These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY] |
-| `REQ-QUIC-RFC9000-S10P2-0002` | That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery |
+| `RFC9000-S10-2-P6-S2-R01` | That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery |
 | `REQ-QUIC-RFC9000-S10P2-0007` | Close all streams on CONNECTION_CLOSE |
 | `REQ-QUIC-RFC9000-S10P2-0008` | Reset open streams implicitly |
 | `REQ-QUIC-RFC9000-S10P2-0010` | Enter draining state after receiving close |
@@ -106,7 +106,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P3P1-0002` | Remember recent stateless reset tokens |
 | `REQ-QUIC-RFC9000-S10P3P1-0003` | Compare the remote-address token set to classify Stateless Reset |
 | `RFC9000-S10-3-1-P2-S2-R01` | Skip the token check after successful packet processing |
-| `REQ-QUIC-RFC9000-S10P3P1-0005` | Always check when the first packet cannot be processed |
+| `RFC9000-S10-3-1-P2-S2-R02` | Always check when the first packet cannot be processed |
 | `RFC9000-S10-3-1-P3-S1-R01` | Ignore unused and retired reset tokens |
 | `REQ-QUIC-RFC9000-S10P3P1-0007` | Avoid leaking token values during comparison |
 | `REQ-QUIC-RFC9000-S10P3P1-0008` | Enter draining on a matching stateless reset token |
@@ -706,7 +706,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S20P1-0008` | Absent either of these conditions, error codes MUST be used to identify a general function of... |
 | `REQ-QUIC-RFC9000-S20P2-0001` | Application protocol error codes MUST be used for the RESET_STREAM frame (Section 19.4), the... |
 | `REQ-QUIC-RFC9000-S21P10-0001` | If duplicate packets are discarded by a receiver, an attacker will MUST race the duplicate pa... |
-| `REQ-QUIC-RFC9000-S21P11-0001` | To defend against this style of denial of service, endpoints that share a static key for stat... |
+| `RFC9000-S21-11-P2-R01` | To defend against this style of denial of service, endpoints that share a static key for stat... |
 | `RFC9000-S21-11-P3-R01` | More generally, servers MUST NOT generate a stateless reset if a connection with the correspo... |
 | `REQ-QUIC-RFC9000-S21P12-0001` | Keep Version Negotiation packets free of downgrade prevention mechanisms |
 | `REQ-QUIC-RFC9000-S21P1P1P1-0001` | Use address validation to confirm receipt capability |
@@ -749,7 +749,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S22P1P4-0007` | Assign document registrations permanent status |
 | `REQ-QUIC-RFC9000-S22P1P4-0008` | Record the change controller and contact for document registrations |
 | `REQ-QUIC-RFC9000-S22P2-0001` | Assign codepoint 0x00000001 |
-| `REQ-QUIC-RFC9000-S22P2-0003` | Exclude reserved version-pattern codepoints from listings |
+| `RFC9000-S22-2-P4-S1-R02` | Exclude reserved version-pattern codepoints from listings |
 | `RFC9000-S22-2-P4-S1-R01` | Protect reserved version-pattern codepoints |
 | `REQ-QUIC-RFC9000-S22P3-0001` | Use Specification Required for transport parameters |
 | `REQ-QUIC-RFC9000-S22P3-0002` | Use stricter policy for low transport-parameter codepoints |
@@ -901,9 +901,9 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S5-1-1-P4-S3-R01` | Do not exceed the peer's active CID limit |
 | `RFC9000-S5-1-1-P4-S4-R01` | Allow temporary CID excess only with immediate retirement requirements |
 | `RFC9000-S5-1-1-P5-S2-R01` | Close on too many active CIDs |
-| `REQ-QUIC-RFC9000-S5P1P1-0017` | Allow limiting the total number of issued CIDs |
+| `RFC9000-S5-1-1-P6-S3-R01` | Allow limiting the total number of issued CIDs |
 | `REQ-QUIC-RFC9000-S5P1P1-0018` | Allow limiting CID issuance to reduce per-path state |
-| `REQ-QUIC-RFC9000-S5P1P1-0019` | Keep enough peer-usable CIDs for migration |
+| `RFC9000-S5-1-1-P7-S1-R01` | Keep enough peer-usable CIDs for migration |
 | `REQ-QUIC-RFC9000-S5P1P2-0002` | Consume CIDs in response to migration |
 | `REQ-QUIC-RFC9000-S5P1P2-0003` | Maintain a set of peer-issued CIDs |
 | `REQ-QUIC-RFC9000-S5P1P2-0004` | Retire a CID by sending RETIRE_CONNECTION_ID |
@@ -973,7 +973,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S7-3-P4-S1-R01` | Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR |
 | `REQ-QUIC-RFC9000-S7P3-0008` | Treat the following as a connection error of type TRANSPORT_PARAMETER_ERROR or PROTOCOL_VIOLATION: |
 | `RFC9000-S7-4-1-P3-S1-R01` | The definition of a new transport parameter (Section 7 |
-| `REQ-QUIC-RFC9000-S7P4P1-0002` | Use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token |
+| `RFC9000-S7-4-1-P4-S1-R01` | Use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token |
 | `RFC9000-S7-4-1-P6-R01` | If 0-RTT data is accepted by the server, the server MUST NOT reduce any limits or alter any values that might be violated by the client with its 0-RTT data |
 | `RFC9000-S7-4-1-P6-S1-R01` | In particular, a server that accepts 0-RTT data MUST NOT set values for the following parameters (Section 18 |
 | `REQ-QUIC-RFC9000-S7P4P1-0010` | Do not use updated transport-parameter values in 0-RTT |

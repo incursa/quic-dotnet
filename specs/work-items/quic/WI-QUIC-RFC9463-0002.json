@@ -35,7 +35,7 @@
     "REQ-QUIC-RFC9463-0041",
     "RFC9463-S4-2-P2-S1-R01",
     "REQ-QUIC-RFC9463-0043",
-    "REQ-QUIC-RFC9463-0044"
+    "RFC9463-S4-2-P4-R01"
   ],
   "summary": "Add trace-owned byte-level support for RFC 9463 DHCPv6 OPTION_V6_DNR.",
   "planned_changes": "- Add `EncryptedDnsDiscoveryDhcpv6Option` for OPTION_V6_DNR TLV encode/decode.\n- Encode and decode RFC 8415 authentication-domain-name wire format.\n- Encode and validate IPv6 Addr Length and IPv6 resolver address lists.\n- Reuse RFC 9460 SvcParam key/value encoding and reject superseded address hints.\n- Support ADN-only mode and OPTION_ORO request data.\n- Decode multiple OPTION_V6_DNR instances as separate resolvers sorted by service priority.\n- Silently discard invalid OPTION_V6_DNR values when using the batch decoder.\n- Add focused positive and negative tests plus canonical xrefs.",

@@ -22,7 +22,7 @@
       "requirement_id": [
         "REQ-QUIC-RFC9000-S22P2-0001",
         "REQ-QUIC-RFC9000-1514",
-        "REQ-QUIC-RFC9000-S22P2-0003",
+        "RFC9000-S22-2-P4-S1-R02",
         "RFC9000-S22-2-P4-S1-R01"
       ],
       "completion_status": "implemented and tested",

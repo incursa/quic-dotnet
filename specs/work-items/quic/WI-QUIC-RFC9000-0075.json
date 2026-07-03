@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S5P1P1-0007",
-    "REQ-QUIC-RFC9000-S5P1P1-0019"
+    "RFC9000-S5-1-1-P7-S1-R01"
   ],
   "summary": "Close the remaining S5P1P1 tail by proving that client-selected and Retry-provided CIDs do not consume peer CID sequence numbers and that migrated-path use of a previously unused locally issued CID replenishes the peer-usable pool when allowed.",
   "planned_changes": "- Route peer CID sequence seeding through the observed peer Initial Source CID when present.\n- Add focused requirement-home tests for first client-selected CID reuse under explicit sequencing, Retry Source CID preferred-address sequencing, and invalid observed Initial Source CID reuse.\n- Add migrated-path local CID replenishment tests covering allowed replenishment, peer active-limit suppression, and local issuance-budget suppression.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
@@ -31,5 +31,5 @@
     "Public API widening.",
     "Hosted interop readiness."
   ],
-  "completion_notes": "Completed as a focused S5P1P1 tail proof for REQ-QUIC-RFC9000-S5P1P1-0007 and REQ-QUIC-RFC9000-S5P1P1-0019."
+  "completion_notes": "Completed as a focused S5P1P1 tail proof for REQ-QUIC-RFC9000-S5P1P1-0007 and RFC9000-S5-1-1-P7-S1-R01."
 }

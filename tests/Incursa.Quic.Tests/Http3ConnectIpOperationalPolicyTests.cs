@@ -60,7 +60,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0189")]
+    [Requirement("RFC9484-S10-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_CanDisableCongestionControlForDatagramOnlyIpPackets()
@@ -69,7 +69,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0189")]
+    [Requirement("RFC9484-S10-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotDisableCongestionControlForMixedPackets()

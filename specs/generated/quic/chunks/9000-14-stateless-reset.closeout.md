@@ -41,7 +41,7 @@
 - `REQ-QUIC-RFC9000-S10P3-0029`: Version-aware Stateless Reset generation still needs negotiated-version policy and endpoint history.
 - `REQ-QUIC-RFC9000-S10P3P1-0002`: Recent-token memory by connection ID and remote address needs a receive-side token store.
 - `RFC9000-S10-3-1-P2-S2-R01`: Skipping the token check after another packet succeeds requires a datagram-processing pipeline.
-- `REQ-QUIC-RFC9000-S10P3P1-0005`: Always checking the first unprocessable packet is blocked by the missing datagram-processing pipeline.
+- `RFC9000-S10-3-1-P2-S2-R02`: Always checking the first unprocessable packet is blocked by the missing datagram-processing pipeline.
 - `RFC9000-S10-3-1-P3-S1-R01`: Unused and retired-token filtering needs connection-scoped token bookkeeping.
 - `REQ-QUIC-RFC9000-S10P3P1-0010`: Remember-and-scope behavior spans `NEW_CONNECTION_ID`, transport-parameter, and retirement state that is not yet modeled.
 - `RFC9000-S10-3-2-P4-S2-R01`: Recoverable connection-ID length handling for static-key tokens is not modeled.
