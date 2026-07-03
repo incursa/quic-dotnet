@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6-0009">Endpoints MUST NOT send a TLS KeyUpdate message.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-P5-S2-R01">Endpoints MUST NOT send a TLS KeyUpdate message.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6-0009")]
+[Requirement("RFC9001-S6-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9001_S6_0009
 {
     [Fact]

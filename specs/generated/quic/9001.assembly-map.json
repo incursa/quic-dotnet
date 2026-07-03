@@ -791,7 +791,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0001",
+      "requirement_id": "RFC9001-S6-P1-S1-R01",
       "title": "Allow key update after handshake confirmation",
       "source_batches": [
         "1-6"
@@ -975,7 +975,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0009",
+      "requirement_id": "RFC9001-S6-P5-S2-R01",
       "title": "Prohibit TLS KeyUpdate messages",
       "source_batches": [
         "1-6"
@@ -998,7 +998,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0010",
+      "requirement_id": "RFC9001-S6-P5-S3-R01",
       "title": "Treat TLS KeyUpdate as a connection error",
       "source_batches": [
         "1-6"
@@ -1021,7 +1021,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S7-0001",
+      "requirement_id": "RFC9001-S7-P2-S3-R01",
       "title": "Use caution with unauthenticated Initial data",
       "source_batches": [
         "7-10"

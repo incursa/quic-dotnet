@@ -382,7 +382,7 @@
       "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0001",
+      "requirement_id": "RFC9001-S6-P1-S1-R01",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -462,7 +462,7 @@
       "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0009",
+      "requirement_id": "RFC9001-S6-P5-S2-R01",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],
@@ -472,7 +472,7 @@
       "notes": "No live RFC 9001 code/test refs were found in the selected roots; adjacent packet-header work belongs to RFC 8999/9000."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6-0010",
+      "requirement_id": "RFC9001-S6-P5-S3-R01",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],

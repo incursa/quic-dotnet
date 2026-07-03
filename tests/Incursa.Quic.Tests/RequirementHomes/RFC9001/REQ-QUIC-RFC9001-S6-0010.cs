@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6-0010">Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-P5-S3-R01">Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6-0010")]
+[Requirement("RFC9001-S6-P5-S3-R01")]
 public sealed class REQ_QUIC_RFC9001_S6_0010
 {
     [Fact]

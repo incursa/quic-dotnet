@@ -915,7 +915,7 @@ requirement-home proof and canonical `trace.x_test_refs` for the remaining
 S3/S4/S7/S9 tail, including behavioral proof for `REQ-QUIC-RFC9001-S3-0011`
 and `REQ-QUIC-RFC9001-S4-0008` through `REQ-QUIC-RFC9001-S4-0010`, plus
 canonical-ownership proof for policy/document-scope clauses such as
-`REQ-QUIC-RFC9001-S7-0001` and `REQ-QUIC-RFC9001-S9-0001`.
+`RFC9001-S7-P2-S3-R01` and `REQ-QUIC-RFC9001-S9-0001`.
 
 Current generated RFC requirement triage reports 1,474 of 1,771 requirements
 `trace_clean`, leaving 297 non-clean: 55 metadata-only missing-xref items, 13

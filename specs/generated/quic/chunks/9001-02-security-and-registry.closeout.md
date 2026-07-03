@@ -56,7 +56,7 @@ The helper-backed ceiling now includes `REQ-QUIC-RFC9001-S6-0004` as closed by r
   - Status: partial because the edge boundary is still missing.
 
 ### Blocked
-- `REQ-QUIC-RFC9001-S6-0001` `Allow key update after handshake confirmation`
+- `RFC9001-S6-P1-S1-R01` `Allow key update after handshake confirmation`
   - Remaining gap: the repo still lacks handshake-confirmation state and the 1-RTT key-update subsystem needed to initiate a safe key update.
 - `REQ-QUIC-RFC9001-S6-0003` `Initialize Key Phase to zero`
   - Remaining gap: the repo does not yet format 1-RTT packets with a key-update state machine, so the initial Key Phase value is not a live implementation concern yet.
@@ -66,9 +66,9 @@ The helper-backed ceiling now includes `REQ-QUIC-RFC9001-S6-0004` as closed by r
   - Remaining gap: the repo does not yet implement packet decryption or the changed-Key-Phase recovery path needed by this clause.
 - `REQ-QUIC-RFC9001-S6-0008` `Update both endpoints on key update`
   - Remaining gap: the repo does not yet model bilateral key-update propagation between endpoints.
-- `REQ-QUIC-RFC9001-S6-0009` `Prohibit TLS KeyUpdate messages`
+- `RFC9001-S6-P5-S2-R01` `Prohibit TLS KeyUpdate messages`
   - Remaining gap: the repo does not yet have a TLS message-processing surface where outbound KeyUpdate messages could be prohibited.
-- `REQ-QUIC-RFC9001-S6-0010` `Treat TLS KeyUpdate as a connection error`
+- `RFC9001-S6-P5-S3-R01` `Treat TLS KeyUpdate as a connection error`
   - Remaining gap: the repo does not yet have TLS alert handling or connection-error orchestration for received KeyUpdate messages.
 - `REQ-QUIC-RFC9001-S7-0002` `Fail on Handshake tampering`
   - Remaining gap: the repo still lacks a TLS handshake implementation, so handshake tampering cannot be exercised or detected here.
@@ -76,7 +76,7 @@ The helper-backed ceiling now includes `REQ-QUIC-RFC9001-S6-0004` as closed by r
   - Remaining gap: the repo still lacks TLS transcript and authentication plumbing, so transport-parameter authentication cannot be proven cryptographically yet.
 
 ### Deferred
-- `REQ-QUIC-RFC9001-S7-0001` `Use caution with unauthenticated Initial data`
+- `RFC9001-S7-P2-S3-R01` `Use caution with unauthenticated Initial data`
   - Remaining gap: this is policy guidance about unauthenticated Initial data, not a clean executable invariant in the current helper-only surfaces.
 - `REQ-QUIC-RFC9001-S9-0001` `Apply TLS security considerations to QUIC`
   - Remaining gap: this is a document-level security-scope rule rather than an executable helper behavior in the current repo.

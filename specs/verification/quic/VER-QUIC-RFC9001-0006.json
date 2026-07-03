@@ -39,7 +39,7 @@
     "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs",
     "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-0006-tests.log",
     "artifacts/v/20260424-rfc9001-s6p5-repeated-epoch-ownership/focused-rfc9001-s6p5-supporting-tests.log",

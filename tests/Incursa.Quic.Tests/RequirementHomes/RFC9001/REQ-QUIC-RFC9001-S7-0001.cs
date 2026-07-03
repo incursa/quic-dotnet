@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9001-S7-0001")]
+[Requirement("RFC9001-S7-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9001_S7_0001
 {
     [Fact]
@@ -11,6 +11,6 @@ public sealed class REQ_QUIC_RFC9001_S7_0001
     [Trait("Category", "Positive")]
     public void CanonicalArtifactsKeepUnauthenticatedInitialDataCautionInScope()
     {
-        QuicRfc9001TailProofTestSupport.AssertCanonicalArtifactsOwnRequirement("REQ-QUIC-RFC9001-S7-0001");
+        QuicRfc9001TailProofTestSupport.AssertCanonicalArtifactsOwnRequirement("RFC9001-S7-P2-S3-R01");
     }
 }

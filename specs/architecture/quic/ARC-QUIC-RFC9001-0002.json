@@ -13,8 +13,8 @@
     "VER-QUIC-RFC9001-0002"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010",
+    "RFC9001-S6-P5-S2-R01",
+    "RFC9001-S6-P5-S3-R01",
     "REQ-QUIC-RFC9001-S3-0003",
     "REQ-QUIC-RFC9001-S3-0004",
     "REQ-QUIC-RFC9001-S3-0005"
@@ -25,8 +25,8 @@
     "src/Incursa.Quic/QuicTlsTransportBridgeDriver.cs",
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs"
   ],
   "design_summary": "The transcript owner classifies post-handshake TLS bytes before bridge publication. A TLS KeyUpdate message is recognized as a dedicated post-handshake classifier outcome, published through the existing prohibited-update path, and then closed by QuicConnectionRuntime as KeyUpdateError. The internal QuicTlsUpdateKind.KeyUpdateInstalled and key-phase install path remain separate so managed QUIC key updates do not masquerade as TLS KeyUpdate support.",
   "edge_cases_and_constraints": [

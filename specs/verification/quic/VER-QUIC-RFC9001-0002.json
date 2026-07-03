@@ -18,8 +18,8 @@
   ],
   "verification_method": "Requirement-home tests plus focused execution and trace inspection.",
   "verifies": [
-    "REQ-QUIC-RFC9001-S6-0009",
-    "REQ-QUIC-RFC9001-S6-0010",
+    "RFC9001-S6-P5-S2-R01",
+    "RFC9001-S6-P5-S3-R01",
     "REQ-QUIC-RFC9001-S3-0003",
     "REQ-QUIC-RFC9001-S3-0004",
     "REQ-QUIC-RFC9001-S3-0005"
@@ -28,8 +28,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S3-0005.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs"
   ],
   "procedure": [
     "Run the RFC 9001 Section 6 requirement-home tests for the prohibited TLS KeyUpdate and connection-error clauses.",

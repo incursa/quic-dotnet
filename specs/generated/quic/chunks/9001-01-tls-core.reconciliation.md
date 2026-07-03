@@ -47,7 +47,7 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - `REQ-QUIC-RFC9001-S5-0010` Use a fixed key for Retry packets - `not implemented`
 
 ### S6
-- `REQ-QUIC-RFC9001-S6-0001` Allow key update after handshake confirmation - `not implemented`
+- `RFC9001-S6-P1-S1-R01` Allow key update after handshake confirmation - `not implemented`
 - `REQ-QUIC-RFC9001-S6-0002` Identify packet protection keys with Key Phase - `not implemented`
 - `REQ-QUIC-RFC9001-S6-0003` Initialize Key Phase to zero - `not implemented`
 - `REQ-QUIC-RFC9001-S6-0004` Toggle Key Phase on each update - `not implemented`
@@ -55,8 +55,8 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - `REQ-QUIC-RFC9001-S6-0006` Update keys when Key Phase changes - `not implemented`
 - `REQ-QUIC-RFC9001-S6-0007` Decrypt the packet with the changed Key Phase - `not implemented`
 - `REQ-QUIC-RFC9001-S6-0008` Update both endpoints on key update - `not implemented`
-- `REQ-QUIC-RFC9001-S6-0009` Prohibit TLS KeyUpdate messages - `not implemented`
-- `REQ-QUIC-RFC9001-S6-0010` Treat TLS KeyUpdate as a connection error - `not implemented`
+- `RFC9001-S6-P5-S2-R01` Prohibit TLS KeyUpdate messages - `not implemented`
+- `RFC9001-S6-P5-S3-R01` Treat TLS KeyUpdate as a connection error - `not implemented`
 
 ## Status summary
 
@@ -101,7 +101,7 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - `S3`: `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012` remain `not implemented`.
 - `S4`: `REQ-QUIC-RFC9001-S4-0001` through `REQ-QUIC-RFC9001-S4-0011` remain `not implemented`.
 - `S5`: `REQ-QUIC-RFC9001-S5-0001` and `REQ-QUIC-RFC9001-S5-0002` are now partially implemented; `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010` remain `not implemented`.
-- `S6`: `REQ-QUIC-RFC9001-S6-0001` through `REQ-QUIC-RFC9001-S6-0010` remain `not implemented`.
+- `S6`: `RFC9001-S6-P1-S1-R01` through `RFC9001-S6-P5-S3-R01` remain `not implemented`.
 - The current repository now has the non-Initial packet-protection material boundary, but it still does not contain RFC 9001 handshake packet I/O or key-update implementation surfaces, so the Handshake half of `S5-0007` remains blocked.
 
 ## Requirements needing deeper implementation work
@@ -110,7 +110,7 @@ Source: `specs/requirements/quic/SPEC-QUIC-RFC9001.json`
 - `S3`: `REQ-QUIC-RFC9001-S3-0001` through `REQ-QUIC-RFC9001-S3-0012` need TLS/QUIC integration implementation and proof.
 - `S4`: `REQ-QUIC-RFC9001-S4-0001` through `REQ-QUIC-RFC9001-S4-0011` need CRYPTO-frame, packet-number-space, and encryption-level implementation work.
 - `S5`: `REQ-QUIC-RFC9001-S5-0004` through `REQ-QUIC-RFC9001-S5-0010` still need packet-protection, secret-derivation, Retry, and Version Negotiation protection work; the Handshake half of `REQ-QUIC-RFC9001-S5-0007` still needs packet I/O plumbing.
-- `S6`: `REQ-QUIC-RFC9001-S6-0001` through `REQ-QUIC-RFC9001-S6-0010` need key-update and AEAD-limit implementation work.
+- `S6`: `RFC9001-S6-P1-S1-R01` through `RFC9001-S6-P5-S3-R01` need key-update and AEAD-limit implementation work.
 
 ## Files written
 

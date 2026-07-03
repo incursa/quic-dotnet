@@ -1092,7 +1092,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0001",
+      "id": "RFC9001-S6-P1-S1-R01",
       "title": "Allow key update after handshake confirmation",
       "statement": "Once the handshake is confirmed, an endpoint MAY initiate a key update.",
       "coverage": {
@@ -1119,7 +1119,7 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0001.cs::HandshakeConfirmedClientRuntimeCanDeriveSuccessorOneRttKeyUpdateMaterial"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P1-S1-R01.cs::HandshakeConfirmedClientRuntimeCanDeriveSuccessorOneRttKeyUpdateMaterial"
         ]
       }
     },
@@ -1355,7 +1355,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0009",
+      "id": "RFC9001-S6-P5-S2-R01",
       "title": "Prohibit TLS KeyUpdate messages",
       "statement": "Endpoints MUST NOT send a TLS KeyUpdate message.",
       "coverage": {
@@ -1379,13 +1379,13 @@
             "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
           ],
           "x_test_refs": [
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverSurfacesTLSKeyUpdateAsAProhibitedMessageThroughThePostHandshakeSeam",
-            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition"
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S2-R01.cs::ClientRoleDriverSurfacesTLSKeyUpdateAsAProhibitedMessageThroughThePostHandshakeSeam",
+            "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S2-R01.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition"
           ]
         }
       },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0010",
+      "id": "RFC9001-S6-P5-S3-R01",
       "title": "Treat TLS KeyUpdate as a connection error",
       "statement": "Endpoints MUST treat the receipt of a TLS KeyUpdate message as a connection error of type 0x010a, equivalent to a fatal TLS alert of unexpected_message.",
       "coverage": {
@@ -1409,10 +1409,10 @@
             "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
           ],
           "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsBecomeConnectionErrors",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::ServerRoleRuntimeConvertsTLSKeyUpdateIntoConnectionErrors",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs::KeyUpdateViolationsStillBecomeConnectionErrorsAfterAPostHandshakeTicketHasBeenStored",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0009.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs::KeyUpdateViolationsBecomeConnectionErrors",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs::ServerRoleRuntimeConvertsTLSKeyUpdateIntoConnectionErrors",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs::KeyUpdateViolationsStillBecomeConnectionErrorsAfterAPostHandshakeTicketHasBeenStored",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S2-R01.cs::ClientRoleDriverKeepsNewSessionTicketProcessingSeparateFromTLSKeyUpdateProhibition"
           ]
         }
       },
@@ -1905,7 +1905,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P3-0002",
+      "id": "RFC9001-S6-3-P5-S1-R01",
       "title": "Retain current and next receive keys",
       "statement": "Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.",
       "coverage": {
@@ -1929,12 +1929,12 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveServerRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeClearsRetainedNextReceiveKeysAfterInstallingPeerUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::ActiveClientRuntimeRetainsPhaseOneAndSecondSuccessorReceiveKeysForApparentRepeatedPeerUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::EstablishingClientRuntimeDoesNotRetainNextReceiveKeysBeforeOneRttKeysExist",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0002.cs::FuzzApparentPeerUpdates_RandomizedTamperedPayloadsRetainNextReceiveKeysWithoutInstalling"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::ActiveClientRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::ActiveServerRuntimeRetainsCurrentAndNextReceiveKeysForApparentPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::ActiveClientRuntimeClearsRetainedNextReceiveKeysAfterInstallingPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::ActiveClientRuntimeRetainsPhaseOneAndSecondSuccessorReceiveKeysForApparentRepeatedPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::EstablishingClientRuntimeDoesNotRetainNextReceiveKeysBeforeOneRttKeysExist",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs::FuzzApparentPeerUpdates_RandomizedTamperedPayloadsRetainNextReceiveKeysWithoutInstalling"
         ]
       }
     },
@@ -1971,7 +1971,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P4-0002",
+      "id": "RFC9001-S6-4-P2-S1-R01",
       "title": "Protect higher packet numbers with same or newer keys",
       "statement": "Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.",
       "coverage": {
@@ -1995,9 +1995,9 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateProtectsHigherPacketNumbersWithNewKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::LocalFirstKeyUpdateDoesNotProtectHigherPacketNumbersWithOldKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0002.cs::FuzzLocalFirstKeyUpdate_RandomizedPayloadsProtectHigherPacketNumbersWithNewKeys"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S1-R01.cs::LocalFirstKeyUpdateProtectsHigherPacketNumbersWithNewKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S1-R01.cs::LocalFirstKeyUpdateDoesNotProtectHigherPacketNumbersWithOldKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S1-R01.cs::FuzzLocalFirstKeyUpdate_RandomizedPayloadsProtectHigherPacketNumbersWithNewKeys"
         ]
       }
     },
@@ -2152,7 +2152,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P5-0004",
+      "id": "RFC9001-S6-5-P7-R01",
       "title": "Limit old read key retention to three PTOs",
       "statement": "An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.",
       "coverage": {
@@ -2176,19 +2176,19 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveServerRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendTheRetentionTimerAfterAnotherNewKeyPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedLocalKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedPeerKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseOneRetentionTimerAfterAnotherPhaseTwoPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseTwoRetentionTimerAfterPhaseThreeLocalKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseTwoRetentionTimerAfterAnotherPhaseThreePacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseThreeRetentionTimerAfterPhaseFourLocalKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseThreeRetentionTimerAfterAnotherPhaseFourPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0004.cs::FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveServerRuntimeArmsTheOldReadKeyRetentionTimerFromTheFirstNewKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeDoesNotExtendTheRetentionTimerAfterAnotherNewKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedLocalKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsThePhaseOneRetentionTimerAfterRepeatedPeerKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeDoesNotExtendThePhaseOneRetentionTimerAfterAnotherPhaseTwoPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsThePhaseTwoRetentionTimerAfterPhaseThreeLocalKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeDoesNotExtendThePhaseTwoRetentionTimerAfterAnotherPhaseThreePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsThePhaseThreeRetentionTimerAfterPhaseFourLocalKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeDoesNotExtendThePhaseThreeRetentionTimerAfterAnotherPhaseFourPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeArmsThePhaseFourRetentionTimerAfterPhaseFiveLocalKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::ActiveClientRuntimeDoesNotExtendThePhaseFourRetentionTimerAfterAnotherPhaseFivePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs::FuzzRetentionTimer_ArmsForNoMoreThanThreePtosAcrossSampledKeyPhases"
         ]
       }
     },
@@ -2639,7 +2639,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9001-S7-0001",
+      "id": "RFC9001-S7-P2-S3-R01",
       "title": "Use caution with unauthenticated Initial data",
       "statement": "Implementations SHOULD use caution when relying on any data contained in Initial packets that is not otherwise authenticated.",
       "coverage": {
@@ -2663,7 +2663,7 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S7-0001.cs::CanonicalArtifactsKeepUnauthenticatedInitialDataCautionInScope"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S7-P2-S3-R01.cs::CanonicalArtifactsKeepUnauthenticatedInitialDataCautionInScope"
         ]
       },
       "notes": [

@@ -47,10 +47,10 @@ This is the helper-backed ceiling for the chunk in the current repository shape.
   - Summary: 2 benchmarks executed successfully in Dry mode
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9001-S6-0001`
+- `RFC9001-S6-P1-S1-R01`
 - `REQ-QUIC-RFC9001-S6-0003`
-- `REQ-QUIC-RFC9001-S6-0006` through `REQ-QUIC-RFC9001-S6-0010`
-- `REQ-QUIC-RFC9001-S7-0001`
+- `REQ-QUIC-RFC9001-S6-0006` through `RFC9001-S6-P5-S3-R01`
+- `RFC9001-S7-P2-S3-R01`
 - `REQ-QUIC-RFC9001-S7-0002`
 - `REQ-QUIC-RFC9001-S8-0002`
 - `REQ-QUIC-RFC9001-S9-0001`

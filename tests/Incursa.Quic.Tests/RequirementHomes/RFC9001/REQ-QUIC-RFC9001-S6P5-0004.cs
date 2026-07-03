@@ -6,9 +6,9 @@ using System.Diagnostics;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P5-0004">An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-5-P7-R01">An endpoint SHOULD retain old read keys for no more than three times the PTO after receiving a packet protected with the new keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P5-0004")]
+[Requirement("RFC9001-S6-5-P7-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P5_0004
 {
     [Fact]

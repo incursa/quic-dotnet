@@ -30,7 +30,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs",
     "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
@@ -40,7 +40,7 @@
     "src/Incursa.Quic/QuicDiagnostics.cs",
     "src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
   ],
-  "status_summary": "Passed locally on 2026-04-25. The focused requirement-home run passed 33/33 tests across REQ-QUIC-CRT-0022, REQ-QUIC-CRT-0043, REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0104, REQ-QUIC-CRT-0105, REQ-QUIC-RFC9001-S6-0010, REQ-QUIC-RFC9001-S8-0001, and REQ-QUIC-RFC9001-S8-0002. A 2026-04-30 idle-timeout follow-up preserved transport-parameter wire values as milliseconds in the TLS bridge state while converting committed runtime idle-timeout values to microseconds before lifecycle scheduling. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/v/20260425-crt-bridge-diagnostics-sender-recovery/.",
+  "status_summary": "Passed locally on 2026-04-25. The focused requirement-home run passed 33/33 tests across REQ-QUIC-CRT-0022, REQ-QUIC-CRT-0043, REQ-QUIC-CRT-0103, REQ-QUIC-CRT-0104, REQ-QUIC-CRT-0105, RFC9001-S6-P5-S3-R01, REQ-QUIC-RFC9001-S8-0001, and REQ-QUIC-RFC9001-S8-0002. A 2026-04-30 idle-timeout follow-up preserved transport-parameter wire values as milliseconds in the TLS bridge state while converting committed runtime idle-timeout values to microseconds before lifecycle scheduling. The touched SpecTrace markdown views rendered and rechecked cleanly from JSON, and git diff --check passed. Evidence is preserved under artifacts/v/20260425-crt-bridge-diagnostics-sender-recovery/.",
   "preconditions": [
     "The Incursa.Quic solution builds successfully.",
     "The tests project can access internal library seams through the existing friend assembly relationship."
@@ -48,7 +48,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0022.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0043.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0010.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicDiagnostics.cs\n- src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0022.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0043.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0103.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0104.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0105.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P5-S3-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs\n- src/Incursa.Quic/QuicTransportTlsBridgeState.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicDiagnostics.cs\n- src/Incursa.Quic/QuicSenderRecoveryRuntime.cs"
     }
   ]
 }

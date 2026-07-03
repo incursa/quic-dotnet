@@ -18,7 +18,7 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 
 ### S6
 
-- `REQ-QUIC-RFC9001-S6-0001` Allow key update after handshake confirmation - `blocked`
+- `RFC9001-S6-P1-S1-R01` Allow key update after handshake confirmation - `blocked`
 - `REQ-QUIC-RFC9001-S6-0002` Identify packet protection keys with Key Phase - `implemented and tested`
 - `REQ-QUIC-RFC9001-S6-0003` Initialize Key Phase to zero - `blocked`
 - `REQ-QUIC-RFC9001-S6-0004` Toggle Key Phase on each update - `implemented and tested`
@@ -26,12 +26,12 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 - `REQ-QUIC-RFC9001-S6-0006` Update keys when Key Phase changes - `blocked`
 - `REQ-QUIC-RFC9001-S6-0007` Decrypt the packet with the changed Key Phase - `blocked`
 - `REQ-QUIC-RFC9001-S6-0008` Update both endpoints on key update - `blocked`
-- `REQ-QUIC-RFC9001-S6-0009` Prohibit TLS KeyUpdate messages - `blocked`
-- `REQ-QUIC-RFC9001-S6-0010` Treat TLS KeyUpdate as a connection error - `blocked`
+- `RFC9001-S6-P5-S2-R01` Prohibit TLS KeyUpdate messages - `blocked`
+- `RFC9001-S6-P5-S3-R01` Treat TLS KeyUpdate as a connection error - `blocked`
 
 ### S7
 
-- `REQ-QUIC-RFC9001-S7-0001` Use caution with unauthenticated Initial data - `deferred`
+- `RFC9001-S7-P2-S3-R01` Use caution with unauthenticated Initial data - `deferred`
 - `REQ-QUIC-RFC9001-S7-0002` Fail on Handshake tampering - `blocked`
 
 ### S8
@@ -87,4 +87,4 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 
 - `REQ-QUIC-RFC9001-S6-0005` still needs edge proof.
 - The blocked S6 items remain blocked until handshake-confirmation, key-update, or TLS message-processing support exists.
-- `REQ-QUIC-RFC9001-S7-0001` and `REQ-QUIC-RFC9001-S9-0001` remain deferred as policy and document-scope items.
+- `RFC9001-S7-P2-S3-R01` and `REQ-QUIC-RFC9001-S9-0001` remain deferred as policy and document-scope items.

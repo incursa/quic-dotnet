@@ -6,9 +6,9 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P3-0002">Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-3-P5-S1-R01">Endpoints MUST be able to retain two sets of receive packet protection keys: the current keys and the next keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P3-0002")]
+[Requirement("RFC9001-S6-3-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P3_0002
 {
     [Fact]

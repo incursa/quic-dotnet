@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6-0001">Once the handshake is confirmed, an endpoint MAY initiate a key update.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-P1-S1-R01">Once the handshake is confirmed, an endpoint MAY initiate a key update.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6-0001")]
+[Requirement("RFC9001-S6-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6_0001
 {
     [Fact]

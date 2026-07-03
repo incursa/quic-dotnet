@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P4-0002">Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-4-P2-S1-R01">Packets with higher packet numbers MUST be protected with the same or newer packet protection keys than packets with lower packet numbers.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P4-0002")]
+[Requirement("RFC9001-S6-4-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P4_0002
 {
     [Fact]
