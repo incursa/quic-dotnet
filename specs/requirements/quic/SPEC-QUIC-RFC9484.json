@@ -555,7 +555,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0027",
+      "id": "RFC9484-S4-P5-S1-R01",
       "title": "Protect IP proxying over HTTP with encryption",
       "statement": "IP proxying over HTTP MUST be operated over TLS or QUIC encryption, or another equivalent encryption protocol, to provide confidentiality, integrity, and authentication.",
       "coverage": {
@@ -1678,7 +1678,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0080",
+      "id": "RFC9484-S4-7-P1-S1-R01",
       "title": "Allow any number of new capsules",
       "statement": "Both endpoints MAY send any number of these new capsules.",
       "coverage": {
@@ -3111,7 +3111,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0148",
+      "id": "RFC9484-S4-8-P1-S1-R01",
       "title": "Reject scoping requests for extension-header protocol numbers",
       "statement": "IP proxies MAY reject requests to scope to protocol numbers that are used for extension headers.",
       "coverage": {
@@ -3279,7 +3279,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0156",
+      "id": "RFC9484-S5-P2-S6-R01",
       "title": "Disallow Context ID reallocation within a request",
       "statement": "Context IDs MUST NOT be re-allocated within a given HTTP request.",
       "coverage": {
@@ -3321,7 +3321,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0158",
+      "id": "RFC9484-S5-P3-S2-R01",
       "title": "Permit future extensions to register Context IDs",
       "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
       "coverage": {
@@ -3512,7 +3512,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0167",
+      "id": "RFC9484-S7-1-P2-R01",
       "title": "Allow optimistic proxied IP packet sending",
       "statement": "When using HTTP/2 or HTTP/3, a client MAY optimistically start sending proxied IP packets before receiving the response to its IP proxying request.",
       "coverage": {
@@ -4215,7 +4215,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0198",
+      "id": "RFC9484-S10-3-P1-S1-R01",
       "title": "Optionally differentiate traffic by DSCP markings",
       "statement": "If an IP proxying endpoint is configured as part of a Differentiated Services domain, it MAY implement traffic differentiation based on these markings.",
       "coverage": {
@@ -4281,7 +4281,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0201",
+      "id": "RFC9484-S10-3-P3-R01",
       "title": "Optionally translate DSCP values for QUIC datagrams",
       "statement": "If tunneled packets use QUIC datagrams and are not subject to congestion control by the outer connection, the IP proxying endpoints MAY translate the DSCP field value from the tunneled traffic to the outer IP header.",
       "coverage": {
@@ -4305,7 +4305,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0202",
+      "id": "RFC9484-S10-3-P3-S1-R01",
       "title": "Do not coalesce inner packets with different DSCP markings",
       "statement": "IP proxying endpoints MUST NOT coalesce multiple inner packets into the same outer packet unless they have the same DSCP marking or an equivalent traffic class.",
       "coverage": {
@@ -4329,7 +4329,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0203",
+      "id": "RFC9484-S11-P1-S2-R01",
       "title": "Restrict IP proxying to authenticated users",
       "statement": "HTTP servers that support IP proxying SHOULD restrict its use to authenticated users.",
       "coverage": {
@@ -4350,7 +4350,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0204",
+      "id": "RFC9484-S11-P2-S3-R01",
       "title": "Avoid persistent per-client address assignment",
       "statement": "Proxies SHOULD avoid persistent per-client address (prefix) assignment when possible.",
       "coverage": {

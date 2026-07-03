@@ -446841,7 +446841,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0027",
+      "requirement_id": "RFC9484-S4-P5-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S4",
@@ -446882,7 +446882,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0027",
+          "requirement_id": "RFC9484-S4-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs",
@@ -446898,13 +446898,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0027"
+            "RFC9484-S4-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0027",
+          "requirement_id": "RFC9484-S4-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs::RequestPolicy_AcceptsRequiredEncryptionModes",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs",
@@ -446920,13 +446920,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0027"
+            "RFC9484-S4-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0027",
+          "requirement_id": "RFC9484-S4-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs",
@@ -446942,13 +446942,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0027"
+            "RFC9484-S4-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0027",
+          "requirement_id": "RFC9484-S4-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs::RequestPolicy_RejectsUnprotectedHttpProxying",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRequestPolicyTests.cs",
@@ -446964,7 +446964,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0027"
+            "RFC9484-S4-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -454163,7 +454163,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0080",
+      "requirement_id": "RFC9484-S4-7-P1-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S4P7",
@@ -454204,7 +454204,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0080",
+          "requirement_id": "RFC9484-S4-7-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs",
@@ -454220,13 +454220,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0080"
+            "RFC9484-S4-7-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0080",
+          "requirement_id": "RFC9484-S4-7-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs::AddressAssign_AllowsAnyNonNegativeNumberOfNewCapsules",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs",
@@ -454242,13 +454242,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0080"
+            "RFC9484-S4-7-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0080",
+          "requirement_id": "RFC9484-S4-7-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs",
@@ -454264,13 +454264,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0080"
+            "RFC9484-S4-7-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0080",
+          "requirement_id": "RFC9484-S4-7-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs::AddressAssign_RejectsImpossibleNegativeCapsuleCount",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressAssignCapsuleTests.cs",
@@ -454286,7 +454286,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0080"
+            "RFC9484-S4-7-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -463209,7 +463209,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0148",
+      "requirement_id": "RFC9484-S4-8-P1-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S4P8",
@@ -463250,7 +463250,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "requirement_id": "RFC9484-S4-8-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
@@ -463266,13 +463266,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0148"
+            "RFC9484-S4-8-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "requirement_id": "RFC9484-S4-8-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
@@ -463288,13 +463288,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0148"
+            "RFC9484-S4-8-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "requirement_id": "RFC9484-S4-8-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
@@ -463310,13 +463310,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0148"
+            "RFC9484-S4-8-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0148",
+          "requirement_id": "RFC9484-S4-8-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
@@ -463332,7 +463332,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0148"
+            "RFC9484-S4-8-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -464273,7 +464273,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0156",
+      "requirement_id": "RFC9484-S5-P2-S6-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S5",
@@ -464314,7 +464314,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0156",
+          "requirement_id": "RFC9484-S5-P2-S6-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464330,13 +464330,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0156"
+            "RFC9484-S5-P2-S6-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0156",
+          "requirement_id": "RFC9484-S5-P2-S6-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_AllowsDistinctContextIds",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464352,13 +464352,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0156"
+            "RFC9484-S5-P2-S6-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0156",
+          "requirement_id": "RFC9484-S5-P2-S6-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464374,13 +464374,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0156"
+            "RFC9484-S5-P2-S6-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0156",
+          "requirement_id": "RFC9484-S5-P2-S6-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464396,7 +464396,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0156"
+            "RFC9484-S5-P2-S6-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -464535,7 +464535,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0158",
+      "requirement_id": "RFC9484-S5-P3-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S5",
@@ -464576,7 +464576,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0158",
+          "requirement_id": "RFC9484-S5-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464592,13 +464592,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0158"
+            "RFC9484-S5-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0158",
+          "requirement_id": "RFC9484-S5-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_AllowsFutureHeaderOrCapsuleRegistrationMechanisms",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464614,13 +464614,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0158"
+            "RFC9484-S5-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0158",
+          "requirement_id": "RFC9484-S5-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464636,13 +464636,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0158"
+            "RFC9484-S5-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0158",
+          "requirement_id": "RFC9484-S5-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -464658,7 +464658,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0158"
+            "RFC9484-S5-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -465820,7 +465820,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0167",
+      "requirement_id": "RFC9484-S7-1-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S7P1",
@@ -465861,7 +465861,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0167",
+          "requirement_id": "RFC9484-S7-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -465877,13 +465877,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0167"
+            "RFC9484-S7-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0167",
+          "requirement_id": "RFC9484-S7-1-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_AllowsOptimisticIpPacketsOverHttp2OrHttp3",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -465899,13 +465899,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0167"
+            "RFC9484-S7-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0167",
+          "requirement_id": "RFC9484-S7-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -465921,13 +465921,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0167"
+            "RFC9484-S7-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0167",
+          "requirement_id": "RFC9484-S7-1-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::DatagramPolicy_DoesNotAllowOptimisticIpPacketsOutsideHttp2OrHttp3",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
@@ -465943,7 +465943,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0167"
+            "RFC9484-S7-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -469889,7 +469889,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0198",
+      "requirement_id": "RFC9484-S10-3-P1-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S10P3",
@@ -469930,7 +469930,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "requirement_id": "RFC9484-S10-3-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -469946,13 +469946,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0198"
+            "RFC9484-S10-3-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "requirement_id": "RFC9484-S10-3-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -469968,13 +469968,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0198"
+            "RFC9484-S10-3-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "requirement_id": "RFC9484-S10-3-P1-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -469990,13 +469990,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0198"
+            "RFC9484-S10-3-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0198",
+          "requirement_id": "RFC9484-S10-3-P1-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470012,7 +470012,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0198"
+            "RFC9484-S10-3-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470282,7 +470282,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0201",
+      "requirement_id": "RFC9484-S10-3-P3-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S10P3",
@@ -470323,7 +470323,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "requirement_id": "RFC9484-S10-3-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470339,13 +470339,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0201"
+            "RFC9484-S10-3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "requirement_id": "RFC9484-S10-3-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470361,13 +470361,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0201"
+            "RFC9484-S10-3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "requirement_id": "RFC9484-S10-3-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470383,13 +470383,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0201"
+            "RFC9484-S10-3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0201",
+          "requirement_id": "RFC9484-S10-3-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470405,7 +470405,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0201"
+            "RFC9484-S10-3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470413,7 +470413,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0202",
+      "requirement_id": "RFC9484-S10-3-P3-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S10P3",
@@ -470454,7 +470454,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "requirement_id": "RFC9484-S10-3-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470470,13 +470470,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0202"
+            "RFC9484-S10-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "requirement_id": "RFC9484-S10-3-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470492,13 +470492,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0202"
+            "RFC9484-S10-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "requirement_id": "RFC9484-S10-3-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470514,13 +470514,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0202"
+            "RFC9484-S10-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0202",
+          "requirement_id": "RFC9484-S10-3-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470536,7 +470536,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0202"
+            "RFC9484-S10-3-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470544,7 +470544,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0203",
+      "requirement_id": "RFC9484-S11-P1-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S11",
@@ -470585,7 +470585,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "requirement_id": "RFC9484-S11-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470601,13 +470601,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0203"
+            "RFC9484-S11-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "requirement_id": "RFC9484-S11-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RejectsUnauthenticatedIpProxyingUse",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470623,13 +470623,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0203"
+            "RFC9484-S11-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "requirement_id": "RFC9484-S11-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470645,13 +470645,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0203"
+            "RFC9484-S11-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0203",
+          "requirement_id": "RFC9484-S11-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470667,7 +470667,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0203"
+            "RFC9484-S11-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470675,7 +470675,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0204",
+      "requirement_id": "RFC9484-S11-P2-S3-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S11",
@@ -470716,7 +470716,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "requirement_id": "RFC9484-S11-P2-S3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470732,13 +470732,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0204"
+            "RFC9484-S11-P2-S3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "requirement_id": "RFC9484-S11-P2-S3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470754,13 +470754,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0204"
+            "RFC9484-S11-P2-S3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "requirement_id": "RFC9484-S11-P2-S3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470776,13 +470776,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0204"
+            "RFC9484-S11-P2-S3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0204",
+          "requirement_id": "RFC9484-S11-P2-S3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs::OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpOperationalPolicyTests.cs",
@@ -470798,7 +470798,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0204"
+            "RFC9484-S11-P2-S3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false

@@ -135,7 +135,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0156")]
+    [Requirement("RFC9484-S5-P2-S6-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_AllowsDistinctContextIds()
@@ -149,7 +149,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0156")]
+    [Requirement("RFC9484-S5-P2-S6-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_RejectsReallocationInsideOneRequestNamespace()
@@ -186,7 +186,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9484-0158")]
+    [Requirement("RFC9484-S5-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, false)]
@@ -197,7 +197,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0158")]
+    [Requirement("RFC9484-S5-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism()
@@ -335,7 +335,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0167")]
+    [Requirement("RFC9484-S7-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramPolicy_AllowsOptimisticIpPacketsOverHttp2OrHttp3()
@@ -345,7 +345,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0167")]
+    [Requirement("RFC9484-S7-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramPolicy_DoesNotAllowOptimisticIpPacketsOutsideHttp2OrHttp3()

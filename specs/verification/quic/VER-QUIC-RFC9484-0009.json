@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 ADDRESS_ASSIGN capsule behavior.",
   "verifies": [
-    "REQ-QUIC-RFC9484-0080",
+    "RFC9484-S4-7-P1-S1-R01",
     "REQ-QUIC-RFC9484-0081",
     "REQ-QUIC-RFC9484-0082",
     "REQ-QUIC-RFC9484-0083",

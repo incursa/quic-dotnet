@@ -355,7 +355,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0148")]
+    [Requirement("RFC9484-S4-8-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ProtocolPolicy_MayRejectExtensionHeaderProtocolNumbers()
@@ -364,7 +364,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0148")]
+    [Requirement("RFC9484-S4-8-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ProtocolPolicy_DoesNotRejectOrdinaryTransportProtocolNumbersAsExtensions()

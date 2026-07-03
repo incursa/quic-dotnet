@@ -8,7 +8,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectIpAddressAssignCapsuleTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0080")]
+    [Requirement("RFC9484-S4-7-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void AddressAssign_AllowsAnyNonNegativeNumberOfNewCapsules()
@@ -18,7 +18,7 @@ public sealed class Http3ConnectIpAddressAssignCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0080")]
+    [Requirement("RFC9484-S4-7-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void AddressAssign_RejectsImpossibleNegativeCapsuleCount()

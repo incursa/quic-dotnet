@@ -19,9 +19,9 @@
     "REQ-QUIC-RFC9484-0153",
     "REQ-QUIC-RFC9484-0154",
     "REQ-QUIC-RFC9484-0155",
-    "REQ-QUIC-RFC9484-0156",
+    "RFC9484-S5-P2-S6-R01",
     "REQ-QUIC-RFC9484-0157",
-    "REQ-QUIC-RFC9484-0158",
+    "RFC9484-S5-P3-S2-R01",
     "REQ-QUIC-RFC9484-0159",
     "REQ-QUIC-RFC9484-0160",
     "REQ-QUIC-RFC9484-0161",
@@ -30,7 +30,7 @@
     "REQ-QUIC-RFC9484-0164",
     "REQ-QUIC-RFC9484-0165",
     "REQ-QUIC-RFC9484-0166",
-    "REQ-QUIC-RFC9484-0167"
+    "RFC9484-S7-1-P2-R01"
   ],
   "scope": "This verification covers IP Proxying HTTP Datagram Context ID and payload layout, 62-bit variable-length Context IDs, dynamic non-zero Context ID allocation, Context ID zero reservation for full IP packets, arbitrary allocation order, per-request reallocation rejection, either-endpoint usability, future registration mechanisms, QUIC DATAGRAM placement after Quarter Stream ID, unknown Context ID drop-or-buffer policy, payload semantics lookup, empty extension payloads, and optimistic HTTP/2 or HTTP/3 client send permission.",
   "preconditions": [

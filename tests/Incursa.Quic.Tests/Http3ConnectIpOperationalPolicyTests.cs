@@ -224,7 +224,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0198")]
+    [Requirement("RFC9484-S10-3-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_AllowsDscpDifferentiationInDiffServDomain()
@@ -233,7 +233,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0198")]
+    [Requirement("RFC9484-S10-3-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotDifferentiateDscpOutsideDiffServDomain()
@@ -278,7 +278,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0201")]
+    [Requirement("RFC9484-S10-3-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_TranslatesDscpForQuicDatagramsOutsideOuterCongestionControl()
@@ -287,7 +287,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0201")]
+    [Requirement("RFC9484-S10-3-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotTranslateDscpWhenOuterCongestionControlApplies()
@@ -296,7 +296,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0202")]
+    [Requirement("RFC9484-S10-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_CoalescesOnlyEquivalentDscpTraffic()
@@ -305,7 +305,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0202")]
+    [Requirement("RFC9484-S10-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotCoalesceDifferentDscpTraffic()
@@ -314,7 +314,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0203")]
+    [Requirement("RFC9484-S11-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_RestrictsIpProxyingToAuthenticatedUsers()
@@ -324,7 +324,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0203")]
+    [Requirement("RFC9484-S11-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_RejectsUnauthenticatedIpProxyingUse()
@@ -333,7 +333,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0204")]
+    [Requirement("RFC9484-S11-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_AvoidsPersistentPerClientAddressAssignmentWhenPossible()
@@ -343,7 +343,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0204")]
+    [Requirement("RFC9484-S11-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_AllowsPersistentAddressAssignmentOnlyWhenNotAvoidable()
