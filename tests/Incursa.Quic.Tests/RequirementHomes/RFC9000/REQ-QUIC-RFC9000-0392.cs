@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0392">A client MUST NOT use the token provided in a Retry for future connections.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P2-S4-R01">A client MUST NOT use the token provided in a Retry for future connections.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0392")]
+[Requirement("RFC9000-S8-1-3-P2-S4-R01")]
 public sealed class REQ_QUIC_RFC9000_0392
 {
     [Fact]

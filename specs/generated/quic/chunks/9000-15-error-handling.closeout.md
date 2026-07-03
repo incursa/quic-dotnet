@@ -20,9 +20,9 @@
 
 ## Scope Inventory
 
-- `S11`: `REQ-QUIC-RFC9000-S11-0001`, `REQ-QUIC-RFC9000-S11-0002`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-0661`
-- `S11P1`: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-0665`, `REQ-QUIC-RFC9000-S11P1-0005`, `REQ-QUIC-RFC9000-S11P1-0006`, `REQ-QUIC-RFC9000-S11P1-0007`, `REQ-QUIC-RFC9000-0668`
-- `S11P2`: `REQ-QUIC-RFC9000-S11P2-0001`, `REQ-QUIC-RFC9000-S11P2-0002`, `REQ-QUIC-RFC9000-S11P2-0003`, `REQ-QUIC-RFC9000-S11P2-0004`, `REQ-QUIC-RFC9000-0674`
+- `S11`: `RFC9000-S11-P1-S1-R01`, `RFC9000-S11-P2-S1-R01`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-0661`
+- `S11P1`: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-0665`, `REQ-QUIC-RFC9000-S11P1-0005`, `REQ-QUIC-RFC9000-S11P1-0006`, `REQ-QUIC-RFC9000-S11P1-0007`, `RFC9000-S11-1-P5-S3-R01`
+- `S11P2`: `REQ-QUIC-RFC9000-S11P2-0001`, `RFC9000-S11-2-P2-S2-R01`, `REQ-QUIC-RFC9000-S11P2-0003`, `REQ-QUIC-RFC9000-S11P2-0004`, `RFC9000-S11-2-P4-S1-R01`
 
 ## Evidence
 
@@ -36,8 +36,8 @@
 
 ## Requirement Coverage
 
-- `REQ-QUIC-RFC9000-S11-0001`: implemented and test-covered by the connection-close round-trip tests.
-- `REQ-QUIC-RFC9000-S11-0002`: implemented and test-covered by the connection-close round-trip tests.
+- `RFC9000-S11-P1-S1-R01`: implemented and test-covered by the connection-close round-trip tests.
+- `RFC9000-S11-P2-S1-R01`: implemented and test-covered by the connection-close round-trip tests.
 - `REQ-QUIC-RFC9000-0659`: implemented and test-covered by the connection-close round-trip tests.
 - `REQ-QUIC-RFC9000-0658`: implemented and test-covered by the connection-close round-trip tests.
 - `REQ-QUIC-RFC9000-0661`: implemented and test-covered by the new requirement-home proof and canonical `x_test_refs`.
@@ -48,19 +48,19 @@
 - `REQ-QUIC-RFC9000-S11P1-0005`: explicitly deferred in the implementation summary because bounding terminal retransmissions needs connection-lifecycle policy.
 - `REQ-QUIC-RFC9000-S11P1-0006`: explicitly deferred in the implementation summary because stateless reset after close needs receive-path and stateful termination logic.
 - `REQ-QUIC-RFC9000-S11P1-0007`: explicitly deferred in the implementation summary because invalid Initial discard depends on handshake authentication and packet-processing pipeline.
-- `REQ-QUIC-RFC9000-0668`: explicitly deferred in the implementation summary because safe discard after revert needs a reversible receive pipeline.
+- `RFC9000-S11-1-P5-S3-R01`: explicitly deferred in the implementation summary because safe discard after revert needs a reversible receive pipeline.
 - `REQ-QUIC-RFC9000-S11P2-0001`: explicitly deferred in the implementation summary because RESET_STREAM instigation needs application-protocol and stream-state orchestration.
-- `REQ-QUIC-RFC9000-S11P2-0002`: explicitly deferred in the implementation summary because only the application protocol can instigate RESET_STREAM.
+- `RFC9000-S11-2-P2-S2-R01`: explicitly deferred in the implementation summary because only the application protocol can instigate RESET_STREAM.
 - `REQ-QUIC-RFC9000-S11P2-0003`: explicitly deferred in the implementation summary because stream termination policy is owned by the application protocol.
 - `REQ-QUIC-RFC9000-S11P2-0004`: explicitly deferred in the implementation summary because STOP_SENDING-driven RESET_STREAM needs an application-protocol callback surface.
-- `REQ-QUIC-RFC9000-0674`: explicitly deferred in the implementation summary because premature-cancel handling is application-specific.
+- `RFC9000-S11-2-P4-S1-R01`: explicitly deferred in the implementation summary because premature-cancel handling is application-specific.
 
 ## Reference Audit
 
 - In-scope source requirement refs found: none.
 - In-scope test requirement refs found:
-  - [`tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs) - `REQ-QUIC-RFC9000-S11-0001`, `REQ-QUIC-RFC9000-S11-0002`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
-  - [`tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs) - `REQ-QUIC-RFC9000-S11-0001`, `REQ-QUIC-RFC9000-S11-0002`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
+  - [`tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs) - `RFC9000-S11-P1-S1-R01`, `RFC9000-S11-P2-S1-R01`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
+  - [`tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs) - `RFC9000-S11-P1-S1-R01`, `RFC9000-S11-P2-S1-R01`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
   - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs) - `REQ-QUIC-RFC9000-0661`
 - Stale or wrong in-scope requirement refs found: none.
 - Out-of-scope stale/wrong requirement refs found:

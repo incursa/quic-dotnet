@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-S13P2P1-0012"
   ],
   "summary": "Implement and prove the active-path 1-RTT Application Data ACK piggyback floor for ordinary ack-eliciting sends while preserving ACK-only feedback-loop protection.",

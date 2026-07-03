@@ -171,12 +171,12 @@
       "statement": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection; the endpoint MAY discard all other connection state."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P1-0005",
+      "id": "RFC9000-S10-2-1-P5-S2-R01",
       "title": "To avoid being used for an amplification attack, such endpoints MUST limit the cumulative size of packets it sends to three times the cumulative size of the packets that are received and attributed to the connection",
       "statement": "To avoid being used for an amplification attack, such endpoints MUST limit the cumulative size of packets it sends to three times the cumulative size of the packets that are received and attributed to the connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P1-0006",
+      "id": "RFC9000-S10-2-1-P5-S3-R01",
       "title": "To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet",
       "statement": "To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet."
     },
@@ -196,7 +196,7 @@
       "statement": "An endpoint that receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P2-0003",
+      "id": "RFC9000-S10-2-2-P2-S2-R01",
       "title": "Send further packets",
       "statement": "An endpoint MUST NOT send further packets."
     },
@@ -271,7 +271,7 @@
       "statement": "Endpoints SHOULD use the APPLICATION_ERROR code when converting to a CONNECTION_CLOSE of type 0x1c."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3-0001",
+      "id": "RFC9000-S10-3-P1-S2-R01",
       "title": "Send a Stateless Reset in response to receiving a packet that it cannot associate with an active connection",
       "statement": "An endpoint MAY send a Stateless Reset in response to receiving a packet that it cannot associate with an active connection."
     },
@@ -406,7 +406,7 @@
       "statement": "An endpoint MUST identify a received datagram as a Stateless Reset by comparing the last 16 bytes of the datagram with all stateless reset tokens associated with the remote address on which the datagram was received."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P1-0004",
+      "id": "RFC9000-S10-3-1-P2-S2-R01",
       "title": "Skip the token check after successful packet processing",
       "statement": "Endpoints MAY skip this check if any packet from a datagram is successfully processed."
     },
@@ -416,7 +416,7 @@
       "statement": "However, the comparison MUST be performed when the first packet in an incoming datagram either cannot be associated with a connection or cannot be decrypted."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P1-0006",
+      "id": "RFC9000-S10-3-1-P3-S1-R01",
       "title": "Ignore unused and retired reset tokens",
       "statement": "An endpoint MUST NOT check for any stateless reset tokens associated with connection IDs it has not used or for connection IDs that have been retired."
     },
@@ -446,7 +446,7 @@
       "statement": "The output of this function MUST be truncated to 16 bytes to produce the stateless reset token for that connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P2-0003",
+      "id": "RFC9000-S10-3-2-P4-S2-R01",
       "title": "Use a recoverable connection ID length with static-key tokens",
       "statement": "An endpoint that uses this design MUST either use the same connection ID length for all connections or encode the length of the connection ID such that it can be recovered without state."
     },
@@ -456,7 +456,7 @@
       "statement": "A static-key token function MUST NOT provide a zero-length connection ID."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P2-0005",
+      "id": "RFC9000-S10-3-2-P5-S2-R01",
       "title": "Do not reuse the connection ID and static key combination",
       "statement": "This method for choosing the stateless reset token means that the combination of connection ID and static key MUST NOT be used for another connection."
     },
@@ -491,12 +491,12 @@
       "statement": "An endpoint MAY remember the number of Stateless Resets that it has sent and stop generating new Stateless Resets once a limit is reached."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11-0001",
+      "id": "RFC9000-S11-P1-S1-R01",
       "title": "that detects an error SHOULD signal the existence of that error to its peer",
       "statement": "An endpoint that detects an error SHOULD signal the existence of that error to its peer."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11-0002",
+      "id": "RFC9000-S11-P2-S1-R01",
       "title": "The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error",
       "statement": "The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error."
     },
@@ -531,7 +531,7 @@
       "statement": "If an application-level error MUST affects a single stream but otherwise leaves the connection in a recoverable state, the endpoint can send a RESET_STREAM frame (Section 19.4) with an appropriate error code to terminate just the affected stream."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11P2-0002",
+      "id": "RFC9000-S11-2-P2-S2-R01",
       "title": "RESET_STREAM MUST only be instigated by the application protocol that uses QUIC",
       "statement": "RESET_STREAM MUST only be instigated by the application protocol that uses QUIC."
     },
@@ -601,12 +601,12 @@
       "statement": "If decryption fails, the receiver MAY either discard or buffer the packet for later processing."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P2-0011",
+      "id": "RFC9000-S12-2-P5-S2-R02",
       "title": "Continue processing remaining coalesced packets",
       "statement": "If decryption fails, the receiver MUST attempt to process the remaining packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P2-0012",
+      "id": "RFC9000-S12-2-P5-S1-R01",
       "title": "Process each coalesced packet separately",
       "statement": "The receiver of coalesced QUIC packets MUST individually process each QUIC packet and separately acknowledge each QUIC packet, as if the packets were received as the payload of different UDP datagrams."
     },
@@ -746,12 +746,12 @@
       "statement": "A sender MUST send one or more frames in a QUIC packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13-0002",
+      "id": "RFC9000-S13-P2-S2-R01",
       "title": "wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets",
       "statement": "A sender MAY wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13-0003",
+      "id": "RFC9000-S13-P2-S3-R01",
       "title": "An implementation MAY use knowledge about application sending behavior or heuristics to determine whether and for how long to wait",
       "statement": "An implementation MAY use knowledge about application sending behavior or heuristics to determine whether and for how long to wait."
     },
@@ -796,12 +796,12 @@
       "statement": "A sender uses the MUST receiver's max_ack_delay value in determining timeouts for timer-based retransmission, as detailed in Section 6.2 of [QUIC-RECOVERY]."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P1-0004",
+      "id": "RFC9000-S13-2-1-P2-R02",
       "title": "Acknowledge 0-RTT and 1-RTT packets within max_ack_delay",
       "statement": "An endpoint MUST acknowledge all ack-eliciting 0-RTT and 1-RTT packets within its advertised max_ack_delay."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "id": "RFC9000-S13-2-1-P2-R01",
       "title": "Acknowledge Initial and Handshake packets immediately",
       "statement": "An endpoint MUST acknowledge all ack-eliciting Initial and Handshake packets immediately."
     },
@@ -911,7 +911,7 @@
       "statement": "A client MAY be unable to use 0-RTT acknowledgments when the server cryptographic handshake messages are delayed or lost."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P7-0001",
+      "id": "RFC9000-S13-2-7-P1-S3-R01",
       "title": "Send non-PADDING frames periodically to elicit acknowledgments",
       "statement": "To avoid a deadlock, a sender SHOULD ensure that other frames are sent periodically in addition to PADDING frames to elicit acknowledgments from the receiver."
     },
@@ -1226,7 +1226,7 @@
       "statement": "Initial packets can even MUST be coalesced with invalid packets, which a receiver will discard."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0003",
+      "id": "RFC9000-S14-1-P1-S3-R01",
       "title": "Pad server Initial datagrams to 1200 bytes",
       "statement": "A server MUST expand the payload of all UDP datagrams carrying ack-eliciting Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes."
     },
@@ -1236,12 +1236,12 @@
       "statement": "Sending UDP datagrams of MUST this size ensures that the network path supports a reasonable Path Maximum Transmission Unit (PMTU), in both directions."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0005",
+      "id": "RFC9000-S14-1-P3-S1-R01",
       "title": "Allow oversized Initial datagrams when the path and peer support them",
       "statement": "Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0006",
+      "id": "RFC9000-S14-1-P4-S1-R01",
       "title": "Discard undersized Initial packets at the server",
       "statement": "A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes."
     },
@@ -1271,7 +1271,7 @@
       "statement": "An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a destination will support a desired maximum datagram size without fragmentation."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0004",
+      "id": "RFC9000-S14-2-P2-S2-R01",
       "title": "Do not exceed the smallest allowed maximum datagram size without PMTU discovery",
       "statement": "In the absence of these mechanisms, QUIC endpoints SHOULD NOT send datagrams larger than the smallest allowed maximum datagram size."
     },
@@ -1286,12 +1286,12 @@
       "statement": "All QUIC packets that are not sent in a PMTU probe SHOULD be sized to fit within the maximum datagram size."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0007",
+      "id": "RFC9000-S14-2-P4-S1-R01",
       "title": "Stop sending packets on a path that cannot support 1200 bytes",
       "statement": "If a QUIC endpoint determines that the PMTU between any pair of local and remote IP addresses cannot support the smallest allowed maximum datagram size of 1200 bytes, it MUST immediately cease sending QUIC packets on the affected path except for those in PMTU probes or those containing CONNECTION_CLOSE frames."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0009",
+      "id": "RFC9000-S14-2-P5-S2-R01",
       "title": "Maintain a maximum datagram size per address pair when doing PMTU discovery",
       "statement": "QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses."
     },
@@ -1311,7 +1311,7 @@
       "statement": "ICMP message validation MUST include matching IP addresses and UDP ports and, when possible, connection IDs to an active QUIC session."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2P1-0006",
+      "id": "RFC9000-S14-2-1-P5-S1-R01",
       "title": "Do not increase PMTU based on ICMP messages",
       "statement": "An endpoint MUST NOT increase the PMTU based on ICMP messages."
     },
@@ -1361,7 +1361,7 @@
       "statement": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P1-0003",
+      "id": "RFC9000-S17-1-P4-R01",
       "title": "After an acknowledgment is received for a packet number space, the sender MUST use a packet n...",
       "statement": "After an acknowledgment is received for a packet number space, the sender MUST use a packet number size able to represent more than twice as large a range as the difference between the largest acknowledged packet number and the packet number being sent."
     },
@@ -1991,12 +1991,12 @@
       "statement": "This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the client."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0003",
+      "id": "RFC9000-S17-2-5-1-P2-S2-R01",
       "title": "A client MUST discard a Retry packet that contains a Source Connection ID field that is ident...",
       "statement": "A client MUST discard a Retry packet that contains a Source Connection ID field that is identical to the Destination Connection ID field of its Initial packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0004",
+      "id": "RFC9000-S17-2-5-1-P2-S3-R01",
       "title": "The client MUST use the value from the Source Connection ID field of the Retry packet in the...",
       "statement": "The client MUST use the value from the Source Connection ID field of the Retry packet in the Destination Connection ID field of subsequent packets that it sends."
     },
@@ -3416,7 +3416,7 @@
       "statement": "To defend against this style of denial of service, endpoints that share a static key for stateless resets (see Section 10.3.2) MUST be arranged so that packets with a given connection ID always arrive at an instance that has connection state, unless that connection is no longer active."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P11-0002",
+      "id": "RFC9000-S21-11-P3-R01",
       "title": "More generally, servers MUST NOT generate a stateless reset if a connection with the correspo...",
       "statement": "More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key."
     },
@@ -3451,7 +3451,7 @@
       "statement": "Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of address validation tokens; see Section 8.1.3."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P4-0001",
+      "id": "RFC9000-S21-4-P1-S2-R01",
       "title": "An endpoint MAY skip packet numbers when sending packets to detect this behavior",
       "statement": "An endpoint MAY skip packet numbers when sending packets to detect this behavior."
     },
@@ -3466,12 +3466,12 @@
       "statement": "QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38] and also have inadequately secured UDP endpoints."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P5P3-0001",
+      "id": "RFC9000-S21-5-3-P2-R01",
       "title": "A client MUST NOT send non-probing frames to a preferred address prior to validating that add...",
       "statement": "A client MUST NOT send non-probing frames to a preferred address prior to validating that address; see Section 8."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P5P6-0004",
+      "id": "RFC9000-S21-5-6-P4-S1-R01",
       "title": "Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_T...",
       "statement": "Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_TOKEN frames in Initial packets or by only sending probing frames in packets prior to completing address validation."
     },
@@ -3486,7 +3486,7 @@
       "statement": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P9-0001",
+      "id": "RFC9000-S21-9-P4-R01",
       "title": "While there are legitimate uses for all messages, implementations SHOULD track cost of proces...",
       "statement": "While there are legitimate uses for all messages, implementations SHOULD track cost of processing relative to progress and treat excessive quantities of any non-productive packets as indicative of an attack."
     },
@@ -3561,7 +3561,7 @@
       "statement": "The Date field MUST NOT be required as part of requesting a registration."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P1P2-0001",
+      "id": "RFC9000-S22-1-2-P1-R01",
       "title": "New requests for codepoints from QUIC registries SHOULD use a randomly selected codepoint tha...",
       "statement": "New requests for codepoints from QUIC registries SHOULD use a randomly selected codepoint that excludes both existing allocations and the first unallocated codepoint in the selected space."
     },
@@ -3576,12 +3576,12 @@
       "statement": "The early codepoint assignment process MAY be used for these values."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P1P2-0005",
+      "id": "RFC9000-S22-1-2-P3-R01",
       "title": "For codepoints that are encoded in variable-length integers (Section 16), such as frame types...",
       "statement": "For codepoints that are encoded in variable-length integers (Section 16), such as frame types, codepoints that encode to four or eight bytes (that is, values 214 and above) SHOULD be used unless the usage is especially sensitive to having a longer encoding."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P1P2-0007",
+      "id": "RFC9000-S22-1-2-P4-S2-R01",
       "title": "IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements...",
       "statement": "IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met."
     },
@@ -3601,7 +3601,7 @@
       "statement": "The creation of a registry MAY specify additional constraints on permanent registrations."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P1P4-0004",
+      "id": "RFC9000-S22-1-4-P2-R01",
       "title": "The creation of a registry MAY identify a range of codepoints where registrations are governe...",
       "statement": "The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy."
     },
@@ -3631,7 +3631,7 @@
       "statement": "All codepoints that follow the pattern 0x?a?a?a?a MUST NOT appear in the listing of assigned values."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P2-0004",
+      "id": "RFC9000-S22-2-P4-S1-R01",
       "title": "Protect reserved version-pattern codepoints",
       "statement": "All codepoints that follow the pattern 0x?a?a?a?a MUST NOT be assigned by IANA."
     },
@@ -3646,7 +3646,7 @@
       "statement": "Values between 0x00 and 0x3f inclusive MUST be assigned using Standards Action or IESG Approval."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P3-0003",
+      "id": "RFC9000-S22-3-P3-R01",
       "title": "Include Parameter Name for transport parameters",
       "statement": "Permanent registrations in this registry MUST include the Parameter Name field."
     },
@@ -3766,7 +3766,7 @@
       "statement": "To deliver an ordered byte stream, an endpoint MUST buffer any out-of-order data it receives up to the advertised flow control limit."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S2P2-0005",
+      "id": "RFC9000-S2-2-P3-S1-R01",
       "title": "Allow optional out-of-order delivery to applications",
       "statement": "Implementations MAY offer the ability to deliver stream data out of order to a receiving application."
     },
@@ -3776,7 +3776,7 @@
       "statement": "An endpoint MAY discard data that has already been received."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S2P2-0007",
+      "id": "RFC9000-S2-2-P4-S2-R01",
       "title": "Keep retransmitted stream data stable at the same offset",
       "statement": "The data at a given offset MUST NOT change if it is sent multiple times."
     },
@@ -4061,7 +4061,7 @@
       "statement": "If an application is no longer interested in the data it is receiving on a stream, it MAY abort reading the stream and specify an application error code."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P5-0002",
+      "id": "RFC9000-S3-5-P2-S1-R01",
       "title": "Signal aborting reads with STOP_SENDING",
       "statement": "If the stream is in the Recv or Size Known state, the transport SHOULD signal aborting reading by sending a STOP_SENDING frame to prompt closure of the stream in the opposite direction."
     },
@@ -4081,12 +4081,12 @@
       "statement": "An endpoint that receives a STOP_SENDING frame MUST send a RESET_STREAM frame if the stream is in the Ready or Send state."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P5-0006",
+      "id": "RFC9000-S3-5-P4-S3-R01",
       "title": "Permit deferred RESET_STREAM in Data Sent",
       "statement": "If the stream is in the Data Sent state, the endpoint MAY defer sending the RESET_STREAM frame until the packets containing outstanding data are acknowledged or declared lost."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P5-0007",
+      "id": "RFC9000-S3-5-P4-S4-R01",
       "title": "Prefer RESET_STREAM over retransmission after loss",
       "statement": "If any outstanding data is declared lost, the endpoint SHOULD send a RESET_STREAM frame instead of retransmitting the data."
     },
@@ -4096,7 +4096,7 @@
       "statement": "An endpoint SHOULD copy the error code from the STOP_SENDING frame to the RESET_STREAM frame it sends."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P5-0009",
+      "id": "RFC9000-S3-5-P5-S2-R01",
       "title": "Allow ignoring later RESET_STREAM error codes",
       "statement": "An endpoint that sends a STOP_SENDING frame MAY ignore the error code in any RESET_STREAM frames subsequently received for that stream."
     },
@@ -4151,7 +4151,7 @@
       "statement": "Once a receiver advertises a limit for the connection or a stream, advertising a smaller limit MUST have no effect rather than be treated as an error."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S4P2-0001",
+      "id": "RFC9000-S4-2-P2-S1-R01",
       "title": "Allow repeated or early credit advertisements",
       "statement": "A receiver MAY send a MAX_STREAM_DATA or MAX_DATA frame multiple times within a round trip or send it early enough to allow time for loss of the frame and subsequent recovery."
     },
@@ -4201,7 +4201,7 @@
       "statement": "If a RESET_STREAM or STREAM frame is received indicating a change in the final size for the stream, an endpoint SHOULD respond with an error of type FINAL_SIZE_ERROR."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S4P5-0008",
+      "id": "RFC9000-S4-5-P5-S2-R01",
       "title": "Treat data beyond final size as an error",
       "statement": "A receiver SHOULD treat receipt of data at or beyond the final size as an error of type FINAL_SIZE_ERROR, even after a stream is closed."
     },
@@ -4231,7 +4231,7 @@
       "statement": "Separate limits MUST apply to unidirectional and bidirectional streams."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S4P6-0006",
+      "id": "RFC9000-S4-6-P2-S1-R01",
       "title": "Close on oversized stream-count values in transport parameters",
       "statement": "If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR."
     },
@@ -4371,17 +4371,17 @@
       "statement": "Connection IDs that are issued and not retired MUST be considered active and valid for use with the current connection at any time in any packet type."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0012",
+      "id": "RFC9000-S5-1-1-P4-S3-R01",
       "title": "Do not exceed the peer's active CID limit",
       "statement": "An endpoint MUST NOT provide more connection IDs than the peer's limit."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0013",
+      "id": "RFC9000-S5-1-1-P4-S4-R01",
       "title": "Allow temporary CID excess only with immediate retirement requirements",
       "statement": "An endpoint MAY send connection IDs that temporarily exceed a peer's limit if the NEW_CONNECTION_ID frame also requires the retirement of any excess by including a sufficiently large value in the Retire Prior To field."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0014",
+      "id": "RFC9000-S5-1-1-P5-S2-R01",
       "title": "Close on too many active CIDs",
       "statement": "After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR."
     },
@@ -4431,7 +4431,7 @@
       "statement": "The endpoint SHOULD continue to accept the previously issued connection IDs until they are retired by the peer."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P2-0013",
+      "id": "RFC9000-S5-1-2-P6-S2-R01",
       "title": "Track at least twice the active CID limit",
       "statement": "An endpoint SHOULD allow for sending and tracking a number of RETIRE_CONNECTION_ID frames of at least twice the value of the active_connection_id_limit transport parameter."
     },
@@ -4516,7 +4516,7 @@
       "statement": "If a server receives a packet that indicates an unsupported version and the packet is large enough to initiate a new connection for any supported version, the server SHOULD send a Version Negotiation packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P2-0004",
+      "id": "RFC9000-S5-2-2-P2-S4-R01",
       "title": "Prefer Version Negotiation when possible",
       "statement": "Servers SHOULD respond with a Version Negotiation packet, provided that the datagram is sufficiently long."
     },
@@ -4621,17 +4621,17 @@
       "statement": "A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet unless it has received and successfully processed any other packet or the Version Negotiation packet lists the QUIC version selected by the client."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S6P2-0002",
+      "id": "RFC9000-S6-2-P2-R01",
       "title": "That supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet, with the following two exceptions",
       "statement": "A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet, with the following two exceptions."
     },
     {
-      "id": "REQ-QUIC-RFC9000-6321",
+      "id": "RFC9000-S6-3-P2-R01",
       "title": "Use reserved versions to test ignoring",
       "statement": "Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value."
     },
     {
-      "id": "REQ-QUIC-RFC9000-6322",
+      "id": "RFC9000-S6-3-P2-S2-R01",
       "title": "Use reserved versions to test discarding",
       "statement": "Endpoints MAY send packets with a reserved version to test that a peer correctly discards the packet."
     },
@@ -4696,7 +4696,7 @@
       "statement": "The client MUST populate the Source Connection ID field with a value of its choosing and set the Source Connection ID Length field to indicate the length."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P2-0011",
+      "id": "RFC9000-S7-2-P8-S1-R01",
       "title": "Change the Destination Connection ID it uses for sending packets in response to only the first received Initial or Retry packet",
       "statement": "A client MUST change the Destination Connection ID it uses for sending packets in response to only the first received Initial or Retry packet."
     },
@@ -4706,7 +4706,7 @@
       "statement": "An endpoint MAY make further changes to the Destination Connection ID only if the values are taken from NEW_CONNECTION_ID frames."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P2-0014",
+      "id": "RFC9000-S7-2-P8-S3-R02",
       "title": "Discard subsequent Initial packets with a different Source Connection ID",
       "statement": "Subsequent Initial packets that include a different Source Connection ID MUST be discarded."
     },
@@ -4726,12 +4726,12 @@
       "statement": "If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P3-0005",
+      "id": "RFC9000-S7-3-P3-S1-R01",
       "title": "The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers)",
       "statement": "The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers)."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P3-0007",
+      "id": "RFC9000-S7-3-P4-S1-R01",
       "title": "Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR",
       "statement": "An endpoint MUST treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR."
     },
@@ -4751,7 +4751,7 @@
       "statement": "A client MUST NOT use remembered values for the following parameters: ack_delay_exponent, max_ack_delay, initial_source_connection_id, original_destination_connection_id, preferred_address, retry_source_connection_id, and stateless_reset_token."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+      "id": "RFC9000-S7-4-1-P6-R01",
       "title": "If 0-RTT data is accepted by the server, the server MUST NOT reduce any limits or alter any values that might be violated by the client with its 0-RTT data",
       "statement": "If 0-RTT data is accepted by the server, the server MUST NOT reduce any limits or alter any values that might be violated by the client with its 0-RTT data."
     },
@@ -4771,7 +4771,7 @@
       "statement": "Updated values of transport parameters from the handshake MUST apply only to 1-RTT packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P5-0002",
+      "id": "RFC9000-S7-5-P2-S2-R01",
       "title": "Choose to allow more data to be buffered during the handshake",
       "statement": "Endpoints MAY choose to allow more data to be buffered during the handshake."
     },
@@ -4781,32 +4781,32 @@
       "statement": "Once the handshake completes, if an endpoint is unable to buffer all data in a CRYPTO frame, it MAY discard that CRYPTO frame and all future CRYPTO frames or close the connection with a CRYPTO_BUFFER_EXCEEDED error code."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P5-0005",
+      "id": "RFC9000-S7-5-P4-S2-R01",
       "title": "Containing discarded CRYPTO frames MUST be acknowledged because the packet has been received and processed by the transport even though the CRYPTO frame was discarded",
       "statement": "Packets containing discarded CRYPTO frames MUST be acknowledged because the packet has been received and processed by the transport even though the CRYPTO frame was discarded."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8-0001",
+      "id": "RFC9000-S8-P2-S2-R01",
       "title": "Limit sending to unvalidated addresses",
       "statement": "After receiving packets from an address that is not yet validated, an endpoint MUST limit the amount of data it sends to the unvalidated address to three times the amount of data received from that address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1-0001",
+      "id": "RFC9000-S8-1-P2-R01",
       "title": "Additionally, an endpoint MAY consider the peer address validated if the peer uses a connection ID chosen by the endpoint and the connection ID contains at least 64 bits of entropy",
       "statement": "Additionally, an endpoint MAY consider the peer address validated if the peer uses a connection ID chosen by the endpoint and the connection ID contains at least 64 bits of entropy."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1-0002",
+      "id": "RFC9000-S8-1-P4-R01",
       "title": "Prior to validating the client address, servers MUST NOT send more than three times as many bytes as the number of bytes they have received",
       "statement": "Prior to validating the client address, servers MUST NOT send more than three times as many bytes as the number of bytes they have received."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1-0003",
+      "id": "RFC9000-S8-1-P4-S2-R01",
       "title": "For the purposes of avoiding amplification prior to address validation, servers MUST count all of the payload bytes received in datagrams that are uniquely attributed to a single connection",
       "statement": "For the purposes of avoiding amplification prior to address validation, servers MUST count all of the payload bytes received in datagrams that are uniquely attributed to a single connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1-0005",
+      "id": "RFC9000-S8-1-P6-S3-R01",
       "title": "To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO)",
       "statement": "To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY]."
     },
@@ -4841,37 +4841,37 @@
       "statement": "If a server receives a client Initial that contains an invalid Retry token but is otherwise valid, it SHOULD immediately close the connection with an INVALID_TOKEN error."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0001",
+      "id": "RFC9000-S8-1-3-P1-S1-R01",
       "title": "Provide clients with an address validation token during one connection that can be used on a subsequent connection",
       "statement": "A server MAY provide clients with an address validation token during one connection that can be used on a subsequent connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0002",
+      "id": "RFC9000-S8-1-3-P2-S3-R01",
       "title": "Include the token in all Initial packets it sends, unless a Retry replaces the token with a newer one",
       "statement": "The client MUST include the token in all Initial packets it sends, unless a Retry replaces the token with a newer one."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0005",
+      "id": "RFC9000-S8-1-3-P3-S2-R01",
       "title": "Thus, a token SHOULD have an expiration time, which could be either an explicit expiration time or an issued timestamp that can be used to dynamically calculate the expiration time",
       "statement": "Thus, a token SHOULD have an expiration time, which could be either an explicit expiration time or an issued timestamp that can be used to dynamically calculate the expiration time."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0006",
+      "id": "RFC9000-S8-1-3-P4-S1-R01",
       "title": "Issued with NEW_TOKEN MUST NOT include information that would allow values to be linked by an observer to the connection on which it was issued",
       "statement": "A token issued with NEW_TOKEN MUST NOT include information that would allow values to be linked by an observer to the connection on which it was issued."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0007",
+      "id": "RFC9000-S8-1-3-P4-S3-R01",
       "title": "Ensure that every NEW_TOKEN frame it sends is unique across all clients, with the exception of those sent to repair losses of previously sent NEW_TOKEN frames",
       "statement": "A server MUST ensure that every NEW_TOKEN frame it sends is unique across all clients, with the exception of those sent to repair losses of previously sent NEW_TOKEN frames."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0008",
+      "id": "RFC9000-S8-1-3-P4-S4-R01",
       "title": "Information that allows the server to distinguish between tokens from Retry and NEW_TOKEN MAY be accessible to entities other than the server",
       "statement": "Information that allows the server to distinguish between tokens from Retry and NEW_TOKEN MAY be accessible to entities other than the server."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0010",
+      "id": "RFC9000-S8-1-3-P6-S4-R01",
       "title": "Include a token that is not applicable to the server that it is connecting to, unless the client has the knowledge that the server that issued the token and the server the client is connecting to are jointly managing the tokens",
       "statement": "A client MUST NOT include a token that is not applicable to the server that it is connecting to, unless the client has the knowledge that the server that issued the token and the server the client is connecting to are jointly managing the tokens."
     },
@@ -4881,17 +4881,17 @@
       "statement": "In comparison, a token obtained in a Retry packet MUST be used immediately during the connection attempt and cannot be used in subsequent connection attempts."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0013",
+      "id": "RFC9000-S8-1-3-P8-S1-R01",
       "title": "Reuse a token from a NEW_TOKEN frame for different connection attempts",
       "statement": "A client SHOULD NOT reuse a token from a NEW_TOKEN frame for different connection attempts."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0014",
+      "id": "RFC9000-S8-1-3-P10-S1-R01",
       "title": "When a server receives an Initial packet with an address validation token, it MUST attempt to validate the token, unless it has already completed address validation",
       "statement": "When a server receives an Initial packet with an address validation token, it MUST attempt to validate the token, unless it has already completed address validation."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P3-0015",
+      "id": "RFC9000-S8-1-3-P10-S2-R01",
       "title": "If the token is invalid, then the server SHOULD proceed as if the client did not have a validated address, including potentially sending a Retry packet",
       "statement": "If the token is invalid, then the server SHOULD proceed as if the client did not have a validated address, including potentially sending a Retry packet."
     },
@@ -4916,7 +4916,7 @@
       "statement": "To protect against such attacks, servers MUST ensure that replay of tokens is prevented or limited."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "id": "RFC9000-S8-1-4-P5-S3-R01",
       "title": "Servers SHOULD ensure that tokens sent in Retry packets are only accepted for a short time, as they are returned immediately by clients",
       "statement": "Servers SHOULD ensure that tokens sent in Retry packets are only accepted for a short time, as they are returned immediately by clients."
     },
@@ -4941,32 +4941,32 @@
       "statement": "To protect against replay attacks, servers MUST ensure that replay of tokens is prevented or limited."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0001",
+      "id": "RFC9000-S8-2-1-P2-S1-R01",
       "title": "Send multiple PATH_CHALLENGE frames to guard against packet loss",
       "statement": "An endpoint MAY send multiple PATH_CHALLENGE frames to guard against packet loss."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+      "id": "RFC9000-S8-2-1-P2-S2-R01",
       "title": "However, an endpoint SHOULD NOT send multiple PATH_CHALLENGE frames in a single packet",
       "statement": "However, an endpoint SHOULD NOT send multiple PATH_CHALLENGE frames in a single packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0004",
+      "id": "RFC9000-S8-2-1-P4-S1-R01",
       "title": "Use unpredictable data in every PATH_CHALLENGE frame so that it can associate the peer's response with the corresponding PATH_CHALLENGE",
       "statement": "The endpoint MUST use unpredictable data in every PATH_CHALLENGE frame so that it can associate the peer's response with the corresponding PATH_CHALLENGE."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+      "id": "RFC9000-S8-2-1-P5-S1-R01",
       "title": "Expand datagrams that contain a PATH_CHALLENGE frame to at least the smallest allowed maximum datagram size of 1200 bytes, unless the anti-amplification limit for the path does not permit sending a datagram of this size",
       "statement": "An endpoint MUST expand datagrams that contain a PATH_CHALLENGE frame to at least the smallest allowed maximum datagram size of 1200 bytes, unless the anti-amplification limit for the path does not permit sending a datagram of this size."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0006",
+      "id": "RFC9000-S8-2-1-P6-S1-R01",
       "title": "To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes",
       "statement": "To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+      "id": "RFC9000-S8-2-1-P7-S1-R01",
       "title": "Unlike other cases where datagrams are expanded, endpoints MUST NOT discard datagrams that appear to be too small when they contain PATH_CHALLENGE or PATH_RESPONSE",
       "statement": "Unlike other cases where datagrams are expanded, endpoints MUST NOT discard datagrams that appear to be too small when they contain PATH_CHALLENGE or PATH_RESPONSE."
     },
@@ -4976,27 +4976,27 @@
       "statement": "To initiate path validation, an endpoint MUST send a PATH_CHALLENGE frame containing an unpredictable payload on the path to be validated."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P2-0001",
+      "id": "RFC9000-S8-2-2-P1-S1-R01",
       "title": "On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame",
       "statement": "On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+      "id": "RFC9000-S8-2-2-P1-S2-R01",
       "title": "Delay transmission of a packet containing a PATH_RESPONSE frame unless constrained by congestion control",
       "statement": "An endpoint MUST NOT delay transmission of a packet containing a PATH_RESPONSE frame unless constrained by congestion control."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+      "id": "RFC9000-S8-2-2-P2-S3-R01",
       "title": "This requirement MUST NOT be enforced by the endpoint that initiates path validation, as that would enable an attack on migration",
       "statement": "This requirement MUST NOT be enforced by the endpoint that initiates path validation, as that would enable an attack on migration; see Section 9.3.3."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+      "id": "RFC9000-S8-2-2-P3-S1-R01",
       "title": "Expand datagrams that contain a PATH_RESPONSE frame to at least the smallest allowed maximum datagram size of 1200 bytes",
       "statement": "An endpoint MUST expand datagrams that contain a PATH_RESPONSE frame to at least the smallest allowed maximum datagram size of 1200 bytes."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+      "id": "RFC9000-S8-2-2-P3-S3-R01",
       "title": "However, an endpoint MUST NOT expand the datagram containing the PATH_RESPONSE if the resulting data exceeds the anti-amplification limit",
       "statement": "However, an endpoint MUST NOT expand the datagram containing the PATH_RESPONSE if the resulting data exceeds the anti-amplification limit."
     },
@@ -5006,7 +5006,7 @@
       "statement": "An endpoint MUST NOT send more than one PATH_RESPONSE frame in response to one PATH_CHALLENGE frame; see Section 13.3."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P2P3-0001",
+      "id": "RFC9000-S8-2-3-P2-S3-R01",
       "title": "However, the endpoint MUST initiate another path validation with an expanded datagram to verify that the path supports the required MTU",
       "statement": "However, the endpoint MUST initiate another path validation with an expanded datagram to verify that the path supports the required MTU."
     },
@@ -5076,7 +5076,7 @@
       "statement": "If the recipient permits the migration, it MUST send subsequent packets to the new peer address and initiate path validation (Section 8.2) to verify the peer's ownership of the address if validation is not already underway."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P3-0002",
+      "id": "RFC9000-S9-3-P4-S1-R01",
       "title": "Allow data on an unvalidated peer address",
       "statement": "An endpoint MAY send data to an unvalidated peer address."
     },
@@ -5086,12 +5086,12 @@
       "statement": "An endpoint MUST protect against potential attacks as described in Sections 9.3.1 and 9.3.2 when it sends data to an unvalidated peer address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P3-0004",
+      "id": "RFC9000-S9-3-P4-S2-R01",
       "title": "Skip validation of a peer address if that address has been seen recently",
       "statement": "An endpoint MAY skip validation of a peer address if that address has been seen recently."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P3-0005",
+      "id": "RFC9000-S9-3-P7-S1-R01",
       "title": "After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client",
       "statement": "After verifying a new client address, the server SHOULD send new address validation tokens (Section 8) to the client."
     },
@@ -5141,7 +5141,7 @@
       "statement": "An endpoint MAY use heuristics to improve detection of this style of attack."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0001",
+      "id": "RFC9000-S9-4-P1-S2-R01",
       "title": "Sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path",
       "statement": "Packets sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path."
     },
@@ -5181,17 +5181,17 @@
       "statement": "If the timer fires before the PATH_RESPONSE is received, an endpoint MAY send a new PATH_CHALLENGE and restart the timer for a longer period of time."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0011",
+      "id": "RFC9000-S9-4-P5-S4-R02",
       "title": "Do Not Make the PATH_CHALLENGE Timer More Aggressive",
       "statement": "This timer MUST NOT be more aggressive."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P5-0001",
+      "id": "RFC9000-S9-5-P2-R01",
       "title": "At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path",
       "statement": "At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P5-0003",
+      "id": "RFC9000-S9-5-P4-R01",
       "title": "Prevent connection-id reuse across destination addresses",
       "statement": "Similarly, an endpoint MUST NOT reuse a connection ID when sending to more than one destination address."
     },
@@ -5256,7 +5256,7 @@
       "statement": "As soon as path validation succeeds, the client SHOULD discontinue use of the old server address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+      "id": "RFC9000-S9-6-1-P4-S2-R01",
       "title": "Keep using the original server address after failed validation",
       "statement": "If path validation fails, the client MUST continue sending all future packets to the server's original IP address."
     },
@@ -11518,12 +11518,12 @@
       "statement": "Deployments SHOULD limit an attacker's ability to target a new connection to a particular server instance."
     },
     {
-      "id": "REQ-QUIC-RFC9000-6321",
+      "id": "RFC9000-S6-3-P2-R01",
       "title": "Allow reserved versions in ignored version fields",
       "statement": "Endpoints MAY add reserved versions to fields where unsupported versions are ignored, to test peer handling."
     },
     {
-      "id": "REQ-QUIC-RFC9000-6322",
+      "id": "RFC9000-S6-3-P2-S2-R01",
       "title": "Send reserved-version packets for discard testing",
       "statement": "Endpoints MAY send packets with a reserved version to test peer discard behavior."
     },

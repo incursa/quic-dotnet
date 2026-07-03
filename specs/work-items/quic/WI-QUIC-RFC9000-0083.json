@@ -15,7 +15,7 @@
     "REQ-QUIC-RFC9000-S17P4-0005",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
-    "REQ-QUIC-RFC9000-1098"
+    "RFC9000-S17-4-P8-S1-R01"
   ],
   "summary": "Close the focused S17P4 spin-bit per-path state proof set with runtime/wire evidence.",
   "planned_changes": "- Add path-local spin-bit state and packet-number gating.\n- Update runtime 1-RTT send seams to use the path's stored spin value.\n- Update 1-RTT receive handling so servers store the received spin bit and clients store its inverse when the received packet number advances.\n- Add focused requirement-home proof for the stored-value send path, server receive rule, client receive rule, non-increasing client edge, and zero-length connection-ID randomized-disablement edge.\n- Link the focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",

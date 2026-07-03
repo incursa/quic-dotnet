@@ -4,18 +4,18 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1090">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R01">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1090")]
+[Requirement("RFC9000-S17-4-P5-R01")]
 public sealed class REQ_QUIC_RFC9000_1090
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1090">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R01">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1090")]
+    [Requirement("RFC9000-S17-4-P5-R01")]
     public void TryBuildProtectedApplicationDataPacket_UsesTheClearedSpinBitWhenDisabled()
     {
         QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
@@ -50,9 +50,9 @@ public sealed class REQ_QUIC_RFC9000_1090
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1090">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P5-R01">When the spin bit is disabled, endpoints MAY set the spin bit to any value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1090")]
+    [Requirement("RFC9000-S17-4-P5-R01")]
     public void TryBuildProtectedApplicationDataPacket_DoesNotClearRequestedSpinBitWhenSelectionAllowsIt()
     {
         QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(

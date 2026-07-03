@@ -8,12 +8,12 @@
 - No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.
 
 ## Requirements Completed
-- `REQ-QUIC-RFC9000-S8P2P1-0004`
-- `REQ-QUIC-RFC9000-S8P2P1-0005`
+- `RFC9000-S8-2-1-P4-S1-R01`
+- `RFC9000-S8-2-1-P5-S1-R01`
 - `REQ-QUIC-RFC9000-S8P2P1-0008`
-- `REQ-QUIC-RFC9000-S8P2P2-0001`
-- `REQ-QUIC-RFC9000-S8P2P2-0005`
-- `REQ-QUIC-RFC9000-S8P2P2-0006`
+- `RFC9000-S8-2-2-P1-S1-R01`
+- `RFC9000-S8-2-2-P3-S1-R01`
+- `RFC9000-S8-2-2-P3-S3-R01`
 
 ## Files Changed
 - [QuicPathValidation.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPathValidation.cs)
@@ -23,7 +23,7 @@
 - [9000-10-path-validation.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-10-path-validation.implementation-summary.json)
 
 ## Tests Added Or Updated
-- [QuicPathValidationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPathValidationTests.cs): added positive and negative coverage for `REQ-QUIC-RFC9000-S8P2P1-0004`, `REQ-QUIC-RFC9000-S8P2P1-0005`, `REQ-QUIC-RFC9000-S8P2P1-0008`, `REQ-QUIC-RFC9000-S8P2P2-0001`, `REQ-QUIC-RFC9000-S8P2P2-0005`, and `REQ-QUIC-RFC9000-S8P2P2-0006`.
+- [QuicPathValidationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPathValidationTests.cs): added positive and negative coverage for `RFC9000-S8-2-1-P4-S1-R01`, `RFC9000-S8-2-1-P5-S1-R01`, `REQ-QUIC-RFC9000-S8P2P1-0008`, `RFC9000-S8-2-2-P1-S1-R01`, `RFC9000-S8-2-2-P3-S1-R01`, and `RFC9000-S8-2-2-P3-S3-R01`.
 
 ## Tests Run And Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --filter "FullyQualifiedName~QuicPathValidationTests|FullyQualifiedName~QuicFrameCodecPart4Tests|FullyQualifiedName~QuicFrameCodecPart4FuzzTests"`
@@ -32,19 +32,19 @@
   - Result: `241 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-0425`
-- `REQ-QUIC-RFC9000-S8P2P1-0001`
-- `REQ-QUIC-RFC9000-S8P2P1-0002`
-- `REQ-QUIC-RFC9000-0435`
-- `REQ-QUIC-RFC9000-S8P2P1-0006`
-- `REQ-QUIC-RFC9000-S8P2P1-0007`
-- `REQ-QUIC-RFC9000-S8P2P2-0002`
-- `REQ-QUIC-RFC9000-0443`
-- `REQ-QUIC-RFC9000-S8P2P2-0004`
+- `RFC9000-S8-2-P6-S1-R01`
+- `RFC9000-S8-2-1-P2-S1-R01`
+- `RFC9000-S8-2-1-P2-S2-R01`
+- `RFC9000-S8-2-1-P3-S1-R01`
+- `RFC9000-S8-2-1-P6-S1-R01`
+- `RFC9000-S8-2-1-P7-S1-R01`
+- `RFC9000-S8-2-2-P1-S2-R01`
+- `RFC9000-S8-2-2-P2-S1-R01`
+- `RFC9000-S8-2-2-P2-S3-R01`
 - `REQ-QUIC-RFC9000-S8P2P2-0007`
 - `REQ-QUIC-RFC9000-0447`
-- `REQ-QUIC-RFC9000-S8P2P3-0001`
-- `REQ-QUIC-RFC9000-0454`
+- `RFC9000-S8-2-3-P2-S3-R01`
+- `RFC9000-S8-2-4-P2-R01`
 - `REQ-QUIC-RFC9000-S8P2P4-0002`
 - `REQ-QUIC-RFC9000-S8P2P4-0003`
 

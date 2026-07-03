@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0010">A client MUST NOT include a token that is not applicable to the server being contacted unless the client has knowledge that the server that issued the token and the contacted server are jointly managing the token space.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P6-S4-R01">A client MUST NOT include a token that is not applicable to the server being contacted unless the client has knowledge that the server that issued the token and the contacted server are jointly managing the token space.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P1P3-0010")]
+[Requirement("RFC9000-S8-1-3-P6-S4-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0010
 {
     [Fact]

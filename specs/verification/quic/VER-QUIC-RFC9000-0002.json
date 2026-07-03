@@ -14,7 +14,7 @@
   ],
   "expected_result": "Server-role validation of a new address emits a protected NEW_TOKEN datagram exactly once per address, client-role validation does not emit NEW_TOKEN traffic, and the internal helper formats a valid NEW_TOKEN frame payload that round-trips through the codec.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S9P3-0005",
+    "RFC9000-S9-3-P7-S1-R01",
     "REQ-QUIC-RFC9000-0488"
   ],
   "procedure": [
@@ -24,7 +24,7 @@
   ],
   "scope": "This slice covers server-only address-validation token emission and the proof that repeated validation transitions do not create duplicate NEW_TOKEN traffic. It does not claim Retry-token generation or client-side token handling.",
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P7-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0488.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
@@ -39,7 +39,7 @@
   "supplemental_sections": [
     {
       "heading": "Evidence",
-      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0005.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0488.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs"
+      "content": "- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P7-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0488.cs\n- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicFrameCodec.cs\n- src/Incursa.Quic/QuicNewTokenFrame.cs"
     }
   ]
 }

@@ -1,11 +1,11 @@
 # 9000-09-address-validation-and-tokens Implementation Summary
 
 ## Requirements Completed
-- `REQ-QUIC-RFC9000-S8-0001`
-- `REQ-QUIC-RFC9000-S8P1-0001`
-- `REQ-QUIC-RFC9000-S8P1-0002`
-- `REQ-QUIC-RFC9000-S8P1-0003`
-- `REQ-QUIC-RFC9000-0375`
+- `RFC9000-S8-P2-S2-R01`
+- `RFC9000-S8-1-P2-R01`
+- `RFC9000-S8-1-P4-R01`
+- `RFC9000-S8-1-P4-S2-R01`
+- `RFC9000-S8-1-P5-R01`
 
 ## Files Changed
 - `src/Incursa.Quic/QuicAddressValidation.cs`
@@ -29,13 +29,13 @@
   - `236 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S8P1-0005`
+- `RFC9000-S8-1-P6-S3-R01`
 - `REQ-QUIC-RFC9000-S8P1-0006`
 - `REQ-QUIC-RFC9000-S8P1-0007`
 - `REQ-QUIC-RFC9000-0381`
 - `REQ-QUIC-RFC9000-S8P1P2-0001` through `REQ-QUIC-RFC9000-S8P1P2-0004`
-- `REQ-QUIC-RFC9000-S8P1P3-0001` through `REQ-QUIC-RFC9000-S8P1P3-0017`
-- `REQ-QUIC-RFC9000-0407` through `REQ-QUIC-RFC9000-S8P1P4-0012`
+- `RFC9000-S8-1-3-P1-S1-R01` through `REQ-QUIC-RFC9000-S8P1P3-0017`
+- `RFC9000-S8-1-4-P1-S1-R01` through `REQ-QUIC-RFC9000-S8P1P4-0012`
 
 ## Risks / Follow-up Notes
 - `QuicAddressValidation` is a structural helper for the 64-bit entropy MAY-clause; the repo does not yet model entropy assessment beyond connection-ID length plus endpoint choice.

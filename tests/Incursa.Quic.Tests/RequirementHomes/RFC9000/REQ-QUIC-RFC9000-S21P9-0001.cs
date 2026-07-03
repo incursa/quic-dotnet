@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P9-0001">While there are legitimate uses for all messages, implementations SHOULD track cost of processing relative to progress and treat excessive quantities of any non-productive packets as indicative of an attack.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-9-P4-R01">While there are legitimate uses for all messages, implementations SHOULD track cost of processing relative to progress and treat excessive quantities of any non-productive packets as indicative of an attack.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P9-0001")]
+[Requirement("RFC9000-S21-9-P4-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P9_0001
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R01");
 
         Assert.Equal("While there are legitimate uses for all messages, implementations SHOULD track cost of processing relative to progress and treat excessive quantities of any non-productive packets as indicative of an attack.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.9 RFC9000-S21.9-B5-P4-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

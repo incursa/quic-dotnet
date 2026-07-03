@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+[Requirement("RFC9000-S4-6-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S4P6_0006
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+    [Requirement("RFC9000-S4-6-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PeerTransportParameterCommit_AcceptsInitialMaxStreamsAtTheEncodingLimit()
@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0006
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+    [Requirement("RFC9000-S4-6-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PeerTransportParameterCommit_ClosesOnOversizedInitialMaxStreams()
@@ -60,9 +60,9 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0006
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0006">If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S4-6-P2-S1-R01">If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0006")]
+    [Requirement("RFC9000-S4-6-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit()

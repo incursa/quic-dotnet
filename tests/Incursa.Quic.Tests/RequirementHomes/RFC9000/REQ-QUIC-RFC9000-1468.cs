@@ -8,9 +8,9 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1468">Endpoints MAY prevent connection attempts or migration to a loopback address.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-6-P2-S1-R01">Endpoints MAY prevent connection attempts or migration to a loopback address.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1468")]
+[Requirement("RFC9000-S21-5-6-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1468
 {
     [Fact]

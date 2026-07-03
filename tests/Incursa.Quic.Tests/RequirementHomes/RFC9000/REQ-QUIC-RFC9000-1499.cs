@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1499">The experts MUST attempt to determine whether the codepoint is still in use.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-3-P2-S2-R01">The experts MUST attempt to determine whether the codepoint is still in use.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1499")]
+[Requirement("RFC9000-S22-1-3-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_1499
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1499
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1499");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-3-P2-S2-R01");
 
         Assert.Equal("Determine whether codepoints remain in use", requirement.GetProperty("title").GetString());
         Assert.Equal("The experts MUST attempt to determine whether the codepoint is still in use.", requirement.GetProperty("statement").GetString());
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_1499
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1499")]
+    [Requirement("RFC9000-S22-1-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotEquateReviewAttemptWithReclaimingTheCodepoint()
@@ -70,7 +70,7 @@ public sealed class REQ_QUIC_RFC9000_1499
         return document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1499")
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-3-P2-S2-R01")
             .Clone();
     }
 }

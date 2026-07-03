@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P3_0001
     [Trait("Category", "Negative")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0002")]
-    [Requirement("REQ-QUIC-RFC9000-1050")]
+    [Requirement("RFC9000-S17-2-5-3-P2-S2-R01")]
     public void ClientDoesNotEmitRetryReplayInitialPacketsForARejectedSecondRetry()
     {
         using QuicConnectionRuntime clientRuntime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -59,7 +59,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P5P3_0001
     [Trait("Category", "Edge")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P3-0002")]
-    [Requirement("REQ-QUIC-RFC9000-1050")]
+    [Requirement("RFC9000-S17-2-5-3-P2-S2-R01")]
     public void ClientRetryReplayInitialPacketsPreserveBoundaryRetryValuesAndHandshakeBytes()
     {
         using QuicConnectionRuntime clientRuntime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();

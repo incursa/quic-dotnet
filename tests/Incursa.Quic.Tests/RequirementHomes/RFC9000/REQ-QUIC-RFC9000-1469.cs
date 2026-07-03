@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1469">Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service was previously available at a different interface or if the address was provided by a service at a non-loopback address.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-6-P2-S2-R01">Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service was previously available at a different interface or if the address was provided by a service at a non-loopback address.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1469")]
+[Requirement("RFC9000-S21-5-6-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_1469
 {
     [Fact]
@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_1469
     [Trait("Category", "Positive")]
     public void RequirementStatement_DescribesLoopbackHygieneGuidance()
     {
-        JsonElement requirement = GetRequirement("REQ-QUIC-RFC9000-1469");
+        JsonElement requirement = GetRequirement("RFC9000-S21-5-6-P2-S2-R01");
 
         Assert.Equal("Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service was previously available at a different interface or if the address was provided by a service at a non-loopback address.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 21.5.6 RFC9000-S21P5P6-B2-P2-S3", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_1469
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotClaimRuntimeLoopbackBlocking()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1469").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P2-S2-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.DoesNotContain("public API", statement);
         Assert.DoesNotContain("runtime enforcement", statement);
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_1469
     [Trait("Category", "Edge")]
     public void RequirementStatement_StaysBoundedToLoopbackHygiene()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1469").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P2-S2-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.Contains("loopback address", statement);
         Assert.Contains("same service was previously available", statement);

@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S19P13-0002 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-1299"
+    "RFC9000-S19-13-P2-R01"
   ],
   "scope": "This verification covers receiver-side STREAM_DATA_BLOCKED policy for receive-capable streams, opened send-only streams, and uncreated send-only stream IDs on the protected Application Data runtime path.",
   "expected_result": "The requirement-home tests show receive-capable streams accept STREAM_DATA_BLOCKED without error, opened send-only stream IDs produce STREAM_STATE_ERROR at the bookkeeping seam, and protected STREAM_DATA_BLOCKED packets targeting opened or uncreated send-only stream IDs transition the runtime to Closing with a local STREAM_STATE_ERROR close and triggering frame type 0x15.",
@@ -32,7 +32,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1299.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-13-P2-R01.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_1299\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",
@@ -45,5 +45,5 @@
       "content": "This verification does not claim STREAM_DATA_BLOCKED parser/formatter closure beyond the existing S19P13 0003 through 0008 proof and does not claim S19P14 STREAMS_BLOCKED behavior."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-05. The focused S19P13-0002 requirement-home filter passed, the Release build passed, regenerated QUIC coverage triage marks REQ-QUIC-RFC9000-1299 trace_clean, SpecTrace core validation passed, and git diff --check passed."
+  "status_summary": "Passed locally on 2026-05-05. The focused S19P13-0002 requirement-home filter passed, the Release build passed, regenerated QUIC coverage triage marks RFC9000-S19-13-P2-R01 trace_clean, SpecTrace core validation passed, and git diff --check passed."
 }

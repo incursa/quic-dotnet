@@ -6,9 +6,9 @@ using System;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0570">Once its closing or draining state ends, an endpoint SHOULD discard all connection state.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-P7-S1-R01">Once its closing or draining state ends, an endpoint SHOULD discard all connection state.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0570")]
+[Requirement("RFC9000-S10-2-P7-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0570
 {
     [Theory]

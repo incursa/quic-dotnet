@@ -4,14 +4,14 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-8135">If address-validation token validation succeeds, the server SHOULD allow the handshake to proceed.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P10-S4-R01">If address-validation token validation succeeds, the server SHOULD allow the handshake to proceed.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-8135")]
+[Requirement("RFC9000-S8-1-3-P10-S4-R01")]
 [Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_8135
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-8135")]
+    [Requirement("RFC9000-S8-1-3-P10-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ValidNewToken_AllowsTheServerHandshakeToProceedWithoutRetry()
@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_RFC9000_8135
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-8135")]
+    [Requirement("RFC9000-S8-1-3-P10-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ValidRetryToken_AllowsTheServerHandshakeToProceed()
@@ -49,7 +49,7 @@ public sealed class REQ_QUIC_RFC9000_8135
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-8135")]
+    [Requirement("RFC9000-S8-1-3-P10-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task InvalidRetryToken_DoesNotAllowTheServerHandshakeToProceed()

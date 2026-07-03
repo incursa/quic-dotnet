@@ -1,8 +1,8 @@
 {
   "chunk_id": "9000-15-error-handling",
   "requirement_id": [
-    "REQ-QUIC-RFC9000-S11-0001",
-    "REQ-QUIC-RFC9000-S11-0002",
+    "RFC9000-S11-P1-S1-R01",
+    "RFC9000-S11-P2-S1-R01",
     "REQ-QUIC-RFC9000-0659",
     "REQ-QUIC-RFC9000-0658",
     "REQ-QUIC-RFC9000-0661",
@@ -13,12 +13,12 @@
     "REQ-QUIC-RFC9000-S11P1-0005",
     "REQ-QUIC-RFC9000-S11P1-0006",
     "REQ-QUIC-RFC9000-S11P1-0007",
-    "REQ-QUIC-RFC9000-0668",
+    "RFC9000-S11-1-P5-S3-R01",
     "REQ-QUIC-RFC9000-S11P2-0001",
-    "REQ-QUIC-RFC9000-S11P2-0002",
+    "RFC9000-S11-2-P2-S2-R01",
     "REQ-QUIC-RFC9000-S11P2-0003",
     "REQ-QUIC-RFC9000-S11P2-0004",
-    "REQ-QUIC-RFC9000-0674"
+    "RFC9000-S11-2-P4-S1-R01"
   ],
   "completion_status": "partial",
   "files_changed": [
@@ -41,8 +41,8 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
   ],
   "direct_refs_added_or_updated": [
-    "REQ-QUIC-RFC9000-S11-0001",
-    "REQ-QUIC-RFC9000-S11-0002",
+    "RFC9000-S11-P1-S1-R01",
+    "RFC9000-S11-P2-S1-R01",
     "REQ-QUIC-RFC9000-0659",
     "REQ-QUIC-RFC9000-0658",
     "REQ-QUIC-RFC9000-0661",
@@ -68,7 +68,7 @@
       "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0668",
+      "requirement_id": "RFC9000-S11-1-P5-S3-R01",
       "reason": "Safe discard after reverting side effects needs a reversible receive pipeline."
     },
     {
@@ -76,7 +76,7 @@
       "reason": "RESET_STREAM instigation for application-level errors needs application-protocol and stream-state orchestration."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0002",
+      "requirement_id": "RFC9000-S11-2-P2-S2-R01",
       "reason": "Only the application protocol can instigate RESET_STREAM, which is not modeled in the current helper layer."
     },
     {
@@ -88,7 +88,7 @@
       "reason": "STOP_SENDING-driven automatic RESET_STREAM requires an application-protocol callback surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0674",
+      "requirement_id": "RFC9000-S11-2-P4-S1-R01",
       "reason": "Premature-cancel handling rules are application-specific and remain outside the current implementation."
     }
   ],

@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0535")]
+[Requirement("RFC9000-S9-6-2-P4-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_0535
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0535")]
+    [Requirement("RFC9000-S9-6-2-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerContinuesProcessingDelayedPacketsReceivedOnTheOldAddressAfterPreferredAddressValidationCompletes()
@@ -50,7 +50,7 @@ public sealed class REQ_QUIC_RFC9000_0535
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0535")]
+    [Requirement("RFC9000-S9-6-2-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath()

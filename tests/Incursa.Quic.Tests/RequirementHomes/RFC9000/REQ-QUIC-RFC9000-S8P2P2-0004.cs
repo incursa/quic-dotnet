@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P2P2-0004")]
+[Requirement("RFC9000-S8-2-2-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P2P2_0004
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0004")]
+    [Requirement("RFC9000-S8-2-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void InitiatorAcceptsMatchingPathResponseOnTheCandidatePath()
@@ -36,7 +36,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0004
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0004")]
+    [Requirement("RFC9000-S8-2-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void InitiatorAcceptsPathResponseForPreviousOutstandingChallengeAfterRetry()
@@ -84,7 +84,7 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0004
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0004")]
+    [Requirement("RFC9000-S8-2-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void InitiatorDoesNotTreatSamePathResponseRuleAsAnEnforcedPeerViolation()

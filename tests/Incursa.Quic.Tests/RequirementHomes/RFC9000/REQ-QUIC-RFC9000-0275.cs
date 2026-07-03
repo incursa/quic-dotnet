@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0275")]
+[Requirement("RFC9000-S5-2-2-P7-R01")]
 public sealed class REQ_QUIC_RFC9000_0275
 {
     [Fact]

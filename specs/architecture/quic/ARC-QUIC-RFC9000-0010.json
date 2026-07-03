@@ -14,8 +14,8 @@
     "VER-QUIC-RFC9000-0010"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-0499",
-    "REQ-QUIC-RFC9000-0502",
+    "RFC9000-S9-3-3-P4-S1-R01",
+    "RFC9000-S9-3-3-P5-S1-R01",
     "REQ-QUIC-RFC9000-0813",
     "REQ-QUIC-RFC9000-0814",
     "REQ-QUIC-RFC9000-0815",
@@ -30,8 +30,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0813.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0499.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0502.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P5-S1-R01.cs",
     "benchmarks/QuicPathValidationBenchmarks.cs"
   ],
   "design_summary": "The runtime treats packets from an unvalidated changed peer address as candidate-path traffic, sends a PATH_CHALLENGE with an unpredictable eight-byte payload, stores that payload and a path-validation timer generation on the candidate path, and retries with a new payload when the timer expires and validation is still pending. Receiving a matching PATH_RESPONSE promotes the validated candidate path through the existing migration path model. Receiving a mismatched PATH_RESPONSE on that candidate path enters the existing local PROTOCOL_VIOLATION close path. Receiving a PATH_CHALLENGE on an active or candidate path emits exactly one PATH_RESPONSE datagram that echoes the challenge data and consumes only the path-local anti-amplification budget.",
@@ -57,7 +57,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Paths.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Paths.cs)\n- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicPathValidation.cs`](../../../src/Incursa.Quic/QuicPathValidation.cs)\n- [`QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`REQ-QUIC-RFC9000-0813.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0813.cs)\n- [`REQ-QUIC-RFC9000-0815.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs)\n- [`REQ-QUIC-RFC9000-S19P18-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs)\n- [`REQ-QUIC-RFC9000-0499.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0499.cs)\n- [`REQ-QUIC-RFC9000-0502.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0502.cs)\n- [`QuicPathValidationBenchmarks.cs`](../../../benchmarks/QuicPathValidationBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Paths.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Paths.cs)\n- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicPathValidation.cs`](../../../src/Incursa.Quic/QuicPathValidation.cs)\n- [`QuicFrameCodec.cs`](../../../src/Incursa.Quic/QuicFrameCodec.cs)\n- [`REQ-QUIC-RFC9000-0813.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0813.cs)\n- [`REQ-QUIC-RFC9000-0815.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs)\n- [`REQ-QUIC-RFC9000-S19P18-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs)\n- [`RFC9000-S9-3-3-P4-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs)\n- [`RFC9000-S9-3-3-P5-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P5-S1-R01.cs)\n- [`QuicPathValidationBenchmarks.cs`](../../../benchmarks/QuicPathValidationBenchmarks.cs)"
     }
   ]
 }

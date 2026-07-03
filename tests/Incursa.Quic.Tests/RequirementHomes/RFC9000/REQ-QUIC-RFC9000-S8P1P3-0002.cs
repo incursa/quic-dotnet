@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0002">The client MUST include the token in all Initial packets it sends, unless a Retry replaces the token with a newer one.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P2-S3-R01">The client MUST include the token in all Initial packets it sends, unless a Retry replaces the token with a newer one.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P1P3-0002")]
+[Requirement("RFC9000-S8-1-3-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0002
 {
     [Fact]

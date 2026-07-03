@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S7P4P1 requirement-home tests over server 0-RTT transport-parameter acceptance decisions, required and optional remembered-value reductions, non-zero application-data allowance, and restored-value support, plus Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "RFC9000-S7-4-1-P6-R01",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
     "REQ-QUIC-RFC9000-0348",
     "REQ-QUIC-RFC9000-0350",
@@ -36,7 +36,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0350.cs",
@@ -54,5 +54,5 @@
       "content": "This verification does not claim public early-data APIs, TLS early_data extension admission wiring, server anti-replay behavior, application-data delivery, or updated-value-in-0-RTT protocol-violation enforcement."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 plus CRT early-data guard filter passed 31/31, regenerated coverage triage marks REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-0351 trace_clean and reports 1,269 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 451 artifacts, the full Release no-build suite passed 4,487/4,487, and git diff --check returned exit code 0 with line-ending warnings only."
+  "status_summary": "Passed locally on 2026-05-06. The Release build passed with 0 warnings and 0 errors, the focused S7P4P1 plus CRT early-data guard filter passed 31/31, regenerated coverage triage marks RFC9000-S7-4-1-P6-R01 through REQ-QUIC-RFC9000-0351 trace_clean and reports 1,269 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 451 artifacts, the full Release no-build suite passed 4,487/4,487, and git diff --check returned exit code 0 with line-ending warnings only."
 }

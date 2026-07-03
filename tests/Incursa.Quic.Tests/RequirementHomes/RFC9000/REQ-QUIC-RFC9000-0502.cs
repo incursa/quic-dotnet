@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0502")]
+[Requirement("RFC9000-S9-3-3-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0502
 {
     private static readonly byte[] PacketNumber =
@@ -12,7 +12,7 @@ public sealed class REQ_QUIC_RFC9000_0502
     ];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0502")]
+    [Requirement("RFC9000-S9-3-3-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PathChallengeFramesOnTheActivePathAreAnsweredWithPathResponseFrames()
@@ -56,7 +56,7 @@ public sealed class REQ_QUIC_RFC9000_0502
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0502")]
+    [Requirement("RFC9000-S9-3-3-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PathChallengeFramesOnCandidatePathsRemainProbingUntilValidationCompletes()
@@ -104,7 +104,7 @@ public sealed class REQ_QUIC_RFC9000_0502
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0502")]
+    [Requirement("RFC9000-S9-3-3-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-0815")]
     [Requirement("REQ-QUIC-RFC9000-S19P17-0006")]
     [CoverageType(RequirementCoverageType.Fuzz)]

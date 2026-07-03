@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P5-0006">If the stream is in the Data Sent state, the endpoint MAY defer sending the RESET_STREAM frame until the packets containing outstanding data are acknowledged or declared lost.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-5-P4-S3-R01">If the stream is in the Data Sent state, the endpoint MAY defer sending the RESET_STREAM frame until the packets containing outstanding data are acknowledged or declared lost.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P5-0006")]
+[Requirement("RFC9000-S3-5-P4-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S3P5_0006
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0006")]
+    [Requirement("RFC9000-S3-5-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStopSendingFrame_AllowsDataSentAndProducesResetStreamFrame()
@@ -60,7 +60,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0006
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0006")]
+    [Requirement("RFC9000-S3-5-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_RejectsAfterDataSentHasBeenAcknowledged()
@@ -108,7 +108,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0006
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0006")]
+    [Requirement("RFC9000-S3-5-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveStopSendingFrame_DataSentBidirectionalStreamTerminatesOnlyTheSendDirection()

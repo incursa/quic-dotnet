@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P1-0004">An endpoint MUST acknowledge all ack-eliciting 0-RTT and 1-RTT packets within its advertised max_ack_delay.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P2-R02">An endpoint MUST acknowledge all ack-eliciting 0-RTT and 1-RTT packets within its advertised max_ack_delay.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P1-0004")]
+[Requirement("RFC9000-S13-2-1-P2-R02")]
 public sealed class REQ_QUIC_RFC9000_S13P2P1_0004
 {
     [Fact]

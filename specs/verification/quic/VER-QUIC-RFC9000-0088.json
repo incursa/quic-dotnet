@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused requirement-home tests over the active-path recovery PING probe and application-send delay boundary, plus the ACK piggyback policy benchmark harness, coverage triage regeneration, SpecTrace JSON validation, and diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S13-0002",
-    "REQ-QUIC-RFC9000-S13P2P7-0001"
+    "RFC9000-S13-P2-S2-R01",
+    "RFC9000-S13-2-7-P1-S3-R01"
   ],
   "scope": "This verification covers the supported active-path Application Data floor for bounded small-packet send delay and periodic ack-eliciting PING probes when recovery has no retransmittable payload to send.",
   "expected_result": "Focused tests show small writes can be coalesced after the short delay, the threshold edge sends without arming the delay timer, the recovery PTO fallback sends PING as a non-PADDING ack-eliciting probe, the probe is not retransmittable, a later recovery expiration can send another PING probe, and the probe path remains unavailable without active-path and 1-RTT prerequisites.",
@@ -36,8 +36,8 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-P2-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-7-P1-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",

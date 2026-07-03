@@ -15,12 +15,12 @@
     "VER-QUIC-RFC9000-0081"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S9P6P1-0005"
+    "RFC9000-S9-6-1-P4-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS9P6P1PreferredAddressTestSupport.cs"
   ],
   "design_summary": "A failed preferred-address validation marks that preferred-address candidate abandoned without promoting it and without discarding the connection while the original server address remains the active path. Future non-probing sends continue to use the original server address.",
@@ -39,7 +39,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes REQ-QUIC-RFC9000-S9P6P1-0005 only. It does not claim complete S9P6P1 closure, preferred_address transport-parameter emission proof, per-family metadata cleanup, public migration APIs, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes RFC9000-S9-6-1-P4-S2-R01 only. It does not claim complete S9P6P1 closure, preferred_address transport-parameter emission proof, per-family metadata cleanup, public migration APIs, multipath support, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

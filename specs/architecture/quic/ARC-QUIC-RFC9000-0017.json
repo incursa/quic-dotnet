@@ -17,7 +17,7 @@
     "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0008",
-    "REQ-QUIC-RFC9000-0764"
+    "RFC9000-S13-2-1-P5-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicAckGenerationState.cs",
@@ -25,7 +25,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0764.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S2-R01.cs"
   ],
   "design_summary": "ACK generation records processed packet numbers regardless of whether the packet is ack-eliciting, but ACK scheduling only treats ack-eliciting state as a reason to send an ACK frame. A packet set containing only non-ack-eliciting packets therefore does not request an immediate ACK, an outgoing ACK frame, or an ACK-only packet, even after max_ack_delay. When a later ack-eliciting packet is processed and an ACK frame is built, the retained non-ack-eliciting packet numbers remain in the ACK ranges, including across gaps.",
   "data_and_state_considerations": "This slice proves ACK scheduling and ACK range retention for processed Application Data packets. It does not implement packet parsing, ACK frame serialization, congestion-control response, peer loss recovery, or active packet transmission policy.",
@@ -52,7 +52,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-S13P2-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs)\n- [`REQ-QUIC-RFC9000-S13P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs)\n- [`REQ-QUIC-RFC9000-0764.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0764.cs)"
+      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicCongestionControlState.cs`](../../../src/Incursa.Quic/QuicCongestionControlState.cs)\n- [`REQ-QUIC-RFC9000-S13P2-0002.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs)\n- [`REQ-QUIC-RFC9000-S13P2-0003.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0008.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs)\n- [`RFC9000-S13-2-1-P5-S2-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S2-R01.cs)"
     }
   ]
 }

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P2-0012">The receiver of coalesced QUIC packets MUST individually process each QUIC packet and separately acknowledge each QUIC packet, as if the packets were received as the payload of different UDP datagrams.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-2-P5-S1-R01">The receiver of coalesced QUIC packets MUST individually process each QUIC packet and separately acknowledge each QUIC packet, as if the packets were received as the payload of different UDP datagrams.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S12P2-0012")]
+[Requirement("RFC9000-S12-2-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S12P2_0012
 {
     [Fact]

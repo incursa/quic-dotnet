@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0401">A client MAY use a token from any previous connection to that server.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P6-S5-R01">A client MAY use a token from any previous connection to that server.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0401")]
+[Requirement("RFC9000-S8-1-3-P6-S5-R01")]
 public sealed class REQ_QUIC_RFC9000_0401
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0401")]
+    [Requirement("RFC9000-S8-1-3-P6-S5-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PreviousConnectionTokenForSameServer_IsIncludedInInitialPackets()
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_0401
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0401")]
+    [Requirement("RFC9000-S8-1-3-P6-S5-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PreviousConnectionTokenForDifferentServer_IsNotIncludedInInitialPackets()

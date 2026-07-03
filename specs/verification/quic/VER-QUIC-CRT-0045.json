@@ -25,7 +25,7 @@
     "src/Incursa.Quic/QuicTlsKeySchedule.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0112.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0361.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-5-P2-S1-R01.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
     "benchmarks/QuicCryptoBufferBenchmarks.cs",
     "benchmarks/README.md",

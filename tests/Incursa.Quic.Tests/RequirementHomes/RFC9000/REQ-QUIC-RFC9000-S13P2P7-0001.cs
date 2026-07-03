@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S13P2P7-0001")]
+[Requirement("RFC9000-S13-2-7-P1-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S13P2P7_0001
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P7-0001")]
+    [Requirement("RFC9000-S13-2-7-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RecoveryTimerExpired_SendsPeriodicPingProbeWhenNoRetransmittablePayloadIsAvailable()
@@ -55,7 +55,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P7_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P7-0001")]
+    [Requirement("RFC9000-S13-2-7-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RecoveryPingProbe_DoesNotSendPaddingOnlyProbeWithoutActivePathOrOneRttKeys()

@@ -10,18 +10,18 @@ using System.Threading;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1055">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-5-3-P4-S6-R01">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1055")]
+[Requirement("RFC9000-S17-2-5-3-P4-S6-R01")]
 public sealed class REQ_QUIC_RFC9000_1055
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1055">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-5-3-P4-S6-R01">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1055")]
+    [Requirement("RFC9000-S17-2-5-3-P4-S6-R01")]
     public async Task ListenerHostMayAbortARetryReplayCandidateThatResetsInitialPacketNumbers()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();
@@ -101,9 +101,9 @@ public sealed class REQ_QUIC_RFC9000_1055
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1055">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-5-3-P4-S6-R01">A server MAY abort the connection if it detects that the client reset the packet number.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1055")]
+    [Requirement("RFC9000-S17-2-5-3-P4-S6-R01")]
     public async Task ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber()
     {
         IPEndPoint listenEndPoint = QuicLoopbackEstablishmentTestSupport.GetUnusedLoopbackEndPoint();

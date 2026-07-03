@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1473">Endpoints MAY retire connection IDs containing patterns known to be problematic without using them.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-6-P5-S4-R01">Endpoints MAY retire connection IDs containing patterns known to be problematic without using them.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1473")]
+[Requirement("RFC9000-S21-5-6-P5-S4-R01")]
 public sealed class REQ_QUIC_RFC9000_1473
 {
     [Fact]
@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_1473
     [Trait("Category", "Positive")]
     public void RequirementStatement_DescribesProblematicCidRetirementGuidance()
     {
-        JsonElement requirement = GetRequirement("REQ-QUIC-RFC9000-1473");
+        JsonElement requirement = GetRequirement("RFC9000-S21-5-6-P5-S4-R01");
 
         Assert.Equal("Endpoints MAY retire connection IDs containing patterns known to be problematic without using them.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 21.5.6 RFC9000-S21P5P6-B5-P5-S4", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_1473
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotClaimPublicPolicyAutomation()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1473").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P5-S4-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.DoesNotContain("public API", statement);
         Assert.DoesNotContain("runtime enforcement", statement);
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_1473
     [Trait("Category", "Edge")]
     public void RequirementStatement_StaysBoundedToProblematicCidHygiene()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1473").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P5-S4-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.Contains("retire connection IDs", statement);
         Assert.Contains("patterns known to be problematic", statement);

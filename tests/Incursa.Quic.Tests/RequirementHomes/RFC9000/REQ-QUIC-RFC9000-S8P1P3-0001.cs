@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0001">A server MAY provide clients with an address validation token during one connection that can be used on a subsequent connection.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P1-S1-R01">A server MAY provide clients with an address validation token during one connection that can be used on a subsequent connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P1P3-0001")]
+[Requirement("RFC9000-S8-1-3-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0001
 {
     [Fact]

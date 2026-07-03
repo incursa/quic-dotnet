@@ -33,28 +33,28 @@
 
 ## Requirements Completed
 
-- `REQ-QUIC-RFC9000-S8-0001`
-- `REQ-QUIC-RFC9000-S8P1-0001`
-- `REQ-QUIC-RFC9000-S8P1-0002`
-- `REQ-QUIC-RFC9000-S8P1-0003`
-- `REQ-QUIC-RFC9000-0375`
+- `RFC9000-S8-P2-S2-R01`
+- `RFC9000-S8-1-P2-R01`
+- `RFC9000-S8-1-P4-R01`
+- `RFC9000-S8-1-P4-S2-R01`
+- `RFC9000-S8-1-P5-R01`
 
 ## Remaining Open Requirements
 
-- `REQ-QUIC-RFC9000-S8P1-0005`
+- `RFC9000-S8-1-P6-S3-R01`
 - `REQ-QUIC-RFC9000-S8P1-0006`
 - `REQ-QUIC-RFC9000-S8P1-0007`
 - `REQ-QUIC-RFC9000-0381`
 - `REQ-QUIC-RFC9000-S8P1P2-0001` through `REQ-QUIC-RFC9000-S8P1P2-0004`
-- `REQ-QUIC-RFC9000-S8P1P3-0001` through `REQ-QUIC-RFC9000-S8P1P3-0017`
-- `REQ-QUIC-RFC9000-0407` through `REQ-QUIC-RFC9000-S8P1P4-0012`
+- `RFC9000-S8-1-3-P1-S1-R01` through `REQ-QUIC-RFC9000-S8P1P3-0017`
+- `RFC9000-S8-1-4-P1-S1-R01` through `REQ-QUIC-RFC9000-S8P1P4-0012`
 
 ## Reference Audit
 
 - Source roots searched: `C:/src/incursa/quic-dotnet/src/Incursa.Quic`
 - Test roots searched: `C:/src/incursa/quic-dotnet/tests`
 - In-scope source requirement refs found: none
-- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S8-0001`, `REQ-QUIC-RFC9000-S8P1-0001`, `REQ-QUIC-RFC9000-S8P1-0002`, `REQ-QUIC-RFC9000-S8P1-0003`, `REQ-QUIC-RFC9000-0375`
+- In-scope test requirement refs found: `RFC9000-S8-P2-S2-R01`, `RFC9000-S8-1-P2-R01`, `RFC9000-S8-1-P4-R01`, `RFC9000-S8-1-P4-S2-R01`, `RFC9000-S8-1-P5-R01`
 - Stale or wrong refs found: none
 - Current in-scope test files: `tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs`, `tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`
 

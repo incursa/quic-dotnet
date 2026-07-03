@@ -4,14 +4,14 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1P3-0014">A server that receives an Initial packet with an address validation token MUST attempt to validate the token unless address validation is already complete.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-3-P10-S1-R01">A server that receives an Initial packet with an address validation token MUST attempt to validate the token unless address validation is already complete.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+[Requirement("RFC9000-S8-1-3-P10-S1-R01")]
 [Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [Requirement("RFC9000-S8-1-3-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task NewTokenInitialWithValidToken_IsValidatedBeforeAdmission()
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [Requirement("RFC9000-S8-1-3-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task NewTokenInitialWithWrongAddressToken_IsValidatedAndRejected()
@@ -54,7 +54,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [Requirement("RFC9000-S8-1-3-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task RetryReplayCandidateWithValidToken_IsValidatedBeforeAdmission()
@@ -72,7 +72,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [Requirement("RFC9000-S8-1-3-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RetryReplayCandidateWithWrongToken_IsValidatedAndRejected()
@@ -94,7 +94,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0014
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0014")]
+    [Requirement("RFC9000-S8-1-3-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task RetryReplayCandidateWithEmptyToken_IsValidatedAndRejected()

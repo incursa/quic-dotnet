@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0901">A client MAY use one of these version numbers with the expectation that the server will initiate version negotiation.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S15-P7-S1-R01">A client MAY use one of these version numbers with the expectation that the server will initiate version negotiation.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0901")]
+[Requirement("RFC9000-S15-P7-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0901
 {
     [Fact]

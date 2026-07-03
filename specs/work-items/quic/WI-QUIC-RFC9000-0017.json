@@ -15,7 +15,7 @@
     "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0008",
-    "REQ-QUIC-RFC9000-0764"
+    "RFC9000-S13-2-1-P5-S2-R01"
   ],
   "summary": "Add direct requirement-home proof and focused trace links for delaying non-ack-eliciting-only ACK emission while retaining those packet numbers for later ACK frame construction.",
   "planned_changes": "- Add requirement-home tests proving only non-ack-eliciting packets do not schedule immediate, outgoing, or ACK-only ACK emission.\n- Add requirement-home tests proving retained non-ack-eliciting packet numbers are included once a later ack-eliciting event causes ACK frame construction.\n- Add deterministic fuzz/property coverage for non-ack-only packet sets and later ack-eliciting events across contiguous and gapped packet numbers.\n- Link the paired RFC 9000 Section 13.2.1 non-ack-eliciting ACK deferral and inclusion requirements to a focused architecture, work-item, and verification artifact set while preserving the broad RFC9000-0001 trace.\n- Preserve focused verification evidence under `artifacts/v/20260425-rfc9000-nonack-deferral-inclusion/`.",

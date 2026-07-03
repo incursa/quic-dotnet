@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2P1-0005">To avoid being used for an amplification attack, such endpoints MUST limit the cumulative size of packets it sends to three times the cumulative size of the packets that are received and attributed to the connection.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P5-S2-R01">To avoid being used for an amplification attack, such endpoints MUST limit the cumulative size of packets it sends to three times the cumulative size of the packets that are received and attributed to the connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P2P1-0005")]
+[Requirement("RFC9000-S10-2-1-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P2P1_0005
 {
     [Fact]

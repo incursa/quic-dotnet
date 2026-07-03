@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1051")]
+[Requirement("RFC9000-S17-2-5-3-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_1051
 {
     [Fact]
@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_RFC9000_1051
     [Trait("Category", "Positive")]
     public void RequirementStatement_AllowsDiscardingDifferentHandshakeMessages()
     {
-        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1051");
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("RFC9000-S17-2-5-3-P2-S3-R01");
 
         Assert.True(statement.Contains("MAY", StringComparison.Ordinal));
         Assert.True(statement.Contains("different cryptographic handshake message", StringComparison.Ordinal));

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0006">A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-1-P4-S1-R01">A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P1-0006")]
+[Requirement("RFC9000-S14-1-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P1_0006
 {
     private const int InitialRouteDatagramOverhead = 20;

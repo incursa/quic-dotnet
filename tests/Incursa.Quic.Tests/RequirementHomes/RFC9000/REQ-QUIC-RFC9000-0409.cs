@@ -6,14 +6,14 @@ using System.Net;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0409">When tokens are used in Retry packets, the server SHOULD include information that allows the server to verify that the source IP address and port in client packets remain constant.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-1-4-P3-S2-R01">When tokens are used in Retry packets, the server SHOULD include information that allows the server to verify that the source IP address and port in client packets remain constant.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0409")]
+[Requirement("RFC9000-S8-1-4-P3-S2-R01")]
 [Collection(QuicLoopbackNetworkTestCollection.Name)]
 public sealed class REQ_QUIC_RFC9000_0409
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0409")]
+    [Requirement("RFC9000-S8-1-4-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task RetryReplayFromOriginalSourceEndpoint_IsValidatedAndAdmitted()
@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_RFC9000_0409
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0409")]
+    [Requirement("RFC9000-S8-1-4-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RetryReplayFromDifferentSourcePort_IsRejectedBeforeAdmission()
@@ -53,7 +53,7 @@ public sealed class REQ_QUIC_RFC9000_0409
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0409")]
+    [Requirement("RFC9000-S8-1-4-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void PortBoundRetryTokenValidation_RejectsMutatedSourcePorts()

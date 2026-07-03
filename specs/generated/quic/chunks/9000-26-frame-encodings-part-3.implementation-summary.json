@@ -1353,7 +1353,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1275",
+      "requirement_id": "RFC9000-S19-10-P2-S1-R01",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",
@@ -1378,7 +1378,7 @@
       "notes": "No per-stream flow-control state exists to enforce or consume MAX_STREAM_DATA values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1276",
+      "requirement_id": "RFC9000-S19-10-P2-S2-R01",
       "completion_status": "blocked by concrete technical dependency",
       "files_changed": [
         "src/Incursa.Quic/QuicMaxStreamDataFrame.cs",

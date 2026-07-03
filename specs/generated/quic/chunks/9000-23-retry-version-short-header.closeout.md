@@ -56,16 +56,16 @@
 | `REQ-QUIC-RFC9000-S17P2P5-0016` | An opaque token that the server MAY use to validate the client's address | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0001` | The server MUST include a connection ID of its choice in the Source Connection ID field | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0002` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0003` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0004` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
+| `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
+| `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `REQ-QUIC-RFC9000-1033` | A server MAY send Retry packets in response to Initial and 0-RTT packets | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0006` | A server MAY either discard or buffer 0-RTT packets that it receives | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `REQ-QUIC-RFC9000-1034` | A server MAY send multiple Retry packets as it receives Initial or 0-RTT packets | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
-| `REQ-QUIC-RFC9000-1035` | A server MUST NOT send more than one Retry packet in response to a single UDP datagram | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
-| `REQ-QUIC-RFC9000-1036` | A client MUST accept and process at most one Retry packet for each connection attempt | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1037` | After the client has received and processed an Initial or Retry packet from the server, it MU... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
+| `RFC9000-S17-2-5-1-P3-S3-R01` | A server MUST NOT send more than one Retry packet in response to a single UDP datagram | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
+| `RFC9000-S17-2-5-2-P1-R01` | A client MUST accept and process at most one Retry packet for each connection attempt | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
+| `RFC9000-S17-2-5-2-P1-S1-R01` | After the client has received and processed an Initial or Retry packet from the server, it MU... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0003` | Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1039` | A client MUST discard a Retry packet with a zero-length Retry Token field | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
+| `RFC9000-S17-2-5-2-P2-S2-R01` | A client MUST discard a Retry packet with a zero-length Retry Token field | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0005` | The client responds to a Retry packet with an Initial packet that MUST include the provided R... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0006` | A client MUST set the Destination Connection ID field of this Initial packet to the value fro... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0007` | It also MUST set the Token field to the token provided in the Retry packet | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
@@ -73,12 +73,12 @@
 | `REQ-QUIC-RFC9000-S17P2P5P2-0009` | A Retry packet does not include a packet number and MUST NOT be explicitly acknowledged by a... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P3-0001` | Subsequent Initial packets from the client MUST include the connection ID and token values fr... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P3-0002` | The client copies the Source Connection ID field from the Retry packet to the Destination Con... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1050` | A client MUST use the same cryptographic handshake message it included in this packet | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1051` | A server MAY treat a packet that contains a different cryptographic handshake message as a co... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1052` | A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the con... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1053` | A client MUST NOT reset the packet number for any packet number space after processing a Retr... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
+| `RFC9000-S17-2-5-3-P2-S2-R01` | A client MUST use the same cryptographic handshake message it included in this packet | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
+| `RFC9000-S17-2-5-3-P2-S3-R01` | A server MAY treat a packet that contains a different cryptographic handshake message as a co... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
+| `RFC9000-S17-2-5-3-P3-R01` | A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the con... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
+| `RFC9000-S17-2-5-3-P4-S1-R01` | A client MUST NOT reset the packet number for any packet number space after processing a Retr... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P3-0007` | In particular, 0-RTT packets MUST contain confidential information that will most likely be r... | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-1055` | A server MAY abort the connection if it detects that the client reset the packet number | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
+| `RFC9000-S17-2-5-3-P4-S6-R01` | A server MAY abort the connection if it detects that the client reset the packet number | not implemented | explicit blocker note | Post-Retry 0-RTT and packet-number continuity behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P3-0001` | This version of QUIC defines a single packet type that MUST use the short packet header | tested but implementation mapping unclear | implementation and test evidence | Only the shared long-header envelope is present; no packet-type-specific Handshake/Retry model or state machine exists yet. |
 | `REQ-QUIC-RFC9000-1059` | A 1-RTT packet MUST use a short packet header | not implemented | explicit blocker note | 1-RTT packet number parsing and the short-header payload/state machine are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P3P1-0002` | It MUST be used after the version and 1-RTT keys are negotiated | not implemented | explicit blocker note | 1-RTT packet number parsing and the short-header payload/state machine are not implemented yet. |
@@ -106,13 +106,13 @@
 | `REQ-QUIC-RFC9000-S17P4-0001` | On-path observers MAY measure the time between two spin bit toggle events to estimate the end... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0002` | The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initi... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0003` | An endpoint that does not support this feature MUST disable it, as defined below | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-1088` | Implementations MUST allow administrators of clients and servers to disable the spin bit eith... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P4-S1-R01` | Implementations MUST allow administrators of clients and servers to disable the spin bit eith... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0005` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-1090` | Allow any spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P5-R01` | Allow any spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-1091` | Ignore any incoming spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0008` | If the spin bit is enabled for the connection, the endpoint maintains a spin value for each n... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0009` | When a server receives a 1-RTT packet that increases the highest packet number seen by the se... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-1098` | When a client receives a 1-RTT packet that increases the highest packet number seen by the cl... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P8-S1-R01` | When a client receives a 1-RTT packet that increases the highest packet number seen by the cl... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 
 ## Consistency Check
 
@@ -162,16 +162,16 @@
 - `REQ-QUIC-RFC9000-S17P2P5-0016`
 - `REQ-QUIC-RFC9000-S17P2P5P1-0001`
 - `REQ-QUIC-RFC9000-S17P2P5P1-0002`
-- `REQ-QUIC-RFC9000-S17P2P5P1-0003`
-- `REQ-QUIC-RFC9000-S17P2P5P1-0004`
+- `RFC9000-S17-2-5-1-P2-S2-R01`
+- `RFC9000-S17-2-5-1-P2-S3-R01`
 - `REQ-QUIC-RFC9000-1033`
 - `REQ-QUIC-RFC9000-S17P2P5P1-0006`
 - `REQ-QUIC-RFC9000-1034`
-- `REQ-QUIC-RFC9000-1035`
-- `REQ-QUIC-RFC9000-1036`
-- `REQ-QUIC-RFC9000-1037`
+- `RFC9000-S17-2-5-1-P3-S3-R01`
+- `RFC9000-S17-2-5-2-P1-R01`
+- `RFC9000-S17-2-5-2-P1-S1-R01`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0003`
-- `REQ-QUIC-RFC9000-1039`
+- `RFC9000-S17-2-5-2-P2-S2-R01`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0005`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0006`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0007`
@@ -179,12 +179,12 @@
 - `REQ-QUIC-RFC9000-S17P2P5P2-0009`
 - `REQ-QUIC-RFC9000-S17P2P5P3-0001`
 - `REQ-QUIC-RFC9000-S17P2P5P3-0002`
-- `REQ-QUIC-RFC9000-1050`
-- `REQ-QUIC-RFC9000-1051`
-- `REQ-QUIC-RFC9000-1052`
-- `REQ-QUIC-RFC9000-1053`
+- `RFC9000-S17-2-5-3-P2-S2-R01`
+- `RFC9000-S17-2-5-3-P2-S3-R01`
+- `RFC9000-S17-2-5-3-P3-R01`
+- `RFC9000-S17-2-5-3-P4-S1-R01`
 - `REQ-QUIC-RFC9000-S17P2P5P3-0007`
-- `REQ-QUIC-RFC9000-1055`
+- `RFC9000-S17-2-5-3-P4-S6-R01`
 - `REQ-QUIC-RFC9000-S17P3-0001`
 - `REQ-QUIC-RFC9000-1059`
 - `REQ-QUIC-RFC9000-S17P3P1-0002`
@@ -198,13 +198,13 @@
 - `REQ-QUIC-RFC9000-S17P4-0001`
 - `REQ-QUIC-RFC9000-S17P4-0002`
 - `REQ-QUIC-RFC9000-S17P4-0003`
-- `REQ-QUIC-RFC9000-1088`
+- `RFC9000-S17-4-P4-S1-R01`
 - `REQ-QUIC-RFC9000-S17P4-0005`
-- `REQ-QUIC-RFC9000-1090`
+- `RFC9000-S17-4-P5-R01`
 - `REQ-QUIC-RFC9000-1091`
 - `REQ-QUIC-RFC9000-S17P4-0008`
 - `REQ-QUIC-RFC9000-S17P4-0009`
-- `REQ-QUIC-RFC9000-1098`
+- `RFC9000-S17-4-P8-S1-R01`
 
 ## Tests Run And Results
 

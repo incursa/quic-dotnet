@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0763">An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P5-S1-R01">An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0763")]
+[Requirement("RFC9000-S13-2-1-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0763
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0756")]
+    [Requirement("RFC9000-S13-2-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task WriteAsync_IncludesPendingAckFrameWithOutboundStreamFrame()
@@ -50,7 +50,7 @@ public sealed class REQ_QUIC_RFC9000_0763
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0756")]
+    [Requirement("RFC9000-S13-2-P2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task OpenOutboundStreamAsync_PiggybacksPendingAckAndCancelsAckDelayTimer()

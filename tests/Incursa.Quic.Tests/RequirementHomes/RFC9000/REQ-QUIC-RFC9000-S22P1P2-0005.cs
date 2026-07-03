@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P1P2-0005">For codepoints that are encoded in variable-length integers (Section 16), such as frame types, codepoints that encode to four or eight bytes (that is, values 214 and above) SHOULD be used unless the usage is especially sensitive to having a longer encoding.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-2-P3-R01">For codepoints that are encoded in variable-length integers (Section 16), such as frame types, codepoints that encode to four or eight bytes (that is, values 214 and above) SHOULD be used unless the usage is especially sensitive to having a longer encoding.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S22P1P2-0005")]
+[Requirement("RFC9000-S22-1-2-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_S22P1P2_0005
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P2_0005
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P2-0005");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P3-R01");
 
         Assert.Equal("For codepoints that are encoded in variable-length integers (Section 16), such as frame types...", requirement.GetProperty("title").GetString());
         Assert.Equal("For codepoints that are encoded in variable-length integers (Section 16), such as frame types, codepoints that encode to four or eight bytes (that is, values 214 and above) SHOULD be used unless the usage is especially sensitive to having a longer encoding.", requirement.GetProperty("statement").GetString());

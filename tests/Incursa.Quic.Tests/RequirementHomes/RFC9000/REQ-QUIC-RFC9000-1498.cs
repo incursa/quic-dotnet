@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1498">A request to remove a codepoint MUST be reviewed by the designated experts.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-3-P2-S1-R01">A request to remove a codepoint MUST be reviewed by the designated experts.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1498")]
+[Requirement("RFC9000-S22-1-3-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1498
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1498
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1498");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-3-P2-S1-R01");
 
         Assert.Equal("Review codepoint removal requests", requirement.GetProperty("title").GetString());
         Assert.Equal("A request to remove a codepoint MUST be reviewed by the designated experts.", requirement.GetProperty("statement").GetString());
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_1498
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1498")]
+    [Requirement("RFC9000-S22-1-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotTreatReviewAsRemovalAuthorization()
@@ -70,7 +70,7 @@ public sealed class REQ_QUIC_RFC9000_1498
         return document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1498")
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-3-P2-S1-R01")
             .Clone();
     }
 }

@@ -54,12 +54,12 @@
 - `REQ-QUIC-RFC9000-0047` - implemented and tested
 - `REQ-QUIC-RFC9000-0048` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0004` - not implemented
-- `REQ-QUIC-RFC9000-S2P2-0005` - not implemented
+- `RFC9000-S2-2-P3-S1-R01` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0006` - not implemented
-- `REQ-QUIC-RFC9000-S2P2-0007` - not implemented
+- `RFC9000-S2-2-P4-S2-R01` - not implemented
 - `REQ-QUIC-RFC9000-0052` - not implemented
 - `REQ-QUIC-RFC9000-S2P2-0009` - tested but implementation mapping unclear
-- `REQ-QUIC-RFC9000-0056` - not implemented
+- `RFC9000-S2-2-P6-R01` - not implemented
 
 ### S2P3
 

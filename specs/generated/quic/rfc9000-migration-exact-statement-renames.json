@@ -31,7 +31,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1052",
+      "staged_requirement_id": "RFC9000-S17-2-5-3-P3-R01",
       "statement": "A client MAY attempt 0-RTT after receiving a Retry packet by sending 0-RTT packets to the connection ID provided by the server.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P3-0005",
       "supersedes": [
@@ -41,7 +41,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0011",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0401",
+      "staged_requirement_id": "RFC9000-S8-1-3-P6-S5-R01",
       "statement": "A client MAY use a token from any previous connection to that server.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P3-0011",
       "supersedes": [
@@ -51,7 +51,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S15-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0901",
+      "staged_requirement_id": "RFC9000-S15-P7-S1-R01",
       "statement": "A client MAY use one of these version numbers with the expectation that the server will initiate version negotiation.",
       "derived_from": "REQ-QUIC-RFC9000-S15-0008",
       "supersedes": [
@@ -61,7 +61,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1036",
+      "staged_requirement_id": "RFC9000-S17-2-5-2-P1-R01",
       "statement": "A client MUST accept and process at most one Retry packet for each connection attempt.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P2-0001",
       "supersedes": [
@@ -71,7 +71,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1039",
+      "staged_requirement_id": "RFC9000-S17-2-5-2-P2-S2-R01",
       "statement": "A client MUST discard a Retry packet with a zero-length Retry Token field.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P2-0004",
       "supersedes": [
@@ -81,7 +81,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S6P2-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-6223",
+      "staged_requirement_id": "RFC9000-S6-2-P2-S2-R01",
       "statement": "A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.",
       "derived_from": "REQ-QUIC-RFC9000-S6P2-0004",
       "supersedes": [
@@ -91,7 +91,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S6P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-6222",
+      "staged_requirement_id": "RFC9000-S6-2-P2-S1-R01",
       "statement": "A client MUST discard any Version Negotiation packet if it has received and successfully processed any other packet, including an earlier Version Negotiation packet.",
       "derived_from": "REQ-QUIC-RFC9000-S6P2-0003",
       "supersedes": [
@@ -111,7 +111,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1053",
+      "staged_requirement_id": "RFC9000-S17-2-5-3-P4-S1-R01",
       "statement": "A client MUST NOT reset the packet number for any packet number space after processing a Retry packet.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P3-0006",
       "supersedes": [
@@ -151,7 +151,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1050",
+      "staged_requirement_id": "RFC9000-S17-2-5-3-P2-S2-R01",
       "statement": "A client MUST use the same cryptographic handshake message it included in this packet.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P3-0003",
       "supersedes": [
@@ -181,7 +181,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0346",
+      "staged_requirement_id": "RFC9000-S7-4-1-P5-R01",
       "statement": "A client that attempts to send 0-RTT data MUST remember all other transport parameters used by the server that it is able to process.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4P1-0004",
       "supersedes": [
@@ -191,7 +191,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0543",
+      "staged_requirement_id": "RFC9000-S9-6-3-P5-S1-R01",
       "statement": "A client that migrates to a new address SHOULD use a preferred address from the same address family for the server.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P3-0006",
       "supersedes": [
@@ -221,7 +221,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0650",
+      "staged_requirement_id": "RFC9000-S10-3-2-P5-S4-R01",
       "statement": "A connection ID from a connection that is reset by revealing the stateless reset token MUST NOT be reused for new connections at nodes that share a static key.",
       "derived_from": "REQ-QUIC-RFC9000-S10P3P2-0006",
       "supersedes": [
@@ -331,7 +331,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0443",
+      "staged_requirement_id": "RFC9000-S8-2-2-P2-S1-R01",
       "statement": "A PATH_RESPONSE frame MUST be sent on the network path where the PATH_CHALLENGE frame was received.",
       "derived_from": "REQ-QUIC-RFC9000-S8P2P2-0003",
       "supersedes": [
@@ -401,7 +401,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1324",
+      "staged_requirement_id": "RFC9000-S13-2-2-P5-S1-R01",
       "statement": "A receiver MAY process multiple available packets before determining whether to send an ACK frame in response.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P2-0003",
       "supersedes": [
@@ -481,7 +481,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0768",
+      "staged_requirement_id": "RFC9000-S13-2-3-P5-S1-R01",
       "statement": "A receiver MUST retain an ACK Range unless it can ensure that it will not subsequently accept packets with numbers in that range.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P3-0010",
       "supersedes": [
@@ -511,7 +511,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P3-0012",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0771",
+      "staged_requirement_id": "RFC9000-S13-2-3-P7-S1-R01",
       "statement": "A receiver SHOULD include an ACK Range containing the largest received packet number in every ACK frame.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P3-0012",
       "supersedes": [
@@ -521,7 +521,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P2-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1323",
+      "staged_requirement_id": "RFC9000-S13-2-2-P4-S1-R01",
       "statement": "A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting packets.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P2-0002",
       "supersedes": [
@@ -531,7 +531,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1498",
+      "staged_requirement_id": "RFC9000-S22-1-3-P2-S1-R01",
       "statement": "A request to remove a codepoint MUST be reviewed by the designated experts.",
       "derived_from": "REQ-QUIC-RFC9000-S22P1P3-0001",
       "supersedes": [
@@ -561,7 +561,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P13-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1298",
+      "staged_requirement_id": "RFC9000-S19-13-P1-R01",
       "statement": "A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.",
       "derived_from": "REQ-QUIC-RFC9000-S19P13-0001",
       "supersedes": [
@@ -601,7 +601,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1055",
+      "staged_requirement_id": "RFC9000-S17-2-5-3-P4-S6-R01",
       "statement": "A server MAY abort the connection if it detects that the client reset the packet number.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P3-0008",
       "supersedes": [
@@ -621,7 +621,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0265",
+      "staged_requirement_id": "RFC9000-S5-2-2-P1-S2-R01",
       "statement": "A server MAY limit the number of packets to which it responds with a Version Negotiation packet.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P2-0002",
       "supersedes": [
@@ -631,7 +631,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S6P1-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0286",
+      "staged_requirement_id": "RFC9000-S6-1-P3-R01",
       "statement": "A server MAY limit the number of Version Negotiation packets it sends.",
       "derived_from": "REQ-QUIC-RFC9000-S6P1-0003",
       "supersedes": [
@@ -681,7 +681,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1051",
+      "staged_requirement_id": "RFC9000-S17-2-5-3-P2-S3-R01",
       "statement": "A server MAY treat a packet that contains a different cryptographic handshake message as a connection error or discard it.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P3-0004",
       "supersedes": [
@@ -701,7 +701,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1035",
+      "staged_requirement_id": "RFC9000-S17-2-5-1-P3-S3-R01",
       "statement": "A server MUST NOT send more than one Retry packet in response to a single UDP datagram.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P1-0008",
       "supersedes": [
@@ -731,7 +731,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P2-0012",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0319",
+      "staged_requirement_id": "RFC9000-S7-2-P8-S2-R01",
       "statement": "A server MUST set the Destination Connection ID it uses for sending packets based on the first received Initial packet.",
       "derived_from": "REQ-QUIC-RFC9000-S7P2-0012",
       "supersedes": [
@@ -931,7 +931,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1037",
+      "staged_requirement_id": "RFC9000-S17-2-5-2-P1-S1-R01",
       "statement": "After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P5P2-0002",
       "supersedes": [
@@ -971,7 +971,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S22P1P4-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1507",
+      "staged_requirement_id": "RFC9000-S22-1-4-P4-R01",
       "statement": "All registrations made by Standards Track publications MUST be permanent.",
       "derived_from": "REQ-QUIC-RFC9000-S22P1P4-0006",
       "supersedes": [
@@ -1001,7 +1001,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0407",
+      "staged_requirement_id": "RFC9000-S8-1-4-P1-S1-R01",
       "statement": "An address validation token MUST be difficult to guess.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P4-0001",
       "supersedes": [
@@ -1011,7 +1011,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0465",
+      "staged_requirement_id": "RFC9000-S9-P5-S2-R01",
       "statement": "An endpoint capable of connection migration MAY wait for a new path to become available before discarding connection state.",
       "derived_from": "REQ-QUIC-RFC9000-S9-0006",
       "supersedes": [
@@ -1021,7 +1021,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0583",
+      "staged_requirement_id": "RFC9000-S10-2-1-P7-S1-R01",
       "statement": "An endpoint in the closing state MUST either discard packets received from an unvalidated address or limit the cumulative size of packets it sends to an unvalidated address to three times the size of packets it receives from that address.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2P1-0007",
       "supersedes": [
@@ -1081,7 +1081,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0580",
+      "staged_requirement_id": "RFC9000-S10-2-1-P5-R01",
       "statement": "An endpoint MAY drop packet protection keys when entering the closing state and send a packet containing a CONNECTION_CLOSE frame in response to any UDP datagram that is received.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2P1-0004",
       "supersedes": [
@@ -1091,7 +1091,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P2-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0425",
+      "staged_requirement_id": "RFC9000-S8-2-P6-S1-R01",
       "statement": "An endpoint MAY include other frames with the PATH_CHALLENGE and PATH_RESPONSE frames used for path validation.",
       "derived_from": "REQ-QUIC-RFC9000-S8P2-0001",
       "supersedes": [
@@ -1101,7 +1101,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0579",
+      "staged_requirement_id": "RFC9000-S10-2-1-P4-S3-R01",
       "statement": "An endpoint MAY retain packet protection keys for incoming packets to allow it to read and process a CONNECTION_CLOSE frame.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2P1-0003",
       "supersedes": [
@@ -1111,7 +1111,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S14P2-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0872",
+      "staged_requirement_id": "RFC9000-S14-2-P4-S2-R01",
       "statement": "An endpoint MAY terminate the connection if an alternative path cannot be found.",
       "derived_from": "REQ-QUIC-RFC9000-S14P2-0008",
       "supersedes": [
@@ -1181,7 +1181,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1421",
+      "staged_requirement_id": "RFC9000-S14-2-1-P2-S1-R01",
       "statement": "An endpoint MUST ignore an ICMP message that claims the PMTU has decreased below QUIC's smallest allowed maximum datagram size.",
       "derived_from": "REQ-QUIC-RFC9000-S14P2P1-0001",
       "supersedes": [
@@ -1191,7 +1191,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4P2-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0357",
+      "staged_requirement_id": "RFC9000-S7-4-2-P1-S2-R01",
       "statement": "An endpoint MUST ignore transport parameters that it does not support.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4P2-0001",
       "supersedes": [
@@ -1201,7 +1201,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S11P1-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0668",
+      "staged_requirement_id": "RFC9000-S11-1-P5-S3-R01",
       "statement": "An endpoint MUST not discard a packet unless it does not process the frames in the packet or it reverts the effects of any processing.",
       "derived_from": "REQ-QUIC-RFC9000-S11P1-0008",
       "supersedes": [
@@ -1211,7 +1211,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0845",
+      "staged_requirement_id": "RFC9000-S13-4-2-1-P5-S2-R01",
       "statement": "An endpoint MUST NOT fail ECN validation as a result of processing an ACK frame that does not increase the largest acknowledged packet number.",
       "derived_from": "REQ-QUIC-RFC9000-S13P4P2P1-0006",
       "supersedes": [
@@ -1231,7 +1231,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0779",
+      "staged_requirement_id": "RFC9000-S13-2-5-P2-S2-R01",
       "statement": "An endpoint MUST NOT include delays that it does not control when populating the ACK Delay field in an ACK frame.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P5-0003",
       "supersedes": [
@@ -1261,7 +1261,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P5-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0515",
+      "staged_requirement_id": "RFC9000-S9-5-P3-R01",
       "statement": "An endpoint MUST NOT reuse a connection ID when sending from more than one local address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P5-0002",
       "supersedes": [
@@ -1271,7 +1271,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0335",
+      "staged_requirement_id": "RFC9000-S7-4-P7-R01",
       "statement": "An endpoint MUST NOT send a parameter more than once in a given transport parameters extension.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4-0002",
       "supersedes": [
@@ -1301,7 +1301,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S4P5-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0193",
+      "staged_requirement_id": "RFC9000-S4-5-P4-R01",
       "statement": "An endpoint MUST NOT send data on a stream at or beyond the final size.",
       "derived_from": "REQ-QUIC-RFC9000-S4P5-0005",
       "supersedes": [
@@ -1311,7 +1311,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S2P2-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0056",
+      "staged_requirement_id": "RFC9000-S2-2-P6-R01",
       "statement": "An endpoint MUST NOT send data on any stream without ensuring that it is within the flow control limits set by its peer.",
       "derived_from": "REQ-QUIC-RFC9000-S2P2-0010",
       "supersedes": [
@@ -1461,7 +1461,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0334",
+      "staged_requirement_id": "RFC9000-S7-4-P6-R01",
       "statement": "An endpoint MUST treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4-0001",
       "supersedes": [
@@ -1501,7 +1501,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0228",
+      "staged_requirement_id": "RFC9000-S5-1-1-P4-S1-R01",
       "statement": "An endpoint SHOULD ensure that its peer has a sufficient number of available and unused connection IDs.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1P1-0010",
       "supersedes": [
@@ -1521,7 +1521,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0576",
+      "staged_requirement_id": "RFC9000-S10-2-1-P3-S1-R01",
       "statement": "An endpoint SHOULD limit the rate at which it generates packets in the closing state.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2P1-0001",
       "supersedes": [
@@ -1541,7 +1541,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0435",
+      "staged_requirement_id": "RFC9000-S8-2-1-P3-S1-R01",
       "statement": "An endpoint SHOULD NOT probe a new path with packets containing a PATH_CHALLENGE frame more frequently than it would send an Initial packet.",
       "derived_from": "REQ-QUIC-RFC9000-S8P2P1-0003",
       "supersedes": [
@@ -1551,7 +1551,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0763",
+      "staged_requirement_id": "RFC9000-S13-2-1-P5-S1-R01",
       "statement": "An endpoint SHOULD send an ACK frame with other frames when there are new ack-eliciting packets to acknowledge.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P1-0010",
       "supersedes": [
@@ -1561,7 +1561,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0015",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0233",
+      "staged_requirement_id": "RFC9000-S5-1-1-P6-S1-R01",
       "statement": "An endpoint SHOULD supply a new connection ID when the peer retires a connection ID.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1P1-0015",
       "supersedes": [
@@ -1571,7 +1571,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P1-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0752",
+      "staged_requirement_id": "RFC9000-S13-1-P3-R01",
       "statement": "An endpoint SHOULD treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition.",
       "derived_from": "REQ-QUIC-RFC9000-S13P1-0004",
       "supersedes": [
@@ -1581,7 +1581,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0336",
+      "staged_requirement_id": "RFC9000-S7-4-P7-S1-R01",
       "statement": "An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4-0003",
       "supersedes": [
@@ -1591,7 +1591,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P1-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0925",
+      "staged_requirement_id": "RFC9000-S17-1-P4-S2-R01",
       "statement": "An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be recovered even if the packet arrives after packets that are sent afterwards.",
       "derived_from": "REQ-QUIC-RFC9000-S17P1-0004",
       "supersedes": [
@@ -1651,7 +1651,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P10-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1276",
+      "staged_requirement_id": "RFC9000-S19-10-P2-S2-R01",
       "statement": "An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P10-0004",
       "supersedes": [
@@ -1671,7 +1671,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P3P3-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0502",
+      "staged_requirement_id": "RFC9000-S9-3-3-P5-S1-R01",
       "statement": "An endpoint that receives a PATH_CHALLENGE on an active path SHOULD send a non-probing packet in response.",
       "derived_from": "REQ-QUIC-RFC9000-S9P3P3-0002",
       "supersedes": [
@@ -1681,7 +1681,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P4-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1208",
+      "staged_requirement_id": "RFC9000-S19-4-P3-S1-R01",
       "statement": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P4-0003",
       "supersedes": [
@@ -1691,7 +1691,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P5-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1217",
+      "staged_requirement_id": "RFC9000-S19-5-P2-R02",
       "statement": "An endpoint that receives a STOP_SENDING frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P5-0004",
       "supersedes": [
@@ -1701,7 +1701,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P13-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1299",
+      "staged_requirement_id": "RFC9000-S19-13-P2-R01",
       "statement": "An endpoint that receives a STREAM_DATA_BLOCKED frame for a send-only stream MUST terminate the connection with error STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P13-0002",
       "supersedes": [
@@ -1731,7 +1731,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P3-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0604",
+      "staged_requirement_id": "RFC9000-S10-3-P2-S1-R01",
       "statement": "An endpoint that wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able.",
       "derived_from": "REQ-QUIC-RFC9000-S10P3-0002",
       "supersedes": [
@@ -1771,7 +1771,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P5-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1454",
+      "staged_requirement_id": "RFC9000-S21-5-P8-S2-R01",
       "statement": "Any future extension that allows server migration MUST also define countermeasures for forgery attacks.",
       "derived_from": "REQ-QUIC-RFC9000-S21P5-0003",
       "supersedes": [
@@ -1781,7 +1781,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1428",
+      "staged_requirement_id": "RFC9000-S14-2-1-P5-S2-R01",
       "statement": "Any reduction in QUIC's maximum datagram size in response to ICMP messages MAY be provisional until QUIC's loss detection algorithm determines that the quoted packet has actually been lost.",
       "derived_from": "REQ-QUIC-RFC9000-S14P2P1-0007",
       "supersedes": [
@@ -1791,7 +1791,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S11P2-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0674",
+      "staged_requirement_id": "RFC9000-S11-2-P4-S1-R01",
       "statement": "Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint.",
       "derived_from": "REQ-QUIC-RFC9000-S11P2-0005",
       "supersedes": [
@@ -1801,7 +1801,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P1P2-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0560",
+      "staged_requirement_id": "RFC9000-S10-1-2-P3-S1-R01",
       "statement": "Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate.",
       "derived_from": "REQ-QUIC-RFC9000-S10P1P2-0001",
       "supersedes": [
@@ -1821,7 +1821,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1494",
+      "staged_requirement_id": "RFC9000-S22-1-2-P4-S1-R01",
       "statement": "Applications to register codepoints in QUIC registries MAY include a requested codepoint as part of the registration.",
       "derived_from": "REQ-QUIC-RFC9000-S22P1P2-0006",
       "supersedes": [
@@ -1851,7 +1851,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0375",
+      "staged_requirement_id": "RFC9000-S8-1-P5-R01",
       "statement": "Clients MUST ensure that UDP datagrams containing Initial packets have UDP payloads of at least 1200 bytes, adding PADDING frames as necessary.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1-0004",
       "supersedes": [
@@ -1921,7 +1921,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0208",
+      "staged_requirement_id": "RFC9000-S5-1-P4-S1-R01",
       "statement": "Connection IDs MUST NOT contain any information that can be used by an external observer to correlate them with other connection IDs for the same connection.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1-0006",
       "supersedes": [
@@ -2011,7 +2011,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1468",
+      "staged_requirement_id": "RFC9000-S21-5-6-P2-S1-R01",
       "statement": "Endpoints MAY prevent connection attempts or migration to a loopback address.",
       "derived_from": "REQ-QUIC-RFC9000-S21P5P6-0001",
       "supersedes": [
@@ -2021,7 +2021,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1473",
+      "staged_requirement_id": "RFC9000-S21-5-6-P5-S4-R01",
       "statement": "Endpoints MAY retire connection IDs containing patterns known to be problematic without using them.",
       "derived_from": "REQ-QUIC-RFC9000-S21P5P6-0006",
       "supersedes": [
@@ -2101,7 +2101,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S4P6-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0200",
+      "staged_requirement_id": "RFC9000-S4-6-P3-R01",
       "statement": "Endpoints MUST NOT exceed the limit set by their peer.",
       "derived_from": "REQ-QUIC-RFC9000-S4P6-0008",
       "supersedes": [
@@ -2121,7 +2121,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P3-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0326",
+      "staged_requirement_id": "RFC9000-S7-3-P3-S2-R01",
       "statement": "Endpoints MUST validate that received transport parameters match received connection ID values.",
       "derived_from": "REQ-QUIC-RFC9000-S7P3-0006",
       "supersedes": [
@@ -2131,7 +2131,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P2P4-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0454",
+      "staged_requirement_id": "RFC9000-S8-2-4-P2-R01",
       "statement": "Endpoints SHOULD abandon path validation based on a timer.",
       "derived_from": "REQ-QUIC-RFC9000-S8P2P4-0001",
       "supersedes": [
@@ -2141,7 +2141,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0780",
+      "staged_requirement_id": "RFC9000-S13-2-5-P2-S3-R01",
       "statement": "Endpoints SHOULD include buffering delays caused by unavailability of decryption keys.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P5-0004",
       "supersedes": [
@@ -2151,7 +2151,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1469",
+      "staged_requirement_id": "RFC9000-S21-5-6-P2-S2-R01",
       "statement": "Endpoints SHOULD NOT allow connections or migration to a loopback address if the same service was previously available at a different interface or if the address was provided by a service at a non-loopback address.",
       "derived_from": "REQ-QUIC-RFC9000-S21P5P6-0002",
       "supersedes": [
@@ -2161,7 +2161,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0016",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0253",
+      "staged_requirement_id": "RFC9000-S5-1-2-P7-S1-R01",
       "statement": "Endpoints SHOULD NOT issue updates of the Retire Prior To field before receiving RETIRE_CONNECTION_ID frames that retire all connection IDs indicated by the previous Retire Prior To value.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1P2-0016",
       "supersedes": [
@@ -2171,7 +2171,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P5P6-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1470",
+      "staged_requirement_id": "RFC9000-S21-5-6-P3-S3-R01",
       "statement": "Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the network indicating that sending datagrams to unvalidated addresses in a given range is not safe.",
       "derived_from": "REQ-QUIC-RFC9000-S21P5P6-0003",
       "supersedes": [
@@ -2311,7 +2311,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0264",
+      "staged_requirement_id": "RFC9000-S5-2-1-P3-S1-R01",
       "statement": "If a client receives a packet that uses a different version than it initially selected, it MUST discard that packet.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P1-0005",
       "supersedes": [
@@ -2331,7 +2331,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0272",
+      "staged_requirement_id": "RFC9000-S5-2-2-P5-S1-R01",
       "statement": "If a server refuses to accept a new connection, it SHOULD send an Initial packet containing a CONNECTION_CLOSE frame with error code CONNECTION_REFUSED.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P2-0007",
       "supersedes": [
@@ -2371,7 +2371,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1P1-0016",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0234",
+      "staged_requirement_id": "RFC9000-S5-1-1-P6-S2-R01",
       "statement": "If an endpoint provided fewer connection IDs than the peer's active_connection_id_limit, it MAY supply a new connection ID when it receives a packet with a previously unused connection ID.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1P1-0016",
       "supersedes": [
@@ -2421,7 +2421,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0540",
+      "staged_requirement_id": "RFC9000-S9-6-3-P2-S2-R01",
       "statement": "If path validation of the server's preferred address fails but validation of the server's original address succeeds, the client MAY migrate to its new address and continue sending to the server's original address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P3-0003",
       "supersedes": [
@@ -2431,7 +2431,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P3-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0539",
+      "staged_requirement_id": "RFC9000-S9-6-3-P2-S1-R01",
       "statement": "If path validation of the server's preferred address succeeds, the client MUST abandon validation of the original address and migrate to using the server's preferred address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P3-0002",
       "supersedes": [
@@ -2491,7 +2491,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0273",
+      "staged_requirement_id": "RFC9000-S5-2-2-P6-S1-R01",
       "statement": "If the packet is a 0-RTT packet, the server MAY buffer a limited number of these packets in anticipation of a late-arriving Initial packet.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P2-0008",
       "supersedes": [
@@ -2521,7 +2521,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0462",
+      "staged_requirement_id": "RFC9000-S9-P3-S2-R01",
       "statement": "If the peer violates this requirement, the endpoint MUST either drop the incoming packets on that path without generating a Stateless Reset or proceed with path validation and allow the peer to migrate.",
       "derived_from": "REQ-QUIC-RFC9000-S9-0003",
       "supersedes": [
@@ -2541,7 +2541,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P3-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0481",
+      "staged_requirement_id": "RFC9000-S9-3-P2-S1-R01",
       "statement": "If the recipient permits the migration, it MUST send subsequent packets to the new peer address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P3-0006",
       "supersedes": [
@@ -2551,7 +2551,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0016",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-8135",
+      "staged_requirement_id": "RFC9000-S8-1-3-P10-S4-R01",
       "statement": "If the validation succeeds, the server SHOULD then allow the handshake to proceed.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P3-0016",
       "supersedes": [
@@ -2561,7 +2561,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P4-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1088",
+      "staged_requirement_id": "RFC9000-S17-4-P4-S1-R01",
       "statement": "Implementations MUST allow administrators of clients and servers to disable the spin bit either globally or on a per-connection basis.",
       "derived_from": "REQ-QUIC-RFC9000-S17P4-0004",
       "supersedes": [
@@ -2571,7 +2571,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P5-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0361",
+      "staged_requirement_id": "RFC9000-S7-5-P2-S1-R01",
       "statement": "Implementations MUST support buffering at least 4096 bytes of data received in out-of-order CRYPTO frames.",
       "derived_from": "REQ-QUIC-RFC9000-S7P5-0001",
       "supersedes": [
@@ -2581,7 +2581,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P3P3-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0499",
+      "staged_requirement_id": "RFC9000-S9-3-3-P4-S1-R01",
       "statement": "In response to an apparent migration, endpoints MUST validate the previously active path using a PATH_CHALLENGE frame.",
       "derived_from": "REQ-QUIC-RFC9000-S9P3P3-0001",
       "supersedes": [
@@ -2631,7 +2631,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2-0011",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0258",
+      "staged_requirement_id": "RFC9000-S5-2-P6-S1-R01",
       "statement": "Invalid packets that lack strong integrity protection, such as Initial, Retry, or Version Negotiation, MAY be discarded.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2-0011",
       "supersedes": [
@@ -2691,7 +2691,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0570",
+      "staged_requirement_id": "RFC9000-S10-2-P7-S1-R01",
       "statement": "Once its closing or draining state ends, an endpoint SHOULD discard all connection state.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2-0004",
       "supersedes": [
@@ -2761,7 +2761,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S21P7-0001",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1476",
+      "staged_requirement_id": "RFC9000-S21-7-P4-R01",
       "statement": "QUIC deployments SHOULD provide mitigations for stream fragmentation attacks.",
       "derived_from": "REQ-QUIC-RFC9000-S21P7-0001",
       "supersedes": [
@@ -2841,7 +2841,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S12P2-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0684",
+      "staged_requirement_id": "RFC9000-S12-2-P4-R01",
       "statement": "Receivers MAY route based on the information in the first packet contained in a UDP datagram.",
       "derived_from": "REQ-QUIC-RFC9000-S12P2-0007",
       "supersedes": [
@@ -2861,7 +2861,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S12P2-0009",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0686",
+      "staged_requirement_id": "RFC9000-S12-2-P4-S2-R01",
       "statement": "Receivers SHOULD ignore any subsequent packets with a different Destination Connection ID than the first packet in the datagram.",
       "derived_from": "REQ-QUIC-RFC9000-S12P2-0009",
       "supersedes": [
@@ -2871,7 +2871,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P10-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1275",
+      "staged_requirement_id": "RFC9000-S19-10-P2-S1-R01",
       "statement": "Receiving a MAX_STREAM_DATA frame for a locally initiated stream that has not yet been created MUST be treated as a connection error of type STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P10-0003",
       "supersedes": [
@@ -2881,7 +2881,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S19P5-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1216",
+      "staged_requirement_id": "RFC9000-S19-5-P2-R01",
       "statement": "Receiving a STOP_SENDING frame for a locally initiated stream that has not yet been created MUST be treated as a connection error of type STREAM_STATE_ERROR.",
       "derived_from": "REQ-QUIC-RFC9000-S19P5-0003",
       "supersedes": [
@@ -2901,7 +2901,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S22P1P2-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1491",
+      "staged_requirement_id": "RFC9000-S22-1-2-P1-S1-R01",
       "statement": "Requests for multiple codepoints MAY use a contiguous range.",
       "derived_from": "REQ-QUIC-RFC9000-S22P1P2-0002",
       "supersedes": [
@@ -2921,7 +2921,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S12P2-0008",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0685",
+      "staged_requirement_id": "RFC9000-S12-2-P4-S1-R01",
       "statement": "Senders MUST NOT coalesce QUIC packets with different connection IDs into a single UDP datagram.",
       "derived_from": "REQ-QUIC-RFC9000-S12P2-0008",
       "supersedes": [
@@ -2951,7 +2951,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0393",
+      "staged_requirement_id": "RFC9000-S8-1-3-P2-S5-R01",
       "statement": "Servers MAY discard any Initial packet that does not carry the expected token.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P3-0004",
       "supersedes": [
@@ -2961,7 +2961,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0275",
+      "staged_requirement_id": "RFC9000-S5-2-2-P7-R01",
       "statement": "Servers MUST drop incoming packets under all other circumstances.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P2-0010",
       "supersedes": [
@@ -2971,7 +2971,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0267",
+      "staged_requirement_id": "RFC9000-S5-2-2-P1-S3-R01",
       "statement": "Servers MUST drop smaller packets that specify unsupported versions.",
       "derived_from": "REQ-QUIC-RFC9000-S5P2P2-0003",
       "supersedes": [
@@ -3011,7 +3011,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0569",
+      "staged_requirement_id": "RFC9000-S10-2-P6-S3-R01",
       "statement": "Servers that retain an open socket for accepting new connections SHOULD NOT end the closing or draining state early.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2-0003",
       "supersedes": [
@@ -3021,7 +3021,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S3P5-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0152",
+      "staged_requirement_id": "RFC9000-S3-5-P6-S1-R01",
       "statement": "STOP_SENDING SHOULD only be sent for a stream that has not been reset by the peer.",
       "derived_from": "REQ-QUIC-RFC9000-S3P5-0010",
       "supersedes": [
@@ -3121,7 +3121,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0392",
+      "staged_requirement_id": "RFC9000-S8-1-3-P2-S4-R01",
       "statement": "The client MUST NOT use the token provided in a Retry for future connections.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P3-0003",
       "supersedes": [
@@ -3131,7 +3131,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0345",
+      "staged_requirement_id": "RFC9000-S7-4-1-P4-S2-R01",
       "statement": "The client MUST use the server's new values in the handshake instead; if the server does not provide new values, the default values are used.",
       "derived_from": "REQ-QUIC-RFC9000-S7P4P1-0003",
       "supersedes": [
@@ -3191,7 +3191,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0571",
+      "staged_requirement_id": "RFC9000-S10-2-P7-S2-R01",
       "statement": "The endpoint MAY send a Stateless Reset in response to any further incoming packets belonging to this connection.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2-0005",
       "supersedes": [
@@ -3211,7 +3211,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S14P2P1-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1426",
+      "staged_requirement_id": "RFC9000-S14-2-1-P4-S4-R01",
       "statement": "The endpoint SHOULD ignore all ICMP messages that fail validation.",
       "derived_from": "REQ-QUIC-RFC9000-S14P2P1-0005",
       "supersedes": [
@@ -3221,7 +3221,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S22P1P3-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1499",
+      "staged_requirement_id": "RFC9000-S22-1-3-P2-S2-R01",
       "statement": "The experts MUST attempt to determine whether the codepoint is still in use.",
       "derived_from": "REQ-QUIC-RFC9000-S22P1P3-0002",
       "supersedes": [
@@ -3361,7 +3361,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S4P5-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0192",
+      "staged_requirement_id": "RFC9000-S4-5-P3-S1-R01",
       "statement": "The receiver MUST use the final size of the stream to account for all bytes sent on the stream in its connection-level flow controller.",
       "derived_from": "REQ-QUIC-RFC9000-S4P5-0004",
       "supersedes": [
@@ -3381,7 +3381,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S5P1-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0209",
+      "staged_requirement_id": "RFC9000-S5-1-P4-S2-R01",
       "statement": "The same connection ID MUST NOT be issued more than once on the same connection.",
       "derived_from": "REQ-QUIC-RFC9000-S5P1-0007",
       "supersedes": [
@@ -3391,7 +3391,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0007",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0651",
+      "staged_requirement_id": "RFC9000-S10-3-2-P6-S1-R01",
       "statement": "The same stateless reset token MUST NOT be used for multiple connection IDs.",
       "derived_from": "REQ-QUIC-RFC9000-S10P3P2-0007",
       "supersedes": [
@@ -3431,7 +3431,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0535",
+      "staged_requirement_id": "RFC9000-S9-6-2-P4-S3-R01",
       "statement": "The server MAY continue to process delayed packets that are received on the old IP address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P2-0005",
       "supersedes": [
@@ -3451,7 +3451,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0532",
+      "staged_requirement_id": "RFC9000-S9-6-2-P3-S1-R01",
       "statement": "The server MUST probe on the path toward the client from its preferred address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P2-0003",
       "supersedes": [
@@ -3471,7 +3471,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0534",
+      "staged_requirement_id": "RFC9000-S9-6-2-P4-S2-R01",
       "statement": "The server SHOULD drop newer packets for this connection that are received on the old IP address.",
       "derived_from": "REQ-QUIC-RFC9000-S9P6P2-0004",
       "supersedes": [
@@ -3541,7 +3541,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P2-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0309",
+      "staged_requirement_id": "RFC9000-S7-2-P3-S2-R01",
       "statement": "This Destination Connection ID MUST be at least 8 bytes in length.",
       "derived_from": "REQ-QUIC-RFC9000-S7P2-0005",
       "supersedes": [
@@ -3581,7 +3581,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0410",
+      "staged_requirement_id": "RFC9000-S8-1-4-P4-S1-R01",
       "statement": "Tokens sent in NEW_TOKEN frames MUST include information that allows the server to verify that the client IP address has not changed from when the token was issued.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P4-0004",
       "supersedes": [
@@ -3591,7 +3591,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0409",
+      "staged_requirement_id": "RFC9000-S8-1-4-P3-S2-R01",
       "statement": "Tokens sent in Retry packets SHOULD include information that allows the server to verify that the source IP address and port in client packets remain constant.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P4-0003",
       "supersedes": [
@@ -3611,7 +3611,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S7P2-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0310",
+      "staged_requirement_id": "RFC9000-S7-2-P3-S3-R01",
       "statement": "Until a packet is received from the server, the client MUST use the same Destination Connection ID value on all packets in this connection.",
       "derived_from": "REQ-QUIC-RFC9000-S7P2-0006",
       "supersedes": [
@@ -3701,7 +3701,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P4-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1098",
+      "staged_requirement_id": "RFC9000-S17-4-P8-S1-R01",
       "statement": "When a client receives a 1-RTT packet that increases the highest packet number seen by the client from the server on a given network path, it MUST set the spin value for that path to the inverse of the spin bit in the received packet.",
       "derived_from": "REQ-QUIC-RFC9000-S17P4-0010",
       "supersedes": [
@@ -3721,7 +3721,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0464",
+      "staged_requirement_id": "RFC9000-S9-P5-S1-R01",
       "statement": "When an endpoint has no validated path on which to send packets, it MAY discard connection state.",
       "derived_from": "REQ-QUIC-RFC9000-S9-0005",
       "supersedes": [
@@ -3741,7 +3741,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0009",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0399",
+      "staged_requirement_id": "RFC9000-S8-1-3-P6-S2-R01",
       "statement": "When connecting to a server for which the client retains an applicable and unused token, it SHOULD include that token in the Token field of its Initial packet.",
       "derived_from": "REQ-QUIC-RFC9000-S8P1P3-0009",
       "supersedes": [
@@ -3751,7 +3751,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0011",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0764",
+      "staged_requirement_id": "RFC9000-S13-2-1-P5-S2-R01",
       "statement": "When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P1-0011",
       "supersedes": [
@@ -3761,7 +3761,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2-0004",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0756",
+      "staged_requirement_id": "RFC9000-S13-2-P2-R01",
       "statement": "When sending a packet for any reason, an endpoint SHOULD attempt to include an ACK frame if one has not been sent recently.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2-0004",
       "supersedes": [
@@ -3781,7 +3781,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P4-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-1090",
+      "staged_requirement_id": "RFC9000-S17-4-P5-R01",
       "statement": "When the spin bit is disabled, endpoints MAY set the spin bit to any value.",
       "derived_from": "REQ-QUIC-RFC9000-S17P4-0006",
       "supersedes": [

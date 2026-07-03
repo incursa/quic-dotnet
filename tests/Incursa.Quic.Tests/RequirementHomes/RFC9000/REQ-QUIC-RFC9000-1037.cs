@@ -4,18 +4,18 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1037">After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-5-2-P1-S1-R01">After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1037")]
+[Requirement("RFC9000-S17-2-5-2-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1037
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1037">After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-5-2-P1-S1-R01">After the client has received and processed an Initial or Retry packet from the server, it MUST discard any subsequent Retry packets that it receives.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1037")]
+    [Requirement("RFC9000-S17-2-5-2-P1-S1-R01")]
     public void ClientDiscardsSubsequentRetryPacketsAfterProcessingTheFirstRetryPacket()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_RFC9000_1037
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-1037")]
+    [Requirement("RFC9000-S17-2-5-2-P1-S1-R01")]
     public void ClientKeepsTheFirstRetryOutcomeWhenASecondRetryArrives()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -59,7 +59,7 @@ public sealed class REQ_QUIC_RFC9000_1037
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-1037")]
+    [Requirement("RFC9000-S17-2-5-2-P1-S1-R01")]
     public void ClientDiscardsSubsequentRetryPacketsWithDifferentRetryValues()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();

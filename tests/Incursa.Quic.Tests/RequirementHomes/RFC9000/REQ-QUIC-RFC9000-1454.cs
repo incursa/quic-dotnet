@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1454">Any future extension that allows server migration MUST also define countermeasures for forgery attacks.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-P8-S2-R01">Any future extension that allows server migration MUST also define countermeasures for forgery attacks.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1454")]
+[Requirement("RFC9000-S21-5-P8-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_1454
 {
     [Fact]
@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_1454
     [Trait("Category", "Positive")]
     public void RequirementStatement_DescribesServerMigrationForgeryCountermeasures()
     {
-        JsonElement requirement = GetRequirement("REQ-QUIC-RFC9000-1454");
+        JsonElement requirement = GetRequirement("RFC9000-S21-5-P8-S2-R01");
 
         Assert.Equal("Any future extension that allows server migration MUST also define countermeasures for forgery attacks.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 21.5 RFC9000-S21P5-B8-P8-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_1454
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotTurnGuidanceIntoRuntimePolicy()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1454").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-P8-S2-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.DoesNotContain("public API", statement);
         Assert.DoesNotContain("runtime enforcement", statement);
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_1454
     [Trait("Category", "Edge")]
     public void RequirementStatement_StaysBoundedToFutureExtensionGuidance()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1454").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-P8-S2-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.Contains("future extension", statement);
         Assert.Contains("server migration", statement);

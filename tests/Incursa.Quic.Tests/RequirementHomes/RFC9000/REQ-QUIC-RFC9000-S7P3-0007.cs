@@ -3,15 +3,15 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
+[Requirement("RFC9000-S7-3-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S7P3_0007
 {
     [Theory]
     [MemberData(nameof(QuicTransportParameterTestData.MissingConnectionIdBindingCases), MemberType = typeof(QuicTransportParameterTestData))]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0007">An endpoint MUST treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P4-S1-R01">An endpoint MUST treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
+    [Requirement("RFC9000-S7-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings(
         object receiverRoleValue,
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0007")]
+    [Requirement("RFC9000-S7-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent()
     {

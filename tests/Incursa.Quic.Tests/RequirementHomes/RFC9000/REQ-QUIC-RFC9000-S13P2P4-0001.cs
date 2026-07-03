@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P4_0001
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P2P4-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-0768")]
+    [Requirement("RFC9000-S13-2-3-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryBuildAckFrame_DropsTheOldestAckRangeAfterTheWindowAdvances()

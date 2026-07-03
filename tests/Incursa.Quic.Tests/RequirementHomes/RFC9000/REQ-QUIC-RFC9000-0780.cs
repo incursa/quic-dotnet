@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0780">Endpoints SHOULD include buffering delays caused by unavailability of decryption keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-5-P2-S3-R01">Endpoints SHOULD include buffering delays caused by unavailability of decryption keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0780")]
+[Requirement("RFC9000-S13-2-5-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_0780
 {
     [Fact]

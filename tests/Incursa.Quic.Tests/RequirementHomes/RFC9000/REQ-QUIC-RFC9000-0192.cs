@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0192">The receiver MUST use the final size of the stream to account for all bytes sent on the stream in its connection-level flow controller.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S4-5-P3-S1-R01">The receiver MUST use the final size of the stream to account for all bytes sent on the stream in its connection-level flow controller.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0192")]
+[Requirement("RFC9000-S4-5-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0192
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0192")]
+    [Requirement("RFC9000-S4-5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveResetStreamFrame_AccountsFinalSizeAtTheConnectionLevel()
@@ -43,7 +43,7 @@ public sealed class REQ_QUIC_RFC9000_0192
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0192")]
+    [Requirement("RFC9000-S4-5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStreamFrame_AccountsFinalSizeAtTheConnectionLevel()
@@ -75,7 +75,7 @@ public sealed class REQ_QUIC_RFC9000_0192
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0192")]
+    [Requirement("RFC9000-S4-5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveResetStreamFrame_AccountsFinalSizeAtTheExactConnectionReceiveLimit()
@@ -109,7 +109,7 @@ public sealed class REQ_QUIC_RFC9000_0192
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0192")]
+    [Requirement("RFC9000-S4-5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveResetStreamFrame_RejectsWhenTheFinalSizeExceedsConnectionReceiveLimit()

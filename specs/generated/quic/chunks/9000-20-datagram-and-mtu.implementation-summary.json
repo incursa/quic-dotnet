@@ -182,7 +182,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -210,7 +210,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -260,7 +260,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -288,7 +288,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -296,7 +296,7 @@
       "notes": "ACK ECN updates are stable across repeated validation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0845",
+      "requirement_id": "RFC9000-S13-4-2-1-P5-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicEcnMarking.cs",
@@ -316,7 +316,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -344,7 +344,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -372,7 +372,7 @@
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-        "REQ-QUIC-RFC9000-0845",
+        "RFC9000-S13-4-2-1-P5-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0007",
         "REQ-QUIC-RFC9000-S13P4P2P1-0008"
       ],
@@ -529,14 +529,14 @@
       ],
       "direct_refs_added_or_updated": [
         "REQ-QUIC-RFC9000-S14P1-0001",
-        "REQ-QUIC-RFC9000-S14P1-0003",
+        "RFC9000-S14-1-P1-S3-R01",
         "REQ-QUIC-RFC9000-S14P1-0008"
       ],
       "remaining_gap": null,
       "notes": "Initial datagram padding and related anti-amplification checks are tagged."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P1-0003",
+      "requirement_id": "RFC9000-S14-1-P1-S3-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
@@ -549,7 +549,7 @@
       ],
       "direct_refs_added_or_updated": [
         "REQ-QUIC-RFC9000-S14P1-0001",
-        "REQ-QUIC-RFC9000-S14P1-0003",
+        "RFC9000-S14-1-P1-S3-R01",
         "REQ-QUIC-RFC9000-S14P1-0008"
       ],
       "remaining_gap": null,
@@ -569,7 +569,7 @@
       ],
       "direct_refs_added_or_updated": [
         "REQ-QUIC-RFC9000-S14P1-0001",
-        "REQ-QUIC-RFC9000-S14P1-0003",
+        "RFC9000-S14-1-P1-S3-R01",
         "REQ-QUIC-RFC9000-S14P1-0008"
       ],
       "remaining_gap": null,
@@ -672,8 +672,8 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S14P1-0002",
         "REQ-QUIC-RFC9000-S14P1-0004",
-        "REQ-QUIC-RFC9000-S14P1-0005",
-        "REQ-QUIC-RFC9000-S14P1-0006",
+        "RFC9000-S14-1-P3-S1-R01",
+        "RFC9000-S14-1-P4-S1-R01",
         "REQ-QUIC-RFC9000-S14P1-0007"
       ],
       "reason": "Requires the remaining address-validation and anti-amplification behaviors beyond the covered helpers."
@@ -684,12 +684,12 @@
         "REQ-QUIC-RFC9000-S14P2-0001",
         "REQ-QUIC-RFC9000-S14P2-0002",
         "REQ-QUIC-RFC9000-S14P2-0003",
-        "REQ-QUIC-RFC9000-S14P2-0004",
+        "RFC9000-S14-2-P2-S2-R01",
         "REQ-QUIC-RFC9000-S14P2-0005",
         "REQ-QUIC-RFC9000-S14P2-0006",
-        "REQ-QUIC-RFC9000-S14P2-0007",
-        "REQ-QUIC-RFC9000-0872",
-        "REQ-QUIC-RFC9000-S14P2-0009",
+        "RFC9000-S14-2-P4-S1-R01",
+        "RFC9000-S14-2-P4-S2-R01",
+        "RFC9000-S14-2-P5-S2-R01",
         "REQ-QUIC-RFC9000-S14P2-0010"
       ],
       "reason": "Packetization and coalescing logic are still absent."
@@ -697,13 +697,13 @@
     {
       "section_token": "S14P2P1",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-1421",
+        "RFC9000-S14-2-1-P2-S1-R01",
         "REQ-QUIC-RFC9000-1422",
         "REQ-QUIC-RFC9000-S14P2P1-0003",
         "REQ-QUIC-RFC9000-S14P2P1-0004",
-        "REQ-QUIC-RFC9000-1426",
-        "REQ-QUIC-RFC9000-S14P2P1-0006",
-        "REQ-QUIC-RFC9000-1428"
+        "RFC9000-S14-2-1-P4-S4-R01",
+        "RFC9000-S14-2-1-P5-S1-R01",
+        "RFC9000-S14-2-1-P5-S2-R01"
       ],
       "reason": "Needs the coalesced datagram encoder and its boundary checks."
     },

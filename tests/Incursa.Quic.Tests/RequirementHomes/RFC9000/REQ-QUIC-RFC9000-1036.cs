@@ -4,18 +4,18 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1036">A client MUST accept and process at most one Retry packet for each connection attempt.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-5-2-P1-R01">A client MUST accept and process at most one Retry packet for each connection attempt.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1036")]
+[Requirement("RFC9000-S17-2-5-2-P1-R01")]
 public sealed class REQ_QUIC_RFC9000_1036
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1036">A client MUST accept and process at most one Retry packet for each connection attempt.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-5-2-P1-R01">A client MUST accept and process at most one Retry packet for each connection attempt.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-1036")]
+    [Requirement("RFC9000-S17-2-5-2-P1-R01")]
     public void ClientAcceptsAndProcessesTheFirstRetryPacketForAConnectionAttempt()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_1036
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-1036")]
+    [Requirement("RFC9000-S17-2-5-2-P1-R01")]
     public void ClientRejectsRetryPacketsMissingRequiredSourceConnectionIdOrToken()
     {
         QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
@@ -60,7 +60,7 @@ public sealed class REQ_QUIC_RFC9000_1036
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-1036")]
+    [Requirement("RFC9000-S17-2-5-2-P1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0006")]
     public void ClientProcessesRetryWithMaximumSourceConnectionIdAndMinimumToken()

@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0674">Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S11-2-P4-S1-R01">Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0674")]
+[Requirement("RFC9000-S11-2-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0674
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0674")]
+    [Requirement("RFC9000-S11-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AbortDirections_ExposeApplicationVisibleCancellationNotifications()
@@ -61,7 +61,7 @@ public sealed class REQ_QUIC_RFC9000_0674
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0674")]
+    [Requirement("RFC9000-S11-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortDirections_DoNotEscalateToConnectionTermination()

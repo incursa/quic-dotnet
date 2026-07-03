@@ -27,7 +27,7 @@ These are codec-level validations or frame-level invariants that are implemented
 
 ### Blocked / deferred (26)
 - Flow-control sender behavior: `REQ-QUIC-RFC9000-S19P12-0001`, `REQ-QUIC-RFC9000-S19P12-0002`
-- Send-only stream handling: `REQ-QUIC-RFC9000-1298`, `REQ-QUIC-RFC9000-1299`
+- Send-only stream handling: `RFC9000-S19-13-P1-R01`, `RFC9000-S19-13-P2-R01`
 - Stream-opening accounting: `REQ-QUIC-RFC9000-S19P14-0001`, `REQ-QUIC-RFC9000-S19P14-0003`
 - Connection-ID lifecycle and duplicate tracking: `REQ-QUIC-RFC9000-S19P15-0001`, `REQ-QUIC-RFC9000-19150001`.. `REQ-QUIC-RFC9000-19150008`
 - Peer-issued CID lifecycle and destination-CID checks: `REQ-QUIC-RFC9000-S19P16-0001`, `REQ-QUIC-RFC9000-S19P16-0002`, `REQ-QUIC-RFC9000-S19P16-0003`, `REQ-QUIC-RFC9000-S19P16-0007`.. `REQ-QUIC-RFC9000-1330`

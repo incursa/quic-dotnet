@@ -22,8 +22,8 @@
     "REQ-QUIC-RFC9000-S5P1P1-0008",
     "REQ-QUIC-RFC9000-S5P1P1-0009",
     "REQ-QUIC-RFC9000-0229",
-    "REQ-QUIC-RFC9000-S5P1P1-0013",
-    "REQ-QUIC-RFC9000-0233"
+    "RFC9000-S5-1-1-P4-S4-R01",
+    "RFC9000-S5-1-1-P6-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
@@ -37,8 +37,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0229.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0013.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0233.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P4-S4-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P6-S1-R01.cs"
   ],
   "design_summary": "The peer connection-ID state treats the initial peer-issued destination connection ID as sequence 0 and the peer preferred-address connection ID as implicit sequence 1. NEW_CONNECTION_ID processing validates duplicate sequence and connection-ID reuse, applies Retire Prior To before enforcing active_connection_id_limit, and reports retired sequence numbers so the runtime can emit RETIRE_CONNECTION_ID. The local issuance path keeps active route and stateless-reset-token state registered until retirement, replenishes retired or newly used issued IDs with the next sequence number when the peer's active limit allows it, and advertises active_connection_id_limit through transport parameters.",
   "data_and_state_considerations": "Connection-ID byte values are copied into route/token state before being exposed through effects. Peer-issued CIDs are tracked by sequence, by historical sequence, and by reverse connection-ID lookup so duplicate frames are idempotent while conflicting reuse is rejected. Locally issued CIDs are retired through paired route and stateless-reset-token effects, and replacement NEW_CONNECTION_ID frames are built only after packet protection can send the frame on the active path.",

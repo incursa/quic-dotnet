@@ -2230,7 +2230,7 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S4P5-0002", "REQ-QUIC-RFC9000-0192", "REQ-QUIC-RFC9000-0193", "REQ-QUIC-RFC9000-0194", "REQ-QUIC-RFC9000-S4P5-0007", "REQ-QUIC-RFC9000-S4P5-0008", "REQ-QUIC-RFC9000-S3P5-0003")
+            requirement_families = @("REQ-QUIC-RFC9000-S4P5-0002", "RFC9000-S4-5-P3-S1-R01", "RFC9000-S4-5-P4-R01", "REQ-QUIC-RFC9000-0194", "REQ-QUIC-RFC9000-S4P5-0007", "RFC9000-S4-5-P5-S2-R01", "REQ-QUIC-RFC9000-S3P5-0003")
             verification_commands = @(
                 'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0002|FullyQualifiedName~REQ_QUIC_RFC9000_0192|FullyQualifiedName~REQ_QUIC_RFC9000_0193|FullyQualifiedName~REQ_QUIC_RFC9000_0194|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0007|FullyQualifiedName~REQ_QUIC_RFC9000_S4P5_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S3P5_0003"'
             )
@@ -2545,7 +2545,7 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0001", "REQ-QUIC-RFC9000-S9P4-0002", "REQ-QUIC-RFC9000-S9P4-0003", "REQ-QUIC-RFC9000-S9P4-0005")
+            requirement_families = @("RFC9000-S9-4-P1-S2-R01", "REQ-QUIC-RFC9000-S9P4-0002", "REQ-QUIC-RFC9000-S9P4-0003", "REQ-QUIC-RFC9000-S9P4-0005")
             verification_commands = @(
                 'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0005"'
             )
@@ -2621,7 +2621,7 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "REQ-QUIC-RFC9000-0513", "REQ-QUIC-RFC9000-S9P4-0011")
+            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "REQ-QUIC-RFC9000-0513", "RFC9000-S9-4-P5-S4-R02")
             verification_commands = @(
                 'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0513|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
             )
@@ -2815,7 +2815,7 @@ function Get-LaneTemplateDefinitions {
             )
             requirement_families = @(
                 "REQ-QUIC-RFC9000-S9P3-0001",
-                "REQ-QUIC-RFC9000-0481",
+                "RFC9000-S9-3-P2-S1-R01",
                 "REQ-QUIC-RFC9000-S9P3-0007",
                 "REQ-QUIC-RFC9000-0483"
             )
@@ -2859,9 +2859,9 @@ function Get-LaneTemplateDefinitions {
                 "specs/generated"
             )
             requirement_families = @(
-                "REQ-QUIC-RFC9000-S9P3-0002",
+                "RFC9000-S9-3-P4-S1-R01",
                 "REQ-QUIC-RFC9000-S9P3-0003",
-                "REQ-QUIC-RFC9000-S9P3-0004",
+                "RFC9000-S9-3-P4-S2-R01",
                 "REQ-QUIC-RFC9000-S9P3-0009",
                 "REQ-QUIC-RFC9000-S9P3-0010"
             )

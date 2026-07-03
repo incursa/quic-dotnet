@@ -11,7 +11,7 @@
 - Audit result: `clean_with_explicit_deferments`
 - No stale requirement IDs remain in scope.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
-- Current test traits use the imported IDs `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `REQ-QUIC-RFC9000-S5P2P2-0004`, `REQ-QUIC-RFC9000-S5P2P3-0002`, and `REQ-QUIC-RFC9000-0277`.
+- Current test traits use the imported IDs `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, and `REQ-QUIC-RFC9000-0277`.
 - No old->new requirement ID rewrites were needed.
 - Every open requirement below carries an explicit blocker note; there are no silent gaps in the scoped set.
 
@@ -32,7 +32,7 @@ Needs review: **0**
 ## 2026-05-04 Live Triage Addendum
 
 - Regenerated `specs/generated/quic/quic-requirement-coverage-triage.json` supersedes the older S5P1P2 parser-only requirement list below.
-- `REQ-QUIC-RFC9000-S5P1P2-0008` through `REQ-QUIC-RFC9000-0253` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0027`.
+- `REQ-QUIC-RFC9000-S5P1P2-0008` through `RFC9000-S5-1-2-P7-S1-R01` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0027`.
 - The live S5P1P2 state is now 12 trace-clean requirements and 4 uncovered requirements.
 - Remaining S5P1P2 open requirements: `REQ-QUIC-RFC9000-0240`, `REQ-QUIC-RFC9000-S5P1P2-0002`, `REQ-QUIC-RFC9000-0244`, and `REQ-QUIC-RFC9000-0245`.
 - The remaining S5P1P2 open work is packet-association/address-pair CID policy, not the bounded peer-CID retirement-pressure seam closed by this addendum.
@@ -54,7 +54,7 @@ Needs review: **0**
 - `REQ-QUIC-RFC9000-S5P2P2-0001`: The new Version Negotiation overload gates unsupported versions on the observed datagram size.
   - Evidence files: `src/Incursa.Quic/QuicVersionNegotiation.cs`, `src/Incursa.Quic/PublicAPI.Unshipped.txt`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
   - Tests: `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
-- `REQ-QUIC-RFC9000-S5P2P2-0004`: The datagram-size gate now backs the server's Version Negotiation response decision.
+- `RFC9000-S5-2-2-P2-S4-R01`: The datagram-size gate now backs the server's Version Negotiation response decision.
   - Evidence files: `src/Incursa.Quic/QuicVersionNegotiation.cs`, `src/Incursa.Quic/PublicAPI.Unshipped.txt`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
   - Tests: `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
@@ -69,7 +69,7 @@ Needs review: **0**
 - Source roots searched: `C:/src/incursa/quic-dotnet/src/Incursa.Quic`
 - Test roots searched: `C:/src/incursa/quic-dotnet/tests`
 - In-scope source requirement refs found: none
-- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `REQ-QUIC-RFC9000-S5P2P2-0004`, `REQ-QUIC-RFC9000-S5P2P3-0002`, `REQ-QUIC-RFC9000-0277`
+- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, `REQ-QUIC-RFC9000-0277`
 - Stale or wrong refs found: none
 - Current canonical in-scope test files: `tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`, `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`, `tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs`
 

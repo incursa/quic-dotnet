@@ -15,18 +15,18 @@
     "VER-QUIC-RFC9000-0033"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-0393",
-    "REQ-QUIC-RFC9000-S8P1P3-0014",
-    "REQ-QUIC-RFC9000-S8P1P3-0015",
-    "REQ-QUIC-RFC9000-8135"
+    "RFC9000-S8-1-3-P2-S5-R01",
+    "RFC9000-S8-1-3-P10-S1-R01",
+    "RFC9000-S8-1-3-P10-S2-R01",
+    "RFC9000-S8-1-3-P10-S4-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicListenerHost.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0393.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0014.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P3-0015.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-8135.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P2-S5-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S4-R01.cs"
   ],
   "design_summary": "The listener Retry bootstrap path treats an Initial packet whose destination connection ID matches the Retry source connection ID as a replay candidate. Before admitting that candidate, it opens the Initial packet with Retry-selected Initial protection, validates that the payload contains CRYPTO data, parses the Initial Token field, and compares the parsed token to the stored Retry token. A wrong or missing token is rejected without invoking the connection-options callback or admitting the connection. A valid token clears the validation failure code, records the observed replay token, posts the handshake bootstrap event, and marks the replay as admitted after the server connection shell accepts the attempt.",
   "data_and_state_considerations": "The Retry bootstrap state stores the original destination connection ID, Retry source connection ID, and random Retry token for the listener instance. Validation observations are kept as internal test-visible flags and failure codes, not as public API. Token bytes are compared exactly and are represented in diagnostics-facing test observations as hex strings.",

@@ -12,12 +12,12 @@
     "VER-QUIC-RFC9000-0032"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-0392",
-    "REQ-QUIC-RFC9000-0399",
-    "REQ-QUIC-RFC9000-0401",
-    "REQ-QUIC-RFC9000-S8P1P3-0010",
+    "RFC9000-S8-1-3-P2-S4-R01",
+    "RFC9000-S8-1-3-P6-S2-R01",
+    "RFC9000-S8-1-3-P6-S5-R01",
+    "RFC9000-S8-1-3-P6-S4-R01",
     "REQ-QUIC-RFC9000-S8P1P3-0012",
-    "REQ-QUIC-RFC9000-S8P1P3-0013",
+    "RFC9000-S8-1-3-P8-S1-R01",
     "REQ-QUIC-RFC9000-S8P1P3-0017"
   ],
   "summary": "Add internal client-side retained-token plumbing for NEW_TOKEN-derived Initial tokens while keeping Retry tokens immediate-use only.",

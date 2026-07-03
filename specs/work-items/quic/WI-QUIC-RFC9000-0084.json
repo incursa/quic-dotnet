@@ -13,8 +13,8 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S17P1-0002",
-    "REQ-QUIC-RFC9000-S17P1-0003",
-    "REQ-QUIC-RFC9000-0925"
+    "RFC9000-S17-1-P4-R01",
+    "RFC9000-S17-1-P4-S2-R01"
   ],
   "summary": "Close the focused S17P1 packet-number encoding proof tail with requirement-home boundary and negative evidence.",
   "planned_changes": "- Add missing edge proof for full-width pre-ack Initial packet-number encoding.\n- Add missing edge proof for the largest post-ack packet-number difference safely representable by a four-byte packet number.\n- Add missing negative and edge proof for out-of-order application-data packet-number recovery.\n- Link focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",

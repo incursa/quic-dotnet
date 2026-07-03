@@ -13,9 +13,9 @@
   ],
   "verification_method": "Focused S9P6P1-0005 requirement-home tests over preferred-address validation failure, followed by the preferred-address regression ring, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S9P6P1-0005"
+    "RFC9000-S9-6-1-P4-S2-R01"
   ],
-  "scope": "This verification covers the generated non-clean S9P6P1 preferred-address validation-failure tail for REQ-QUIC-RFC9000-S9P6P1-0005.",
+  "scope": "This verification covers the generated non-clean S9P6P1 preferred-address validation-failure tail for RFC9000-S9-6-1-P4-S2-R01.",
   "expected_result": "The focused tests show the failed preferred-address candidate is abandoned without promotion, the preferred path is not recorded as recently validated, future sends continue on the original server address after IPv4 preferred-address validation failure, and the same behavior holds for an IPv6 original/preferred-address edge.",
   "procedure": [
     "Run the focused S9P6P1-0005 requirement-home filter.",
@@ -33,7 +33,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS9P6P1PreferredAddressTestSupport.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0005\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0003|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P1_0004|FullyQualifiedName~REQ_QUIC_RFC9000_0525\"",

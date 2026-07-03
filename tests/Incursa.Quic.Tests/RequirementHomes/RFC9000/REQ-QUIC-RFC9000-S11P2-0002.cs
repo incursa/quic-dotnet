@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11P2-0002">RESET_STREAM MUST only be instigated by the application protocol that uses QUIC.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S11-2-P2-S2-R01">RESET_STREAM MUST only be instigated by the application protocol that uses QUIC.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S11P2-0002")]
+[Requirement("RFC9000-S11-2-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S11P2_0002
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S11P2-0002")]
+    [Requirement("RFC9000-S11-2-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAbortLocalStreamWrites_UsesTheApplicationProtocolOwnedResetPath()
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S11P2_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S11P2-0002")]
+    [Requirement("RFC9000-S11-2-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams()

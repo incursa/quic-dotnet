@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0410")]
+[Requirement("RFC9000-S8-1-4-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0410
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0410")]
+    [Requirement("RFC9000-S8-1-4-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ValidateNewToken_AcceptsUnchangedClientIpAddress()
@@ -22,7 +22,7 @@ public sealed class REQ_QUIC_RFC9000_0410
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0410")]
+    [Requirement("RFC9000-S8-1-4-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ValidateNewToken_RejectsChangedClientIpAddress()
@@ -37,7 +37,7 @@ public sealed class REQ_QUIC_RFC9000_0410
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0410")]
+    [Requirement("RFC9000-S8-1-4-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NewTokenEmissionOnValidatedPath_ProducesATokenBoundToTheValidatedRemoteAddress()

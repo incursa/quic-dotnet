@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1323">A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-2-P4-S1-R01">A receiver SHOULD send an ACK frame after receiving at least two ack-eliciting packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1323")]
+[Requirement("RFC9000-S13-2-2-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1323
 {
     [Fact]

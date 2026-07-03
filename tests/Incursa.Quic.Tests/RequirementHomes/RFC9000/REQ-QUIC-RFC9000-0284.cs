@@ -121,11 +121,11 @@ public sealed class REQ_QUIC_RFC9000_0284
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P2-0001">If a server receives a packet that indicates an unsupported version and the packet is large enough to initiate a new connection for any supported version, the server SHOULD send a Version Negotiation packet.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P2-0004">Servers SHOULD respond with a Version Negotiation packet, provided that the datagram is sufficiently long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-2-2-P2-S4-R01">Servers SHOULD respond with a Version Negotiation packet, provided that the datagram is sufficiently long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0284">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S5P2P2-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S5P2P2-0004")]
+    [Requirement("RFC9000-S5-2-2-P2-S4-R01")]
     [Requirement("REQ-QUIC-RFC9000-0284")]
     [CoverageType(RequirementCoverageType.Positive)]
     public async Task ListenerRespondsToTheInteropRunnerWaitForItProbeWithVersionNegotiation()

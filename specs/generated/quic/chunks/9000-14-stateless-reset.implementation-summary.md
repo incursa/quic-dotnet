@@ -5,7 +5,7 @@
 - Stateless reset token generation and truncation helpers: `REQ-QUIC-RFC9000-S10P3-0003`, `REQ-QUIC-RFC9000-0607`, `REQ-QUIC-RFC9000-S10P3-0016`, `REQ-QUIC-RFC9000-S10P3P2-0001`, `REQ-QUIC-RFC9000-S10P3P2-0002`, `REQ-QUIC-RFC9000-S10P3P2-0004`, `REQ-QUIC-RFC9000-S10P3P2-0009`, `REQ-QUIC-RFC9000-S10P3P2-0010`, `REQ-QUIC-RFC9000-0644`, `REQ-QUIC-RFC9000-S10P3P2-0012`
 - Stateless reset packet layout, tail token placement, fixed-bit handling, and visible-prefix sizing: `REQ-QUIC-RFC9000-S10P3-0005`, `REQ-QUIC-RFC9000-S10P3-0006`, `REQ-QUIC-RFC9000-S10P3-0007`, `REQ-QUIC-RFC9000-S10P3-0008`, `REQ-QUIC-RFC9000-S10P3-0013`, `REQ-QUIC-RFC9000-S10P3-0021`, `REQ-QUIC-RFC9000-S10P3-0022`, `REQ-QUIC-RFC9000-S10P3-0023`, `REQ-QUIC-RFC9000-S10P3-0024`, `REQ-QUIC-RFC9000-S10P3-0025`, `REQ-QUIC-RFC9000-S10P3-0026`
 - Stateless-reset response sizing and amplification guardrails: `REQ-QUIC-RFC9000-S10P3-0009`, `REQ-QUIC-RFC9000-S10P3-0010`, `REQ-QUIC-RFC9000-0622`, `REQ-QUIC-RFC9000-S10P3-0027`, `REQ-QUIC-RFC9000-S10P3-0028`, `REQ-QUIC-RFC9000-S10P3P3-0001`
-- Endpoint-host Stateless Reset response floors for unattributed packets and long-header packets: `REQ-QUIC-RFC9000-S10P3-0001`, `REQ-QUIC-RFC9000-S10P3-0015`
+- Endpoint-host Stateless Reset response floors for unattributed packets and long-header packets: `RFC9000-S10-3-P1-S2-R01`, `REQ-QUIC-RFC9000-S10P3-0015`
 - Trailing-token detection, token-match draining, and no-send transitions: `REQ-QUIC-RFC9000-S10P3P1-0001`, `REQ-QUIC-RFC9000-S10P3P1-0003`, `REQ-QUIC-RFC9000-S10P3P1-0007`, `REQ-QUIC-RFC9000-S10P3P1-0008`, `REQ-QUIC-RFC9000-0629`, `REQ-QUIC-RFC9000-0639`, `REQ-QUIC-RFC9000-0640`
 - Packet parser coverage for too-small invalid packets: `REQ-QUIC-RFC9000-0623`
 - Existing codec coverage traced into this chunk: `REQ-QUIC-RFC9000-S10P3-0017`, `REQ-QUIC-RFC9000-S10P3-0018`
@@ -20,7 +20,7 @@
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStatelessResetEndpointHostTestSupport.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs`
@@ -31,7 +31,7 @@
 
 ## Tests Added Or Updated
 
-- Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0001.cs` to prove the endpoint host sends a Stateless Reset for an unattributed packet.
+- Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs` to prove the endpoint host sends a Stateless Reset for an unattributed packet.
 - Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs` to prove the endpoint host sends a Stateless Reset for a long-header packet.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs` to prove the three-times amplification ceiling with positive and negative coverage.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs` to prove that a matched stateless reset token enters draining and disables further sends.
@@ -50,20 +50,20 @@
 
 ## Remaining Open Requirements In Scope
 
-- `REQ-QUIC-RFC9000-0604`
+- `RFC9000-S10-3-P2-S1-R01`
 - `REQ-QUIC-RFC9000-S10P3-0014`
 - `REQ-QUIC-RFC9000-S10P3-0019`
 - `REQ-QUIC-RFC9000-0610`
 - `REQ-QUIC-RFC9000-S10P3-0029`
 - `REQ-QUIC-RFC9000-S10P3P1-0002`
-- `REQ-QUIC-RFC9000-S10P3P1-0004`
+- `RFC9000-S10-3-1-P2-S2-R01`
 - `REQ-QUIC-RFC9000-S10P3P1-0005`
-- `REQ-QUIC-RFC9000-S10P3P1-0006`
+- `RFC9000-S10-3-1-P3-S1-R01`
 - `REQ-QUIC-RFC9000-S10P3P1-0010`
-- `REQ-QUIC-RFC9000-S10P3P2-0003`
-- `REQ-QUIC-RFC9000-S10P3P2-0005`
-- `REQ-QUIC-RFC9000-0650`
-- `REQ-QUIC-RFC9000-0651`
+- `RFC9000-S10-3-2-P4-S2-R01`
+- `RFC9000-S10-3-2-P5-S2-R01`
+- `RFC9000-S10-3-2-P5-S4-R01`
+- `RFC9000-S10-3-2-P6-S1-R01`
 - `REQ-QUIC-RFC9000-S10P3P2-0008`
 - `REQ-QUIC-RFC9000-S10P3P3-0002`
 

@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1470">Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the network indicating that sending datagrams to unvalidated addresses in a given range is not safe.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-6-P3-S3-R01">Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the network indicating that sending datagrams to unvalidated addresses in a given range is not safe.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1470")]
+[Requirement("RFC9000-S21-5-6-P3-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_1470
 {
     [Fact]
@@ -16,7 +16,7 @@ public sealed class REQ_QUIC_RFC9000_1470
     [Trait("Category", "Positive")]
     public void RequirementStatement_DescribesAddressUseGuidance()
     {
-        JsonElement requirement = GetRequirement("REQ-QUIC-RFC9000-1470");
+        JsonElement requirement = GetRequirement("RFC9000-S21-5-6-P3-S3-R01");
 
         Assert.Equal("Endpoints SHOULD NOT refuse to use an address unless they have specific knowledge about the network indicating that sending datagrams to unvalidated addresses in a given range is not safe.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 21.5.6 RFC9000-S21P5P6-B3-P3-S3", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_1470
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotClaimRuntimeAddressRefusal()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1470").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P3-S3-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.DoesNotContain("public API", statement);
         Assert.DoesNotContain("runtime enforcement", statement);
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_1470
     [Trait("Category", "Edge")]
     public void RequirementStatement_StaysBoundedToNetworkKnowledgeGuidance()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-1470").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P3-S3-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.Contains("specific knowledge about the network", statement);
         Assert.Contains("unvalidated addresses", statement);

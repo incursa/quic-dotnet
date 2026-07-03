@@ -28,7 +28,7 @@
   ],
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0004",
+      "requirement_id": "RFC9000-S8-2-1-P4-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
@@ -46,7 +46,7 @@
       "notes": "Cryptographically unpredictable challenge bytes are generated with RandomNumberGenerator.Fill before the frame is formatted."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0005",
+      "requirement_id": "RFC9000-S8-2-1-P5-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
@@ -81,7 +81,7 @@
       "notes": "The helper provides the unpredictable payload primitive that a caller uses to build a PATH_CHALLENGE for path validation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0001",
+      "requirement_id": "RFC9000-S8-2-2-P1-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
@@ -98,7 +98,7 @@
       "notes": "PATH_RESPONSE echo behavior is exercised by the existing frame codec and verified by the new round-trip test."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0005",
+      "requirement_id": "RFC9000-S8-2-2-P3-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
@@ -116,7 +116,7 @@
       "notes": "PATH_RESPONSE-bearing datagrams are padded to the 1200-byte minimum when the anti-amplification budget allows it."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0006",
+      "requirement_id": "RFC9000-S8-2-2-P3-S3-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPathValidation.cs",
@@ -133,7 +133,7 @@
       "notes": "The padding helper refuses to expand a datagram once the remaining send budget would be exceeded."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0425",
+      "requirement_id": "RFC9000-S8-2-P6-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -142,7 +142,7 @@
       "notes": "This is a packet-assembly concern, not a frame-codec concern, so it remains outside the available helper slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0001",
+      "requirement_id": "RFC9000-S8-2-1-P2-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -151,7 +151,7 @@
       "notes": "The current code can build a single PATH_CHALLENGE frame, but not the packet-level strategy for duplicating it."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0002",
+      "requirement_id": "RFC9000-S8-2-1-P2-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -160,7 +160,7 @@
       "notes": "The packet-level packing policy is not present in this slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0435",
+      "requirement_id": "RFC9000-S8-2-1-P3-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -169,7 +169,7 @@
       "notes": "This remains a connection-state and recovery concern."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0006",
+      "requirement_id": "RFC9000-S8-2-1-P6-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -178,7 +178,7 @@
       "notes": "The helper can pad a datagram, but the orchestration for a second validation pass is missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0007",
+      "requirement_id": "RFC9000-S8-2-1-P7-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -187,7 +187,7 @@
       "notes": "Discard-vs-accept decisions for undersized packets are not implemented in the current path-validation slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0002",
+      "requirement_id": "RFC9000-S8-2-2-P1-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -196,7 +196,7 @@
       "notes": "This needs connection-level send scheduling rather than frame encoding helpers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0443",
+      "requirement_id": "RFC9000-S8-2-2-P2-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -205,7 +205,7 @@
       "notes": "The current code has no path-selection or path-binding layer."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0004",
+      "requirement_id": "RFC9000-S8-2-2-P2-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -232,7 +232,7 @@
       "notes": "This is the same missing dependency as REQ-QUIC-RFC9000-S8P2P2-0007."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P2P3-0001",
+      "requirement_id": "RFC9000-S8-2-3-P2-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -241,7 +241,7 @@
       "notes": "The helper can generate padding, but the MTU probe/retry orchestration is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0454",
+      "requirement_id": "RFC9000-S8-2-4-P2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -269,19 +269,19 @@
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-0425",
-    "REQ-QUIC-RFC9000-S8P2P1-0001",
-    "REQ-QUIC-RFC9000-S8P2P1-0002",
-    "REQ-QUIC-RFC9000-0435",
-    "REQ-QUIC-RFC9000-S8P2P1-0006",
-    "REQ-QUIC-RFC9000-S8P2P1-0007",
-    "REQ-QUIC-RFC9000-S8P2P2-0002",
-    "REQ-QUIC-RFC9000-0443",
-    "REQ-QUIC-RFC9000-S8P2P2-0004",
+    "RFC9000-S8-2-P6-S1-R01",
+    "RFC9000-S8-2-1-P2-S1-R01",
+    "RFC9000-S8-2-1-P2-S2-R01",
+    "RFC9000-S8-2-1-P3-S1-R01",
+    "RFC9000-S8-2-1-P6-S1-R01",
+    "RFC9000-S8-2-1-P7-S1-R01",
+    "RFC9000-S8-2-2-P1-S2-R01",
+    "RFC9000-S8-2-2-P2-S1-R01",
+    "RFC9000-S8-2-2-P2-S3-R01",
     "REQ-QUIC-RFC9000-S8P2P2-0007",
     "REQ-QUIC-RFC9000-0447",
-    "REQ-QUIC-RFC9000-S8P2P3-0001",
-    "REQ-QUIC-RFC9000-0454",
+    "RFC9000-S8-2-3-P2-S3-R01",
+    "RFC9000-S8-2-4-P2-R01",
     "REQ-QUIC-RFC9000-S8P2P4-0002",
     "REQ-QUIC-RFC9000-S8P2P4-0003"
   ],

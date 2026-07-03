@@ -826,7 +826,7 @@
     "notes": "Requires sender-side flow-control state and heuristics that are not implemented in this slice."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-1298",
+    "requirement_id": "RFC9000-S19-13-P1-R01",
     "status": "blocked",
     "implementation_refs": [],
     "test_refs": [],
@@ -836,7 +836,7 @@
     "notes": "Requires stream-state tracking and send-only handling that is not implemented in this slice."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-1299",
+    "requirement_id": "RFC9000-S19-13-P2-R01",
     "status": "blocked",
     "implementation_refs": [],
     "test_refs": [],

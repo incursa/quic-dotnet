@@ -3,17 +3,17 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+[Requirement("RFC9000-S7-3-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S7P3_0005
 {
     [Theory]
     [MemberData(nameof(QuicTransportParameterTestData.MatchingConnectionIdBindingCases), MemberType = typeof(QuicTransportParameterTestData))]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0005">The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers).</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0326">Endpoints MUST validate that received transport parameters match received connection ID values.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P3-S1-R01">The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers).</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P3-S2-R01">Endpoints MUST validate that received transport parameters match received connection ID values.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
-    [Requirement("REQ-QUIC-RFC9000-0326")]
+    [Requirement("RFC9000-S7-3-P3-S1-R01")]
+    [Requirement("RFC9000-S7-3-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateConnectionIdBindings_AcceptsMatchingConnectionIdBindings(
         object receiverRoleValue,
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+    [Requirement("RFC9000-S7-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryValidateConnectionIdBindings_RejectsMismatchedOriginalDestinationConnectionId()
     {
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0005")]
+    [Requirement("RFC9000-S7-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     public void TryValidateConnectionIdBindings_AcceptsZeroLengthInitialSourceConnectionIdMatch()
     {

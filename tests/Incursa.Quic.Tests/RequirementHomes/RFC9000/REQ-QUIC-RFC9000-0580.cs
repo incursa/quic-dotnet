@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0580">An endpoint MAY drop packet protection keys when entering the closing state and send a packet containing a CONNECTION_CLOSE frame in response to any UDP datagram that is received.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P5-R01">An endpoint MAY drop packet protection keys when entering the closing state and send a packet containing a CONNECTION_CLOSE frame in response to any UDP datagram that is received.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0580")]
+[Requirement("RFC9000-S10-2-1-P5-R01")]
 public sealed class REQ_QUIC_RFC9000_0580
 {
     [Fact]

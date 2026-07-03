@@ -13,8 +13,8 @@
   ],
   "verification_method": "Requirement-home execution, deterministic state-machine fuzz topoffs, existing PATH_CHALLENGE/PATH_RESPONSE frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded path-validation response and retry slice.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0499",
-    "REQ-QUIC-RFC9000-0502",
+    "RFC9000-S9-3-3-P4-S1-R01",
+    "RFC9000-S9-3-3-P5-S1-R01",
     "REQ-QUIC-RFC9000-0813",
     "REQ-QUIC-RFC9000-0814",
     "REQ-QUIC-RFC9000-0815",
@@ -44,8 +44,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0814.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P18-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0499.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0502.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P4-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-3-P5-S1-R01.cs",
     "benchmarks/QuicPathValidationBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-path-validation-response-retry/focused-rfc9000-path-validation-response-retry-tests.log",
     "artifacts/v/20260425-rfc9000-path-validation-response-retry/focused-rfc9000-path-frame-fuzz-tests.log",
@@ -66,5 +66,5 @@
       "content": "Deterministic requirement-home fuzz topoffs cover representative path identities, retry timer generations, challenge-payload changes, and one-shot PATH_RESPONSE echo behavior. Existing frame-codec fuzz coverage remains the untrusted parse/format proof for PATH_CHALLENGE and PATH_RESPONSE payload boundaries. The permanent benchmark suite covers helper and transition harness execution only; Dry validation is not treated as a stable performance baseline."
     }
   ],
-  "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for the bounded path-validation response and retry slice passed 21/21, the PATH_CHALLENGE/PATH_RESPONSE frame-codec guard passed 5/5, and the new QuicPathValidationBenchmarks Dry suite executed all 3 cases. Dry benchmark results are harness evidence only and are not treated as stable performance baselines. On 2026-05-22, the REQ-QUIC-RFC9000-0499/0502 topoff filter passed 5/5 and regenerated triage marks both trace_clean."
+  "status_summary": "Passed locally on 2026-04-25. Focused requirement-home tests for the bounded path-validation response and retry slice passed 21/21, the PATH_CHALLENGE/PATH_RESPONSE frame-codec guard passed 5/5, and the new QuicPathValidationBenchmarks Dry suite executed all 3 cases. Dry benchmark results are harness evidence only and are not treated as stable performance baselines. On 2026-05-22, the RFC9000-S9-3-3-P4-S1-R01/0502 topoff filter passed 5/5 and regenerated triage marks both trace_clean."
 }

@@ -6,9 +6,9 @@ using System.Text;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13-0002">A sender MAY wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-P2-S2-R01">A sender MAY wait for a short period of time to collect multiple frames before sending a packet that is not maximally packed, to avoid sending out large numbers of small packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13-0002")]
+[Requirement("RFC9000-S13-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S13_0002
 {
     private static readonly byte[] PacketConnectionId =

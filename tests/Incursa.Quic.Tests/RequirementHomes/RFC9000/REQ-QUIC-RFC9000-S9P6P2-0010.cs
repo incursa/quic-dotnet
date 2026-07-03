@@ -6,7 +6,7 @@ using System.Net;
 namespace Incursa.Quic.Tests;
 
 [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
-[Requirement("REQ-QUIC-RFC9000-S21P5P6-0004")]
+[Requirement("RFC9000-S21-5-6-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
 {
     private static readonly QuicConnectionPathIdentity OriginalPath = new("203.0.113.60", RemotePort: 443);

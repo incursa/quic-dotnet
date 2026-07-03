@@ -38,35 +38,35 @@
   "implementation_summary_alignment": {
     "spec_requirement_ids": [
       "REQ-QUIC-RFC9000-S13-0001",
-      "REQ-QUIC-RFC9000-S13-0002",
-      "REQ-QUIC-RFC9000-S13-0003",
+      "RFC9000-S13-P2-S2-R01",
+      "RFC9000-S13-P2-S3-R01",
       "REQ-QUIC-RFC9000-S13-0004",
       "REQ-QUIC-RFC9000-S13-0005",
       "REQ-QUIC-RFC9000-0749",
       "REQ-QUIC-RFC9000-S13P1-0002",
       "REQ-QUIC-RFC9000-S13P1-0003",
-      "REQ-QUIC-RFC9000-0752",
+      "RFC9000-S13-1-P3-R01",
       "REQ-QUIC-RFC9000-0753",
       "REQ-QUIC-RFC9000-S13P2-0002",
       "REQ-QUIC-RFC9000-S13P2-0003",
-      "REQ-QUIC-RFC9000-0756",
+      "RFC9000-S13-2-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0001",
       "REQ-QUIC-RFC9000-0758",
       "REQ-QUIC-RFC9000-S13P2P1-0003",
-      "REQ-QUIC-RFC9000-S13P2P1-0004",
-      "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "RFC9000-S13-2-1-P2-R02",
+      "RFC9000-S13-2-1-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0006",
       "REQ-QUIC-RFC9000-S13P2P1-0007",
       "REQ-QUIC-RFC9000-S13P2P1-0008",
       "REQ-QUIC-RFC9000-S13P2P1-0009",
-      "REQ-QUIC-RFC9000-0763",
-      "REQ-QUIC-RFC9000-0764",
+      "RFC9000-S13-2-1-P5-S1-R01",
+      "RFC9000-S13-2-1-P5-S2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0012",
       "REQ-QUIC-RFC9000-S13P2P1-0013",
       "REQ-QUIC-RFC9000-1322",
       "REQ-QUIC-RFC9000-S13P2P2-0001",
-      "REQ-QUIC-RFC9000-1323",
-      "REQ-QUIC-RFC9000-1324",
+      "RFC9000-S13-2-2-P4-S1-R01",
+      "RFC9000-S13-2-2-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0001",
       "REQ-QUIC-RFC9000-13230",
       "REQ-QUIC-RFC9000-S13P2P3-0003",
@@ -76,53 +76,53 @@
       "REQ-QUIC-RFC9000-13235",
       "REQ-QUIC-RFC9000-S13P2P3-0008",
       "REQ-QUIC-RFC9000-13236",
-      "REQ-QUIC-RFC9000-0768",
+      "RFC9000-S13-2-3-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0011",
-      "REQ-QUIC-RFC9000-0771",
+      "RFC9000-S13-2-3-P7-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0013",
       "REQ-QUIC-RFC9000-S13P2P4-0001",
       "REQ-QUIC-RFC9000-S13P2P5-0001",
       "REQ-QUIC-RFC9000-S13P2P5-0002",
-      "REQ-QUIC-RFC9000-0779",
-      "REQ-QUIC-RFC9000-0780",
+      "RFC9000-S13-2-5-P2-S2-R01",
+      "RFC9000-S13-2-5-P2-S3-R01",
       "REQ-QUIC-RFC9000-S13P2P5-0005",
       "REQ-QUIC-RFC9000-S13P2P6-0001",
       "REQ-QUIC-RFC9000-S13P2P6-0002",
       "REQ-QUIC-RFC9000-S13P2P6-0003",
       "REQ-QUIC-RFC9000-S13P2P6-0004",
-      "REQ-QUIC-RFC9000-S13P2P7-0001"
+      "RFC9000-S13-2-7-P1-S3-R01"
     ],
     "summary_requirement_ids": [
       "REQ-QUIC-RFC9000-S13-0001",
-      "REQ-QUIC-RFC9000-S13-0002",
-      "REQ-QUIC-RFC9000-S13-0003",
+      "RFC9000-S13-P2-S2-R01",
+      "RFC9000-S13-P2-S3-R01",
       "REQ-QUIC-RFC9000-S13-0004",
       "REQ-QUIC-RFC9000-S13-0005",
       "REQ-QUIC-RFC9000-0749",
       "REQ-QUIC-RFC9000-S13P1-0002",
       "REQ-QUIC-RFC9000-S13P1-0003",
-      "REQ-QUIC-RFC9000-0752",
+      "RFC9000-S13-1-P3-R01",
       "REQ-QUIC-RFC9000-0753",
       "REQ-QUIC-RFC9000-S13P2-0002",
       "REQ-QUIC-RFC9000-S13P2-0003",
-      "REQ-QUIC-RFC9000-0756",
+      "RFC9000-S13-2-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0001",
       "REQ-QUIC-RFC9000-0758",
       "REQ-QUIC-RFC9000-S13P2P1-0003",
-      "REQ-QUIC-RFC9000-S13P2P1-0004",
-      "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "RFC9000-S13-2-1-P2-R02",
+      "RFC9000-S13-2-1-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0006",
       "REQ-QUIC-RFC9000-S13P2P1-0007",
       "REQ-QUIC-RFC9000-S13P2P1-0008",
       "REQ-QUIC-RFC9000-S13P2P1-0009",
-      "REQ-QUIC-RFC9000-0763",
-      "REQ-QUIC-RFC9000-0764",
+      "RFC9000-S13-2-1-P5-S1-R01",
+      "RFC9000-S13-2-1-P5-S2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0012",
       "REQ-QUIC-RFC9000-S13P2P1-0013",
       "REQ-QUIC-RFC9000-1322",
       "REQ-QUIC-RFC9000-S13P2P2-0001",
-      "REQ-QUIC-RFC9000-1323",
-      "REQ-QUIC-RFC9000-1324",
+      "RFC9000-S13-2-2-P4-S1-R01",
+      "RFC9000-S13-2-2-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0001",
       "REQ-QUIC-RFC9000-13230",
       "REQ-QUIC-RFC9000-S13P2P3-0003",
@@ -132,21 +132,21 @@
       "REQ-QUIC-RFC9000-13235",
       "REQ-QUIC-RFC9000-S13P2P3-0008",
       "REQ-QUIC-RFC9000-13236",
-      "REQ-QUIC-RFC9000-0768",
+      "RFC9000-S13-2-3-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0011",
-      "REQ-QUIC-RFC9000-0771",
+      "RFC9000-S13-2-3-P7-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0013",
       "REQ-QUIC-RFC9000-S13P2P4-0001",
       "REQ-QUIC-RFC9000-S13P2P5-0001",
       "REQ-QUIC-RFC9000-S13P2P5-0002",
-      "REQ-QUIC-RFC9000-0779",
-      "REQ-QUIC-RFC9000-0780",
+      "RFC9000-S13-2-5-P2-S2-R01",
+      "RFC9000-S13-2-5-P2-S3-R01",
       "REQ-QUIC-RFC9000-S13P2P5-0005",
       "REQ-QUIC-RFC9000-S13P2P6-0001",
       "REQ-QUIC-RFC9000-S13P2P6-0002",
       "REQ-QUIC-RFC9000-S13P2P6-0003",
       "REQ-QUIC-RFC9000-S13P2P6-0004",
-      "REQ-QUIC-RFC9000-S13P2P7-0001"
+      "RFC9000-S13-2-7-P1-S3-R01"
     ],
     "missing_in_summary": [],
     "extra_in_summary": [],
@@ -159,21 +159,21 @@
       "REQ-QUIC-RFC9000-0753",
       "REQ-QUIC-RFC9000-S13P2-0002",
       "REQ-QUIC-RFC9000-S13P2-0003",
-      "REQ-QUIC-RFC9000-0756",
+      "RFC9000-S13-2-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0001",
       "REQ-QUIC-RFC9000-0758",
-      "REQ-QUIC-RFC9000-S13P2P1-0004",
-      "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "RFC9000-S13-2-1-P2-R02",
+      "RFC9000-S13-2-1-P2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0006",
       "REQ-QUIC-RFC9000-S13P2P1-0007",
       "REQ-QUIC-RFC9000-S13P2P1-0008",
-      "REQ-QUIC-RFC9000-0763",
-      "REQ-QUIC-RFC9000-0764",
+      "RFC9000-S13-2-1-P5-S1-R01",
+      "RFC9000-S13-2-1-P5-S2-R01",
       "REQ-QUIC-RFC9000-S13P2P1-0013",
       "REQ-QUIC-RFC9000-1322",
       "REQ-QUIC-RFC9000-S13P2P2-0001",
-      "REQ-QUIC-RFC9000-1323",
-      "REQ-QUIC-RFC9000-1324",
+      "RFC9000-S13-2-2-P4-S1-R01",
+      "RFC9000-S13-2-2-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0001",
       "REQ-QUIC-RFC9000-13230",
       "REQ-QUIC-RFC9000-S13P2P3-0003",
@@ -181,12 +181,12 @@
       "REQ-QUIC-RFC9000-13235",
       "REQ-QUIC-RFC9000-S13P2P3-0008",
       "REQ-QUIC-RFC9000-13236",
-      "REQ-QUIC-RFC9000-0768",
+      "RFC9000-S13-2-3-P5-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P3-0011",
-      "REQ-QUIC-RFC9000-0771",
+      "RFC9000-S13-2-3-P7-S1-R01",
       "REQ-QUIC-RFC9000-S13P2P5-0001",
       "REQ-QUIC-RFC9000-S13P2P5-0002",
-      "REQ-QUIC-RFC9000-0779",
+      "RFC9000-S13-2-5-P2-S2-R01",
       "REQ-QUIC-RFC9000-S13P2P5-0005",
       "REQ-QUIC-RFC9000-S13P2P6-0001",
       "REQ-QUIC-RFC9000-S13P2P6-0002"
@@ -215,7 +215,7 @@
       "notes": "Packet composition is still outside the available helper slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13-0002",
+      "requirement_id": "RFC9000-S13-P2-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -224,7 +224,7 @@
       "notes": "Needs the outgoing packet scheduler, not just ACK-state helpers."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13-0003",
+      "requirement_id": "RFC9000-S13-P2-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -289,7 +289,7 @@
       "notes": "The helper records processed packets and the generated ACK frame round-trips through the frame codec, including the largest acknowledged packet and ack delay."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0752",
+      "requirement_id": "RFC9000-S13-1-P3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -358,7 +358,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0756",
+      "requirement_id": "RFC9000-S13-2-P2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -427,7 +427,7 @@
       "notes": "This is a QUIC recovery concern rather than ACK generation state."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0004",
+      "requirement_id": "RFC9000-S13-2-1-P2-R02",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -447,7 +447,7 @@
       "notes": "Ack-eliciting application-data packets are held to max_ack_delay, which also applies to 0-RTT and 1-RTT application-data traffic in the helper-level model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0005",
+      "requirement_id": "RFC9000-S13-2-1-P2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -532,7 +532,7 @@
       "notes": "This is a consequence of peer behavior, not local ACK generation."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0763",
+      "requirement_id": "RFC9000-S13-2-1-P5-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -552,7 +552,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0764",
+      "requirement_id": "RFC9000-S13-2-1-P5-S2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -643,7 +643,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1323",
+      "requirement_id": "RFC9000-S13-2-2-P4-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -663,7 +663,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1324",
+      "requirement_id": "RFC9000-S13-2-2-P5-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -849,7 +849,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0768",
+      "requirement_id": "RFC9000-S13-2-3-P5-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -889,7 +889,7 @@
       "notes": "The helper trims the oldest retained ACK ranges when the configured limit is reached, keeping the newest ranges and the largest acknowledged packet number."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0771",
+      "requirement_id": "RFC9000-S13-2-3-P7-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -975,7 +975,7 @@
       "notes": "The ACK frame helper and codec preserve multiple ACK ranges, the largest received packet number, and the ACK Delay field without adding uncontrolled delay."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0779",
+      "requirement_id": "RFC9000-S13-2-5-P2-S2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -996,19 +996,19 @@
       "notes": "The helper reports ACK Delay directly from measured receive-to-send time, so no uncontrolled delay is introduced."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0780",
+      "requirement_id": "RFC9000-S13-2-5-P2-S3-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAckGenerationState.cs",
         "src/Incursa.Quic/QuicCongestionControlState.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P2-S3-R01.cs"
       ],
       "tests_covering_requirement": [
         "TryBuildAckFrame_IncludesBufferingDelayFromUnavailableDecryptionKeys",
         "TryBuildAckFrame_DoesNotInventBufferingDelayWhenNoneWasRecorded"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P2-S3-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "The helper now adds buffering delay from unavailable decryption keys into ACK Delay without inventing delay when none was recorded."
@@ -1092,7 +1092,7 @@
       "notes": "Deferred intentionally because the clause is explanatory, not a standalone rule."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P7-0001",
+      "requirement_id": "RFC9000-S13-2-7-P1-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -1103,13 +1103,13 @@
   ],
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9000-S13-0001",
-    "REQ-QUIC-RFC9000-S13-0002",
-    "REQ-QUIC-RFC9000-S13-0003",
+    "RFC9000-S13-P2-S2-R01",
+    "RFC9000-S13-P2-S3-R01",
     "REQ-QUIC-RFC9000-S13-0004",
     "REQ-QUIC-RFC9000-S13-0005",
     "REQ-QUIC-RFC9000-0749",
     "REQ-QUIC-RFC9000-S13P1-0002",
-    "REQ-QUIC-RFC9000-0752",
+    "RFC9000-S13-1-P3-R01",
     "REQ-QUIC-RFC9000-S13P2P1-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
@@ -1119,7 +1119,7 @@
     "REQ-QUIC-RFC9000-S13P2P4-0001",
     "REQ-QUIC-RFC9000-S13P2P6-0003",
     "REQ-QUIC-RFC9000-S13P2P6-0004",
-    "REQ-QUIC-RFC9000-S13P2P7-0001"
+    "RFC9000-S13-2-7-P1-S3-R01"
   ],
   "tests_reviewed": [
     {
@@ -1142,14 +1142,14 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
     "tests/Incursa.Quic.Tests/QuicFrameCodecFuzzTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0780.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P2-S3-R01.cs",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.md",
     "specs/generated/quic/chunks/9000-18-ack-generation.implementation-summary.json"
   ],
   "notes": [
     "No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.",
     "The requirement-home proof for REQ-QUIC-RFC9000-S13P2P1-0007 now closes the remaining gap and removes it from the blocked set.",
-    "The requirement-home proof for REQ-QUIC-RFC9000-0780 now closes the decryption-key buffering-delay gap and keeps the remaining blocked set focused on packet assembly, timing, peer-ACK, and carrier-selection work.",
+    "The requirement-home proof for RFC9000-S13-2-5-P2-S3-R01 now closes the decryption-key buffering-delay gap and keeps the remaining blocked set focused on packet assembly, timing, peer-ACK, and carrier-selection work.",
     "The helper-level implementation covers ACK state, delayed ACK thresholds, immediate ACK triggers, ACK range trimming, ACK-ECN emission, per-space tracking, and the one-ACK-only-packet guard.",
     "No stale or wrong requirement refs were found in the scoped source or tests."
   ]

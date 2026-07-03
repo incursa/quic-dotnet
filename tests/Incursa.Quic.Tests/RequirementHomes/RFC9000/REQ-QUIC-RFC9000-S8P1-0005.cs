@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P1-0005")]
+[Requirement("RFC9000-S8-1-P6-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1_0005
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0005">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S8-1-P6-S3-R01">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S8P1-0005")]
+    [Requirement("RFC9000-S8-1-P6-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ClientSendsAckElicitingHandshakeAckProbeWhenServerCryptoTrafficNeedsAck()
@@ -53,9 +53,9 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0005
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P1-0005">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S8-1-P6-S3-R01">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S8P1-0005")]
+    [Requirement("RFC9000-S8-1-P6-S3-R01")]
     [Requirement("REQ-QUIC-RFC9000-S8P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

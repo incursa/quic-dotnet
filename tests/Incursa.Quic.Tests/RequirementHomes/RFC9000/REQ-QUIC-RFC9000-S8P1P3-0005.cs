@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P1P3-0005")]
+[Requirement("RFC9000-S8-1-3-P3-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P1P3_0005
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0005")]
+    [Requirement("RFC9000-S8-1-3-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ValidateNewToken_AcceptsTokenBeforeItsExpirationTime()
@@ -22,7 +22,7 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0005
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1P3-0005")]
+    [Requirement("RFC9000-S8-1-3-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void ValidateNewToken_RejectsTokenAfterItsExpirationTime()

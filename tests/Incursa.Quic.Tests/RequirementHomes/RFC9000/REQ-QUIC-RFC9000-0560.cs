@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0560">Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-1-2-P3-S1-R01">Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0560")]
+[Requirement("RFC9000-S10-1-2-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0560
 {
     [Fact]

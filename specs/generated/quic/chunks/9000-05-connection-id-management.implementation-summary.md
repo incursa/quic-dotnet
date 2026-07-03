@@ -7,7 +7,7 @@
 - `REQ-QUIC-RFC9000-S5P1P2-0008`: The wire-format Retire Prior To field is now directly traced.
 - `REQ-QUIC-RFC9000-S5P2-0001`: Trace coverage was already present from the prior pass; the packet-classification hook is still a direct match for the imported ID.
 - `REQ-QUIC-RFC9000-S5P2P2-0001`: The Version Negotiation send helper now gates unsupported versions on the observed datagram size.
-- `REQ-QUIC-RFC9000-S5P2P2-0004`: The same helper now covers the "datagram sufficiently long" decision for server responses.
+- `RFC9000-S5-2-2-P2-S4-R01`: The same helper now covers the "datagram sufficiently long" decision for server responses.
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
 - `REQ-QUIC-RFC9000-0277`: The disable_active_migration transport parameter is directly traced at the wire level.
 
@@ -52,10 +52,10 @@
 - `REQ-QUIC-RFC9000-0247`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-0248`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-0249`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-S5P1P2-0013`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `RFC9000-S5-1-2-P6-S2-R01`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-0251`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 - `REQ-QUIC-RFC9000-S5P1P2-0015`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
-- `REQ-QUIC-RFC9000-0253`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
+- `RFC9000-S5-1-2-P7-S1-R01`: No connection-state or CID lifecycle manager exists in this parser/codec slice.
 
 ### `S5P2`
 
@@ -69,7 +69,7 @@
 - `REQ-QUIC-RFC9000-S5P2-0008`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0009`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0010`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
-- `REQ-QUIC-RFC9000-0258`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
+- `RFC9000-S5-2-P6-S1-R01`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0012`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 - `REQ-QUIC-RFC9000-S5P2-0013`: No packet association, key-removal, or error-recovery pipeline exists in this parser-centric slice.
 
@@ -80,19 +80,19 @@
 - `REQ-QUIC-RFC9000-0261`: No client-side packet association or version-selection state exists.
 - `REQ-QUIC-RFC9000-S5P2P1-0003`: No client-side packet association or version-selection state exists.
 - `REQ-QUIC-RFC9000-S5P2P1-0004`: No client-side packet association or version-selection state exists.
-- `REQ-QUIC-RFC9000-0264`: No client-side packet association or version-selection state exists.
+- `RFC9000-S5-2-1-P3-S1-R01`: No client-side packet association or version-selection state exists.
 
 ### `S5P2P2`
 
 - Open: 8
-- `REQ-QUIC-RFC9000-0265`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-0267`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P1-S2-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P1-S3-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0005`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-0271`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-0272`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-0273`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P5-S1-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P6-S1-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `REQ-QUIC-RFC9000-S5P2P2-0009`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-0275`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P7-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 
 ### `S5P2P3`
 

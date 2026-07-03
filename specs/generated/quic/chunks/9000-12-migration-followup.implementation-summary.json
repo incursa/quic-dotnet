@@ -35,7 +35,7 @@
   "notes": "No reconciliation artifact existed for this chunk, so it was treated as greenfield. The implementation layer remains blocked for the migration behavior; only the ACK-generation and preferred-address evidence is now explicitly traced.",
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0001",
+      "requirement_id": "RFC9000-S9-4-P1-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -149,7 +149,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0011",
+      "requirement_id": "RFC9000-S9-4-P5-S4-R02",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -158,7 +158,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0001",
+      "requirement_id": "RFC9000-S9-5-P2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -167,7 +167,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0515",
+      "requirement_id": "RFC9000-S9-5-P3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -176,7 +176,7 @@
       "notes": "This needs packet/path association and connection-ID rotation state that the current library does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P5-0003",
+      "requirement_id": "RFC9000-S9-5-P4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -332,7 +332,7 @@
       "notes": "This needs a validated-path send-path switch and old-path retirement logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P1-0005",
+      "requirement_id": "RFC9000-S9-6-1-P4-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -416,7 +416,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0532",
+      "requirement_id": "RFC9000-S9-6-2-P3-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -425,7 +425,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0534",
+      "requirement_id": "RFC9000-S9-6-2-P4-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -434,7 +434,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0535",
+      "requirement_id": "RFC9000-S9-6-2-P4-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -506,7 +506,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0539",
+      "requirement_id": "RFC9000-S9-6-3-P2-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -515,7 +515,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0540",
+      "requirement_id": "RFC9000-S9-6-3-P2-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -542,7 +542,7 @@
       "notes": "This needs concurrent path-validation orchestration, attack protection on preferred-address traffic, and previous-path decision logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0543",
+      "requirement_id": "RFC9000-S9-6-3-P5-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

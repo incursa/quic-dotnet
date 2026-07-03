@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S21P4-0001")]
+[Requirement("RFC9000-S21-4-P1-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P4_0001
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S21P4-0001")]
+    [Requirement("RFC9000-S21-4-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void HandshakePacketNumbersCanBeSkippedWhenTheCoordinatorCounterAdvances()
@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S21P4_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S21P4-0001")]
+    [Requirement("RFC9000-S21-4-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PacketNumbersStayContiguousUnlessTheCoordinatorCounterIsAdvanced()
@@ -66,7 +66,7 @@ public sealed class REQ_QUIC_RFC9000_S21P4_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S21P4-0001")]
+    [Requirement("RFC9000-S21-4-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void ApplicationPacketNumbersCanSkipToTheFourByteBoundary()

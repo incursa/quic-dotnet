@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-6321")]
+[Requirement("RFC9000-S6-3-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_6321
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6321">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-3-P2-R01">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-6321")]
+    [Requirement("RFC9000-S6-3-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void IsReservedVersion_UsesTheReservedPattern()
     {
@@ -23,9 +23,9 @@ public sealed class REQ_QUIC_RFC9000_6321
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6321">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-3-P2-R01">Endpoints MAY add reserved versions to any field where unknown or unsupported versions are ignored to test that a peer correctly ignores the value.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-6321")]
+    [Requirement("RFC9000-S6-3-P2-R01")]
     public void ShouldDiscardVersionNegotiation_IgnoresReservedVersionAdvertisements()
     {
         uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(0x11223344);

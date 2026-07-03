@@ -5,7 +5,7 @@ using System.Net;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S9P6P1-0005")]
+[Requirement("RFC9000-S9-6-1-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S9P6P1_0005
 {
     [Fact]

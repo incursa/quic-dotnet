@@ -24,8 +24,8 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 
 - `REQ-QUIC-RFC9000-S17P1-0001` - not implemented; no packet-number encoding surface exists.
 - `REQ-QUIC-RFC9000-S17P1-0002` - not implemented; no packet-number-space acknowledgement state exists.
-- `REQ-QUIC-RFC9000-S17P1-0003` - not implemented; no sender-side packet-number sizing policy exists.
-- `REQ-QUIC-RFC9000-0925` - not implemented; no packet-number recovery heuristic exists.
+- `RFC9000-S17-1-P4-R01` - not implemented; no sender-side packet-number sizing policy exists.
+- `RFC9000-S17-1-P4-S2-R01` - not implemented; no packet-number recovery heuristic exists.
 
 ### S17P2
 
@@ -122,7 +122,7 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 
 ## Requirements Needing Deeper Implementation Work
 
-- `REQ-QUIC-RFC9000-S17P1-0001` through `REQ-QUIC-RFC9000-0925`
+- `REQ-QUIC-RFC9000-S17P1-0001` through `RFC9000-S17-1-P4-S2-R01`
 - `REQ-QUIC-RFC9000-S17P2-0002` through `REQ-QUIC-RFC9000-S17P2-0004`
 - `REQ-QUIC-RFC9000-S17P2-0014` through `REQ-QUIC-RFC9000-S17P2-0016`
 - `REQ-QUIC-RFC9000-S17P2-0026` through `REQ-QUIC-RFC9000-S17P2-0029`

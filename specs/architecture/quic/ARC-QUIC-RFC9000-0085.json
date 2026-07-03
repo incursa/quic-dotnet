@@ -14,8 +14,8 @@
     "VER-QUIC-RFC9000-0085"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-0409",
-    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "RFC9000-S8-1-4-P3-S2-R01",
+    "RFC9000-S8-1-4-P5-S3-R01",
     "REQ-QUIC-RFC9000-0412"
   ],
   "key_components": [
@@ -23,8 +23,8 @@
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0409.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P3-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P5-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0412.cs"
   ],
   "design_summary": "Retry bootstrap tokens are issued by the address-validation token protector with the remote IP address and UDP source port included in the integrity-protected MAC input and an explicit one-minute Retry lifetime. The listener stores the issuing path identity, requires replay Initial packets to carry the exact Retry token, rejects replays from a different remote endpoint before admission, and validates the protected token lifetime before marking Retry replay validation successful. The anti-amplification budget remains the three-times-received-payload cap for unvalidated client addresses.",
@@ -46,7 +46,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused S8P1P4 hard proof tail for REQ-QUIC-RFC9000-0409, REQ-QUIC-RFC9000-S8P1P4-0007, and REQ-QUIC-RFC9000-0412. It does not claim full token replay hardening beyond the existing listener-local NEW_TOKEN replay cache, public API widening, persistent cross-restart token state, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
+      "content": "This design closes the focused S8P1P4 hard proof tail for RFC9000-S8-1-4-P3-S2-R01, RFC9000-S8-1-4-P5-S3-R01, and REQ-QUIC-RFC9000-0412. It does not claim full token replay hardening beyond the existing listener-local NEW_TOKEN replay cache, public API widening, persistent cross-restart token state, hosted interop readiness, or closure of unrelated deferred fuzz obligations."
     }
   ]
 }

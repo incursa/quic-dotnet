@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0006">An endpoint MUST NOT check for any stateless reset tokens associated with connection IDs it has not used or for connection IDs that have been retired.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-1-P3-S1-R01">An endpoint MUST NOT check for any stateless reset tokens associated with connection IDs it has not used or for connection IDs that have been retired.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P3P1-0006")]
+[Requirement("RFC9000-S10-3-1-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P3P1_0006
 {
     [Fact]

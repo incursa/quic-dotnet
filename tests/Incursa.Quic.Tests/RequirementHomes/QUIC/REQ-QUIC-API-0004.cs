@@ -17,7 +17,7 @@ public sealed class REQ_QUIC_API_0004
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0002")]
     [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0005")]
+    [Requirement("RFC9000-S2-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void QuicStream_ExposesTheNarrowAbortAndCompletionSurface()
@@ -58,7 +58,7 @@ public sealed class REQ_QUIC_API_0004
     [Requirement("REQ-QUIC-RFC9000-S2P4-0001")]
     [Requirement("REQ-QUIC-RFC9000-S2-0003")]
     [Requirement("REQ-QUIC-RFC9000-0023")]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0005")]
+    [Requirement("RFC9000-S2-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task SupportedLoopbackStreamEntry_ReturnsRealQuicStreamFacades()

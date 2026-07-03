@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0435")]
+[Requirement("RFC9000-S8-2-1-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0435
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0435")]
+    [Requirement("RFC9000-S8-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PathValidationTimerExpirySendsTheNextProbeAtTheArmedCadence()
@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9000_0435
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0435")]
+    [Requirement("RFC9000-S8-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RepeatedPacketsBeforeTheValidationDeadlineDoNotSendAnotherProbe()
@@ -70,7 +70,7 @@ public sealed class REQ_QUIC_RFC9000_0435
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0435")]
+    [Requirement("RFC9000-S8-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TimerAtTheExactValidationDeadlineSendsOneProbeAndRearmsLater()

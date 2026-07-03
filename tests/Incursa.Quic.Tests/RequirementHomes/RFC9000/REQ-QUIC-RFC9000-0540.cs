@@ -5,7 +5,7 @@ using System.Net;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0540")]
+[Requirement("RFC9000-S9-6-3-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0540
 {
     [Fact]
@@ -110,7 +110,7 @@ public sealed class REQ_QUIC_RFC9000_0540
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0540")]
+    [Requirement("RFC9000-S9-6-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds()

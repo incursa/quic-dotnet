@@ -14,7 +14,7 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S7P4P1-0001",
     "REQ-QUIC-RFC9000-S7P4P1-0002",
-    "REQ-QUIC-RFC9000-0346"
+    "RFC9000-S7-4-1-P5-R01"
   ],
   "summary": "Close the bounded RFC 9000 Section 7.4.1 client remembered transport-parameter policy floor by classifying known transport parameters, deriving a sanitized 0-RTT remembered subset, and gating dormant early-data readiness on that subset.",
   "planned_changes": "- Add an internal QuicZeroRttTransportParameterPolicy with known transport-parameter identifiers and mandatory, optional, or prohibited 0-RTT storage classifications.\n- Derive a sanitized ZeroRttTransportParameters snapshot from the raw peer transport-parameter snapshot when constructing a detached resumption ticket carrier.\n- Preserve the raw peer snapshot for resumption metadata while using only the sanitized subset for HasEarlyDataPrerequisiteMaterial.\n- Add focused requirement-home tests for classification coverage, prohibited-parameter exclusion, processable parameter retention, and prohibited-only snapshot rejection.\n- Retarget S7P4P1 0001, 0002, and 0004 trace links to the focused proof instead of the broad RFC 9000 umbrella.",
@@ -26,11 +26,11 @@
     "ARC-QUIC-RFC9000-0068"
   ],
   "out_of_scope": [
-    "REQ-QUIC-RFC9000-0345 new-value/default-value consumption.",
-    "REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-0356 server acceptance, restored-value support, and updated-value violation policy.",
+    "RFC9000-S7-4-1-P4-S2-R01 new-value/default-value consumption.",
+    "RFC9000-S7-4-1-P6-R01 through REQ-QUIC-RFC9000-0356 server acceptance, restored-value support, and updated-value violation policy.",
     "Public 0-RTT or early-data APIs.",
     "TLS early_data extension emission or acceptance.",
     "Server anti-replay or application-data delivery."
   ],
-  "completion_notes": "Completed as a focused client remembered-transport-parameter policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and REQ-QUIC-RFC9000-0346."
+  "completion_notes": "Completed as a focused client remembered-transport-parameter policy and requirement-home proof for REQ-QUIC-RFC9000-S7P4P1-0001, REQ-QUIC-RFC9000-S7P4P1-0002, and RFC9000-S7-4-1-P5-R01."
 }

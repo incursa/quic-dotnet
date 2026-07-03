@@ -1,9 +1,9 @@
 # 9000-08-transport-params-and-crypto-buffers Implementation Summary
 
 ## Requirements Completed
-- `REQ-QUIC-RFC9000-0334` through `REQ-QUIC-RFC9000-0336`
-- `REQ-QUIC-RFC9000-0357`
-- `REQ-QUIC-RFC9000-0361` through `REQ-QUIC-RFC9000-S7P5-0005`
+- `RFC9000-S7-4-P6-R01` through `RFC9000-S7-4-P7-S1-R01`
+- `RFC9000-S7-4-2-P1-S2-R01`
+- `RFC9000-S7-5-P2-S1-R01` through `RFC9000-S7-5-P4-S2-R01`
 
 ## Files Changed
 - `src/Incursa.Quic/QuicTransportParametersCodec.cs`
@@ -14,9 +14,9 @@
 - `tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs`
 
 ## Tests Added or Updated
-- Updated `TryParseTransportParameters_IgnoresReservedGreaseParameters` to tag `REQ-QUIC-RFC9000-0357`.
+- Updated `TryParseTransportParameters_IgnoresReservedGreaseParameters` to tag `RFC9000-S7-4-2-P1-S2-R01`.
 - Added `TryParseTransportParameters_RejectsDuplicateTransportParameters` for duplicate known and unsupported transport parameters.
-- Updated `TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo` to tag `REQ-QUIC-RFC9000-0334`.
+- Updated `TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo` to tag `RFC9000-S7-4-P6-R01`.
 - Added `QuicCryptoBufferTests.TryAddFrame_BuffersOutOfOrderFramesAndDequeuesContiguousBytes`.
 - Added `QuicCryptoBufferTests.TryAddFrame_AllowsConfiguredCapacityDuringHandshake`.
 - Added `QuicCryptoBufferTests.TryAddFrame_ClosesWithBufferExceededWhenCapacityIsNotExpanded`.

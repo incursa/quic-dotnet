@@ -108,7 +108,7 @@ public sealed class REQ_QUIC_RFC9000_0177
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0023">DATA_BLOCKED, STREAM_DATA_BLOCKED, and STREAMS_BLOCKED frames MUST use connection, stream, and stream-type scope respectively.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0024">A new frame MUST be sent if a packet containing the most recent frame for a scope is lost, but only while the endpoint is blocked on the corresponding limit.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P3-0025">These frames MUST always include the limit that is causing blocking at the time that they are transmitted.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1298">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S19-13-P1-R01">A sender SHOULD send a STREAM_DATA_BLOCKED frame (type=0x15) when it wishes to send data but is unable to do so due to stream-level flow control.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0006">STREAM_DATA_BLOCKED frames MUST contain the following fields:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0007">The Stream ID field MUST be variable-length integer indicating the stream that is blocked due to flow control.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P13-0008">The Maximum Stream Data field MUST be variable-length integer indicating the offset of the stream at which the blocking occurred.</workbench-requirement>
@@ -121,7 +121,7 @@ public sealed class REQ_QUIC_RFC9000_0177
     [Requirement("REQ-QUIC-RFC9000-S13P3-0023")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0024")]
     [Requirement("REQ-QUIC-RFC9000-S13P3-0025")]
-    [Requirement("REQ-QUIC-RFC9000-1298")]
+    [Requirement("RFC9000-S19-13-P1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0007")]
     [Requirement("REQ-QUIC-RFC9000-S19P13-0008")]

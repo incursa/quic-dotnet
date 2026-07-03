@@ -6,18 +6,18 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1507">All registrations made by Standards Track publications MUST be permanent.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-4-P4-R01">All registrations made by Standards Track publications MUST be permanent.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1507")]
+[Requirement("RFC9000-S22-1-4-P4-R01")]
 public sealed class REQ_QUIC_RFC9000_1507
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-1507")]
+    [Requirement("RFC9000-S22-1-4-P4-R01")]
     public void RequirementStatement_DoesNotAllowProvisionalStandardsTrackRegistrations()
     {
-        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1507");
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("RFC9000-S22-1-4-P4-R01");
 
         Assert.Contains("Standards Track", statement);
         Assert.Contains("MUST be permanent", statement);
@@ -37,7 +37,7 @@ public sealed class REQ_QUIC_RFC9000_1507
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1507");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-4-P4-R01");
 
         Assert.Equal("Make Standards Track registrations permanent", requirement.GetProperty("title").GetString());
         Assert.Equal("All registrations made by Standards Track publications MUST be permanent.", requirement.GetProperty("statement").GetString());

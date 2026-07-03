@@ -7,15 +7,15 @@ using System.Net.Sockets;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0571">The endpoint MAY send a Stateless Reset in response to any further incoming packets belonging to this connection.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-P7-S2-R01">The endpoint MAY send a Stateless Reset in response to any further incoming packets belonging to this connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0571")]
+[Requirement("RFC9000-S10-2-P7-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0571
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-0571")]
+    [Requirement("RFC9000-S10-2-P7-S2-R01")]
     public async Task EndpointHostSendsStatelessResetForRetainedRoutePacketsAfterDiscard()
     {
         using Socket serverSocket = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -69,7 +69,7 @@ public sealed class REQ_QUIC_RFC9000_0571
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-0571")]
+    [Requirement("RFC9000-S10-2-P7-S2-R01")]
     public void TryCreateStatelessResetDatagramForPacket_DoesNotEmitBeforeDiscard()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2, maximumStatelessResetEmissionsPerRemoteAddress: 1);

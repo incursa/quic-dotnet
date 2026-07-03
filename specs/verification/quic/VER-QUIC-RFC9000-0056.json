@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused S5P2P2 requirement-home tests, full S5P2P2 requirement-home regression filter, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0272",
-    "REQ-QUIC-RFC9000-0273"
+    "RFC9000-S5-2-2-P5-S1-R01",
+    "RFC9000-S5-2-2-P6-S1-R01"
   ],
   "scope": "This verification covers deliberate listener refusal with a protected Initial CONNECTION_REFUSED close and bounded listener-local 0-RTT buffering before the matching Initial arrives.",
   "expected_result": "The requirement-home tests show a refused otherwise valid Initial receives a protected Initial CONNECTION_CLOSE carrying CONNECTION_REFUSED, accepted connections do not receive that refusal close, the refusal packet handles a shortest-client-CID edge while remaining padded to the Version 1 minimum, 0-RTT is classified for buffering only when capacity is configured, disabled buffering drops 0-RTT, and the buffer enforces the per-connection limit before draining for the late Initial.",
@@ -36,8 +36,8 @@
     "src/Incursa.Quic/QuicListenerPreAcceptanceIngressPolicy.cs",
     "src/Incursa.Quic/QuicListenerZeroRttPreInitialBuffer.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0272.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0273.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs",
     "dotnet build Incursa.Quic.slnx -c Release",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0272|FullyQualifiedName~REQ_QUIC_RFC9000_0273\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0001|FullyQualifiedName~REQ_QUIC_RFC9000_0265|FullyQualifiedName~REQ_QUIC_RFC9000_0267|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0005|FullyQualifiedName~REQ_QUIC_RFC9000_0271|FullyQualifiedName~REQ_QUIC_RFC9000_0272|FullyQualifiedName~REQ_QUIC_RFC9000_0273|FullyQualifiedName~REQ_QUIC_RFC9000_S5P2P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_0275\"",

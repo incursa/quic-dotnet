@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2P1-0006">To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P5-S3-R01">To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P2P1-0006")]
+[Requirement("RFC9000-S10-2-1-P5-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P2P1_0006
 {
     [Fact]

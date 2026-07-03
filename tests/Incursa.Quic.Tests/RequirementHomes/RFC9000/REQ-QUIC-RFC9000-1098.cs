@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1098">On receiving a 1-RTT packet that increases the highest packet number seen by the client from the server on a network path, the client MUST set the spin value for that path to the inverse of the spin bit in the received packet.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P8-S1-R01">On receiving a 1-RTT packet that increases the highest packet number seen by the client from the server on a network path, the client MUST set the spin value for that path to the inverse of the spin bit in the received packet.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1098")]
+[Requirement("RFC9000-S17-4-P8-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1098
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1098")]
+    [Requirement("RFC9000-S17-4-P8-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ClientReceiveOneRttPacket_StoresTheInverseOfTheReceivedSpinBitForThePath()
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_1098
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1098")]
+    [Requirement("RFC9000-S17-4-P8-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientReceiveOneRttPacket_IgnoresNonIncreasingPacketNumbersForSpinUpdates()

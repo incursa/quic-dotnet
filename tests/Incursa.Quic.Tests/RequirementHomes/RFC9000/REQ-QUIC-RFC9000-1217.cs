@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1217")]
+[Requirement("RFC9000-S19-5-P2-R02")]
 public sealed class REQ_QUIC_RFC9000_1217
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1217")]
+    [Requirement("RFC9000-S19-5-P2-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStopSendingFrame_RejectsReceiveOnlyStream()
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1217
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1217")]
+    [Requirement("RFC9000-S19-5-P2-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_AcceptsSendCapableUnidirectionalStream()
@@ -47,7 +47,7 @@ public sealed class REQ_QUIC_RFC9000_1217
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1217")]
+    [Requirement("RFC9000-S19-5-P2-R02")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveStopSendingFrame_RejectsServerRolePeerUnidirectionalStream()

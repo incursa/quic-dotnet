@@ -6,13 +6,13 @@ using System.Text;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0685">Senders MUST NOT coalesce QUIC packets with different connection IDs into a single UDP datagram.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-2-P4-S1-R01">Senders MUST NOT coalesce QUIC packets with different connection IDs into a single UDP datagram.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0685")]
+[Requirement("RFC9000-S12-2-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0685
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0685")]
+    [Requirement("RFC9000-S12-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram_RewritesBothPacketsToTheCurrentPeerDestinationConnectionIdAfterRotation()
@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9000_0685
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0685")]
+    [Requirement("RFC9000-S12-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagram_DoesNotRetainTheStaleDestinationConnectionIdInEitherPacket()

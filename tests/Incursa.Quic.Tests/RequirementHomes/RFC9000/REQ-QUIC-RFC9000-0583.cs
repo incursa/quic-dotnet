@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0583">An endpoint in the closing state MUST either discard packets received from an unvalidated address or limit the cumulative size of packets it sends to an unvalidated address to three times the size of packets it receives from that address.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P7-S1-R01">An endpoint in the closing state MUST either discard packets received from an unvalidated address or limit the cumulative size of packets it sends to an unvalidated address to three times the size of packets it receives from that address.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0583")]
+[Requirement("RFC9000-S10-2-1-P7-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0583
 {
     [Fact]

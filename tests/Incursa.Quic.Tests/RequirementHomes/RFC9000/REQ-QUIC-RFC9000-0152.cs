@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0152">STOP_SENDING SHOULD only be sent for a stream that has not been reset by the peer.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-5-P6-S1-R01">STOP_SENDING SHOULD only be sent for a stream that has not been reset by the peer.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0152")]
+[Requirement("RFC9000-S3-5-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0152
 {
     private static readonly byte[] PacketConnectionId = [0x0A, 0x0B, 0x0C];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0152")]
+    [Requirement("RFC9000-S3-5-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStopSendingFrame_AllowsStreamsThatHaveNotBeenResetByThePeer()
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_0152
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0152")]
+    [Requirement("RFC9000-S3-5-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_RejectsStreamsThatHaveAlreadyBeenResetByThePeer()
@@ -77,7 +77,7 @@ public sealed class REQ_QUIC_RFC9000_0152
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0152")]
+    [Requirement("RFC9000-S3-5-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortStreamReadsAsync_DoesNotSendStopSendingAfterPeerResetStream()

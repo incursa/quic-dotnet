@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P2P1-0001")]
+[Requirement("RFC9000-S8-2-1-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P2P1_0001
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P2P1-0001")]
+    [Requirement("RFC9000-S8-2-1-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PathValidationTimerCanSendAnotherPathChallengeToCoverLoss()

@@ -125,15 +125,15 @@
       "REQ-QUIC-RFC9000-S3P4-0002",
       "REQ-QUIC-RFC9000-S3P4-0003",
       "REQ-QUIC-RFC9000-S3P5-0001",
-      "REQ-QUIC-RFC9000-S3P5-0002",
+      "RFC9000-S3-5-P2-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0003",
       "REQ-QUIC-RFC9000-S3P5-0004",
       "REQ-QUIC-RFC9000-S3P5-0005",
-      "REQ-QUIC-RFC9000-S3P5-0006",
-      "REQ-QUIC-RFC9000-S3P5-0007",
+      "RFC9000-S3-5-P4-S3-R01",
+      "RFC9000-S3-5-P4-S4-R01",
       "REQ-QUIC-RFC9000-S3P5-0008",
-      "REQ-QUIC-RFC9000-S3P5-0009",
-      "REQ-QUIC-RFC9000-0152",
+      "RFC9000-S3-5-P5-S2-R01",
+      "RFC9000-S3-5-P6-S1-R01",
       "REQ-QUIC-RFC9000-S3P5-0011",
       "REQ-QUIC-RFC9000-S3P5-0012",
       "REQ-QUIC-RFC9000-S3P5-0013"
@@ -205,15 +205,15 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P2-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0004.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S4-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0152.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P6-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0012.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0013.cs"
@@ -1141,7 +1141,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0002",
+      "requirement_id": "RFC9000-S3-5-P2-S1-R01",
       "section": "S3P5",
       "title": "Signal aborting reads with STOP_SENDING",
       "status": "blocked",
@@ -1149,7 +1149,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P2-S1-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1205,7 +1205,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0006",
+      "requirement_id": "RFC9000-S3-5-P4-S3-R01",
       "section": "S3P5",
       "title": "Permit deferred RESET_STREAM in Data Sent",
       "status": "blocked",
@@ -1213,7 +1213,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1221,7 +1221,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0007",
+      "requirement_id": "RFC9000-S3-5-P4-S4-R01",
       "section": "S3P5",
       "title": "Prefer RESET_STREAM over retransmission after loss",
       "status": "blocked",
@@ -1229,7 +1229,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S4-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1253,7 +1253,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0009",
+      "requirement_id": "RFC9000-S3-5-P5-S2-R01",
       "section": "S3P5",
       "title": "Allow ignoring later RESET_STREAM error codes",
       "status": "blocked",
@@ -1261,7 +1261,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1269,7 +1269,7 @@
       "notes": "STOP_SENDING/RESET_STREAM coordination, loss handling, and post-abort flow-control accounting remain absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0152",
+      "requirement_id": "RFC9000-S3-5-P6-S1-R01",
       "section": "S3P5",
       "title": "Prefer STOP_SENDING only for streams that have not been reset",
       "status": "blocked",
@@ -1277,7 +1277,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0152.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P6-S1-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1369,15 +1369,15 @@
     "REQ-QUIC-RFC9000-S3P4-0002",
     "REQ-QUIC-RFC9000-S3P4-0003",
     "REQ-QUIC-RFC9000-S3P5-0001",
-    "REQ-QUIC-RFC9000-S3P5-0002",
+    "RFC9000-S3-5-P2-S1-R01",
     "REQ-QUIC-RFC9000-S3P5-0003",
     "REQ-QUIC-RFC9000-S3P5-0004",
     "REQ-QUIC-RFC9000-S3P5-0005",
-    "REQ-QUIC-RFC9000-S3P5-0006",
-    "REQ-QUIC-RFC9000-S3P5-0007",
+    "RFC9000-S3-5-P4-S3-R01",
+    "RFC9000-S3-5-P4-S4-R01",
     "REQ-QUIC-RFC9000-S3P5-0008",
-    "REQ-QUIC-RFC9000-S3P5-0009",
-    "REQ-QUIC-RFC9000-0152",
+    "RFC9000-S3-5-P5-S2-R01",
+    "RFC9000-S3-5-P6-S1-R01",
     "REQ-QUIC-RFC9000-S3P5-0011",
     "REQ-QUIC-RFC9000-S3P5-0012",
     "REQ-QUIC-RFC9000-S3P5-0013"

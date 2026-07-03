@@ -58,7 +58,7 @@
       "REQ-QUIC-RFC9000-S13P4P2P1-0003",
       "REQ-QUIC-RFC9000-S13P4P2P1-0004",
       "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-      "REQ-QUIC-RFC9000-0845",
+      "RFC9000-S13-4-2-1-P5-S2-R01",
       "REQ-QUIC-RFC9000-S13P4P2P1-0007",
       "REQ-QUIC-RFC9000-S13P4P2P1-0008"
     ],
@@ -83,10 +83,10 @@
     "S14P1": [
       "REQ-QUIC-RFC9000-S14P1-0001",
       "REQ-QUIC-RFC9000-S14P1-0002",
-      "REQ-QUIC-RFC9000-S14P1-0003",
+      "RFC9000-S14-1-P1-S3-R01",
       "REQ-QUIC-RFC9000-S14P1-0004",
-      "REQ-QUIC-RFC9000-S14P1-0005",
-      "REQ-QUIC-RFC9000-S14P1-0006",
+      "RFC9000-S14-1-P3-S1-R01",
+      "RFC9000-S14-1-P4-S1-R01",
       "REQ-QUIC-RFC9000-S14P1-0007",
       "REQ-QUIC-RFC9000-S14P1-0008"
     ],
@@ -94,22 +94,22 @@
       "REQ-QUIC-RFC9000-S14P2-0001",
       "REQ-QUIC-RFC9000-S14P2-0002",
       "REQ-QUIC-RFC9000-S14P2-0003",
-      "REQ-QUIC-RFC9000-S14P2-0004",
+      "RFC9000-S14-2-P2-S2-R01",
       "REQ-QUIC-RFC9000-S14P2-0005",
       "REQ-QUIC-RFC9000-S14P2-0006",
-      "REQ-QUIC-RFC9000-S14P2-0007",
-      "REQ-QUIC-RFC9000-0872",
-      "REQ-QUIC-RFC9000-S14P2-0009",
+      "RFC9000-S14-2-P4-S1-R01",
+      "RFC9000-S14-2-P4-S2-R01",
+      "RFC9000-S14-2-P5-S2-R01",
       "REQ-QUIC-RFC9000-S14P2-0010"
     ],
     "S14P2P1": [
-      "REQ-QUIC-RFC9000-1421",
+      "RFC9000-S14-2-1-P2-S1-R01",
       "REQ-QUIC-RFC9000-1422",
       "REQ-QUIC-RFC9000-S14P2P1-0003",
       "REQ-QUIC-RFC9000-S14P2P1-0004",
-      "REQ-QUIC-RFC9000-1426",
-      "REQ-QUIC-RFC9000-S14P2P1-0006",
-      "REQ-QUIC-RFC9000-1428"
+      "RFC9000-S14-2-1-P4-S4-R01",
+      "RFC9000-S14-2-1-P5-S1-R01",
+      "RFC9000-S14-2-1-P5-S2-R01"
     ],
     "S14P3": [
       "REQ-QUIC-RFC9000-S14P3-0001",
@@ -170,7 +170,7 @@
           "REQ-QUIC-RFC9000-S13P4P2P1-0003",
           "REQ-QUIC-RFC9000-S13P4P2P1-0004",
           "REQ-QUIC-RFC9000-S13P4P2P1-0005",
-          "REQ-QUIC-RFC9000-0845",
+          "RFC9000-S13-4-2-1-P5-S2-R01",
           "REQ-QUIC-RFC9000-S13P4P2P1-0007",
           "REQ-QUIC-RFC9000-S13P4P2P1-0008"
         ],
@@ -213,7 +213,7 @@
         "section_token": "S14P1",
         "requirements": [
           "REQ-QUIC-RFC9000-S14P1-0001",
-          "REQ-QUIC-RFC9000-S14P1-0003",
+          "RFC9000-S14-1-P1-S3-R01",
           "REQ-QUIC-RFC9000-S14P1-0008"
         ],
         "files": [
@@ -300,8 +300,8 @@
         "requirements": [
           "REQ-QUIC-RFC9000-S14P1-0002",
           "REQ-QUIC-RFC9000-S14P1-0004",
-          "REQ-QUIC-RFC9000-S14P1-0005",
-          "REQ-QUIC-RFC9000-S14P1-0006",
+          "RFC9000-S14-1-P3-S1-R01",
+          "RFC9000-S14-1-P4-S1-R01",
           "REQ-QUIC-RFC9000-S14P1-0007"
         ],
         "reason": "The remaining Initial-path and anti-amplification behaviors are not modeled yet."
@@ -312,12 +312,12 @@
           "REQ-QUIC-RFC9000-S14P2-0001",
           "REQ-QUIC-RFC9000-S14P2-0002",
           "REQ-QUIC-RFC9000-S14P2-0003",
-          "REQ-QUIC-RFC9000-S14P2-0004",
+          "RFC9000-S14-2-P2-S2-R01",
           "REQ-QUIC-RFC9000-S14P2-0005",
           "REQ-QUIC-RFC9000-S14P2-0006",
-          "REQ-QUIC-RFC9000-S14P2-0007",
-          "REQ-QUIC-RFC9000-0872",
-          "REQ-QUIC-RFC9000-S14P2-0009",
+          "RFC9000-S14-2-P4-S1-R01",
+          "RFC9000-S14-2-P4-S2-R01",
+          "RFC9000-S14-2-P5-S2-R01",
           "REQ-QUIC-RFC9000-S14P2-0010"
         ],
         "reason": "Packetization and coalescing logic are still absent."
@@ -325,13 +325,13 @@
       {
         "section_token": "S14P2P1",
         "requirements": [
-          "REQ-QUIC-RFC9000-1421",
+          "RFC9000-S14-2-1-P2-S1-R01",
           "REQ-QUIC-RFC9000-1422",
           "REQ-QUIC-RFC9000-S14P2P1-0003",
           "REQ-QUIC-RFC9000-S14P2P1-0004",
-          "REQ-QUIC-RFC9000-1426",
-          "REQ-QUIC-RFC9000-S14P2P1-0006",
-          "REQ-QUIC-RFC9000-1428"
+          "RFC9000-S14-2-1-P4-S4-R01",
+          "RFC9000-S14-2-1-P5-S1-R01",
+          "RFC9000-S14-2-1-P5-S2-R01"
         ],
         "reason": "The coalesced datagram encoder and its boundary checks are not implemented."
       },
@@ -405,7 +405,7 @@
         "file": "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
         "ids": [
           "REQ-QUIC-RFC9000-S14P1-0001",
-          "REQ-QUIC-RFC9000-S14P1-0003"
+          "RFC9000-S14-1-P1-S3-R01"
         ]
       },
       {

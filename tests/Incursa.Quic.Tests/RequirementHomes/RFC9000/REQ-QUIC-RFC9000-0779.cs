@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0779">An endpoint MUST NOT include delays that it does not control when populating the ACK Delay field in an ACK frame.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-5-P2-S2-R01">An endpoint MUST NOT include delays that it does not control when populating the ACK Delay field in an ACK frame.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0779")]
+[Requirement("RFC9000-S13-2-5-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0779
 {
     [Fact]

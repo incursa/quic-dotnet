@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S9P5-0003")]
+[Requirement("RFC9000-S9-5-P4-R01")]
 public sealed class REQ_QUIC_RFC9000_S9P5_0003
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P5-0003")]
+    [Requirement("RFC9000-S9-5-P4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EndpointRejectsConnectionIdReuseAcrossDifferentDestinationAddresses()

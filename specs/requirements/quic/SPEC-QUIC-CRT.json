@@ -1793,8 +1793,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::ClientRetryReplayRetainsTheInitialClientHelloAndRetryMetadataExactlyOnce",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0122.cs::RecoveryProbeAfterRetryRetainsTheRetrySelectedInitialKeysAndToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs::RetrySelectedInitialProbeReplay_IncludesPendingInitialAckFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs::RetrySelectedInitialReplay_DoesNotInventAckFrameWhenNoAckIsPending"
         ]
       },
       "notes": [

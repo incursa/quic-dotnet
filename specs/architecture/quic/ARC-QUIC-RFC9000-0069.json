@@ -15,7 +15,7 @@
     "VER-QUIC-RFC9000-0069"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "RFC9000-S7-4-1-P6-R01",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
     "REQ-QUIC-RFC9000-0348",
     "REQ-QUIC-RFC9000-0350",
@@ -24,7 +24,7 @@
   "key_components": [
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P6-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P4P1-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0350.cs",
@@ -46,7 +46,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes REQ-QUIC-RFC9000-S7P4P1-0005 through REQ-QUIC-RFC9000-0351 as an internal server policy and proof slice. It deliberately leaves REQ-QUIC-RFC9000-0345 and REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-0356 to follow-on client updated-value and packet-context enforcement work."
+      "content": "This design closes RFC9000-S7-4-1-P6-R01 through REQ-QUIC-RFC9000-0351 as an internal server policy and proof slice. It deliberately leaves RFC9000-S7-4-1-P4-S2-R01 and REQ-QUIC-RFC9000-S7P4P1-0010 through REQ-QUIC-RFC9000-0356 to follow-on client updated-value and packet-context enforcement work."
     }
   ]
 }

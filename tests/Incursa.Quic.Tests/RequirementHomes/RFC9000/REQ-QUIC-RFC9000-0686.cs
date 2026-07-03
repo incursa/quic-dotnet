@@ -6,9 +6,9 @@ using System.Text;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0686">Receivers SHOULD ignore any subsequent packets with a different Destination Connection ID than the first packet in the datagram.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-2-P4-S2-R01">Receivers SHOULD ignore any subsequent packets with a different Destination Connection ID than the first packet in the datagram.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0686")]
+[Requirement("RFC9000-S12-2-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0686
 {
     [Fact]

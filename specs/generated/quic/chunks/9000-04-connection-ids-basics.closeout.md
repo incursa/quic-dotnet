@@ -78,12 +78,12 @@ Section tokens: `S5, S5P1, S5P1P1`
 
 - `REQ-QUIC-RFC9000-S5-0001` through `REQ-QUIC-RFC9000-S5-0007`
 - `REQ-QUIC-RFC9000-S5-0008`
-- `REQ-QUIC-RFC9000-S5P1-0001` through `REQ-QUIC-RFC9000-0209`
+- `REQ-QUIC-RFC9000-S5P1-0001` through `RFC9000-S5-1-P4-S2-R01`
 - `REQ-QUIC-RFC9000-S5P1-0009` through `REQ-QUIC-RFC9000-S5P1-0010`
 - `REQ-QUIC-RFC9000-S5P1-0014` through `REQ-QUIC-RFC9000-0217`
 - `REQ-QUIC-RFC9000-S5P1P1-0001` through `REQ-QUIC-RFC9000-0221`
-- `REQ-QUIC-RFC9000-0222` through `REQ-QUIC-RFC9000-0228`
-- `REQ-QUIC-RFC9000-S5P1P1-0012` through `REQ-QUIC-RFC9000-0239`
+- `REQ-QUIC-RFC9000-0222` through `RFC9000-S5-1-1-P4-S1-R01`
+- `RFC9000-S5-1-1-P4-S3-R01` through `REQ-QUIC-RFC9000-0239`
 - `REQ-QUIC-RFC9000-0215` remains blocked by the lack of routing-state modeling, even though the zero-length CID case now has an explicit proof test.
 - `REQ-QUIC-RFC9000-0219` remains wire-level evidence only; the repo still does not model the connection-state semantics that would close the initial-CID ownership rule.
 

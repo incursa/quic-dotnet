@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S9P6P3-0006/0009/0010 requirement-home tests, Release build, full Release no-build solution tests, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0543",
+    "RFC9000-S9-6-3-P5-S1-R01",
     "REQ-QUIC-RFC9000-S9P6P3-0009",
     "REQ-QUIC-RFC9000-0542"
   ],
@@ -33,7 +33,7 @@
     "The connection has completed enough handshake state for active migration promotion to be policy-eligible."
   ],
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0543.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P3-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0542.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",

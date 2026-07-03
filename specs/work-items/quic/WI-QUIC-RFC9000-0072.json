@@ -21,11 +21,11 @@
     "REQ-QUIC-RFC9000-0261",
     "REQ-QUIC-RFC9000-S5P2P1-0003",
     "REQ-QUIC-RFC9000-S5P2P1-0004",
-    "REQ-QUIC-RFC9000-0264",
+    "RFC9000-S5-2-1-P3-S1-R01",
     "REQ-QUIC-RFC9000-S5P2-0006",
     "REQ-QUIC-RFC9000-S5P2-0008",
     "REQ-QUIC-RFC9000-S5P2-0009",
-    "REQ-QUIC-RFC9000-0258"
+    "RFC9000-S5-2-P6-S1-R01"
   ],
   "summary": "Close the bounded S5P2P1 packet classification and association floor by adding focused requirement-home proof for endpoint routing, listener Initial admission, zero-length connection-ID routing, version mismatch discard, and weakly protected invalid packet discard.",
   "planned_changes": "- Add shared S5P2P1 endpoint association test support.\n- Add focused tests for incoming packet classification, existing connection association, server Initial admission, non-zero Destination Connection ID routing, zero-length connection-ID route matching, and local-endpoint mismatch rejection.\n- Retarget existing S5P2P1 packet-number-space, version mismatch, and weakly protected invalid packet tests to method-level x_test_refs.\n- Add focused architecture, work-item, and verification artifacts for the closed S5P2P1 association floor.\n- Regenerate QUIC requirement coverage triage and update status ledgers.",
@@ -43,5 +43,5 @@
     "Public API widening.",
     "Hosted interop readiness."
   ],
-  "completion_notes": "Completed as a focused endpoint ingress and association proof for REQ-QUIC-RFC9000-S5P2-0001 through REQ-QUIC-RFC9000-0255 and REQ-QUIC-RFC9000-S5P2P1-0001 through REQ-QUIC-RFC9000-0264, plus the related packet-number-space, version mismatch, and weakly protected invalid packet proofs recorded in the linked verification artifact."
+  "completion_notes": "Completed as a focused endpoint ingress and association proof for REQ-QUIC-RFC9000-S5P2-0001 through REQ-QUIC-RFC9000-0255 and REQ-QUIC-RFC9000-S5P2P1-0001 through RFC9000-S5-2-1-P3-S1-R01, plus the related packet-number-space, version mismatch, and weakly protected invalid packet proofs recorded in the linked verification artifact."
 }

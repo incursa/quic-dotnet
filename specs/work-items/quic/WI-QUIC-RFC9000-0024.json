@@ -14,14 +14,14 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2P1-0001",
-    "REQ-QUIC-RFC9000-S13P2P1-0004",
+    "RFC9000-S13-2-1-P2-R02",
     "REQ-QUIC-RFC9000-S13P2P1-0006",
     "REQ-QUIC-RFC9000-S13P2P1-0007",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
     "REQ-QUIC-RFC9000-S13P2P2-0001",
-    "REQ-QUIC-RFC9000-1323",
-    "REQ-QUIC-RFC9000-1324"
+    "RFC9000-S13-2-2-P4-S1-R01",
+    "RFC9000-S13-2-2-P5-S1-R01"
   ],
   "summary": "Implement and prove the active-path Application Data ACK-delay runtime timer so ordinary ACK-only packets wait for local max_ack_delay while immediate ACK exceptions, packet-count threshold sends, and ACK piggybacking still work.",
   "planned_changes": "- Add a dedicated runtime ACK-delay timer kind and deadline state.\n- Arm the timer after ordinary 1-RTT ack-eliciting packet processing when no immediate ACK or packet-count threshold send is required.\n- Emit an ACK-only packet at timer expiry without injecting ack-eliciting frames.\n- Keep non-ack-eliciting-only receipts from arming the timer.\n- Cancel the timer after ACK-only sends or ACK piggybacking on outgoing ack-eliciting packets.\n- Preserve Initial, Handshake, path scheduling, interop success, and public API behavior outside this slice.\n- Add positive, negative, edge, deterministic fuzz/property, and BenchmarkDotNet coverage for the timer decision path.",

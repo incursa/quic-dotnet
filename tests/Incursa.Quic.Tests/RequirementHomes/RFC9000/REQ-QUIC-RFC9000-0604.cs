@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0604">An endpoint that wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-P2-S1-R01">An endpoint that wishes to communicate a fatal connection error MUST use a CONNECTION_CLOSE frame if it is able.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0604")]
+[Requirement("RFC9000-S10-3-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0604
 {
     [Fact]

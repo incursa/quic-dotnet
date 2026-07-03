@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0081"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S9P6P1-0005"
+    "RFC9000-S9-6-1-P4-S2-R01"
   ],
   "summary": "Close the S9P6P1 preferred-address validation-failure policy by proving failed preferred-address validation leaves future sends on the original server address.",
   "planned_changes": "- Add focused positive and edge requirement-home proof for future-send behavior after preferred-address validation failure.\n- Preserve the active original server path when a non-active preferred-address candidate fails validation.\n- Link the focused proof through canonical requirement x_test_refs.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
@@ -24,7 +24,7 @@
     "ARC-QUIC-RFC9000-0081"
   ],
   "out_of_scope": [
-    "Complete S9P6P1 closure outside REQ-QUIC-RFC9000-S9P6P1-0005.",
+    "Complete S9P6P1 closure outside RFC9000-S9-6-1-P4-S2-R01.",
     "Server preferred_address emission proof.",
     "Per-family preferred-address metadata cleanup.",
     "Public migration APIs.",

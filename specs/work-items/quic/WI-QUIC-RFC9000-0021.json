@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-0789"
   ],
   "summary": "Implement and prove fresh pending ACK prefixing for rebuilt Initial and Handshake CRYPTO retransmission packets without treating old ACK bytes as retransmittable data.",

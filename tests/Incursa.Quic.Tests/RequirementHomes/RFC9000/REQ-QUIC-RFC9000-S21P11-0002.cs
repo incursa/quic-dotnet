@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P11-0002">More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-11-P3-R01">More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P11-0002")]
+[Requirement("RFC9000-S21-11-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P11_0002
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-11-P3-R01");
 
         Assert.Equal("More generally, servers MUST NOT generate a stateless reset if a connection with the correspo...", requirement.GetProperty("title").GetString());
         Assert.Equal("More generally, servers MUST NOT generate a stateless reset if a connection with the corresponding connection ID could be active on any endpoint using the same static key.", requirement.GetProperty("statement").GetString());
@@ -42,7 +42,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-11-P3-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 
@@ -63,7 +63,7 @@ public sealed class REQ_QUIC_RFC9000_S21P11_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P11-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-11-P3-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1276")]
+[Requirement("RFC9000-S19-10-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_1276
 {
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1276">An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S19-10-P2-S2-R01">An endpoint that receives a MAX_STREAM_DATA frame for a receive-only stream MUST terminate the connection with error STREAM_STATE_ERROR.</workbench-requirement>
     /// </workbench-requirements>
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

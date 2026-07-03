@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P2P3-0001">However, the endpoint MUST initiate another path validation with an expanded datagram to verify that the path supports the required MTU.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-2-3-P2-S3-R01">However, the endpoint MUST initiate another path validation with an expanded datagram to verify that the path supports the required MTU.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P2P3-0001")]
+[Requirement("RFC9000-S8-2-3-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P2P3_0001
 {
     [Fact]

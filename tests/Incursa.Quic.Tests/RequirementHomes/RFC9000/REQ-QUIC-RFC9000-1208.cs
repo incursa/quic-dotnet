@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1208")]
+[Requirement("RFC9000-S19-4-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1208
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1208")]
+    [Requirement("RFC9000-S19-4-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveResetStreamFrame_RejectsOpenedSendOnlyStream()
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_1208
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1208")]
+    [Requirement("RFC9000-S19-4-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveResetStreamFrame_AcceptsReceiveCapableStream()
@@ -47,7 +47,7 @@ public sealed class REQ_QUIC_RFC9000_1208
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1208")]
+    [Requirement("RFC9000-S19-4-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveResetStreamFrame_RejectsUncreatedSendOnlyStream()

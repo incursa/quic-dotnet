@@ -52,12 +52,12 @@ Section tokens: `S2, S2P1, S2P2, S2P3, S2P4`
 - `REQ-QUIC-RFC9000-0047` - partially implemented; STREAM frames expose Stream ID and Offset fields, but no ordered reassembly layer places data for delivery.
 - `REQ-QUIC-RFC9000-0048` - not implemented; No application-facing ordered byte-stream delivery surface exists.
 - `REQ-QUIC-RFC9000-S2P2-0004` - not implemented; No out-of-order buffering or flow-control-bounded reassembly exists.
-- `REQ-QUIC-RFC9000-S2P2-0005` - not implemented; No optional out-of-order delivery API exists.
+- `RFC9000-S2-2-P3-S1-R01` - not implemented; No optional out-of-order delivery API exists.
 - `REQ-QUIC-RFC9000-S2P2-0006` - not implemented; No receive-state implementation can discard already-received data.
-- `REQ-QUIC-RFC9000-S2P2-0007` - not implemented; No retransmission/send-state surface ensures byte stability at offsets.
+- `RFC9000-S2-2-P4-S2-R01` - not implemented; No retransmission/send-state surface ensures byte stability at offsets.
 - `REQ-QUIC-RFC9000-0052` - not implemented; No conflicting-retransmission detection or error path exists.
 - `REQ-QUIC-RFC9000-S2P2-0009` - tested but implementation mapping unclear; The parser exposes stream payload as opaque bytes, but there is no higher-level stream abstraction to prove the API shape.
-- `REQ-QUIC-RFC9000-0056` - not implemented; No sender-side flow-control enforcement exists.
+- `RFC9000-S2-2-P6-R01` - not implemented; No sender-side flow-control enforcement exists.
 
 ### S2P3
 
@@ -144,7 +144,7 @@ Section tokens: `S2, S2P1, S2P2, S2P3, S2P4`
 - `REQ-QUIC-RFC9000-0031`
 - `REQ-QUIC-RFC9000-0034`
 - `REQ-QUIC-RFC9000-S2P1-0012` through `REQ-QUIC-RFC9000-S2P1-0014`
-- `REQ-QUIC-RFC9000-0047` through `REQ-QUIC-RFC9000-0056`
+- `REQ-QUIC-RFC9000-0047` through `RFC9000-S2-2-P6-R01`
 - `REQ-QUIC-RFC9000-S2P3-0001` through `REQ-QUIC-RFC9000-S2P3-0003`
 - `REQ-QUIC-RFC9000-S2P4-0001` through `REQ-QUIC-RFC9000-S2P4-0003`
 - `REQ-QUIC-RFC9000-S2P4-0008`

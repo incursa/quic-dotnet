@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0668">An endpoint MUST NOT discard a packet unless it does not process the frames in the packet or it reverts the effects of any processing.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S11-1-P5-S3-R01">An endpoint MUST NOT discard a packet unless it does not process the frames in the packet or it reverts the effects of any processing.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0668")]
+[Requirement("RFC9000-S11-1-P5-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_0668
 {
     [Fact]

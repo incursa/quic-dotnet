@@ -381,7 +381,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Close and draining lifecycle requirements remain blocked without connection close orchestration.'
             RequirementPrefixes = @('S10', 'S10P2', 'S10P2P1', 'S10P2P2', 'S10P2P3')
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-0560'
+                'RFC9000-S10-1-2-P3-S1-R01'
             )
         },
         [pscustomobject]@{
@@ -420,7 +420,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Path-validation abandonment and NO_VIABLE_PATH signaling remain blocked without terminal path-validation state and runtime error emission.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-0454',
+                'RFC9000-S8-2-4-P2-R01',
                 'REQ-QUIC-RFC9000-S8P2P4-0002',
                 'REQ-QUIC-RFC9000-S8P2P4-0003'
             )
@@ -439,7 +439,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Delayed old-address packet processing remains blocked without source-address tracking and path-probe orchestration.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-0535'
+                'RFC9000-S9-6-2-P4-S3-R01'
             )
         },
         [pscustomobject]@{
@@ -458,7 +458,7 @@ function Get-RequirementGapMappings {
             Summary            = 'Optional server abort behavior for detected packet-number reset remains blocked without a source-level packet-number reset detection seam.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-1055'
+                'RFC9000-S17-2-5-3-P4-S6-R01'
             )
         },
         [pscustomobject]@{
@@ -487,20 +487,20 @@ function Get-RequirementGapMappings {
             Summary            = 'Section 21 security and deployment-policy requirements remain blocked without deployment-policy and runner-oriented proof surfaces.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S21P4-0001',
+                'RFC9000-S21-4-P1-S2-R01',
                 'REQ-QUIC-RFC9000-S21P5-0001',
                 'REQ-QUIC-RFC9000-S21P5-0002',
-                'REQ-QUIC-RFC9000-1454',
-                'REQ-QUIC-RFC9000-1469',
-                'REQ-QUIC-RFC9000-1470',
+                'RFC9000-S21-5-P8-S2-R01',
+                'RFC9000-S21-5-6-P2-S2-R01',
+                'RFC9000-S21-5-6-P3-S3-R01',
                 'REQ-QUIC-RFC9000-S21P5P6-0005',
-                'REQ-QUIC-RFC9000-1473',
+                'RFC9000-S21-5-6-P5-S4-R01',
                 'REQ-QUIC-RFC9000-S21P6-0001',
-                'REQ-QUIC-RFC9000-1476',
-                'REQ-QUIC-RFC9000-S21P9-0001',
+                'RFC9000-S21-7-P4-R01',
+                'RFC9000-S21-9-P4-R01',
                 'REQ-QUIC-RFC9000-S21P9-0002',
                 'REQ-QUIC-RFC9000-S21P11-0001',
-                'REQ-QUIC-RFC9000-S21P11-0002'
+                'RFC9000-S21-11-P3-R01'
             )
         },
         [pscustomobject]@{
@@ -508,13 +508,13 @@ function Get-RequirementGapMappings {
             Summary            = 'Section 22.1.2 registry-selection requirements remain blocked without a codepoint allocation workflow surface.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-S22P1P2-0001',
-                'REQ-QUIC-RFC9000-1491',
+                'RFC9000-S22-1-2-P1-R01',
+                'RFC9000-S22-1-2-P1-S1-R01',
                 'REQ-QUIC-RFC9000-S22P1P2-0003',
                 'REQ-QUIC-RFC9000-S22P1P2-0004',
-                'REQ-QUIC-RFC9000-S22P1P2-0005',
-                'REQ-QUIC-RFC9000-1494',
-                'REQ-QUIC-RFC9000-S22P1P2-0007'
+                'RFC9000-S22-1-2-P3-R01',
+                'RFC9000-S22-1-2-P4-S1-R01',
+                'RFC9000-S22-1-2-P4-S2-R01'
             )
         },
         [pscustomobject]@{
@@ -522,8 +522,8 @@ function Get-RequirementGapMappings {
             Summary            = 'Section 22.1.3 codepoint-review requirements remain blocked without a codepoint maintenance workflow surface.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9000-1498',
-                'REQ-QUIC-RFC9000-1499',
+                'RFC9000-S22-1-3-P2-S1-R01',
+                'RFC9000-S22-1-3-P2-S2-R01',
                 'REQ-QUIC-RFC9000-1500',
                 'REQ-QUIC-RFC9000-1501'
             )
@@ -536,9 +536,9 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-S22P1P4-0001',
                 'REQ-QUIC-RFC9000-S22P1P4-0002',
                 'REQ-QUIC-RFC9000-S22P1P4-0003',
-                'REQ-QUIC-RFC9000-S22P1P4-0004',
+                'RFC9000-S22-1-4-P2-R01',
                 'REQ-QUIC-RFC9000-S22P1P4-0005',
-                'REQ-QUIC-RFC9000-1507',
+                'RFC9000-S22-1-4-P4-R01',
                 'REQ-QUIC-RFC9000-S22P1P4-0007',
                 'REQ-QUIC-RFC9000-S22P1P4-0008'
             )

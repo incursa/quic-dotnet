@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S5P1P1-0014")]
+[Requirement("RFC9000-S5-1-1-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S5P1P1_0014
 {
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0014">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P5-S2-R01">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0014")]
+    [Requirement("RFC9000-S5-1-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NewConnectionIdFrame_ClosesWhenTheActiveConnectionIdSetExceedsTheLocalLimit()
@@ -40,9 +40,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0014
 
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0014">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P5-S2-R01">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0014")]
+    [Requirement("RFC9000-S5-1-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void NewConnectionIdFrame_AllowsAReplacementWhenRetirePriorToKeepsTheActiveSetWithinTheLocalLimit()
@@ -72,9 +72,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0014
 
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0014">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P5-S2-R01">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0014")]
+    [Requirement("RFC9000-S5-1-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void NewConnectionIdFrame_AllowsAnExactDuplicateWhenAlreadyAtTheLocalLimit()

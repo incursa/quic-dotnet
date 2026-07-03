@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P5-0008">A receiver SHOULD treat receipt of data at or beyond the final size as an error of type FINAL_SIZE_ERROR, even after a stream is closed.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S4-5-P5-S2-R01">A receiver SHOULD treat receipt of data at or beyond the final size as an error of type FINAL_SIZE_ERROR, even after a stream is closed.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S4P5-0008")]
+[Requirement("RFC9000-S4-5-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S4P5_0008
 {
     [Fact]

@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1494">Applications to register codepoints in QUIC registries MAY include a requested codepoint as part of the registration.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-2-P4-S1-R01">Applications to register codepoints in QUIC registries MAY include a requested codepoint as part of the registration.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1494")]
+[Requirement("RFC9000-S22-1-2-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1494
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1494
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1494");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P4-S1-R01");
 
         Assert.Equal("Allow requested codepoint values in registration applications", requirement.GetProperty("title").GetString());
         Assert.Equal("Applications to register codepoints in QUIC registries MAY include a requested codepoint as part of the registration.", requirement.GetProperty("statement").GetString());
@@ -69,7 +69,7 @@ public sealed class REQ_QUIC_RFC9000_1494
         return document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1494")
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P4-S1-R01")
             .Clone();
     }
 }

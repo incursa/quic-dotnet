@@ -32,8 +32,8 @@ internal static class QuicTransportParametersCodec
 
     // CONTEXT: Transport-parameter IDs are wire-visible, so this parser/formatter cluster must stay
     // aligned with the validation rules for invalid values, server-only fields, and Version Information.
-    // SEE: spec:REQ-QUIC-RFC9000-0326
-    // SEE: spec:REQ-QUIC-RFC9000-0334
+    // SEE: spec:RFC9000-S7-3-P3-S2-R01
+    // SEE: spec:RFC9000-S7-4-P6-R01
     // SEE: spec:REQ-QUIC-RFC9000-1162
     // SEE: spec:REQ-QUIC-RFC9368-S3-0001
     private const ulong OriginalDestinationConnectionIdId = 0x00;

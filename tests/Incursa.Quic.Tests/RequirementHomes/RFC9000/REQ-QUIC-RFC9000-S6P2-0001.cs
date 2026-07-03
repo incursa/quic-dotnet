@@ -9,13 +9,13 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0001">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet unless it has received and successfully processed any other packet or the Version Negotiation packet lists the QUIC version selected by the client.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0002">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet, with the following two exceptions.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6223">A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-2-P2-R01">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet, with the following two exceptions.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-2-P2-S2-R01">A client MUST discard a Version Negotiation packet that lists the QUIC version selected by the client.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-21120001">Future versions of QUIC that use Version Negotiation packets MUST define a mechanism that is robust against version downgrade attacks.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-6223")]
+    [Requirement("RFC9000-S6-2-P2-R01")]
+    [Requirement("RFC9000-S6-2-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-21120001")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldAbandonConnectionAttempt_OnlyWhenTheSelectedVersionIsNotAdvertised()
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
+    [Requirement("RFC9000-S6-2-P2-R01")]
     public void ShouldAbandonConnectionAttempt_ReturnsFalseWhenTheClientSupportsMultipleVersions()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
@@ -72,8 +72,8 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S6P2-0002")]
-    [Requirement("REQ-QUIC-RFC9000-6222")]
+    [Requirement("RFC9000-S6-2-P2-R01")]
+    [Requirement("RFC9000-S6-2-P2-S1-R01")]
     public void ShouldAbandonConnectionAttempt_ReturnsFalseAfterAnotherPacketHasAlreadyBeenProcessed()
     {
         byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(

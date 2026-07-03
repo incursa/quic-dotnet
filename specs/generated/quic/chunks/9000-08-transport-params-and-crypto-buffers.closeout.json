@@ -18,22 +18,22 @@
     "silent_gaps": 0
   },
   "implemented_and_tested_requirements": [
-    "REQ-QUIC-RFC9000-0334",
-    "REQ-QUIC-RFC9000-0335",
-    "REQ-QUIC-RFC9000-0336",
-    "REQ-QUIC-RFC9000-0357",
-    "REQ-QUIC-RFC9000-0361",
-    "REQ-QUIC-RFC9000-S7P5-0002",
+    "RFC9000-S7-4-P6-R01",
+    "RFC9000-S7-4-P7-R01",
+    "RFC9000-S7-4-P7-S1-R01",
+    "RFC9000-S7-4-2-P1-S2-R01",
+    "RFC9000-S7-5-P2-S1-R01",
+    "RFC9000-S7-5-P2-S2-R01",
     "REQ-QUIC-RFC9000-0365",
     "REQ-QUIC-RFC9000-S7P5-0004",
-    "REQ-QUIC-RFC9000-S7P5-0005"
+    "RFC9000-S7-5-P4-S2-R01"
   ],
   "blocked_requirements": [
     "REQ-QUIC-RFC9000-S7P4P1-0001",
     "REQ-QUIC-RFC9000-S7P4P1-0002",
-    "REQ-QUIC-RFC9000-0345",
-    "REQ-QUIC-RFC9000-0346",
-    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "RFC9000-S7-4-1-P4-S2-R01",
+    "RFC9000-S7-4-1-P5-R01",
+    "RFC9000-S7-4-1-P6-R01",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
     "REQ-QUIC-RFC9000-0348",
     "REQ-QUIC-RFC9000-0350",
@@ -46,15 +46,15 @@
   "reference_audit": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
-      "REQ-QUIC-RFC9000-0334",
-      "REQ-QUIC-RFC9000-0335",
-      "REQ-QUIC-RFC9000-0336",
-      "REQ-QUIC-RFC9000-0357",
-      "REQ-QUIC-RFC9000-0361",
-      "REQ-QUIC-RFC9000-S7P5-0002",
+      "RFC9000-S7-4-P6-R01",
+      "RFC9000-S7-4-P7-R01",
+      "RFC9000-S7-4-P7-S1-R01",
+      "RFC9000-S7-4-2-P1-S2-R01",
+      "RFC9000-S7-5-P2-S1-R01",
+      "RFC9000-S7-5-P2-S2-R01",
       "REQ-QUIC-RFC9000-0365",
       "REQ-QUIC-RFC9000-S7P5-0004",
-      "REQ-QUIC-RFC9000-S7P5-0005"
+      "RFC9000-S7-5-P4-S2-R01"
     ],
     "source_files_checked_for_requirement_ids": [
       "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -72,9 +72,9 @@
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9000-S7P4P1-0001",
     "REQ-QUIC-RFC9000-S7P4P1-0002",
-    "REQ-QUIC-RFC9000-0345",
-    "REQ-QUIC-RFC9000-0346",
-    "REQ-QUIC-RFC9000-S7P4P1-0005",
+    "RFC9000-S7-4-1-P4-S2-R01",
+    "RFC9000-S7-4-1-P5-R01",
+    "RFC9000-S7-4-1-P6-R01",
     "REQ-QUIC-RFC9000-S7P4P1-0006",
     "REQ-QUIC-RFC9000-0348",
     "REQ-QUIC-RFC9000-0350",

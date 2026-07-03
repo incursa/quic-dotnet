@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0650">A connection ID from a connection that is reset by revealing the stateless reset token MUST NOT be reused for new connections at nodes that share a static key.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-2-P5-S4-R01">A connection ID from a connection that is reset by revealing the stateless reset token MUST NOT be reused for new connections at nodes that share a static key.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0650")]
+[Requirement("RFC9000-S10-3-2-P5-S4-R01")]
 public sealed class REQ_QUIC_RFC9000_0650
 {
     [Fact]

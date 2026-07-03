@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P1-0004">Endpoints MAY skip this check if any packet from a datagram is successfully processed.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-1-P2-S2-R01">Endpoints MAY skip this check if any packet from a datagram is successfully processed.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P3P1-0004")]
+[Requirement("RFC9000-S10-3-1-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P3P1_0004
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P1-0004")]
+    [Requirement("RFC9000-S10-3-1-P2-S2-R01")]
     public void ReceiveDatagram_PrefersSuccessfullyProcessedMinimumRoutablePacketOverPotentialStatelessResetTail()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);

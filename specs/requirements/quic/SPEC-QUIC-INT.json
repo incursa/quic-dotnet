@@ -695,7 +695,7 @@
           "REQ-QUIC-INT-0004",
           "REQ-QUIC-INT-0018",
           "REQ-QUIC-INT-0019",
-          "REQ-QUIC-RFC9000-0901",
+          "RFC9000-S15-P7-S1-R01",
           "SPEC-QUIC-CRT"
         ],
         "x_code_refs": [
@@ -1009,7 +1009,7 @@
         ],
         "related": [
           "REQ-QUIC-INT-0027",
-          "REQ-QUIC-RFC9000-0925",
+          "RFC9000-S17-1-P4-S2-R01",
           "SPEC-QUIC-RFC9000"
         ],
         "x_code_refs": [

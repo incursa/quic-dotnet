@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0925">An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be recovered even if the packet arrives after packets that are sent afterwards.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-1-P4-S2-R01">An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be recovered even if the packet arrives after packets that are sent afterwards.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0925")]
+[Requirement("RFC9000-S17-1-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0925
 {
     [Fact]

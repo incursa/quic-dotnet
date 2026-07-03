@@ -15,11 +15,11 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-S17P2P5P3-0001",
     "REQ-QUIC-RFC9000-S17P2P5P3-0002",
-    "REQ-QUIC-RFC9000-1050",
-    "REQ-QUIC-RFC9000-1053",
+    "RFC9000-S17-2-5-3-P2-S2-R01",
+    "RFC9000-S17-2-5-3-P4-S1-R01",
     "REQ-QUIC-CRT-0122"
   ],
   "summary": "Implement and prove fresh pending Initial ACK prefixing for Retry-selected Initial replay packets without changing Retry token echoing, Retry-selected destination connection ID, retained ClientHello bytes, or packet-number continuity.",

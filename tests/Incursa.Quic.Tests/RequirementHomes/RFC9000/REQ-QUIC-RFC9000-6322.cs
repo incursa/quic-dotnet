@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-6322")]
+[Requirement("RFC9000-S6-3-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_6322
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-6322")]
+    [Requirement("RFC9000-S6-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryBuildProtectedInitialPacket_CanCarryAReservedVersionForDiscardTesting()
@@ -37,9 +37,9 @@ public sealed class REQ_QUIC_RFC9000_6322
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-6322">Endpoints MAY send packets with a reserved version to test that a peer correctly discards the packet.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-3-P2-S2-R01">Endpoints MAY send packets with a reserved version to test that a peer correctly discards the packet.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-6322")]
+    [Requirement("RFC9000-S6-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryParseVersionNegotiation_RejectsPacketsWithReservedVersions()
     {

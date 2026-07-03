@@ -14,7 +14,7 @@
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded Initial and Handshake CRYPTO retransmission ACK piggyback floor.",
   "verifies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-0789"
   ],
   "scope": "This verification covers rebuilt Initial and Handshake CRYPTO retransmission packet construction when ACK-generation state already contains pending ack-eliciting receipts in the matching packet number space.",
@@ -36,7 +36,7 @@
   "evidence": [
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-crypto-retransmission-ack-piggyback/focused-tests.log",

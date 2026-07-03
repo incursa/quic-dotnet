@@ -15,9 +15,9 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S14P2-0003",
     "REQ-QUIC-RFC9000-S14P2-0005",
-    "REQ-QUIC-RFC9000-S14P2-0007",
-    "REQ-QUIC-RFC9000-0872",
-    "REQ-QUIC-RFC9000-S14P2-0009"
+    "RFC9000-S14-2-P4-S1-R01",
+    "RFC9000-S14-2-P4-S2-R01",
+    "RFC9000-S14-2-P5-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs",

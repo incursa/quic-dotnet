@@ -18,7 +18,7 @@
       "REQ-QUIC-RFC9000-S5P1P2-0005",
       "REQ-QUIC-RFC9000-S5P1P2-0008",
       "REQ-QUIC-RFC9000-S5P2P2-0001",
-      "REQ-QUIC-RFC9000-S5P2P2-0004",
+      "RFC9000-S5-2-2-P2-S4-R01",
       "REQ-QUIC-RFC9000-S5P2P3-0002",
       "REQ-QUIC-RFC9000-0277"
     ],
@@ -64,10 +64,10 @@
       "REQ-QUIC-RFC9000-0247",
       "REQ-QUIC-RFC9000-0248",
       "REQ-QUIC-RFC9000-0249",
-      "REQ-QUIC-RFC9000-S5P1P2-0013",
+      "RFC9000-S5-1-2-P6-S2-R01",
       "REQ-QUIC-RFC9000-0251",
       "REQ-QUIC-RFC9000-S5P1P2-0015",
-      "REQ-QUIC-RFC9000-0253"
+      "RFC9000-S5-1-2-P7-S1-R01"
     ],
     "supporting_artifacts": [
       "ARC-QUIC-RFC9000-0027",
@@ -96,22 +96,22 @@
     "REQ-QUIC-RFC9000-S5P2-0008",
     "REQ-QUIC-RFC9000-S5P2-0009",
     "REQ-QUIC-RFC9000-S5P2-0010",
-    "REQ-QUIC-RFC9000-0258",
+    "RFC9000-S5-2-P6-S1-R01",
     "REQ-QUIC-RFC9000-S5P2-0012",
     "REQ-QUIC-RFC9000-S5P2-0013",
     "REQ-QUIC-RFC9000-S5P2P1-0001",
     "REQ-QUIC-RFC9000-0261",
     "REQ-QUIC-RFC9000-S5P2P1-0003",
     "REQ-QUIC-RFC9000-S5P2P1-0004",
-    "REQ-QUIC-RFC9000-0264",
-    "REQ-QUIC-RFC9000-0265",
-    "REQ-QUIC-RFC9000-0267",
+    "RFC9000-S5-2-1-P3-S1-R01",
+    "RFC9000-S5-2-2-P1-S2-R01",
+    "RFC9000-S5-2-2-P1-S3-R01",
     "REQ-QUIC-RFC9000-S5P2P2-0005",
     "REQ-QUIC-RFC9000-0271",
-    "REQ-QUIC-RFC9000-0272",
-    "REQ-QUIC-RFC9000-0273",
+    "RFC9000-S5-2-2-P5-S1-R01",
+    "RFC9000-S5-2-2-P6-S1-R01",
     "REQ-QUIC-RFC9000-S5P2P2-0009",
-    "REQ-QUIC-RFC9000-0275",
+    "RFC9000-S5-2-2-P7-R01",
     "REQ-QUIC-RFC9000-S5P2P3-0001",
     "REQ-QUIC-RFC9000-S5P2P3-0003",
     "REQ-QUIC-RFC9000-0278",
@@ -299,7 +299,7 @@
       "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P1P2-0013",
+      "requirement_id": "RFC9000-S5-1-2-P6-S2-R01",
       "section": "S5P1P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -338,7 +338,7 @@
       "notes": "This section depends on connection lifecycle behavior that the current parser/codec layer does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0253",
+      "requirement_id": "RFC9000-S5-1-2-P7-S1-R01",
       "section": "S5P1P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -487,7 +487,7 @@
       "notes": "This section needs a connection-state machine and packet-processing orchestration."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0258",
+      "requirement_id": "RFC9000-S5-2-P6-S1-R01",
       "section": "S5P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -578,7 +578,7 @@
       "notes": "Client receive-path behavior is absent from the current surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0264",
+      "requirement_id": "RFC9000-S5-2-1-P3-S1-R01",
       "section": "S5P2P1",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -612,7 +612,7 @@
       "notes": "The new overload gates Version Negotiation on unsupported versions and sufficient datagram size."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0265",
+      "requirement_id": "RFC9000-S5-2-2-P1-S2-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -625,7 +625,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0267",
+      "requirement_id": "RFC9000-S5-2-2-P1-S3-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -638,7 +638,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0004",
+      "requirement_id": "RFC9000-S5-2-2-P2-S4-R01",
       "section": "S5P2P2",
       "status": "covered",
       "completion_status": "implemented and tested",
@@ -652,7 +652,7 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs:52-73"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S5P2P2-0004"
+        "RFC9000-S5-2-2-P2-S4-R01"
       ],
       "direct_refs_state": "canonical",
       "remaining_gap": null,
@@ -685,7 +685,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0272",
+      "requirement_id": "RFC9000-S5-2-2-P5-S1-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -698,7 +698,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0273",
+      "requirement_id": "RFC9000-S5-2-2-P6-S1-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",
@@ -724,7 +724,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0275",
+      "requirement_id": "RFC9000-S5-2-2-P7-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",

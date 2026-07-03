@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0579">An endpoint MAY retain packet protection keys for incoming packets to allow it to read and process a CONNECTION_CLOSE frame.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P4-S3-R01">An endpoint MAY retain packet protection keys for incoming packets to allow it to read and process a CONNECTION_CLOSE frame.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0579")]
+[Requirement("RFC9000-S10-2-1-P4-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_0579
 {
     [Fact]

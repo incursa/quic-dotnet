@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9000-0085"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-0409",
-    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "RFC9000-S8-1-4-P3-S2-R01",
+    "RFC9000-S8-1-4-P5-S3-R01",
     "REQ-QUIC-RFC9000-0412"
   ],
   "summary": "Close the focused S8P1P4 Retry token source endpoint continuity, short lifetime, and anti-amplification proof tail.",

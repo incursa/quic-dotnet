@@ -14,13 +14,13 @@
   "verification_method": "Focused S5P2P2 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
     "REQ-QUIC-RFC9000-S5P2P2-0001",
-    "REQ-QUIC-RFC9000-0265",
-    "REQ-QUIC-RFC9000-0267",
-    "REQ-QUIC-RFC9000-S5P2P2-0004",
+    "RFC9000-S5-2-2-P1-S2-R01",
+    "RFC9000-S5-2-2-P1-S3-R01",
+    "RFC9000-S5-2-2-P2-S4-R01",
     "REQ-QUIC-RFC9000-S5P2P2-0005",
     "REQ-QUIC-RFC9000-0271",
     "REQ-QUIC-RFC9000-S5P2P2-0009",
-    "REQ-QUIC-RFC9000-0275",
+    "RFC9000-S5-2-2-P7-R01",
     "REQ-QUIC-RFC9000-0280",
     "REQ-QUIC-RFC9000-0282"
   ],
@@ -45,12 +45,12 @@
     "src/Incursa.Quic/QuicVersionNegotiation.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS5P2P2ServerPreAcceptanceTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0265.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0267.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0271.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0275.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0280.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0282.cs",
     "dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0021|FullyQualifiedName~REQ_QUIC_RFC9000_0028|FullyQualifiedName~REQ_QUIC_RFC9000_0280|FullyQualifiedName~REQ_QUIC_RFC9000_0282\"",
@@ -66,5 +66,5 @@
       "content": "This verification does not claim CONNECTION_REFUSED policy, 0-RTT buffering, client-side Version Negotiation handling, client-side Initial/Retry CID continuity, preferred-address behavior, public API changes, or broader interop readiness."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-05. The focused S5P2P2 requirement-home filter passed 14/14, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks S5P2P2 0001 through 0006 and 0009 through 0010 trace_clean while leaving 0007 and 0008 out of scope, SpecTrace core validation passed, and git diff --check passed. On 2026-05-22, the RFC9000 topoff filter for REQ-QUIC-RFC9000-0021, 0028, 0280, and 0282 passed 8/8; REQ-QUIC-RFC9000-0280 and REQ-QUIC-RFC9000-0282 are bounded to pre-acceptance Version Negotiation eligibility and undersized datagram omission behavior. The S5P2P2 cleanup filter for REQ-QUIC-RFC9000-0265 and REQ-QUIC-RFC9000-0275 passed 5/5 and regenerated triage marks both trace_clean."
+  "status_summary": "Passed locally on 2026-05-05. The focused S5P2P2 requirement-home filter passed 14/14, the Release build passed with 0 warnings and 0 errors, regenerated QUIC coverage triage marks S5P2P2 0001 through 0006 and 0009 through 0010 trace_clean while leaving 0007 and 0008 out of scope, SpecTrace core validation passed, and git diff --check passed. On 2026-05-22, the RFC9000 topoff filter for REQ-QUIC-RFC9000-0021, 0028, 0280, and 0282 passed 8/8; REQ-QUIC-RFC9000-0280 and REQ-QUIC-RFC9000-0282 are bounded to pre-acceptance Version Negotiation eligibility and undersized datagram omission behavior. The S5P2P2 cleanup filter for RFC9000-S5-2-2-P1-S2-R01 and RFC9000-S5-2-2-P7-R01 passed 5/5 and regenerated triage marks both trace_clean."
 }

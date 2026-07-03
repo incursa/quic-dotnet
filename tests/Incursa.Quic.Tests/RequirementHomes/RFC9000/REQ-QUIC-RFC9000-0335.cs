@@ -3,18 +3,18 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0335")]
+[Requirement("RFC9000-S7-4-P7-R01")]
 public sealed class REQ_QUIC_RFC9000_0335
 {
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0334">An endpoint MUST treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0335">An endpoint MUST NOT send a parameter more than once in a given transport parameters extension.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0336">An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-P6-R01">An endpoint MUST treat receipt of a transport parameter with an invalid value as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-P7-R01">An endpoint MUST NOT send a parameter more than once in a given transport parameters extension.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-P7-S1-R01">An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-0334")]
-    [Requirement("REQ-QUIC-RFC9000-0335")]
-    [Requirement("REQ-QUIC-RFC9000-0336")]
+    [Requirement("RFC9000-S7-4-P6-R01")]
+    [Requirement("RFC9000-S7-4-P7-R01")]
+    [Requirement("RFC9000-S7-4-P7-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryFormatTransportParameters_UsesEachParameterOnceAndParsesBack()
@@ -53,11 +53,11 @@ public sealed class REQ_QUIC_RFC9000_0335
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0335">An endpoint MUST NOT send a parameter more than once in a given transport parameters extension.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0336">An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-P7-R01">An endpoint MUST NOT send a parameter more than once in a given transport parameters extension.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-4-P7-S1-R01">An endpoint SHOULD treat receipt of duplicate transport parameters as a connection error of type TRANSPORT_PARAMETER_ERROR.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-0335")]
-    [Requirement("REQ-QUIC-RFC9000-0336")]
+    [Requirement("RFC9000-S7-4-P7-R01")]
+    [Requirement("RFC9000-S7-4-P7-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseTransportParameters_RejectsDuplicateTransportParameters()

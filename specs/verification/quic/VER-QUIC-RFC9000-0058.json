@@ -16,10 +16,10 @@
   "verifies": [
     "REQ-QUIC-RFC9000-0316",
     "REQ-QUIC-RFC9000-0317",
-    "REQ-QUIC-RFC9000-S7P2-0011",
-    "REQ-QUIC-RFC9000-0319",
+    "RFC9000-S7-2-P8-S1-R01",
+    "RFC9000-S7-2-P8-S2-R01",
     "REQ-QUIC-RFC9000-S7P2-0013",
-    "REQ-QUIC-RFC9000-S7P2-0014"
+    "RFC9000-S7-2-P8-S3-R02"
   ],
   "scope": "This verification covers RFC 9000 Section 7.2 server Source Connection ID adoption and conflicting-source continuity during connection establishment, plus the server first-client-Initial Destination Connection ID derivation and the NEW_CONNECTION_ID-only later-change boundary.",
   "expected_result": "The requirement-home tests show that the client adopts the first server Initial or Retry Source Connection ID for subsequent sends, keeps a Retry-selected outbound Destination Connection ID when the first post-Retry server Initial carries a different server Source Connection ID, keeps 0-RTT formatting aligned with the adopted server Source Connection ID after server Initial receipt, refuses later Initial or Handshake source changes after the first valid server Initial, refuses later Retry source changes, and keeps later Destination Connection ID changes limited to NEW_CONNECTION_ID frames. The server proof shows Initial responses use the Source Connection ID from the first received client Initial rather than the client's Original Destination Connection ID.",
@@ -48,10 +48,10 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2ServerConnectionIdTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0316.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0317.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0319.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0014.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R02.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0146.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",

@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused S8P1P4 requirement-home tests over listener Retry bootstrap replay admission, source-port rejection, port-bound token lifetime validation, deterministic port mutation fuzzing, and anti-amplification budget enforcement, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0409",
-    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "RFC9000-S8-1-4-P3-S2-R01",
+    "RFC9000-S8-1-4-P5-S3-R01",
     "REQ-QUIC-RFC9000-0412"
   ],
   "scope": "This verification covers the focused generated S8P1P4 hard proof tail for Retry token source endpoint continuity, short Retry token lifetime, and anti-amplification behavior when the client address changes.",
@@ -37,8 +37,8 @@
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P1P3ServerTokenValidationTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0409.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P1P4-0007.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P3-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-4-P5-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0412.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0409|FullyQualifiedName~REQ_QUIC_RFC9000_S8P1P4_0007|FullyQualifiedName~REQ_QUIC_RFC9000_0412\"",
     "dotnet build Incursa.Quic.slnx -c Release",

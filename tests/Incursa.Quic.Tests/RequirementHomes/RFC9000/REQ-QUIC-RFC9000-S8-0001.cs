@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8-0001">After receiving packets from an address that is not yet validated, an endpoint MUST limit the amount of data it sends to the unvalidated address to three times the amount of data received from that address.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-P2-S2-R01">After receiving packets from an address that is not yet validated, an endpoint MUST limit the amount of data it sends to the unvalidated address to three times the amount of data received from that address.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8-0001")]
+[Requirement("RFC9000-S8-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S8_0001
 {
     [Fact]

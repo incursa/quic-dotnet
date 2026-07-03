@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P1P2-0007">IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-2-P4-S2-R01">IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S22P1P2-0007")]
+[Requirement("RFC9000-S22-1-2-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S22P1P2_0007
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P2_0007
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P2-0007");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P4-S2-R01");
 
         Assert.Equal("IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements...", requirement.GetProperty("title").GetString());
         Assert.Equal("IANA MUST allocate the selected codepoint if the codepoint is unassigned and the requirements of the registration policy are met.", requirement.GetProperty("statement").GetString());

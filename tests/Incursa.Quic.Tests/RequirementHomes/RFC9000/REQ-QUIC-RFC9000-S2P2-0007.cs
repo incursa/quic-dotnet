@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S2P2-0007">The data at a given offset MUST NOT change if it is sent multiple times.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S2-2-P4-S2-R01">The data at a given offset MUST NOT change if it is sent multiple times.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S2P2-0007")]
+[Requirement("RFC9000-S2-2-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S2P2_0007
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0007")]
+    [Requirement("RFC9000-S2-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStreamFrame_PreservesAnIdenticalRetransmissionAtTheSameOffset()
@@ -50,7 +50,7 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0007")]
+    [Requirement("RFC9000-S2-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStreamFrame_IgnoresAConflictingRetransmissionAtTheSameOffset()
@@ -88,7 +88,7 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S2P2-0007")]
+    [Requirement("RFC9000-S2-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReceiveStreamFrame_AppendsOnlyTheNewTailBytesOfAnOverlappingRetransmission()

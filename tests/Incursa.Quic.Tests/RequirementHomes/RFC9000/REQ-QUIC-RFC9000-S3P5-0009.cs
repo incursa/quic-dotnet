@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P5-0009">An endpoint that sends a STOP_SENDING frame MAY ignore the error code in any RESET_STREAM frames subsequently received for that stream.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-5-P5-S2-R01">An endpoint that sends a STOP_SENDING frame MAY ignore the error code in any RESET_STREAM frames subsequently received for that stream.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P5-0009")]
+[Requirement("RFC9000-S3-5-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S3P5_0009
 {
     private static readonly byte[] PacketConnectionId = [0x0A, 0x0B, 0x0C];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0009")]
+    [Requirement("RFC9000-S3-5-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AbortStreamReadsAsync_IgnoresSubsequentResetStreamErrorCode()
@@ -72,7 +72,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0009
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0009")]
+    [Requirement("RFC9000-S3-5-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveResetStreamFrame_RejectsFinalSizeChangesAfterStopSendingIsSent()

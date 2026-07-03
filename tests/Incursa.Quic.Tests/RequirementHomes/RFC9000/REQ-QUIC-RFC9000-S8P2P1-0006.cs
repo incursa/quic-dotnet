@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P2P1-0006">To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S8-2-1-P6-S1-R01">To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S8P2P1-0006")]
+[Requirement("RFC9000-S8-2-1-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P2P1_0006
 {
     [Fact]

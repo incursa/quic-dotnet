@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0872">An endpoint MAY terminate the connection if an alternative path cannot be found.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-2-P4-S2-R01">An endpoint MAY terminate the connection if an alternative path cannot be found.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0872")]
+[Requirement("RFC9000-S14-2-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0872
 {
     [Fact]

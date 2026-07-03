@@ -14,8 +14,8 @@
   "verification_method": "Focused S17P1 requirement-home tests over protected Initial, Handshake, and Application Data packet-number encoding and open paths, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
     "REQ-QUIC-RFC9000-S17P1-0002",
-    "REQ-QUIC-RFC9000-S17P1-0003",
-    "REQ-QUIC-RFC9000-0925"
+    "RFC9000-S17-1-P4-R01",
+    "RFC9000-S17-1-P4-S2-R01"
   ],
   "scope": "This verification covers the focused generated S17P1 packet-number encoding proof tail for full-width pre-ack encoding, post-ack range sufficiency, and out-of-order recovery with four-byte packet numbers.",
   "expected_result": "The focused tests show that Initial and Handshake packet builders use four-byte packet numbers before any acknowledgment, the Initial builder reaches the maximum four-byte boundary without truncation, the Application Data builder uses a four-byte packet number at the largest post-ack safe range, late packets missing a packet-number byte fail to open, and out-of-order packets at the four-byte boundary can still be opened and recovered.",
@@ -37,8 +37,8 @@
     "src/Incursa.Quic/QuicPacketParser.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0925.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-S2-R01.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P1_\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",

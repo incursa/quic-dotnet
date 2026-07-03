@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0752">An endpoint SHOULD treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-1-P3-R01">An endpoint SHOULD treat receipt of an acknowledgment for a packet it did not send as a connection error of type PROTOCOL_VIOLATION, if it is able to detect the condition.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0752")]
+[Requirement("RFC9000-S13-1-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_0752
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0752")]
+    [Requirement("RFC9000-S13-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAcknowledgePacket_RemovesASentPacketFromTracking()
@@ -36,7 +36,7 @@ public sealed class REQ_QUIC_RFC9000_0752
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0752")]
+    [Requirement("RFC9000-S13-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAcknowledgePacket_RejectsAnUnsentPacket()
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_0752
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0752")]
+    [Requirement("RFC9000-S13-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryAcknowledgePacket_DoesNotMatchASentPacketAcrossPacketNumberSpaces()

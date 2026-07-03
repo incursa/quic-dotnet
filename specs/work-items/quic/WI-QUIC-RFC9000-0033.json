@@ -12,10 +12,10 @@
     "VER-QUIC-RFC9000-0033"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-0393",
-    "REQ-QUIC-RFC9000-S8P1P3-0014",
-    "REQ-QUIC-RFC9000-S8P1P3-0015",
-    "REQ-QUIC-RFC9000-8135"
+    "RFC9000-S8-1-3-P2-S5-R01",
+    "RFC9000-S8-1-3-P10-S1-R01",
+    "RFC9000-S8-1-3-P10-S2-R01",
+    "RFC9000-S8-1-3-P10-S4-R01"
   ],
   "summary": "Add focused proof and trace ownership for server-side Retry token validation, invalid-token discard, and valid-token handshake admission.",
   "planned_changes": "- Add focused S8P1P3 requirement-home tests for wrong, missing, and valid Retry token replay candidates.\n- Reuse the existing listener Retry bootstrap validation path instead of adding a broader token store.\n- Record canonical architecture, work-item, and verification ownership for the selected server-side S8P1P3 requirements.\n- Regenerate coverage triage and validate SpecTrace JSON.",

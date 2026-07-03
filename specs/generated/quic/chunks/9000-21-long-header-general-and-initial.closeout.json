@@ -33,8 +33,8 @@
     "REQ-QUIC-RFC9000-S17P2-0026",
     "REQ-QUIC-RFC9000-S17P1-0001",
     "REQ-QUIC-RFC9000-S17P1-0002",
-    "REQ-QUIC-RFC9000-S17P1-0003",
-    "REQ-QUIC-RFC9000-0925",
+    "RFC9000-S17-1-P4-R01",
+    "RFC9000-S17-1-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P2-0010",
     "REQ-QUIC-RFC9000-S17P2-0011",
     "REQ-QUIC-RFC9000-S17P2-0028",
@@ -649,7 +649,7 @@
       "notes": "No live packet-number surface exists under src, tests, or benchmarks."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0003",
+      "requirement_id": "RFC9000-S17-1-P4-R01",
       "section": "S17P1",
       "title": "After an acknowledgment is received for a packet number space, the sender MUST use a packet n...",
       "status": "blocked",
@@ -662,7 +662,7 @@
       "notes": "No live packet-number surface exists under src, tests, or benchmarks."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0925",
+      "requirement_id": "RFC9000-S17-1-P4-S2-R01",
       "section": "S17P1",
       "title": "An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be...",
       "status": "blocked",

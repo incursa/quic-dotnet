@@ -16,7 +16,7 @@
     "REQ-QUIC-RFC9000-S17P4-0005",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
-    "REQ-QUIC-RFC9000-1098"
+    "RFC9000-S17-4-P8-S1-R01"
   ],
   "scope": "This verification covers the focused generated S17P4 spin-bit per-path state proof set and the missing randomized-disablement edge proof for zero-length connection IDs.",
   "expected_result": "The focused tests show that endpoints emit the stored path spin value in protected 1-RTT short headers, servers store the received spin bit when the received packet number advances, clients store the inverse when the received packet number advances, non-increasing packet numbers do not change the client path spin value, and zero-length connection IDs remain disabled by randomized spin-bit selection.",
@@ -45,7 +45,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1098.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P8-S1-R01.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P4_0005|FullyQualifiedName~REQ_QUIC_RFC9000_S17P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S17P4_0009|FullyQualifiedName~REQ_QUIC_RFC9000_1098\"",
     "dotnet build Incursa.Quic.slnx -c Release",
     "pwsh -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .",

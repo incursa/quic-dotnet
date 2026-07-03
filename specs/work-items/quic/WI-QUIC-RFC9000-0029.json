@@ -12,17 +12,17 @@
     "VER-QUIC-RFC9000-0029"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-0425",
-    "REQ-QUIC-RFC9000-S8P2P1-0001",
-    "REQ-QUIC-RFC9000-S8P2P1-0002",
-    "REQ-QUIC-RFC9000-0435",
-    "REQ-QUIC-RFC9000-S8P2P1-0005",
-    "REQ-QUIC-RFC9000-S8P2P1-0007",
-    "REQ-QUIC-RFC9000-S8P2P2-0002",
-    "REQ-QUIC-RFC9000-0443",
-    "REQ-QUIC-RFC9000-S8P2P2-0004",
-    "REQ-QUIC-RFC9000-S8P2P2-0005",
-    "REQ-QUIC-RFC9000-S8P2P2-0006"
+    "RFC9000-S8-2-P6-S1-R01",
+    "RFC9000-S8-2-1-P2-S1-R01",
+    "RFC9000-S8-2-1-P2-S2-R01",
+    "RFC9000-S8-2-1-P3-S1-R01",
+    "RFC9000-S8-2-1-P5-S1-R01",
+    "RFC9000-S8-2-1-P7-S1-R01",
+    "RFC9000-S8-2-2-P1-S2-R01",
+    "RFC9000-S8-2-2-P2-S1-R01",
+    "RFC9000-S8-2-2-P2-S3-R01",
+    "RFC9000-S8-2-2-P3-S1-R01",
+    "RFC9000-S8-2-2-P3-S3-R01"
   ],
   "summary": "Implement and prove the bounded RFC 9000 Section 8.2 runtime path-validation datagram floor for challenge retries, response immediacy, same-path response emission, small-packet non-discard, and anti-amplification-aware padding.",
   "planned_changes": "- Add a shared runtime path-validation datagram builder for PATH_CHALLENGE and PATH_RESPONSE frames.\n- Keep datagrams padded to the 1200-byte RFC minimum when the path-local anti-amplification state permits it.\n- Fall back to the bare path-validation frame only when the path budget does not permit the expanded datagram.\n- Preserve one PATH_CHALLENGE per datagram while allowing timer-driven retries over time.\n- Keep PATH_RESPONSE emission same-transition and same-path without enforcing the same-path rule as an initiator-side peer violation.\n- Fill the focused RFC 9000 S8P2 requirement homes with positive, negative, and edge coverage.",

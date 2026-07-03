@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13-0003">An implementation MAY use knowledge about application sending behavior or heuristics to determine whether and for how long to wait.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-P2-S3-R01">An implementation MAY use knowledge about application sending behavior or heuristics to determine whether and for how long to wait.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13-0003")]
+[Requirement("RFC9000-S13-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S13_0003
 {
     private static readonly byte[] PacketConnectionId =

@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-0763"
+    "RFC9000-S13-2-1-P5-S1-R01"
   ],
   "summary": "Implement and prove fresh pending Initial ACK prefixing for ordinary non-Retry bootstrap Initial replay probe packets without changing retained ClientHello bytes, empty token handling, or packet-number continuity.",
   "planned_changes": "- Wire the ordinary bootstrap Initial replay helper to build a transient Initial ACK frame payload when Initial ACK-generation state has pending ack-eliciting receipts.\n- Pass that transient ACK payload to the existing Initial packet builder before the replayed CRYPTO frame while preserving the original Initial destination connection ID and empty token.\n- Mark the piggybacked Initial ACK frame as sent only after the replay packet is tracked under its actual new Initial packet number.\n- Preserve existing behavior when no Initial ACK is pending.\n- Keep Retry-selected replay, delayed-ACK scheduling, path scheduling, interop success, and public API behavior outside this slice.\n- Add focused positive, negative, deterministic fuzz/property, and BenchmarkDotNet coverage for the ordinary bootstrap replay packet-builder path.",

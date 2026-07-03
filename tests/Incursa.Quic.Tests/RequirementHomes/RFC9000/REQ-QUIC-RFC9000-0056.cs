@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0056">An endpoint MUST NOT send data on any stream without ensuring that it is within the flow control limits set by its peer.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S2-2-P6-R01">An endpoint MUST NOT send data on any stream without ensuring that it is within the flow control limits set by its peer.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0056")]
+[Requirement("RFC9000-S2-2-P6-R01")]
 public sealed class REQ_QUIC_RFC9000_0056
 {
     [Fact]

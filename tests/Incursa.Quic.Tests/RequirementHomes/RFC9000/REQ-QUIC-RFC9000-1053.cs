@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1053")]
+[Requirement("RFC9000-S17-2-5-3-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1053
 {
     [Fact]
@@ -65,7 +65,7 @@ public sealed class REQ_QUIC_RFC9000_1053
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-1053")]
+    [Requirement("RFC9000-S17-2-5-3-P4-S1-R01")]
     public void ClientInitialPacketNumberDoesNotRestartAtZeroAfterRetry()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
@@ -98,7 +98,7 @@ public sealed class REQ_QUIC_RFC9000_1053
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-1053")]
+    [Requirement("RFC9000-S17-2-5-3-P4-S1-R01")]
     public void ClientPacketNumbersContinueAcrossRetryAfterMultipleInitialAndZeroRttPackets()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();

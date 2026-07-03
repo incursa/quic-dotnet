@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1088">Implementations MUST allow administrators of clients and servers to disable the spin bit either globally or on a per-connection basis.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P4-S1-R01">Implementations MUST allow administrators of clients and servers to disable the spin bit either globally or on a per-connection basis.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1088")]
+[Requirement("RFC9000-S17-4-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1088
 {
     [Fact]

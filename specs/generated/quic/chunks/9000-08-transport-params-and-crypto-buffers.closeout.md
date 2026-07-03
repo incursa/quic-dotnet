@@ -8,9 +8,9 @@
 - No reconciliation artifact existed for this chunk; the implementation summary was treated as the source of truth.
 
 ## Requirements Completed
-- `REQ-QUIC-RFC9000-0334` through `REQ-QUIC-RFC9000-0336`
-- `REQ-QUIC-RFC9000-0357`
-- `REQ-QUIC-RFC9000-0361` through `REQ-QUIC-RFC9000-S7P5-0005`
+- `RFC9000-S7-4-P6-R01` through `RFC9000-S7-4-P7-S1-R01`
+- `RFC9000-S7-4-2-P1-S2-R01`
+- `RFC9000-S7-5-P2-S1-R01` through `RFC9000-S7-5-P4-S2-R01`
 
 ## Files Changed
 - [QuicTransportParametersCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParametersCodec.cs)
@@ -23,9 +23,9 @@
 - [9000-08-transport-params-and-crypto-buffers.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-08-transport-params-and-crypto-buffers.implementation-summary.json)
 
 ## Tests Added Or Updated
-- [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added trace refs for `REQ-QUIC-RFC9000-0334`, `REQ-QUIC-RFC9000-0335`, `REQ-QUIC-RFC9000-0336`, and `REQ-QUIC-RFC9000-0357`.
-- [QuicCryptoBufferTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs): added positive and negative coverage for `REQ-QUIC-RFC9000-0361` through `REQ-QUIC-RFC9000-S7P5-0005`.
-- [QuicCryptoBufferFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs): added fuzz coverage for `REQ-QUIC-RFC9000-0361` and `REQ-QUIC-RFC9000-S7P5-0002`.
+- [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added trace refs for `RFC9000-S7-4-P6-R01`, `RFC9000-S7-4-P7-R01`, `RFC9000-S7-4-P7-S1-R01`, and `RFC9000-S7-4-2-P1-S2-R01`.
+- [QuicCryptoBufferTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCryptoBufferTests.cs): added positive and negative coverage for `RFC9000-S7-5-P2-S1-R01` through `RFC9000-S7-5-P4-S2-R01`.
+- [QuicCryptoBufferFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCryptoBufferFuzzTests.cs): added fuzz coverage for `RFC9000-S7-5-P2-S1-R01` and `RFC9000-S7-5-P2-S2-R01`.
 
 ## Tests Run And Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`

@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0003">An endpoint that uses this design MUST either use the same connection ID length for all connections or encode the length of the connection ID such that it can be recovered without state.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-2-P4-S2-R01">An endpoint that uses this design MUST either use the same connection ID length for all connections or encode the length of the connection ID such that it can be recovered without state.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P3P2-0003")]
+[Requirement("RFC9000-S10-3-2-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P3P2_0003
 {
     private static readonly QuicConnectionPathIdentity PathIdentity = new("203.0.113.82", RemotePort: 443);
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0003")]
+    [Requirement("RFC9000-S10-3-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void StatelessResetLookup_RecoversDistinctConnectionIdLengthsWithoutExternalState()
@@ -80,7 +80,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0003")]
+    [Requirement("RFC9000-S10-3-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void StatelessResetLookup_DoesNotCrossMatchDifferentConnectionIdLengths()
@@ -118,7 +118,7 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S10P3P2-0003")]
+    [Requirement("RFC9000-S10-3-2-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void StatelessResetLookup_HandlesMaximumConnectionIdLengthWithoutLosingLengthInformation()

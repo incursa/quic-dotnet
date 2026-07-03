@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P5-0007">If any outstanding data is declared lost, the endpoint SHOULD send a RESET_STREAM frame instead of retransmitting the data.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-5-P4-S4-R01">If any outstanding data is declared lost, the endpoint SHOULD send a RESET_STREAM frame instead of retransmitting the data.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
+[Requirement("RFC9000-S3-5-P4-S4-R01")]
 public sealed class REQ_QUIC_RFC9000_S3P5_0007
 {
     private static readonly byte[] PacketConnectionId = [0x0A, 0x0B, 0x0C];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
+    [Requirement("RFC9000-S3-5-P4-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task TryRegisterLoss_QueuesStreamDataForRepairBeforeTheStreamIsAborted()
@@ -71,7 +71,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
+    [Requirement("RFC9000-S3-5-P4-S4-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task AbortStreamWrites_ReplacesQueuedStreamDataRetransmissionWithResetStream()
@@ -153,7 +153,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0007")]
+    [Requirement("RFC9000-S3-5-P4-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortStreamWrites_RemovesTheQueuedStreamDataRetransmission()

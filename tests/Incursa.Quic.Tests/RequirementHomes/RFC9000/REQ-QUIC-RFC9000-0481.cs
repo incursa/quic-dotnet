@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0481")]
+[Requirement("RFC9000-S9-3-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0481
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P3-0002")]
+    [Requirement("RFC9000-S9-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task NonProbingPacketFromPermittedMigrationRoutesStreamPacketsToTheMigratedAddressBeforeValidation()
@@ -80,7 +80,7 @@ public sealed class REQ_QUIC_RFC9000_0481
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P3-0002")]
+    [Requirement("RFC9000-S9-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AckOnlyPacketFromPermittedMigrationRoutesStreamPacketsToTheMigratedAddressBeforeValidation()
@@ -120,7 +120,7 @@ public sealed class REQ_QUIC_RFC9000_0481
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P3-0002")]
+    [Requirement("RFC9000-S9-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task NonProbingMigrationSendCreditExhaustionQueuesStreamWritesUntilValidation()

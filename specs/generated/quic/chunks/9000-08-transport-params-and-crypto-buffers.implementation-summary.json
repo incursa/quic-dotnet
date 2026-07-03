@@ -17,7 +17,7 @@
   ],
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0334",
+      "requirement_id": "RFC9000-S7-4-P6-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -33,7 +33,7 @@
       "notes": "Invalid transport-parameter values are rejected by the parser."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0335",
+      "requirement_id": "RFC9000-S7-4-P7-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -49,7 +49,7 @@
       "notes": "Duplicate transport-parameter IDs are rejected before application, including unsupported IDs."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0336",
+      "requirement_id": "RFC9000-S7-4-P7-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -65,7 +65,7 @@
       "notes": "Duplicate transport parameters are treated as a transport error by returning parse failure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0357",
+      "requirement_id": "RFC9000-S7-4-2-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicTransportParametersCodec.cs",
@@ -81,7 +81,7 @@
       "notes": "Unsupported GREASE transport parameters are ignored while recognized parameters are still parsed."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0361",
+      "requirement_id": "RFC9000-S7-5-P2-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicCryptoBuffer.cs",
@@ -102,7 +102,7 @@
       "notes": "The helper buffers out-of-order CRYPTO frames and holds 4096 bytes by default."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0002",
+      "requirement_id": "RFC9000-S7-5-P2-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicCryptoBuffer.cs",
@@ -157,7 +157,7 @@
       "notes": "After handshake completion, overflow can be discarded or closed depending on configuration."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P5-0005",
+      "requirement_id": "RFC9000-S7-5-P4-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicCryptoBuffer.cs",
@@ -192,7 +192,7 @@
       "notes": "Blocked until the connection/resumption layer can compare remembered values against the transport parameters used for 0-RTT."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0345",
+      "requirement_id": "RFC9000-S7-4-1-P4-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -201,7 +201,7 @@
       "notes": "Blocked until the connection/resumption layer can apply server-provided transport-parameter values to the handshake."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0346",
+      "requirement_id": "RFC9000-S7-4-1-P5-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -210,7 +210,7 @@
       "notes": "Blocked until the connection/resumption layer can preserve all server transport parameters that are relevant to 0-RTT."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P4P1-0005",
+      "requirement_id": "RFC9000-S7-4-1-P6-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

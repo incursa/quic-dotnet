@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0576">An endpoint SHOULD limit the rate at which it generates packets in the closing state.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-1-P3-S1-R01">An endpoint SHOULD limit the rate at which it generates packets in the closing state.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0576")]
+[Requirement("RFC9000-S10-2-1-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0576
 {
     [Fact]

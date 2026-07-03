@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P2-0004">In the absence of these mechanisms, QUIC endpoints SHOULD NOT send datagrams larger than the smallest allowed maximum datagram size.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-2-P2-S2-R01">In the absence of these mechanisms, QUIC endpoints SHOULD NOT send datagrams larger than the smallest allowed maximum datagram size.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P2-0004")]
+[Requirement("RFC9000-S14-2-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P2_0004
 {
     [Fact]

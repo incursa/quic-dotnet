@@ -38,7 +38,7 @@
 - `S2`: `REQ-QUIC-RFC9000-0019` through `REQ-QUIC-RFC9000-0022`, and `REQ-QUIC-RFC9000-0025` remain not implemented.
 - `S2`: `REQ-QUIC-RFC9000-0024`, `REQ-QUIC-RFC9000-0027`, and `REQ-QUIC-RFC9000-0026` remain wire-level only and still need a stateful stream implementation to become fully proven.
 - `S2P1`: `REQ-QUIC-RFC9000-S2P1-0001`, `REQ-QUIC-RFC9000-S2P1-0002`, `REQ-QUIC-RFC9000-0031`, `REQ-QUIC-RFC9000-0034`, and `REQ-QUIC-RFC9000-S2P1-0012` through `REQ-QUIC-RFC9000-S2P1-0014` remain not implemented.
-- `S2P2`: `REQ-QUIC-RFC9000-0048` through `REQ-QUIC-RFC9000-0052` and `REQ-QUIC-RFC9000-0056` remain not implemented; `REQ-QUIC-RFC9000-S2P2-0009` remains wire-level only.
+- `S2P2`: `REQ-QUIC-RFC9000-0048` through `REQ-QUIC-RFC9000-0052` and `RFC9000-S2-2-P6-R01` remain not implemented; `REQ-QUIC-RFC9000-S2P2-0009` remains wire-level only.
 - `S2P3`: all three requirements remain not implemented.
 - `S2P4`: `REQ-QUIC-RFC9000-S2P4-0001` through `REQ-QUIC-RFC9000-S2P4-0003` and `REQ-QUIC-RFC9000-S2P4-0008` remain not implemented; `REQ-QUIC-RFC9000-S2P4-0004` through `REQ-QUIC-RFC9000-S2P4-0007` remain wire-level only and still depend on a stateful stream surface.
 

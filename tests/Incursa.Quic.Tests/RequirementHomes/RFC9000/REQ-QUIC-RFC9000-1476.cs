@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1476">QUIC deployments SHOULD provide mitigations for stream fragmentation attacks.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-7-P4-R01">QUIC deployments SHOULD provide mitigations for stream fragmentation attacks.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1476")]
+[Requirement("RFC9000-S21-7-P4-R01")]
 public sealed class REQ_QUIC_RFC9000_1476
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1476
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1476");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-7-P4-R01");
 
         Assert.Equal("Provide stream fragmentation mitigations", requirement.GetProperty("title").GetString());
         Assert.Equal("QUIC deployments SHOULD provide mitigations for stream fragmentation attacks.", requirement.GetProperty("statement").GetString());
@@ -35,7 +35,7 @@ public sealed class REQ_QUIC_RFC9000_1476
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotDowngradeStreamFragmentationMitigationGuidance()
     {
-        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("REQ-QUIC-RFC9000-1476");
+        string statement = QuicRfc9000RequirementSpecSupport.GetStatement("RFC9000-S21-7-P4-R01");
 
         Assert.True(statement.Contains("SHOULD provide mitigations", StringComparison.Ordinal));
         Assert.False(statement.Contains("MAY provide mitigations", StringComparison.OrdinalIgnoreCase));

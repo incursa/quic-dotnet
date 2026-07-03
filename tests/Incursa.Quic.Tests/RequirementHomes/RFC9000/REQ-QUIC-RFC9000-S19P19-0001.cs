@@ -136,8 +136,8 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11-0001">An endpoint that detects an error SHOULD signal the existence of that error to its peer.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11-0002">The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S11-P1-S1-R01">An endpoint that detects an error SHOULD signal the existence of that error to its peer.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S11-P2-S1-R01">The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0659">An endpoint MAY use a generic error code such as PROTOCOL_VIOLATION or INTERNAL_ERROR in place of a specific error code.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0658">An endpoint MAY use any applicable error code when it detects an error condition.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P19-0001">The CONNECTION_CLOSE frame with a type of 0x1c MUST be used to signal errors at only the QUIC layer, or the absence of errors (with the NO_ERROR code).</workbench-requirement>
@@ -157,8 +157,8 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0663">Application-specific protocol errors MUST be signaled using the CONNECTION_CLOSE frame with a frame type of 0x1d.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11P1-0003">Transport errors, including all those described in this document, MUST be carried in the CONNECTION_CLOSE frame with a frame type of 0x1c.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S11-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S11-0002")]
+    [Requirement("RFC9000-S11-P1-S1-R01")]
+    [Requirement("RFC9000-S11-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-0659")]
     [Requirement("REQ-QUIC-RFC9000-0658")]
     [Requirement("REQ-QUIC-RFC9000-S19P19-0001")]

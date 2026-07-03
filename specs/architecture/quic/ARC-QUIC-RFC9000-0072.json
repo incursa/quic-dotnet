@@ -25,11 +25,11 @@
     "REQ-QUIC-RFC9000-0261",
     "REQ-QUIC-RFC9000-S5P2P1-0003",
     "REQ-QUIC-RFC9000-S5P2P1-0004",
-    "REQ-QUIC-RFC9000-0264",
+    "RFC9000-S5-2-1-P3-S1-R01",
     "REQ-QUIC-RFC9000-S5P2-0006",
     "REQ-QUIC-RFC9000-S5P2-0008",
     "REQ-QUIC-RFC9000-S5P2-0009",
-    "REQ-QUIC-RFC9000-0258"
+    "RFC9000-S5-2-P6-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
@@ -45,11 +45,11 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0261.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0264.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0258.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs"
   ],
   "design_summary": "The endpoint ingress path classifies datagrams by header form before routing. Long-header packets route by exact Destination Connection ID after excluding Version Negotiation and Retry endpoint-handled packets. Short-header packets route by the longest registered Destination Connection ID prefix, including the zero-length route when a connection has selected zero-length connection-ID mode. The zero-length route is intentionally scoped to the local endpoint tuple so remote address or port changes can still be processed while traffic for a different local endpoint is not associated. Listener-host pre-acceptance remains responsible for creating a new server connection from a conforming Initial packet when no existing route matches.",
   "data_and_state_considerations": "Routes live in QuicConnectionRuntimeEndpoint buckets keyed by connection-ID length and route key. Zero-length routes rely on endpoint binding state rather than peer connection-ID bytes. Routed packets are posted to the owning runtime as QuicConnectionPacketReceivedEvent instances; malformed or unroutable packets do not reach the runtime path.",

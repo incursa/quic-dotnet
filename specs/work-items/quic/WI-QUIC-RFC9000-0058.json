@@ -15,10 +15,10 @@
   "addresses": [
     "REQ-QUIC-RFC9000-0316",
     "REQ-QUIC-RFC9000-0317",
-    "REQ-QUIC-RFC9000-S7P2-0011",
-    "REQ-QUIC-RFC9000-0319",
+    "RFC9000-S7-2-P8-S1-R01",
+    "RFC9000-S7-2-P8-S2-R01",
     "REQ-QUIC-RFC9000-S7P2-0013",
-    "REQ-QUIC-RFC9000-S7P2-0014"
+    "RFC9000-S7-2-P8-S3-R02"
   ],
   "summary": "Close the RFC 9000 Section 7.2 server Source Connection ID adoption and continuity floor for client and server establishment paths.",
   "planned_changes": "- Add focused requirement-home tests for first server Initial adoption, Retry-first adoption, post-Retry first-Initial processing without outbound Destination Connection ID replacement, 0-RTT post-adoption formatting, strict conflicting-source discard after the first valid server Initial, server first-client-Initial Destination Connection ID derivation, and NEW_CONNECTION_ID-only later Destination Connection ID changes.\n- Add a shared S7P2 server connection-ID helper for client bootstrap, retry replay, server handshake flight generation, packet receipt, 0-RTT formatting, deferred Handshake buffer inspection, and long-header CID assertions.\n- Make the default client establishment path reject later long-header packets with a different server Source Connection ID after the first valid server Initial has been observed.\n- Keep the replacement peer Initial reset behavior from REQ-QUIC-CRT-0146 as an explicit internal opt-in for its focused proof and the interop harness multiconnect client case.\n- Link the focused proof to dedicated architecture and verification artifacts.",

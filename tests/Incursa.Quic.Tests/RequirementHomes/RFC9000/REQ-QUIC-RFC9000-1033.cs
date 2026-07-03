@@ -83,7 +83,7 @@ public sealed class REQ_QUIC_RFC9000_1033
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Requirement("REQ-QUIC-RFC9000-1034")]
-    [Requirement("REQ-QUIC-RFC9000-1035")]
+    [Requirement("RFC9000-S17-2-5-1-P3-S3-R01")]
     [Requirement("REQ-QUIC-RFC9000-1033")]
     [Trait("Category", "Negative")]
     public async Task ListenerHostCanOmitRetryPacketsForInitialDatagramsWhenRetryBootstrapIsDisabled()

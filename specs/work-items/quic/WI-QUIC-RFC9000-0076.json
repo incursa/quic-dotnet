@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0076"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-0200",
+    "RFC9000-S4-6-P3-R01",
     "REQ-QUIC-RFC9000-0201",
     "REQ-QUIC-RFC9000-0203"
   ],
@@ -32,5 +32,5 @@
     "Hosted interop readiness.",
     "Closing the deferred S4P6-0009 fuzz expectation."
   ],
-  "completion_notes": "Completed as a focused S4P6 proof for REQ-QUIC-RFC9000-0200, REQ-QUIC-RFC9000-0201, and REQ-QUIC-RFC9000-0203."
+  "completion_notes": "Completed as a focused S4P6 proof for RFC9000-S4-6-P3-R01, REQ-QUIC-RFC9000-0201, and REQ-QUIC-RFC9000-0203."
 }

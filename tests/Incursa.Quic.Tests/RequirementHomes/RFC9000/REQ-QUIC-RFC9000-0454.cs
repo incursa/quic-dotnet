@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0454")]
+[Requirement("RFC9000-S8-2-4-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_0454
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0454")]
+    [Requirement("RFC9000-S8-2-4-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PathValidationTimerEventuallyAbandonsAnExpiredCandidate()
@@ -71,7 +71,7 @@ public sealed class REQ_QUIC_RFC9000_0454
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0454")]
+    [Requirement("RFC9000-S8-2-4-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void FirstTimerExpiryStillRetriesInsteadOfAbandoningTheCandidate()

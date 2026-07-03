@@ -15,13 +15,13 @@
     "VER-QUIC-RFC9000-0019"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S9P3-0005",
+    "RFC9000-S9-3-P7-S1-R01",
     "REQ-QUIC-RFC9000-0488",
-    "REQ-QUIC-RFC9000-0763"
+    "RFC9000-S13-2-1-P5-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs"
   ],
   "design_summary": "The explicit-path 1-RTT application send helper, currently used by server NEW_TOKEN emission after path validation, performs the same transient ACK-prefix composition used by the active-path stream send helper. When Application Data ACK state is pending, the helper protects ACK plus NEW_TOKEN in one Application Data packet, marks the ACK frame as sent under the carrier packet number, and keeps the original NEW_TOKEN payload as the retransmittable plaintext. If no ACK is pending, the helper emits the NEW_TOKEN payload unchanged.",

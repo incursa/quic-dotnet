@@ -16,7 +16,7 @@
 - [9000-07-handshake-properties.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9000-07-handshake-properties.implementation-summary.json)
 
 ## Tests Added Or Updated
-- [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added positive and negative connection-ID binding validation coverage for `REQ-QUIC-RFC9000-S7P3-0005` through `REQ-QUIC-RFC9000-S7P3-0008`.
+- [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added positive and negative connection-ID binding validation coverage for `RFC9000-S7-3-P3-S1-R01` through `REQ-QUIC-RFC9000-S7P3-0008`.
 - [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added trace refs for transport-parameter serialization/parsing coverage tied to `REQ-QUIC-RFC9000-S7P3-0001` through `REQ-QUIC-RFC9000-S7P3-0004`.
 - [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs): added S7P3 trace refs, including zero-length connection-ID coverage for `REQ-QUIC-RFC9000-0332`.
 - [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): added long-header CID trace for `REQ-QUIC-RFC9000-0305`.
@@ -30,7 +30,7 @@
 
 ## Remaining Open Requirements In Scope
 - `REQ-QUIC-RFC9000-S7-0001` through `REQ-QUIC-RFC9000-0295`
-- `REQ-QUIC-RFC9000-0305` through `REQ-QUIC-RFC9000-S7P2-0014`
+- `REQ-QUIC-RFC9000-0305` through `RFC9000-S7-2-P8-S3-R02`
 - No `S7P3` requirements remain open.
 
 ## Risks Or Follow-Up Notes

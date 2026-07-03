@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P1P4-0004">The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-4-P2-R01">The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S22P1P4-0004")]
+[Requirement("RFC9000-S22-1-4-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_S22P1P4_0004
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S22P1P4_0004
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S22P1P4-0004");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-4-P2-R01");
 
         Assert.Equal("The creation of a registry MAY identify a range of codepoints where registrations are governe...", requirement.GetProperty("title").GetString());
         Assert.Equal("The creation of a registry MAY identify a range of codepoints where registrations are governed by a different registration policy.", requirement.GetProperty("statement").GetString());

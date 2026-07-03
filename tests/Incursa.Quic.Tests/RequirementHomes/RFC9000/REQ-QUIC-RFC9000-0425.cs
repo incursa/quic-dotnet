@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0425")]
+[Requirement("RFC9000-S8-2-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0425
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0425")]
+    [Requirement("RFC9000-S8-2-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PathValidationFramesCanBeProcessedWithOtherFramesInTheSamePacket()

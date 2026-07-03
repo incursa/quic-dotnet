@@ -47,7 +47,7 @@
       "REQ-QUIC-RFC9000-0554",
       "REQ-QUIC-RFC9000-S10P1P1-0001",
       "REQ-QUIC-RFC9000-S10P2P2-0001",
-      "REQ-QUIC-RFC9000-S10P2P2-0003",
+      "RFC9000-S10-2-2-P2-S2-R01",
       "REQ-QUIC-RFC9000-S10P2P2-0005"
     ],
     "stale_requirement_refs_found": [],
@@ -155,12 +155,12 @@
       "section_token": "S10P1P2",
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-0560",
+        "RFC9000-S10-1-2-P3-S1-R01",
         "REQ-QUIC-RFC9000-S10P1P2-0002"
       ],
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
-        "REQ-QUIC-RFC9000-0560",
+        "RFC9000-S10-1-2-P3-S1-R01",
         "REQ-QUIC-RFC9000-S10P1P2-0002"
       ],
       "tests_covering_requirement": [],
@@ -174,9 +174,9 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2-0001",
         "REQ-QUIC-RFC9000-S10P2-0002",
-        "REQ-QUIC-RFC9000-0569",
-        "REQ-QUIC-RFC9000-0570",
-        "REQ-QUIC-RFC9000-0571",
+        "RFC9000-S10-2-P6-S3-R01",
+        "RFC9000-S10-2-P7-S1-R01",
+        "RFC9000-S10-2-P7-S2-R01",
         "REQ-QUIC-RFC9000-0562",
         "REQ-QUIC-RFC9000-S10P2-0007",
         "REQ-QUIC-RFC9000-S10P2-0008",
@@ -187,12 +187,12 @@
       ],
       "implemented_requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2-0001",
-        "REQ-QUIC-RFC9000-0569"
+        "RFC9000-S10-2-P6-S3-R01"
       ],
       "blocked_requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2-0002",
-        "REQ-QUIC-RFC9000-0570",
-        "REQ-QUIC-RFC9000-0571",
+        "RFC9000-S10-2-P7-S1-R01",
+        "RFC9000-S10-2-P7-S2-R01",
         "REQ-QUIC-RFC9000-0562",
         "REQ-QUIC-RFC9000-S10P2-0007",
         "REQ-QUIC-RFC9000-S10P2-0008",
@@ -203,11 +203,11 @@
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S2-R01.cs::TryEnterClosingState_DisablesFurtherPackets"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S2-R01.cs"
       ],
       "remaining_gap": "This behavior still needs the endpoint runtime for the remaining close/drain packet-response policy and CONNECTION_CLOSE wire representation.",
       "notes": "The helper-backed closing/draining no-send clauses are now proven, but the runtime still needs to bind packets and wire emission to those states."
@@ -216,26 +216,26 @@
       "section_token": "S10P2P1",
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-0576",
+        "RFC9000-S10-2-1-P3-S1-R01",
         "REQ-QUIC-RFC9000-S10P2P1-0002",
-        "REQ-QUIC-RFC9000-0579",
-        "REQ-QUIC-RFC9000-0580",
-        "REQ-QUIC-RFC9000-S10P2P1-0005",
-        "REQ-QUIC-RFC9000-S10P2P1-0006",
-        "REQ-QUIC-RFC9000-0583",
+        "RFC9000-S10-2-1-P4-S3-R01",
+        "RFC9000-S10-2-1-P5-R01",
+        "RFC9000-S10-2-1-P5-S2-R01",
+        "RFC9000-S10-2-1-P5-S3-R01",
+        "RFC9000-S10-2-1-P7-S1-R01",
         "REQ-QUIC-RFC9000-0572",
         "REQ-QUIC-RFC9000-S10P2P1-0009",
         "REQ-QUIC-RFC9000-0575"
       ],
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
-        "REQ-QUIC-RFC9000-0576",
+        "RFC9000-S10-2-1-P3-S1-R01",
         "REQ-QUIC-RFC9000-S10P2P1-0002",
-        "REQ-QUIC-RFC9000-0579",
-        "REQ-QUIC-RFC9000-0580",
-        "REQ-QUIC-RFC9000-S10P2P1-0005",
-        "REQ-QUIC-RFC9000-S10P2P1-0006",
-        "REQ-QUIC-RFC9000-0583",
+        "RFC9000-S10-2-1-P4-S3-R01",
+        "RFC9000-S10-2-1-P5-R01",
+        "RFC9000-S10-2-1-P5-S2-R01",
+        "RFC9000-S10-2-1-P5-S3-R01",
+        "RFC9000-S10-2-1-P7-S1-R01",
         "REQ-QUIC-RFC9000-0572",
         "REQ-QUIC-RFC9000-S10P2P1-0009",
         "REQ-QUIC-RFC9000-0575"
@@ -251,13 +251,13 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2P2-0001",
         "REQ-QUIC-RFC9000-S10P2P2-0002",
-        "REQ-QUIC-RFC9000-S10P2P2-0003",
+        "RFC9000-S10-2-2-P2-S2-R01",
         "REQ-QUIC-RFC9000-S10P2P2-0004",
         "REQ-QUIC-RFC9000-S10P2P2-0005"
       ],
       "implemented_requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2P2-0001",
-        "REQ-QUIC-RFC9000-S10P2P2-0003",
+        "RFC9000-S10-2-2-P2-S2-R01",
         "REQ-QUIC-RFC9000-S10P2P2-0005"
       ],
       "blocked_requirement_ids": [
@@ -266,13 +266,13 @@
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs::TryEnterClosingState_DisablesFurtherPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S2-R01.cs::TryEnterClosingState_DisablesFurtherPackets",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_TransitionsTheRuntimeToDraining",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotChangeStateAgain"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S2-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs"
       ],
       "remaining_gap": "This behavior still needs the endpoint runtime for immediate-close orchestration and CONNECTION_CLOSE packet-response policy.",

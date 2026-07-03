@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0005">Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-1-P3-S1-R01">Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P1-0005")]
+[Requirement("RFC9000-S14-1-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P1_0005
 {
     private static readonly byte[] InitialDestinationConnectionId =

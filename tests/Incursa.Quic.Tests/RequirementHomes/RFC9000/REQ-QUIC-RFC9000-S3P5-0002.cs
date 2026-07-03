@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P5-0002">If the stream is in the Recv or Size Known state, the transport SHOULD signal aborting reading by sending a STOP_SENDING frame to prompt closure of the stream in the opposite direction.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-5-P2-S1-R01">If the stream is in the Recv or Size Known state, the transport SHOULD signal aborting reading by sending a STOP_SENDING frame to prompt closure of the stream in the opposite direction.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
+[Requirement("RFC9000-S3-5-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S3P5_0002
 {
     private static readonly byte[] PacketConnectionId =
@@ -15,7 +15,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0002
     ];
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
+    [Requirement("RFC9000-S3-5-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AbortStreamReadsAsync_EmitsStopSendingAndRaisesReadAbortedNotification()
@@ -63,7 +63,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
+    [Requirement("RFC9000-S3-5-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public async Task AbortStreamReadsAsync_EmitsStopSendingFromSizeKnownState()
@@ -114,7 +114,7 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P5-0002")]
+    [Requirement("RFC9000-S3-5-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AbortStreamReadsAsync_DoesNotEmitResetStreamOrWriteAbortedNotification()

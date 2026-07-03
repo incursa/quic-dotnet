@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0326")]
+[Requirement("RFC9000-S7-3-P3-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0326
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0326")]
+    [Requirement("RFC9000-S7-3-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryValidateConnectionIdBindings_AcceptsReceivedTransportParametersThatMatchObservedConnectionIds()
     {
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_0326
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0326")]
+    [Requirement("RFC9000-S7-3-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryValidateConnectionIdBindings_RejectsReceivedTransportParametersThatMismatchObservedConnectionIds()

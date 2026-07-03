@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1491">Requests for multiple codepoints MAY use a contiguous range</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-2-P1-S1-R01">Requests for multiple codepoints MAY use a contiguous range</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-1491")]
+[Requirement("RFC9000-S22-1-2-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_1491
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1491
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1491");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P1-S1-R01");
 
         Assert.Equal("Allow contiguous ranges for multi-codepoint requests", requirement.GetProperty("title").GetString());
         Assert.Equal("Requests for multiple codepoints MAY use a contiguous range.", requirement.GetProperty("statement").GetString());
@@ -69,7 +69,7 @@ public sealed class REQ_QUIC_RFC9000_1491
         return document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-1491")
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S22-1-2-P1-S1-R01")
             .Clone();
     }
 }

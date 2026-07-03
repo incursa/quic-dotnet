@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S8P2P2-0001")]
+[Requirement("RFC9000-S8-2-2-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S8P2P2_0001
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S8P2P2-0001">On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S8-2-2-P1-S1-R01">On receiving a PATH_CHALLENGE frame, an endpoint MUST respond by echoing the data contained in the PATH_CHALLENGE frame in a PATH_RESPONSE frame.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0001")]
+    [Requirement("RFC9000-S8-2-2-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatPathResponseFrame_EchoesChallengeData()
     {

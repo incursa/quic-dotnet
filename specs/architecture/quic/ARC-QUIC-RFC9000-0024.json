@@ -19,14 +19,14 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2P1-0001",
-    "REQ-QUIC-RFC9000-S13P2P1-0004",
+    "RFC9000-S13-2-1-P2-R02",
     "REQ-QUIC-RFC9000-S13P2P1-0006",
     "REQ-QUIC-RFC9000-S13P2P1-0007",
-    "REQ-QUIC-RFC9000-0763",
+    "RFC9000-S13-2-1-P5-S1-R01",
     "REQ-QUIC-RFC9000-S13P2P1-0012",
     "REQ-QUIC-RFC9000-S13P2P2-0001",
-    "REQ-QUIC-RFC9000-1323",
-    "REQ-QUIC-RFC9000-1324"
+    "RFC9000-S13-2-2-P4-S1-R01",
+    "RFC9000-S13-2-2-P5-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
@@ -36,9 +36,9 @@
     "src/Incursa.Quic/QuicAckGenerationState.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1324.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs"
@@ -72,7 +72,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicConnectionRuntime.Routing.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Routing.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`REQ-QUIC-RFC9000-0763.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0763.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs)\n- [`REQ-QUIC-RFC9000-1324.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1324.cs)\n- [`QuicS13ApplicationSendDelayTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
+      "content": "- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Lifecycle.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs)\n- [`QuicConnectionRuntime.Routing.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Routing.cs)\n- [`QuicConnectionRuntimeStateModels.cs`](../../../src/Incursa.Quic/QuicConnectionRuntimeStateModels.cs)\n- [`RFC9000-S13-2-1-P5-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs)\n- [`RFC9000-S13-2-2-P5-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-2-P5-S1-R01.cs)\n- [`QuicS13ApplicationSendDelayTestSupport.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
     }
   ]
 }

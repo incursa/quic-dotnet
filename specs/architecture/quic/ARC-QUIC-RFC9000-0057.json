@@ -15,8 +15,8 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9000-S7P2-0004",
-    "REQ-QUIC-RFC9000-0309",
-    "REQ-QUIC-RFC9000-0310",
+    "RFC9000-S7-2-P3-S2-R01",
+    "RFC9000-S7-2-P3-S3-R01",
     "REQ-QUIC-RFC9000-S7P2-0007",
     "REQ-QUIC-RFC9000-0315"
   ],
@@ -26,8 +26,8 @@
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2FirstFlightConnectionIdTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0309.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0310.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0315.cs"
   ],

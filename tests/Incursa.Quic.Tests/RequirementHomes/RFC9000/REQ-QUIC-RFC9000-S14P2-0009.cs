@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P2-0009">QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-2-P5-S2-R01">QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P2-0009")]
+[Requirement("RFC9000-S14-2-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P2_0009
 {
     [Fact]

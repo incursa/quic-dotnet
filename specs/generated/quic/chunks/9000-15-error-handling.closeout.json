@@ -21,8 +21,8 @@
   },
   "scope_inventory": {
     "S11": [
-      "REQ-QUIC-RFC9000-S11-0001",
-      "REQ-QUIC-RFC9000-S11-0002",
+      "RFC9000-S11-P1-S1-R01",
+      "RFC9000-S11-P2-S1-R01",
       "REQ-QUIC-RFC9000-0659",
       "REQ-QUIC-RFC9000-0658",
       "REQ-QUIC-RFC9000-0661"
@@ -35,20 +35,20 @@
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
       "REQ-QUIC-RFC9000-S11P1-0007",
-      "REQ-QUIC-RFC9000-0668"
+      "RFC9000-S11-1-P5-S3-R01"
     ],
     "S11P2": [
       "REQ-QUIC-RFC9000-S11P2-0001",
-      "REQ-QUIC-RFC9000-S11P2-0002",
+      "RFC9000-S11-2-P2-S2-R01",
       "REQ-QUIC-RFC9000-S11P2-0003",
       "REQ-QUIC-RFC9000-S11P2-0004",
-      "REQ-QUIC-RFC9000-0674"
+      "RFC9000-S11-2-P4-S1-R01"
     ]
   },
   "coverage": {
     "covered_requirement_ids": [
-      "REQ-QUIC-RFC9000-S11-0001",
-      "REQ-QUIC-RFC9000-S11-0002",
+      "RFC9000-S11-P1-S1-R01",
+      "RFC9000-S11-P2-S1-R01",
       "REQ-QUIC-RFC9000-0659",
       "REQ-QUIC-RFC9000-0658",
       "REQ-QUIC-RFC9000-0661",
@@ -62,12 +62,12 @@
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
       "REQ-QUIC-RFC9000-S11P1-0007",
-      "REQ-QUIC-RFC9000-0668",
+      "RFC9000-S11-1-P5-S3-R01",
       "REQ-QUIC-RFC9000-S11P2-0001",
-      "REQ-QUIC-RFC9000-S11P2-0002",
+      "RFC9000-S11-2-P2-S2-R01",
       "REQ-QUIC-RFC9000-S11P2-0003",
       "REQ-QUIC-RFC9000-S11P2-0004",
-      "REQ-QUIC-RFC9000-0674"
+      "RFC9000-S11-2-P4-S1-R01"
     ],
     "uncovered_requirement_ids": []
   },
@@ -77,8 +77,8 @@
       {
         "file": "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S11-0001",
-          "REQ-QUIC-RFC9000-S11-0002",
+          "RFC9000-S11-P1-S1-R01",
+          "RFC9000-S11-P2-S1-R01",
           "REQ-QUIC-RFC9000-0659",
           "REQ-QUIC-RFC9000-0658",
           "REQ-QUIC-RFC9000-S11P1-0001",
@@ -89,8 +89,8 @@
       {
         "file": "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S11-0001",
-          "REQ-QUIC-RFC9000-S11-0002",
+          "RFC9000-S11-P1-S1-R01",
+          "RFC9000-S11-P2-S1-R01",
           "REQ-QUIC-RFC9000-0659",
           "REQ-QUIC-RFC9000-0658",
           "REQ-QUIC-RFC9000-S11P1-0001",
@@ -157,7 +157,7 @@
       "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0668",
+      "requirement_id": "RFC9000-S11-1-P5-S3-R01",
       "reason": "Safe discard after reverting side effects needs a reversible receive pipeline."
     },
     {
@@ -165,7 +165,7 @@
       "reason": "RESET_STREAM instigation needs application-protocol and stream-state orchestration."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P2-0002",
+      "requirement_id": "RFC9000-S11-2-P2-S2-R01",
       "reason": "Only the application protocol can instigate RESET_STREAM."
     },
     {
@@ -177,7 +177,7 @@
       "reason": "STOP_SENDING-driven RESET_STREAM needs an application-protocol callback surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0674",
+      "requirement_id": "RFC9000-S11-2-P4-S1-R01",
       "reason": "Premature-cancel handling is application-specific."
     }
   ],

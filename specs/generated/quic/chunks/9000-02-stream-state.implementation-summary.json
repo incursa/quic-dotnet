@@ -591,7 +591,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0002",
+      "requirement_id": "RFC9000-S3-5-P2-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -627,7 +627,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0006",
+      "requirement_id": "RFC9000-S3-5-P4-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -636,7 +636,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0007",
+      "requirement_id": "RFC9000-S3-5-P4-S4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -654,7 +654,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P5-0009",
+      "requirement_id": "RFC9000-S3-5-P5-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -663,7 +663,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0152",
+      "requirement_id": "RFC9000-S3-5-P6-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -735,15 +735,15 @@
     "REQ-QUIC-RFC9000-S3P4-0002",
     "REQ-QUIC-RFC9000-S3P4-0003",
     "REQ-QUIC-RFC9000-S3P5-0001",
-    "REQ-QUIC-RFC9000-S3P5-0002",
+    "RFC9000-S3-5-P2-S1-R01",
     "REQ-QUIC-RFC9000-S3P5-0003",
     "REQ-QUIC-RFC9000-S3P5-0004",
     "REQ-QUIC-RFC9000-S3P5-0005",
-    "REQ-QUIC-RFC9000-S3P5-0006",
-    "REQ-QUIC-RFC9000-S3P5-0007",
+    "RFC9000-S3-5-P4-S3-R01",
+    "RFC9000-S3-5-P4-S4-R01",
     "REQ-QUIC-RFC9000-S3P5-0008",
-    "REQ-QUIC-RFC9000-S3P5-0009",
-    "REQ-QUIC-RFC9000-0152",
+    "RFC9000-S3-5-P5-S2-R01",
+    "RFC9000-S3-5-P6-S1-R01",
     "REQ-QUIC-RFC9000-S3P5-0011",
     "REQ-QUIC-RFC9000-S3P5-0012",
     "REQ-QUIC-RFC9000-S3P5-0013"

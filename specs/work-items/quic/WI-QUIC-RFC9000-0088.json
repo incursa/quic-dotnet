@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9000-0088"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S13-0002",
-    "REQ-QUIC-RFC9000-S13P2P7-0001"
+    "RFC9000-S13-P2-S2-R01",
+    "RFC9000-S13-2-7-P1-S3-R01"
   ],
   "summary": "Close the active-path S13 ACK deadlock/send-scheduling proof gap by proving periodic PING recovery probes and the bounded application send-delay edge.",
   "planned_changes": "- Add focused S13P2P7 requirement-home proof that the recovery PTO fallback emits an ack-eliciting PING probe, not a PADDING-only packet, when no retransmittable payload is available.\n- Add negative proof that the PING probe path stays unavailable without an active path and 1-RTT material.\n- Add S13-0002 edge proof for the small-packet delay threshold boundary.\n- Add canonical x_test_refs and focused architecture/work-item/verification artifacts.\n- Keep the existing ACK piggyback policy benchmark suite as the local benchmark guard and add a PING frame formatting case.",

@@ -40,7 +40,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ### S3P5
 
-- blocked: `REQ-QUIC-RFC9000-S3P5-0001`, `REQ-QUIC-RFC9000-S3P5-0002`, `REQ-QUIC-RFC9000-S3P5-0003`, `REQ-QUIC-RFC9000-S3P5-0004`, `REQ-QUIC-RFC9000-S3P5-0005`, `REQ-QUIC-RFC9000-S3P5-0006`, `REQ-QUIC-RFC9000-S3P5-0007`, `REQ-QUIC-RFC9000-S3P5-0008`, `REQ-QUIC-RFC9000-S3P5-0009`, `REQ-QUIC-RFC9000-0152`, `REQ-QUIC-RFC9000-S3P5-0011`, `REQ-QUIC-RFC9000-S3P5-0012`, `REQ-QUIC-RFC9000-S3P5-0013`
+- blocked: `REQ-QUIC-RFC9000-S3P5-0001`, `RFC9000-S3-5-P2-S1-R01`, `REQ-QUIC-RFC9000-S3P5-0003`, `REQ-QUIC-RFC9000-S3P5-0004`, `REQ-QUIC-RFC9000-S3P5-0005`, `RFC9000-S3-5-P4-S3-R01`, `RFC9000-S3-5-P4-S4-R01`, `REQ-QUIC-RFC9000-S3P5-0008`, `RFC9000-S3-5-P5-S2-R01`, `RFC9000-S3-5-P6-S1-R01`, `REQ-QUIC-RFC9000-S3P5-0011`, `REQ-QUIC-RFC9000-S3P5-0012`, `REQ-QUIC-RFC9000-S3P5-0013`
 
 ## Existing Implementation Evidence
 
@@ -105,15 +105,15 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0002.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P4-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0001.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0002.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P2-S1-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0004.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0005.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0006.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0007.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S4-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0008.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0009.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0152.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P6-S1-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0011.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0012.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P5-0013.cs`

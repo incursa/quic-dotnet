@@ -14,15 +14,15 @@
     "VER-QUIC-RFC9000-0088"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S13-0002",
-    "REQ-QUIC-RFC9000-S13P2P7-0001"
+    "RFC9000-S13-P2-S2-R01",
+    "RFC9000-S13-2-7-P1-S3-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P7-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-P2-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-7-P1-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13ApplicationSendDelayTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS13AckPiggybackTestSupport.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs"
@@ -45,7 +45,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused S13 periodic ACK-probe scheduling gap for REQ-QUIC-RFC9000-S13-0002 and REQ-QUIC-RFC9000-S13P2P7-0001 only. It keeps broader packet-composition completeness, PMTU behavior, candidate-path scheduling, and hosted interop readiness out of scope."
+      "content": "This design closes the focused S13 periodic ACK-probe scheduling gap for RFC9000-S13-P2-S2-R01 and RFC9000-S13-2-7-P1-S3-R01 only. It keeps broader packet-composition completeness, PMTU behavior, candidate-path scheduling, and hosted interop readiness out of scope."
     }
   ]
 }

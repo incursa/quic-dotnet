@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S4P6 requirement-home tests over stream-limit local opens, inbound STREAM_LIMIT_ERROR handling, and blocked-open STREAMS_BLOCKED frame production, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0200",
+    "RFC9000-S4-6-P3-R01",
     "REQ-QUIC-RFC9000-0201",
     "REQ-QUIC-RFC9000-0203"
   ],
@@ -35,7 +35,7 @@
     "src/Incursa.Quic/QuicConnectionStreamState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0200.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0201.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0203.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P14-0001.cs",
@@ -52,5 +52,5 @@
       "content": "This verification does not claim automatic stream-limit autotuning, public stream API widening, broader stream-management parity, hosted interop readiness, or closure of the deferred S4P6-0009 fuzz expectation."
     }
   ],
-  "status_summary": "Passed locally on 2026-05-06. The focused S4P6 filter passed 11/11, the Release build passed with 0 warnings and 0 errors, regenerated coverage triage marks REQ-QUIC-RFC9000-0200, REQ-QUIC-RFC9000-0201, and REQ-QUIC-RFC9000-0203 trace_clean and reports 1,299 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 472 artifacts, the full Release no-build suite passed 4,550/4,550, and git diff --check returned exit code 0 with line-ending warnings only."
+  "status_summary": "Passed locally on 2026-05-06. The focused S4P6 filter passed 11/11, the Release build passed with 0 warnings and 0 errors, regenerated coverage triage marks RFC9000-S4-6-P3-R01, REQ-QUIC-RFC9000-0201, and REQ-QUIC-RFC9000-0203 trace_clean and reports 1,299 of 1,771 QUIC requirements trace-clean overall, core SpecTrace JSON validation passed for 472 artifacts, the full Release no-build suite passed 4,550/4,550, and git diff --check returned exit code 0 with line-ending warnings only."
 }

@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S5P1P1-0012")]
+[Requirement("RFC9000-S5-1-1-P4-S3-R01")]
 public sealed class REQ_QUIC_RFC9000_S5P1P1_0012
 {
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0012">An endpoint MUST NOT provide more connection IDs than the peer's limit.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P4-S3-R01">An endpoint MUST NOT provide more connection IDs than the peer's limit.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0012")]
+    [Requirement("RFC9000-S5-1-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ConnectionIdIssuedEvent_AllowsOneAdditionalConnectionIdAtTheDefaultPeerLimit()
@@ -32,9 +32,9 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0012
 
     [Fact]
     /// <workbench-requirements generated="true" source="manual">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1P1-0012">An endpoint MUST NOT provide more connection IDs than the peer's limit.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P4-S3-R01">An endpoint MUST NOT provide more connection IDs than the peer's limit.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S5P1P1-0012")]
+    [Requirement("RFC9000-S5-1-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ConnectionIdIssuedEvent_RejectsAnAdditionalConnectionIdThatWouldExceedTheDefaultPeerLimit()

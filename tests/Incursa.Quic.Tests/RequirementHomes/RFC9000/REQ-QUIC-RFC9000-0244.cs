@@ -11,8 +11,8 @@ public sealed class REQ_QUIC_RFC9000_0244
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0244">Endpoints MUST limit the use of a connection ID to packets sent from a single local address to a single destination address.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-0244")]
-    [Requirement("REQ-QUIC-RFC9000-0515")]
-    [Requirement("REQ-QUIC-RFC9000-S9P5-0003")]
+    [Requirement("RFC9000-S9-5-P3-R01")]
+    [Requirement("RFC9000-S9-5-P4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ValidatedMigrationUsesANewPeerConnectionIdForTheNewAddressPair()
@@ -81,8 +81,8 @@ public sealed class REQ_QUIC_RFC9000_0244
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-0515")]
-    [Requirement("REQ-QUIC-RFC9000-S9P5-0003")]
+    [Requirement("RFC9000-S9-5-P3-R01")]
+    [Requirement("RFC9000-S9-5-P4-R01")]
     public async Task ValidatedMigrationUsesAMaximumLengthPeerConnectionIdOnTheNewAddressPair()
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();

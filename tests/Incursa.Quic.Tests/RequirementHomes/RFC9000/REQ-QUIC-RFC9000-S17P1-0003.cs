@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P1-0003">After an acknowledgment is received for a packet number space, the sender MUST use a packet number size able to represent more than twice as large a range as the difference between the largest acknowledged packet number and the packet number being sent.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-1-P4-R01">After an acknowledgment is received for a packet number space, the sender MUST use a packet number size able to represent more than twice as large a range as the difference between the largest acknowledged packet number and the packet number being sent.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P1-0003")]
+[Requirement("RFC9000-S17-1-P4-R01")]
 public sealed class REQ_QUIC_RFC9000_S17P1_0003
 {
     [Fact]

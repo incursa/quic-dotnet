@@ -5,7 +5,7 @@ using System.Net;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0532")]
+[Requirement("RFC9000-S9-6-2-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0532
 {
     private static readonly QuicConnectionPathIdentity OriginalPath = new("203.0.113.90", RemotePort: 443);
@@ -17,7 +17,7 @@ public sealed class REQ_QUIC_RFC9000_0532
     private static readonly QuicConnectionPathIdentity PreferredPath = new(new IPAddress(PreferredIpv4Address).ToString(), RemotePort: 9443);
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0532")]
+    [Requirement("RFC9000-S9-6-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerProbesThePreferredAddressPathWithAPathChallengeFrame()
@@ -46,7 +46,7 @@ public sealed class REQ_QUIC_RFC9000_0532
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0532")]
+    [Requirement("RFC9000-S9-6-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ServerStopsProbingThePreferredAddressPathAfterValidationCompletes()

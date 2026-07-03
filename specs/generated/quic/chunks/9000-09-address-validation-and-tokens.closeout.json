@@ -28,12 +28,12 @@
   "implementation_summary_file": "./specs/generated/quic/chunks/9000-09-address-validation-and-tokens.implementation-summary.json",
   "implementation_summary_alignment": {
     "spec_requirement_ids": [
-      "REQ-QUIC-RFC9000-S8-0001",
-      "REQ-QUIC-RFC9000-S8P1-0001",
-      "REQ-QUIC-RFC9000-S8P1-0002",
-      "REQ-QUIC-RFC9000-S8P1-0003",
-      "REQ-QUIC-RFC9000-0375",
-      "REQ-QUIC-RFC9000-S8P1-0005",
+      "RFC9000-S8-P2-S2-R01",
+      "RFC9000-S8-1-P2-R01",
+      "RFC9000-S8-1-P4-R01",
+      "RFC9000-S8-1-P4-S2-R01",
+      "RFC9000-S8-1-P5-R01",
+      "RFC9000-S8-1-P6-S3-R01",
       "REQ-QUIC-RFC9000-S8P1-0006",
       "REQ-QUIC-RFC9000-S8P1-0007",
       "REQ-QUIC-RFC9000-0381",
@@ -41,30 +41,30 @@
       "REQ-QUIC-RFC9000-S8P1P2-0002",
       "REQ-QUIC-RFC9000-S8P1P2-0003",
       "REQ-QUIC-RFC9000-S8P1P2-0004",
-      "REQ-QUIC-RFC9000-S8P1P3-0001",
-      "REQ-QUIC-RFC9000-S8P1P3-0002",
-      "REQ-QUIC-RFC9000-0392",
-      "REQ-QUIC-RFC9000-0393",
-      "REQ-QUIC-RFC9000-S8P1P3-0005",
-      "REQ-QUIC-RFC9000-S8P1P3-0006",
-      "REQ-QUIC-RFC9000-S8P1P3-0007",
-      "REQ-QUIC-RFC9000-S8P1P3-0008",
-      "REQ-QUIC-RFC9000-0399",
-      "REQ-QUIC-RFC9000-S8P1P3-0010",
-      "REQ-QUIC-RFC9000-0401",
+      "RFC9000-S8-1-3-P1-S1-R01",
+      "RFC9000-S8-1-3-P2-S3-R01",
+      "RFC9000-S8-1-3-P2-S4-R01",
+      "RFC9000-S8-1-3-P2-S5-R01",
+      "RFC9000-S8-1-3-P3-S2-R01",
+      "RFC9000-S8-1-3-P4-S1-R01",
+      "RFC9000-S8-1-3-P4-S3-R01",
+      "RFC9000-S8-1-3-P4-S4-R01",
+      "RFC9000-S8-1-3-P6-S2-R01",
+      "RFC9000-S8-1-3-P6-S4-R01",
+      "RFC9000-S8-1-3-P6-S5-R01",
       "REQ-QUIC-RFC9000-S8P1P3-0012",
-      "REQ-QUIC-RFC9000-S8P1P3-0013",
-      "REQ-QUIC-RFC9000-S8P1P3-0014",
-      "REQ-QUIC-RFC9000-S8P1P3-0015",
-      "REQ-QUIC-RFC9000-8135",
+      "RFC9000-S8-1-3-P8-S1-R01",
+      "RFC9000-S8-1-3-P10-S1-R01",
+      "RFC9000-S8-1-3-P10-S2-R01",
+      "RFC9000-S8-1-3-P10-S4-R01",
       "REQ-QUIC-RFC9000-S8P1P3-0017",
-      "REQ-QUIC-RFC9000-0407",
+      "RFC9000-S8-1-4-P1-S1-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0002",
-      "REQ-QUIC-RFC9000-0409",
-      "REQ-QUIC-RFC9000-0410",
+      "RFC9000-S8-1-4-P3-S2-R01",
+      "RFC9000-S8-1-4-P4-S1-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0005",
       "REQ-QUIC-RFC9000-S8P1P4-0006",
-      "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "RFC9000-S8-1-4-P5-S3-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0008",
       "REQ-QUIC-RFC9000-S8P1P4-0009",
       "REQ-QUIC-RFC9000-S8P1P4-0010",
@@ -72,12 +72,12 @@
       "REQ-QUIC-RFC9000-S8P1P4-0012"
     ],
     "summary_requirement_ids": [
-      "REQ-QUIC-RFC9000-S8-0001",
-      "REQ-QUIC-RFC9000-S8P1-0001",
-      "REQ-QUIC-RFC9000-S8P1-0002",
-      "REQ-QUIC-RFC9000-S8P1-0003",
-      "REQ-QUIC-RFC9000-0375",
-      "REQ-QUIC-RFC9000-S8P1-0005",
+      "RFC9000-S8-P2-S2-R01",
+      "RFC9000-S8-1-P2-R01",
+      "RFC9000-S8-1-P4-R01",
+      "RFC9000-S8-1-P4-S2-R01",
+      "RFC9000-S8-1-P5-R01",
+      "RFC9000-S8-1-P6-S3-R01",
       "REQ-QUIC-RFC9000-S8P1-0006",
       "REQ-QUIC-RFC9000-S8P1-0007",
       "REQ-QUIC-RFC9000-0381",
@@ -85,30 +85,30 @@
       "REQ-QUIC-RFC9000-S8P1P2-0002",
       "REQ-QUIC-RFC9000-S8P1P2-0003",
       "REQ-QUIC-RFC9000-S8P1P2-0004",
-      "REQ-QUIC-RFC9000-S8P1P3-0001",
-      "REQ-QUIC-RFC9000-S8P1P3-0002",
-      "REQ-QUIC-RFC9000-0392",
-      "REQ-QUIC-RFC9000-0393",
-      "REQ-QUIC-RFC9000-S8P1P3-0005",
-      "REQ-QUIC-RFC9000-S8P1P3-0006",
-      "REQ-QUIC-RFC9000-S8P1P3-0007",
-      "REQ-QUIC-RFC9000-S8P1P3-0008",
-      "REQ-QUIC-RFC9000-0399",
-      "REQ-QUIC-RFC9000-S8P1P3-0010",
-      "REQ-QUIC-RFC9000-0401",
+      "RFC9000-S8-1-3-P1-S1-R01",
+      "RFC9000-S8-1-3-P2-S3-R01",
+      "RFC9000-S8-1-3-P2-S4-R01",
+      "RFC9000-S8-1-3-P2-S5-R01",
+      "RFC9000-S8-1-3-P3-S2-R01",
+      "RFC9000-S8-1-3-P4-S1-R01",
+      "RFC9000-S8-1-3-P4-S3-R01",
+      "RFC9000-S8-1-3-P4-S4-R01",
+      "RFC9000-S8-1-3-P6-S2-R01",
+      "RFC9000-S8-1-3-P6-S4-R01",
+      "RFC9000-S8-1-3-P6-S5-R01",
       "REQ-QUIC-RFC9000-S8P1P3-0012",
-      "REQ-QUIC-RFC9000-S8P1P3-0013",
-      "REQ-QUIC-RFC9000-S8P1P3-0014",
-      "REQ-QUIC-RFC9000-S8P1P3-0015",
-      "REQ-QUIC-RFC9000-8135",
+      "RFC9000-S8-1-3-P8-S1-R01",
+      "RFC9000-S8-1-3-P10-S1-R01",
+      "RFC9000-S8-1-3-P10-S2-R01",
+      "RFC9000-S8-1-3-P10-S4-R01",
       "REQ-QUIC-RFC9000-S8P1P3-0017",
-      "REQ-QUIC-RFC9000-0407",
+      "RFC9000-S8-1-4-P1-S1-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0002",
-      "REQ-QUIC-RFC9000-0409",
-      "REQ-QUIC-RFC9000-0410",
+      "RFC9000-S8-1-4-P3-S2-R01",
+      "RFC9000-S8-1-4-P4-S1-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0005",
       "REQ-QUIC-RFC9000-S8P1P4-0006",
-      "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "RFC9000-S8-1-4-P5-S3-R01",
       "REQ-QUIC-RFC9000-S8P1P4-0008",
       "REQ-QUIC-RFC9000-S8P1P4-0009",
       "REQ-QUIC-RFC9000-S8P1P4-0010",
@@ -122,11 +122,11 @@
   "reference_audit": {
     "source_requirement_refs_found": [],
     "test_requirement_refs_found": [
-      "REQ-QUIC-RFC9000-S8-0001",
-      "REQ-QUIC-RFC9000-S8P1-0001",
-      "REQ-QUIC-RFC9000-S8P1-0002",
-      "REQ-QUIC-RFC9000-S8P1-0003",
-      "REQ-QUIC-RFC9000-0375"
+      "RFC9000-S8-P2-S2-R01",
+      "RFC9000-S8-1-P2-R01",
+      "RFC9000-S8-1-P4-R01",
+      "RFC9000-S8-1-P4-S2-R01",
+      "RFC9000-S8-1-P5-R01"
     ],
     "source_files_checked_for_requirement_ids": [
       "src/Incursa.Quic/QuicAddressValidation.cs",
@@ -142,7 +142,7 @@
   },
   "requirements": [
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8-0001",
+      "requirement_id": "RFC9000-S8-P2-S2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
@@ -159,7 +159,7 @@
       "notes": "The anti-amplification budget helper now enforces the three-times cap until validation, and the tests cover both the capped and post-validation paths."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0001",
+      "requirement_id": "RFC9000-S8-1-P2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAddressValidation.cs",
@@ -176,7 +176,7 @@
       "notes": "The helper implements the endpoint-chosen CID plus 64-bit structural check that this repo can express without a full entropy-analysis surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0002",
+      "requirement_id": "RFC9000-S8-1-P4-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
@@ -193,7 +193,7 @@
       "notes": "Servers are limited to three times the payload bytes counted by the helper before address validation completes."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0003",
+      "requirement_id": "RFC9000-S8-1-P4-S2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAntiAmplificationBudget.cs",
@@ -210,7 +210,7 @@
       "notes": "Only datagrams uniquely attributable to a single connection contribute to the received-byte tally."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0375",
+      "requirement_id": "RFC9000-S8-1-P5-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicAddressValidation.cs",
@@ -227,7 +227,7 @@
       "notes": "Initial datagram padding is formatted as repeated PADDING frames until the 1200-byte minimum is reached."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0005",
+      "requirement_id": "RFC9000-S8-1-P6-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -251,7 +251,7 @@
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],
       "remaining_gap": "PTO and packet-probe scheduling are not wired into any send-path or timer state, so the deadlock-avoidance probe packet cannot be emitted.",
-      "notes": "This remains blocked on the same recovery/timer machinery as REQ-QUIC-RFC9000-S8P1-0005."
+      "notes": "This remains blocked on the same recovery/timer machinery as RFC9000-S8-1-P6-S3-R01."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9000-0381",
@@ -299,7 +299,7 @@
       "notes": "This chunk still lacks the Retry-specific packet model and the state needed to carry a token across connection attempts."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0001",
+      "requirement_id": "RFC9000-S8-1-3-P1-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -308,7 +308,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0002",
+      "requirement_id": "RFC9000-S8-1-3-P2-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -317,7 +317,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0392",
+      "requirement_id": "RFC9000-S8-1-3-P2-S4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -326,7 +326,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0393",
+      "requirement_id": "RFC9000-S8-1-3-P2-S5-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -335,7 +335,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0005",
+      "requirement_id": "RFC9000-S8-1-3-P3-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -344,7 +344,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0006",
+      "requirement_id": "RFC9000-S8-1-3-P4-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -353,7 +353,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0007",
+      "requirement_id": "RFC9000-S8-1-3-P4-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -362,7 +362,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0008",
+      "requirement_id": "RFC9000-S8-1-3-P4-S4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -371,7 +371,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0399",
+      "requirement_id": "RFC9000-S8-1-3-P6-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -380,7 +380,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0010",
+      "requirement_id": "RFC9000-S8-1-3-P6-S4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -389,7 +389,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0401",
+      "requirement_id": "RFC9000-S8-1-3-P6-S5-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -407,7 +407,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0013",
+      "requirement_id": "RFC9000-S8-1-3-P8-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -416,7 +416,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0014",
+      "requirement_id": "RFC9000-S8-1-3-P10-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -425,7 +425,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P3-0015",
+      "requirement_id": "RFC9000-S8-1-3-P10-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -434,7 +434,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-8135",
+      "requirement_id": "RFC9000-S8-1-3-P10-S4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -452,7 +452,7 @@
       "notes": "All token lifecycle and validation behavior in Section 8.1.3 depends on missing connection-state and server token management infrastructure."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0407",
+      "requirement_id": "RFC9000-S8-1-4-P1-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -470,7 +470,7 @@
       "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0409",
+      "requirement_id": "RFC9000-S8-1-4-P3-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -479,7 +479,7 @@
       "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0410",
+      "requirement_id": "RFC9000-S8-1-4-P4-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -506,7 +506,7 @@
       "notes": "The repository currently has no token-generation or validation substrate that can satisfy the Section 8.1.4 security requirements."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1P4-0007",
+      "requirement_id": "RFC9000-S8-1-4-P5-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -561,7 +561,7 @@
     }
   ],
   "remaining_open_requirements": [
-    "REQ-QUIC-RFC9000-S8P1-0005",
+    "RFC9000-S8-1-P6-S3-R01",
     "REQ-QUIC-RFC9000-S8P1-0006",
     "REQ-QUIC-RFC9000-S8P1-0007",
     "REQ-QUIC-RFC9000-0381",
@@ -569,30 +569,30 @@
     "REQ-QUIC-RFC9000-S8P1P2-0002",
     "REQ-QUIC-RFC9000-S8P1P2-0003",
     "REQ-QUIC-RFC9000-S8P1P2-0004",
-    "REQ-QUIC-RFC9000-S8P1P3-0001",
-    "REQ-QUIC-RFC9000-S8P1P3-0002",
-    "REQ-QUIC-RFC9000-0392",
-    "REQ-QUIC-RFC9000-0393",
-    "REQ-QUIC-RFC9000-S8P1P3-0005",
-    "REQ-QUIC-RFC9000-S8P1P3-0006",
-    "REQ-QUIC-RFC9000-S8P1P3-0007",
-    "REQ-QUIC-RFC9000-S8P1P3-0008",
-    "REQ-QUIC-RFC9000-0399",
-    "REQ-QUIC-RFC9000-S8P1P3-0010",
-    "REQ-QUIC-RFC9000-0401",
+    "RFC9000-S8-1-3-P1-S1-R01",
+    "RFC9000-S8-1-3-P2-S3-R01",
+    "RFC9000-S8-1-3-P2-S4-R01",
+    "RFC9000-S8-1-3-P2-S5-R01",
+    "RFC9000-S8-1-3-P3-S2-R01",
+    "RFC9000-S8-1-3-P4-S1-R01",
+    "RFC9000-S8-1-3-P4-S3-R01",
+    "RFC9000-S8-1-3-P4-S4-R01",
+    "RFC9000-S8-1-3-P6-S2-R01",
+    "RFC9000-S8-1-3-P6-S4-R01",
+    "RFC9000-S8-1-3-P6-S5-R01",
     "REQ-QUIC-RFC9000-S8P1P3-0012",
-    "REQ-QUIC-RFC9000-S8P1P3-0013",
-    "REQ-QUIC-RFC9000-S8P1P3-0014",
-    "REQ-QUIC-RFC9000-S8P1P3-0015",
-    "REQ-QUIC-RFC9000-8135",
+    "RFC9000-S8-1-3-P8-S1-R01",
+    "RFC9000-S8-1-3-P10-S1-R01",
+    "RFC9000-S8-1-3-P10-S2-R01",
+    "RFC9000-S8-1-3-P10-S4-R01",
     "REQ-QUIC-RFC9000-S8P1P3-0017",
-    "REQ-QUIC-RFC9000-0407",
+    "RFC9000-S8-1-4-P1-S1-R01",
     "REQ-QUIC-RFC9000-S8P1P4-0002",
-    "REQ-QUIC-RFC9000-0409",
-    "REQ-QUIC-RFC9000-0410",
+    "RFC9000-S8-1-4-P3-S2-R01",
+    "RFC9000-S8-1-4-P4-S1-R01",
     "REQ-QUIC-RFC9000-S8P1P4-0005",
     "REQ-QUIC-RFC9000-S8P1P4-0006",
-    "REQ-QUIC-RFC9000-S8P1P4-0007",
+    "RFC9000-S8-1-4-P5-S3-R01",
     "REQ-QUIC-RFC9000-S8P1P4-0008",
     "REQ-QUIC-RFC9000-S8P1P4-0009",
     "REQ-QUIC-RFC9000-S8P1P4-0010",

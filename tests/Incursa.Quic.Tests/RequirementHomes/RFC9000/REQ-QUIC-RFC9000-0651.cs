@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0651">The same stateless reset token MUST NOT be used for multiple connection IDs.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-2-P6-S1-R01">The same stateless reset token MUST NOT be used for multiple connection IDs.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0651")]
+[Requirement("RFC9000-S10-3-2-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0651
 {
     [Fact]

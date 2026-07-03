@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1052")]
+[Requirement("RFC9000-S17-2-5-3-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_1052
 {
     [Fact]
@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_1052
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-1052")]
+    [Requirement("RFC9000-S17-2-5-3-P3-R01")]
     public void ClientZeroRttPacketsDoNotUseTheRetryConnectionIdBeforeRetryIsApplied()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();
@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9000_1052
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
-    [Requirement("REQ-QUIC-RFC9000-1052")]
+    [Requirement("RFC9000-S17-2-5-3-P3-R01")]
     public void ClientZeroRttPacketsUseAMaximumLengthRetryConnectionIdAfterRetryIsApplied()
     {
         QuicHandshakeFlowCoordinator coordinator = QuicS17P2P5P2TestSupport.CreateClientCoordinator();

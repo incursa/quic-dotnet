@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-1216")]
+[Requirement("RFC9000-S19-5-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_1216
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1216")]
+    [Requirement("RFC9000-S19-5-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReceiveStopSendingFrame_RejectsUncreatedLocalStream()
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_1216
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-1216")]
+    [Requirement("RFC9000-S19-5-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveStopSendingFrame_AcceptsCreatedLocalStream()

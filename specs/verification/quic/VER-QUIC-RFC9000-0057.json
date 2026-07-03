@@ -14,8 +14,8 @@
   "verification_method": "Focused S7P2 requirement-home tests, Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, and whitespace diff checking.",
   "verifies": [
     "REQ-QUIC-RFC9000-S7P2-0004",
-    "REQ-QUIC-RFC9000-0309",
-    "REQ-QUIC-RFC9000-0310",
+    "RFC9000-S7-2-P3-S2-R01",
+    "RFC9000-S7-2-P3-S3-R01",
     "REQ-QUIC-RFC9000-S7P2-0007",
     "REQ-QUIC-RFC9000-0315"
   ],
@@ -39,8 +39,8 @@
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS7P2FirstFlightConnectionIdTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0309.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0310.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0315.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_0309|FullyQualifiedName~REQ_QUIC_RFC9000_0310|FullyQualifiedName~REQ_QUIC_RFC9000_0315\"",

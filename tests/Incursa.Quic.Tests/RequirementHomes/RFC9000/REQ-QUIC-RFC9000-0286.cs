@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0286")]
+[Requirement("RFC9000-S6-1-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_0286
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0286")]
+    [Requirement("RFC9000-S6-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ShouldSendVersionNegotiation_DoesNotSendWhenVersionIsSupportedOrResponseWasAlreadySent()
@@ -25,9 +25,9 @@ public sealed class REQ_QUIC_RFC9000_0286
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0286">A server MAY limit the number of Version Negotiation packets it sends.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S6-1-P3-R01">A server MAY limit the number of Version Negotiation packets it sends.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-0286")]
+    [Requirement("RFC9000-S6-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void ShouldSendVersionNegotiation_CanLimitRepeatedResponses()
     {

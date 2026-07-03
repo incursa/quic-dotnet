@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0407")]
+[Requirement("RFC9000-S8-1-4-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_0407
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0407")]
+    [Requirement("RFC9000-S8-1-4-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IssueNewToken_ProducesUniqueHardToGuessTokensForTheSameAddress()
@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_RFC9000_0407
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0407")]
+    [Requirement("RFC9000-S8-1-4-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ValidateNewToken_RejectsGuessedTokenBytes()

@@ -16,8 +16,8 @@
   "remaining_open_requirements": [
     "REQ-QUIC-RFC9000-S17P1-0001",
     "REQ-QUIC-RFC9000-S17P1-0002",
-    "REQ-QUIC-RFC9000-S17P1-0003",
-    "REQ-QUIC-RFC9000-0925",
+    "RFC9000-S17-1-P4-R01",
+    "RFC9000-S17-1-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P2-0010",
     "REQ-QUIC-RFC9000-S17P2-0011",
     "REQ-QUIC-RFC9000-S17P2-0022",
@@ -562,7 +562,7 @@
       "notes": "No live packet-number surface exists under src, tests, or benchmarks."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0003",
+      "requirement_id": "RFC9000-S17-1-P4-R01",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -571,7 +571,7 @@
       "notes": "No live packet-number surface exists under src, tests, or benchmarks."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0925",
+      "requirement_id": "RFC9000-S17-1-P4-S2-R01",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],

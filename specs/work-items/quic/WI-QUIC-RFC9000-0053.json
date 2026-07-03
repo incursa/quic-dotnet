@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0053"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-1299"
+    "RFC9000-S19-13-P2-R01"
   ],
   "summary": "Close the remaining RFC 9000 Section 19.13 receiver-side send-only STREAM_DATA_BLOCKED policy tail.",
   "planned_changes": "- Add focused requirement-home proof that receive-capable streams accept STREAM_DATA_BLOCKED without a transport error.\n- Keep direct stream-state proof that opened send-only streams return STREAM_STATE_ERROR.\n- Add protected runtime proof that opened and uncreated send-only stream IDs close the connection with STREAM_STATE_ERROR and triggering frame type 0x15.\n- Propagate the existing stream-state error through the protected Application Data frame loop instead of dropping it as an unclassified receive failure.\n- Link the proof to dedicated architecture, work-item, and verification artifacts.",

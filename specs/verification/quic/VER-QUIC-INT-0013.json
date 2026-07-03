@@ -38,7 +38,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0020.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0901.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S15-P7-S1-R01.cs",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/runner-report.json",
     "artifacts/interop-runner/20260512-170806170-both-quic-go/runner.stderr.log"

@@ -635,7 +635,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1208",
+      "requirement_id": "RFC9000-S19-4-P3-S1-R01",
       "section": "S19P4",
       "title": "An endpoint that receives a RESET_STREAM frame for a send-only stream MUST terminate the conn...",
       "status": "not implemented",
@@ -767,7 +767,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1216",
+      "requirement_id": "RFC9000-S19-5-P2-R01",
       "section": "S19P5",
       "title": "Receiving a STOP_SENDING frame for a locally initiated stream that has not yet been created M...",
       "status": "not implemented",
@@ -779,7 +779,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-1217",
+      "requirement_id": "RFC9000-S19-5-P2-R02",
       "section": "S19P5",
       "title": "An endpoint that receives a STOP_SENDING frame for a receive-only stream MUST terminate the c...",
       "status": "not implemented",

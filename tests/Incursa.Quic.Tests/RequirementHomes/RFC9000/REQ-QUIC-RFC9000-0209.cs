@@ -3,14 +3,14 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0209")]
+[Requirement("RFC9000-S5-1-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0209
 {
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0209">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-P4-S2-R01">The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-0209")]
+    [Requirement("RFC9000-S5-1-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseLongHeader_AllowsMaximumLengthSourceConnectionIds()
     {
@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_RFC9000_0209
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0209")]
+    [Requirement("RFC9000-S5-1-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryParseLongHeader_RejectsPacketsTruncatedAfterTheSourceConnectionId()

@@ -16,7 +16,7 @@
     "REQ-QUIC-RFC9000-S13P2-0002",
     "REQ-QUIC-RFC9000-S13P2-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0008",
-    "REQ-QUIC-RFC9000-0764"
+    "RFC9000-S13-2-1-P5-S2-R01"
   ],
   "scope": "This verification covers the supported ACK-generation behavior for processed Application Data packet numbers: non-ack-eliciting-only receipts do not independently request ACK emission, and retained non-ack-eliciting packet numbers are included in ACK ranges when a later ack-eliciting event causes ACK frame construction.",
   "expected_result": "Focused tests prove non-ack-only scheduling deferral, delayed behavior after max_ack_delay, retained non-ack packet inclusion in contiguous ACK ranges, retained inclusion across gaps, and deterministic fuzz/property samples for both surfaces. No parser, serializer, wire-format, hot-path production, loss-recovery, congestion-control, packet-builder, or public API behavior is introduced by this proof slice.",
@@ -37,7 +37,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0764.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S2-R01.cs",
     "artifacts/v/20260425-rfc9000-nonack-deferral-inclusion/focused-rfc9000-nonack-deferral-inclusion-tests.log",
     "artifacts/v/20260425-rfc9000-nonack-deferral-inclusion/render.log",
     "artifacts/v/20260425-rfc9000-nonack-deferral-inclusion/render-check.log",

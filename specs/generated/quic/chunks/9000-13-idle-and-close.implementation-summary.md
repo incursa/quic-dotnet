@@ -8,7 +8,7 @@
 - `REQ-QUIC-RFC9000-0554`
 - `REQ-QUIC-RFC9000-S10P1P1-0001`
 - `REQ-QUIC-RFC9000-S10P2P2-0001`
-- `REQ-QUIC-RFC9000-S10P2P2-0003`
+- `RFC9000-S10-2-2-P2-S2-R01`
 - `REQ-QUIC-RFC9000-S10P2P2-0005`
 
 ## Files Changed
@@ -20,7 +20,7 @@
 - `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0572.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0003.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S2-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs`
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
@@ -46,9 +46,9 @@
 - Result: `1349 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S10-0001`, `REQ-QUIC-RFC9000-0548`, `REQ-QUIC-RFC9000-S10P1-0002`, `REQ-QUIC-RFC9000-S10P1-0004`, `REQ-QUIC-RFC9000-0560`, `REQ-QUIC-RFC9000-S10P1P2-0002`, `REQ-QUIC-RFC9000-S10P2-0002`, `REQ-QUIC-RFC9000-0570` through `REQ-QUIC-RFC9000-S10P2-0012`, `REQ-QUIC-RFC9000-0576` through `REQ-QUIC-RFC9000-0575`, `REQ-QUIC-RFC9000-S10P2P2-0002`, `REQ-QUIC-RFC9000-S10P2P2-0004`, `REQ-QUIC-RFC9000-S10P2P3-0001` through `REQ-QUIC-RFC9000-S10P2P3-0013`
+- `REQ-QUIC-RFC9000-S10-0001`, `REQ-QUIC-RFC9000-0548`, `REQ-QUIC-RFC9000-S10P1-0002`, `REQ-QUIC-RFC9000-S10P1-0004`, `RFC9000-S10-1-2-P3-S1-R01`, `REQ-QUIC-RFC9000-S10P1P2-0002`, `REQ-QUIC-RFC9000-S10P2-0002`, `RFC9000-S10-2-P7-S1-R01` through `REQ-QUIC-RFC9000-S10P2-0012`, `RFC9000-S10-2-1-P3-S1-R01` through `REQ-QUIC-RFC9000-0575`, `REQ-QUIC-RFC9000-S10P2P2-0002`, `REQ-QUIC-RFC9000-S10P2P2-0004`, `REQ-QUIC-RFC9000-S10P2P3-0001` through `REQ-QUIC-RFC9000-S10P2P3-0013`
 - The helper slice now closes the idle-timeout arithmetic requirements plus the closing/draining no-send helper clauses and the peer-close draining transition, but silent close/state discard and CONNECTION_CLOSE wire emission still need the endpoint runtime.
-- `REQ-QUIC-RFC9000-0560` is intentionally left as policy guidance rather than transport behavior.
+- `RFC9000-S10-1-2-P3-S1-R01` is intentionally left as policy guidance rather than transport behavior.
 
 ## Risks or Follow-up Notes
 - The repo now has helper-level closing/draining state transitions, but no endpoint runtime to turn those flags into packet emission or discard behavior.

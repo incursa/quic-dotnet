@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P2-0001">A receiver MAY send a MAX_STREAM_DATA or MAX_DATA frame multiple times within a round trip or send it early enough to allow time for loss of the frame and subsequent recovery.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S4-2-P2-S1-R01">A receiver MAY send a MAX_STREAM_DATA or MAX_DATA frame multiple times within a round trip or send it early enough to allow time for loss of the frame and subsequent recovery.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
+[Requirement("RFC9000-S4-2-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S4P2_0001
 {
     private const ulong MaximumFlowControlLimit = QuicVariableLengthInteger.MaxValue;
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
+    [Requirement("RFC9000-S4-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryApplyMaxFrames_AllowsRepeatedCreditAdvertisements()
@@ -38,7 +38,7 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
+    [Requirement("RFC9000-S4-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryApplyMaxFrames_IgnoresRepeatedCreditAdvertisementsThatDoNotIncreaseTheLimit()
@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P2-0001")]
+    [Requirement("RFC9000-S4-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryApplyMaxFrames_AllowsMaximumRepresentableCreditAdvertisements()

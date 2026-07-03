@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0764">When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P5-S2-R01">When only non-ack-eliciting packets need to be acknowledged, an endpoint MAY choose not to send an ACK frame with outgoing frames until an ack-eliciting packet has been received.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0764")]
+[Requirement("RFC9000-S13-2-1-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0764
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0764")]
+    [Requirement("RFC9000-S13-2-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ShouldIncludeAckFrameWithOutgoingPacket_AllowsAckAfterAckElicitingPacketArrives()
