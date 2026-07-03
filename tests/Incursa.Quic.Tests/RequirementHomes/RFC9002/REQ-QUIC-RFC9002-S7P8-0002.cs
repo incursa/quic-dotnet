@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P8-0002">A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-8-P2-S2-R01">A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P8-0002")]
+[Requirement("RFC9002-S7-8-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P8_0002
 {
     [Fact]

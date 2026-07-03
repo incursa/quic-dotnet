@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0002">An endpoint MAY send up to two full-sized datagrams containing ack-eliciting packets to avoid an expensive consecutive PTO expiration due to a single lost datagram or to transmit data from multiple packet number spaces.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P1-S1-R01">An endpoint MAY send up to two full-sized datagrams containing ack-eliciting packets to avoid an expensive consecutive PTO expiration due to a single lost datagram or to transmit data from multiple packet number spaces.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0002")]
+[Requirement("RFC9002-S6-2-4-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0002
 {
     [Fact]

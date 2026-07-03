@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2P1-0005">When the PTO fires, the client MUST send a Handshake packet if it has Handshake keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-2-1-P3-S3-R01">When the PTO fires, the client MUST send a Handshake packet if it has Handshake keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P2P1-0005")]
+[Requirement("RFC9002-S6-2-2-1-P3-S3-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0005
 {
     [Fact]

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P3P3-0002">A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-3-3-P2-S1-R01">A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P3P3-0002")]
+[Requirement("RFC9002-S7-3-3-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P3P3_0002
 {
     [Theory]

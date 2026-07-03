@@ -6,28 +6,28 @@
     "REQ-QUIC-RFC9002-S7-0003",
     "REQ-QUIC-RFC9002-S7-0004",
     "REQ-QUIC-RFC9002-S7-0005",
-    "REQ-QUIC-RFC9002-S7-0006",
+    "RFC9002-S7-P7-S1-R01",
     "REQ-QUIC-RFC9002-S7P1-0001",
     "REQ-QUIC-RFC9002-S7P2-0001",
     "REQ-QUIC-RFC9002-S7P2-0002",
-    "REQ-QUIC-RFC9002-S7P2-0003",
-    "REQ-QUIC-RFC9002-S7P2-0004",
+    "RFC9002-S7-2-P2-S1-R01",
+    "RFC9002-S7-2-P2-S2-R01",
     "REQ-QUIC-RFC9002-S7P2-0005",
     "REQ-QUIC-RFC9002-S7P3P1-0001",
     "REQ-QUIC-RFC9002-S7P3P1-0002",
     "REQ-QUIC-RFC9002-S7P3P1-0003",
     "REQ-QUIC-RFC9002-S7P3P2-0001",
     "REQ-QUIC-RFC9002-S7P3P2-0002",
-    "REQ-QUIC-RFC9002-S7P3P2-0003",
-    "REQ-QUIC-RFC9002-S7P3P2-0004",
-    "REQ-QUIC-RFC9002-S7P3P2-0005",
+    "RFC9002-S7-3-2-P2-S1-R01",
+    "RFC9002-S7-3-2-P2-S2-R01",
+    "RFC9002-S7-3-2-P3-S1-R01",
     "REQ-QUIC-RFC9002-S7P3P2-0006",
     "REQ-QUIC-RFC9002-S7P3P2-0007",
     "REQ-QUIC-RFC9002-S7P3P3-0001",
-    "REQ-QUIC-RFC9002-S7P3P3-0002",
-    "REQ-QUIC-RFC9002-S7P4-0001",
-    "REQ-QUIC-RFC9002-S7P4-0002",
-    "REQ-QUIC-RFC9002-S7P5-0001",
+    "RFC9002-S7-3-3-P2-S1-R01",
+    "RFC9002-S7-4-P1-S3-R01",
+    "RFC9002-S7-4-P1-S4-R01",
+    "RFC9002-S7-5-P1-S1-R01",
     "REQ-QUIC-RFC9002-S7P5-0002",
     "REQ-QUIC-RFC9002-S7P6-0001",
     "REQ-QUIC-RFC9002-S7P6P1-0001",
@@ -39,14 +39,14 @@
     "REQ-QUIC-RFC9002-S7P6P2-0004",
     "REQ-QUIC-RFC9002-S7P6P2-0005",
     "REQ-QUIC-RFC9002-S7P6P2-0006",
-    "REQ-QUIC-RFC9002-S7P7-0001",
-    "REQ-QUIC-RFC9002-S7P7-0002",
+    "RFC9002-S7-7-P1-S1-R01",
+    "RFC9002-S7-7-P2-S2-R01",
     "REQ-QUIC-RFC9002-S7P7-0003",
     "REQ-QUIC-RFC9002-S7P7-0004",
     "REQ-QUIC-RFC9002-S7P7-0005",
     "REQ-QUIC-RFC9002-S7P8-0001",
-    "REQ-QUIC-RFC9002-S7P8-0002",
-    "REQ-QUIC-RFC9002-S7P8-0003"
+    "RFC9002-S7-8-P2-S2-R01",
+    "RFC9002-S7-8-P3-S1-R01"
   ],
   "completion_status": "completed_with_deferred_items",
   "files_changed": [
@@ -64,8 +64,8 @@
         "REQ-QUIC-RFC9002-S7-0002",
         "REQ-QUIC-RFC9002-S7-0003",
         "REQ-QUIC-RFC9002-S7-0004",
-        "REQ-QUIC-RFC9002-S7-0006",
-        "REQ-QUIC-RFC9002-S7P5-0001",
+        "RFC9002-S7-P7-S1-R01",
+        "RFC9002-S7-5-P1-S1-R01",
         "REQ-QUIC-RFC9002-S7P5-0002"
       ],
       "test": "CanSendAndRegisterPacketSent_TreatAckOnlyPacketsAsFreeButCountProbesAsFlight"
@@ -79,28 +79,28 @@
         "REQ-QUIC-RFC9002-S7P3P1-0003",
         "REQ-QUIC-RFC9002-S7P3P2-0001",
         "REQ-QUIC-RFC9002-S7P3P2-0002",
-        "REQ-QUIC-RFC9002-S7P3P2-0003",
-        "REQ-QUIC-RFC9002-S7P3P2-0004",
-        "REQ-QUIC-RFC9002-S7P3P2-0005",
+        "RFC9002-S7-3-2-P2-S1-R01",
+        "RFC9002-S7-3-2-P2-S2-R01",
+        "RFC9002-S7-3-2-P3-S1-R01",
         "REQ-QUIC-RFC9002-S7P3P2-0006",
         "REQ-QUIC-RFC9002-S7P3P2-0007",
         "REQ-QUIC-RFC9002-S7P3P3-0001",
-        "REQ-QUIC-RFC9002-S7P3P3-0002",
-        "REQ-QUIC-RFC9002-S7P4-0001",
-        "REQ-QUIC-RFC9002-S7P4-0002"
+        "RFC9002-S7-3-3-P2-S1-R01",
+        "RFC9002-S7-4-P1-S3-R01",
+        "RFC9002-S7-4-P1-S4-R01"
       ],
       "test": "TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals"
     },
     {
       "requirement_ids": [
         "REQ-QUIC-RFC9002-S7-0001",
-        "REQ-QUIC-RFC9002-S7P7-0001",
-        "REQ-QUIC-RFC9002-S7P7-0002",
+        "RFC9002-S7-7-P1-S1-R01",
+        "RFC9002-S7-7-P2-S2-R01",
         "REQ-QUIC-RFC9002-S7P7-0003",
         "REQ-QUIC-RFC9002-S7P7-0004",
         "REQ-QUIC-RFC9002-S7P7-0005",
-        "REQ-QUIC-RFC9002-S7P8-0002",
-        "REQ-QUIC-RFC9002-S7P8-0003"
+        "RFC9002-S7-8-P2-S2-R01",
+        "RFC9002-S7-8-P3-S1-R01"
       ],
       "test": "TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers"
     },
@@ -178,8 +178,8 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9002-S7P2-0001",
         "REQ-QUIC-RFC9002-S7P2-0002",
-        "REQ-QUIC-RFC9002-S7P2-0003",
-        "REQ-QUIC-RFC9002-S7P2-0004",
+        "RFC9002-S7-2-P2-S1-R01",
+        "RFC9002-S7-2-P2-S2-R01",
         "REQ-QUIC-RFC9002-S7P2-0005",
         "REQ-QUIC-RFC9002-S7-0005"
       ],
@@ -187,8 +187,8 @@
     },
     {
       "requirement_ids": [
-        "REQ-QUIC-RFC9002-S7P2-0003",
-        "REQ-QUIC-RFC9002-S7P2-0004"
+        "RFC9002-S7-2-P2-S1-R01",
+        "RFC9002-S7-2-P2-S2-R01"
       ],
       "test": "ComputeInitialWindowAndResetToInitialWindow_FollowTheDatagramSize"
     }
@@ -203,11 +203,11 @@
       "reason": "No alternate-controller or RFC 8085 send-policy surface exists yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "requirement_id": "RFC9002-S7-7-P1-S1-R01",
       "reason": "The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "requirement_id": "RFC9002-S7-7-P2-S2-R01",
       "reason": "Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration."
     },
     {
@@ -223,7 +223,7 @@
       "reason": "The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "requirement_id": "RFC9002-S7-8-P2-S2-R01",
       "reason": "Application-limited classification due to pacing delay is a sender-state concern that is not represented yet."
     }
   ],

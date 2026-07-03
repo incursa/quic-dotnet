@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P2-0007">Implementations SHOULD NOT refresh the min_rtt value too often.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-2-P6-S2-R01">Implementations SHOULD NOT refresh the min_rtt value too often.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S5P2-0007")]
+[Requirement("RFC9002-S5-2-P6-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S5P2_0007
 {
     [Fact]

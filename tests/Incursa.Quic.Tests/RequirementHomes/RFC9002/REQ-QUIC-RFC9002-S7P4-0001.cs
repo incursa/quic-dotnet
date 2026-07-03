@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P4-0001">Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-4-P1-S3-R01">Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P4-0001")]
+[Requirement("RFC9002-S7-4-P1-S3-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P4_0001
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S7P4-0002")]
+    [Requirement("RFC9002-S7-4-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [CoverageType(RequirementCoverageType.Edge)]
     public void TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable()

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P8-0003">A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-8-P3-S1-R01">A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P8-0003")]
+[Requirement("RFC9002-S7-8-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P8_0003
 {
     [Fact]

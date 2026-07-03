@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P7-0001">A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-7-P1-S1-R01">A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P7-0001")]
+[Requirement("RFC9002-S7-7-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P7_0001
 {
     [Fact]
@@ -28,8 +28,8 @@ public sealed class REQ_QUIC_RFC9002_S7P7_0001
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [Requirement("REQ-QUIC-RFC9002-S7-0001")]
-    [Requirement("REQ-QUIC-RFC9002-S7P7-0001")]
-    [Requirement("REQ-QUIC-RFC9002-S7P7-0002")]
+    [Requirement("RFC9002-S7-7-P1-S1-R01")]
+    [Requirement("RFC9002-S7-7-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9002-S7P7-0003")]
     [Requirement("REQ-QUIC-RFC9002-S7P7-0004")]
     [Requirement("REQ-QUIC-RFC9002-S7P7-0005")]

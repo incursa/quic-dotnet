@@ -636,7 +636,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0001",
+      "requirement_id": "RFC9002-S5-2-P2-S1-R01",
       "title": "Initialize min_rtt from the first sample",
       "source_batches": [
         "5-8"
@@ -659,7 +659,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0002",
+      "requirement_id": "RFC9002-S5-2-P2-S2-R01",
       "title": "Update min_rtt on later samples",
       "source_batches": [
         "5-8"
@@ -728,7 +728,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0005",
+      "requirement_id": "RFC9002-S5-2-P5-S1-R01",
       "title": "Refresh min_rtt after persistent congestion",
       "source_batches": [
         "5-8"
@@ -751,7 +751,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0006",
+      "requirement_id": "RFC9002-S5-2-P6-S1-R01",
       "title": "Allow opportunistic min_rtt reestablishment",
       "source_batches": [
         "5-8"
@@ -774,7 +774,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "requirement_id": "RFC9002-S5-2-P6-S2-R01",
       "title": "Avoid over-refreshing min_rtt",
       "source_batches": [
         "5-8"
@@ -820,7 +820,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0002",
+      "requirement_id": "RFC9002-S5-3-P3-S2-R01",
       "title": "Ignore max_ack_delay before handshake confirmation",
       "source_batches": [
         "5-8"
@@ -847,7 +847,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0003",
+      "requirement_id": "RFC9002-S5-3-P4-S2-R01",
       "title": "Allow dropping some adjusted samples",
       "source_batches": [
         "5-8"
@@ -1225,7 +1225,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "requirement_id": "RFC9002-S6-1-2-P1-S2-R01",
       "title": "Bound the time threshold by timer granularity",
       "source_batches": [
         "5-8"
@@ -1413,7 +1413,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0003",
+      "requirement_id": "RFC9002-S6-2-P3-S1-R01",
       "title": "Do not infer loss from PTO expiration",
       "source_batches": [
         "5-8"
@@ -1670,7 +1670,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "requirement_id": "RFC9002-S6-2-2-P1-S1-R01",
       "title": "Reuse prior-smoothed RTT on resumed connections",
       "source_batches": [
         "5-8"
@@ -1693,7 +1693,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "requirement_id": "RFC9002-S6-2-2-P1-S2-R01",
       "title": "Default initial RTT to 333 milliseconds",
       "source_batches": [
         "5-8"
@@ -1716,7 +1716,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "requirement_id": "RFC9002-S6-2-2-P2-S1-R01",
       "title": "Use PATH_CHALLENGE and PATH_RESPONSE timing for initial RTT",
       "source_batches": [
         "5-8"
@@ -1739,7 +1739,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "requirement_id": "RFC9002-S6-2-2-P2-S1-R02",
       "title": "Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample",
       "source_batches": [
         "5-8"
@@ -1762,7 +1762,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "requirement_id": "RFC9002-S6-2-2-P3-S2-R01",
       "title": "Reset timers when keys are discarded",
       "source_batches": [
         "5-8"
@@ -1785,7 +1785,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "requirement_id": "RFC9002-S6-2-2-1-P1-S2-R01",
       "title": "Delay server PTO until address validation traffic arrives",
       "source_batches": [
         "5-8"
@@ -1854,7 +1854,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S2-R01",
       "title": "Arm the client PTO before handshake confirmation",
       "source_batches": [
         "5-8"
@@ -1877,7 +1877,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R01",
       "title": "Send Handshake probes when keys are available",
       "source_batches": [
         "5-8"
@@ -1946,7 +1946,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "requirement_id": "RFC9002-S6-2-4-P1-R01",
       "title": "Probe with at least one ack-eliciting packet",
       "source_batches": [
         "5-8"
@@ -1969,7 +1969,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "requirement_id": "RFC9002-S6-2-4-P1-S1-R01",
       "title": "Allow two full-sized PTO datagrams",
       "source_batches": [
         "5-8"
@@ -1992,7 +1992,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "requirement_id": "RFC9002-S6-2-4-P1-S2-R01",
       "title": "Keep PTO probe packets ack-eliciting",
       "source_batches": [
         "5-8"
@@ -2015,7 +2015,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "requirement_id": "RFC9002-S6-2-4-P2-R01",
       "title": "Use other packet number spaces for PTO probes",
       "source_batches": [
         "5-8"
@@ -2038,7 +2038,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "requirement_id": "RFC9002-S6-2-4-P4-R01",
       "title": "Include new data in PTO probes",
       "source_batches": [
         "5-8"
@@ -2061,7 +2061,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "requirement_id": "RFC9002-S6-2-4-P4-S1-R01",
       "title": "Allow previously sent data in PTO probes",
       "source_batches": [
         "5-8"
@@ -2084,7 +2084,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "requirement_id": "RFC9002-S6-2-4-P4-S2-R01",
       "title": "Allow alternative probe-content strategies",
       "source_batches": [
         "5-8"
@@ -2107,7 +2107,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "requirement_id": "RFC9002-S6-2-4-P5-S2-R01",
       "title": "Send a PING when no probe data exists",
       "source_batches": [
         "5-8"
@@ -2222,7 +2222,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0004",
+      "requirement_id": "RFC9002-S6-3-P3-S1-R01",
       "title": "Permit RTT estimation from Retry timing",
       "source_batches": [
         "5-8"
@@ -2245,7 +2245,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0005",
+      "requirement_id": "RFC9002-S6-3-P3-S2-R01",
       "title": "Allow using Retry-derived RTT as the initial RTT",
       "source_batches": [
         "5-8"
@@ -2291,7 +2291,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0002",
+      "requirement_id": "RFC9002-S6-4-P1-S1-R02",
       "title": "Remove discarded packets from bytes in flight",
       "source_batches": [
         "5-8"
@@ -2475,7 +2475,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7-0006",
+      "requirement_id": "RFC9002-S7-P7-S1-R01",
       "title": "Respect the bytes-in-flight ceiling",
       "source_batches": [
         "5-8"
@@ -2567,7 +2567,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0003",
+      "requirement_id": "RFC9002-S7-2-P2-S1-R01",
       "title": "Recompute the initial window when datagram size changes",
       "source_batches": [
         "5-8"
@@ -2590,7 +2590,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P2-0004",
+      "requirement_id": "RFC9002-S7-2-P2-S2-R01",
       "title": "Reset the initial window after handshake-driven MTU reduction",
       "source_batches": [
         "5-8"
@@ -2759,7 +2759,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "requirement_id": "RFC9002-S7-3-2-P2-S1-R01",
       "title": "Cut the slow start threshold on recovery entry",
       "source_batches": [
         "5-8"
@@ -2782,7 +2782,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "requirement_id": "RFC9002-S7-3-2-P2-S2-R01",
       "title": "Restore congestion window before leaving recovery",
       "source_batches": [
         "5-8"
@@ -2805,7 +2805,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "requirement_id": "RFC9002-S7-3-2-P3-S1-R01",
       "title": "Permit gentler recovery-window reduction",
       "source_batches": [
         "5-8"
@@ -2897,7 +2897,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "requirement_id": "RFC9002-S7-3-3-P2-S1-R01",
       "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
       "source_batches": [
         "5-8"
@@ -2920,7 +2920,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0001",
+      "requirement_id": "RFC9002-S7-4-P1-S3-R01",
       "title": "Ignore undecryptable packet loss before keys are available",
       "source_batches": [
         "5-8"
@@ -2943,7 +2943,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P4-0002",
+      "requirement_id": "RFC9002-S7-4-P1-S4-R01",
       "title": "Do not ignore later packet loss",
       "source_batches": [
         "5-8"
@@ -2966,7 +2966,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P5-0001",
+      "requirement_id": "RFC9002-S7-5-P1-S1-R01",
       "title": "Do not block probe packets with congestion control",
       "source_batches": [
         "5-8"
@@ -3250,7 +3250,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "requirement_id": "RFC9002-S7-7-P1-S1-R01",
       "title": "Pace all in-flight packets",
       "source_batches": [
         "5-8"
@@ -3273,7 +3273,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "requirement_id": "RFC9002-S7-7-P2-S2-R01",
       "title": "Either pace or cap bursts",
       "source_batches": [
         "5-8"
@@ -3388,7 +3388,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "requirement_id": "RFC9002-S7-8-P2-S2-R01",
       "title": "Do not call yourself application-limited because of pacing delay",
       "source_batches": [
         "5-8"
@@ -3411,7 +3411,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P8-0003",
+      "requirement_id": "RFC9002-S7-8-P3-S1-R01",
       "title": "Allow alternate cwnd-updating mechanisms after underutilization",
       "source_batches": [
         "5-8"

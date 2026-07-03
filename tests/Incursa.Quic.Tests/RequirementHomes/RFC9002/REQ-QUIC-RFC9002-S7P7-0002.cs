@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P7-0002">Senders MUST either use pacing or limit such bursts.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-7-P2-S2-R01">Senders MUST either use pacing or limit such bursts.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P7-0002")]
+[Requirement("RFC9002-S7-7-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P7_0002
 {
     [Fact]

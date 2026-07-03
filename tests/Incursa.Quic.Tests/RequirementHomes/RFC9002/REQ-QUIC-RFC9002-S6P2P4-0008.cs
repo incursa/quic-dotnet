@@ -6,9 +6,9 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0008">When there is no data to send, the sender SHOULD send a PING or other ack-eliciting frame in a single packet, rearming the PTO timer.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P5-S2-R01">When there is no data to send, the sender SHOULD send a PING or other ack-eliciting frame in a single packet, rearming the PTO timer.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0008")]
+[Requirement("RFC9002-S6-2-4-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0008
 {
     [Fact]

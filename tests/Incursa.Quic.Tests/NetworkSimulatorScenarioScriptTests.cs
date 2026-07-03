@@ -63,7 +63,7 @@ public sealed class NetworkSimulatorScenarioScriptTests
             "--delay=15ms --bandwidth=10Mbps --queue=25 --drops_to_client=4,8 --drops_to_server=6",
             GetPlanValue(output, "Parameters"));
         Assert.Equal(
-            "REQ-QUIC-RFC9002-S3-0009,REQ-QUIC-RFC9002-S3-0010,REQ-QUIC-RFC9002-S6P2-0001,REQ-QUIC-RFC9002-S6P2P4-0001,REQ-QUIC-RFC9002-S6P2P4-0003",
+            "REQ-QUIC-RFC9002-S3-0009,REQ-QUIC-RFC9002-S3-0010,REQ-QUIC-RFC9002-S6P2-0001,RFC9002-S6-2-4-P1-R01,RFC9002-S6-2-4-P1-S2-R01",
             GetPlanValue(output, "Mapped requirements"));
         Assert.Contains("bottleneck-link IP packet indexes", GetPlanValue(output, "Expected observable behavior"), StringComparison.OrdinalIgnoreCase);
         Assert.Contains("droplist --delay=15ms", GetPlanValue(output, "Simulator command"), StringComparison.OrdinalIgnoreCase);

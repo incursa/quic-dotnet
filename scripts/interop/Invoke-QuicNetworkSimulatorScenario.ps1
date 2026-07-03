@@ -133,8 +133,8 @@ function New-ScenarioDefinition {
             "REQ-QUIC-RFC9002-S3-0009",
             "REQ-QUIC-RFC9002-S3-0010",
             "REQ-QUIC-RFC9002-S6P2-0001",
-            "REQ-QUIC-RFC9002-S6P2P4-0001",
-            "REQ-QUIC-RFC9002-S6P2P4-0003"
+            "RFC9002-S6-2-4-P1-R01",
+            "RFC9002-S6-2-4-P1-S2-R01"
         )
         expected_observable_behavior = "Reliable data is acknowledged or declared lost, retransmitted in a new ack-eliciting packet, and the bounded transfer completes. Droplist indexes are bottleneck-link IP packet indexes, not QUIC packet numbers."
         evidence_required = @(

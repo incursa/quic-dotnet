@@ -11,9 +11,9 @@
   "artifact_id": "VER-QUIC-RFC9002-0002",
   "verifies": [
     "REQ-QUIC-RFC9002-S6-0001",
-    "REQ-QUIC-RFC9002-S6P2P2-0005",
+    "RFC9002-S6-2-2-P3-S2-R01",
     "REQ-QUIC-RFC9002-S6P4-0001",
-    "REQ-QUIC-RFC9002-S6P4-0002",
+    "RFC9002-S6-4-P1-S1-R02",
     "REQ-QUIC-RFC9002-S6P4-0003",
     "REQ-QUIC-RFC9002-S6P4-0004",
     "REQ-QUIC-RFC9002-SAP11-0003",
@@ -33,9 +33,9 @@
   "scope": "This design covers the RFC 9002 recovery slice, including ACK processing, transport-parameter inputs, timer behavior, and the recovery contracts that sit on top of the transport layer.\nIt does not duplicate RFC 9000 transport framing or RFC 9001 TLS packet-protection behavior.",
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP11-0003.cs",

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P4-0002">Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-4-P1-S4-R01">Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P4-0002")]
+[Requirement("RFC9002-S7-4-P1-S4-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P4_0002
 {
     [Fact]

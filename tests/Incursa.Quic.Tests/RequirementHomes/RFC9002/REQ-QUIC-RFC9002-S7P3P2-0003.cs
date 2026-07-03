@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P3P2-0003">On entering a recovery period, a sender MUST set the slow start threshold to half the congestion window when loss is detected.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-3-2-P2-S1-R01">On entering a recovery period, a sender MUST set the slow start threshold to half the congestion window when loss is detected.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P3P2-0003")]
+[Requirement("RFC9002-S7-3-2-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P3P2_0003
 {
     [Fact]

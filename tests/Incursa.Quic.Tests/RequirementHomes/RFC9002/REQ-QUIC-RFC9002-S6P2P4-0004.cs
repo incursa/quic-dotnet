@@ -6,9 +6,9 @@ using System.Text;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0004">In addition to sending data in the packet number space for which the timer expired, the sender SHOULD send ack-eliciting packets from other packet number spaces with in-flight data, coalescing packets if possible.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P2-R01">In addition to sending data in the packet number space for which the timer expired, the sender SHOULD send ack-eliciting packets from other packet number spaces with in-flight data, coalescing packets if possible.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0004")]
+[Requirement("RFC9002-S6-2-4-P2-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
 {
     private static readonly byte[] ApplicationPacketConnectionId =
@@ -1113,7 +1113,7 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
         // The confirmed client opened stream 0, logged that it sent "GET /clean-blue-chef\r\n",
         // and still had outstanding Initial and Handshake packets in flight. Even after
         // HANDSHAKE_DONE, those older crypto packet-number spaces remain responsible for the next
-        // PTO. REQ-QUIC-RFC9002-S6P2P4-0004 still expects the sender to use the remaining probe
+        // PTO. RFC9002-S6-2-4-P2-R01 still expects the sender to use the remaining probe
         // budget for other spaces with in-flight data, so the probe event must keep the crypto
         // repair present while also repairing the 1-RTT request stream.
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();

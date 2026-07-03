@@ -9,8 +9,8 @@
 ## Requirements Completed
 - `S5`: `REQ-QUIC-RFC9002-S5-0001`
 - `S5P1`: `REQ-QUIC-RFC9002-S5P1-0001`, `REQ-QUIC-RFC9002-S5P1-0002`, `REQ-QUIC-RFC9002-S5P1-0003`, `REQ-QUIC-RFC9002-S5P1-0004`, `REQ-QUIC-RFC9002-S5P1-0005`
-- `S5P2`: `REQ-QUIC-RFC9002-S5P2-0001`, `REQ-QUIC-RFC9002-S5P2-0002`, `REQ-QUIC-RFC9002-S5P2-0003`, `REQ-QUIC-RFC9002-S5P2-0004`, `REQ-QUIC-RFC9002-S5P2-0005`, `REQ-QUIC-RFC9002-S5P2-0006`
-- `S5P3`: `REQ-QUIC-RFC9002-S5P3-0001`, `REQ-QUIC-RFC9002-S5P3-0002`, `REQ-QUIC-RFC9002-S5P3-0003`, `REQ-QUIC-RFC9002-S5P3-0004`, `REQ-QUIC-RFC9002-S5P3-0005`, `REQ-QUIC-RFC9002-S5P3-0006`, `REQ-QUIC-RFC9002-S5P3-0007`, `REQ-QUIC-RFC9002-S5P3-0008`, `REQ-QUIC-RFC9002-S5P3-0009`, `REQ-QUIC-RFC9002-S5P3-0010`, `REQ-QUIC-RFC9002-S5P3-0011`, `REQ-QUIC-RFC9002-S5P3-0012`
+- `S5P2`: `RFC9002-S5-2-P2-S1-R01`, `RFC9002-S5-2-P2-S2-R01`, `REQ-QUIC-RFC9002-S5P2-0003`, `REQ-QUIC-RFC9002-S5P2-0004`, `RFC9002-S5-2-P5-S1-R01`, `RFC9002-S5-2-P6-S1-R01`
+- `S5P3`: `REQ-QUIC-RFC9002-S5P3-0001`, `RFC9002-S5-3-P3-S2-R01`, `RFC9002-S5-3-P4-S2-R01`, `REQ-QUIC-RFC9002-S5P3-0004`, `REQ-QUIC-RFC9002-S5P3-0005`, `REQ-QUIC-RFC9002-S5P3-0006`, `REQ-QUIC-RFC9002-S5P3-0007`, `REQ-QUIC-RFC9002-S5P3-0008`, `REQ-QUIC-RFC9002-S5P3-0009`, `REQ-QUIC-RFC9002-S5P3-0010`, `REQ-QUIC-RFC9002-S5P3-0011`, `REQ-QUIC-RFC9002-S5P3-0012`
 
 ## Files Changed
 - [benchmarks/QuicRttEstimatorBenchmarks.cs](C:/src/incursa/quic-dotnet/benchmarks/QuicRttEstimatorBenchmarks.cs)
@@ -32,7 +32,7 @@
 - `dotnet build .\\benchmarks\\Incursa.Quic.Benchmarks.csproj -c Release` - `Succeeded`
 
 ## Remaining Open Requirements in Scope
-- `REQ-QUIC-RFC9002-S5P2-0007` - intentionally deferred because refresh cadence is a higher-level policy decision and the estimator exposes a refresh hook without enforcing a global throttle.
+- `RFC9002-S5-2-P6-S2-R01` - intentionally deferred because refresh cadence is a higher-level policy decision and the estimator exposes a refresh hook without enforcing a global throttle.
 
 ## Risks or Follow-up Notes
 - The benchmark suite is compiled but was not executed in this turn.

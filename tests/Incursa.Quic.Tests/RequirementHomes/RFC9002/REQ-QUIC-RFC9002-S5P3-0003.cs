@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0003">Before handshake confirmation, an endpoint MAY ignore an RTT sample if adjusting the sample for acknowledgment delay would make it smaller than min_rtt.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-3-P4-S2-R01">Before handshake confirmation, an endpoint MAY ignore an RTT sample if adjusting the sample for acknowledgment delay would make it smaller than min_rtt.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S5P3-0003")]
+[Requirement("RFC9002-S5-3-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S5P3_0003
 {
     [Fact]

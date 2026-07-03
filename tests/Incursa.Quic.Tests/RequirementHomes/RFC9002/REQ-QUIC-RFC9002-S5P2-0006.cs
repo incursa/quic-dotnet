@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P2-0006">Endpoints MAY reestablish min_rtt at other times in the connection, such as when traffic volume is low and an acknowledgment is received with a low acknowledgment delay.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-2-P6-S1-R01">Endpoints MAY reestablish min_rtt at other times in the connection, such as when traffic volume is low and an acknowledgment is received with a low acknowledgment delay.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S5P2-0006")]
+[Requirement("RFC9002-S5-2-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S5P2_0006
 {
     [Fact]

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0003">All probe packets sent on a PTO MUST be ack-eliciting.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P1-S2-R01">All probe packets sent on a PTO MUST be ack-eliciting.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0003")]
+[Requirement("RFC9002-S6-2-4-P1-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0003
 {
     [Fact]

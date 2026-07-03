@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P3P2-0005">Implementations MAY reduce the congestion window immediately upon entering a recovery period or use other mechanisms, such as Proportional Rate Reduction, to reduce the congestion window more gradually.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-3-2-P3-S1-R01">Implementations MAY reduce the congestion window immediately upon entering a recovery period or use other mechanisms, such as Proportional Rate Reduction, to reduce the congestion window more gradually.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P3P2-0005")]
+[Requirement("RFC9002-S7-3-2-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P3P2_0005
 {
     [Theory]

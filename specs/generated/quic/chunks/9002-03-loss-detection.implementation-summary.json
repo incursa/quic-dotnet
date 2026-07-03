@@ -27,7 +27,7 @@
   "files_changed": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs",
     "specs/requirements/quic/SPEC-QUIC-RFC9002.json",
     "specs/requirements/quic/SPEC-QUIC-RFC9002.md",
     "specs/generated/quic/chunks/9002-03-loss-detection.implementation-summary.json",
@@ -62,7 +62,7 @@
       "REQ-QUIC-RFC9002-S6P1P1-0001",
       "REQ-QUIC-RFC9002-S6P1P1-0002",
       "REQ-QUIC-RFC9002-S6P1P2-0001",
-      "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "RFC9002-S6-1-2-P1-S2-R01",
       "REQ-QUIC-RFC9002-S6P1P2-0003",
       "REQ-QUIC-RFC9002-S6P1P2-0004",
       "REQ-QUIC-RFC9002-S6P1P2-0005",
@@ -70,7 +70,7 @@
       "REQ-QUIC-RFC9002-S6P1P2-0007",
       "REQ-QUIC-RFC9002-S6P2-0001",
       "REQ-QUIC-RFC9002-S6P2-0002",
-      "REQ-QUIC-RFC9002-S6P2-0003",
+      "RFC9002-S6-2-P3-S1-R01",
       "REQ-QUIC-RFC9002-S6P2P1-0001",
       "REQ-QUIC-RFC9002-S6P2P1-0002",
       "REQ-QUIC-RFC9002-S6P2P1-0003",
@@ -81,34 +81,34 @@
       "REQ-QUIC-RFC9002-S6P2P1-0008",
       "REQ-QUIC-RFC9002-S6P2P1-0009",
       "REQ-QUIC-RFC9002-S6P2P1-0010",
-      "REQ-QUIC-RFC9002-S6P2P2-0001",
-      "REQ-QUIC-RFC9002-S6P2P2-0002",
-      "REQ-QUIC-RFC9002-S6P2P2-0003",
-      "REQ-QUIC-RFC9002-S6P2P2-0004",
-      "REQ-QUIC-RFC9002-S6P2P2-0005",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "RFC9002-S6-2-2-P1-S1-R01",
+      "RFC9002-S6-2-2-P1-S2-R01",
+      "RFC9002-S6-2-2-P2-S1-R01",
+      "RFC9002-S6-2-2-P2-S1-R02",
+      "RFC9002-S6-2-2-P3-S2-R01",
+      "RFC9002-S6-2-2-1-P1-S2-R01",
       "REQ-QUIC-RFC9002-S6P2P2P1-0002",
       "REQ-QUIC-RFC9002-S6P2P2P1-0003",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0004",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "RFC9002-S6-2-2-1-P3-S2-R01",
+      "RFC9002-S6-2-2-1-P3-S3-R01",
       "REQ-QUIC-RFC9002-S6P2P2P1-0006",
       "REQ-QUIC-RFC9002-S6P2P3-0001",
-      "REQ-QUIC-RFC9002-S6P2P4-0001",
-      "REQ-QUIC-RFC9002-S6P2P4-0002",
-      "REQ-QUIC-RFC9002-S6P2P4-0003",
-      "REQ-QUIC-RFC9002-S6P2P4-0004",
-      "REQ-QUIC-RFC9002-S6P2P4-0005",
-      "REQ-QUIC-RFC9002-S6P2P4-0006",
-      "REQ-QUIC-RFC9002-S6P2P4-0007",
-      "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "RFC9002-S6-2-4-P1-R01",
+      "RFC9002-S6-2-4-P1-S1-R01",
+      "RFC9002-S6-2-4-P1-S2-R01",
+      "RFC9002-S6-2-4-P2-R01",
+      "RFC9002-S6-2-4-P4-R01",
+      "RFC9002-S6-2-4-P4-S1-R01",
+      "RFC9002-S6-2-4-P4-S2-R01",
+      "RFC9002-S6-2-4-P5-S2-R01",
       "REQ-QUIC-RFC9002-S6P2P4-0009",
       "REQ-QUIC-RFC9002-S6P3-0001",
       "REQ-QUIC-RFC9002-S6P3-0002",
       "REQ-QUIC-RFC9002-S6P3-0003",
-      "REQ-QUIC-RFC9002-S6P3-0004",
-      "REQ-QUIC-RFC9002-S6P3-0005",
+      "RFC9002-S6-3-P3-S1-R01",
+      "RFC9002-S6-3-P3-S2-R01",
       "REQ-QUIC-RFC9002-S6P4-0001",
-      "REQ-QUIC-RFC9002-S6P4-0002",
+      "RFC9002-S6-4-P1-S1-R02",
       "REQ-QUIC-RFC9002-S6P4-0003",
       "REQ-QUIC-RFC9002-S6P4-0004"
     ],
@@ -212,17 +212,17 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "requirement_id": "RFC9002-S6-1-2-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -344,18 +344,18 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2-0003",
+      "requirement_id": "RFC9002-S6-2-P3-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -540,60 +540,60 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "requirement_id": "RFC9002-S6-2-2-P1-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "requirement_id": "RFC9002-S6-2-2-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary",
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "requirement_id": "RFC9002-S6-2-2-P2-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R02.cs"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs::TryMeasurePathChallengeRoundTripMicros_ComputesTheElapsedTimeWithoutUpdatingRttState",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R02.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
       ],
       "direct_refs_added_or_updated": [
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R02.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "requirement_id": "RFC9002-S6-2-2-P2-S1-R02",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicPathValidationTests.cs"
@@ -608,34 +608,34 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "requirement_id": "RFC9002-S6-2-2-P3-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "requirement_id": "RFC9002-S6-2-2-1-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -675,34 +675,34 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -746,129 +746,129 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "requirement_id": "RFC9002-S6-2-4-P1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "requirement_id": "RFC9002-S6-2-4-P1-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S1-R01.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "requirement_id": "RFC9002-S6-2-4-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "requirement_id": "RFC9002-S6-2-4-P2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "requirement_id": "RFC9002-S6-2-4-P4-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-R01.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "requirement_id": "RFC9002-S6-2-4-P4-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S1-R01.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "requirement_id": "RFC9002-S6-2-4-P4-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S2-R01.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "requirement_id": "RFC9002-S6-2-4-P5-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -936,33 +936,33 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0004",
+      "requirement_id": "RFC9002-S6-3-P3-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P3-0005",
+      "requirement_id": "RFC9002-S6-3-P3-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
@@ -984,17 +984,17 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P4-0002",
+      "requirement_id": "RFC9002-S6-4-P1-S1-R02",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."

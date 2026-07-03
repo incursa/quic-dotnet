@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P4-0006">Previously sent data MAY be sent if no new data can be sent.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-4-P4-S1-R01">Previously sent data MAY be sent if no new data can be sent.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P4-0006")]
+[Requirement("RFC9002-S6-2-4-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P4_0006
 {
     [Fact]

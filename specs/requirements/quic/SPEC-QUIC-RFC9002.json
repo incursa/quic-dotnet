@@ -832,7 +832,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P2-0001",
+      "id": "RFC9002-S5-2-P2-S1-R01",
       "title": "Initialize min_rtt from the first sample",
       "statement": "min_rtt MUST be set to latest_rtt on the first RTT sample.",
       "coverage": {
@@ -856,14 +856,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0001.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesMinRttFromTheFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_IgnoresAckDelayWhenInitializingTheFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S1-R01.cs::TryUpdateFromAck_InitializesTheFirstSampleAtTheZeroBoundary"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P2-0002",
+      "id": "RFC9002-S5-2-P2-S2-R01",
       "title": "Update min_rtt on later samples",
       "statement": "On all RTT samples after the first, min_rtt MUST be set to the lesser of min_rtt and latest_rtt.",
       "coverage": {
@@ -887,9 +887,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0002.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_UpdatesMinRttWhenALaterSampleIsSmaller",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_DoesNotRaiseMinRttWhenALaterSampleIsLarger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P2-S2-R01.cs::TryUpdateFromAck_LeavesMinRttUnchangedWhenALaterSampleMatchesIt"
         ]
       }
     },
@@ -955,7 +955,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P2-0005",
+      "id": "RFC9002-S5-2-P5-S1-R01",
       "title": "Refresh min_rtt after persistent congestion",
       "statement": "Endpoints SHOULD set min_rtt to the newest RTT sample after persistent congestion is established.",
       "coverage": {
@@ -979,14 +979,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0005.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsExplicitMinRttReestablishment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_ReestablishesTheMinimumRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P5-S1-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P2-0006",
+      "id": "RFC9002-S5-2-P6-S1-R01",
       "title": "Allow opportunistic min_rtt reestablishment",
       "statement": "Endpoints MAY reestablish min_rtt at other times in the connection, such as when traffic volume is low and an acknowledgment is received with a low acknowledgment delay.",
       "coverage": {
@@ -1010,13 +1010,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0006.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0006.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::RefreshMinRttFromLatestSample_AllowsOpportunisticReestablishmentAfterALowDelayAck",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S1-R01.cs::TryUpdateFromAck_LeavesMinRttAtTheCurrentFloorWhenTheCallerDoesNotRefreshIt"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P2-0007",
+      "id": "RFC9002-S5-2-P6-S2-R01",
       "title": "Avoid over-refreshing min_rtt",
       "statement": "Implementations SHOULD NOT refresh the min_rtt value too often.",
       "coverage": {
@@ -1040,9 +1040,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P2-0007.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_ReestablishesMinRttWithoutAlteringDerivedState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_DoesNotInventAnRttSampleOnAColdEstimator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-2-P6-S2-R01.cs::RefreshMinRttFromLatestSample_IsIdempotentWhenTheSameSampleIsReapplied"
         ]
       }
     },
@@ -1078,7 +1078,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P3-0002",
+      "id": "RFC9002-S5-3-P3-S2-R01",
       "title": "Ignore max_ack_delay before handshake confirmation",
       "statement": "The endpoint SHOULD ignore max_ack_delay until the handshake is confirmed.",
       "coverage": {
@@ -1104,14 +1104,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_UsesTheReportedAckDelayBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_StopsIgnoringPeerMaxAckDelayAfterHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0002.cs::TryUpdateFromAck_IgnoresAZeroPeerMaxAckDelayBeforeHandshakeConfirmation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P3-S2-R01.cs::TryUpdateFromAck_UsesTheReportedAckDelayBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P3-S2-R01.cs::TryUpdateFromAck_StopsIgnoringPeerMaxAckDelayAfterHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P3-S2-R01.cs::TryUpdateFromAck_IgnoresAZeroPeerMaxAckDelayBeforeHandshakeConfirmation"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P3-0003",
+      "id": "RFC9002-S5-3-P4-S2-R01",
       "title": "Allow dropping some adjusted samples",
       "statement": "Before handshake confirmation, an endpoint MAY ignore an RTT sample if adjusting the sample for acknowledgment delay would make it smaller than min_rtt.",
       "coverage": {
@@ -1135,8 +1135,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0003.cs::TryUpdateFromAck_DoesNotDropASampleWhenAckDelayWouldMakeTheAdjustedSampleSmallerThanMinRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0003.cs::TryUpdateFromAck_AllowsAnAdjustedSampleThatExactlyMatchesMinRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P4-S2-R01.cs::TryUpdateFromAck_DoesNotDropASampleWhenAckDelayWouldMakeTheAdjustedSampleSmallerThanMinRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P4-S2-R01.cs::TryUpdateFromAck_AllowsAnAdjustedSampleThatExactlyMatchesMinRtt"
         ]
       }
     },
@@ -1604,7 +1604,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P1P2-0002",
+      "id": "RFC9002-S6-1-2-P1-S2-R01",
       "title": "Bound the time threshold by timer granularity",
       "statement": "To avoid declaring packets lost too early, the time threshold MUST be at least the local timer granularity.",
       "coverage": {
@@ -1628,9 +1628,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P2-0002.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs::ComputeLossDelayMicros_UsesTimerGranularityWhenItExceedsTheScaledRttThreshold",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs::ComputeLossDelayMicros_BoundsTheTimeThresholdByTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-2-P1-S2-R01.cs::ComputeLossDelayMicros_RejectsAZeroTimerGranularity"
         ]
       }
     },
@@ -1851,7 +1851,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2-0003",
+      "id": "RFC9002-S6-2-P3-S1-R01",
       "title": "Do not infer loss from PTO expiration",
       "statement": "A PTO timer expiration MUST NOT cause prior unacknowledged packets to be marked as lost.",
       "coverage": {
@@ -1878,9 +1878,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2-0003.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_PrefersTheLossDetectionTimerOverPtoTimers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_CancelsTheTimerWhenRecoveryIsBlocked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-P3-S1-R01.cs::TrySelectLossDetectionTimerMicros_UsesThePtoTimeoutWhenNoLossTimeIsPending"
         ]
       }
     },
@@ -2206,7 +2206,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2-0001",
+      "id": "RFC9002-S6-2-2-P1-S1-R01",
       "title": "Reuse prior-smoothed RTT on resumed connections",
       "statement": "Resumed connections over the same network MAY use the previous connection's final smoothed RTT value as the resumed connection's initial RTT.",
       "coverage": {
@@ -2230,13 +2230,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0001.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs::Constructor_RequiresExplicitReuseOfThePriorFinalSmoothedRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S1-R01.cs::Constructor_CanReuseTheSmallestObservedPriorFinalSmoothedRtt"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2-0002",
+      "id": "RFC9002-S6-2-2-P1-S2-R01",
       "title": "Default initial RTT to 333 milliseconds",
       "statement": "When no previous RTT is available, the initial RTT SHOULD be set to 333 milliseconds.",
       "coverage": {
@@ -2260,14 +2260,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Constructor_UsesTheDefaultInitialRttWhenNoPreviousRttIsAvailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0002.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs::Constructor_UsesTheDefaultInitialRttWhenNoPreviousRttIsAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs::Reset_DoesNotFallBackTo333MillisecondsWhenANonDefaultInitialRttWasConfigured",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P1-S2-R01.cs::ConstructorAndReset_UseTheExact333MillisecondDefaultAtTheBoundary"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2-0003",
+      "id": "RFC9002-S6-2-2-P2-S1-R01",
       "title": "Use PATH_CHALLENGE and PATH_RESPONSE timing for initial RTT",
       "statement": "A connection MAY use the delay between sending a PATH_CHALLENGE and receiving a PATH_RESPONSE to set the initial RTT for a new path.",
       "coverage": {
@@ -2291,13 +2291,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0003.cs::TryMeasurePathChallengeRoundTripMicros_RejectsResponsesThatArriveBeforeTheirChallenge",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0003.cs::TryMeasurePathChallengeRoundTripMicros_HandlesBoundaryIntervals"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R01.cs::TryMeasurePathChallengeRoundTripMicros_RejectsResponsesThatArriveBeforeTheirChallenge",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R01.cs::TryMeasurePathChallengeRoundTripMicros_HandlesBoundaryIntervals"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2-0004",
+      "id": "RFC9002-S6-2-2-P2-S1-R02",
       "title": "Do not treat PATH_CHALLENGE/PATH_RESPONSE delay as an RTT sample",
       "statement": "That delay SHOULD NOT be considered an RTT sample.",
       "coverage": {
@@ -2321,13 +2321,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_MeasuresDelayWithoutUpdatingTheRttEstimator",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0004.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R02.cs::TryMeasurePathChallengeRoundTripMicros_MeasuresDelayWithoutUpdatingTheRttEstimator",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P2-S1-R02.cs::TryMeasurePathChallengeRoundTripMicros_DoesNotCreateAnRttSample"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2-0005",
+      "id": "RFC9002-S6-2-2-P3-S2-R01",
       "title": "Reset timers when keys are discarded",
       "statement": "When Initial or Handshake keys are discarded, the PTO and loss detection timers MUST be reset.",
       "coverage": {
@@ -2351,14 +2351,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenHandshakeKeysAreDiscarded",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2-0005.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenInitialKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs::TryDiscardPacketNumberSpace_ResetsPtoStateWhenHandshakeKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs::TryDiscardPacketNumberSpace_LeavesPtoBackoffCountUnchangedWhenApplicationDataIsDiscarded"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2P1-0001",
+      "id": "RFC9002-S6-2-2-1-P1-S2-R01",
       "title": "Delay server PTO until address validation traffic arrives",
       "statement": "If no additional data can be sent, the server's PTO timer MUST NOT be armed until datagrams have been received from the client.",
       "coverage": {
@@ -2385,9 +2385,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0001.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::CanSend_ReturnsFalseBeforeAnyClientDatagramsAreReceived",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_OpensTheBudgetAfterClientTrafficArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P1-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresUnattributedDatagrams"
         ]
       }
     },
@@ -2460,7 +2460,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2P1-0004",
+      "id": "RFC9002-S6-2-2-1-P3-S2-R01",
       "title": "Arm the client PTO before handshake confirmation",
       "statement": "The client MUST set the PTO timer if it has not received an acknowledgment for any of its Handshake packets and the handshake is not confirmed, even if there are no packets in flight.",
       "coverage": {
@@ -2487,14 +2487,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0004.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_DoesNotArmApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs::TryComputeProbeTimeoutMicros_ArmsHandshakePtoAtTheGranularityFloorWhenRttIsZero"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2P1-0005",
+      "id": "RFC9002-S6-2-2-1-P3-S3-R01",
       "title": "Send Handshake probes when keys are available",
       "statement": "When the PTO fires, the client MUST send a Handshake packet if it has Handshake keys.",
       "coverage": {
@@ -2521,8 +2521,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0005.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesHandshakeWhenInitialDeadlineIsMissing"
         ]
       }
     },
@@ -2594,7 +2594,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0001",
+      "id": "RFC9002-S6-2-4-P1-R01",
       "title": "Probe with at least one ack-eliciting packet",
       "statement": "When a PTO timer expires, a sender MUST send at least one ack-eliciting packet in the packet number space as a probe.",
       "coverage": {
@@ -2618,14 +2618,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0001.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryFormatPingFrame_ProducesTheMinimumAckElicitingProbe",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryFormatPingFrame_RejectsAZeroLengthDestination",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs::TryParsePingFrame_ConsumesTheSingleByteAtThePacketBoundary"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0002",
+      "id": "RFC9002-S6-2-4-P1-S1-R01",
       "title": "Allow two full-sized PTO datagrams",
       "statement": "An endpoint MAY send up to two full-sized datagrams containing ack-eliciting packets to avoid an expensive consecutive PTO expiration due to a single lost datagram or to transmit data from multiple packet number spaces.",
       "coverage": {
@@ -2649,12 +2649,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0002.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S1-R01.cs::ProbePackets_CanUseTwoFullSizedDatagramsAfterTheCongestionWindowIsFilled"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0003",
+      "id": "RFC9002-S6-2-4-P1-S2-R01",
       "title": "Keep PTO probe packets ack-eliciting",
       "statement": "All probe packets sent on a PTO MUST be ack-eliciting.",
       "coverage": {
@@ -2678,14 +2678,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0003.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RecognizesPingAsAckEliciting",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RejectsPaddingAndAckFrames",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S2-R01.cs::IsAckElicitingFrameType_RejectsConnectionCloseFrames"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0004",
+      "id": "RFC9002-S6-2-4-P2-R01",
       "title": "Use other packet number spaces for PTO probes",
       "statement": "In addition to sending data in the packet number space for which the timer expired, the sender SHOULD send ack-eliciting packets from other packet number spaces with in-flight data, coalescing packets if possible.",
       "coverage": {
@@ -2709,18 +2709,18 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0004.cs::HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsTheEarlierDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheRemainingDeadlineWhenOneSpaceIsMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::HandleRecoveryTimerExpired_CoalescesHandshakeAndApplicationDataOnTheRemainingProbeDatagramBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::HandleRecoveryTimerExpired_RebuildsTheApplicationRepairUnderTheLatestPeerConnectionIdBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P2-R01.cs::HandleRecoveryTimerExpired_AfterHandshakeConfirmationKeepsCryptoSpaceProbesAheadOfApplicationRepairWhileRepairingApplicationData"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0005",
+      "id": "RFC9002-S6-2-4-P4-R01",
       "title": "Include new data in PTO probes",
       "statement": "An endpoint SHOULD include new data in packets that are sent on PTO expiration.",
       "coverage": {
@@ -2744,12 +2744,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0005.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-R01.cs::TryFormatStreamFrame_RoundTripsNewApplicationData"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0006",
+      "id": "RFC9002-S6-2-4-P4-S1-R01",
       "title": "Allow previously sent data in PTO probes",
       "statement": "Previously sent data MAY be sent if no new data can be sent.",
       "coverage": {
@@ -2773,12 +2773,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0006.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S1-R01.cs::TryFormatStreamFrame_RoundTripsPreviouslySentApplicationData"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0007",
+      "id": "RFC9002-S6-2-4-P4-S2-R01",
       "title": "Allow alternative probe-content strategies",
       "statement": "Implementations MAY use alternative strategies for determining the content of probe packets, including sending new or retransmitted data based on the application's priorities.",
       "coverage": {
@@ -2802,12 +2802,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0007.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P4-S2-R01.cs::ProbeContent_CanUseEitherNewOrPreviouslySentStreamData"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P4-0008",
+      "id": "RFC9002-S6-2-4-P5-S2-R01",
       "title": "Send a PING when no probe data exists",
       "statement": "When there is no data to send, the sender SHOULD send a PING or other ack-eliciting frame in a single packet, rearming the PTO timer.",
       "coverage": {
@@ -2831,9 +2831,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P4-0008.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::TryFormatPingFrame_ProvidesTheFallbackProbeWhenNoDataIsAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::RecoveryPto_FallsBackToAPingProbeWhenNoRetransmittableDataExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs::TryFormatPingFrame_RejectsInsufficientSpaceForTheFallbackProbe"
         ]
       }
     },
@@ -2956,7 +2956,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P3-0004",
+      "id": "RFC9002-S6-3-P3-S1-R01",
       "title": "Permit RTT estimation from Retry timing",
       "statement": "The client MAY compute an RTT estimate to the server as the time period from when the first Initial packet was sent to when a Retry or Version Negotiation packet is received.",
       "coverage": {
@@ -2980,13 +2980,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0004.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs::TryMeasureRetryRoundTripMicros_RejectsRetryPacketsThatPrecedeTheFirstInitialPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S1-R01.cs::TryMeasureRetryRoundTripMicros_AllowsAZeroLengthRoundTripAtTheBoundary"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P3-0005",
+      "id": "RFC9002-S6-3-P3-S2-R01",
       "title": "Allow using Retry-derived RTT as the initial RTT",
       "statement": "The client MAY use this value in place of its default for the initial RTT estimate.",
       "coverage": {
@@ -3010,8 +3010,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0005.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs::RetryDerivedInitialRtt_RejectsAZeroLengthRetryMeasurement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P3-S2-R01.cs::RetryDerivedInitialRtt_SeedsTheEstimatorWithTheSmallestNonZeroMeasurement"
         ]
       }
     },
@@ -3046,7 +3046,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P4-0002",
+      "id": "RFC9002-S6-4-P1-S1-R02",
       "title": "Remove discarded packets from bytes in flight",
       "statement": "The sender MUST remove those packets from the count of bytes in flight.",
       "coverage": {
@@ -3070,8 +3070,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0002.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs::TryDiscardPacketNumberSpace_RemovesInitialAndHandshakePacketsFromBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs::TryDiscardPacketNumberSpace_DoesNotChangeBytesInFlightWhenNoEarlyKeysWereTracked"
         ]
       }
     },
@@ -3294,7 +3294,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7-0006",
+      "id": "RFC9002-S7-P7-S1-R01",
       "title": "Respect the bytes-in-flight ceiling",
       "statement": "An endpoint MUST NOT send a packet if it would cause bytes_in_flight to be larger than the congestion window, unless the packet is sent on a PTO timer expiration or when entering recovery.",
       "coverage": {
@@ -3318,8 +3318,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_AllowsCongestionControlledPacketsThatFitWithinTheWindow",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0006.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-P7-S1-R01.cs::CanSend_AllowsCongestionControlledPacketsThatFitWithinTheWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-P7-S1-R01.cs::CanSend_RejectsCongestionControlledPacketsThatWouldExceedTheWindow"
         ]
       }
     },
@@ -3415,7 +3415,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P2-0003",
+      "id": "RFC9002-S7-2-P2-S1-R01",
       "title": "Recompute the initial window when datagram size changes",
       "statement": "If the maximum datagram size changes during the connection, the initial congestion window SHOULD be recalculated with the new size.",
       "coverage": {
@@ -3439,14 +3439,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_RecomputesTheInitialWindowWhenTheDatagramSizeChanges",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_DoesNotRecomputeTheWindowWhenResetIsFalse",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0003.cs::UpdateMaxDatagramSize_UsesTheTransitionPointForTheInitialWindow"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S1-R01.cs::UpdateMaxDatagramSize_RecomputesTheInitialWindowWhenTheDatagramSizeChanges",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S1-R01.cs::UpdateMaxDatagramSize_DoesNotRecomputeTheWindowWhenResetIsFalse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S1-R01.cs::UpdateMaxDatagramSize_UsesTheTransitionPointForTheInitialWindow"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P2-0004",
+      "id": "RFC9002-S7-2-P2-S2-R01",
       "title": "Reset the initial window after handshake-driven MTU reduction",
       "statement": "If the maximum datagram size is decreased in order to complete the handshake, the congestion window SHOULD be set to the new initial congestion window.",
       "coverage": {
@@ -3470,9 +3470,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_ResetsTheWindowAfterReducingTheDatagramSize",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_DoesNotResetTheWindowWhenResetToInitialWindowIsFalse",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0004.cs::UpdateMaxDatagramSize_ResetsToTheTransitionPointInitialWindow"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S2-R01.cs::UpdateMaxDatagramSize_ResetsTheWindowAfterReducingTheDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S2-R01.cs::UpdateMaxDatagramSize_DoesNotResetTheWindowWhenResetToInitialWindowIsFalse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P2-S2-R01.cs::UpdateMaxDatagramSize_ResetsToTheTransitionPointInitialWindow"
         ]
       }
     },
@@ -3660,7 +3660,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P3P2-0003",
+      "id": "RFC9002-S7-3-2-P2-S1-R01",
       "title": "Cut the slow start threshold on recovery entry",
       "statement": "On entering a recovery period, a sender MUST set the slow start threshold to half the congestion window when loss is detected.",
       "coverage": {
@@ -3684,13 +3684,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0003.cs::TryRegisterLoss_HonorsTheMinimumCongestionWindowWhenRecoveryWouldCutBelowIt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0003.cs::TryRegisterLoss_DoesNotCutTheSlowStartThresholdForIneligibleSignals"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S1-R01.cs::TryRegisterLoss_HonorsTheMinimumCongestionWindowWhenRecoveryWouldCutBelowIt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S1-R01.cs::TryRegisterLoss_DoesNotCutTheSlowStartThresholdForIneligibleSignals"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P3P2-0004",
+      "id": "RFC9002-S7-3-2-P2-S2-R01",
       "title": "Restore congestion window before leaving recovery",
       "statement": "The congestion window MUST be set to the reduced value of the slow start threshold before exiting the recovery period.",
       "coverage": {
@@ -3714,13 +3714,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0004.cs::TryRegisterAcknowledgedPacket_LeavesTheReducedCongestionWindowInPlaceAtTheRecoveryBoundary",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0004.cs::TryRegisterAcknowledgedPacket_DoesNotRestoreTheCongestionWindowForPacketsAtTheRecoveryBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S2-R01.cs::TryRegisterAcknowledgedPacket_LeavesTheReducedCongestionWindowInPlaceAtTheRecoveryBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P2-S2-R01.cs::TryRegisterAcknowledgedPacket_DoesNotRestoreTheCongestionWindowForPacketsAtTheRecoveryBoundary"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P3P2-0005",
+      "id": "RFC9002-S7-3-2-P3-S1-R01",
       "title": "Permit gentler recovery-window reduction",
       "statement": "Implementations MAY reduce the congestion window immediately upon entering a recovery period or use other mechanisms, such as Proportional Rate Reduction, to reduce the congestion window more gradually.",
       "coverage": {
@@ -3744,7 +3744,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P2-0005.cs::ComputeReducedCongestionWindowBytes_UsesAGentlerReductionFactorAndHonorsMinimumWindow"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P3-S1-R01.cs::ComputeReducedCongestionWindowBytes_UsesAGentlerReductionFactorAndHonorsMinimumWindow"
         ]
       }
     },
@@ -3838,7 +3838,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P3P3-0002",
+      "id": "RFC9002-S7-3-3-P2-S1-R01",
       "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
       "statement": "A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.",
       "coverage": {
@@ -3862,13 +3862,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.3.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0002.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P3P3-0002.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-3-P2-S1-R01.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-3-P2-S1-R01.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P4-0001",
+      "id": "RFC9002-S7-4-P1-S3-R01",
       "title": "Ignore undecryptable packet loss before keys are available",
       "statement": "Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.",
       "coverage": {
@@ -3892,12 +3892,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S3-R01.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P4-0002",
+      "id": "RFC9002-S7-4-P1-S4-R01",
       "title": "Do not ignore later packet loss",
       "statement": "Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.",
       "coverage": {
@@ -3921,13 +3921,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0001.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P4-0002.cs::TryRegisterLoss_DoesNotIgnorePacketsSentAfterTheEarliestAcknowledgedPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S3-R01.cs::TryRegisterLoss_IgnoresPacketsThatMayHaveArrivedBeforeKeysWereAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S4-R01.cs::TryRegisterLoss_DoesNotIgnorePacketsSentAfterTheEarliestAcknowledgedPacket"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P5-0001",
+      "id": "RFC9002-S7-5-P1-S1-R01",
       "title": "Do not block probe packets with congestion control",
       "statement": "Probe packets MUST NOT be blocked by the congestion controller.",
       "coverage": {
@@ -3951,7 +3951,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0001.cs::CanSend_StillAllowsProbePacketsWhenTheCongestionWindowIsFull",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-5-P1-S1-R01.cs::CanSend_StillAllowsProbePacketsWhenTheCongestionWindowIsFull",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
         ]
       }
@@ -4285,7 +4285,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P7-0001",
+      "id": "RFC9002-S7-7-P1-S1-R01",
       "title": "Pace all in-flight packets",
       "statement": "A sender SHOULD pace sending of all in-flight packets based on input from the congestion controller.",
       "coverage": {
@@ -4309,12 +4309,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0001.cs::TryComputePacingIntervalMicros_ComputesThePacingIntervalForInFlightPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs::TryComputePacingIntervalMicros_ComputesThePacingIntervalForInFlightPackets"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P7-0002",
+      "id": "RFC9002-S7-7-P2-S2-R01",
       "title": "Either pace or cap bursts",
       "statement": "Senders MUST either use pacing or limit such bursts.",
       "coverage": {
@@ -4338,7 +4338,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0002.cs::TryGetBurstLimitBytes_ReturnsABurstCapWhenTheSenderDoesNotPace"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S2-R01.cs::TryGetBurstLimitBytes_ReturnsABurstCapWhenTheSenderDoesNotPace"
         ]
       }
     },
@@ -4462,7 +4462,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P8-0002",
+      "id": "RFC9002-S7-8-P2-S2-R01",
       "title": "Do not call yourself application-limited because of pacing delay",
       "statement": "A sender SHOULD NOT consider itself application limited if it would have fully utilized the congestion window without pacing delay.",
       "coverage": {
@@ -4486,13 +4486,13 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs::TryProcessAckFrame_GrowsTheCongestionWindowWhenPacingDelayWouldHaveMaskedUtilization",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0002.cs::TryProcessAckFrame_DoesNotGrowTheCongestionWindowWhenApplicationLimitedIsSet"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P2-S2-R01.cs::TryProcessAckFrame_GrowsTheCongestionWindowWhenPacingDelayWouldHaveMaskedUtilization",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P2-S2-R01.cs::TryProcessAckFrame_DoesNotGrowTheCongestionWindowWhenApplicationLimitedIsSet"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P8-0003",
+      "id": "RFC9002-S7-8-P3-S1-R01",
       "title": "Allow alternate cwnd-updating mechanisms after underutilization",
       "statement": "A sender MAY implement alternative mechanisms to update its congestion window after periods of underutilization, such as those proposed for TCP in RFC 7661.",
       "coverage": {
@@ -4516,8 +4516,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.8"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0003.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P8-0003.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P3-S1-R01.cs::TryRegisterAcknowledgedPacket_DoesNotUseTheCongestionAvoidanceFormulaBeforeTheThresholdIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P3-S1-R01.cs::TryRegisterAcknowledgedPacket_GrowsTheCongestionWindowByOneDatagramPerCongestionWindowAcknowledged"
         ]
       }
     },

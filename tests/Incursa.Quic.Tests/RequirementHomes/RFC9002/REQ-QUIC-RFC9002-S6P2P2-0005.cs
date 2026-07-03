@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2-0005">When Initial or Handshake keys are discarded, the PTO and loss detection timers MUST be reset.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-2-P3-S2-R01">When Initial or Handshake keys are discarded, the PTO and loss detection timers MUST be reset.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P2-0005")]
+[Requirement("RFC9002-S6-2-2-P3-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2_0005
 {
     [Fact]

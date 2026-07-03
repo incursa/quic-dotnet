@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P4-0002">The sender MUST remove those packets from the count of bytes in flight.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-4-P1-S1-R02">The sender MUST remove those packets from the count of bytes in flight.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P4-0002")]
+[Requirement("RFC9002-S6-4-P1-S1-R02")]
 public sealed class REQ_QUIC_RFC9002_S6P4_0002
 {
     [Fact]
