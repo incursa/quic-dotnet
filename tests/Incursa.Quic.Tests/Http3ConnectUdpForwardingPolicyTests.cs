@@ -42,7 +42,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0101")]
+    [Requirement("RFC9298-S6-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, true)]
@@ -53,7 +53,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0101")]
+    [Requirement("RFC9298-S6-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotDisableCongestionControlWithoutCertainty()
@@ -62,7 +62,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0102")]
+    [Requirement("RFC9298-S6-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_DoesNotSignalEcnWhenCongestionControlDisabled()
@@ -71,7 +71,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0102")]
+    [Requirement("RFC9298-S6-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_RejectsEcnSupportSignalWhenCongestionControlDisabled()
@@ -98,7 +98,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0104")]
+    [Requirement("RFC9298-S6-P3-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, true)]
@@ -109,7 +109,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0104")]
+    [Requirement("RFC9298-S6-P3-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotReportEcnFeedbackWhenNotPermitted()
@@ -118,7 +118,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0105")]
+    [Requirement("RFC9298-S6-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_PrefersHttp3ForUdpProxying()
@@ -127,7 +127,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0105")]
+    [Requirement("RFC9298-S6-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotPreferNonHttp3UdpProxying()
@@ -174,7 +174,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0108")]
+    [Requirement("RFC9298-S6-1-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_DoesNotCapsuleOversizedPayloadWhenQuicDatagramInUse()
@@ -183,7 +183,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0108")]
+    [Requirement("RFC9298-S6-1-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_RejectsCapsuleFallbackForOversizedQuicDatagramPayload()
@@ -282,7 +282,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0114")]
+    [Requirement("RFC9298-S6-2-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_IgnoresTargetEcnBits()
@@ -291,7 +291,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0114")]
+    [Requirement("RFC9298-S6-2-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotPreserveTargetEcnBits()

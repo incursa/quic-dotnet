@@ -1709,7 +1709,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0082",
+      "id": "RFC9298-S4-P2-S5-R01",
       "title": "Do not re-allocate Context IDs in a namespace",
       "statement": "Context IDs MUST NOT be re-allocated within a given HTTP namespace.",
       "coverage": {
@@ -1749,7 +1749,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0084",
+      "id": "RFC9298-S4-P3-S2-R01",
       "title": "Permit future Context ID registration mechanisms",
       "statement": "Future extensions MAY use HTTP header fields or capsules to register Context IDs.",
       "coverage": {
@@ -2089,7 +2089,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0101",
+      "id": "RFC9298-S6-P2-S2-R01",
       "title": "Do not disable congestion control without certainty",
       "statement": "The underlying HTTP connection MUST NOT disable congestion control unless it has an out-of-band way of knowing with absolute certainty that the inner traffic is congestion-controlled.",
       "coverage": {
@@ -2109,7 +2109,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0102",
+      "id": "RFC9298-S6-P3-S1-R01",
       "title": "Do not signal ECN support when congestion control is disabled",
       "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST NOT signal Explicit Congestion Notification (ECN) support on that connection.",
       "coverage": {
@@ -2149,7 +2149,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0104",
+      "id": "RFC9298-S6-P3-S3-R01",
       "title": "Allow ECN feedback reporting when permitted",
       "statement": "It MAY continue to report ECN feedback via QUIC ACK_ECN frames or the TCP ECE bit, as the peer may not have disabled congestion control.",
       "coverage": {
@@ -2169,7 +2169,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0105",
+      "id": "RFC9298-S6-P4-S3-R01",
       "title": "Prefer HTTP/3 for UDP proxying",
       "statement": "UDP proxying SHOULD be performed over HTTP/3 to allow leveraging the QUIC DATAGRAM frame.",
       "coverage": {
@@ -2235,7 +2235,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9298-0108",
+      "id": "RFC9298-S6-1-P1-S3-R01",
       "title": "Do not capsule oversized UDP payloads",
       "statement": "If a UDP proxy is using QUIC DATAGRAM frames and it receives a UDP payload from the target that will not fit inside a QUIC DATAGRAM frame, the UDP proxy SHOULD NOT send the UDP payload in a DATAGRAM capsule.",
       "coverage": {
@@ -2364,7 +2364,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0114",
+      "id": "RFC9298-S6-2-P3-R01",
       "title": "Ignore ECN bits received from target",
       "statement": "A UDP proxy MUST ignore ECN bits in the IP header of UDP packets received from the target.",
       "coverage": {

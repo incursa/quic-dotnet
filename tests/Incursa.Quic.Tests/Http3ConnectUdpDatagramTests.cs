@@ -170,7 +170,7 @@ public sealed class Http3ConnectUdpDatagramTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9298-0080")]
-    [Requirement("REQ-QUIC-RFC9298-0082")]
+    [Requirement("RFC9298-S4-P2-S5-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_RejectsReallocationInsideOneRequestNamespace()
@@ -214,7 +214,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0082")]
+    [Requirement("RFC9298-S4-P2-S5-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_AllowsDistinctContextIds()
@@ -252,7 +252,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0084")]
+    [Requirement("RFC9298-S4-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, false)]
@@ -263,7 +263,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0084")]
+    [Requirement("RFC9298-S4-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism()
