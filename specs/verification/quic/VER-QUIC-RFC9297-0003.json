@@ -13,9 +13,9 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, HTTP/3 package build, and diff hygiene for the RFC 9297 lifecycle and conversion surface.",
   "verifies": [
-    "REQ-QUIC-RFC9297-0004",
-    "REQ-QUIC-RFC9297-0005",
-    "REQ-QUIC-RFC9297-0006",
+    "RFC9297-S2-P5-R01",
+    "RFC9297-S2-P6-R01",
+    "RFC9297-S2-P6-S1-R01",
     "REQ-QUIC-RFC9297-0007",
     "REQ-QUIC-RFC9297-0014",
     "REQ-QUIC-RFC9297-0015",
@@ -23,7 +23,7 @@
     "REQ-QUIC-RFC9297-0026",
     "REQ-QUIC-RFC9297-0027",
     "REQ-QUIC-RFC9297-0046",
-    "REQ-QUIC-RFC9297-0048",
+    "RFC9297-S3-3-P2-R01",
     "REQ-QUIC-RFC9297-0050",
     "REQ-QUIC-RFC9297-0066",
     "REQ-QUIC-RFC9297-0067",
@@ -56,7 +56,7 @@
     "src/Incursa.Quic.Http3/Http3DatagramIntermediaryPolicy.cs",
     "tests/Incursa.Quic.Tests/Http3DatagramLifecyclePolicyTests.cs",
     "tests/Incursa.Quic.Tests/Http3DatagramIntermediaryPolicyTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/REQ-QUIC-RFC9297-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9297/RFC9297-S2-P5-R01.cs"
   ],
   "status_summary": "The RFC 9297 HTTP Datagram and Capsule Protocol requirement set is trace-owned and verified by focused local gates. Later MASQUE work starts from RFC 9298 CONNECT-UDP and RFC 9484 CONNECT-IP behavior."
 }

@@ -10,7 +10,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
     [Requirement("REQ-QUIC-RFC9297-0042")]
     [Requirement("REQ-QUIC-RFC9297-0043")]
     [Requirement("REQ-QUIC-RFC9297-0044")]
-    [Requirement("REQ-QUIC-RFC9297-0059")]
+    [Requirement("RFC9297-S3-4-P4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(101)]
@@ -27,7 +27,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
     [Requirement("REQ-QUIC-RFC9297-0043")]
     [Requirement("REQ-QUIC-RFC9297-0044")]
     [Requirement("REQ-QUIC-RFC9297-0045")]
-    [Requirement("REQ-QUIC-RFC9297-0059")]
+    [Requirement("RFC9297-S3-4-P4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [InlineData(100)]
@@ -138,7 +138,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
     [Theory]
     [Requirement("REQ-QUIC-RFC9297-0052")]
     [Requirement("REQ-QUIC-RFC9297-0053")]
-    [Requirement("REQ-QUIC-RFC9297-0054")]
+    [Requirement("RFC9297-S3-4-P1-S1-R02")]
     [Requirement("REQ-QUIC-RFC9297-0057")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -151,7 +151,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9297-0054")]
+    [Requirement("RFC9297-S3-4-P1-S1-R02")]
     [Requirement("REQ-QUIC-RFC9297-0057")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -182,8 +182,8 @@ public sealed class Http3CapsuleProtocolPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0058")]
-    [Requirement("REQ-QUIC-RFC9297-0060")]
+    [Requirement("RFC9297-S3-4-P3-R01")]
+    [Requirement("RFC9297-S3-4-P5-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CapsuleProtocolHeader_AllowsIntermediaryProcessingAndRecommendedEmission()
@@ -196,7 +196,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9297-0079")]
-    [Requirement("REQ-QUIC-RFC9297-0080")]
+    [Requirement("RFC9297-S5-4-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CapsuleProtocolRegistry_ExposesRegisteredFieldNameAndRequiresTypeLabel()
@@ -207,7 +207,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9297-0079")]
-    [Requirement("REQ-QUIC-RFC9297-0080")]
+    [Requirement("RFC9297-S5-4-P1-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void CapsuleProtocolRegistry_RejectsMissingTypeLabels()

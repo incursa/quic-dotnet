@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3DatagramLifecyclePolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0004")]
+    [Requirement("RFC9297-S2-P5-R01")]
     [Requirement("REQ-QUIC-RFC9297-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -21,9 +21,9 @@ public sealed class Http3DatagramLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0004")]
-    [Requirement("REQ-QUIC-RFC9297-0005")]
-    [Requirement("REQ-QUIC-RFC9297-0006")]
+    [Requirement("RFC9297-S2-P5-R01")]
+    [Requirement("RFC9297-S2-P6-R01")]
+    [Requirement("RFC9297-S2-P6-S1-R01")]
     [Requirement("REQ-QUIC-RFC9297-0007")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -40,8 +40,8 @@ public sealed class Http3DatagramLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0005")]
-    [Requirement("REQ-QUIC-RFC9297-0006")]
+    [Requirement("RFC9297-S2-P6-R01")]
+    [Requirement("RFC9297-S2-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramLifecycle_UnsupportedReceiveMapsToRequestAbort()

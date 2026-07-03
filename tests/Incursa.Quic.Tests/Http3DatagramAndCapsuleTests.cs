@@ -134,7 +134,7 @@ public sealed class Http3DatagramAndCapsuleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9297-0003")]
-    [Requirement("REQ-QUIC-RFC9297-0018")]
+    [Requirement("RFC9297-S2-1-1-P2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0025")]
     [Requirement("REQ-QUIC-RFC9297-0076")]
     [Requirement("REQ-QUIC-RFC9297-0077")]
@@ -157,8 +157,8 @@ public sealed class Http3DatagramAndCapsuleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9297-0003")]
-    [Requirement("REQ-QUIC-RFC9297-0018")]
-    [Requirement("REQ-QUIC-RFC9297-0019")]
+    [Requirement("RFC9297-S2-1-1-P2-R01")]
+    [Requirement("RFC9297-S2-1-1-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0025")]
     [Requirement("REQ-QUIC-RFC9297-0076")]
     [Requirement("REQ-QUIC-RFC9297-0077")]
@@ -174,8 +174,8 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0018")]
-    [Requirement("REQ-QUIC-RFC9297-0019")]
+    [Requirement("RFC9297-S2-1-1-P2-R01")]
+    [Requirement("RFC9297-S2-1-1-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0025")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -189,7 +189,7 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0020")]
+    [Requirement("RFC9297-S2-1-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramSupport_GatesSendingOnLocalAndPeerSettings()
@@ -200,7 +200,7 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0020")]
+    [Requirement("RFC9297-S2-1-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramSupport_DoesNotSendWhenEitherEndpointDisablesDatagrams()
@@ -210,8 +210,8 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0021")]
-    [Requirement("REQ-QUIC-RFC9297-0022")]
+    [Requirement("RFC9297-S2-1-1-P4-R01")]
+    [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0024")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -223,7 +223,7 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0022")]
+    [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0023")]
     [Requirement("REQ-QUIC-RFC9297-0024")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -237,7 +237,7 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0022")]
+    [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0023")]
     [Requirement("REQ-QUIC-RFC9297-0024")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -317,8 +317,8 @@ public sealed class Http3DatagramAndCapsuleTests
     [Requirement("REQ-QUIC-RFC9297-0033")]
     [Requirement("REQ-QUIC-RFC9297-0034")]
     [Requirement("REQ-QUIC-RFC9297-0035")]
-    [Requirement("REQ-QUIC-RFC9297-0047")]
-    [Requirement("REQ-QUIC-RFC9297-0049")]
+    [Requirement("RFC9297-S3-3-P1-R01")]
+    [Requirement("RFC9297-S3-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9297-0051")]
     [Requirement("REQ-QUIC-RFC9297-0061")]
     [Requirement("REQ-QUIC-RFC9297-0062")]
@@ -354,8 +354,8 @@ public sealed class Http3DatagramAndCapsuleTests
     [Requirement("REQ-QUIC-RFC9297-0033")]
     [Requirement("REQ-QUIC-RFC9297-0034")]
     [Requirement("REQ-QUIC-RFC9297-0035")]
-    [Requirement("REQ-QUIC-RFC9297-0047")]
-    [Requirement("REQ-QUIC-RFC9297-0049")]
+    [Requirement("RFC9297-S3-3-P1-R01")]
+    [Requirement("RFC9297-S3-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9297-0051")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -367,8 +367,8 @@ public sealed class Http3DatagramAndCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0047")]
-    [Requirement("REQ-QUIC-RFC9297-0049")]
+    [Requirement("RFC9297-S3-3-P1-R01")]
+    [Requirement("RFC9297-S3-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9297-0051")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

@@ -28,7 +28,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0048")]
+    [Requirement("RFC9297-S3-3-P2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0050")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -38,7 +38,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9297-0048")]
+    [Requirement("RFC9297-S3-3-P2-R01")]
     [Requirement("REQ-QUIC-RFC9297-0050")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
