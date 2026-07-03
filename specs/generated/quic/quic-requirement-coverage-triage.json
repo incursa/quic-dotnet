@@ -318637,7 +318637,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9220-0003",
+      "requirement_id": "RFC9220-S3-P3-R01",
       "artifact_id": "SPEC-QUIC-RFC9220",
       "rfc": "RFC9220",
       "section_prefix": "S3",
@@ -318683,7 +318683,7 @@
       ],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "requirement_id": "RFC9220-S3-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
@@ -318699,13 +318699,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9220-0003"
+            "RFC9220-S3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "requirement_id": "RFC9220-S3-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse",
           "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
@@ -318721,13 +318721,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9220-0003"
+            "RFC9220-S3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "requirement_id": "RFC9220-S3-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
@@ -318743,13 +318743,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9220-0003"
+            "RFC9220-S3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9220-0003",
+          "requirement_id": "RFC9220-S3-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs::UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus",
           "file": "tests/Incursa.Quic.Tests/Http3ExtendedConnectTests.cs",
@@ -318765,7 +318765,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9220-0003"
+            "RFC9220-S3-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false

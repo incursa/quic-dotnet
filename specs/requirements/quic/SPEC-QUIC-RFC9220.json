@@ -111,7 +111,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9220-0003",
+      "id": "RFC9220-S3-P3-R01",
       "title": "Respond to unsupported Extended CONNECT protocols",
       "statement": "If a server advertises support for Extended CONNECT but receives an Extended CONNECT request with an unknown or unsupported \":protocol\" value, the server SHOULD respond with a 501 (Not Implemented) status code.",
       "coverage": {

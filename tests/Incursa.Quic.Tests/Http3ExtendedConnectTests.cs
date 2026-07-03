@@ -96,7 +96,7 @@ public sealed class Http3ExtendedConnectTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9220-0003")]
+    [Requirement("RFC9220-S3-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UnsupportedProtocolResponse_UsesRecommendedNotImplementedStatus()
@@ -109,7 +109,7 @@ public sealed class Http3ExtendedConnectTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9220-0003")]
+    [Requirement("RFC9220-S3-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void SupportedWebSocketProtocol_DoesNotRequireUnsupportedResponse()
