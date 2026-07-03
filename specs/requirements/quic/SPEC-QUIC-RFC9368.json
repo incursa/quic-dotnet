@@ -87,7 +87,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9368-S4-0001",
+      "id": "RFC9368-S4-P2-S1-R01",
       "title": "Select a compatible negotiated version",
       "statement": "When an endpoint can parse the client's first flight using the client's Chosen Version and the client's Version Information lists at least one mutually supported compatible version, the server MUST select one such version as the Negotiated Version, continue the handshake using that version, and preserve the client's Original Version long enough to authenticate the Version Information carried on that original first flight.",
       "coverage": {
@@ -113,15 +113,15 @@
           "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9368-S4-0002",
+      "id": "RFC9368-S4-P2-S2-R01",
       "title": "Adopt and validate the negotiated version",
       "statement": "A client that learns the Negotiated Version from the server's handshake packets MUST validate that the server's Chosen Version matches the Negotiated Version and close the connection with a version negotiation error if they do not match. When the negotiated version is compatible with the client's Original Version, the client continues the connection using that negotiated version for subsequent packets.",
       "coverage": {
@@ -147,10 +147,10 @@
           "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders"
         ]
       }
     }

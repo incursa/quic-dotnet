@@ -403261,7 +403261,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+      "requirement_id": "RFC9368-S4-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9368",
       "rfc": "RFC9368",
       "section_prefix": "S4",
@@ -403281,10 +403281,10 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -403304,10 +403304,10 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
           "method": "ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
@@ -403320,16 +403320,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
           "method": "ConnectAsync_NegotiatesVersion2WhenBothEndpointsOfferCompatibleVersionsAndPreservesOriginalAndNegotiatedInitialProtections",
@@ -403342,16 +403342,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
           "method": "Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
@@ -403364,16 +403364,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
           "method": "Fuzz_TrySelectCompatibleVersion_RespectsCompatibilityAndServerOrderingAcrossRepresentativeVersionSets",
@@ -403386,16 +403386,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
           "method": "TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
@@ -403408,16 +403408,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
           "method": "TrySelectCompatibleVersion_FallsBackToTheOriginalVersionWhenItIsTheOnlyMutuallySupportedVersion",
@@ -403430,16 +403430,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
           "method": "TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
@@ -403452,16 +403452,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0001",
+          "requirement_id": "RFC9368-S4-P2-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0001.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs::TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0001",
           "member": "REQ_QUIC_RFC9368_S4_0001.TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
           "method": "TrySelectCompatibleVersion_RejectsMissingOrIncompatibleVersionSets",
@@ -403474,7 +403474,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0001"
+            "RFC9368-S4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -403482,7 +403482,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+      "requirement_id": "RFC9368-S4-P2-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9368",
       "rfc": "RFC9368",
       "section_prefix": "S4",
@@ -403502,10 +403502,10 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -403525,10 +403525,10 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
           "method": "Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
@@ -403541,16 +403541,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
           "method": "Fuzz_TryAdoptNegotiatedVersion_RekeysOnlyForCompatibleSupportedVersionSetsAcrossRepresentativeOrders",
@@ -403563,16 +403563,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
           "method": "TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
@@ -403585,16 +403585,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
           "method": "TryAdoptNegotiatedVersion_IsANoOpWhenTheNegotiatedVersionMatchesTheCurrentSelection",
@@ -403607,16 +403607,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
           "method": "TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
@@ -403629,16 +403629,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
           "method": "TryAdoptNegotiatedVersion_RejectsUnsupportedOrIncompatibleVersions",
@@ -403651,16 +403651,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
           "method": "TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
@@ -403673,16 +403673,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs::TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
           "method": "TryAdoptNegotiatedVersion_SwitchesTheClientRuntimeToTheNegotiatedVersionAndUpdatesIncomingInitialProtection",
@@ -403695,16 +403695,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9368-S4-0002",
+          "requirement_id": "RFC9368-S4-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S4-0002.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9368_S4_0002",
           "member": "REQ_QUIC_RFC9368_S4_0002.TryCommitPeerTransportParameters_RejectsAChosenVersionThatDoesNotMatchTheNegotiatedVersion",
           "method": "TryCommitPeerTransportParameters_RejectsAChosenVersionThatDoesNotMatchTheNegotiatedVersion",
@@ -403717,7 +403717,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9368-S4-0002"
+            "RFC9368-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true

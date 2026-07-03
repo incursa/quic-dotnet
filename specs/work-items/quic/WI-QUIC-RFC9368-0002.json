@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9368-0002"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9368-S4-0001",
-    "REQ-QUIC-RFC9368-S4-0002"
+    "RFC9368-S4-P2-S1-R01",
+    "RFC9368-S4-P2-S2-R01"
   ],
   "summary": "Close the RFC 9368 runtime-selection gap by proving server compatible-version selection, client negotiated-version adoption, and the original-versus-negotiated Initial protection split with focused requirement-home and live loopback tests.",
   "planned_changes": "- Add section 4 runtime-selection clauses to `SPEC-QUIC-RFC9368.json`.\n- Preserve the original-version Initial protection on the server while creating negotiated-version Initial protection for the selected version.\n- Add client negotiated-version adoption helpers and tests.\n- Add focused requirement-home tests for positive, negative, edge, fuzz, and live loopback behavior.\n- Remove the runtime-selection gap ledger entry and refresh generated coverage.\n- Run the targeted RFC 9368 tests and the v2 interop sanity checks, then validate SpecTrace JSON and diff hygiene.",

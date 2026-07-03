@@ -13,8 +13,8 @@
     "VER-QUIC-RFC9368-0002"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9368-S4-0001",
-    "REQ-QUIC-RFC9368-S4-0002"
+    "RFC9368-S4-P2-S1-R01",
+    "RFC9368-S4-P2-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicVersionNegotiation.cs",

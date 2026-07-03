@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9368-S4-0001")]
+[Requirement("RFC9368-S4-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9368_S4_0001
 {
     private static readonly uint[] ClientSupportedVersions =

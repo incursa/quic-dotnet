@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9368-S4-0002")]
+[Requirement("RFC9368-S4-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9368_S4_0002
 {
     private static readonly byte[] InitialDestinationConnectionId =
