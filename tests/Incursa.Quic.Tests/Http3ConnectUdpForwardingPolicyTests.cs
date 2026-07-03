@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectUdpForwardingPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0099")]
+    [Requirement("RFC9298-S6-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_AvoidsIncreasingUdpBurstiness()
@@ -15,7 +15,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0099")]
+    [Requirement("RFC9298-S6-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotPermitIncreasedBurstiness()
@@ -24,7 +24,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0100")]
+    [Requirement("RFC9298-S6-P1-S2-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_DoesNotQueuePacketsOnlyToIncreaseBatching()
@@ -33,7 +33,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0100")]
+    [Requirement("RFC9298-S6-P1-S2-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_RejectsBatchingOnlyQueuePermission()

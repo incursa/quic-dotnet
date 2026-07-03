@@ -11,7 +11,7 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
+    [Requirement("RFC9000-S14-1-P5-S1-R01")]
     [Trait("Category", "Positive")]
     public void CanSend_TracksTheThreeTimesAmplificationCapUntilValidation()
     {
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
+    [Requirement("RFC9000-S14-1-P5-S1-R01")]
     [Trait("Category", "Negative")]
     public void CanSend_RejectsBytesBeyondTheThreeTimesCapBeforeValidation()
     {
@@ -46,7 +46,7 @@ public sealed class REQ_QUIC_RFC9000_S21P1P1P1_0002
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    [Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
+    [Requirement("RFC9000-S14-1-P5-S1-R01")]
     [Trait("Category", "Edge")]
     public void CanSend_AllowsUnlimitedBudgetAfterAddressValidation()
     {

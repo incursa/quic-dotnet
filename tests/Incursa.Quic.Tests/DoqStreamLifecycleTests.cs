@@ -257,7 +257,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0011")]
+    [Requirement("RFC9250-S4-2-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0012")]
     [Requirement("REQ-QUIC-RFC9250-0017")]
     [Requirement("REQ-QUIC-RFC9250-0099")]
@@ -288,7 +288,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0011")]
+    [Requirement("RFC9250-S4-2-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0012")]
     [Requirement("REQ-QUIC-RFC9250-0017")]
     [Requirement("REQ-QUIC-RFC9250-0099")]
@@ -1216,7 +1216,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0104")]
+    [Requirement("RFC9250-S5-5-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AllowsQueryWhenResumptionTicketIsNotMarkedUsed()
@@ -1238,7 +1238,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0104")]
+    [Requirement("RFC9250-S5-5-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RejectsQueryWhenResumptionTicketIsAlreadyUsed()

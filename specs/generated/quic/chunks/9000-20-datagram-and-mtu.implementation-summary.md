@@ -23,13 +23,13 @@
 - Datagram sizing and Initial padding:
   - `REQ-QUIC-RFC9000-S14-0003`
   - `REQ-QUIC-RFC9000-0856`
-  - `REQ-QUIC-RFC9000-S14P1-0001`
+  - `RFC9000-S14-1-P1-S1-R01`
   - `RFC9000-S14-1-P1-S3-R01`
-  - `REQ-QUIC-RFC9000-S14P1-0008`
+  - `RFC9000-S14-1-P5-S1-R01`
 - PMTU probe floor:
   - `REQ-QUIC-RFC9000-S14P4-0001`
 - PMTU probe loss:
-  - `REQ-QUIC-RFC9000-S14P4-0002`
+  - `RFC9000-S14-4-P2-S2-R01`
 
 ## Files Changed
 - [src/Incursa.Quic/QuicCongestionControlState.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicCongestionControlState.cs)

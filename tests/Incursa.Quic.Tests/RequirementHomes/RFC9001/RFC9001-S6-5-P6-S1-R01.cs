@@ -6,9 +6,9 @@ using System.Diagnostics;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P5-0003">Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-5-P6-S1-R01">Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P5-0003")]
+[Requirement("RFC9001-S6-5-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P5_0003
 {
     [Fact]

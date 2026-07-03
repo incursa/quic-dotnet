@@ -1669,7 +1669,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0074",
+      "id": "RFC9463-S5-2-P3-R01",
       "title": "Discard Invalid OPTION_V4_DNR Entries",
       "statement": "The DHCPv4 client MUST silently discard any OPTION_V4_DNR that fails the validation steps in Section 3.1.8.",
       "coverage": {

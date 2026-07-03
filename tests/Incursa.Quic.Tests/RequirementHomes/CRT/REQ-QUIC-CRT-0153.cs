@@ -96,7 +96,7 @@ public sealed class REQ_QUIC_CRT_0153
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9250-0108")]
+    [Requirement("RFC9250-S5-5-3-P5-S2-R01")]
     public void DisabledServerEarlyDataAndReplayKeepZeroRttOpenMaterialAndEncryptedExtensionsClosed()
     {
         QuicServerResumptionTicketStore disabledTicketStore = new();

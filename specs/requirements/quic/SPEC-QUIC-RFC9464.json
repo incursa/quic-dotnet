@@ -1627,7 +1627,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9464-0076",
+      "id": "RFC9464-S6-P3-R01",
       "title": "Disallow ENCDNS_IP* use after NULL authentication unless preconfigured",
       "statement": "If the IKEv2 responder has used the NULL Authentication method to authenticate itself, the initiator MUST NOT use returned ENCDNS_IP* resolvers configuration unless the initiator is preconfigured, e.g., in the operating system or the application.",
       "coverage": {

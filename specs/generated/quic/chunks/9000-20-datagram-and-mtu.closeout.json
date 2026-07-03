@@ -81,14 +81,14 @@
       "REQ-QUIC-RFC9000-S14-0009"
     ],
     "S14P1": [
-      "REQ-QUIC-RFC9000-S14P1-0001",
+      "RFC9000-S14-1-P1-S1-R01",
       "REQ-QUIC-RFC9000-S14P1-0002",
       "RFC9000-S14-1-P1-S3-R01",
       "REQ-QUIC-RFC9000-S14P1-0004",
       "RFC9000-S14-1-P3-S1-R01",
       "RFC9000-S14-1-P4-S1-R01",
       "REQ-QUIC-RFC9000-S14P1-0007",
-      "REQ-QUIC-RFC9000-S14P1-0008"
+      "RFC9000-S14-1-P5-S1-R01"
     ],
     "S14P2": [
       "REQ-QUIC-RFC9000-S14P2-0001",
@@ -105,7 +105,7 @@
     "S14P2P1": [
       "RFC9000-S14-2-1-P2-S1-R01",
       "RFC9000-S14-2-1-P4-S1-R01",
-      "REQ-QUIC-RFC9000-S14P2P1-0003",
+      "RFC9000-S14-2-1-P4-S2-R01",
       "REQ-QUIC-RFC9000-S14P2P1-0004",
       "RFC9000-S14-2-1-P4-S4-R01",
       "RFC9000-S14-2-1-P5-S1-R01",
@@ -119,7 +119,7 @@
     ],
     "S14P4": [
       "REQ-QUIC-RFC9000-S14P4-0001",
-      "REQ-QUIC-RFC9000-S14P4-0002"
+      "RFC9000-S14-4-P2-S2-R01"
     ]
   },
   "status_groups": {
@@ -212,9 +212,9 @@
       {
         "section_token": "S14P1",
         "requirements": [
-          "REQ-QUIC-RFC9000-S14P1-0001",
+          "RFC9000-S14-1-P1-S1-R01",
           "RFC9000-S14-1-P1-S3-R01",
-          "REQ-QUIC-RFC9000-S14P1-0008"
+          "RFC9000-S14-1-P5-S1-R01"
         ],
         "files": [
           "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
@@ -226,13 +226,13 @@
         "section_token": "S14P4",
         "requirements": [
           "REQ-QUIC-RFC9000-S14P4-0001",
-          "REQ-QUIC-RFC9000-S14P4-0002"
+          "RFC9000-S14-4-P2-S2-R01"
         ],
         "files": [
           "src/Incursa.Quic/QuicConnectionSendRuntime.cs",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs",
           "src/Incursa.Quic/QuicCongestionControlState.cs",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-4-P2-S2-R01.cs",
           "tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs"
         ]
       }
@@ -327,7 +327,7 @@
         "requirements": [
           "RFC9000-S14-2-1-P2-S1-R01",
           "RFC9000-S14-2-1-P4-S1-R01",
-          "REQ-QUIC-RFC9000-S14P2P1-0003",
+          "RFC9000-S14-2-1-P4-S2-R01",
           "REQ-QUIC-RFC9000-S14P2P1-0004",
           "RFC9000-S14-2-1-P4-S4-R01",
           "RFC9000-S14-2-1-P5-S1-R01",
@@ -386,7 +386,7 @@
         "ids": [
           "REQ-QUIC-RFC9000-S13P4-0001",
           "REQ-QUIC-RFC9000-S13P4P2-0001",
-          "REQ-QUIC-RFC9000-S14P4-0002"
+          "RFC9000-S14-4-P2-S2-R01"
         ]
       },
       {
@@ -396,22 +396,22 @@
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0002.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-4-P2-S2-R01.cs",
         "ids": [
-          "REQ-QUIC-RFC9000-S14P4-0002"
+          "RFC9000-S14-4-P2-S2-R01"
         ]
       },
       {
         "file": "tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs",
         "ids": [
-          "REQ-QUIC-RFC9000-S14P1-0001",
+          "RFC9000-S14-1-P1-S1-R01",
           "RFC9000-S14-1-P1-S3-R01"
         ]
       },
       {
         "file": "tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs",
         "ids": [
-          "REQ-QUIC-RFC9000-S14P1-0008"
+          "RFC9000-S14-1-P5-S1-R01"
         ]
       },
       {

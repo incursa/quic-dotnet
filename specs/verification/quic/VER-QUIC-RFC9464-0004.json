@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9464-0071",
     "REQ-QUIC-RFC9464-0072",
     "REQ-QUIC-RFC9464-0073",
-    "REQ-QUIC-RFC9464-0076"
+    "RFC9464-S6-P3-R01"
   ],
   "scope": "This verification covers malformed attribute rejection before policy use, preference for encrypted DNS resolvers when classic INTERNAL_IP*_DNS addresses are also present, use of conveyed ENCDNS_IP* addresses as encrypted resolver session targets, ADN and SHA2-256 SubjectPublicKeyInfo digest certificate validation decisions, non-recoverable resolver certificate validation failure, split-tunnel INTERNAL_DNS_DOMAIN routing to ENCDNS_IP* resolvers, allowance for INTERNAL_DNS_DOMAIN without classic DNS attributes, and rejection of non-preconfigured NULL-authenticated responder data.",
   "preconditions": [

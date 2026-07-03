@@ -1188,7 +1188,7 @@ expectation.
 Follow-on S4P6 stream-limit enforcement and blocked-open tail closure on
 2026-05-06 closes `RFC9000-S4-6-P3-R01`,
 `RFC9000-S4-6-P3-S1-R01`, and
-`REQ-QUIC-RFC9000-0203` under `ARC-QUIC-RFC9000-0076`,
+`RFC9000-S4-6-P6-R01` under `ARC-QUIC-RFC9000-0076`,
 `WI-QUIC-RFC9000-0076`, and `VER-QUIC-RFC9000-0076`. The proof covers local
 bidirectional and unidirectional opens staying within the peer's current stream
 limit, inbound STREAM frames at the advertised limit being accepted, zero

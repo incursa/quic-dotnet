@@ -15,7 +15,7 @@
   ],
   "verification_method": "Requirement-home execution, protected-packet inspection, existing frame-codec fuzz coverage, BenchmarkDotNet Dry validation, and SpecTrace render/check for the bounded active-runtime `STREAMS_BLOCKED` emission slice.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0203",
+    "RFC9000-S4-6-P6-R01",
     "REQ-QUIC-RFC9000-S13P3-0022",
     "REQ-QUIC-RFC9000-S13P3-0023",
     "REQ-QUIC-RFC9000-S19P14-0001",

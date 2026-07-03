@@ -27,11 +27,11 @@
 - `S13P4P2P1`: `REQ-QUIC-RFC9000-S13P4P2P1-0001`, `REQ-QUIC-RFC9000-S13P4P2P1-0002`, `REQ-QUIC-RFC9000-S13P4P2P1-0003`, `REQ-QUIC-RFC9000-S13P4P2P1-0004`, `REQ-QUIC-RFC9000-S13P4P2P1-0005`, `RFC9000-S13-4-2-1-P5-S2-R01`, `REQ-QUIC-RFC9000-S13P4P2P1-0007`, `REQ-QUIC-RFC9000-S13P4P2P1-0008`
 - `S13P4P2P2`: `REQ-QUIC-RFC9000-S13P4P2P2-0001`, `REQ-QUIC-RFC9000-S13P4P2P2-0002`, `REQ-QUIC-RFC9000-S13P4P2P2-0003`, `REQ-QUIC-RFC9000-S13P4P2P2-0004`, `REQ-QUIC-RFC9000-S13P4P2P2-0005`
 - `S14`: `REQ-QUIC-RFC9000-0851`, `REQ-QUIC-RFC9000-S14-0002`, `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-0856`, `REQ-QUIC-RFC9000-S14-0005`, `REQ-QUIC-RFC9000-S14-0006`, `REQ-QUIC-RFC9000-0857`, `REQ-QUIC-RFC9000-S14-0008`, `REQ-QUIC-RFC9000-S14-0009`
-- `S14P1`: `REQ-QUIC-RFC9000-S14P1-0001`, `REQ-QUIC-RFC9000-S14P1-0002`, `RFC9000-S14-1-P1-S3-R01`, `REQ-QUIC-RFC9000-S14P1-0004`, `RFC9000-S14-1-P3-S1-R01`, `RFC9000-S14-1-P4-S1-R01`, `REQ-QUIC-RFC9000-S14P1-0007`, `REQ-QUIC-RFC9000-S14P1-0008`
+- `S14P1`: `RFC9000-S14-1-P1-S1-R01`, `REQ-QUIC-RFC9000-S14P1-0002`, `RFC9000-S14-1-P1-S3-R01`, `REQ-QUIC-RFC9000-S14P1-0004`, `RFC9000-S14-1-P3-S1-R01`, `RFC9000-S14-1-P4-S1-R01`, `REQ-QUIC-RFC9000-S14P1-0007`, `RFC9000-S14-1-P5-S1-R01`
 - `S14P2`: `REQ-QUIC-RFC9000-S14P2-0001`, `REQ-QUIC-RFC9000-S14P2-0002`, `RFC9000-S14-2-P2-S1-R01`, `RFC9000-S14-2-P2-S2-R01`, `REQ-QUIC-RFC9000-S14P2-0005`, `REQ-QUIC-RFC9000-S14P2-0006`, `RFC9000-S14-2-P4-S1-R01`, `RFC9000-S14-2-P4-S2-R01`, `RFC9000-S14-2-P5-S2-R01`, `RFC9000-S14-2-P6-S1-R01`
-- `S14P2P1`: `RFC9000-S14-2-1-P2-S1-R01`, `RFC9000-S14-2-1-P4-S1-R01`, `REQ-QUIC-RFC9000-S14P2P1-0003`, `REQ-QUIC-RFC9000-S14P2P1-0004`, `RFC9000-S14-2-1-P4-S4-R01`, `RFC9000-S14-2-1-P5-S1-R01`, `RFC9000-S14-2-1-P5-S2-R01`
+- `S14P2P1`: `RFC9000-S14-2-1-P2-S1-R01`, `RFC9000-S14-2-1-P4-S1-R01`, `RFC9000-S14-2-1-P4-S2-R01`, `REQ-QUIC-RFC9000-S14P2P1-0004`, `RFC9000-S14-2-1-P4-S4-R01`, `RFC9000-S14-2-1-P5-S1-R01`, `RFC9000-S14-2-1-P5-S2-R01`
 - `S14P3`: `REQ-QUIC-RFC9000-S14P3-0001`, `REQ-QUIC-RFC9000-S14P3-0002`, `RFC9000-S14-3-P2-S1-R01`, `REQ-QUIC-RFC9000-S14P3-0004`
-- `S14P4`: `REQ-QUIC-RFC9000-S14P4-0001`, `REQ-QUIC-RFC9000-S14P4-0002`
+- `S14P4`: `REQ-QUIC-RFC9000-S14P4-0001`, `RFC9000-S14-4-P2-S2-R01`
 
 ## Evidence
 
@@ -41,7 +41,7 @@
 - `REQ-QUIC-RFC9000-S13P4P2P1-0001` through `REQ-QUIC-RFC9000-S13P4P2P1-0008` are now directly traced by the ECN validation helper tests, including the negative path for zeroed-or-missing ECN counts.
 - `REQ-QUIC-RFC9000-S13P4P2P2-0001`, `REQ-QUIC-RFC9000-S13P4P2P2-0003`, `REQ-QUIC-RFC9000-S13P4P2P2-0004`, and `REQ-QUIC-RFC9000-S13P4P2P2-0005` are implemented and test-covered in the ECN validation helper tests.
 - `REQ-QUIC-RFC9000-S14P4-0001` is implemented and test-covered in [`src/Incursa.Quic/QuicConnectionSendRuntime.cs`](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicConnectionSendRuntime.cs) and [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs).
-- `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-0856`, `REQ-QUIC-RFC9000-S14P1-0001`, `RFC9000-S14-1-P1-S3-R01`, `REQ-QUIC-RFC9000-S14P1-0008`, and `REQ-QUIC-RFC9000-S14P4-0002` are implemented and test-covered by the address-validation, anti-amplification, version-negotiation, and congestion-control tests.
+- `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-0856`, `RFC9000-S14-1-P1-S1-R01`, `RFC9000-S14-1-P1-S3-R01`, `RFC9000-S14-1-P5-S1-R01`, and `RFC9000-S14-4-P2-S2-R01` are implemented and test-covered by the address-validation, anti-amplification, version-negotiation, and congestion-control tests.
 - `REQ-QUIC-RFC9000-S13P4P2-0005` remains an explicit deferred item because the helper slice does not need a no-op path for the permissive guidance.
 
 ## Blocked Requirements
@@ -60,10 +60,10 @@
   - [`tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicEcnValidationStateTests.cs) - `REQ-QUIC-RFC9000-S13P4-0001`, `REQ-QUIC-RFC9000-S13P4P2-0001`, `REQ-QUIC-RFC9000-S13P4P2-0006`, `REQ-QUIC-RFC9000-S13P4P1-0006`, `REQ-QUIC-RFC9000-S13P4P2P1-0001`, `REQ-QUIC-RFC9000-S13P4P2P1-0002`, `REQ-QUIC-RFC9000-S13P4P2P1-0003`, `REQ-QUIC-RFC9000-S13P4P2P1-0004`, `REQ-QUIC-RFC9000-S13P4P2P1-0005`, `REQ-QUIC-RFC9000-S13P4P2P2-0001`, `REQ-QUIC-RFC9000-S13P4P2P2-0004`
   - [`tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs) - `REQ-QUIC-RFC9000-S13P4P1-0004`, `REQ-QUIC-RFC9000-S13P4P1-0005`, `REQ-QUIC-RFC9000-S13P4P1-0006`
   - [`tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs) - `REQ-QUIC-RFC9000-S13P4P1-0004`, `REQ-QUIC-RFC9000-S13P4P1-0005`
-  - [`tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs) - `REQ-QUIC-RFC9000-S13P4-0001`, `REQ-QUIC-RFC9000-S13P4P2-0001`, `REQ-QUIC-RFC9000-S14P4-0002`
+  - [`tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicCongestionControlStateTests.cs) - `REQ-QUIC-RFC9000-S13P4-0001`, `REQ-QUIC-RFC9000-S13P4P2-0001`, `RFC9000-S14-4-P2-S2-R01`
   - [`tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P4-0001.cs) - `REQ-QUIC-RFC9000-S14P4-0001`
-  - [`tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs) - `REQ-QUIC-RFC9000-S14P1-0001`, `RFC9000-S14-1-P1-S3-R01`
-  - [`tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs) - `REQ-QUIC-RFC9000-S14P1-0008`
+  - [`tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAddressValidationTests.cs) - `RFC9000-S14-1-P1-S1-R01`, `RFC9000-S14-1-P1-S3-R01`
+  - [`tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAntiAmplificationBudgetTests.cs) - `RFC9000-S14-1-P5-S1-R01`
   - [`tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs) - `REQ-QUIC-RFC9000-S14-0003`, `REQ-QUIC-RFC9000-0856`
 - Stale or wrong in-scope requirement refs found: none.
 

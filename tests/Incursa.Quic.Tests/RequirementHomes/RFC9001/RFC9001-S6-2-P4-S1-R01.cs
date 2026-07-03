@@ -7,9 +7,9 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P2-0004">An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-2-P4-S1-R01">An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P2-0004")]
+[Requirement("RFC9001-S6-2-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P2_0004
 {
     [Fact]

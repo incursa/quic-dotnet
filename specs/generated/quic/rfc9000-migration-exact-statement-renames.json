@@ -1611,7 +1611,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S4P6-0012",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0203",
+      "staged_requirement_id": "RFC9000-S4-6-P6-R01",
       "statement": "An endpoint that is unable to open a new stream due to the peer's limits SHOULD send a STREAMS_BLOCKED frame.",
       "derived_from": "REQ-QUIC-RFC9000-S4P6-0012",
       "supersedes": [

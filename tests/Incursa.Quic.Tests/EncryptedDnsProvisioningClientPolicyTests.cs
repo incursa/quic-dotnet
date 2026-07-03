@@ -152,7 +152,7 @@ public sealed class EncryptedDnsProvisioningClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0076")]
+    [Requirement("RFC9464-S6-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NullAuthenticatedResponderBlocksEncryptedDnsUnlessPreconfigured()
@@ -168,7 +168,7 @@ public sealed class EncryptedDnsProvisioningClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0076")]
+    [Requirement("RFC9464-S6-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void PreconfiguredNullAuthenticatedResponderCanUseEncryptedDns()

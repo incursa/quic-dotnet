@@ -318,7 +318,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0074")]
+    [Requirement("RFC9463-S5-2-P3-R01")]
     [Requirement("REQ-QUIC-RFC9463-0075")]
     [Requirement("REQ-QUIC-RFC9463-0076")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -338,7 +338,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0074")]
+    [Requirement("RFC9463-S5-2-P3-R01")]
     [Requirement("REQ-QUIC-RFC9463-0075")]
     [Requirement("REQ-QUIC-RFC9463-0076")]
     [CoverageType(RequirementCoverageType.Negative)]

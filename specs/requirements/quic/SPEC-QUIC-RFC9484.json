@@ -3132,7 +3132,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0149",
+      "id": "RFC9484-S4-8-P1-S2-R01",
       "title": "Walk extension headers to the outermost non-extension protocol number",
       "statement": "Upon receiving packets, implementations that support scoping or routing by Internet Protocol Number MUST walk the chain of extensions to find the outermost non-extension Internet Protocol Number to match against the scoping rule.",
       "coverage": {

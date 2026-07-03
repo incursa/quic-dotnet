@@ -3,13 +3,13 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0203")]
+[Requirement("RFC9000-S4-6-P6-R01")]
 public sealed class REQ_QUIC_RFC9000_0203
 {
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Requirement("REQ-QUIC-RFC9000-0203")]
+    [Requirement("RFC9000-S4-6-P6-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryOpenLocalStream_ReturnsStreamsBlockedFrameWhenThePeerLimitIsReached(bool bidirectional)
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_0203
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0203")]
+    [Requirement("RFC9000-S4-6-P6-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryOpenLocalStream_ReturnsStreamsBlockedWhenThePeerLimitIsReached()

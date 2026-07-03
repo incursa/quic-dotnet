@@ -1216,7 +1216,7 @@
       "statement": "If an endpoint receives a datagram of a certain size, it MUST NOT assume that the sender sent the datagram at the same size."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0001",
+      "id": "RFC9000-S14-1-P1-S1-R01",
       "title": "Pad Initial datagrams to 1200 bytes",
       "statement": "A client MUST expand the payload of all UDP datagrams carrying Initial packets to at least the smallest allowed maximum datagram size of 1200 bytes by adding PADDING frames to the Initial packet or by coalescing the Initial packet."
     },
@@ -1251,7 +1251,7 @@
       "statement": "A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0008",
+      "id": "RFC9000-S14-1-P5-S1-R01",
       "title": "Limit bytes sent before validating the client address",
       "statement": "The server MUST also limit the number of bytes it sends before validating the address of the client."
     },
@@ -1301,7 +1301,7 @@
       "statement": "A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2P1-0003",
+      "id": "RFC9000-S14-2-1-P4-S2-R01",
       "title": "Use the quoted packet to associate ICMP messages with a connection",
       "statement": "This validation SHOULD use the quoted packet supplied in the payload of an ICMP message to associate the message with a corresponding transport connection."
     },
@@ -1336,7 +1336,7 @@
       "statement": "PMTU probes MUST be ack-eliciting packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P4-0002",
+      "id": "RFC9000-S14-4-P2-S2-R01",
       "title": "Do not treat PMTU probe loss as congestion",
       "statement": "Loss of a QUIC packet that is carried in a PMTU probe SHOULD NOT trigger a congestion control reaction."
     },

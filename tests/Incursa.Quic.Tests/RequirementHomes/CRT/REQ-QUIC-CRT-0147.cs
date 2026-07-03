@@ -514,7 +514,7 @@ public sealed class REQ_QUIC_CRT_0147
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S6P2P3-0001")]
+    [Requirement("RFC9002-S6-2-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DuplicateRetriedClientHelloAfterServerFlightReplaysServerHelloAndHandshakeProbes()
@@ -669,7 +669,7 @@ public sealed class REQ_QUIC_CRT_0147
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S6P2P3-0001")]
+    [Requirement("RFC9002-S6-2-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DuplicateRetriedClientHelloAfterServerFlightDoesNotProbePastAntiAmplificationBudget()
@@ -700,7 +700,7 @@ public sealed class REQ_QUIC_CRT_0147
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9002-S6P2P3-0001")]
+    [Requirement("RFC9002-S6-2-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void FuzzDuplicateRetriedClientHelloAfterServerFlight_ProbeReplayStaysBudgetedAndBounded()

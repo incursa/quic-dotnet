@@ -34,7 +34,7 @@
     "REQ-QUIC-RFC9484-0146",
     "REQ-QUIC-RFC9484-0147",
     "RFC9484-S4-8-P1-S1-R01",
-    "REQ-QUIC-RFC9484-0149"
+    "RFC9484-S4-8-P1-S2-R01"
   ],
   "summary": "Add CONNECT-IP ROUTE_ADVERTISEMENT capsule codec and route/protocol validation policy.",
   "planned_changes": "- Add route range model validation.\n- Add ROUTE_ADVERTISEMENT capsule create/parse helpers.\n- Add supersession, withdrawal, route ordering, overlap, request-stream abort, validation-permission, and extension-header protocol-number policy helpers.\n- Add focused tests, canonical xrefs, and narrow RFC9484 blocked triage.",

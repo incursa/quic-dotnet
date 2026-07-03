@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9464-0071",
     "REQ-QUIC-RFC9464-0072",
     "REQ-QUIC-RFC9464-0073",
-    "REQ-QUIC-RFC9464-0076"
+    "RFC9464-S6-P3-R01"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsProvisioningClientPolicy.cs",

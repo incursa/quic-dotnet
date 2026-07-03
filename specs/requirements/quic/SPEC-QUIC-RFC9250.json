@@ -392,7 +392,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0011",
+      "id": "RFC9250-S4-2-P5-S1-R01",
       "title": "Select the next available client-initiated bidirectional stream",
       "statement": "The client MUST select the next available client-initiated bidirectional stream for each subsequent query on a QUIC connection.",
       "coverage": {
@@ -2848,7 +2848,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0104",
+      "id": "RFC9250-S5-5-3-P3-S1-R01",
       "title": "Use resumption tickets only once",
       "statement": "Clients SHOULD use resumption tickets only once, as specified in Appendix C.4 of RFC8446.",
       "coverage": {
@@ -2974,7 +2974,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0108",
+      "id": "RFC9250-S5-5-3-P5-S2-R01",
       "title": "Implement anti-replay mechanisms",
       "statement": "Servers SHOULD implement the anti-replay mechanisms specified in Section 8 of RFC8446.",
       "coverage": {

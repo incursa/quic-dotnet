@@ -766,7 +766,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0108")]
+    [Requirement("RFC9250-S5-5-3-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void AntiReplayEnabledByDefault()

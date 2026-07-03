@@ -14,11 +14,11 @@
   "addresses": [
     "REQ-QUIC-RFC9250-0102",
     "REQ-QUIC-RFC9250-0103",
-    "REQ-QUIC-RFC9250-0104",
+    "RFC9250-S5-5-3-P3-S1-R01",
     "RFC9250-S5-5-3-P3-S2-R01",
     "REQ-QUIC-RFC9250-0106",
     "RFC9250-S5-5-3-P5-S1-R01",
-    "REQ-QUIC-RFC9250-0108",
+    "RFC9250-S5-5-3-P5-S2-R01",
     "RFC9250-S5-5-4-P1-S4-R01"
   ],
   "summary": "Add client-side idle-timeout reuse gating, resumption ticket single-use tracking, connectivity-change detection, address validation token policy, and server-side resumption ticket lifetime and anti-replay options.",

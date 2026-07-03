@@ -267,14 +267,14 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S14-0006` | Avoid exceeding the max_udp_payload_size once known |
 | `REQ-QUIC-RFC9000-S14-0008` | In IPv4 [IPv4], the Don't Fragment (DF) bit MUST be set if possible, to prevent fragmentation on the path |
 | `REQ-QUIC-RFC9000-S14-0009` | Treat received datagram size as unauthenticated |
-| `REQ-QUIC-RFC9000-S14P1-0001` | Pad Initial datagrams to 1200 bytes |
+| `RFC9000-S14-1-P1-S1-R01` | Pad Initial datagrams to 1200 bytes |
 | `REQ-QUIC-RFC9000-S14P1-0002` | Initial packets can even be coalesced with invalid packets, which a receiver will discard |
 | `RFC9000-S14-1-P1-S3-R01` | Pad server Initial datagrams to 1200 bytes |
 | `REQ-QUIC-RFC9000-S14P1-0004` | Sending UDP datagrams of this size ensures that the network path supports a reasonable Path Maximum Transmission Unit (PMTU), in both directions |
 | `RFC9000-S14-1-P3-S1-R01` | Allow oversized Initial datagrams when the path and peer support them |
 | `RFC9000-S14-1-P4-S1-R01` | Discard undersized Initial packets at the server |
 | `REQ-QUIC-RFC9000-S14P1-0007` | Allow servers to close on undersized Initial packets |
-| `REQ-QUIC-RFC9000-S14P1-0008` | Limit bytes sent before validating the client address |
+| `RFC9000-S14-1-P5-S1-R01` | Limit bytes sent before validating the client address |
 | `REQ-QUIC-RFC9000-S14P2-0001` | The UDP payload includes one or more QUIC packet headers and protected payloads |
 | `REQ-QUIC-RFC9000-S14P2-0002` | The largest UDP payload an endpoint sends at any given time is referred to as the endpoint's maximum datagram size |
 | `RFC9000-S14-2-P2-S1-R01` | Use DPLPMTUD or PMTUD to determine support for a desired size |
@@ -284,14 +284,14 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S14-2-P4-S1-R01` | Stop sending packets on a path that cannot support 1200 bytes |
 | `RFC9000-S14-2-P5-S2-R01` | Maintain a maximum datagram size per address pair when doing PMTU discovery |
 | `RFC9000-S14-2-P6-S1-R01` | Allow conservative maximum datagram size estimates |
-| `REQ-QUIC-RFC9000-S14P2P1-0003` | Use the quoted packet to associate ICMP messages with a connection |
+| `RFC9000-S14-2-1-P4-S2-R01` | Use the quoted packet to associate ICMP messages with a connection |
 | `REQ-QUIC-RFC9000-S14P2P1-0004` | Validate ICMP messages with addresses, ports, and connection IDs |
 | `RFC9000-S14-2-1-P5-S1-R01` | Do not increase PMTU based on ICMP messages |
 | `REQ-QUIC-RFC9000-S14P3-0001` | DPLPMTUD [DPLPMTUD] relies on tracking loss or acknowledgment of QUIC packets that are carried in PMTU probes |
 | `REQ-QUIC-RFC9000-S14P3-0002` | PMTU probes for DPLPMTUD that use the PADDING frame implement "Probing using padding data", as defined in Section 4 |
 | `REQ-QUIC-RFC9000-S14P3-0004` | Maintain an MPS per address pair when using DPLPMTUD |
 | `REQ-QUIC-RFC9000-S14P4-0001` | Make PMTU probes ack-eliciting |
-| `REQ-QUIC-RFC9000-S14P4-0002` | Do not treat PMTU probe loss as congestion |
+| `RFC9000-S14-4-P2-S2-R01` | Do not treat PMTU probe loss as congestion |
 | `REQ-QUIC-RFC9000-S15-0003` | Identify this specification as version 0x00000001 |
 | `REQ-QUIC-RFC9000-S17-0001` | All numeric values MUST be encoded in network byte order (that is, big endian), and all field... |
 | `REQ-QUIC-RFC9000-S17P1-0001` | When present in long or short packet headers, they MUST be encoded in 1 to 4 bytes |

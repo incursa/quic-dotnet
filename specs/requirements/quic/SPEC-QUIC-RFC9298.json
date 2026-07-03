@@ -2049,7 +2049,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0099",
+      "id": "RFC9298-S6-P1-S2-R01",
       "title": "Avoid increasing UDP burstiness",
       "statement": "UDP proxies SHOULD avoid increasing burstiness of UDP traffic.",
       "coverage": {
@@ -2069,7 +2069,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0100",
+      "id": "RFC9298-S6-P1-S2-R02",
       "title": "Do not queue packets to increase batching",
       "statement": "UDP proxies SHOULD NOT queue packets to increase batching.",
       "coverage": {

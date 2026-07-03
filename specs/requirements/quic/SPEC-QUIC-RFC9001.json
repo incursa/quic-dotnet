@@ -1830,7 +1830,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P2-0004",
+      "id": "RFC9001-S6-2-P4-S1-R01",
       "title": "Allow KEY_UPDATE_ERROR for old-key ACKs of newer-key packets",
       "statement": "An endpoint MAY treat an acknowledgment carried in an old-key packet that acknowledges a newer-key packet as a connection error of type KEY_UPDATE_ERROR.",
       "coverage": {
@@ -1850,20 +1850,20 @@
           "VER-QUIC-RFC9001-0003"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveServerRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatOnlyAcknowledgeOldKeyPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessedAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatOnlyAcknowledgePhaseTwoPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_AreProcessedAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatOnlyAcknowledgePhaseThreePackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_AreProcessedAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatOnlyAcknowledgePhaseFourPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_AreProcessedAcrossRepresentativePayloadSizes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs::FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveServerRuntimeAllowsOldKeyAckPacketsThatAcknowledgeNewerKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldKeyAckPacketsThatOnlyAcknowledgeOldKeyPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::FuzzOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseTwoAckPacketsThatOnlyAcknowledgePhaseTwoPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::FuzzOldPhaseTwoAckPacketsThatAcknowledgePhaseThreePackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseThreeAckPacketsThatOnlyAcknowledgePhaseThreePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::FuzzOldPhaseThreeAckPacketsThatAcknowledgePhaseFourPackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::ActiveClientRuntimeAllowsOldPhaseFourAckPacketsThatOnlyAcknowledgePhaseFourPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::FuzzOldPhaseFourAckPacketsThatAcknowledgePhaseFivePackets_AreProcessedAcrossRepresentativePayloadSizes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs::FuzzLaterOldKeyAckPacketsThatAcknowledgeNewerKeyPackets_AreProcessed"
         ],
         "upstream_refs": [
           "RFC 9001 §6.2 RFC9001-S6.2-B5-P4-S1",
@@ -1872,7 +1872,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P3-0001",
+      "id": "RFC9001-S6-3-P1-S1-R01",
       "title": "Avoid timing signals for invalid Key Phase bits",
       "statement": "Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.",
       "coverage": {
@@ -1896,11 +1896,11 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveServerRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeDropsCurrentKeyPacketsThatCarryTheNextKeyPhaseBitWithoutClosing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::ActiveClientRuntimeDropsSuccessorKeyPacketsThatCarryTheOldKeyPhaseBitWithoutClosing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs::FuzzInvalidKeyPhasePackets_RandomizedPayloadSizesDoNotCloseOrSendAResponse"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs::ActiveClientRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs::ActiveServerRuntimeStillInstallsAnAuthenticatedSuccessorPacketWithTheMatchingKeyPhaseBit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs::ActiveClientRuntimeDropsCurrentKeyPacketsThatCarryTheNextKeyPhaseBitWithoutClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs::ActiveClientRuntimeDropsSuccessorKeyPacketsThatCarryTheOldKeyPhaseBitWithoutClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs::FuzzInvalidKeyPhasePackets_RandomizedPayloadSizesDoNotCloseOrSendAResponse"
         ]
       }
     },
@@ -2112,7 +2112,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P5-0003",
+      "id": "RFC9001-S6-5-P6-S1-R01",
       "title": "Wait before initiating another key update after confirmation",
       "statement": "Endpoints SHOULD wait three times the PTO before initiating a key update after receiving the acknowledgment that confirms the previous key update.",
       "coverage": {
@@ -2136,18 +2136,18 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveServerRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotAllowARepeatedLocalKeyUpdateBeforeTheCurrentKeyPhaseIsAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotArmTheRepeatedUpdateCooldownWhenOnlyAnOldPhasePacketIsAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeDoesNotExtendTheRepeatedUpdateCooldownAfterDuplicateAcknowledgments",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsRepeatedLocalKeyUpdateAfterCooldownAndOldKeyDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseThreeAfterPhaseTwoAcknowledgmentCooldownAndOldKeyDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseFourAfterPhaseThreeAcknowledgmentCooldownAndOldKeyDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::ActiveClientRuntimeInstallsLocalPhaseFiveAfterPhaseFourAcknowledgmentCooldownAndOldKeyDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs::FuzzLaterLocalKeyUpdates_InstallOnlyAfterAcknowledgmentCooldownAndOldKeyDiscard"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveServerRuntimeArmsAThreePtoCooldownAfterAcknowledgingTheCurrentKeyPhase",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeDoesNotAllowARepeatedLocalKeyUpdateBeforeTheCurrentKeyPhaseIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeDoesNotArmTheRepeatedUpdateCooldownWhenOnlyAnOldPhasePacketIsAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeDoesNotExtendTheRepeatedUpdateCooldownAfterDuplicateAcknowledgments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::FuzzRepeatedLocalKeyUpdateCooldown_RandomizedAcknowledgmentTimingKeepsTheGateClosedUntilThreePtosExpire",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeInstallsRepeatedLocalKeyUpdateAfterCooldownAndOldKeyDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeRejectsRepeatedLocalKeyUpdateUntilRetainedOldKeysAreDiscarded",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeInstallsLocalPhaseThreeAfterPhaseTwoAcknowledgmentCooldownAndOldKeyDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeInstallsLocalPhaseFourAfterPhaseThreeAcknowledgmentCooldownAndOldKeyDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::ActiveClientRuntimeInstallsLocalPhaseFiveAfterPhaseFourAcknowledgmentCooldownAndOldKeyDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs::FuzzLaterLocalKeyUpdates_InstallOnlyAfterAcknowledgmentCooldownAndOldKeyDiscard"
         ]
       }
     },

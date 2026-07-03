@@ -17,21 +17,21 @@
   "procedure": [
     "Run the existing first-successor RFC 9001 Section 6 requirement-home tests as a regression baseline.",
     "Run the direct RFC 9001 Section 6.1 first-successor requirement-home tests for REQ-QUIC-RFC9001-S6P1-0001 through REQ-QUIC-RFC9001-S6P1-0010.",
-    "Run the direct first RFC 9001 Section 6.2 requirement-home tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, REQ-QUIC-RFC9001-S6P2-0003, and REQ-QUIC-RFC9001-S6P2-0004.",
-    "Run the direct invalid Key Phase RFC 9001 Section 6.3 requirement-home tests for REQ-QUIC-RFC9001-S6P3-0001.",
+    "Run the direct first RFC 9001 Section 6.2 requirement-home tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, REQ-QUIC-RFC9001-S6P2-0003, and RFC9001-S6-2-P4-S1-R01.",
+    "Run the direct invalid Key Phase RFC 9001 Section 6.3 requirement-home tests for RFC9001-S6-3-P1-S1-R01.",
     "Run the direct first next-receive-key RFC 9001 Section 6.3 requirement-home tests for RFC9001-S6-3-P5-S1-R01.",
     "Run the direct first send-key ordering RFC 9001 Section 6.4 requirement-home tests for REQ-QUIC-RFC9001-S6P4-0001 through REQ-QUIC-RFC9001-S6P4-0003.",
     "Run the direct first old/current next receive-selection RFC 9001 Section 6.5 requirement-home tests for REQ-QUIC-RFC9001-S6P5-0001 and REQ-QUIC-RFC9001-S6P5-0002.",
     "Run the direct bounded repeated lower-recovered retained phase-1 receive-selection tests for REQ-QUIC-RFC9001-S6P5-0001.",
     "Run the direct first retained-old timer and discard RFC 9001 Section 6.5 requirement-home tests for RFC9001-S6-5-P7-R01 and REQ-QUIC-RFC9001-S6P5-0005.",
-    "Run the direct first repeated local-update cooldown RFC 9001 Section 6.5 requirement-home tests for REQ-QUIC-RFC9001-S6P5-0003.",
-    "Run the direct bounded repeated local install and outbound Key Phase parity tests for REQ-QUIC-RFC9001-S6-0004 and REQ-QUIC-RFC9001-S6P5-0003.",
+    "Run the direct first repeated local-update cooldown RFC 9001 Section 6.5 requirement-home tests for RFC9001-S6-5-P6-S1-R01.",
+    "Run the direct bounded repeated local install and outbound Key Phase parity tests for REQ-QUIC-RFC9001-S6-0004 and RFC9001-S6-5-P6-S1-R01.",
     "Run the direct bounded repeated peer second-successor tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, REQ-QUIC-RFC9001-S6P2-0003, RFC9001-S6-3-P5-S1-R01, and REQ-QUIC-RFC9001-S6P5-0002.",
     "Run the direct bounded repeated old-key discard cleanup tests for RFC9001-S6-5-P7-R01 and REQ-QUIC-RFC9001-S6P5-0005 after local and peer phase-2 installs.",
     "Run the direct retained-old cleanup state-isolation tests for REQ-QUIC-RFC9001-S6P5-0005 to prove old-key expiry preserves current-phase acknowledgment and cooldown state while still removing retained old material and matching sender/recovery state.",
-    "Run the bounded phase-3 local install, retained phase-2 lower-recovered selection, retained phase-2 old-key ACK parity, and retained phase-2 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0004, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
-    "Run the bounded phase-4 local install, peer phase-4 opening and ACK protection, retained phase-3 lower-recovered selection, phase-4 higher-recovered next-key selection, retained phase-3 old-key ACK parity, and retained phase-3 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, REQ-QUIC-RFC9001-S6P2-0004, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
-    "Run the bounded phase-5 local install, peer phase-5 opening and ACK protection, retained phase-4 lower-recovered selection, phase-5 higher-recovered next-key selection, retained phase-4 old-key ACK parity, and retained phase-4 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, REQ-QUIC-RFC9001-S6P2-0004, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
+    "Run the bounded phase-3 local install, retained phase-2 lower-recovered selection, retained phase-2 old-key ACK parity, and retained phase-2 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, RFC9001-S6-2-P4-S1-R01, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
+    "Run the bounded phase-4 local install, peer phase-4 opening and ACK protection, retained phase-3 lower-recovered selection, phase-4 higher-recovered next-key selection, retained phase-3 old-key ACK parity, and retained phase-3 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, RFC9001-S6-2-P4-S1-R01, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
+    "Run the bounded phase-5 local install, peer phase-5 opening and ACK protection, retained phase-4 lower-recovered selection, phase-5 higher-recovered next-key selection, retained phase-4 old-key ACK parity, and retained phase-4 cleanup tests for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0002, RFC9001-S6-2-P4-S1-R01, and REQ-QUIC-RFC9001-S6P5-0001 through REQ-QUIC-RFC9001-S6P5-0005.",
     "Run representative later-phase property/fuzz coverage for phases 6 through 32 while keeping the repeated epoch-ledger ownership slice closed under ARC/WI/VER-QUIC-RFC9001-0006.",
     "Run the refreshed QuicRepeatedKeyUpdateControlBenchmarks Dry validation with the representative later-epoch cleanup case preserved under artifacts\\verification\\20260424-rfc9001-s6p5-repeated-epoch-ledger\\bdn.",
     "Run the optional `REQ-QUIC-RFC9001-S6P2-0003` consecutive peer-update policy proof without creating a distinguishable invalid-Key-Phase signal.",
@@ -67,15 +67,15 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P3-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P4-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P1-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-3-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P6-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicRfc9001KeyUpdateRetentionTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/QuicRfc9001RepeatedKeyUpdateTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-5-P7-R01.cs",
@@ -469,15 +469,15 @@
     "REQ-QUIC-RFC9001-S6P2-0001",
     "REQ-QUIC-RFC9001-S6P2-0002",
     "REQ-QUIC-RFC9001-S6P2-0003",
-    "REQ-QUIC-RFC9001-S6P2-0004",
-    "REQ-QUIC-RFC9001-S6P3-0001",
+    "RFC9001-S6-2-P4-S1-R01",
+    "RFC9001-S6-3-P1-S1-R01",
     "RFC9001-S6-3-P5-S1-R01",
     "REQ-QUIC-RFC9001-S6P4-0001",
     "RFC9001-S6-4-P2-S1-R01",
     "REQ-QUIC-RFC9001-S6P4-0003",
     "REQ-QUIC-RFC9001-S6P5-0001",
     "REQ-QUIC-RFC9001-S6P5-0002",
-    "REQ-QUIC-RFC9001-S6P5-0003",
+    "RFC9001-S6-5-P6-S1-R01",
     "RFC9001-S6-5-P7-R01",
     "REQ-QUIC-RFC9001-S6P5-0005",
     "REQ-QUIC-RFC9001-S6P6-0001",
@@ -518,19 +518,19 @@
     },
     {
       "heading": "Bounded Phase-3 Epoch-Ledger Evidence",
-      "content": "- The 2026-04-23 bounded phase-3 run proves local phase-3 install after phase-2 acknowledgment, three-PTO cooldown, and retained-old discard for REQ-QUIC-RFC9001-S6P5-0003.\n- The same run proves bounded peer phase-3 packet opening after phase-2 confirmation for REQ-QUIC-RFC9001-S6P2-0001, phase-2 old-key ACK KEY_UPDATE_ERROR parity for REQ-QUIC-RFC9001-S6P2-0004, retained phase-2 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, retained phase-2 timer arming for RFC9001-S6-5-P7-R01, and retained phase-2 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase3-epoch-ledger/` with 51 focused phase-3 tests, a 145-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
+      "content": "- The 2026-04-23 bounded phase-3 run proves local phase-3 install after phase-2 acknowledgment, three-PTO cooldown, and retained-old discard for RFC9001-S6-5-P6-S1-R01.\n- The same run proves bounded peer phase-3 packet opening after phase-2 confirmation for REQ-QUIC-RFC9001-S6P2-0001, phase-2 old-key ACK KEY_UPDATE_ERROR parity for RFC9001-S6-2-P4-S1-R01, retained phase-2 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, retained phase-2 timer arming for RFC9001-S6-5-P7-R01, and retained phase-2 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase3-epoch-ledger/` with 51 focused phase-3 tests, a 145-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
     },
     {
       "heading": "Bounded Phase-4 Epoch-Ledger Evidence",
-      "content": "- The 2026-04-23 bounded phase-4 run proves local phase-4 install after phase-3 acknowledgment, three-PTO cooldown, and retained-old discard for REQ-QUIC-RFC9001-S6P5-0003.\n- The same run proves bounded peer phase-4 packet opening and ACK-key update after phase-3 confirmation for REQ-QUIC-RFC9001-S6P2-0001 and REQ-QUIC-RFC9001-S6P2-0002, phase-3 old-key ACK KEY_UPDATE_ERROR parity for REQ-QUIC-RFC9001-S6P2-0004, retained phase-3 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, phase-4 higher recovered next-key selection for REQ-QUIC-RFC9001-S6P5-0002, retained phase-3 timer arming for RFC9001-S6-5-P7-R01, and retained phase-3 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase4-epoch-ledger/` with 75 focused phase-4 tests, a 159-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
+      "content": "- The 2026-04-23 bounded phase-4 run proves local phase-4 install after phase-3 acknowledgment, three-PTO cooldown, and retained-old discard for RFC9001-S6-5-P6-S1-R01.\n- The same run proves bounded peer phase-4 packet opening and ACK-key update after phase-3 confirmation for REQ-QUIC-RFC9001-S6P2-0001 and REQ-QUIC-RFC9001-S6P2-0002, phase-3 old-key ACK KEY_UPDATE_ERROR parity for RFC9001-S6-2-P4-S1-R01, retained phase-3 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, phase-4 higher recovered next-key selection for REQ-QUIC-RFC9001-S6P5-0002, retained phase-3 timer arming for RFC9001-S6-5-P7-R01, and retained phase-3 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase4-epoch-ledger/` with 75 focused phase-4 tests, a 159-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
     },
     {
       "heading": "Bounded Phase-5 Epoch-Ledger Evidence",
-      "content": "- The 2026-04-23 bounded phase-5 run proves local phase-5 install after phase-4 acknowledgment, three-PTO cooldown, and retained-old discard for REQ-QUIC-RFC9001-S6P5-0003.\n- The same run proves bounded peer phase-5 packet opening and ACK-key update after phase-4 confirmation for REQ-QUIC-RFC9001-S6P2-0001 and REQ-QUIC-RFC9001-S6P2-0002, phase-4 old-key ACK KEY_UPDATE_ERROR parity for REQ-QUIC-RFC9001-S6P2-0004, retained phase-4 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, phase-5 higher recovered next-key selection for REQ-QUIC-RFC9001-S6P5-0002, retained phase-4 timer arming for RFC9001-S6-5-P7-R01, and retained phase-4 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase5-epoch-ledger/` with 89 focused phase-5 tests, a 173-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
+      "content": "- The 2026-04-23 bounded phase-5 run proves local phase-5 install after phase-4 acknowledgment, three-PTO cooldown, and retained-old discard for RFC9001-S6-5-P6-S1-R01.\n- The same run proves bounded peer phase-5 packet opening and ACK-key update after phase-4 confirmation for REQ-QUIC-RFC9001-S6P2-0001 and REQ-QUIC-RFC9001-S6P2-0002, phase-4 old-key ACK KEY_UPDATE_ERROR parity for RFC9001-S6-2-P4-S1-R01, retained phase-4 lower recovered receive selection for REQ-QUIC-RFC9001-S6P5-0001, phase-5 higher recovered next-key selection for REQ-QUIC-RFC9001-S6P5-0002, retained phase-4 timer arming for RFC9001-S6-5-P7-R01, and retained phase-4 cleanup with matching sender/recovery state for REQ-QUIC-RFC9001-S6P5-0005.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-phase5-epoch-ledger/` with 89 focused phase-5 tests, a 173-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation."
     },
     {
       "heading": "Representative Multi-Epoch Evidence",
-      "content": "- The 2026-04-23 representative multi-epoch run proves phases 6 through 32 are not hard-coded to the bounded phase-5 topoff for REQ-QUIC-RFC9001-S6P2-0001, REQ-QUIC-RFC9001-S6P2-0004, REQ-QUIC-RFC9001-S6P5-0003, and REQ-QUIC-RFC9001-S6P5-0005.\n- The same run proves later local installs still require current-phase acknowledgment, cooldown, and prior retained-old discard; later peer updates open with next keys after confirmation and prior old-key discard; later retained old-key ACK packets that acknowledge newer sends close with KEY_UPDATE_ERROR; and later retained-previous cleanup drops only the retained previous phase while preserving current state across representative packet sets.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-representative-multi-epoch/` with 53 focused tests, a 177-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation. This remains representative helper-backed proof; the repeated epoch-ledger ownership slice is closed under ARC/WI/VER-QUIC-RFC9001-0006.\n- The 2026-04-24 representative later-epoch class run extends the sampled later-phase shape through the same phases 6 through 32 boundary, passed 55 focused tests, and is preserved under `artifacts/v/20260424-rfc9001-s6p5-representative-later-epoch/focused-rfc9001-s6p5-representative-tests.log`."
+      "content": "- The 2026-04-23 representative multi-epoch run proves phases 6 through 32 are not hard-coded to the bounded phase-5 topoff for REQ-QUIC-RFC9001-S6P2-0001, RFC9001-S6-2-P4-S1-R01, RFC9001-S6-5-P6-S1-R01, and REQ-QUIC-RFC9001-S6P5-0005.\n- The same run proves later local installs still require current-phase acknowledgment, cooldown, and prior retained-old discard; later peer updates open with next keys after confirmation and prior old-key discard; later retained old-key ACK packets that acknowledge newer sends close with KEY_UPDATE_ERROR; and later retained-previous cleanup drops only the retained previous phase while preserving current state across representative packet sets.\n- Evidence is preserved under `artifacts/v/20260423-rfc9001-s6p5-representative-multi-epoch/` with 53 focused tests, a 177-test S6P1-through-S6P6 guard, and a QuicRepeatedKeyUpdateControlBenchmarks Dry validation. This remains representative helper-backed proof; the repeated epoch-ledger ownership slice is closed under ARC/WI/VER-QUIC-RFC9001-0006.\n- The 2026-04-24 representative later-epoch class run extends the sampled later-phase shape through the same phases 6 through 32 boundary, passed 55 focused tests, and is preserved under `artifacts/v/20260424-rfc9001-s6p5-representative-later-epoch/focused-rfc9001-s6p5-representative-tests.log`."
     },
     {
       "heading": "Bounded Repeated AEAD-Limit Local-Update Evidence",

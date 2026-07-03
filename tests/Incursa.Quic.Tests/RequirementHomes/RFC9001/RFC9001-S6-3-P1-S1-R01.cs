@@ -6,9 +6,9 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P3-0001">Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-3-P1-S1-R01">Endpoints responding to an apparent key update MUST NOT generate a timing signal that reveals whether the Key Phase bit was invalid.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P3-0001")]
+[Requirement("RFC9001-S6-3-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P3_0001
 {
     [Fact]

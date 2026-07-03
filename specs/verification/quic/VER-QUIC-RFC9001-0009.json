@@ -14,7 +14,7 @@
   ],
   "procedure": [
     "Run the focused requirement-home tests for REQ-QUIC-RFC9001-S6P5-0007.",
-    "Rerun adjacent REQ-QUIC-RFC9001-S6P5-0006 and REQ-QUIC-RFC9001-S6P5-0003 regression tests.",
+    "Rerun adjacent REQ-QUIC-RFC9001-S6P5-0006 and RFC9001-S6-5-P6-S1-R01 regression tests.",
     "Build the solution in Release.",
     "Run `pwsh -NoProfile -File scripts\\Validate-SpecTraceJson.ps1 -Profiles core`.",
     "Run `dotnet tool run workbench -- --format json validate --profile core`.",

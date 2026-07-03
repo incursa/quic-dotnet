@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0008">The server MUST also limit the number of bytes it sends before validating the address of the client.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-1-P5-S1-R01">The server MUST also limit the number of bytes it sends before validating the address of the client.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P1-0008")]
+[Requirement("RFC9000-S14-1-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P1_0008
 {
     [Fact]

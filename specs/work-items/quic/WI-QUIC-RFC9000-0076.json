@@ -14,7 +14,7 @@
   "addresses": [
     "RFC9000-S4-6-P3-R01",
     "RFC9000-S4-6-P3-S1-R01",
-    "REQ-QUIC-RFC9000-0203"
+    "RFC9000-S4-6-P6-R01"
   ],
   "summary": "Close the S4P6 stream-limit enforcement tail by adding focused requirement-home proof for local-open peer limits, inbound over-limit STREAM_LIMIT_ERROR handling, and blocked-open STREAMS_BLOCKED frame production.",
   "planned_changes": "- Add positive local-open boundary proof for bidirectional and unidirectional peer stream limits.\n- Add inbound STREAM acceptance proof at the advertised limit and zero-limit rejection edge proof.\n- Add direct S4P6 positive STREAMS_BLOCKED frame proof while preserving the existing active-runtime S19P14 emission proof.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
@@ -32,5 +32,5 @@
     "Hosted interop readiness.",
     "Closing the deferred S4P6-0009 fuzz expectation."
   ],
-  "completion_notes": "Completed as a focused S4P6 proof for RFC9000-S4-6-P3-R01, RFC9000-S4-6-P3-S1-R01, and REQ-QUIC-RFC9000-0203."
+  "completion_notes": "Completed as a focused S4P6 proof for RFC9000-S4-6-P3-R01, RFC9000-S4-6-P3-S1-R01, and RFC9000-S4-6-P6-R01."
 }

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P3-0001">To speed up handshake completion under these conditions, an endpoint MAY, for a limited number of times per connection, send a packet containing unacknowledged CRYPTO data earlier than PTO expiry, subject to the address-validation limits.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-3-P2-S1-R01">To speed up handshake completion under these conditions, an endpoint MAY, for a limited number of times per connection, send a packet containing unacknowledged CRYPTO data earlier than PTO expiry, subject to the address-validation limits.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P3-0001")]
+[Requirement("RFC9002-S6-2-3-P2-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P2P3_0001
 {
     [Fact]

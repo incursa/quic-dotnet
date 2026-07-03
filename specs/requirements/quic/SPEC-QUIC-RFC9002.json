@@ -2561,7 +2561,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P3-0001",
+      "id": "RFC9002-S6-2-3-P2-S1-R01",
       "title": "Permit early CRYPTO probes for handshake speedup",
       "statement": "To speed up handshake completion under these conditions, an endpoint MAY, for a limited number of times per connection, send a packet containing unacknowledged CRYPTO data earlier than PTO expiry, subject to the address-validation limits.",
       "coverage": {
@@ -2585,8 +2585,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_ArmsAnEarlyCryptoProbeAfterUniqueDatagramReceiptRestoresSendBudget",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs::TrySelectLossDetectionTimerMicros_DoesNotArmAnEarlyCryptoProbeWhileThePeerIsStillAmplificationLimited",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-3-P2-S1-R01.cs::TrySelectLossDetectionTimerMicros_ArmsAnEarlyCryptoProbeAfterUniqueDatagramReceiptRestoresSendBudget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-3-P2-S1-R01.cs::TrySelectLossDetectionTimerMicros_DoesNotArmAnEarlyCryptoProbeWhileThePeerIsStillAmplificationLimited",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightReplaysServerHelloAndHandshakeProbes",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::DuplicateRetriedClientHelloAfterServerFlightDoesNotProbePastAntiAmplificationBudget",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0147.cs::FuzzDuplicateRetriedClientHelloAfterServerFlight_ProbeReplayStaysBudgetedAndBounded"

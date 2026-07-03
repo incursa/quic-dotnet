@@ -90,7 +90,7 @@ public sealed class REQ_QUIC_RFC9000_S19P14_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0005">The Maximum Streams field MUST be encoded as a variable-length integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0006">STREAMS_BLOCKED frames MUST contain the following field:</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P14-0007">The Maximum Streams field MUST be variable-length integer indicating the maximum number of streams allowed at the time the frame was sent.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0203">An endpoint that is unable to open a new stream due to the peer&apos;s limits SHOULD send a STREAMS_BLOCKED frame.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S4-6-P6-R01">An endpoint that is unable to open a new stream due to the peer&apos;s limits SHOULD send a STREAMS_BLOCKED frame.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-0027")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0002")]
@@ -98,7 +98,7 @@ public sealed class REQ_QUIC_RFC9000_S19P14_0002
     [Requirement("REQ-QUIC-RFC9000-S19P14-0005")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0006")]
     [Requirement("REQ-QUIC-RFC9000-S19P14-0007")]
-    [Requirement("REQ-QUIC-RFC9000-0203")]
+    [Requirement("RFC9000-S4-6-P6-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryParseStreamsBlockedFrame_ParsesAndFormatsBidirectionalAndUnidirectionalVariants(bool isBidirectional)
     {

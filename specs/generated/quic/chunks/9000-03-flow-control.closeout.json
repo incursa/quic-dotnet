@@ -20,7 +20,7 @@
       "RFC9000-S4-2-P2-S1-R01 through REQ-QUIC-RFC9000-0180",
       "REQ-QUIC-RFC9000-S4P4-0001 through REQ-QUIC-RFC9000-0186",
       "REQ-QUIC-RFC9000-S4P5-0001 through RFC9000-S4-5-P5-S2-R01",
-      "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-0203"
+      "REQ-QUIC-RFC9000-S4P6-0001 through RFC9000-S4-6-P6-R01"
     ],
     "stale_requirement_refs_found": [],
     "notes": "No requirement tags were found under src/Incursa.Quic; the helper-layer evidence comes from QuicConnectionStreamState, QuicTransportParametersCodec, QuicCryptoBuffer, and the requirement-home tests."
@@ -98,7 +98,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0203.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0204.cs"
   ],
   "requirements": [
@@ -220,7 +220,7 @@
       "notes": "Wire-level final-size handling is directly proven, including the negative boundary at or beyond the known final size."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0001 through REQ-QUIC-RFC9000-0203",
+      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0001 through RFC9000-S4-6-P6-R01",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryReceiveStreamFrame_LimitsTheCumulativeNumberOfIncomingStreams",

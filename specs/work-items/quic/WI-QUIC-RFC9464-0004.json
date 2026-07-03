@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9464-0071",
     "REQ-QUIC-RFC9464-0072",
     "REQ-QUIC-RFC9464-0073",
-    "REQ-QUIC-RFC9464-0076"
+    "RFC9464-S6-P3-R01"
   ],
   "summary": "Add trace-owned client-side RFC 9464 encrypted DNS provisioning policy.",
   "planned_changes": "- Add a pure client policy that consumes decoded ENCDNS_IP* and ENCDNS_DIGEST_INFO attributes.\n- Prefer encrypted DNS resolvers over classic INTERNAL_IP*_DNS data when ENCDNS_IP* is available.\n- Expand conveyed ENCDNS_IP* addresses into resolver session targets sorted by service priority.\n- Route split-tunnel INTERNAL_DNS_DOMAIN names to encrypted resolvers when present.\n- Reject ENCDNS_IP* data received after responder NULL authentication unless preconfigured.\n- Model ADN and SHA2-256 SubjectPublicKeyInfo digest certificate validation outcomes and non-recoverable failure.\n- Add focused positive and negative tests plus canonical xrefs.",

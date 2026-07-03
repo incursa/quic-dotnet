@@ -224,7 +224,7 @@ public sealed class Http3DatagramAndCapsuleTests
 
     [Fact]
     [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0023")]
+    [Requirement("RFC9297-S2-1-1-P4-S3-R02")]
     [Requirement("REQ-QUIC-RFC9297-0024")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -238,7 +238,7 @@ public sealed class Http3DatagramAndCapsuleTests
 
     [Fact]
     [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0023")]
+    [Requirement("RFC9297-S2-1-1-P4-S3-R02")]
     [Requirement("REQ-QUIC-RFC9297-0024")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

@@ -23,7 +23,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `RFC9000-S4-2-P2-S1-R01` through `REQ-QUIC-RFC9000-0180`
 - `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`
 - `REQ-QUIC-RFC9000-S4P5-0001` through `RFC9000-S4-5-P5-S2-R01`
-- `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-0203`
+- `REQ-QUIC-RFC9000-S4P6-0001` through `RFC9000-S4-6-P6-R01`
 - `REQ-QUIC-RFC9000-0204`
 
 ## Requirements Partial

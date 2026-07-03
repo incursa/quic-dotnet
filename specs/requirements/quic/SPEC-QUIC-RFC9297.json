@@ -460,7 +460,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0023",
+      "id": "RFC9297-S2-1-1-P4-S3-R02",
       "title": "Terminate on lowered SETTINGS_H3_DATAGRAM",
       "statement": "If the validation fails, the client MUST terminate the connection with error H3_SETTINGS_ERROR.",
       "coverage": {
