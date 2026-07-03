@@ -36,7 +36,7 @@
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "src/Incursa.Quic.Dns/DoqStream.cs",
     "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0005.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P1-R01.cs"
   ],
   "status_summary": "The DoQ adapter now proves fatal-protocol-error handling for truncated responses, extra response bytes, and inbound unidirectional streams over real QUIC loopback, while leaving the missing-FIN, peer STOP_SENDING, EDNS keepalive, and server-initiated bidirectional stream cases as explicit follow-up scope."
 }

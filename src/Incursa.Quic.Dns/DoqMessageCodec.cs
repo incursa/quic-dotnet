@@ -97,7 +97,7 @@ public static class DoqMessageCodec
     // CONTEXT: DoQ framing keeps the DNS payload intact apart from the 2-octet length prefix.
     // This parser walks the body just far enough to reject EDNS(0) TCP keepalive without changing
     // the underlying RFC 1035 message semantics.
-    // SEE: spec:REQ-QUIC-RFC9250-0010
+    // SEE: spec:RFC9250-S4-2-P4-S1-R01
     // SEE: spec:REQ-QUIC-RFC9250-0053
     // SEE: spec:REQ-QUIC-RFC9250-0059
     public static bool ContainsTcpKeepaliveEdnsOption(ReadOnlySpan<byte> dnsMessage)

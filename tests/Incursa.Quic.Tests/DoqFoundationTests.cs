@@ -77,7 +77,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0005")]
+    [Requirement("RFC9250-S4-1-1-P1-R01")]
     [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -141,7 +141,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0005")]
+    [Requirement("RFC9250-S4-1-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ListenerOptionsAllowExplicitAlternateDoqPort()
@@ -197,7 +197,7 @@ public sealed class DoqFoundationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0004")]
-    [Requirement("REQ-QUIC-RFC9250-0005")]
+    [Requirement("RFC9250-S4-1-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified()
@@ -215,7 +215,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0010")]
+    [Requirement("RFC9250-S4-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void MessageCodecEncodesTwoOctetLengthPrefix()
@@ -226,7 +226,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0010")]
+    [Requirement("RFC9250-S4-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void MessageCodecDecodesOneMessageAndReportsConsumedBytes()
@@ -242,7 +242,7 @@ public sealed class DoqFoundationTests
     [Theory]
     [InlineData(new byte[] { 0x00 })]
     [InlineData(new byte[] { 0x00, 0x03, 0x01, 0x02 })]
-    [Requirement("REQ-QUIC-RFC9250-0010")]
+    [Requirement("RFC9250-S4-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void MessageCodecReportsPartialFramesAsIncomplete(byte[] source)
@@ -253,7 +253,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0010")]
+    [Requirement("RFC9250-S4-2-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent()

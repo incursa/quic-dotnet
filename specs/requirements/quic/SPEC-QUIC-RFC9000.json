@@ -6498,7 +6498,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9000-0661",
+      "id": "RFC9000-S11-P3-S2-R01",
       "title": "Do not use stateless reset when frame transmission state exists",
       "statement": "A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection.",
       "coverage": {
@@ -6518,8 +6518,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset"
         ],
         "upstream_refs": [
           "RFC 9000 11 RFC9000-S11-B3-P3-S2",
@@ -7379,7 +7379,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0758",
+      "id": "RFC9000-S13-2-1-P1-R01",
       "title": "Acknowledge every packet at least once",
       "statement": "Every packet SHOULD be acknowledged at least once.",
       "coverage": {
@@ -7399,9 +7399,9 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0758.cs::TryBuildAckFrame_IncludesContiguousAckElicitingAndNonAckElicitingPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0758.cs::TryBuildAckFrame_ReturnsFalseWithoutTrackedPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0758.cs::TryBuildAckFrame_PreservesSparsePacketRanges"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P1-R01.cs::TryBuildAckFrame_IncludesContiguousAckElicitingAndNonAckElicitingPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P1-R01.cs::TryBuildAckFrame_ReturnsFalseWithoutTrackedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P1-R01.cs::TryBuildAckFrame_PreservesSparsePacketRanges"
         ],
         "upstream_refs": [
           "RFC 9000 13.2.1 RFC9000-S13P2P1-B1-P1-S1",
@@ -8184,7 +8184,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9000-0877",
+      "id": "RFC9000-S14-3-P2-S1-R01",
       "title": "Set BASE_PLPMTU consistently with QUIC's smallest allowed maximum datagram size",
       "statement": "Endpoints SHOULD set the initial value of BASE_PLPMTU to be consistent with QUIC's smallest allowed maximum datagram size.",
       "coverage": {
@@ -8207,9 +8207,9 @@
           "VER-QUIC-RFC9000-0006"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0877.cs::InitialPathStateUsesTheQuicMinimumAsBasePlpmtu",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0877.cs::ConstructorRejectsABasePlpmtuBelowTheQuicMinimum",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0877.cs::ConstructorRejectsABasePlpmtuAboveTheQuicMinimum"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-3-P2-S1-R01.cs::InitialPathStateUsesTheQuicMinimumAsBasePlpmtu",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-3-P2-S1-R01.cs::ConstructorRejectsABasePlpmtuBelowTheQuicMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-3-P2-S1-R01.cs::ConstructorRejectsABasePlpmtuAboveTheQuicMinimum"
         ],
         "upstream_refs": [
           "RFC9000-S14P3-B2-P2-S1",
@@ -11176,7 +11176,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs::RecordIncomingPacket_WithCongestionExperiencedCodepointRequiresImmediateAck",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs::RecordIncomingPacket_WithoutCongestionExperiencedCodepointKeepsApplicationDataDelayedAckEligible",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1322.cs::MarkAckFrameSent_ClearsCongestionExperiencedImmediateAckUntilAnotherCePacketArrives",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P3-S1-R01.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
         ],
         "upstream_refs": [
           "RFC 9000 13.2.1 RFC9000-S13P2P1-B10-P10-S1",
@@ -13510,7 +13510,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P1-0002",
+      "id": "RFC9000-S10-2-1-P4-S1-R01",
       "title": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection",
       "statement": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection; the endpoint MAY discard all other connection state.",
       "coverage": {
@@ -13534,8 +13534,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0002.cs::LocalCloseRequested_ClearsIdleTimeoutStateAndRetainsTheSelectedConnectionIdentity",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P1-0002.cs::LocalCloseRequested_WhileClosingDoesNotReplaceTheRetainedSelectedConnectionIdentity"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-1-P4-S1-R01.cs::LocalCloseRequested_ClearsIdleTimeoutStateAndRetainsTheSelectedConnectionIdentity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-1-P4-S1-R01.cs::LocalCloseRequested_WhileClosingDoesNotReplaceTheRetainedSelectedConnectionIdentity"
         ]
       }
     },
@@ -18002,7 +18002,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P5-0005",
+      "id": "RFC9000-S13-2-5-P3-S1-R01",
       "title": "Report measured delay when it exceeds max_ack_delay",
       "statement": "When the measured acknowledgment delay is larger than its max_ack_delay, an endpoint SHOULD report the measured delay.",
       "coverage": {
@@ -18026,7 +18026,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P3-S1-R01.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
         ]
       }
     },
@@ -19241,7 +19241,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P3-S1-R01.cs::TryBuildAckFrame_UsesEcnCountsAndReportsMeasuredDelayWhenDelayed"
         ]
       }
     },
@@ -20014,9 +20014,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets"
         ]
       }
     },
@@ -20045,9 +20045,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_RejectsADesiredMaximumDatagramSizeAboveTheInitialEstimate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_UsesTheRfcMinimumAsTheBoundaryForOrdinaryPackets"
         ]
       }
     },
@@ -20420,7 +20420,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0003",
+      "id": "RFC9000-S14-2-P2-S1-R01",
       "title": "Use DPLPMTUD or PMTUD to determine support for a desired size",
       "statement": "An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a destination will support a desired maximum datagram size without fragmentation.",
       "coverage": {
@@ -20444,7 +20444,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0003.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P2-S1-R01.cs::CanSend_DeterminesWhetherThePathSupportsADesiredDatagramSize"
         ]
       }
     },
@@ -20604,7 +20604,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0010",
+      "id": "RFC9000-S14-2-P6-S1-R01",
       "title": "Allow conservative maximum datagram size estimates",
       "statement": "A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions.",
       "coverage": {
@@ -20628,9 +20628,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtAConservativeEstimateJustAboveTheRfcMinimum",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_ProjectsAConservativeEstimateOntoTheSendRuntime",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2-0010.cs::TrySetActivePathMaximumDatagramSize_RejectsZeroMaximumDatagramSize"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P6-S1-R01.cs::TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtAConservativeEstimateJustAboveTheRfcMinimum",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P6-S1-R01.cs::TrySetActivePathMaximumDatagramSize_ProjectsAConservativeEstimateOntoTheSendRuntime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P6-S1-R01.cs::TrySetActivePathMaximumDatagramSize_RejectsZeroMaximumDatagramSize"
         ]
       }
     },
@@ -37663,7 +37663,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P3-0002",
+      "id": "RFC9000-S3-3-P2-S2-R01",
       "title": "Forbid post-reset transmission of STREAM frames",
       "statement": "A sender MUST NOT send a STREAM or STREAM_DATA_BLOCKED frame for a stream in the Reset Sent state or any terminal state after sending a RESET_STREAM frame.",
       "coverage": {
@@ -37687,9 +37687,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_EmitsStreamDataBlockedBeforeResetSent",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetSent",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs::TryReserveSendCapacity_RejectsStreamDataBlockedAfterResetSentAtCreditBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs::TryReserveSendCapacity_EmitsStreamDataBlockedBeforeResetSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetSent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs::TryReserveSendCapacity_RejectsStreamDataBlockedAfterResetSentAtCreditBoundary"
         ]
       }
     },
@@ -40759,7 +40759,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P2-0001",
+      "id": "RFC9000-S5-2-2-P1-S1-R01",
       "title": "Send Version Negotiation for large unsupported packets",
       "statement": "If a server receives a packet that indicates an unsupported version and the packet is large enough to initiate a new connection for any supported version, the server SHOULD send a Version Negotiation packet.",
       "coverage": {
@@ -40786,8 +40786,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_DoesNotSendForSupportedOrUndersizedPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S1-R01.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S1-R01.cs::ShouldSendVersionNegotiation_DoesNotSendForSupportedOrUndersizedPackets"
         ]
       }
     },
@@ -40819,7 +40819,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0001.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S1-R01.cs::ShouldSendVersionNegotiation_RequiresAnUnsupportedClientVersionAndSufficientDatagramSize"
         ]
       }
     },
@@ -41003,8 +41003,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset"
         ]
       }
     },

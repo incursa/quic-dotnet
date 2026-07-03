@@ -217,7 +217,7 @@
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
         "RFC9000-S10-2-1-P3-S1-R01",
-        "REQ-QUIC-RFC9000-S10P2P1-0002",
+        "RFC9000-S10-2-1-P4-S1-R01",
         "RFC9000-S10-2-1-P4-S3-R01",
         "RFC9000-S10-2-1-P5-R01",
         "RFC9000-S10-2-1-P5-S2-R01",
@@ -230,7 +230,7 @@
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
         "RFC9000-S10-2-1-P3-S1-R01",
-        "REQ-QUIC-RFC9000-S10P2P1-0002",
+        "RFC9000-S10-2-1-P4-S1-R01",
         "RFC9000-S10-2-1-P4-S3-R01",
         "RFC9000-S10-2-1-P5-R01",
         "RFC9000-S10-2-1-P5-S2-R01",

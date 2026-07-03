@@ -116,7 +116,7 @@
       "REQ-QUIC-RFC9000-S3P2-0023",
       "REQ-QUIC-RFC9000-S3P2-0024",
       "REQ-QUIC-RFC9000-S3P3-0001",
-      "REQ-QUIC-RFC9000-S3P3-0002",
+      "RFC9000-S3-3-P2-S2-R01",
       "REQ-QUIC-RFC9000-S3P3-0003",
       "REQ-QUIC-RFC9000-S3P3-0004",
       "REQ-QUIC-RFC9000-S3P3-0005",
@@ -196,7 +196,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs",
@@ -997,7 +997,7 @@
       "notes": "Live stream objects that gate outbound and inbound frames by state are still absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0002",
+      "requirement_id": "RFC9000-S3-3-P2-S2-R01",
       "section": "S3P3",
       "title": "Forbid post-reset transmission of STREAM frames",
       "status": "blocked",
@@ -1005,7 +1005,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1360,7 +1360,7 @@
     "REQ-QUIC-RFC9000-0120",
     "REQ-QUIC-RFC9000-S3P2-0023",
     "REQ-QUIC-RFC9000-S3P3-0001",
-    "REQ-QUIC-RFC9000-S3P3-0002",
+    "RFC9000-S3-3-P2-S2-R01",
     "REQ-QUIC-RFC9000-S3P3-0003",
     "REQ-QUIC-RFC9000-S3P3-0004",
     "REQ-QUIC-RFC9000-S3P3-0005",

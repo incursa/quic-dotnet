@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0661">A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S11-P3-S2-R01">A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0661")]
+[Requirement("RFC9000-S11-P3-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0661
 {
     [Fact]

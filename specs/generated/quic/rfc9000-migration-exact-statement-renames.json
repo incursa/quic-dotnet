@@ -771,7 +771,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S11-0005",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0661",
+      "staged_requirement_id": "RFC9000-S11-P3-S2-R01",
       "statement": "A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection.",
       "derived_from": "REQ-QUIC-RFC9000-S11-0005",
       "supersedes": [
@@ -2201,7 +2201,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S14P3-0003",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0877",
+      "staged_requirement_id": "RFC9000-S14-3-P2-S1-R01",
       "statement": "Endpoints SHOULD set the initial value of BASE_PLPMTU to be consistent with QUIC's smallest allowed maximum datagram size.",
       "derived_from": "REQ-QUIC-RFC9000-S14P3-0003",
       "supersedes": [
@@ -2211,7 +2211,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0002",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0758",
+      "staged_requirement_id": "RFC9000-S13-2-1-P1-R01",
       "statement": "Every packet SHOULD be acknowledged at least once.",
       "derived_from": "REQ-QUIC-RFC9000-S13P2P1-0002",
       "supersedes": [

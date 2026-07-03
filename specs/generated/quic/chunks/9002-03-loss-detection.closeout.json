@@ -56,7 +56,7 @@
       "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "RFC9002-S6-2-2-1-P3-S2-R01",
       "RFC9002-S6-2-2-1-P3-S3-R01",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "RFC9002-S6-2-2-1-P3-S3-R02",
       "REQ-QUIC-RFC9002-S6P2P3-0001",
       "RFC9002-S6-2-4-P1-R01",
       "RFC9002-S6-2-4-P1-S1-R01",
@@ -113,7 +113,7 @@
       "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "RFC9002-S6-2-2-1-P3-S2-R01",
       "RFC9002-S6-2-2-1-P3-S3-R01",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "RFC9002-S6-2-2-1-P3-S3-R02",
       "REQ-QUIC-RFC9002-S6P2P3-0001",
       "RFC9002-S6-2-4-P1-R01",
       "RFC9002-S6-2-4-P1-S1-R01",
@@ -196,7 +196,7 @@
       "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "RFC9002-S6-2-2-1-P3-S2-R01",
       "RFC9002-S6-2-2-1-P3-S3-R01",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "RFC9002-S6-2-2-1-P3-S3-R02",
       "REQ-QUIC-RFC9002-S6P2P3-0001",
       "RFC9002-S6-2-4-P1-R01",
       "RFC9002-S6-2-4-P1-S1-R01",
@@ -264,7 +264,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R01.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P3-0001.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P1-S1-R01.cs",
@@ -951,20 +951,20 @@
       "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R02",
       "title": "Send Initial probes otherwise",
       "section_token": "S6P2P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs"
       ],
       "remaining_gap": null,
       "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."

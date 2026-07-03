@@ -2368,7 +2368,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P6-0003",
+      "id": "RFC9001-S6-6-P4-S3-R01",
       "title": "Initiate key updates before the AEAD confidentiality limit",
       "statement": "Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.",
       "coverage": {
@@ -2392,12 +2392,12 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::RuntimeSendPathInstallsFirstKeyUpdateBeforeProtectingBeyondConfidentialityLimit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::RuntimeSendPathInstallsRepeatedKeyUpdateBeforeProtectingBeyondRepeatedConfidentialityLimit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs::FuzzRepeatedConfidentialityLimitPolicy_UsesRepeatedLocalUpdateGate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::AeadLimitPolicyRequestsKeyUpdateWhenConfidentialityLimitBlocksFurtherProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::RuntimeSendPathInstallsFirstKeyUpdateBeforeProtectingBeyondConfidentialityLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::RuntimeSendPathInstallsRepeatedKeyUpdateBeforeProtectingBeyondRepeatedConfidentialityLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::AeadLimitPolicyContinuesBeforeConfidentialityLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::FuzzConfidentialityLimitPolicy_RandomizedLimitsRequestKeyUpdateBeforeExcessProtection",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs::FuzzRepeatedConfidentialityLimitPolicy_UsesRepeatedLocalUpdateGate"
         ]
       }
     },

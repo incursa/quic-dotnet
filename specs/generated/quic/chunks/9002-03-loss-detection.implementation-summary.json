@@ -91,7 +91,7 @@
       "REQ-QUIC-RFC9002-S6P2P2P1-0003",
       "RFC9002-S6-2-2-1-P3-S2-R01",
       "RFC9002-S6-2-2-1-P3-S3-R01",
-      "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "RFC9002-S6-2-2-1-P3-S3-R02",
       "REQ-QUIC-RFC9002-S6P2P3-0001",
       "RFC9002-S6-2-4-P1-R01",
       "RFC9002-S6-2-4-P1-S1-R01",
@@ -708,18 +708,18 @@
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R02",
       "completion_status": "implemented_and_tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs"
       ],
       "remaining_gap": null,
       "notes": "Covered by existing requirement-home proof and linked RFC 9002 architecture/work-item/verification artifacts; this reconciliation only corrects stale generated classification."

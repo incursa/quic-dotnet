@@ -1742,7 +1742,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0082",
+      "id": "RFC9297-S5-4-P3-S2-R01",
       "title": "IANA assignment is prohibited",
       "statement": "These values MUST NOT be assigned by IANA.",
       "coverage": {

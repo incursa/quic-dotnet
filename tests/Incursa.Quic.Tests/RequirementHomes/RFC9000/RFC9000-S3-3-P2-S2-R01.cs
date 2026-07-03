@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P3-0002">A sender MUST NOT send a STREAM or STREAM_DATA_BLOCKED frame for a stream in the Reset Sent state or any terminal state after sending a RESET_STREAM frame.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-3-P2-S2-R01">A sender MUST NOT send a STREAM or STREAM_DATA_BLOCKED frame for a stream in the Reset Sent state or any terminal state after sending a RESET_STREAM frame.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+[Requirement("RFC9000-S3-3-P2-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S3P3_0002
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+    [Requirement("RFC9000-S3-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryReserveSendCapacity_EmitsStreamDataBlockedBeforeResetSent()
@@ -43,7 +43,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+    [Requirement("RFC9000-S3-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsStreamFramesAfterResetSent()
@@ -79,7 +79,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0002
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0002")]
+    [Requirement("RFC9000-S3-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryReserveSendCapacity_RejectsStreamDataBlockedAfterResetSentAtCreditBoundary()

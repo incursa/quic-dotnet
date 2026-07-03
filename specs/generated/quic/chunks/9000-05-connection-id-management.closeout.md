@@ -11,7 +11,7 @@
 - Audit result: `clean_with_explicit_deferments`
 - No stale requirement IDs remain in scope.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
-- Current test traits use the imported IDs `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, and `REQ-QUIC-RFC9000-0277`.
+- Current test traits use the imported IDs `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `RFC9000-S5-2-2-P1-S1-R01`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, and `REQ-QUIC-RFC9000-0277`.
 - No old->new requirement ID rewrites were needed.
 - Every open requirement below carries an explicit blocker note; there are no silent gaps in the scoped set.
 
@@ -51,7 +51,7 @@ Needs review: **0**
 - `REQ-QUIC-RFC9000-S5P2-0001`: The packet-classification hook is still a direct match for the imported ID.
   - Evidence files: `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`
   - Tests: `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`
-- `REQ-QUIC-RFC9000-S5P2P2-0001`: The new Version Negotiation overload gates unsupported versions on the observed datagram size.
+- `RFC9000-S5-2-2-P1-S1-R01`: The new Version Negotiation overload gates unsupported versions on the observed datagram size.
   - Evidence files: `src/Incursa.Quic/QuicVersionNegotiation.cs`, `src/Incursa.Quic/PublicAPI.Unshipped.txt`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
   - Tests: `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`
 - `RFC9000-S5-2-2-P2-S4-R01`: The datagram-size gate now backs the server's Version Negotiation response decision.
@@ -69,7 +69,7 @@ Needs review: **0**
 - Source roots searched: `C:/src/incursa/quic-dotnet/src/Incursa.Quic`
 - Test roots searched: `C:/src/incursa/quic-dotnet/tests`
 - In-scope source requirement refs found: none
-- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `REQ-QUIC-RFC9000-S5P2P2-0001`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, `REQ-QUIC-RFC9000-0277`
+- In-scope test requirement refs found: `REQ-QUIC-RFC9000-S5P2-0001`, `REQ-QUIC-RFC9000-S5P1P2-0004`, `REQ-QUIC-RFC9000-S5P1P2-0005`, `REQ-QUIC-RFC9000-S5P1P2-0008`, `RFC9000-S5-2-2-P1-S1-R01`, `RFC9000-S5-2-2-P2-S4-R01`, `REQ-QUIC-RFC9000-S5P2P3-0002`, `REQ-QUIC-RFC9000-0277`
 - Stale or wrong refs found: none
 - Current canonical in-scope test files: `tests/Incursa.Quic.Tests/QuicFrameCodecPart4Tests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecPart4FuzzTests.cs`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicHeaderPropertyTests.cs`, `tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs`, `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`, `tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs`
 

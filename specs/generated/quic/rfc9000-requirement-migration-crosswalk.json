@@ -166,7 +166,7 @@
       "statement": "An immediate close MAY be used after an application protocol has arranged to close a connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P1-0002",
+      "id": "RFC9000-S10-2-1-P4-S1-R01",
       "title": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection",
       "statement": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection; the endpoint MAY discard all other connection state."
     },
@@ -886,7 +886,7 @@
       "statement": "The endpoint MUST encode this acknowledgment delay in the ACK Delay field of an ACK frame."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P5-0005",
+      "id": "RFC9000-S13-2-5-P3-S1-R01",
       "title": "Report measured delay when it exceeds max_ack_delay",
       "statement": "When the measured acknowledgment delay is larger than its max_ack_delay, an endpoint SHOULD report the measured delay."
     },
@@ -1266,7 +1266,7 @@
       "statement": "The largest UDP payload MUST an endpoint sends at any given time is referred to as the endpoint's maximum datagram size."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0003",
+      "id": "RFC9000-S14-2-P2-S1-R01",
       "title": "Use DPLPMTUD or PMTUD to determine support for a desired size",
       "statement": "An endpoint SHOULD use DPLPMTUD or PMTUD to determine whether the path to a destination will support a desired maximum datagram size without fragmentation."
     },
@@ -1296,7 +1296,7 @@
       "statement": "QUIC implementations that implement any kind of PMTU discovery SHOULD maintain a maximum datagram size for each combination of local and remote IP addresses."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2-0010",
+      "id": "RFC9000-S14-2-P6-S1-R01",
       "title": "Allow conservative maximum datagram size estimates",
       "statement": "A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions."
     },
@@ -4016,7 +4016,7 @@
       "statement": "A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P3-0002",
+      "id": "RFC9000-S3-3-P2-S2-R01",
       "title": "Forbid post-reset transmission of STREAM frames",
       "statement": "A sender MUST NOT send a STREAM or STREAM_DATA_BLOCKED frame for a stream in the Reset Sent state or any terminal state after sending a RESET_STREAM frame."
     },
@@ -4511,7 +4511,7 @@
       "statement": "A client MAY drop packets encrypted with a key it has not yet computed or buffer them in anticipation of later packets that allow it to compute the key."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P2-0001",
+      "id": "RFC9000-S5-2-2-P1-S1-R01",
       "title": "Send Version Negotiation for large unsupported packets",
       "statement": "If a server receives a packet that indicates an unsupported version and the packet is large enough to initiate a new connection for any supported version, the server SHOULD send a Version Negotiation packet."
     },

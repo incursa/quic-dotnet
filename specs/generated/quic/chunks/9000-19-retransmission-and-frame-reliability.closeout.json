@@ -144,7 +144,7 @@
     ],
     "test_files_with_requirement_traits": [
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0005.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P3-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P3-0010.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0814.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P3-0001.cs"

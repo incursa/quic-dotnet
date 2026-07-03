@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9002-S6P2P2P1-0003",
     "RFC9002-S6-2-2-1-P3-S2-R01",
     "RFC9002-S6-2-2-1-P3-S3-R01",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0006"
+    "RFC9002-S6-2-2-1-P3-S3-R02"
   ],
   "summary": "Keep the RFC 9002 PTO timer discipline slice traceable while the runtime-owned recovery state arms PTO, restarts it on the supported transitions, and applies validation-aware gating before handshake confirmation.",
   "planned_changes": "- Reuse the packet-space recovery ledger as the single PTO timer source of truth instead of introducing a parallel timer store.\n- Reset PTO backoff on ack-eliciting send, acknowledgment, and key discard while preserving the current zero-backoff floor.\n- Gate pre-confirmation client and server PTO arming on actual validation state rather than on test-only assumptions.\n- Keep PTO expiration as scheduler state only, leaving packet-loss marking, probe composition, retry reset, and migration switching to separate slices.",

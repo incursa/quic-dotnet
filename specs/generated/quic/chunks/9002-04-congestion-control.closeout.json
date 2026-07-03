@@ -64,7 +64,7 @@
       "RFC9002-S7-7-P1-S1-R01",
       "RFC9002-S7-7-P2-S2-R01",
       "REQ-QUIC-RFC9002-S7P7-0003",
-      "REQ-QUIC-RFC9002-S7P7-0004",
+      "RFC9002-S7-7-P2-S4-R01",
       "REQ-QUIC-RFC9002-S7P7-0005",
       "REQ-QUIC-RFC9002-S7P8-0001",
       "RFC9002-S7-8-P2-S2-R01",
@@ -112,7 +112,7 @@
       "RFC9002-S7-7-P1-S1-R01",
       "RFC9002-S7-7-P2-S2-R01",
       "REQ-QUIC-RFC9002-S7P7-0003",
-      "REQ-QUIC-RFC9002-S7P7-0004",
+      "RFC9002-S7-7-P2-S4-R01",
       "REQ-QUIC-RFC9002-S7P7-0005",
       "REQ-QUIC-RFC9002-S7P8-0001",
       "RFC9002-S7-8-P2-S2-R01",
@@ -187,7 +187,7 @@
       "RFC9002-S7-7-P1-S1-R01",
       "RFC9002-S7-7-P2-S2-R01",
       "REQ-QUIC-RFC9002-S7P7-0003",
-      "REQ-QUIC-RFC9002-S7P7-0004",
+      "RFC9002-S7-7-P2-S4-R01",
       "REQ-QUIC-RFC9002-S7P7-0005",
       "REQ-QUIC-RFC9002-S7P8-0001",
       "RFC9002-S7-8-P2-S2-R01",
@@ -956,7 +956,7 @@
       "notes": "The helper slice exercises the core congestion-control math, but the full sender/pacer behavior required by the RFC clause remains deferred."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "requirement_id": "RFC9002-S7-7-P2-S4-R01",
       "title": "Allow larger bursts when the path can absorb them",
       "section_token": "S7P7",
       "status": "deferred",
@@ -1066,7 +1066,7 @@
       "reason": "Initial-window burst capping is not yet wired to a concrete transmit queue."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "requirement_id": "RFC9002-S7-7-P2-S4-R01",
       "reason": "Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice."
     },
     {

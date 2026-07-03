@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class DnsServiceBindingClientPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0017")]
+    [Requirement("RFC9461-S5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DohPathEndpointDoesNotQueryHttpsRecords()
@@ -18,7 +18,7 @@ public sealed class DnsServiceBindingClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0017")]
+    [Requirement("RFC9461-S5-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EndpointWithoutDohPathCanQueryHttpsRecords()

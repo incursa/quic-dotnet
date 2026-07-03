@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P2-0010">A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-2-P6-S1-R01">A QUIC implementation MAY be more conservative in computing the maximum datagram size to allow for unknown tunnel overheads or IP header options or extensions.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P2-0010")]
+[Requirement("RFC9000-S14-2-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P2_0010
 {
     [Fact]

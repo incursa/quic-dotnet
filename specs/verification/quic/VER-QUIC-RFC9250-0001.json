@@ -14,10 +14,10 @@
   "verification_method": "Focused unit tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for the DoQ foundation surface.",
   "verifies": [
     "REQ-QUIC-RFC9250-0004",
-    "REQ-QUIC-RFC9250-0005",
+    "RFC9250-S4-1-1-P1-R01",
     "RFC9250-S4-1-1-P2-R01",
     "RFC9250-S4-1-1-P3-R01",
-    "REQ-QUIC-RFC9250-0010",
+    "RFC9250-S4-2-P4-S1-R01",
     "REQ-QUIC-RFC9250-0026",
     "REQ-QUIC-RFC9250-0027",
     "REQ-QUIC-RFC9250-0028",

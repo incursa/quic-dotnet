@@ -2156,7 +2156,7 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S3P3-0001", "REQ-QUIC-RFC9000-S3P3-0002", "REQ-QUIC-RFC9000-S3P3-0005")
+            requirement_families = @("REQ-QUIC-RFC9000-S3P3-0001", "RFC9000-S3-3-P2-S2-R01", "REQ-QUIC-RFC9000-S3P3-0005")
             verification_commands = @(
                 'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
             )

@@ -1587,7 +1587,7 @@ Current triage reminders after the S17P2P5P2/P3 closure:
 8. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S19P14-0001` and
    `REQ-QUIC-RFC9000-S19P14-0003` as `trace_clean`; S19P14 no longer needs to
    be the next local lane.
-9. Regenerated coverage triage marks `REQ-QUIC-RFC9000-S5P2P2-0001` through
+9. Regenerated coverage triage marks `RFC9000-S5-2-2-P1-S1-R01` through
    `RFC9000-S5-2-2-P7-R01` as `trace_clean`; S5P2P2 no longer needs to
    be the next local lane.
 

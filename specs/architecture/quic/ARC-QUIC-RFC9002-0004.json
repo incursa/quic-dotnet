@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9002-S6P2P2P1-0003",
     "RFC9002-S6-2-2-1-P3-S2-R01",
     "RFC9002-S6-2-2-1-P3-S3-R01",
-    "REQ-QUIC-RFC9002-S6P2P2P1-0006"
+    "RFC9002-S6-2-2-1-P3-S3-R02"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.cs",

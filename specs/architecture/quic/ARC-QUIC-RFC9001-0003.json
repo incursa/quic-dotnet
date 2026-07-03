@@ -49,7 +49,7 @@
     "REQ-QUIC-RFC9001-S6P5-0005",
     "REQ-QUIC-RFC9001-S6P6-0001",
     "REQ-QUIC-RFC9001-S6P6-0002",
-    "REQ-QUIC-RFC9001-S6P6-0003",
+    "RFC9001-S6-6-P4-S3-R01",
     "REQ-QUIC-RFC9001-S6P6-0004",
     "REQ-QUIC-RFC9001-S6P6-0005"
   ],
@@ -99,7 +99,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P5-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0005.cs",
     "benchmarks/QuicApplicationPacketKeyPhaseBenchmarks.cs",

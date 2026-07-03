@@ -217,7 +217,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
 
     [Theory]
     [Requirement("REQ-QUIC-RFC9297-0081")]
-    [Requirement("REQ-QUIC-RFC9297-0082")]
+    [Requirement("RFC9297-S5-4-P3-S2-R01")]
     [Requirement("RFC9297-S5-4-P3-S2-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -231,7 +231,7 @@ public sealed class Http3CapsuleProtocolPolicyTests
 
     [Theory]
     [Requirement("REQ-QUIC-RFC9297-0081")]
-    [Requirement("REQ-QUIC-RFC9297-0082")]
+    [Requirement("RFC9297-S5-4-P3-S2-R01")]
     [Requirement("RFC9297-S5-4-P3-S2-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

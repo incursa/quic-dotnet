@@ -6,9 +6,9 @@ using System.Diagnostics;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P6-0003">Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-6-P4-S3-R01">Endpoints MUST initiate a key update before sending more protected packets than the selected AEAD confidentiality limit permits.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P6-0003")]
+[Requirement("RFC9001-S6-6-P4-S3-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P6_0003
 {
     [Fact]

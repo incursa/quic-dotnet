@@ -27,7 +27,7 @@
     "RFC9002-S7-7-P1-S1-R01",
     "RFC9002-S7-7-P2-S2-R01",
     "REQ-QUIC-RFC9002-S7P7-0003",
-    "REQ-QUIC-RFC9002-S7P7-0004",
+    "RFC9002-S7-7-P2-S4-R01",
     "REQ-QUIC-RFC9002-S7P7-0005",
     "RFC9002-S7-8-P2-S2-R01"
   ],
@@ -51,7 +51,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P1-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S4-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-8-P2-S2-R01.cs",
     "benchmarks/QuicHandshakePacketProtectionBenchmarks.cs",

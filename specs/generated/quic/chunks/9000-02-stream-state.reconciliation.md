@@ -32,7 +32,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 
 ### S3P3
 
-- blocked: `REQ-QUIC-RFC9000-S3P3-0001`, `REQ-QUIC-RFC9000-S3P3-0002`, `REQ-QUIC-RFC9000-S3P3-0003`, `REQ-QUIC-RFC9000-S3P3-0004`, `REQ-QUIC-RFC9000-S3P3-0005`, `REQ-QUIC-RFC9000-S3P3-0006`
+- blocked: `REQ-QUIC-RFC9000-S3P3-0001`, `RFC9000-S3-3-P2-S2-R01`, `REQ-QUIC-RFC9000-S3P3-0003`, `REQ-QUIC-RFC9000-S3P3-0004`, `REQ-QUIC-RFC9000-S3P3-0005`, `REQ-QUIC-RFC9000-S3P3-0006`
 
 ### S3P4
 
@@ -96,7 +96,7 @@ Section tokens: `S3, S3P1, S3P2, S3P3, S3P4, S3P5`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0002.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0005.cs`

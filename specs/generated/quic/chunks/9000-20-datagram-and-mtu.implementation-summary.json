@@ -683,14 +683,14 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S14P2-0001",
         "REQ-QUIC-RFC9000-S14P2-0002",
-        "REQ-QUIC-RFC9000-S14P2-0003",
+        "RFC9000-S14-2-P2-S1-R01",
         "RFC9000-S14-2-P2-S2-R01",
         "REQ-QUIC-RFC9000-S14P2-0005",
         "REQ-QUIC-RFC9000-S14P2-0006",
         "RFC9000-S14-2-P4-S1-R01",
         "RFC9000-S14-2-P4-S2-R01",
         "RFC9000-S14-2-P5-S2-R01",
-        "REQ-QUIC-RFC9000-S14P2-0010"
+        "RFC9000-S14-2-P6-S1-R01"
       ],
       "reason": "Packetization and coalescing logic are still absent."
     },
@@ -712,7 +712,7 @@
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S14P3-0001",
         "REQ-QUIC-RFC9000-S14P3-0002",
-        "REQ-QUIC-RFC9000-0877",
+        "RFC9000-S14-3-P2-S1-R01",
         "REQ-QUIC-RFC9000-S14P3-0004"
       ],
       "reason": "ICMP-based PMTU validation remains blocked by missing probe and path surfaces."

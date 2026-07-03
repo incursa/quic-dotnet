@@ -25,7 +25,7 @@
       "RFC9000-S11-P2-S1-R01",
       "REQ-QUIC-RFC9000-0659",
       "REQ-QUIC-RFC9000-0658",
-      "REQ-QUIC-RFC9000-0661"
+      "RFC9000-S11-P3-S2-R01"
     ],
     "S11P1": [
       "REQ-QUIC-RFC9000-S11P1-0001",
@@ -51,13 +51,13 @@
       "RFC9000-S11-P2-S1-R01",
       "REQ-QUIC-RFC9000-0659",
       "REQ-QUIC-RFC9000-0658",
-      "REQ-QUIC-RFC9000-0661",
+      "RFC9000-S11-P3-S2-R01",
       "REQ-QUIC-RFC9000-S11P1-0001",
       "REQ-QUIC-RFC9000-0663",
       "REQ-QUIC-RFC9000-S11P1-0003"
     ],
     "deferred_requirement_ids": [
-      "REQ-QUIC-RFC9000-0661",
+      "RFC9000-S11-P3-S2-R01",
       "REQ-QUIC-RFC9000-0665",
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
@@ -99,9 +99,9 @@
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-0661"
+          "RFC9000-S11-P3-S2-R01"
         ]
       }
     ],
@@ -129,13 +129,13 @@
     "test_files": [
       "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs",
       "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs",
       "tests/Incursa.Quic.Tests/QuicFrameTestData.cs"
     ],
     "notes": [
       "The implementation summary reports successful test runs for the frame-codec error-handling slice and the full suite; this closeout did not rerun them.",
-      "The requirement-home proof and canonical x_test_refs now close REQ-QUIC-RFC9000-0661.",
+      "The requirement-home proof and canonical x_test_refs now close RFC9000-S11-P3-S2-R01.",
       "The missing reconciliation artifact path is treated as absent, not stale."
     ]
   },
@@ -182,5 +182,5 @@
     }
   ],
   "uncovered_requirements": [],
-  "conclusion": "The selected S11/S11P1/S11P2 slice is trace-consistent: implemented requirements have code and test evidence, REQ-QUIC-RFC9000-0661 is now closed by the requirement-home proof and canonical x_test_refs, deferred requirements are explicitly blocked in the implementation summary, and no silent gaps remain in scope. One out-of-scope stale test tag remains in QuicFrameCodecTests.cs and should be retagged if the repository wants that classifier test to carry the error-handling trace."
+  "conclusion": "The selected S11/S11P1/S11P2 slice is trace-consistent: implemented requirements have code and test evidence, RFC9000-S11-P3-S2-R01 is now closed by the requirement-home proof and canonical x_test_refs, deferred requirements are explicitly blocked in the implementation summary, and no silent gaps remain in scope. One out-of-scope stale test tag remains in QuicFrameCodecTests.cs and should be retagged if the repository wants that classifier test to carry the error-handling trace."
 }

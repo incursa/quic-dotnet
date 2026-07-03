@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P2P1-0006">When the PTO fires and the client does not have Handshake keys, it MUST send an Initial packet in a UDP datagram with a payload of at least 1200 bytes.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-2-1-P3-S3-R02">When the PTO fires and the client does not have Handshake keys, it MUST send an Initial packet in a UDP datagram with a payload of at least 1200 bytes.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P2P1-0006")]
+[Requirement("RFC9002-S6-2-2-1-P3-S3-R02")]
 public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0006
 {
     [Fact]

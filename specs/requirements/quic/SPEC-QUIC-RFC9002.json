@@ -2527,7 +2527,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P2P1-0006",
+      "id": "RFC9002-S6-2-2-1-P3-S3-R02",
       "title": "Send Initial probes otherwise",
       "statement": "When the PTO fires and the client does not have Handshake keys, it MUST send an Initial packet in a UDP datagram with a payload of at least 1200 bytes.",
       "coverage": {
@@ -2554,9 +2554,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P2P1-0006.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsInitialWhenHandshakeKeysAreUnavailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothDeadlinesAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-P3-S3-R02.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesAnImmediateInitialDeadlineWhenItIsTheOnlyOption"
         ]
       }
     },
@@ -4374,7 +4374,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P7-0004",
+      "id": "RFC9002-S7-7-P2-S4-R01",
       "title": "Allow larger bursts when the path can absorb them",
       "statement": "A sender with knowledge that the network path can absorb larger bursts MAY use a higher limit.",
       "coverage": {
@@ -4398,7 +4398,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0004.cs::TryGetBurstLimitBytes_UsesTheHigherLimitWhenThePathCanAbsorbLargerBursts"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S4-R01.cs::TryGetBurstLimitBytes_UsesTheHigherLimitWhenThePathCanAbsorbLargerBursts"
         ]
       }
     },

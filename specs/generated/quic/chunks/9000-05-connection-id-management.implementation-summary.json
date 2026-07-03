@@ -373,7 +373,7 @@
       "notes": "Client receive-path behavior is absent from the current surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0001",
+      "requirement_id": "RFC9000-S5-2-2-P1-S1-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicVersionNegotiation.cs",
@@ -384,7 +384,7 @@
         "tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs:52-73"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S5P2P2-0001"
+        "RFC9000-S5-2-2-P1-S1-R01"
       ],
       "remaining_gap": null,
       "notes": "The new overload gates Version Negotiation on unsupported versions and sufficient datagram size."

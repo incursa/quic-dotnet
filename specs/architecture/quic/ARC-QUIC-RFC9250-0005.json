@@ -25,7 +25,7 @@
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "src/Incursa.Quic.Dns/DoqStream.cs",
     "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0005.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P1-R01.cs"
   ],
   "design_summary": "The DoQ stream helper already enforces the one-message-until-FIN boundary, so early FIN and extra-byte cases fail as fatal protocol errors when the client attempts to decode a response that is truncated or contains more than one DNS message. The server closes the connection when it accepts a non-bidirectional inbound stream because the DoQ adapter only serves client-initiated bidirectional query streams.",
   "data_and_state_considerations": "The fatal-error cases are connection-local policy decisions layered on top of the stream helper. Malformed response frames close the DoQ session after the failed stream is observed, while inbound unidirectional streams are rejected before dispatch so no DNS handler state is created for them.",

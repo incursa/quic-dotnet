@@ -208,7 +208,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0005",
+      "id": "RFC9250-S4-1-1-P1-R01",
       "title": "Listen on UDP port 853 by default",
       "statement": "A DNS server that supports DoQ MUST listen for and accept QUIC connections on the dedicated UDP port 853, unless there is a mutual agreement to use another port.",
       "coverage": {
@@ -360,7 +360,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0010",
+      "id": "RFC9250-S4-2-P4-S1-R01",
       "title": "Encode DNS messages with a 2-octet length field",
       "statement": "All DNS messages sent over DoQ connections MUST be encoded as a 2-octet length field followed by the message content as specified in [RFC1035].",
       "coverage": {
@@ -512,7 +512,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0015",
+      "id": "RFC9250-S4-2-P7-R01",
       "title": "Send responses on the same stream",
       "statement": "The server MUST send the response(s) on the same stream.",
       "coverage": {

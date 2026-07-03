@@ -2062,7 +2062,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0002",
+      "requirement_id": "RFC9000-S3-3-P2-S2-R01",
       "title": "Forbid post-reset transmission of STREAM frames",
       "source_batches": [
         "2-5"
@@ -5491,7 +5491,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0001",
+      "requirement_id": "RFC9000-S5-2-2-P1-S1-R01",
       "title": "Send Version Negotiation for large unsupported packets",
       "source_batches": [
         "2-5"
@@ -12159,7 +12159,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P2P1-0002",
+      "requirement_id": "RFC9000-S10-2-1-P4-S1-R01",
       "title": "An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection",
       "source_batches": [
         "6-10",
@@ -14227,7 +14227,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0661",
+      "requirement_id": "RFC9000-S11-P3-S2-R01",
       "title": "A stateless reset MUST NOT be used by an endpoint that has the state necessary to send a frame on the connection",
       "source_batches": [
         "11-15"
@@ -16251,7 +16251,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0758",
+      "requirement_id": "RFC9000-S13-2-1-P1-R01",
       "title": "Acknowledge every packet at least once",
       "source_batches": [
         "11-15"
@@ -17033,7 +17033,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0005",
+      "requirement_id": "RFC9000-S13-2-5-P3-S1-R01",
       "title": "Report measured delay when it exceeds max_ack_delay",
       "source_batches": [
         "11-15"
@@ -19195,7 +19195,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2-0003",
+      "requirement_id": "RFC9000-S14-2-P2-S1-R01",
       "title": "Use DPLPMTUD or PMTUD to determine support for a desired size",
       "source_batches": [
         "11-15"
@@ -19356,7 +19356,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S14P2-0010",
+      "requirement_id": "RFC9000-S14-2-P6-S1-R01",
       "title": "Allow conservative maximum datagram size estimates",
       "source_batches": [
         "11-15"
@@ -19586,7 +19586,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0877",
+      "requirement_id": "RFC9000-S14-3-P2-S1-R01",
       "title": "Set BASE_PLPMTU consistently with QUIC's minimum",
       "source_batches": [
         "11-15"

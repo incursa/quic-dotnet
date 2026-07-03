@@ -384,7 +384,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0017",
+      "id": "RFC9461-S5-P3-S1-R01",
       "title": "Avoid querying HTTPS RRs when using dohpath",
       "statement": "Clients SHOULD NOT query HTTPS RRs when using `dohpath`.",
       "coverage": {

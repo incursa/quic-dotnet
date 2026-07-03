@@ -57,7 +57,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P2-0010` | Enter draining state after receiving close |
 | `REQ-QUIC-RFC9000-S10P2-0011` | Close immediately on protocol violation |
 | `REQ-QUIC-RFC9000-S10P2-0012` | Permit immediate close after application shutdown |
-| `REQ-QUIC-RFC9000-S10P2P1-0002` | An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection |
+| `RFC9000-S10-2-1-P4-S1-R01` | An endpoint's selected connection ID and the QUIC version are sufficient information to identify packets for a closing connection |
 | `RFC9000-S10-2-1-P5-S2-R01` | To avoid being used for an amplification attack, such endpoints MUST limit the cumulative size of packets it sends to three times the cumulative size of the packets that are received and attributed to the connection |
 | `RFC9000-S10-2-1-P5-S3-R01` | To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet |
 | `REQ-QUIC-RFC9000-S10P2P1-0009` | Retain only closing-state essentials |
@@ -201,7 +201,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P2P4-0001` | In cases with ACK frame loss and reordering, this approach does not guarantee that every acknowledgment is seen by the sender before it is no longer included in the ACK frame |
 | `REQ-QUIC-RFC9000-S13P2P5-0001` | Measure intentional acknowledgment delays |
 | `REQ-QUIC-RFC9000-S13P2P5-0002` | Encode acknowledgment delay in ACK Delay |
-| `REQ-QUIC-RFC9000-S13P2P5-0005` | Report measured delay when it exceeds max_ack_delay |
+| `RFC9000-S13-2-5-P3-S1-R01` | Report measured delay when it exceeds max_ack_delay |
 | `RFC9000-S13-2-6-P1-S1-R01` | Carry ACK frames only in the same packet number space |
 | `RFC9000-S13-2-6-P1-S2-R01` | Use 1-RTT for acknowledging 1-RTT packets |
 | `REQ-QUIC-RFC9000-S13P2P6-0003` | Acknowledge client 0-RTT packets with 1-RTT packets |
@@ -277,13 +277,13 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S14P1-0008` | Limit bytes sent before validating the client address |
 | `REQ-QUIC-RFC9000-S14P2-0001` | The UDP payload includes one or more QUIC packet headers and protected payloads |
 | `REQ-QUIC-RFC9000-S14P2-0002` | The largest UDP payload an endpoint sends at any given time is referred to as the endpoint's maximum datagram size |
-| `REQ-QUIC-RFC9000-S14P2-0003` | Use DPLPMTUD or PMTUD to determine support for a desired size |
+| `RFC9000-S14-2-P2-S1-R01` | Use DPLPMTUD or PMTUD to determine support for a desired size |
 | `RFC9000-S14-2-P2-S2-R01` | Do not exceed the smallest allowed maximum datagram size without PMTU discovery |
 | `REQ-QUIC-RFC9000-S14P2-0005` | Both DPLPMTUD and PMTUD send datagrams that are larger than the current maximum datagram size, referred to as PMTU probes |
 | `REQ-QUIC-RFC9000-S14P2-0006` | Size non-PMTU-probe packets to fit within the maximum datagram size |
 | `RFC9000-S14-2-P4-S1-R01` | Stop sending packets on a path that cannot support 1200 bytes |
 | `RFC9000-S14-2-P5-S2-R01` | Maintain a maximum datagram size per address pair when doing PMTU discovery |
-| `REQ-QUIC-RFC9000-S14P2-0010` | Allow conservative maximum datagram size estimates |
+| `RFC9000-S14-2-P6-S1-R01` | Allow conservative maximum datagram size estimates |
 | `REQ-QUIC-RFC9000-S14P2P1-0003` | Use the quoted packet to associate ICMP messages with a connection |
 | `REQ-QUIC-RFC9000-S14P2P1-0004` | Validate ICMP messages with addresses, ports, and connection IDs |
 | `RFC9000-S14-2-1-P5-S1-R01` | Do not increase PMTU based on ICMP messages |
@@ -827,7 +827,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S3P2-0023` | Remain in Data Recvd when RESET_STREAM is suppressed |
 | `REQ-QUIC-RFC9000-S3P2-0024` | Enter Reset Read after the application receives reset notification |
 | `REQ-QUIC-RFC9000-S3P3-0001` | Forbid terminal-state transmit frames |
-| `REQ-QUIC-RFC9000-S3P3-0002` | Forbid post-reset transmission of STREAM frames |
+| `RFC9000-S3-3-P2-S2-R01` | Forbid post-reset transmission of STREAM frames |
 | `REQ-QUIC-RFC9000-S3P3-0003` | Allow delayed receipt of state-changing frames |
 | `REQ-QUIC-RFC9000-S3P3-0004` | Limit MAX_STREAM_DATA to Recv |
 | `REQ-QUIC-RFC9000-S3P3-0005` | Allow STOP_SENDING except after reset reception |
@@ -926,7 +926,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S5P2P1-0001` | Match client packets by client-selected CID |
 | `REQ-QUIC-RFC9000-S5P2P1-0003` | Discard packets that do not match an existing client connection |
 | `REQ-QUIC-RFC9000-S5P2P1-0004` | Allow clients to drop or buffer not-yet-decryptable packets |
-| `REQ-QUIC-RFC9000-S5P2P2-0001` | Send Version Negotiation for large unsupported packets |
+| `RFC9000-S5-2-2-P1-S1-R01` | Send Version Negotiation for large unsupported packets |
 | `RFC9000-S5-2-2-P2-S4-R01` | Prefer Version Negotiation when possible |
 | `REQ-QUIC-RFC9000-S5P2P2-0005` | Match supported-version packets by connection ID or address tuple |
 | `REQ-QUIC-RFC9000-S5P2P2-0009` | Ignore premature Handshake packets from clients |

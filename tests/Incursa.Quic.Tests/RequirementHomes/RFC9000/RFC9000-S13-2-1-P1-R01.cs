@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0758">Every packet SHOULD be acknowledged at least once.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P1-R01">Every packet SHOULD be acknowledged at least once.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0758")]
+[Requirement("RFC9000-S13-2-1-P1-R01")]
 public sealed class REQ_QUIC_RFC9000_0758
 {
     [Fact]

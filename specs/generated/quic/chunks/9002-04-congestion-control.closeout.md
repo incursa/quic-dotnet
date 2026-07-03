@@ -87,7 +87,7 @@
 - `RFC9002-S7-7-P1-S1-R01` - Pace all in-flight packets. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet.
 - `RFC9002-S7-7-P2-S2-R01` - Either pace or cap bursts. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration.
 - `REQ-QUIC-RFC9002-S7P7-0003` - Limit bursts to the initial congestion window. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: Initial-window burst capping is not yet wired to a concrete transmit queue.
-- `REQ-QUIC-RFC9002-S7P7-0004` - Allow larger bursts when the path can absorb them. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice.
+- `RFC9002-S7-7-P2-S4-R01` - Allow larger bursts when the path can absorb them. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice.
 - `REQ-QUIC-RFC9002-S7P7-0005` - Do not pace pure ACK packets. Status: deferred. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers. Gap: The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing.
 
 ### S7P8
@@ -100,7 +100,7 @@
 - `RFC9002-S7-7-P1-S1-R01` - The repo still lacks a real packet scheduler/send loop that can pace every in-flight packet.
 - `RFC9002-S7-7-P2-S2-R01` - Burst capping versus pacing is only modeled as helper math; enforcement belongs in sender orchestration.
 - `REQ-QUIC-RFC9002-S7P7-0003` - Initial-window burst capping is not yet wired to a concrete transmit queue.
-- `REQ-QUIC-RFC9002-S7P7-0004` - Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice.
+- `RFC9002-S7-7-P2-S4-R01` - Larger-burst allowance needs path-level scheduling decisions that are outside the current helper slice.
 - `REQ-QUIC-RFC9002-S7P7-0005` - The helper can skip pacing pure ACKs, but the sender layer that decides which packets are ACK-only is still missing.
 - `RFC9002-S7-8-P2-S2-R01` - Application-limited classification due to pacing delay is a sender-state concern that is not represented yet.
 

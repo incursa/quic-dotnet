@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0004"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S14P2-0003",
+    "RFC9000-S14-2-P2-S1-R01",
     "REQ-QUIC-RFC9000-S14P2-0005",
     "REQ-QUIC-RFC9000-S14P2-0006",
     "RFC9000-S14-2-P4-S1-R01",
@@ -29,7 +29,7 @@
     "Automatic alternative-path search.",
     "Probe generation beyond the admissibility helper."
   ],
-  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S14P2-0003, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, RFC9000-S14-2-P4-S1-R01, RFC9000-S14-2-P4-S2-R01, and RFC9000-S14-2-P5-S2-R01. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here.",
+  "completion_notes": "This packet now proves RFC9000-S14-2-P2-S1-R01, REQ-QUIC-RFC9000-S14P2-0005, REQ-QUIC-RFC9000-S14P2-0006, RFC9000-S14-2-P4-S1-R01, RFC9000-S14-2-P4-S2-R01, and RFC9000-S14-2-P5-S2-R01. Automatic alternative-path search remains a separate lifecycle slice and is not claimed here.",
   "design_links": [
     "ARC-QUIC-RFC9000-0004"
   ]

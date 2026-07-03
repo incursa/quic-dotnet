@@ -5,7 +5,7 @@
     "RFC9000-S11-P2-S1-R01",
     "REQ-QUIC-RFC9000-0659",
     "REQ-QUIC-RFC9000-0658",
-    "REQ-QUIC-RFC9000-0661",
+    "RFC9000-S11-P3-S2-R01",
     "REQ-QUIC-RFC9000-S11P1-0001",
     "REQ-QUIC-RFC9000-0663",
     "REQ-QUIC-RFC9000-S11P1-0003",
@@ -36,8 +36,8 @@
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_ParsesAndFormatsTransportAndApplicationVariants",
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingTests.cs::TryParseConnectionCloseFrame_RejectsTruncatedOrUnknownTypes",
     "tests/Incursa.Quic.Tests/QuicFrameCodecErrorHandlingFuzzTests.cs::Fuzz_ConnectionCloseFrame_RoundTripsRepresentativeTransportAndApplicationShapes",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0661.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-P3-S2-R01.cs::ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset",
     "tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs::IsAckElicitingFrameType_ClassifiesKnownFrameTypes"
   ],
   "direct_refs_added_or_updated": [
@@ -45,7 +45,7 @@
     "RFC9000-S11-P2-S1-R01",
     "REQ-QUIC-RFC9000-0659",
     "REQ-QUIC-RFC9000-0658",
-    "REQ-QUIC-RFC9000-0661",
+    "RFC9000-S11-P3-S2-R01",
     "REQ-QUIC-RFC9000-S11P1-0001",
     "REQ-QUIC-RFC9000-0663",
     "REQ-QUIC-RFC9000-S11P1-0003"
@@ -93,7 +93,7 @@
     }
   ],
   "notes": [
-    "Wire-format CONNECTION_CLOSE support is now present for both transport and application closes, and the requirement-home proof now closes REQ-QUIC-RFC9000-0661 while the classifier no longer treats application close type 0x1d as ack-eliciting.",
+    "Wire-format CONNECTION_CLOSE support is now present for both transport and application closes, and the requirement-home proof now closes RFC9000-S11-P3-S2-R01 while the classifier no longer treats application close type 0x1d as ack-eliciting.",
     "The remaining section 11 clauses are endpoint- and application-lifecycle policies that need connection-state and application-protocol surfaces not present in this repository slice."
   ]
 }

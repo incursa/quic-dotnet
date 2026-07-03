@@ -6,7 +6,7 @@
 - `REQ-QUIC-RFC9000-S5P1P2-0005`: The no-reuse request is covered at the wire format layer by the RETIRE_CONNECTION_ID frame codec.
 - `REQ-QUIC-RFC9000-S5P1P2-0008`: The wire-format Retire Prior To field is now directly traced.
 - `REQ-QUIC-RFC9000-S5P2-0001`: Trace coverage was already present from the prior pass; the packet-classification hook is still a direct match for the imported ID.
-- `REQ-QUIC-RFC9000-S5P2P2-0001`: The Version Negotiation send helper now gates unsupported versions on the observed datagram size.
+- `RFC9000-S5-2-2-P1-S1-R01`: The Version Negotiation send helper now gates unsupported versions on the observed datagram size.
 - `RFC9000-S5-2-2-P2-S4-R01`: The same helper now covers the "datagram sufficiently long" decision for server responses.
 - `REQ-QUIC-RFC9000-S5P2P3-0002`: The preferred_address transport parameter is encoded, parsed, and fuzzed; the remaining migration-policy clauses are tracked separately in this chunk.
 - `REQ-QUIC-RFC9000-0277`: The disable_active_migration transport parameter is directly traced at the wire level.

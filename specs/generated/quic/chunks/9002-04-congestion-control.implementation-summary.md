@@ -60,7 +60,7 @@ Deferred because the repo slice still lacks a full sender/pacer/application-limi
 - `RFC9002-S7-7-P1-S1-R01`
 - `RFC9002-S7-7-P2-S2-R01`
 - `REQ-QUIC-RFC9002-S7P7-0003`
-- `REQ-QUIC-RFC9002-S7P7-0004`
+- `RFC9002-S7-7-P2-S4-R01`
 - `REQ-QUIC-RFC9002-S7P7-0005`
 - `RFC9002-S7-8-P2-S2-R01`
 

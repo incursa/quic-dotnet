@@ -928,12 +928,12 @@
       "id": "REQ-QUIC-RFC9000-S11-0005",
       "title": "Do not use stateless reset when frame transmission state exists",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0661"
+        "RFC9000-S11-P3-S2-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0661 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S11-P3-S2-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S10P3-0004",
@@ -2501,23 +2501,23 @@
       "id": "REQ-QUIC-RFC9000-S14P3-0003",
       "title": "Set BASE_PLPMTU consistently with QUIC's smallest allowed maximum datagram size",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0877"
+        "RFC9000-S14-3-P2-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0877 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S14-3-P2-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S13P2P1-0002",
       "title": "Acknowledge every packet at least once",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0758"
+        "RFC9000-S13-2-1-P1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0758 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S13-2-1-P1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P21-0008",
