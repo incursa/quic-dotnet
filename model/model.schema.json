@@ -85,9 +85,23 @@
       "type": "string",
       "pattern": "^SPEC-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*$"
     },
-    "requirementId": {
+    "legacyRequirementId": {
       "type": "string",
       "pattern": "^REQ-[A-Z][A-Z0-9]*(?:-[A-Z][A-Z0-9]*)*-\\d{4,}$"
+    },
+    "rfcRequirementCandidateId": {
+      "type": "string",
+      "pattern": "^RFC\\d{4,}-S\\d+(?:-\\d+)*(?:-P\\d+(?:-S\\d+)?)?-R\\d{2,}$"
+    },
+    "requirementId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/legacyRequirementId"
+        },
+        {
+          "$ref": "#/$defs/rfcRequirementCandidateId"
+        }
+      ]
     },
     "architectureId": {
       "type": "string",
