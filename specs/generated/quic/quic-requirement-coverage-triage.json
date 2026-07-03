@@ -230334,7 +230334,7 @@
           "requirement_id": "REQ-QUIC-RFC9000-S5P2-0002",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
           "method": "EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
@@ -230348,7 +230348,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S5P2-0002",
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -358072,7 +358072,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+      "requirement_id": "RFC9287-S3-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9287",
       "rfc": "RFC9287",
       "section_prefix": "S3",
@@ -358092,11 +358092,11 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 5,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -358116,10 +358116,10 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
           "method": "EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
@@ -358133,16 +358133,16 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S5P2-0002",
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
           "method": "EndpointRoutesClearedFixedBitLongHeaderPacketsToRegisteredConnection",
@@ -358156,16 +358156,16 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-S5P2-0002",
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
           "method": "Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
@@ -358178,16 +358178,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
           "method": "Fuzz_NegotiatedGreaseQuicBit_AcceptsClearedFixedBitPacketsAcrossRepresentativePayloads",
@@ -358200,16 +358200,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
           "method": "NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
@@ -358222,16 +358222,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
           "method": "NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAfterTransportParameters",
@@ -358244,16 +358244,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
           "method": "NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
@@ -358266,16 +358266,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
           "method": "NegotiatedGreaseQuicBitAcceptsClearedFixedBitPacketsAtTheShortestPayload",
@@ -358288,16 +358288,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.RuntimeAcceptQueueSurfacesClearedFixedBitPeerRequestStream",
           "method": "RuntimeAcceptQueueSurfacesClearedFixedBitPeerRequestStream",
@@ -358310,16 +358310,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.RuntimeAcceptQueueSurfacesPeerStreamsImplicitlyOpenedByHigherStreamId",
           "method": "RuntimeAcceptQueueSurfacesPeerStreamsImplicitlyOpenedByHigherStreamId",
@@ -358332,16 +358332,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.RuntimeDispatchAcceptsClearedFixedBitShortHeaderPacketsAfterNegotiation",
           "method": "RuntimeDispatchAcceptsClearedFixedBitShortHeaderPacketsAfterNegotiation",
@@ -358354,16 +358354,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.RuntimeDispatchAcceptsClearedFixedBitWhenLocalEndpointAdvertisedGreaseQuicBit",
           "method": "RuntimeDispatchAcceptsClearedFixedBitWhenLocalEndpointAdvertisedGreaseQuicBit",
@@ -358376,16 +358376,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
           "method": "StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
@@ -358398,16 +358398,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9287-S3-0003",
+          "requirement_id": "RFC9287-S3-P2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs::StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
           "class": "REQ_QUIC_RFC9287_S3_0003",
           "member": "REQ_QUIC_RFC9287_S3_0003.StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
           "method": "StrictOpenRejectsFixedBitZeroPacketsWithoutNegotiation",
@@ -358420,7 +358420,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9287-S3-0003"
+            "RFC9287-S3-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true

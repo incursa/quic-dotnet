@@ -14,7 +14,7 @@
   "addresses": [
     "REQ-QUIC-RFC9287-S3-0001",
     "REQ-QUIC-RFC9287-S3-0002",
-    "REQ-QUIC-RFC9287-S3-0003",
+    "RFC9287-S3-P2-R01",
     "REQ-QUIC-RFC9287-S3-0004"
   ],
   "summary": "Implement the RFC 9287 grease_quic_bit transport parameter and negotiated QUIC-bit policy for QUIC version 1, including codec support, runtime packet-policy plumbing, and focused proof coverage.",

@@ -15,7 +15,7 @@
   "satisfies": [
     "REQ-QUIC-RFC9287-S3-0001",
     "REQ-QUIC-RFC9287-S3-0002",
-    "REQ-QUIC-RFC9287-S3-0003",
+    "RFC9287-S3-P2-R01",
     "REQ-QUIC-RFC9287-S3-0004"
   ],
   "key_components": [

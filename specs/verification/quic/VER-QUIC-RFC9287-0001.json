@@ -15,7 +15,7 @@
   "verifies": [
     "REQ-QUIC-RFC9287-S3-0001",
     "REQ-QUIC-RFC9287-S3-0002",
-    "REQ-QUIC-RFC9287-S3-0003",
+    "RFC9287-S3-P2-R01",
     "REQ-QUIC-RFC9287-S3-0004"
   ],
   "scope": "This verification covers the RFC 9287 section 3 transport-parameter and negotiated QUIC-bit policy slice only. It proves empty transport-parameter emission, non-empty rejection, negotiated bit-0 acceptance after local advertisement, outbound bit-0 clearing after peer-parameter commitment, parser strict-default preservation, edge and fuzzed representative transport-parameter and packet-policy shapes, and the hot-path benchmark evidence. It does not verify the optional early 0-RTT greasing path or broader RFC 9368/RFC 9369 versioning work.",
@@ -37,7 +37,7 @@
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0002.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0003.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/RFC9287-S3-P2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9287/REQ-QUIC-RFC9287-S3-0004.cs",
     "tests/Incursa.Quic.Tests/QuicGreaseQuicBitFuzzSupport.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersCodecUnitTests.cs",
