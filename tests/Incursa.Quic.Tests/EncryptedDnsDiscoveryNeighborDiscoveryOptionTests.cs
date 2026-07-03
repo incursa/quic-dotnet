@@ -261,7 +261,7 @@ public sealed class EncryptedDnsDiscoveryNeighborDiscoveryOptionTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0106")]
-    [Requirement("REQ-QUIC-RFC9463-0107")]
+    [Requirement("RFC9463-S6-2-P2-R01")]
     [Requirement("REQ-QUIC-RFC9463-0108")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -282,7 +282,7 @@ public sealed class EncryptedDnsDiscoveryNeighborDiscoveryOptionTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0106")]
-    [Requirement("REQ-QUIC-RFC9463-0107")]
+    [Requirement("RFC9463-S6-2-P2-R01")]
     [Requirement("REQ-QUIC-RFC9463-0108")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

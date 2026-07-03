@@ -417930,7 +417930,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9463-0040",
+      "requirement_id": "RFC9463-S4-2-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9463",
       "rfc": "RFC9463",
       "section_prefix": "S4P2",
@@ -417976,7 +417976,7 @@
       ],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0040",
+          "requirement_id": "RFC9463-S4-2-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -417992,15 +417992,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0040",
+          "requirement_id": "RFC9463-S4-2-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs::DecodeManyIgnoresNonDnrOptions",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418016,15 +418016,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0040",
+          "requirement_id": "RFC9463-S4-2-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418040,15 +418040,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0040",
+          "requirement_id": "RFC9463-S4-2-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs::DecodeManyReturnsSeparateResolversSortedByServicePriority",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418064,9 +418064,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -418136,9 +418136,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -418160,9 +418160,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -418184,9 +418184,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -418208,9 +418208,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -418218,7 +418218,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9463-0042",
+      "requirement_id": "RFC9463-S4-2-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9463",
       "rfc": "RFC9463",
       "section_prefix": "S4P2",
@@ -418264,7 +418264,7 @@
       ],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0042",
+          "requirement_id": "RFC9463-S4-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418280,15 +418280,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0042",
+          "requirement_id": "RFC9463-S4-2-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs::DecodeManyIgnoresNonDnrOptions",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418304,15 +418304,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0042",
+          "requirement_id": "RFC9463-S4-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418328,15 +418328,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0042",
+          "requirement_id": "RFC9463-S4-2-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs::DecodeManyReturnsSeparateResolversSortedByServicePriority",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv6OptionTests.cs",
@@ -418352,9 +418352,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9463-0040",
+            "RFC9463-S4-2-P2-R01",
             "REQ-QUIC-RFC9463-0041",
-            "REQ-QUIC-RFC9463-0042"
+            "RFC9463-S4-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -419295,7 +419295,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -419320,7 +419320,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -419345,7 +419345,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -419370,7 +419370,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422543,7 +422543,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422568,7 +422568,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422593,7 +422593,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422618,7 +422618,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422691,7 +422691,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422716,7 +422716,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422741,7 +422741,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422766,7 +422766,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -422774,7 +422774,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9463-0073",
+      "requirement_id": "RFC9463-S5-2-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9463",
       "rfc": "RFC9463",
       "section_prefix": "S5P2",
@@ -422820,7 +422820,7 @@
       ],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0073",
+          "requirement_id": "RFC9463-S5-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs",
@@ -422839,13 +422839,13 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0073",
+          "requirement_id": "RFC9463-S5-2-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeIgnoresNonDnrDhcpv4Options",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs",
@@ -422864,13 +422864,13 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0073",
+          "requirement_id": "RFC9463-S5-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs",
@@ -422889,13 +422889,13 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0073",
+          "requirement_id": "RFC9463-S5-2-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs::DecodeReturnsSeparateInstancesSortedByServicePriority",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryDhcpv4OptionTests.cs",
@@ -422914,7 +422914,7 @@
             "REQ-QUIC-RFC9463-0049",
             "REQ-QUIC-RFC9463-0071",
             "REQ-QUIC-RFC9463-0072",
-            "REQ-QUIC-RFC9463-0073"
+            "RFC9463-S5-2-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -428489,7 +428489,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428513,7 +428513,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428537,7 +428537,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428561,7 +428561,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428570,7 +428570,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9463-0107",
+      "requirement_id": "RFC9463-S6-2-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9463",
       "rfc": "RFC9463",
       "section_prefix": "S6P2",
@@ -428616,7 +428616,7 @@
       ],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0107",
+          "requirement_id": "RFC9463-S6-2-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
@@ -428633,14 +428633,14 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0107",
+          "requirement_id": "RFC9463-S6-2-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyCanRejectInvalidOptionWhenSilentDiscardIsDisabled",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
@@ -428657,14 +428657,14 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0107",
+          "requirement_id": "RFC9463-S6-2-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
@@ -428681,14 +428681,14 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9463-0107",
+          "requirement_id": "RFC9463-S6-2-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs::DecodeManyReturnsSeparateOptionsSortedByServicePriority",
           "file": "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryNeighborDiscoveryOptionTests.cs",
@@ -428705,7 +428705,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428777,7 +428777,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428801,7 +428801,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428825,7 +428825,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,
@@ -428849,7 +428849,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9463-0106",
-            "REQ-QUIC-RFC9463-0107",
+            "RFC9463-S6-2-P2-R01",
             "REQ-QUIC-RFC9463-0108"
           ],
           "requirement_tagged": true,

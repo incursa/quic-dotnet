@@ -43,7 +43,7 @@
     "REQ-QUIC-RFC9463-0104",
     "REQ-QUIC-RFC9463-0105",
     "REQ-QUIC-RFC9463-0106",
-    "REQ-QUIC-RFC9463-0107",
+    "RFC9463-S6-2-P2-R01",
     "REQ-QUIC-RFC9463-0108"
   ],
   "scope": "This verification covers Neighbor Discovery encrypted DNS option field order, Type and Length unit encoding, Service Priority, Lifetime and default lifetime behavior, infinity and retirement lifetime semantics, RFC 8415 authentication-domain-name wire formatting, IPv6 Addr Length and address-list encoding, shared lifetime across IPv6 addresses, RFC 9460 SvcParams encoding and alpn preference, forbidden address hints, default port lookup when the port SvcParam is absent, ADN-only mode field omission, zero padding to an 8-octet boundary, multiple option processing, service-priority ordering, invalid-option discard, and loopback-address discard behavior.",

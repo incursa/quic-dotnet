@@ -42,7 +42,7 @@
     "REQ-QUIC-RFC9463-0104",
     "REQ-QUIC-RFC9463-0105",
     "REQ-QUIC-RFC9463-0106",
-    "REQ-QUIC-RFC9463-0107",
+    "RFC9463-S6-2-P2-R01",
     "REQ-QUIC-RFC9463-0108"
   ],
   "summary": "Add trace-owned byte-level support for the RFC 9463 Neighbor Discovery encrypted DNS option.",

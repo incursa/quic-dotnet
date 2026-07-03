@@ -285,7 +285,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     [Requirement("REQ-QUIC-RFC9463-0049")]
     [Requirement("REQ-QUIC-RFC9463-0071")]
     [Requirement("REQ-QUIC-RFC9463-0072")]
-    [Requirement("REQ-QUIC-RFC9463-0073")]
+    [Requirement("RFC9463-S5-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DecodeReturnsSeparateInstancesSortedByServicePriority()
@@ -304,7 +304,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     [Requirement("REQ-QUIC-RFC9463-0049")]
     [Requirement("REQ-QUIC-RFC9463-0071")]
     [Requirement("REQ-QUIC-RFC9463-0072")]
-    [Requirement("REQ-QUIC-RFC9463-0073")]
+    [Requirement("RFC9463-S5-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DecodeIgnoresNonDnrDhcpv4Options()

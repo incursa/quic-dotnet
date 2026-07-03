@@ -887,7 +887,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0040",
+      "id": "RFC9463-S4-2-P2-R01",
       "title": "Accept multiple OPTION_V6_DNR instances",
       "statement": "The DHCPv6 client MUST be prepared to receive multiple instances of the OPTION_V6_DNR option.",
       "coverage": {
@@ -935,7 +935,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0042",
+      "id": "RFC9463-S4-2-P2-S1-R01",
       "title": "Process instances by service priority",
       "statement": "The DHCPv6 client MUST process OPTION_V6_DNR instances in service-priority order, where a smaller value indicates higher preference.",
       "coverage": {
@@ -1645,7 +1645,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0073",
+      "id": "RFC9463-S5-2-P2-S1-R01",
       "title": "Process Instances by Service Priority",
       "statement": "These instances MUST be processed by service priority, with smaller values indicating higher preference.",
       "coverage": {
@@ -2383,7 +2383,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9463-0107",
+      "id": "RFC9463-S6-2-P2-R01",
       "title": "Receive multiple Encrypted DNS options",
       "statement": "The host MUST be prepared to receive multiple Encrypted DNS options in RAs.",
       "coverage": {
