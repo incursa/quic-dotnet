@@ -12,9 +12,9 @@
     "VER-QUIC-RFC9250-0010"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9250-0039",
-    "REQ-QUIC-RFC9250-0041",
-    "REQ-QUIC-RFC9250-0051"
+    "RFC9250-S4-3-1-P1-S2-R01",
+    "RFC9250-S4-3-1-P2-S1-R01",
+    "RFC9250-S4-3-2-P2-S2-R02"
   ],
   "summary": "Add server-side STOP_SENDING dispatch prevention, client-side unsolicited RESET_STREAM tolerance, and registered error code pathway documentation.",
   "planned_changes": "- Add STOP_SENDING check in DoqServer.HandleQueryStreamAsync after reading query but before handler dispatch.\n- Add MaxUnsolicitedResets property and atomic counter to DoqClient; count peer RESET_STREAM events and close connection only when threshold exceeded.\n- Add doc comment to DoqErrorCode noting the registered-specific-code MAY pathway.\n- Add focused tests: STOP_SENDING before dispatch, unsolicited RESET_STREAM below and beyond limit, and registered code documentation.",

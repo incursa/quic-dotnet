@@ -15,11 +15,11 @@
     "REQ-QUIC-RFC9250-0102",
     "REQ-QUIC-RFC9250-0103",
     "REQ-QUIC-RFC9250-0104",
-    "REQ-QUIC-RFC9250-0105",
+    "RFC9250-S5-5-3-P3-S2-R01",
     "REQ-QUIC-RFC9250-0106",
-    "REQ-QUIC-RFC9250-0107",
+    "RFC9250-S5-5-3-P5-S1-R01",
     "REQ-QUIC-RFC9250-0108",
-    "REQ-QUIC-RFC9250-0109"
+    "RFC9250-S5-5-4-P1-S4-R01"
   ],
   "summary": "Add client-side idle-timeout reuse gating, resumption ticket single-use tracking, connectivity-change detection, address validation token policy, and server-side resumption ticket lifetime and anti-replay options.",
   "planned_changes": "- Add DoqClient.IdleTimeoutMargin reuse gating against the advertised QUIC idle timeout.\n- Cross-reference edns-tcp-keepalive prohibition to slice 0008 (ARC/WI/VER-0008).\n- Add DoqClient.IsTicketUsed flag set after first QueryAsync; reject subsequent use.\n- Add DoqClient.ConnectivityId and PriorConnectivityId for connectivity-change detection.\n- Add DoqClient.UseAddressValidationWithResumptionOnly policy flag (default true).\n- Add DoqServerOptions.ResumptionTicketLifetime (default 6 hours).\n- Add DoqServerOptions.EnableAntiReplay (default true).\n- Add focused unit tests for idle-timeout reuse gating, ticket tracking, connectivity checks, and options defaults.",

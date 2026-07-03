@@ -328125,10 +328125,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -328251,12 +328251,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -328288,12 +328288,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -328762,7 +328762,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -328785,7 +328785,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -328899,8 +328899,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -328940,8 +328940,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329024,7 +329024,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -329047,7 +329047,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -329161,8 +329161,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329202,8 +329202,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329227,7 +329227,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0006",
+      "requirement_id": "RFC9250-S4-1-1-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P1P1",
@@ -329269,7 +329269,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329286,13 +329286,13 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329309,13 +329309,13 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329331,13 +329331,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ClientOptionsAllowExplicitAlternateDoqPort",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329353,13 +329353,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329376,13 +329376,13 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersUseDefaultDoqPort",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329399,13 +329399,13 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006"
+            "RFC9250-S4-1-1-P2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs",
@@ -329423,8 +329423,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329446,7 +329446,7 @@
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0006",
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs",
@@ -329464,8 +329464,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329489,7 +329489,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0007",
+      "requirement_id": "RFC9250-S4-1-1-P3-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P1P1",
@@ -329530,7 +329530,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329546,13 +329546,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0007"
+            "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersAllowDoqPortsOtherThanUdp53",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329568,13 +329568,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0007"
+            "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329590,13 +329590,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0007"
+            "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::EndpointHelpersRejectUdpPort53",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -329612,13 +329612,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0007"
+            "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs",
@@ -329636,8 +329636,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329659,7 +329659,7 @@
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0007",
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0001.cs",
@@ -329677,8 +329677,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -329762,10 +329762,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -329888,12 +329888,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -329925,12 +329925,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330003,10 +330003,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -330030,7 +330030,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014"
           ],
           "requirement_tagged": false,
@@ -330053,9 +330053,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": false,
           "class_level_only": false
@@ -330128,12 +330128,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330165,12 +330165,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330420,8 +330420,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -330461,8 +330461,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -330656,12 +330656,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330693,12 +330693,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330881,12 +330881,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330918,12 +330918,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -330936,7 +330936,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0013",
+      "requirement_id": "RFC9250-S4-2-P6-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P2",
@@ -330977,7 +330977,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -330996,10 +330996,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -331007,7 +331007,7 @@
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331023,14 +331023,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsyncSendsSelectedStreamQueryAndFin",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331046,14 +331046,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331069,15 +331069,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331093,15 +331093,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -331122,12 +331122,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331138,7 +331138,7 @@
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0013",
+          "requirement_id": "RFC9250-S4-2-P6-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -331159,12 +331159,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331237,10 +331237,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -331267,10 +331267,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -331294,7 +331294,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014"
           ],
           "requirement_tagged": true,
@@ -331317,9 +331317,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -331341,9 +331341,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -331370,12 +331370,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331407,12 +331407,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331485,10 +331485,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -331609,12 +331609,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331646,12 +331646,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331664,7 +331664,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0016",
+      "requirement_id": "RFC9250-S4-2-P7-R02",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P2",
@@ -331705,7 +331705,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0016",
+          "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331724,10 +331724,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -331735,7 +331735,7 @@
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0016",
+          "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerRejectsIncompleteDoqQueryFrame",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331758,7 +331758,7 @@
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0016",
+          "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerWritesResponseOnTheSameQueryStream",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -331781,7 +331781,7 @@
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0016",
+          "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -331802,12 +331802,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -331818,7 +331818,7 @@
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0016",
+          "requirement_id": "RFC9250-S4-2-P7-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -331839,12 +331839,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -332027,12 +332027,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -332064,12 +332064,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -332082,7 +332082,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0018",
+      "requirement_id": "RFC9250-S4-2-P9-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P2",
@@ -332123,7 +332123,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -332139,15 +332139,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerDoesNotDispatchQueryBeforeClientStreamFin",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -332163,15 +332163,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -332187,13 +332187,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -332209,13 +332209,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0018"
+            "RFC9250-S4-2-P9-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -332236,12 +332236,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -332252,7 +332252,7 @@
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0018",
+          "requirement_id": "RFC9250-S4-2-P9-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0002.cs",
@@ -332273,12 +332273,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -332348,7 +332348,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332373,7 +332373,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332403,15 +332403,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332441,15 +332441,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332514,7 +332514,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332539,7 +332539,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332569,15 +332569,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332607,15 +332607,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332680,7 +332680,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332705,7 +332705,7 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -332735,15 +332735,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332773,15 +332773,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -332937,10 +332937,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -332969,12 +332969,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -333006,12 +333006,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -333172,10 +333172,10 @@
             "REQ-QUIC-RFC9250-0002",
             "REQ-QUIC-RFC9250-0008",
             "REQ-QUIC-RFC9250-0009",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023"
           ],
@@ -333204,12 +333204,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -333241,12 +333241,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -333259,7 +333259,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0024",
+      "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P2P1",
@@ -333302,7 +333302,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333318,13 +333318,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_PreservesOriginalInput",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333340,13 +333340,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333362,13 +333362,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_ThrowsOnShortInput",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333384,13 +333384,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333406,13 +333406,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::GenerateMessageId_WritesSpecifiedId",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333428,13 +333428,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024"
+            "RFC9250-S4-2-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333450,14 +333450,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024",
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S1-R01",
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0024",
+          "requirement_id": "RFC9250-S4-2-1-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333473,8 +333473,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024",
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S1-R01",
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -333482,7 +333482,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0025",
+      "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P2P1",
@@ -333524,7 +333524,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333540,13 +333540,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoq_SetsMessageIdToZero",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333562,13 +333562,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333584,13 +333584,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoq_ThrowsOnShortInput",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333606,13 +333606,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333628,14 +333628,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024",
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S1-R01",
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0025",
+          "requirement_id": "RFC9250-S4-2-1-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -333651,8 +333651,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0024",
-            "REQ-QUIC-RFC9250-0025"
+            "RFC9250-S4-2-1-P3-S1-R01",
+            "RFC9250-S4-2-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -333755,8 +333755,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -333796,8 +333796,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334004,8 +334004,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334045,8 +334045,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334253,8 +334253,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334294,8 +334294,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334502,8 +334502,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334543,8 +334543,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334751,8 +334751,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -334792,8 +334792,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335000,8 +335000,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335041,8 +335041,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335249,8 +335249,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335290,8 +335290,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335498,8 +335498,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335539,8 +335539,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -335740,15 +335740,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -335778,15 +335778,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -335932,15 +335932,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -335970,15 +335970,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336124,15 +336124,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336162,15 +336162,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336316,15 +336316,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336354,15 +336354,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336385,7 +336385,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0037",
-            "REQ-QUIC-RFC9250-0040"
+            "RFC9250-S4-3-1-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -336408,7 +336408,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0037",
-            "REQ-QUIC-RFC9250-0040"
+            "RFC9250-S4-3-1-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -336504,15 +336504,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336542,15 +336542,15 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -336608,7 +336608,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0039",
+      "requirement_id": "RFC9250-S4-3-1-P1-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -336646,7 +336646,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0039",
+          "requirement_id": "RFC9250-S4-3-1-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -336662,13 +336662,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0039"
+            "RFC9250-S4-3-1-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0039",
+          "requirement_id": "RFC9250-S4-3-1-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -336684,7 +336684,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0039"
+            "RFC9250-S4-3-1-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -336692,7 +336692,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0040",
+      "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -336730,7 +336730,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0040",
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -336746,15 +336746,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0040",
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -336778,21 +336778,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0040",
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -336816,21 +336816,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0040",
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -336847,13 +336847,13 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0037",
-            "REQ-QUIC-RFC9250-0040"
+            "RFC9250-S4-3-1-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0040",
+          "requirement_id": "RFC9250-S4-3-1-P1-S4-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -336870,7 +336870,7 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0037",
-            "REQ-QUIC-RFC9250-0040"
+            "RFC9250-S4-3-1-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -336878,7 +336878,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0041",
+      "requirement_id": "RFC9250-S4-3-1-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -336916,7 +336916,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0041",
+          "requirement_id": "RFC9250-S4-3-1-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -336932,13 +336932,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0041"
+            "RFC9250-S4-3-1-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0041",
+          "requirement_id": "RFC9250-S4-3-1-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -336954,13 +336954,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0041"
+            "RFC9250-S4-3-1-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0041",
+          "requirement_id": "RFC9250-S4-3-1-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::ServerChecksStopSendingBeforeDispatchingQuery",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -336976,7 +336976,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0041"
+            "RFC9250-S4-3-1-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -336984,7 +336984,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0042",
+      "requirement_id": "RFC9250-S4-3-1-P3-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -337022,7 +337022,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0042",
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337038,14 +337038,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0042",
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337069,21 +337069,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0042",
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337107,21 +337107,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0042",
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337137,15 +337137,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0042",
+          "requirement_id": "RFC9250-S4-3-1-P3-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337161,9 +337161,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -337171,7 +337171,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0043",
+      "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -337209,7 +337209,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0043",
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337225,14 +337225,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0043",
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337256,21 +337256,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0043",
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337294,21 +337294,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0043",
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337324,15 +337324,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0043",
+          "requirement_id": "RFC9250-S4-3-1-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337348,9 +337348,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -337358,7 +337358,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0044",
+      "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -337396,7 +337396,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0044",
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337415,13 +337415,13 @@
             "REQ-QUIC-RFC9250-0019",
             "REQ-QUIC-RFC9250-0020",
             "REQ-QUIC-RFC9250-0021",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0044",
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337445,21 +337445,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0044",
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337483,21 +337483,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0044",
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337513,15 +337513,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0044",
+          "requirement_id": "RFC9250-S4-3-1-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::CancellationLimitClosesWithExcessiveLoad",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337537,9 +337537,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044"
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -337547,7 +337547,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0045",
+      "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -337585,7 +337585,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0045",
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337601,15 +337601,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0045",
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337633,21 +337633,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0045",
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337671,21 +337671,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0045",
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337701,14 +337701,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0045",
+          "requirement_id": "RFC9250-S4-3-1-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337724,8 +337724,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -337733,7 +337733,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0046",
+      "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P1",
@@ -337771,7 +337771,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0046",
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337787,15 +337787,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0046",
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337819,21 +337819,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0046",
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -337857,21 +337857,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0046",
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337887,14 +337887,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0046",
+          "requirement_id": "RFC9250-S4-3-1-P5-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::EarlyResetAbandonsTransactionAndResetsServerWrites",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -337910,8 +337910,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046"
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -337919,7 +337919,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0047",
+      "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P2",
@@ -337940,8 +337940,8 @@
       "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsync_PropagatesServfailResponseCodeFromHandler",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailTraceArtifactsAreLinked",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailResponseCodeAndTestsAreTraceLinked"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailTraceArtifactsAreLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailResponseCodeAndTestsAreTraceLinked"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -337961,7 +337961,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337977,13 +337977,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsync_PropagatesServfailResponseCodeFromHandler",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -337999,16 +337999,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs",
           "class": "REQ_QUIC_RFC9250_0006",
           "member": "REQ_QUIC_RFC9250_0006.DoqServfailResponseCodeAndTestsAreTraceLinked",
           "method": "DoqServfailResponseCodeAndTestsAreTraceLinked",
@@ -338021,16 +338021,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailResponseCodeAndTestsAreTraceLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailResponseCodeAndTestsAreTraceLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs",
           "class": "REQ_QUIC_RFC9250_0006",
           "member": "REQ_QUIC_RFC9250_0006.DoqServfailResponseCodeAndTestsAreTraceLinked",
           "method": "DoqServfailResponseCodeAndTestsAreTraceLinked",
@@ -338043,16 +338043,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs",
           "class": "REQ_QUIC_RFC9250_0006",
           "member": "REQ_QUIC_RFC9250_0006.DoqServfailTraceArtifactsAreLinked",
           "method": "DoqServfailTraceArtifactsAreLinked",
@@ -338065,16 +338065,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0047",
+          "requirement_id": "RFC9250-S4-3-2-P1-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailTraceArtifactsAreLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailTraceArtifactsAreLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs",
           "class": "REQ_QUIC_RFC9250_0006",
           "member": "REQ_QUIC_RFC9250_0006.DoqServfailTraceArtifactsAreLinked",
           "method": "DoqServfailTraceArtifactsAreLinked",
@@ -338087,7 +338087,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0047"
+            "RFC9250-S4-3-2-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -338095,7 +338095,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0048",
+      "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P2",
@@ -338133,7 +338133,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0048",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -338149,15 +338149,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0048",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338181,21 +338181,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0048",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338219,21 +338219,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0048",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338249,15 +338249,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0048",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338273,9 +338273,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -338283,7 +338283,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0049",
+      "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P2",
@@ -338321,7 +338321,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0049",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -338337,15 +338337,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0049",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338369,21 +338369,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0049",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338407,21 +338407,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0049",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338437,15 +338437,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0049",
+          "requirement_id": "RFC9250-S4-3-2-P2-S1-R02",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338461,9 +338461,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -338471,7 +338471,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0050",
+      "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P2",
@@ -338509,7 +338509,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0050",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -338525,15 +338525,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0050",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338557,21 +338557,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0050",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0003.cs",
@@ -338595,21 +338595,21 @@
             "REQ-QUIC-RFC9250-0036",
             "REQ-QUIC-RFC9250-0037",
             "REQ-QUIC-RFC9250-0038",
-            "REQ-QUIC-RFC9250-0040",
-            "REQ-QUIC-RFC9250-0042",
-            "REQ-QUIC-RFC9250-0043",
-            "REQ-QUIC-RFC9250-0044",
-            "REQ-QUIC-RFC9250-0045",
-            "REQ-QUIC-RFC9250-0046",
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-1-P1-S4-R01",
+            "RFC9250-S4-3-1-P3-R01",
+            "RFC9250-S4-3-1-P3-S1-R01",
+            "RFC9250-S4-3-1-P3-S2-R01",
+            "RFC9250-S4-3-1-P5-S1-R01",
+            "RFC9250-S4-3-1-P5-S2-R01",
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0050",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338625,15 +338625,15 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0050",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs::InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0034-Cancellation.cs",
@@ -338649,9 +338649,9 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0048",
-            "REQ-QUIC-RFC9250-0049",
-            "REQ-QUIC-RFC9250-0050"
+            "RFC9250-S4-3-2-P2-S1-R01",
+            "RFC9250-S4-3-2-P2-S1-R02",
+            "RFC9250-S4-3-2-P2-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -338659,7 +338659,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0051",
+      "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P2",
@@ -338700,7 +338700,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0051",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -338716,13 +338716,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0051"
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0051",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -338738,13 +338738,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0051"
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0051",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -338760,13 +338760,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0051"
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0051",
+          "requirement_id": "RFC9250-S4-3-2-P2-S2-R02",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -338782,7 +338782,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0051"
+            "RFC9250-S4-3-2-P2-S2-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -339782,8 +339782,8 @@
       "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientTreatsPeerStopSendingAsFatalProtocolErrorAndClosesConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -339850,7 +339850,7 @@
           "requirement_id": "REQ-QUIC-RFC9250-0057",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs",
           "class": "REQ_QUIC_RFC9250_0007",
           "member": "REQ_QUIC_RFC9250_0007.DoqPeerStopSendingCodeAndTestsAreTraceLinked",
           "method": "DoqPeerStopSendingCodeAndTestsAreTraceLinked",
@@ -339871,8 +339871,8 @@
         {
           "requirement_id": "REQ-QUIC-RFC9250-0057",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs",
           "class": "REQ_QUIC_RFC9250_0007",
           "member": "REQ_QUIC_RFC9250_0007.DoqPeerStopSendingCodeAndTestsAreTraceLinked",
           "method": "DoqPeerStopSendingCodeAndTestsAreTraceLinked",
@@ -339894,7 +339894,7 @@
           "requirement_id": "REQ-QUIC-RFC9250-0057",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs",
           "class": "REQ_QUIC_RFC9250_0007",
           "member": "REQ_QUIC_RFC9250_0007.DoqPeerStopSendingTraceArtifactsAreLinked",
           "method": "DoqPeerStopSendingTraceArtifactsAreLinked",
@@ -339915,8 +339915,8 @@
         {
           "requirement_id": "REQ-QUIC-RFC9250-0057",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs",
           "class": "REQ_QUIC_RFC9250_0007",
           "member": "REQ_QUIC_RFC9250_0007.DoqPeerStopSendingTraceArtifactsAreLinked",
           "method": "DoqPeerStopSendingTraceArtifactsAreLinked",
@@ -340999,7 +340999,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0064",
+      "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P3P4",
@@ -341040,7 +341040,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -341056,13 +341056,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
@@ -341078,13 +341078,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs",
@@ -341100,13 +341100,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::RegisteredContextualErrorCodesDoNotNormalizeAsUnspecifiedError",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs",
@@ -341122,13 +341122,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs",
@@ -341144,13 +341144,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0064",
+          "requirement_id": "RFC9250-S4-3-4-P2-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs::UnknownOrUnexpectedErrorCodesNormalizeToUnspecifiedError",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs",
@@ -341166,7 +341166,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0064"
+            "RFC9250-S4-3-4-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -343079,7 +343079,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": false,
@@ -343102,7 +343102,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": false,
@@ -343243,7 +343243,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0077",
+      "requirement_id": "RFC9250-S4-5-P2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S4P5",
@@ -343284,7 +343284,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0077",
+          "requirement_id": "RFC9250-S4-5-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -343300,14 +343300,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0077",
+          "requirement_id": "RFC9250-S4-5-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsZeroRttForReplayableQueryOpcode",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -343323,14 +343323,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0077",
+          "requirement_id": "RFC9250-S4-5-P2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -343346,14 +343346,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0077",
+          "requirement_id": "RFC9250-S4-5-P2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -343369,7 +343369,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
@@ -343701,7 +343701,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
@@ -343724,7 +343724,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
@@ -343747,7 +343747,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
@@ -343770,7 +343770,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": true,
@@ -343840,8 +343840,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": false,
           "class_level_only": false
@@ -343885,7 +343885,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0077",
+            "RFC9250-S4-5-P2-R01",
             "REQ-QUIC-RFC9250-0079"
           ],
           "requirement_tagged": false,
@@ -345203,7 +345203,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0086",
+      "requirement_id": "RFC9250-S5-1-P1-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S5P1",
@@ -345244,7 +345244,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0086",
+          "requirement_id": "RFC9250-S5-1-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -345260,13 +345260,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086"
+            "RFC9250-S5-1-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0086",
+          "requirement_id": "RFC9250-S5-1-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDefaultsToNoFallback",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -345282,13 +345282,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086"
+            "RFC9250-S5-1-P1-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0086",
+          "requirement_id": "RFC9250-S5-1-P1-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -345304,14 +345304,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086",
+            "RFC9250-S5-1-P1-S2-R01",
             "REQ-QUIC-RFC9250-0087"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0086",
+          "requirement_id": "RFC9250-S5-1-P1-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDoesNotSelectFallbackTransport",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -345327,7 +345327,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086",
+            "RFC9250-S5-1-P1-S2-R01",
             "REQ-QUIC-RFC9250-0087"
           ],
           "requirement_tagged": true,
@@ -345488,7 +345488,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086",
+            "RFC9250-S5-1-P1-S2-R01",
             "REQ-QUIC-RFC9250-0087"
           ],
           "requirement_tagged": true,
@@ -345511,7 +345511,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0086",
+            "RFC9250-S5-1-P1-S2-R01",
             "REQ-QUIC-RFC9250-0087"
           ],
           "requirement_tagged": true,
@@ -345608,7 +345608,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0088",
+      "requirement_id": "RFC9250-S5-2-P3-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S5P2",
@@ -345628,8 +345628,8 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
         "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
         "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff"
       ],
@@ -345651,7 +345651,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -345667,13 +345667,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -345689,13 +345689,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -345711,14 +345711,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088",
+            "RFC9250-S5-2-P3-S1-R01",
             "REQ-QUIC-RFC9250-0089"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -345734,17 +345734,17 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088",
+            "RFC9250-S5-2-P3-S1-R01",
             "REQ-QUIC-RFC9250-0089"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs",
           "class": "REQ_QUIC_RFC9250_0088",
           "member": "REQ_QUIC_RFC9250_0088.DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
           "method": "DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
@@ -345757,16 +345757,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs",
           "class": "REQ_QUIC_RFC9250_0088",
           "member": "REQ_QUIC_RFC9250_0088.DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
           "method": "DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
@@ -345779,16 +345779,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs",
           "class": "REQ_QUIC_RFC9250_0088",
           "member": "REQ_QUIC_RFC9250_0088.DoqOpportunisticBackoffTraceArtifactsAreLinked",
           "method": "DoqOpportunisticBackoffTraceArtifactsAreLinked",
@@ -345801,16 +345801,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0088",
+          "requirement_id": "RFC9250-S5-2-P3-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs",
           "class": "REQ_QUIC_RFC9250_0088",
           "member": "REQ_QUIC_RFC9250_0088.DoqOpportunisticBackoffTraceArtifactsAreLinked",
           "method": "DoqOpportunisticBackoffTraceArtifactsAreLinked",
@@ -345823,7 +345823,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088"
+            "RFC9250-S5-2-P3-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -345977,7 +345977,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088",
+            "RFC9250-S5-2-P3-S1-R01",
             "REQ-QUIC-RFC9250-0089"
           ],
           "requirement_tagged": true,
@@ -346000,7 +346000,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0088",
+            "RFC9250-S5-2-P3-S1-R01",
             "REQ-QUIC-RFC9250-0089"
           ],
           "requirement_tagged": true,
@@ -347771,12 +347771,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -347808,12 +347808,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -347996,12 +347996,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -348033,12 +348033,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -348221,12 +348221,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -348258,12 +348258,12 @@
             "REQ-QUIC-RFC9250-0009",
             "REQ-QUIC-RFC9250-0011",
             "REQ-QUIC-RFC9250-0012",
-            "REQ-QUIC-RFC9250-0013",
+            "RFC9250-S4-2-P6-S1-R01",
             "REQ-QUIC-RFC9250-0014",
             "REQ-QUIC-RFC9250-0015",
-            "REQ-QUIC-RFC9250-0016",
+            "RFC9250-S4-2-P7-R02",
             "REQ-QUIC-RFC9250-0017",
-            "REQ-QUIC-RFC9250-0018",
+            "RFC9250-S4-2-P9-R01",
             "REQ-QUIC-RFC9250-0022",
             "REQ-QUIC-RFC9250-0023",
             "REQ-QUIC-RFC9250-0099",
@@ -348732,7 +348732,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0105",
+      "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S5P5P3",
@@ -348773,7 +348773,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0105",
+          "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -348789,14 +348789,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0105",
+          "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -348812,14 +348812,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0105",
+          "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -348835,14 +348835,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0105",
+          "requirement_id": "RFC9250-S5-5-3-P3-S2-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -348858,8 +348858,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -349088,7 +349088,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0107",
+      "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S5P5P3",
@@ -349130,7 +349130,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -349146,13 +349146,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ResumptionTicketLifetimeDefaultIsSixHours",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -349168,13 +349168,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -349190,13 +349190,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::ResumptionTicketLifetimeRejectsNonPositiveValues",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -349212,13 +349212,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs",
@@ -349234,13 +349234,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0107",
+          "requirement_id": "RFC9250-S5-5-3-P5-S1-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs::EnabledServerEarlyDataAdvertisesNewSessionTicketExtensionAndStoresRememberedParameters",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0153.cs",
@@ -349256,7 +349256,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0107"
+            "RFC9250-S5-5-3-P5-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -349395,7 +349395,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9250-0109",
+      "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
       "artifact_id": "SPEC-QUIC-RFC9250",
       "rfc": "RFC9250",
       "section_prefix": "S5P5P4",
@@ -349415,8 +349415,8 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 4,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
         "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
         "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange"
       ],
@@ -349438,7 +349438,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -349454,14 +349454,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -349477,14 +349477,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -349500,14 +349500,14 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange",
           "file": "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
@@ -349523,17 +349523,17 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0105",
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-3-P3-S2-R01",
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs",
           "class": "REQ_QUIC_RFC9250_0109",
           "member": "REQ_QUIC_RFC9250_0109.DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
           "method": "DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
@@ -349546,16 +349546,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs",
           "class": "REQ_QUIC_RFC9250_0109",
           "member": "REQ_QUIC_RFC9250_0109.DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
           "method": "DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
@@ -349568,16 +349568,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs",
           "class": "REQ_QUIC_RFC9250_0109",
           "member": "REQ_QUIC_RFC9250_0109.DoqConnectivityPrivacyTraceArtifactsAreLinked",
           "method": "DoqConnectivityPrivacyTraceArtifactsAreLinked",
@@ -349590,16 +349590,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9250-0109",
+          "requirement_id": "RFC9250-S5-5-4-P1-S4-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs",
           "class": "REQ_QUIC_RFC9250_0109",
           "member": "REQ_QUIC_RFC9250_0109.DoqConnectivityPrivacyTraceArtifactsAreLinked",
           "method": "DoqConnectivityPrivacyTraceArtifactsAreLinked",
@@ -349612,7 +349612,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9250-0109"
+            "RFC9250-S5-5-4-P1-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -355829,8 +355829,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -355870,8 +355870,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356078,8 +356078,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356119,8 +356119,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356327,8 +356327,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356368,8 +356368,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356576,8 +356576,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356617,8 +356617,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356825,8 +356825,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -356866,8 +356866,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -357074,8 +357074,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -357115,8 +357115,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -357323,8 +357323,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",
@@ -357364,8 +357364,8 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0004",
             "REQ-QUIC-RFC9250-0005",
-            "REQ-QUIC-RFC9250-0006",
-            "REQ-QUIC-RFC9250-0007",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01",
             "REQ-QUIC-RFC9250-0010",
             "REQ-QUIC-RFC9250-0026",
             "REQ-QUIC-RFC9250-0027",

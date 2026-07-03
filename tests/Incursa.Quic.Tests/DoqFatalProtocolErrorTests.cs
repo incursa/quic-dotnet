@@ -276,7 +276,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [Requirement("RFC9250-S4-3-4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NormalizeReceivedErrorCode_MapsUnknownCodesToUnspecifiedError()
@@ -288,7 +288,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [Requirement("RFC9250-S4-3-4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NormalizeReceivedErrorCode_PassesThroughKnownCodes()
@@ -328,7 +328,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0041")]
+    [Requirement("RFC9250-S4-3-1-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ServerDoesNotDispatchQueryWhenStopSendingReceivedBeforeFin()
@@ -354,7 +354,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0051")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ClientWithMaxUnsolicitedResets_ToleratesResetsBelowLimit()
@@ -408,7 +408,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0051")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ClientWithMaxUnsolicitedResets_ClosesConnectionWhenLimitExceeded()
@@ -454,7 +454,7 @@ public sealed class DoqFatalProtocolErrorTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0039")]
+    [Requirement("RFC9250-S4-3-1-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RegisteredErrorCodePathwayIsDocumentedInDoqErrorCode()

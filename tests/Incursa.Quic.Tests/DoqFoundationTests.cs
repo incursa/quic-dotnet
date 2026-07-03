@@ -78,7 +78,7 @@ public sealed class DoqFoundationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0005")]
-    [Requirement("REQ-QUIC-RFC9250-0006")]
+    [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EndpointHelpersUseDefaultDoqPort()
@@ -91,7 +91,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0007")]
+    [Requirement("RFC9250-S4-1-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EndpointHelpersAllowDoqPortsOtherThanUdp53()
@@ -109,7 +109,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0007")]
+    [Requirement("RFC9250-S4-1-1-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void EndpointHelpersRejectUdpPort53()
@@ -122,7 +122,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0006")]
+    [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientOptionsAllowExplicitAlternateDoqPort()
@@ -160,7 +160,7 @@ public sealed class DoqFoundationTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0004")]
-    [Requirement("REQ-QUIC-RFC9250-0006")]
+    [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified()
@@ -546,7 +546,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [Requirement("RFC9250-S4-2-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NormalizeToDoq_SetsMessageIdToZero()
@@ -561,7 +561,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [Requirement("RFC9250-S4-2-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void NormalizeToDoq_ThrowsOnShortInput()
@@ -571,7 +571,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [Requirement("RFC9250-S4-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void GenerateMessageId_WritesSpecifiedId()
@@ -586,7 +586,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [Requirement("RFC9250-S4-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void GenerateMessageId_PreservesOriginalInput()
@@ -602,7 +602,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0024")]
+    [Requirement("RFC9250-S4-2-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void GenerateMessageId_ThrowsOnShortInput()
@@ -612,8 +612,8 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0024")]
-    [Requirement("REQ-QUIC-RFC9250-0025")]
+    [Requirement("RFC9250-S4-2-1-P3-S1-R01")]
+    [Requirement("RFC9250-S4-2-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void NormalizeToDoqAndGenerateMessageId_RoundTrip()
@@ -743,7 +743,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0107")]
+    [Requirement("RFC9250-S5-5-3-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ResumptionTicketLifetimeDefaultIsSixHours()
@@ -754,7 +754,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0107")]
+    [Requirement("RFC9250-S5-5-3-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ResumptionTicketLifetimeRejectsNonPositiveValues()
@@ -910,7 +910,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0086")]
+    [Requirement("RFC9250-S5-1-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void StrictProfileDefaultsToNoFallback()
@@ -919,7 +919,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0086")]
+    [Requirement("RFC9250-S5-1-P1-S2-R01")]
     [Requirement("REQ-QUIC-RFC9250-0087")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

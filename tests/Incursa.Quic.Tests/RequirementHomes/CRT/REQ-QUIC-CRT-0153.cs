@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_CRT_0153
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9250-0107")]
+    [Requirement("RFC9250-S5-5-3-P5-S1-R01")]
     public void EnabledServerEarlyDataAdvertisesNewSessionTicketExtensionAndStoresRememberedParameters()
     {
         QuicServerResumptionTicketStore ticketStore = new();

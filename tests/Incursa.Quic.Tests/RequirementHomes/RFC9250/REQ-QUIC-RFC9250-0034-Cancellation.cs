@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0037")]
-    [Requirement("REQ-QUIC-RFC9250-0040")]
+    [Requirement("RFC9250-S4-3-1-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CanceledQueryResultIsAbandonedBeforeLaterQueriesContinue()
@@ -37,7 +37,7 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0041")]
+    [Requirement("RFC9250-S4-3-1-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerChecksStopSendingBeforeDispatchingQuery()
@@ -51,9 +51,9 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0042")]
-    [Requirement("REQ-QUIC-RFC9250-0043")]
-    [Requirement("REQ-QUIC-RFC9250-0044")]
+    [Requirement("RFC9250-S4-3-1-P3-R01")]
+    [Requirement("RFC9250-S4-3-1-P3-S1-R01")]
+    [Requirement("RFC9250-S4-3-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CancellationLimitClosesWithExcessiveLoad()
@@ -69,8 +69,8 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0045")]
-    [Requirement("REQ-QUIC-RFC9250-0046")]
+    [Requirement("RFC9250-S4-3-1-P5-S1-R01")]
+    [Requirement("RFC9250-S4-3-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void EarlyResetAbandonsTransactionAndResetsServerWrites()
@@ -85,9 +85,9 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0048")]
-    [Requirement("REQ-QUIC-RFC9250-0049")]
-    [Requirement("REQ-QUIC-RFC9250-0050")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R01")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R02")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void InternalErrorAbortsStreamWithInternalErrorAndAbandonsTransaction()

@@ -16,11 +16,11 @@
     "REQ-QUIC-RFC9250-0102",
     "REQ-QUIC-RFC9250-0103",
     "REQ-QUIC-RFC9250-0104",
-    "REQ-QUIC-RFC9250-0105",
+    "RFC9250-S5-5-3-P3-S2-R01",
     "REQ-QUIC-RFC9250-0106",
-    "REQ-QUIC-RFC9250-0107",
+    "RFC9250-S5-5-3-P5-S1-R01",
     "REQ-QUIC-RFC9250-0108",
-    "REQ-QUIC-RFC9250-0109"
+    "RFC9250-S5-5-4-P1-S4-R01"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/DoqClient.cs",

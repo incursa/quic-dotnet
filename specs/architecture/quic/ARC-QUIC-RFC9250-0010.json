@@ -13,9 +13,9 @@
     "VER-QUIC-RFC9250-0010"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9250-0039",
-    "REQ-QUIC-RFC9250-0041",
-    "REQ-QUIC-RFC9250-0051"
+    "RFC9250-S4-3-1-P1-S2-R01",
+    "RFC9250-S4-3-1-P2-S1-R01",
+    "RFC9250-S4-3-2-P2-S2-R02"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/DoqServer.cs",

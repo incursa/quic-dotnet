@@ -13,13 +13,13 @@
     "VER-QUIC-RFC9250-0006"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9250-0047"
+    "RFC9250-S4-3-2-P1-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs"
   ],
   "design_summary": "The DoQ server writes the handler-provided DNS response payload back to the peer on the same bidirectional stream. The adapter does not inspect or rewrite DNS response codes, so a handler that returns a SERVFAIL payload delivers that SERVFAIL response to the client unchanged.",
   "data_and_state_considerations": "No new adapter state is needed for SERVFAIL pass-through. The response remains an opaque DNS payload at the DoQ layer, subject only to the existing two-octet length prefix and zero-message-ID client checks.",

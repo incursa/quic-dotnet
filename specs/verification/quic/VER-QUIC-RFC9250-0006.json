@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused loopback tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for SERVFAIL response pass-through behavior.",
   "verifies": [
-    "REQ-QUIC-RFC9250-0047"
+    "RFC9250-S4-3-2-P1-S2-R01"
   ],
   "scope": "This verification covers handler-provided SERVFAIL DNS response pass-through to the client. It does not verify resolver policy for when to emit SERVFAIL, nor transport-level error mapping.",
   "preconditions": [
@@ -31,7 +31,7 @@
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs"
   ],
   "status_summary": "The DoQ adapter now proves SERVFAIL response pass-through over real QUIC loopback. Remaining RFC 9250 padding, AXFR/IXFR, 0-RTT, Retry/address-validation, gateway rewriting, and interop work remains future trace-owned scope."
 }

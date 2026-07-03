@@ -155,7 +155,7 @@ public sealed class REQ_QUIC_RFC9250_0026_ErrorCodes
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [Requirement("RFC9250-S4-3-4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UnknownOrUnexpectedErrorCodesNormalizeToUnspecifiedError()
@@ -167,7 +167,7 @@ public sealed class REQ_QUIC_RFC9250_0026_ErrorCodes
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0064")]
+    [Requirement("RFC9250-S4-3-4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RegisteredContextualErrorCodesDoNotNormalizeAsUnspecifiedError()

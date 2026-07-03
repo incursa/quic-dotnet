@@ -12,8 +12,8 @@
     "VER-QUIC-RFC9250-0012"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9250-0024",
-    "REQ-QUIC-RFC9250-0025"
+    "RFC9250-S4-2-1-P3-S1-R01",
+    "RFC9250-S4-2-1-P3-S2-R01"
   ],
   "summary": "Add public static helper methods NormalizeToDoq and GenerateMessageId to DoqMessage for use by gateway implementations.",
   "planned_changes": "- Add DoqMessage.NormalizeToDoq(ReadOnlySpan<byte>) that returns a new byte array with the DNS Message ID set to 0.\n- Add DoqMessage.GenerateMessageId(ReadOnlySpan<byte>, ushort) that returns a new byte array with the specified Message ID.\n- Add focused unit tests for both methods including boundary cases.\n- Link the requirement-home, architecture, and verification trace artifacts for REQ-0024 and REQ-0025.",

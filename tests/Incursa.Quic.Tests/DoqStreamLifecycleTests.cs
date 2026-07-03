@@ -18,10 +18,10 @@ public sealed class DoqStreamLifecycleTests
     [Requirement("REQ-QUIC-RFC9250-0002")]
     [Requirement("REQ-QUIC-RFC9250-0008")]
     [Requirement("REQ-QUIC-RFC9250-0009")]
-    [Requirement("REQ-QUIC-RFC9250-0013")]
+    [Requirement("RFC9250-S4-2-P6-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0014")]
     [Requirement("REQ-QUIC-RFC9250-0015")]
-    [Requirement("REQ-QUIC-RFC9250-0016")]
+    [Requirement("RFC9250-S4-2-P7-R02")]
     [Requirement("REQ-QUIC-RFC9250-0022")]
     [Requirement("REQ-QUIC-RFC9250-0023")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -234,7 +234,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0047")]
+    [Requirement("RFC9250-S4-3-2-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task QueryAsync_PropagatesServfailResponseCodeFromHandler()
@@ -323,7 +323,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0018")]
+    [Requirement("RFC9250-S4-2-P9-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task ServerMayDeferHandlerUntilCompleteLengthPrefixedQueryArrives()
@@ -346,7 +346,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0013")]
+    [Requirement("RFC9250-S4-2-P6-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0014")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -371,9 +371,9 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0013")]
+    [Requirement("RFC9250-S4-2-P6-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0014")]
-    [Requirement("REQ-QUIC-RFC9250-0018")]
+    [Requirement("RFC9250-S4-2-P9-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task ServerDoesNotDispatchQueryBeforeClientStreamFin()
@@ -552,8 +552,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0042")]
-    [Requirement("REQ-QUIC-RFC9250-0043")]
+    [Requirement("RFC9250-S4-3-1-P3-R01")]
+    [Requirement("RFC9250-S4-3-1-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task CancellationVolumeLimitClosesConnectionWithExcessiveLoad()
@@ -598,9 +598,9 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0040")]
-    [Requirement("REQ-QUIC-RFC9250-0045")]
-    [Requirement("REQ-QUIC-RFC9250-0046")]
+    [Requirement("RFC9250-S4-3-1-P1-S4-R01")]
+    [Requirement("RFC9250-S4-3-1-P5-S1-R01")]
+    [Requirement("RFC9250-S4-3-1-P5-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task EarlyResetBeforeFinDoesNotDispatchQueryAndLeavesConnectionUsable()
@@ -632,9 +632,9 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0048")]
-    [Requirement("REQ-QUIC-RFC9250-0049")]
-    [Requirement("REQ-QUIC-RFC9250-0050")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R01")]
+    [Requirement("RFC9250-S4-3-2-P2-S1-R02")]
+    [Requirement("RFC9250-S4-3-2-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task HandlerFailureAbortsStreamWithInternalErrorAndClosesConnection()
@@ -659,7 +659,7 @@ public sealed class DoqStreamLifecycleTests
     [Requirement("REQ-QUIC-RFC9250-0019")]
     [Requirement("REQ-QUIC-RFC9250-0020")]
     [Requirement("REQ-QUIC-RFC9250-0021")]
-    [Requirement("REQ-QUIC-RFC9250-0044")]
+    [Requirement("RFC9250-S4-3-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task DanglingStreamLimitClosesConnectionWithExcessiveLoad()
@@ -1303,8 +1303,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0105")]
-    [Requirement("REQ-QUIC-RFC9250-0109")]
+    [Requirement("RFC9250-S5-5-3-P3-S2-R01")]
+    [Requirement("RFC9250-S5-5-4-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AllowsQueryWhenConnectivityIsUnchanged()
@@ -1328,8 +1328,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0105")]
-    [Requirement("REQ-QUIC-RFC9250-0109")]
+    [Requirement("RFC9250-S5-5-3-P3-S2-R01")]
+    [Requirement("RFC9250-S5-5-4-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RejectsQueryAfterConnectivityChange()
@@ -1356,7 +1356,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0079")]
-    [Requirement("REQ-QUIC-RFC9250-0077")]
+    [Requirement("RFC9250-S4-5-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AllowsZeroRttForReplayableQueryOpcode()
@@ -1380,7 +1380,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0079")]
-    [Requirement("REQ-QUIC-RFC9250-0077")]
+    [Requirement("RFC9250-S4-5-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream()
@@ -1509,7 +1509,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0088")]
+    [Requirement("RFC9250-S5-2-P3-S1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0089")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -1571,7 +1571,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0088")]
+    [Requirement("RFC9250-S5-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task OpportunisticProfileAllowsQueryAfterBackoffIsCleared()

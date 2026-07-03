@@ -239,7 +239,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0006",
+      "id": "RFC9250-S4-1-1-P2-R01",
       "title": "Connect to UDP port 853 by default",
       "statement": "A DNS client desiring to use DoQ with a particular server MUST establish a QUIC connection to UDP port 853 on the server, unless there is a mutual agreement to use another port.",
       "coverage": {
@@ -270,7 +270,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0007",
+      "id": "RFC9250-S4-1-1-P3-R01",
       "title": "Disallow UDP port 53",
       "statement": "A DoQ connection MUST NOT use UDP port 53.",
       "coverage": {
@@ -452,7 +452,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0013",
+      "id": "RFC9250-S4-2-P6-S1-R01",
       "title": "Send DNS query on selected stream",
       "statement": "A client MUST send the DNS query over the selected stream.",
       "coverage": {
@@ -542,7 +542,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0016",
+      "id": "RFC9250-S4-2-P7-R02",
       "title": "Signal end of server stream with STREAM FIN",
       "statement": "The server MUST indicate, after the last response, through the STREAM FIN mechanism that no further data will be sent on that stream.",
       "coverage": {
@@ -602,7 +602,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0018",
+      "id": "RFC9250-S4-2-P9-R01",
       "title": "Allow deferred processing until client STREAM FIN",
       "statement": "A server MAY defer processing of a query until the STREAM FIN has been indicated on the stream selected by the client.",
       "coverage": {
@@ -779,7 +779,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0024",
+      "id": "RFC9250-S4-2-1-P3-S1-R01",
       "title": "Generate Message ID when forwarding from DoQ",
       "statement": "When forwarding a DNS message from DoQ over another transport, a DNS Message ID MUST be generated according to the rules of the protocol that is in use.",
       "coverage": {
@@ -811,7 +811,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0025",
+      "id": "RFC9250-S4-2-1-P3-S2-R01",
       "title": "Set Message ID to zero when forwarding to DoQ",
       "statement": "When forwarding a DNS message from another transport over DoQ, the Message ID MUST be set to 0.",
       "coverage": {
@@ -1251,7 +1251,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0039",
+      "id": "RFC9250-S4-3-1-P1-S2-R01",
       "title": "Use registered specific error code",
       "statement": "A DoQ client MAY use a more specific error code registered according to Section 8.4.",
       "coverage": {
@@ -1280,7 +1280,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0040",
+      "id": "RFC9250-S4-3-1-P1-S4-R01",
       "title": "Abandon corresponding DNS transaction",
       "statement": "The corresponding DNS transaction MUST be abandoned.",
       "coverage": {
@@ -1309,7 +1309,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0041",
+      "id": "RFC9250-S4-3-1-P2-S1-R01",
       "title": "Stop processing after STOP_SENDING",
       "statement": "Servers SHOULD NOT continue processing a DNS transaction if they receive a STOP_SENDING.",
       "coverage": {
@@ -1338,7 +1338,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0042",
+      "id": "RFC9250-S4-3-1-P3-R01",
       "title": "Limit cancellation request volume",
       "statement": "Servers MAY impose implementation limits on the total number or rate of cancellation requests.",
       "coverage": {
@@ -1367,7 +1367,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0043",
+      "id": "RFC9250-S4-3-1-P3-S1-R01",
       "title": "Close connection on cancellation limits",
       "statement": "If limits are encountered, servers MAY close the connection.",
       "coverage": {
@@ -1396,7 +1396,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0044",
+      "id": "RFC9250-S4-3-1-P3-S2-R01",
       "title": "Use DOQ_EXCESSIVE_LOAD for debugging",
       "statement": "Servers wanting to help client debugging MAY use the error code DOQ_EXCESSIVE_LOAD.",
       "coverage": {
@@ -1425,7 +1425,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0045",
+      "id": "RFC9250-S4-3-1-P5-S1-R01",
       "title": "Stop processing on early RESET_STREAM",
       "statement": "Servers MUST NOT continue processing a DNS transaction if they receive a RESET_STREAM request from the client before the client indicates the STREAM FIN.",
       "coverage": {
@@ -1454,7 +1454,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0046",
+      "id": "RFC9250-S4-3-1-P5-S2-R01",
       "title": "Issue RESET_STREAM unless already reset or response complete",
       "statement": "The server MUST issue a RESET_STREAM to indicate that the transaction is abandoned unless it has already done so for another reason or it has already sent the response and indicated the STREAM FIN.",
       "coverage": {
@@ -1485,7 +1485,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0047",
+      "id": "RFC9250-S4-3-2-P1-S2-R01",
       "title": "Notify client of SERVFAIL with SERVFAIL response",
       "statement": "A client SHOULD be notified of SERVFAIL through a response whose Response Code is set to SERVFAIL.",
       "coverage": {
@@ -1510,13 +1510,13 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::QueryAsync_PropagatesServfailResponseCodeFromHandler",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0006.cs::DoqServfailResponseCodeAndTestsAreTraceLinked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P2-R01.cs::DoqServfailResponseCodeAndTestsAreTraceLinked"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0048",
+      "id": "RFC9250-S4-3-2-P2-S1-R01",
       "title": "Issue RESET_STREAM on internal error",
       "statement": "If a server cannot send a DNS response because of an internal error, it SHOULD issue a QUIC RESET_STREAM frame.",
       "coverage": {
@@ -1545,7 +1545,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0049",
+      "id": "RFC9250-S4-3-2-P2-S1-R02",
       "title": "Set RESET_STREAM error code to DOQ_INTERNAL_ERROR",
       "statement": "The error code SHOULD be set to DOQ_INTERNAL_ERROR.",
       "coverage": {
@@ -1574,7 +1574,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0050",
+      "id": "RFC9250-S4-3-2-P2-S2-R01",
       "title": "Abandon the corresponding DNS transaction",
       "statement": "The corresponding DNS transaction MUST be abandoned.",
       "coverage": {
@@ -1603,7 +1603,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0051",
+      "id": "RFC9250-S4-3-2-P2-S2-R02",
       "title": "Limit unsolicited RESET_STREAM frames before closing",
       "statement": "Clients MAY limit unsolicited QUIC RESET_STREAM frames received on a connection before closing it.",
       "coverage": {
@@ -1808,8 +1808,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs::ClientTreatsPeerStopSendingAsFatalProtocolErrorAndClosesConnection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs::DoqPeerStopSendingCodeAndTestsAreTraceLinked"
         ]
       }
     },
@@ -1994,7 +1994,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0064",
+      "id": "RFC9250-S4-3-4-P2-S1-R01",
       "title": "Treat unknown or unexpected error codes as unspecified",
       "statement": "An implementation MUST treat use of an error code in an unexpected context or receipt of an unknown error code as equivalent to DOQ_UNSPECIFIED_ERROR.",
       "coverage": {
@@ -2398,7 +2398,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0077",
+      "id": "RFC9250-S4-5-P2-R01",
       "title": "Prohibit 0-RTT for non-replayable transactions",
       "statement": "The 0-RTT mechanism MUST NOT be used to send DNS requests that are not replayable transactions.",
       "coverage": {
@@ -2878,7 +2878,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0105",
+      "id": "RFC9250-S5-5-3-P3-S2-R01",
       "title": "Avoid resumption after connectivity changes",
       "statement": "By default, clients SHOULD NOT use session resumption if the client's connectivity has changed.",
       "coverage": {
@@ -2940,7 +2940,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0107",
+      "id": "RFC9250-S5-5-3-P5-S1-R01",
       "title": "Issue long-lived resumption tickets",
       "statement": "Servers SHOULD issue session resumption tickets with a sufficiently long lifetime.",
       "coverage": {
@@ -3004,7 +3004,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0109",
+      "id": "RFC9250-S5-5-4-P1-S4-R01",
       "title": "Default to privacy-preserving new sessions",
       "statement": "Clients SHOULD prioritize privacy and start new sessions when connectivity changes.",
       "coverage": {
@@ -3028,8 +3028,8 @@
           "VER-QUIC-RFC9250-0014"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs::DoqConnectivityPrivacyCodeAndTestsAreTraceLinked",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsQueryWhenConnectivityIsUnchanged",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsQueryAfterConnectivityChange"
         ]
@@ -4017,7 +4017,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0086",
+      "id": "RFC9250-S5-1-P1-S2-R01",
       "title": "Use a Strict usage profile for DoQ stubs",
       "statement": "DoQ stubs SHOULD use a Strict usage profile.",
       "coverage": {
@@ -4080,7 +4080,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0088",
+      "id": "RFC9250-S5-2-P3-S1-R01",
       "title": "Back off after DoQ failure",
       "statement": "Implementations using the Opportunistic profile SHOULD back off from DoQ for at least the timeout value after the failure.",
       "coverage": {
@@ -4104,8 +4104,8 @@
           "VER-QUIC-RFC9250-0016"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0088.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P3-S1-R01.cs::DoqOpportunisticBackoffCodeAndTestsAreTraceLinked",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileAllowsQueryAfterBackoffIsCleared",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::OpportunisticProfileRejectsQueryWhileEndpointIsBackedOff"
         ]

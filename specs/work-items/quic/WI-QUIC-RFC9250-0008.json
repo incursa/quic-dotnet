@@ -15,7 +15,7 @@
     "REQ-QUIC-RFC9250-0058",
     "REQ-QUIC-RFC9250-0059",
     "REQ-QUIC-RFC9250-0061",
-    "REQ-QUIC-RFC9250-0064",
+    "RFC9250-S4-3-4-P2-S1-R01",
     "REQ-QUIC-RFC9250-0103"
   ],
   "summary": "Implement four extended protocol error enforcement mechanisms: EDNS(0) tcp-keepalive rejection, server-initiated bidirectional stream detection, missing STREAM FIN timeout, and unknown/unexpected-context error code normalization.",

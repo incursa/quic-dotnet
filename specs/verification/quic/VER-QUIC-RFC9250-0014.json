@@ -15,11 +15,11 @@
   "verifies": [
     "REQ-QUIC-RFC9250-0102",
     "REQ-QUIC-RFC9250-0104",
-    "REQ-QUIC-RFC9250-0105",
+    "RFC9250-S5-5-3-P3-S2-R01",
     "REQ-QUIC-RFC9250-0106",
-    "REQ-QUIC-RFC9250-0107",
+    "RFC9250-S5-5-3-P5-S1-R01",
     "REQ-QUIC-RFC9250-0108",
-    "REQ-QUIC-RFC9250-0109"
+    "RFC9250-S5-5-4-P1-S4-R01"
   ],
   "scope": "This verification covers client-side idle-timeout reuse gating, ticket single-use, connectivity-change detection, address validation token policy, and server-side resumption ticket lifetime and anti-replay options. REQ-0103 (edns-tcp-keepalive) is verified by slice 0008.",
   "preconditions": [
@@ -38,7 +38,7 @@
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0109.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-4-P1-S4-R01.cs"
   ],
   "status_summary": "All 8 REQs are now traced and verified. Policy-layer idle-timeout reuse gating, ticket single-use, connectivity-change detection, address validation gating, ticket lifetime, and anti-replay are implemented."
 }

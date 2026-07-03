@@ -30,7 +30,7 @@
   "evidence": [
     "src/Incursa.Quic.Dns/DoqClient.cs",
     "tests/Incursa.Quic.Tests/DoqFatalProtocolErrorTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0007.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-1-P3-R01.cs"
   ],
   "status_summary": "The DoQ adapter now proves a peer STOP_SENDING on the outstanding query stream is treated as a fatal protocol error. Missing expected STREAM FIN timeout policy, EDNS keepalive handling, and server-initiated bidirectional stream handling remain open."
 }
