@@ -3713,7 +3713,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0176",
+      "id": "RFC9484-S7-2-P5-R01",
       "title": "Do not forward link-local traffic beyond the received interface",
       "statement": "IP proxying endpoints MUST not forward any link-local traffic beyond the IP proxying interface on which it was received.",
       "coverage": {

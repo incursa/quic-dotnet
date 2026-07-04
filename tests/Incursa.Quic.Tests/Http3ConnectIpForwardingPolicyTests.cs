@@ -161,7 +161,7 @@ public sealed class Http3ConnectIpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0176")]
+    [Requirement("RFC9484-S7-2-P5-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_AllowsNonLinkLocalTrafficBeyondReceivedInterface()
@@ -170,7 +170,7 @@ public sealed class Http3ConnectIpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0176")]
+    [Requirement("RFC9484-S7-2-P5-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotForwardLinkLocalTrafficBeyondReceivedInterface()

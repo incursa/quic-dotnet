@@ -14917,7 +14917,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+      "requirement_id": "RFC9000-S12-2-P5-S2-R01",
       "title": "Buffer or discard on decryption failure",
       "source_batches": [
         "11-15"

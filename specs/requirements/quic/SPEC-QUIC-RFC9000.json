@@ -16151,7 +16151,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P2-0010",
+      "id": "RFC9000-S12-2-P5-S2-R01",
       "title": "Buffer or discard on decryption failure",
       "statement": "If decryption fails, the receiver MAY either discard or buffer the packet for later processing.",
       "coverage": {
@@ -16175,9 +16175,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
         ]
       }
     },

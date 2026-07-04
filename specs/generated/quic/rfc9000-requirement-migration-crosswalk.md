@@ -143,7 +143,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S12P2-0002` | The length includes both the Packet Number and Payload fields, both of which are confidentiality protected and initially of unknown length |
 | `REQ-QUIC-RFC9000-S12P2-0003` | Using the Length field, a sender can coalesce multiple QUIC packets into one UDP datagram |
 | `REQ-QUIC-RFC9000-S12P2-0006` | include multiple frames in a single packet if they are to be sent at the same encryption level, instead of coalescing multiple packets at the same encryption level |
-| `REQ-QUIC-RFC9000-S12P2-0010` | Buffer or discard on decryption failure |
+| `RFC9000-S12-2-P5-S2-R01` | Buffer or discard on decryption failure |
 | `RFC9000-S12-2-P5-S2-R02` | Continue processing remaining coalesced packets |
 | `RFC9000-S12-2-P5-S1-R01` | Process each coalesced packet separately |
 | `REQ-QUIC-RFC9000-S12P2-0013` | Retry packets (Section 17 |

@@ -88800,7 +88800,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+      "requirement_id": "RFC9000-S12-2-P5-S2-R01",
       "artifact_id": "SPEC-QUIC-RFC9000",
       "rfc": "RFC9000",
       "section_prefix": "S12P2",
@@ -88820,9 +88820,9 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -88842,10 +88842,10 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
           "method": "TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
@@ -88858,16 +88858,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
           "method": "TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
@@ -88880,16 +88880,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
           "method": "TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
@@ -88902,16 +88902,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
           "method": "TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
@@ -88924,16 +88924,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
           "method": "TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
@@ -88946,16 +88946,16 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-S12P2-0010",
+          "requirement_id": "RFC9000-S12-2-P5-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P2-0010.cs",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S12P2_0010",
           "member": "REQ_QUIC_RFC9000_S12P2_0010.TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
           "method": "TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
@@ -88968,7 +88968,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-S12P2-0010"
+            "RFC9000-S12-2-P5-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -467003,7 +467003,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0176",
+      "requirement_id": "RFC9484-S7-2-P5-R01",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
       "section_prefix": "S7P2",
@@ -467044,7 +467044,7 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0176",
+          "requirement_id": "RFC9484-S7-2-P5-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
@@ -467060,13 +467060,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0176"
+            "RFC9484-S7-2-P5-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0176",
+          "requirement_id": "RFC9484-S7-2-P5-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_AllowsNonLinkLocalTrafficBeyondReceivedInterface",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
@@ -467082,13 +467082,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0176"
+            "RFC9484-S7-2-P5-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0176",
+          "requirement_id": "RFC9484-S7-2-P5-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
@@ -467104,13 +467104,13 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0176"
+            "RFC9484-S7-2-P5-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9484-0176",
+          "requirement_id": "RFC9484-S7-2-P5-R01",
           "source": "spec_xref",
           "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs::ForwardingPolicy_DoesNotForwardLinkLocalTrafficBeyondReceivedInterface",
           "file": "tests/Incursa.Quic.Tests/Http3ConnectIpForwardingPolicyTests.cs",
@@ -467126,7 +467126,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0176"
+            "RFC9484-S7-2-P5-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false

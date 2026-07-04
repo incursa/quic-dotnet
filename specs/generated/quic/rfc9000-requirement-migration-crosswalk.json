@@ -596,7 +596,7 @@
       "statement": "An endpoint SHOULD include multiple frames in a single packet if they are to be sent at the same encryption level, instead of coalescing multiple packets at the same encryption level."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P2-0010",
+      "id": "RFC9000-S12-2-P5-S2-R01",
       "title": "Buffer or discard on decryption failure",
       "statement": "If decryption fails, the receiver MAY either discard or buffer the packet for later processing."
     },

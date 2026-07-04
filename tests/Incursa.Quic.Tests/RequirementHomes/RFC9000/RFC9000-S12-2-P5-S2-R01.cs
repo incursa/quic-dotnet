@@ -8,9 +8,9 @@ using System.Security.Cryptography.X509Certificates;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P2-0010">If decryption fails, the receiver MAY either discard or buffer the packet for later processing.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-2-P5-S2-R01">If decryption fails, the receiver MAY either discard or buffer the packet for later processing.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S12P2-0010")]
+[Requirement("RFC9000-S12-2-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S12P2_0010
 {
     [Fact]
