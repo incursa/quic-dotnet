@@ -62,9 +62,9 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S10-2-1-P5-S3-R01` | To minimize the state that an endpoint maintains for a closing connection, endpoints MAY send the exact same packet in response to any received packet |
 | `REQ-QUIC-RFC9000-S10P2P1-0009` | Retain only closing-state essentials |
 | `REQ-QUIC-RFC9000-S10P2P2-0001` | While otherwise identical to the closing state, an endpoint in the draining state MUST NOT send any packets |
-| `REQ-QUIC-RFC9000-S10P2P2-0002` | That receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate |
+| `RFC9000-S10-2-2-P2-S1-R01` | That receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate |
 | `RFC9000-S10-2-2-P2-S2-R01` | Send further packets |
-| `REQ-QUIC-RFC9000-S10P2P2-0004` | Enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining |
+| `RFC9000-S10-2-2-P3-S1-R01` | Enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining |
 | `REQ-QUIC-RFC9000-S10P2P2-0005` | Enter draining on peer close |
 | `REQ-QUIC-RFC9000-S10P2P3-0001` | After the handshake is confirmed (see Section 4 |
 | `REQ-QUIC-RFC9000-S10P2P3-0002` | However, prior to confirming the handshake, it is possible that more advanced packet protection keys are not available to the peer, so another CONNECTION_CLOSE frame MAY be sent in a packet that uses a lower packet protection level |
@@ -258,8 +258,8 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P4P2P1-0008` | Fail ECN validation for never-applied ECT counts |
 | `REQ-QUIC-RFC9000-S13P4P2P2-0001` | Disable ECN when validation fails |
 | `REQ-QUIC-RFC9000-S13P4P2P2-0002` | It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer does not support ECN |
-| `REQ-QUIC-RFC9000-S13P4P2P2-0003` | Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection |
-| `REQ-QUIC-RFC9000-S13P4P2P2-0004` | Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable |
+| `RFC9000-S13-4-2-2-P2-S1-R01` | Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection |
+| `RFC9000-S13-4-2-2-P3-S1-R01` | Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable |
 | `RFC9000-S13-4-2-2-P3-S2-R01` | Network routing and path elements can change mid-connection |
 | `REQ-QUIC-RFC9000-S14-0002` | The datagram size includes one or more QUIC packet headers and protected payloads, but not the UDP or IP headers |
 | `REQ-QUIC-RFC9000-S14-0003` | Define maximum datagram size as the largest UDP payload across a path |
@@ -719,7 +719,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S21-5-P7-S2-R01` | QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]... |
 | `RFC9000-S21-5-3-P2-R01` | A client MUST NOT send non-probing frames to a preferred address prior to validating that add... |
 | `RFC9000-S21-5-6-P4-S1-R01` | Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_T... |
-| `REQ-QUIC-RFC9000-S21P5P6-0005` | Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat... |
+| `RFC9000-S21-5-6-P5-S3-R01` | Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat... |
 | `RFC9000-S21-6-P2-R01` | QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the... |
 | `RFC9000-S21-9-P4-R01` | While there are legitimate uses for all messages, implementations SHOULD track cost of proces... |
 | `RFC9000-S21-9-P4-R02` | Endpoints MAY respond to this condition with a connection error or by dropping packets |

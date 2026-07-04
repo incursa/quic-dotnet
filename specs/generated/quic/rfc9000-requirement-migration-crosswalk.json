@@ -191,7 +191,7 @@
       "statement": "While otherwise identical to the closing state, an endpoint in the draining state MUST NOT send any packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P2-0002",
+      "id": "RFC9000-S10-2-2-P2-S1-R01",
       "title": "That receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate",
       "statement": "An endpoint that receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate."
     },
@@ -201,7 +201,7 @@
       "statement": "An endpoint MUST NOT send further packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P2-0004",
+      "id": "RFC9000-S10-2-2-P3-S1-R01",
       "title": "Enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining",
       "statement": "An endpoint MAY enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining."
     },
@@ -1171,12 +1171,12 @@
       "statement": "It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer MUST NOT support ECN."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+      "id": "RFC9000-S13-4-2-2-P2-S1-R01",
       "title": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection",
       "statement": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+      "id": "RFC9000-S13-4-2-2-P3-S1-R01",
       "title": "Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable",
       "statement": "Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable."
     },
@@ -3476,7 +3476,7 @@
       "statement": "Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_TOKEN frames in Initial packets or by only sending probing frames in packets prior to completing address validation."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+      "id": "RFC9000-S21-5-6-P5-S3-R01",
       "title": "Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat...",
       "statement": "Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address."
     },

@@ -250,9 +250,9 @@
       "status": "partially_implemented",
       "requirement_ids": [
         "REQ-QUIC-RFC9000-S10P2P2-0001",
-        "REQ-QUIC-RFC9000-S10P2P2-0002",
+        "RFC9000-S10-2-2-P2-S1-R01",
         "RFC9000-S10-2-2-P2-S2-R01",
-        "REQ-QUIC-RFC9000-S10P2P2-0004",
+        "RFC9000-S10-2-2-P3-S1-R01",
         "REQ-QUIC-RFC9000-S10P2P2-0005"
       ],
       "implemented_requirement_ids": [
@@ -261,8 +261,8 @@
         "REQ-QUIC-RFC9000-S10P2P2-0005"
       ],
       "blocked_requirement_ids": [
-        "REQ-QUIC-RFC9000-S10P2P2-0002",
-        "REQ-QUIC-RFC9000-S10P2P2-0004"
+        "RFC9000-S10-2-2-P2-S1-R01",
+        "RFC9000-S10-2-2-P3-S1-R01"
       ],
       "tests_covering_requirement": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0001.cs::TryEnterDrainingState_DisablesSendingPackets",

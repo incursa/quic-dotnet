@@ -46,7 +46,7 @@
 - Result: `1349 passed, 0 failed, 0 skipped`
 
 ## Remaining Open Requirements In Scope
-- `REQ-QUIC-RFC9000-S10-0001`, `REQ-QUIC-RFC9000-0548`, `REQ-QUIC-RFC9000-S10P1-0002`, `REQ-QUIC-RFC9000-S10P1-0004`, `RFC9000-S10-1-2-P3-S1-R01`, `REQ-QUIC-RFC9000-S10P1P2-0002`, `RFC9000-S10-2-P6-S2-R01`, `RFC9000-S10-2-P7-S1-R01` through `REQ-QUIC-RFC9000-S10P2-0012`, `RFC9000-S10-2-1-P3-S1-R01` through `REQ-QUIC-RFC9000-0575`, `REQ-QUIC-RFC9000-S10P2P2-0002`, `REQ-QUIC-RFC9000-S10P2P2-0004`, `REQ-QUIC-RFC9000-S10P2P3-0001` through `REQ-QUIC-RFC9000-S10P2P3-0013`
+- `REQ-QUIC-RFC9000-S10-0001`, `REQ-QUIC-RFC9000-0548`, `REQ-QUIC-RFC9000-S10P1-0002`, `REQ-QUIC-RFC9000-S10P1-0004`, `RFC9000-S10-1-2-P3-S1-R01`, `REQ-QUIC-RFC9000-S10P1P2-0002`, `RFC9000-S10-2-P6-S2-R01`, `RFC9000-S10-2-P7-S1-R01` through `REQ-QUIC-RFC9000-S10P2-0012`, `RFC9000-S10-2-1-P3-S1-R01` through `REQ-QUIC-RFC9000-0575`, `RFC9000-S10-2-2-P2-S1-R01`, `RFC9000-S10-2-2-P3-S1-R01`, `REQ-QUIC-RFC9000-S10P2P3-0001` through `REQ-QUIC-RFC9000-S10P2P3-0013`
 - The helper slice now closes the idle-timeout arithmetic requirements plus the closing/draining no-send helper clauses and the peer-close draining transition, but silent close/state discard and CONNECTION_CLOSE wire emission still need the endpoint runtime.
 - `RFC9000-S10-1-2-P3-S1-R01` is intentionally left as policy guidance rather than transport behavior.
 
