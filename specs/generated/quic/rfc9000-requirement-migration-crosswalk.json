@@ -3491,7 +3491,7 @@
       "statement": "While there are legitimate uses for all messages, implementations SHOULD track cost of processing relative to progress and treat excessive quantities of any non-productive packets as indicative of an attack."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P9-0002",
+      "id": "RFC9000-S21-9-P4-R02",
       "title": "Endpoints MAY respond to this condition with a connection error or by dropping packets",
       "statement": "Endpoints MAY respond to this condition with a connection error or by dropping packets."
     },

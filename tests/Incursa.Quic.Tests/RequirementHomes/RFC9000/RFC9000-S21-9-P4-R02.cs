@@ -6,10 +6,10 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P9-0002">Endpoints MAY respond to this condition with a connection error or by dropping packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-9-P4-R02">Endpoints MAY respond to this condition with a connection error or by dropping packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P9-0002")]
-public sealed class REQ_QUIC_RFC9000_S21P9_0002
+[Requirement("RFC9000-S21-9-P4-R02")]
+public sealed class RFC9000_S21_9_P4_R02
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R02");
 
         Assert.Equal("Endpoints MAY respond to this condition with a connection error or by dropping packets.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.9 RFC9000-S21.9-B5-P4-S2", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R02");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S21P9_0002
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P9-0002");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-9-P4-R02");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

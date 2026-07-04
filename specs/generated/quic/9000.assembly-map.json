@@ -32539,7 +32539,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S21P9-0002",
+      "requirement_id": "RFC9000-S21-9-P4-R02",
       "title": "Endpoints MAY respond to this condition with a connection error or by dropping packets",
       "source_batches": [
         "21-end"

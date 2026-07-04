@@ -134,7 +134,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0193")]
+    [Requirement("RFC9484-S10-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_DoesNotCapsuleOversizedIpPacketWhenQuicDatagramInUse()
@@ -143,7 +143,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0193")]
+    [Requirement("RFC9484-S10-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_RejectsDatagramCapsuleFallbackForOversizedIpPacket()

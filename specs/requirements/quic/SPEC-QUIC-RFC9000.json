@@ -34487,7 +34487,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P9-0002",
+      "id": "RFC9000-S21-9-P4-R02",
       "title": "Endpoints MAY respond to this condition with a connection error or by dropping packets",
       "statement": "Endpoints MAY respond to this condition with a connection error or by dropping packets.",
       "coverage": {
@@ -34511,9 +34511,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.9"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_DescribesAllowedResponsesToTheAttackCondition",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_DoesNotMakeTheResponseMandatory",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P9-0002.cs::RequirementStatement_StaysBoundedToEitherAllowedResponse"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-9-P4-R02.cs::RequirementStatement_DescribesAllowedResponsesToTheAttackCondition",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-9-P4-R02.cs::RequirementStatement_DoesNotMakeTheResponseMandatory",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-9-P4-R02.cs::RequirementStatement_StaysBoundedToEitherAllowedResponse"
         ]
       }
     },

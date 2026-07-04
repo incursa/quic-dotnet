@@ -255,7 +255,7 @@ The Slowloris mitigation guidance proof surface is now closed for
 `RFC9000-S21-6-P2-R01`.
 
 The packet-processing-cost guidance proof surface is now closed for
-`RFC9000-S21-9-P4-R01` and `REQ-QUIC-RFC9000-S21P9-0002`.
+`RFC9000-S21-9-P4-R01` and `RFC9000-S21-9-P4-R02`.
 
 The request-forgery guidance proof surface is now closed for
 `REQ-QUIC-RFC9000-S21P5-0001`.

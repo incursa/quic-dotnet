@@ -722,7 +722,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S21P5P6-0005` | Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat... |
 | `RFC9000-S21-6-P2-R01` | QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the... |
 | `RFC9000-S21-9-P4-R01` | While there are legitimate uses for all messages, implementations SHOULD track cost of proces... |
-| `REQ-QUIC-RFC9000-S21P9-0002` | Endpoints MAY respond to this condition with a connection error or by dropping packets |
+| `RFC9000-S21-9-P4-R02` | Endpoints MAY respond to this condition with a connection error or by dropping packets |
 | `REQ-QUIC-RFC9000-S22P1P1-0001` | Require only codepoint value and contact information for provisional registration requests |
 | `REQ-QUIC-RFC9000-S22P1P1-0002` | Require Expert Review for provisional registrations |
 | `REQ-QUIC-RFC9000-S22P1P1-0003` | Include a Date field in provisional registrations |

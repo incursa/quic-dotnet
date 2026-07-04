@@ -4104,7 +4104,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0193",
+      "id": "RFC9484-S10-1-P1-R01",
       "title": "Avoid DATAGRAM capsules for oversized IP packets",
       "statement": "If an IP packet will not fit inside a QUIC DATAGRAM frame, the IP proxy SHOULD NOT send the IP packet in a DATAGRAM capsule.",
       "coverage": {
