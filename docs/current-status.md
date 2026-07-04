@@ -864,7 +864,7 @@ warnings.
 
 ## 2026-05-08 S13 ACK-Only Feedback-Loop Edge Closure Note
 
-`REQ-QUIC-RFC9000-S13P2P1-0009` is now `trace_clean` under the existing
+`RFC9000-S13-2-1-P5-S1-R02` is now `trace_clean` under the existing
 `ARC-QUIC-RFC9000-0018`, `WI-QUIC-RFC9000-0018`, and
 `VER-QUIC-RFC9000-0018` ownership. The edge-proof topoff shows that a local
 ACK-only packet remains non-ack-eliciting and non-retransmittable, and that a
@@ -892,7 +892,7 @@ no-build suite 4,831/4,831, regenerated QUIC requirement coverage triage, and
 a non-retransmittable, ack-eliciting PING probe when no retransmittable payload
 is available, does not emit a padding-only probe before an active path and 1-RTT
 keys exist, and does not delay application data at the small-packet threshold.
-`REQ-QUIC-RFC9000-S13P2P1-0009` remains the adjacent explicit edge-proof gap for
+`RFC9000-S13-2-1-P5-S1-R02` remains the adjacent explicit edge-proof gap for
 ACK-only feedback-loop behavior.
 
 Current generated RFC requirement triage reports 1,476 of 1,771 requirements

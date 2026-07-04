@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P1-0009">An endpoint that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments MUST be included in packets with ack-eliciting frames.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P5-S1-R02">An endpoint MUST NOT rely on ACK-only packets to elicit acknowledgments from its peer.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P1-0009")]
-public sealed class REQ_QUIC_RFC9000_S13P2P1_0009
+[Requirement("RFC9000-S13-2-1-P5-S1-R02")]
+public sealed class RFC9000_S13_2_1_P5_S1_R02
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

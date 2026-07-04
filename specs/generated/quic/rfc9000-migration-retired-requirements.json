@@ -4261,12 +4261,12 @@
       "id": "REQ-QUIC-RFC9000-S15-0010",
       "title": "Treat reserved versions as non-real protocols",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0903"
+        "RFC9000-S15-P7-S1-R03"
       ],
       "notes": [
         "RFC9000 S15 semantic review adopted the incoming staged reserved-version wording as canonical."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0903 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S15-P7-S1-R03 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S16-0003",

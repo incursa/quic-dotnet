@@ -8458,7 +8458,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0903",
+      "id": "RFC9000-S15-P7-S1-R03",
       "title": "Reserved version numbers are not real protocols",
       "statement": "Reserved version numbers MUST NOT represent a real protocol.",
       "coverage": {
@@ -8478,8 +8478,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0903.cs::TryParseLongHeader_ParsesReservedVersionPacketsAsLongHeaders",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0903.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S15-P7-S1-R03.cs::TryParseLongHeader_ParsesReservedVersionPacketsAsLongHeaders",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S15-P7-S1-R03.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions"
         ],
         "upstream_refs": [
           "RFC9000-S15-B7-P7-S1",
@@ -17561,9 +17561,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P1-0009",
-      "title": "that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments are included in packets with ack-eliciting frames",
-      "statement": "An endpoint that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments MUST be included in packets with ack-eliciting frames.",
+      "id": "RFC9000-S13-2-1-P5-S1-R02",
+      "title": "Avoid relying on ACK-only packets to elicit acknowledgments",
+      "statement": "An endpoint MUST NOT rely on ACK-only packets to elicit acknowledgments from its peer.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -17600,9 +17600,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs::PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R02.cs::OpenOutboundStreamAsync_PiggybacksPendingAckOnAckElicitingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R02.cs::MarkAckFrameSent_DoesNotPermitDuplicateAckOnlyTriggerForTheSameAckElicitingPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R02.cs::PeerAckOnlyPacketAcknowledgingAckOnlyPacket_DoesNotTriggerAckOnlyLoop",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs::InitialCryptoFlush_IncludesPendingInitialAckFrame",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs::HandshakeCryptoFlush_IncludesPendingHandshakeAckFrame",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs::Fuzz_LongHeaderAckPrefixRoundTripsAcrossInitialAndHandshakeCryptoPayloads",

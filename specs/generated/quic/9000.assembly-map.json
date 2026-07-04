@@ -16412,8 +16412,8 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0009",
-      "title": "that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments are included in packets with ack-eliciting frames",
+      "requirement_id": "RFC9000-S13-2-1-P5-S1-R02",
+      "title": "Avoid relying on ACK-only packets to elicit acknowledgments",
       "source_batches": [
         "11-15"
       ],
@@ -19885,7 +19885,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0903",
+      "requirement_id": "RFC9000-S15-P7-S1-R03",
       "title": "Treat reserved versions as non-real protocols",
       "source_batches": [
         "11-15"

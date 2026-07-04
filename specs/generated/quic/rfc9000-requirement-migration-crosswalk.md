@@ -188,7 +188,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S13-2-1-P3-R01` | Do not send multiple ACK-only packets in response to one ack-eliciting packet |
 | `REQ-QUIC-RFC9000-S13P2P1-0007` | Do not send non-ack-eliciting packets in response to non-ack-eliciting packets |
 | `REQ-QUIC-RFC9000-S13P2P1-0008` | Non-ack-eliciting packets are eventually acknowledged when the endpoint sends an ACK frame in response to other events |
-| `REQ-QUIC-RFC9000-S13P2P1-0009` | that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments are included in packets with ack-eliciting frames |
+| `RFC9000-S13-2-1-P5-S1-R02` | Avoid relying on ACK-only packets to elicit acknowledgments |
 | `RFC9000-S13-2-1-P6-S1-R01` | Avoid infinite feedback loops when adding ack-eliciting frames |
 | `REQ-QUIC-RFC9000-S13P2P1-0013` | Send ACK frames without delay for out-of-order or gap-detecting packets |
 | `REQ-QUIC-RFC9000-S13P2P2-0001` | determines how frequently to send acknowledgments in response to ack-eliciting packets |

@@ -10,7 +10,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S15-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0903",
+      "staged_requirement_id": "RFC9000-S15-P7-S1-R03",
       "old_statement": "Reserved version numbers MUST never represent a real protocol.",
       "staged_statement": "Reserved version numbers MUST NOT represent a real protocol.",
       "derived_from": "REQ-QUIC-RFC9000-S15-0010",

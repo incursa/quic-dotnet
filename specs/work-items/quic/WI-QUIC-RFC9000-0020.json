@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0020"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "RFC9000-S13-2-1-P5-S1-R02",
     "RFC9000-S13-2-1-P5-S1-R01"
   ],
   "summary": "Implement and prove pending ACK prefixing for live Initial and Handshake CRYPTO packet construction without broadening retry/replay, retransmission, interop, or public API claims.",

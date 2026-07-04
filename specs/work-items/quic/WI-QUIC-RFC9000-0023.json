@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9000-0023"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "RFC9000-S13-2-1-P5-S1-R02",
     "RFC9000-S13-2-1-P5-S1-R01"
   ],
   "summary": "Implement and prove fresh pending Initial ACK prefixing for ordinary non-Retry bootstrap Initial replay probe packets without changing retained ClientHello bytes, empty token handling, or packet-number continuity.",

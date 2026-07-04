@@ -15,7 +15,7 @@
     "VER-QUIC-RFC9000-0020"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "RFC9000-S13-2-1-P5-S1-R02",
     "RFC9000-S13-2-1-P5-S1-R01"
   ],
   "key_components": [

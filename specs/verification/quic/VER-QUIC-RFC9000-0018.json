@@ -13,7 +13,7 @@
   ],
   "verification_method": "Requirement-home execution, deterministic fuzz/property sampling, BenchmarkDotNet evidence, SpecTrace render/check, attempted JSON validation, and diff hygiene for the bounded active-path 1-RTT Application Data ACK piggyback policy.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S13P2P1-0009",
+    "RFC9000-S13-2-1-P5-S1-R02",
     "RFC9000-S13-2-1-P5-S1-R01",
     "RFC9000-S13-2-1-P6-S1-R01"
   ],
@@ -36,7 +36,7 @@
     "src/Incursa.Quic/QuicAckGenerationState.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R02.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P6-S1-R01.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
