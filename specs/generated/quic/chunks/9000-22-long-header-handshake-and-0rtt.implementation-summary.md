@@ -47,12 +47,12 @@
 - `REQ-QUIC-RFC9000-S17P2P3-0003`
 - `REQ-QUIC-RFC9000-S17P2P3-0004`
 - `REQ-QUIC-RFC9000-1006`
-- `REQ-QUIC-RFC9000-S17P2P3-0018`
+- `RFC9000-S17-2-3-P5-S2-R01`
 - `REQ-QUIC-RFC9000-1009`
 - `REQ-QUIC-RFC9000-S17P2P3-0020`
 - `REQ-QUIC-RFC9000-S17P2P3-0021`
 - `REQ-QUIC-RFC9000-1011`
-- `REQ-QUIC-RFC9000-S17P2P3-0023`
+- `RFC9000-S17-2-3-P8-R01`
 
 ## Risks Or Follow-Up Notes
 - This pass only closes parser-local Version Negotiation, Initial, and 0-RTT requirements that can be proven from raw header bytes.

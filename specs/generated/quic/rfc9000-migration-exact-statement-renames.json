@@ -241,7 +241,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P2P3-0006",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0595",
+      "staged_requirement_id": "RFC9000-S10-2-3-P3-S2-R01",
       "statement": "A CONNECTION_CLOSE of type 0x1d MUST be replaced by a CONNECTION_CLOSE of type 0x1c when sending the frame in Initial or Handshake packets.",
       "derived_from": "REQ-QUIC-RFC9000-S10P2P3-0006",
       "supersedes": [
@@ -1831,7 +1831,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S3P2-0011",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0109",
+      "staged_requirement_id": "RFC9000-S3-2-P6-R01",
       "statement": "Before a stream is created, all streams of the same type with lower-numbered stream IDs MUST be created.",
       "derived_from": "REQ-QUIC-RFC9000-S3P2-0011",
       "supersedes": [
@@ -2061,7 +2061,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S10P3-0012",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0623",
+      "staged_requirement_id": "RFC9000-S10-3-P14-S1-R01",
       "statement": "Endpoints MUST discard packets that are too small to be valid QUIC packets.",
       "derived_from": "REQ-QUIC-RFC9000-S10P3-0012",
       "supersedes": [
@@ -3531,7 +3531,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0013",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0971",
+      "staged_requirement_id": "RFC9000-S17-2-1-P6-R01",
       "statement": "The Version field of a Version Negotiation packet MUST be set to 0x00000000.",
       "derived_from": "REQ-QUIC-RFC9000-S17P2P1-0013",
       "supersedes": [

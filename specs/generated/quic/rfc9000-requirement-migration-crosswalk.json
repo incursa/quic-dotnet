@@ -1791,7 +1791,7 @@
       "statement": "The Packet Number field MUST be between 8 and 32 bits long."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "id": "RFC9000-S17-2-3-P5-S2-R01",
       "title": "New packet numbers MUST be used for any new packets that are sent; as described in Section 17...",
       "statement": "New packet numbers MUST be used for any new packets that are sent; as described in Section 17.2.5.3, reusing packet numbers could compromise packet protection."
     },
@@ -1806,7 +1806,7 @@
       "statement": "For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can only acknowledge a 1-RTT packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "id": "RFC9000-S17-2-3-P8-R01",
       "title": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error...",
       "statement": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error of an appropriate type (for instance, a FLOW_CONTROL_ERROR for exceeding stream data limits)."
     },
@@ -2666,7 +2666,7 @@
       "statement": "A receiver MAY use the sequence number supplied in the NEW_CONNECTION_ID frame to handle receiving the same NEW_CONNECTION_ID frame multiple times."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P15-0021",
+      "id": "RFC9000-S19-15-P10-S2-R01",
       "title": "Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO...",
       "statement": "Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CONNECTION_ID frames have no effect."
     },
@@ -2856,7 +2856,7 @@
       "statement": "The Type field MUST be encoded as a variable-length integer with value 0x01."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P2-0004",
+      "id": "RFC9000-S19-2-P4-R01",
       "title": "The PING frame MAY be used to keep a connection alive when an application or application prot...",
       "statement": "The PING frame MAY be used to keep a connection alive when an application or application protocol wishes to prevent the connection from timing out; see Section 10.1.2."
     },
@@ -3666,7 +3666,7 @@
       "statement": "Values between 0x00 and 0x3f inclusive MUST be assigned using Standards Action or IESG Approval."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P4-0003",
+      "id": "RFC9000-S22-4-P3-R01",
       "title": "Include Frame Type Name for frame types",
       "statement": "Permanent registrations in this registry MUST include the Frame Type Name field."
     },
@@ -3916,7 +3916,7 @@
       "statement": "In either case, the endpoint MUST send a RESET_STREAM frame, which causes the stream to enter the Reset Sent state."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P1-0016",
+      "id": "RFC9000-S3-1-P10-R01",
       "title": "Permit RESET_STREAM as the first frame",
       "statement": "An endpoint MAY send a RESET_STREAM as the first frame that mentions a stream, causing the sending part of that stream to open and then immediately transition to the Reset Sent state."
     },
@@ -3941,7 +3941,7 @@
       "statement": "The initial state for the receiving part of a stream MUST be Recv."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0006",
+      "id": "RFC9000-S3-2-P4-R01",
       "title": "Enter Recv when the peer-side sending part opens",
       "statement": "For a bidirectional stream, the receiving part MUST enter the Recv state when the sending part initiated by the endpoint enters the Ready state."
     },
@@ -4546,7 +4546,7 @@
       "statement": "Clients MAY choose not to use the preferred address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P3-0006",
+      "id": "RFC9000-S5-2-3-P4-R01",
       "title": "Avoid stateless reset oracles in simple load balancing",
       "statement": "Server deployments that use this simple form of load balancing MUST avoid the creation of a stateless reset oracle."
     },
@@ -5301,7 +5301,7 @@
       "statement": "If the received packet contains a PATH_CHALLENGE frame, the server MUST send a packet containing a PATH_RESPONSE frame as described in Section 8.2."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+      "id": "RFC9000-S9-6-2-P2-S3-R01",
       "title": "Move Exclusively to the Preferred Address After Validation",
       "statement": "Once the server has completed path validation and has received a non-probing packet with a new largest packet number on its preferred address, the server MUST send non-probing packets to the client exclusively from its preferred IP address."
     },

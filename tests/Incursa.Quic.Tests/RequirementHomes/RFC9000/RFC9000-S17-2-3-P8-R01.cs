@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0023">A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error of an appropriate type (for instance, a FLOW_CONTROL_ERROR for exceeding stream data limits).</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-3-P8-R01">A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error of an appropriate type (for instance, a FLOW_CONTROL_ERROR for exceeding stream data limits).</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P2P3-0023")]
-public sealed class REQ_QUIC_RFC9000_S17P2P3_0023
+[Requirement("RFC9000-S17-2-3-P8-R01")]
+public sealed class RFC9000_S17_2_3_P8_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

@@ -35,10 +35,10 @@
     "REQ-QUIC-RFC9002-S7P6P1-0003",
     "REQ-QUIC-RFC9002-S7P6P2-0001",
     "REQ-QUIC-RFC9002-S7P6P2-0002",
-    "REQ-QUIC-RFC9002-S7P6P2-0003",
+    "RFC9002-S7-6-2-P4-R01",
     "REQ-QUIC-RFC9002-S7P6P2-0004",
     "REQ-QUIC-RFC9002-S7P6P2-0005",
-    "REQ-QUIC-RFC9002-S7P6P2-0006",
+    "RFC9002-S7-6-2-P6-R01",
     "RFC9002-S7-7-P1-S1-R01",
     "RFC9002-S7-7-P2-S2-R01",
     "RFC9002-S7-7-P2-S3-R01",
@@ -134,7 +134,7 @@
     },
     {
       "requirement_ids": [
-        "REQ-QUIC-RFC9002-S7P6P2-0003"
+        "RFC9002-S7-6-2-P4-R01"
       ],
       "test": "TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
     },
@@ -158,19 +158,19 @@
     },
     {
       "requirement_ids": [
-        "REQ-QUIC-RFC9002-S7P6P2-0006"
+        "RFC9002-S7-6-2-P6-R01"
       ],
       "test": "TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected"
     },
     {
       "requirement_ids": [
-        "REQ-QUIC-RFC9002-S7P6P2-0006"
+        "RFC9002-S7-6-2-P6-R01"
       ],
       "test": "TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort"
     },
     {
       "requirement_ids": [
-        "REQ-QUIC-RFC9002-S7P6P2-0006"
+        "RFC9002-S7-6-2-P6-R01"
       ],
       "test": "TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
     },

@@ -24,7 +24,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0187")]
+    [Requirement("RFC9484-S10-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_AvoidsIncreasingIpTrafficBurstiness()
@@ -33,7 +33,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0187")]
+    [Requirement("RFC9484-S10-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotPermitIncreasedBurstiness()

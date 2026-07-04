@@ -135,7 +135,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0007",
+      "id": "RFC9484-S3-P5-2-S1-R01",
       "title": "Require absolute-form URI Template",
       "statement": "The URI Template MUST be in absolute form.",
       "coverage": {
@@ -744,7 +744,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0036",
+      "id": "RFC9484-S4-1-P3-S3-R02",
       "title": "Report proxy errors with Proxy-Status details",
       "statement": "If errors occur during this process, the IP proxy SHOULD send details using an appropriate Proxy-Status header field.",
       "coverage": {
@@ -1319,7 +1319,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0063",
+      "id": "RFC9484-S4-5-P2-2-R01",
       "title": "Response meets Capsule Protocol HTTP requirements",
       "statement": "The response MUST meet the requirements of HTTP responses that start the Capsule Protocol.",
       "coverage": {
@@ -2398,7 +2398,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0114",
+      "id": "RFC9484-S4-7-2-P6-4-S1-R01",
       "title": "Limit IP Version values to 4 or 6",
       "statement": "The IP Version field MUST be either 4 or 6.",
       "coverage": {
@@ -3761,7 +3761,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0178",
+      "id": "RFC9484-S7-2-P7-2-S1-R01",
       "title": "Use ICMPv6 echo requests to verify link MTU",
       "statement": "Unless endpoints have an out-of-band guarantee that the previous techniques are sufficient, IP proxying endpoints MUST use ICMPv6 echo requests with 1232 bytes of data to determine the link MTU and tear down the tunnel if no response is received.",
       "coverage": {
@@ -3971,7 +3971,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0187",
+      "id": "RFC9484-S10-P1-S1-R01",
       "title": "Avoid burstiness of IP traffic",
       "statement": "IP proxying endpoints SHOULD avoid increasing burstiness of IP traffic.",
       "coverage": {

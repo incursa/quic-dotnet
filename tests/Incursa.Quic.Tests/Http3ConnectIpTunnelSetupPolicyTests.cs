@@ -123,7 +123,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0036")]
+    [Requirement("RFC9484-S4-1-P3-S3-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TunnelSetup_AddsProxyStatusDetailsOnErrors()
@@ -135,7 +135,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0036")]
+    [Requirement("RFC9484-S4-1-P3-S3-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_RejectsEmptyProxyStatusErrorType()

@@ -705,8 +705,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0067")]
-    [Requirement("REQ-QUIC-RFC9250-0068")]
+    [Requirement("RFC9250-S4-4-P4-R01")]
+    [Requirement("RFC9250-S4-4-P4-S1-R01")]
     [Requirement("RFC9250-S4-4-P6-S3-R01")]
     [Requirement("REQ-QUIC-RFC9250-0102")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -733,8 +733,8 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0067")]
-    [Requirement("REQ-QUIC-RFC9250-0068")]
+    [Requirement("RFC9250-S4-4-P4-R01")]
+    [Requirement("RFC9250-S4-4-P4-S1-R01")]
     [Requirement("RFC9250-S4-4-P6-S3-R01")]
     [Requirement("RFC9250-S4-4-P6-S4-R01")]
     [Requirement("REQ-QUIC-RFC9250-0102")]

@@ -14,7 +14,7 @@
   "addresses": [
     "REQ-QUIC-RFC9000-0529",
     "REQ-QUIC-RFC9000-S9P6P2-0009",
-    "REQ-QUIC-RFC9000-S9P6P2-0010"
+    "RFC9000-S9-6-2-P2-S3-R01"
   ],
   "summary": "Add focused requirement-home proof and trace ownership for preferred-address candidate validation, PATH_CHALLENGE response, and validated preferred-address non-probing cutover.",
   "planned_changes": "- Add direct positive proof that the chosen preferred address remains a candidate path until validation succeeds.\n- Add direct positive proof that a protected PATH_CHALLENGE on the preferred-address candidate path receives a matching PATH_RESPONSE on that path.\n- Add edge proof that validated IPv6 preferred-address selection also becomes the exclusive non-probing send path.\n- Link the S9P6P2-0008 through S9P6P2-0010 requirements to dedicated architecture, work-item, and verification artifacts.\n- Regenerate QUIC requirement coverage triage and run focused verification.",

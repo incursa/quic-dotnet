@@ -707,7 +707,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0035",
+      "id": "RFC9297-S3-2-P7-R01",
       "title": "Silently drop unknown capsules",
       "statement": "Endpoints that receive a Capsule with an unknown Capsule Type MUST silently drop that Capsule and skip over it to parse the next Capsule.",
       "coverage": {
@@ -1493,7 +1493,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0071",
+      "id": "RFC9297-S3-5-P6-S1-R01",
       "title": "Drop oversized HTTP Datagrams instead of converting them",
       "statement": "If the HTTP Datagram is too large to fit in a DATAGRAM frame, the intermediary SHOULD drop the HTTP Datagram instead of converting it to a DATAGRAM Capsule.",
       "coverage": {

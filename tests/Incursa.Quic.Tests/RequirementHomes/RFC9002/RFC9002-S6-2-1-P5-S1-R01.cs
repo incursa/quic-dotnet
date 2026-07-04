@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P2P1-0003">The PTO period MUST be at least kGranularity.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-2-1-P5-S1-R01">The PTO period MUST be at least kGranularity.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P2P1-0003")]
-public sealed class REQ_QUIC_RFC9002_S6P2P1_0003
+[Requirement("RFC9002-S6-2-1-P5-S1-R01")]
+public sealed class RFC9002_S6_2_1_P5_S1_R01
 {
     public static TheoryData<PtoGranularityFloorCase> PtoGranularityFloorCases => new()
     {

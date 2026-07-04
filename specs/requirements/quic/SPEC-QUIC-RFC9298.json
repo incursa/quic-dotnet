@@ -51,7 +51,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0003",
+      "id": "RFC9298-S2-P4-2-R01",
       "title": "Require absolute URI Template form",
       "statement": "The URI Template MUST be in absolute form.",
       "coverage": {
@@ -72,7 +72,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0004",
+      "id": "RFC9298-S2-P4-2-R02",
       "title": "Require non-empty URI Template components",
       "statement": "The URI Template MUST include non-empty scheme, authority, and path components.",
       "coverage": {
@@ -782,7 +782,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0038",
+      "id": "RFC9298-S3-1-P3-S3-R01",
       "title": "Resolve DNS names before replying",
       "statement": "If target_host is a DNS name, the UDP proxy MUST perform DNS resolution before replying to the HTTP request.",
       "coverage": {
@@ -887,7 +887,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0043",
+      "id": "RFC9298-S3-1-P4-S2-R01",
       "title": "Discard unmatched packets",
       "statement": "Packets that do not match MUST be discarded by the UDP proxy.",
       "coverage": {
@@ -1829,7 +1829,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0088",
+      "id": "RFC9298-S5-P3-2-S1-R01",
       "title": "Unknown Context ID handling",
       "statement": "If an HTTP/3 Datagram carrying an unknown Context ID is received, the receiver SHALL either drop it silently or buffer it temporarily for about a round trip while awaiting registration of the corresponding Context ID.",
       "coverage": {
@@ -1889,7 +1889,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0091",
+      "id": "RFC9298-S5-P4-S1-R01",
       "title": "Context ID zero carries unmodified UDP payload",
       "statement": "When Context ID is zero, the UDP Proxying Payload field MUST contain the unmodified payload of a UDP packet.",
       "coverage": {

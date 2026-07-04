@@ -3,8 +3,8 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S17P2P3-0018")]
-public sealed class REQ_QUIC_RFC9000_S17P2P3_0018
+[Requirement("RFC9000-S17-2-3-P5-S2-R01")]
+public sealed class RFC9000_S17_2_3_P5_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

@@ -20,7 +20,7 @@
 ## 2026-05-04 Live Triage Addendum
 
 - Regenerated `specs/generated/quic/quic-requirement-coverage-triage.json` supersedes the older requirement lists below for S19P1 through S19P5.
-- `REQ-QUIC-RFC9000-S19P1-0006`, `REQ-QUIC-RFC9000-S19P2-0001`, `REQ-QUIC-RFC9000-S19P2-0003`, and `REQ-QUIC-RFC9000-S19P2-0004` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0042`.
+- `REQ-QUIC-RFC9000-S19P1-0006`, `REQ-QUIC-RFC9000-S19P2-0001`, `REQ-QUIC-RFC9000-S19P2-0003`, and `RFC9000-S19-2-P4-R01` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0042`.
 - `REQ-QUIC-RFC9000-S19P3-0001` through `REQ-QUIC-RFC9000-S19P3-0020`, `REQ-QUIC-RFC9000-1192` through `REQ-QUIC-RFC9000-S19P3P1-0010`, and `REQ-QUIC-RFC9000-S19P3P2-0001` through `REQ-QUIC-RFC9000-S19P3P2-0007` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0040`.
 - `REQ-QUIC-RFC9000-1205` through `REQ-QUIC-RFC9000-S19P4-0011` and `REQ-QUIC-RFC9000-S19P5-0001` through `REQ-QUIC-RFC9000-S19P5-0010` are trace-clean under `ARC/WI/VER-QUIC-RFC9000-0041`.
 - Remaining non-clean requirements in this chunk: none in the live triage snapshot.
@@ -110,7 +110,7 @@
 ### S19P2
 
 - `REQ-QUIC-RFC9000-S19P2-0001`
-- `REQ-QUIC-RFC9000-S19P2-0004`
+- `RFC9000-S19-2-P4-R01`
 
 ### S19P3
 

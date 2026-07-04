@@ -12,7 +12,7 @@ public sealed class REQ_QUIC_RFC9000_0661
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0006")]
+    [Requirement("RFC9000-S5-2-3-P4-R01")]
     public async Task ReceiveDatagram_RoutesAssociatedPacketsToTheRuntimeInsteadOfStatelessReset()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);
@@ -61,7 +61,7 @@ public sealed class REQ_QUIC_RFC9000_0661
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0006")]
+    [Requirement("RFC9000-S5-2-3-P4-R01")]
     public void ReceiveDatagram_DoesNotTreatAssociatedPacketsAsStatelessReset()
     {
         using QuicConnectionRuntimeEndpoint endpoint = new(2);

@@ -6,13 +6,13 @@ using FsCheck.Xunit;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0109">An endpoint MUST open lower-numbered peer streams first.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-2-P6-R01">An endpoint MUST open lower-numbered peer streams first.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0109")]
-public sealed class REQ_QUIC_RFC9000_0109
+[Requirement("RFC9000-S3-2-P6-R01")]
+public sealed class RFC9000_S3_2_P6_R01
 {
     [Property]
-    [Requirement("REQ-QUIC-RFC9000-0109")]
+    [Requirement("RFC9000-S3-2-P6-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Property")]
     public void TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst(byte streamIndex)
@@ -30,7 +30,7 @@ public sealed class REQ_QUIC_RFC9000_0109
     }
 
     [Property]
-    [Requirement("REQ-QUIC-RFC9000-0109")]
+    [Requirement("RFC9000-S3-2-P6-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Property")]
     public void TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst(byte streamIndex)
@@ -55,7 +55,7 @@ public sealed class REQ_QUIC_RFC9000_0109
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0109")]
+    [Requirement("RFC9000-S3-2-P6-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit()

@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P1-0016">An endpoint MAY send a RESET_STREAM as the first frame that mentions a stream, causing the sending part of that stream to open and then immediately transition to the Reset Sent state.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-1-P10-R01">An endpoint MAY send a RESET_STREAM as the first frame that mentions a stream, causing the sending part of that stream to open and then immediately transition to the Reset Sent state.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P1-0016")]
-public sealed class REQ_QUIC_RFC9000_S3P1_0016
+[Requirement("RFC9000-S3-1-P10-R01")]
+public sealed class RFC9000_S3_1_P10_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P1-0016")]
+    [Requirement("RFC9000-S3-1-P10-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAbortLocalStreamWrites_OpensTheNextLocalStreamWhenResetIsTheFirstFrame()
@@ -33,7 +33,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0016
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P1-0016")]
+    [Requirement("RFC9000-S3-1-P10-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams()
@@ -47,7 +47,7 @@ public sealed class REQ_QUIC_RFC9000_S3P1_0016
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P1-0016")]
+    [Requirement("RFC9000-S3-1-P10-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryAbortLocalStreamWrites_OpensTheFirstLocalUnidirectionalStreamWhenResetIsTheFirstFrame()

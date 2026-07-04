@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S22P4-0003")]
-public sealed class REQ_QUIC_RFC9000_S22P4_0003
+[Requirement("RFC9000-S22-4-P3-R01")]
+public sealed class RFC9000_S22_4_P3_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S22P4-0003")]
+    [Requirement("RFC9000-S22-4-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void FrameRegistry_IncludesTheFrameTypeNameField()

@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S19P15-0021")]
-public sealed class REQ_QUIC_RFC9000_S19P15_0021
+[Requirement("RFC9000-S19-15-P10-S2-R01")]
+public sealed class RFC9000_S19_15_P10_S2_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S19P15-0021")]
+    [Requirement("RFC9000-S19-15-P10-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryAcceptNewConnectionId_SmallerSubsequentRetirePriorToDoesNotRetireAdditionalConnectionIds()
     {

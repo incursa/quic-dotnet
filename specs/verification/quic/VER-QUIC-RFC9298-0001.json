@@ -14,8 +14,8 @@
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, HTTP/3 package build, and diff hygiene for the RFC 9298 URI Template and target surface.",
   "verifies": [
     "RFC9298-S2-P5-S1-R01",
-    "REQ-QUIC-RFC9298-0003",
-    "REQ-QUIC-RFC9298-0004",
+    "RFC9298-S2-P4-2-R01",
+    "RFC9298-S2-P4-2-R02",
     "REQ-QUIC-RFC9298-0005",
     "REQ-QUIC-RFC9298-0006",
     "REQ-QUIC-RFC9298-0007",

@@ -1948,7 +1948,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "id": "RFC9002-S6-2-1-P5-S1-R01",
       "title": "Keep PTO above granularity",
       "statement": "The PTO period MUST be at least kGranularity.",
       "coverage": {
@@ -1972,14 +1972,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P5-S1-R01.cs::TryComputeProbeTimeoutMicros_UsesTimerGranularityAsThePtoFloor",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P5-S1-R01.cs::TryComputeProbeTimeoutMicros_RejectsAZeroTimerGranularity",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P5-S1-R01.cs::TryComputeProbeTimeoutMicros_ClampsThePtoPeriodToTheGranularityFloor"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "id": "RFC9002-S6-2-1-P6-S1-R01",
       "title": "Use the earlier PTO across Initial and Handshake spaces",
       "statement": "When ack-eliciting packets in multiple packet number spaces are in flight, the PTO timer MUST be set to the earlier value of the Initial and Handshake packet number spaces.",
       "coverage": {
@@ -2003,14 +2003,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P6-S1-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsTheEarlierDeadline",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P6-S1-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_ReturnsFalseWhenBothTimersAreMissing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P6-S1-R01.cs::TrySelectInitialOrHandshakeProbeTimeoutMicros_UsesTheSharedDeadlineWhenBothTimersMatch"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "id": "RFC9002-S6-2-1-P7-S1-R01",
       "title": "Defer application-data PTO until handshake confirmation",
       "statement": "An endpoint MUST NOT set its PTO timer for the Application Data packet number space until the handshake is confirmed.",
       "coverage": {
@@ -2034,8 +2034,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P7-S1-R01.cs::TryComputeProbeTimeoutMicros_RejectsApplicationDataBeforeHandshakeConfirmation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P7-S1-R01.cs::TryComputeProbeTimeoutMicros_GatesApplicationDataPtoOnHandshakeConfirmation"
         ]
       }
     },
@@ -4166,7 +4166,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "id": "RFC9002-S7-6-2-P4-R01",
       "title": "Delay persistent congestion until at least one RTT sample exists",
       "statement": "Persistent congestion SHOULD NOT start until there is at least one RTT sample.",
       "coverage": {
@@ -4190,7 +4190,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0003.cs::TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P4-R01.cs::TryDetectPersistentCongestion_DelaysDetectionUntilAnRttSampleExists"
         ]
       }
     },
@@ -4254,7 +4254,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "id": "RFC9002-S7-6-2-P6-R01",
       "title": "Reset cwnd to the minimum on persistent congestion",
       "statement": "When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.",
       "coverage": {
@@ -4278,9 +4278,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P6P2-0006.cs::TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P6-R01.cs::TryDetectPersistentCongestion_CollapsesTheWindowWhenPersistentCongestionIsDetected",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P6-R01.cs::TryDetectPersistentCongestion_DoesNotCollapseTheWindowWhenTheDurationIsTooShort",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-6-2-P6-R01.cs::TryDetectPersistentCongestion_CollapsesTheWindowAtTheDurationBoundary"
         ]
       }
     },

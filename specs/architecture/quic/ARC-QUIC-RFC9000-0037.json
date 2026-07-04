@@ -33,7 +33,7 @@
     "REQ-QUIC-RFC9000-1009",
     "REQ-QUIC-RFC9000-S17P2P3-0021",
     "REQ-QUIC-RFC9000-1011",
-    "REQ-QUIC-RFC9000-S17P2P3-0023"
+    "RFC9000-S17-2-3-P8-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicPacketParser.cs",

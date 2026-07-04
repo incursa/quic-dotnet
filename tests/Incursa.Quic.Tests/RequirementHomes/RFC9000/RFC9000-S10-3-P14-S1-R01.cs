@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0623">Endpoints MUST discard packets that are too small to be valid QUIC packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-P14-S1-R01">Endpoints MUST discard packets that are too small to be valid QUIC packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0623")]
-public sealed class REQ_QUIC_RFC9000_0623
+[Requirement("RFC9000-S10-3-P14-S1-R01")]
+public sealed class RFC9000_S10_3_P14_S1_R01
 {
     public static TheoryData<byte[]> TruncatedLongHeaderCases => new()
     {
@@ -64,7 +64,7 @@ public sealed class REQ_QUIC_RFC9000_0623
     [MemberData(nameof(TruncatedLongHeaderCases))]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0623">Endpoints MUST discard packets that are too small to be valid QUIC packets.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S10-3-P14-S1-R01">Endpoints MUST discard packets that are too small to be valid QUIC packets.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0008">The Destination Connection ID Length field MUST be 8 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0009">The Destination Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0010">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
@@ -75,7 +75,7 @@ public sealed class REQ_QUIC_RFC9000_0623
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P3-0014">The Source Connection ID field MUST be between 0 and 160 bits long.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-0623")]
+    [Requirement("RFC9000-S10-3-P14-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0008")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0009")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0010")]

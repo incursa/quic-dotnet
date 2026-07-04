@@ -542,7 +542,7 @@
       "notes": "Transport-parameter wire support is present, but the migration runtime is still absent for the open clauses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0006",
+      "requirement_id": "RFC9000-S5-2-3-P4-R01",
       "completion_status": "not implemented",
       "files_changed": [],
       "tests_covering_requirement": [],

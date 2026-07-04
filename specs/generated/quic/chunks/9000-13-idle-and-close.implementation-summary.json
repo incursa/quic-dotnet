@@ -549,7 +549,7 @@
       "notes": "The current repo has no CONNECTION_CLOSE wire support or packet sending state machine."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0595",
+      "requirement_id": "RFC9000-S10-2-3-P3-S2-R01",
       "completion_status": "blocked_by_technical_dependency",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -657,7 +657,7 @@
     "REQ-QUIC-RFC9000-S10P2P3-0003",
     "REQ-QUIC-RFC9000-S10P2P3-0004",
     "REQ-QUIC-RFC9000-S10P2P3-0005",
-    "REQ-QUIC-RFC9000-0595",
+    "RFC9000-S10-2-3-P3-S2-R01",
     "REQ-QUIC-RFC9000-S10P2P3-0007",
     "REQ-QUIC-RFC9000-S10P2P3-0008",
     "REQ-QUIC-RFC9000-S10P2P3-0009",

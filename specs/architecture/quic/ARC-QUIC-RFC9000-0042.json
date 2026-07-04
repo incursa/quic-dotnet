@@ -17,14 +17,14 @@
     "REQ-QUIC-RFC9000-S19P1-0006",
     "REQ-QUIC-RFC9000-S19P2-0001",
     "REQ-QUIC-RFC9000-S19P2-0003",
-    "REQ-QUIC-RFC9000-S19P2-0004"
+    "RFC9000-S19-2-P4-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0003.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-2-P4-R01.cs"
   ],
   "design_summary": "The proof stays on the existing QuicFrameCodec fixed-type frame seam. PADDING is formatted and parsed as the single-byte variable-length integer value 0x00. PING is formatted and parsed as the single-byte variable-length integer value 0x01, and the existing ack-eliciting classifier remains the proof seam that a formatted PING can act as a reachability or keep-alive probe.",
   "data_and_state_considerations": "PADDING and PING carry no payload at this frame-codec boundary. The focused tests assert exact one-byte encoding, mismatched-type rejection, and rejection of longer varint encodings for the fixed frame type values. PING policy proof intentionally does not create timers; it proves the frame that policy code can use is well-formed and ack-eliciting.",

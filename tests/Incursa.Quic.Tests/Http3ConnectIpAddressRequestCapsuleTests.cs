@@ -156,7 +156,7 @@ public sealed class Http3ConnectIpAddressRequestCapsuleTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9484-0108")]
     [Requirement("REQ-QUIC-RFC9484-0113")]
-    [Requirement("REQ-QUIC-RFC9484-0114")]
+    [Requirement("RFC9484-S4-7-2-P6-4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix()
@@ -168,7 +168,7 @@ public sealed class Http3ConnectIpAddressRequestCapsuleTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9484-0108")]
     [Requirement("REQ-QUIC-RFC9484-0113")]
-    [Requirement("REQ-QUIC-RFC9484-0114")]
+    [Requirement("RFC9484-S4-7-2-P6-4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RequestedAddress_RejectsUnsupportedIpVersion()

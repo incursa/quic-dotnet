@@ -200,7 +200,7 @@
         "REQ-QUIC-RFC9000-S9P6P2-0007",
         "REQ-QUIC-RFC9000-0529",
         "REQ-QUIC-RFC9000-S9P6P2-0009",
-        "REQ-QUIC-RFC9000-S9P6P2-0010",
+        "RFC9000-S9-6-2-P2-S3-R01",
         "REQ-QUIC-RFC9000-S9P6P2-0011"
       ],
       "implemented_requirement_ids": [],
@@ -214,7 +214,7 @@
         "REQ-QUIC-RFC9000-S9P6P2-0007",
         "REQ-QUIC-RFC9000-0529",
         "REQ-QUIC-RFC9000-S9P6P2-0009",
-        "REQ-QUIC-RFC9000-S9P6P2-0010",
+        "RFC9000-S9-6-2-P2-S3-R01",
         "REQ-QUIC-RFC9000-S9P6P2-0011"
       ],
       "tests_covering_requirement": [],

@@ -6,13 +6,13 @@ using FsCheck.Xunit;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P2-0006">An endpoint MUST enter Recv when the peer-side sending part opens.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-2-P4-R01">An endpoint MUST enter Recv when the peer-side sending part opens.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
-public sealed class REQ_QUIC_RFC9000_S3P2_0006
+[Requirement("RFC9000-S3-2-P4-R01")]
+public sealed class RFC9000_S3_2_P4_R01
 {
     [Property]
-    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("RFC9000-S3-2-P4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens(byte streamIndex)
@@ -48,7 +48,7 @@ public sealed class REQ_QUIC_RFC9000_S3P2_0006
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P2-0006")]
+    [Requirement("RFC9000-S3-2-P4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryApplyMaxStreamDataFrame_LeavesLocalUnidirectionalReceiveStateUnchanged()

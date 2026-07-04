@@ -5,9 +5,9 @@ using System.Net;
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
+[Requirement("RFC9000-S9-6-2-P2-S3-R01")]
 [Requirement("RFC9000-S21-5-6-P4-S1-R01")]
-public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
+public sealed class RFC9000_S9_6_2_P2_S3_R01
 {
     private static readonly QuicConnectionPathIdentity OriginalPath = new("203.0.113.60", RemotePort: 443);
     private static readonly byte[] InitialSourceConnectionId = [0x10, 0x11, 0x12, 0x13];
@@ -19,7 +19,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
     private static readonly QuicConnectionPathIdentity PreferredIpv6Path = new(new IPAddress(PreferredIpv6Address).ToString(), RemotePort: 9553);
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
+    [Requirement("RFC9000-S9-6-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes()
@@ -59,7 +59,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
+    [Requirement("RFC9000-S9-6-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes()
@@ -114,7 +114,7 @@ public sealed class REQ_QUIC_RFC9000_S9P6P2_0010
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S9P6P2-0010")]
+    [Requirement("RFC9000-S9-6-2-P2-S3-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes()

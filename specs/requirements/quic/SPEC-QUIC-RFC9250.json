@@ -2084,7 +2084,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0067",
+      "id": "RFC9250-S4-4-P4-R01",
       "title": "Monitor server idle time",
       "statement": "Clients SHOULD monitor server idle time, defined as the time since the last packet from the server was received.",
       "coverage": {
@@ -2114,7 +2114,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0068",
+      "id": "RFC9250-S4-4-P4-S1-R01",
       "title": "Check idle time before sending a query",
       "statement": "When a client prepares to send a new DNS query to the server, it SHOULD check whether the idle time is sufficiently lower than the idle timer.",
       "coverage": {

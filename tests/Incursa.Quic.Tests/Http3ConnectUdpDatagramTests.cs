@@ -296,7 +296,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0088")]
+    [Requirement("RFC9298-S5-P3-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramPolicy_UnknownContextIdCanBeBufferedTemporarily()
@@ -305,7 +305,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0088")]
+    [Requirement("RFC9298-S5-P3-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable()
@@ -335,7 +335,7 @@ public sealed class Http3ConnectUdpDatagramTests
 
     [Fact]
     [Requirement("RFC9298-S5-P4-R01")]
-    [Requirement("REQ-QUIC-RFC9298-0091")]
+    [Requirement("RFC9298-S5-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload()
@@ -351,7 +351,7 @@ public sealed class Http3ConnectUdpDatagramTests
 
     [Fact]
     [Requirement("RFC9298-S5-P4-R01")]
-    [Requirement("REQ-QUIC-RFC9298-0091")]
+    [Requirement("RFC9298-S5-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets()

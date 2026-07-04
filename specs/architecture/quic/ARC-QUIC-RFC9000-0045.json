@@ -18,7 +18,7 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-0529",
     "REQ-QUIC-RFC9000-S9P6P2-0009",
-    "REQ-QUIC-RFC9000-S9P6P2-0010"
+    "RFC9000-S9-6-2-P2-S3-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Paths.cs",
@@ -26,7 +26,7 @@
     "src/Incursa.Quic/QuicConnectionPeerConnectionIdState.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0529.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs"
   ],

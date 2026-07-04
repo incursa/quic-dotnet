@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9484-0060",
     "REQ-QUIC-RFC9484-0061",
     "REQ-QUIC-RFC9484-0062",
-    "REQ-QUIC-RFC9484-0063",
+    "RFC9484-S4-5-P2-2-R01",
     "REQ-QUIC-RFC9484-0064"
   ],
   "summary": "Add HTTP/2 and HTTP/3 CONNECT-IP Extended CONNECT request/response policy helpers.",

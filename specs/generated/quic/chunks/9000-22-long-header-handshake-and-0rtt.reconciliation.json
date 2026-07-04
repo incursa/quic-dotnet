@@ -52,12 +52,12 @@
     "REQ-QUIC-RFC9000-S17P2P3-0015",
     "REQ-QUIC-RFC9000-S17P2P3-0016",
     "REQ-QUIC-RFC9000-1006",
-    "REQ-QUIC-RFC9000-S17P2P3-0018",
+    "RFC9000-S17-2-3-P5-S2-R01",
     "REQ-QUIC-RFC9000-1009",
     "REQ-QUIC-RFC9000-S17P2P3-0020",
     "REQ-QUIC-RFC9000-S17P2P3-0021",
     "REQ-QUIC-RFC9000-1011",
-    "REQ-QUIC-RFC9000-S17P2P3-0023"
+    "RFC9000-S17-2-3-P8-R01"
   ],
   "requirements": [
     {
@@ -367,7 +367,7 @@
       "notes": "Server/client behavior for VN packets is absent."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0971",
+      "requirement_id": "RFC9000-S17-2-1-P6-R01",
       "status": "implemented and tested",
       "implementation_refs": [
         "src/Incursa.Quic/QuicPacketParser.cs:73-94",
@@ -2267,7 +2267,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "requirement_id": "RFC9000-S17-2-3-P5-S2-R01",
       "status": "not implemented",
       "implementation_refs": [
         "src/Incursa.Quic/QuicPacketParser.cs:26-50",
@@ -2467,7 +2467,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "requirement_id": "RFC9000-S17-2-3-P8-R01",
       "status": "not implemented",
       "implementation_refs": [
         "src/Incursa.Quic/QuicPacketParser.cs:26-50",

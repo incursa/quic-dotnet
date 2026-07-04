@@ -383,7 +383,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9484-0062")]
-    [Requirement("REQ-QUIC-RFC9484-0063")]
+    [Requirement("RFC9484-S4-5-P2-2-R01")]
     [Requirement("REQ-QUIC-RFC9484-0064")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -399,7 +399,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
 
     [Theory]
     [Requirement("REQ-QUIC-RFC9484-0062")]
-    [Requirement("REQ-QUIC-RFC9484-0063")]
+    [Requirement("RFC9484-S4-5-P2-2-R01")]
     [Requirement("REQ-QUIC-RFC9484-0064")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -419,7 +419,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0063")]
+    [Requirement("RFC9484-S4-5-P2-2-R01")]
     [Requirement("REQ-QUIC-RFC9484-0064")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

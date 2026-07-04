@@ -117,7 +117,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9297-0070")]
-    [Requirement("REQ-QUIC-RFC9297-0071")]
+    [Requirement("RFC9297-S3-5-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IntermediaryPolicy_DropsOversizedDatagramsInsteadOfConvertingWhenFramesAreSupported()
@@ -128,7 +128,7 @@ public sealed class Http3DatagramIntermediaryPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0071")]
+    [Requirement("RFC9297-S3-5-P6-S1-R01")]
     [Requirement("REQ-QUIC-RFC9297-0072")]
     [Requirement("REQ-QUIC-RFC9297-0073")]
     [CoverageType(RequirementCoverageType.Positive)]

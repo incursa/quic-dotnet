@@ -26,7 +26,7 @@ public sealed class Http3ConnectIpUriTemplateTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0007")]
+    [Requirement("RFC9484-S3-P5-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UriTemplate_AcceptsAbsoluteTemplate()
@@ -37,7 +37,7 @@ public sealed class Http3ConnectIpUriTemplateTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0007")]
+    [Requirement("RFC9484-S3-P5-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UriTemplate_RejectsRelativeTemplate()

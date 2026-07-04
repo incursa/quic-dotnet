@@ -24,7 +24,7 @@
   "procedure": [
     "Review `docs/current-status.md` and `specs/requirements/quic/SPEC-QUIC-INT.json` to confirm the blocker lane is formalized.",
     "Inspect `src/Incursa.Quic.InteropHarness/setup.sh` and `src/Incursa.Quic.InteropHarness/README.md` for the preferred-address setup.",
-    "Run the focused requirement-home tests for `REQ-QUIC-INT-0025` plus the supporting RFC9000 migration proofs `RFC9000-S9-6-1-P4-S2-R01`, `REQ-QUIC-RFC9000-S9P6P2-0010`, and `RFC9000-S9-6-3-P5-S1-R01`.",
+    "Run the focused requirement-home tests for `REQ-QUIC-INT-0025` plus the supporting RFC9000 migration proofs `RFC9000-S9-6-1-P4-S2-R01`, `RFC9000-S9-6-2-P2-S3-R01`, and `RFC9000-S9-6-3-P5-S1-R01`.",
     "Confirm the blocker note remains bounded and separate from rebind, QUIC v2, HTTP/3, or broad support claims.",
     "Inspect local clean-runner proof `.artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx` for original-path first-flight source selection, preferred-address path observation, and `runner-report.json` success.",
     "Inspect hosted run `26174181713` under `.artifacts/gh-run-26174181713/interop-runner-server-connectionmigration-neqo-26174181713/20260520-155738932-server-nginx` for `runner-report.json` success, completed transfer, original/preferred path observation, qlog-backed PATH_CHALLENGE/PATH_RESPONSE evidence, and active-migration DCID change."
@@ -39,7 +39,7 @@
     "specs/work-items/quic/WI-QUIC-INT-0019.json",
     "tests/Incursa.Quic.Tests/RequirementHomes/INT/REQ-QUIC-INT-0025.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs",
     ".artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx/runner-report.json",
     ".artifacts/interop-runner/connectionmigration-shim-proof/20260519-163904754-server-nginx/runner.stderr.log",

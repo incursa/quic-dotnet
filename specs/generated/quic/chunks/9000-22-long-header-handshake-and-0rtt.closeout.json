@@ -42,12 +42,12 @@
     "REQ-QUIC-RFC9000-S17P2P3-0003",
     "REQ-QUIC-RFC9000-S17P2P3-0004",
     "REQ-QUIC-RFC9000-1006",
-    "REQ-QUIC-RFC9000-S17P2P3-0018",
+    "RFC9000-S17-2-3-P5-S2-R01",
     "REQ-QUIC-RFC9000-1009",
     "REQ-QUIC-RFC9000-S17P2P3-0020",
     "REQ-QUIC-RFC9000-S17P2P3-0021",
     "REQ-QUIC-RFC9000-1011",
-    "REQ-QUIC-RFC9000-S17P2P3-0023"
+    "RFC9000-S17-2-3-P8-R01"
   ],
   "counts": {
     "total": 69,
@@ -310,7 +310,7 @@
       "notes": "The most-significant unused bit is covered by the requirement-home tests."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0971",
+      "requirement_id": "RFC9000-S17-2-1-P6-R01",
       "section": "S17P2P1",
       "title": "The Version field of a Version Negotiation packet MUST be set to 0x00000000",
       "status": "covered",
@@ -1391,7 +1391,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "requirement_id": "RFC9000-S17-2-3-P5-S2-R01",
       "section": "S17P2P3",
       "title": "New packet numbers MUST be used for any new packets that are sent; as described in Sectio...",
       "status": "blocked",
@@ -1456,7 +1456,7 @@
       "notes": "The repository does not yet implement 0-RTT packet payload or sender/receiver behavior."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "requirement_id": "RFC9000-S17-2-3-P8-R01",
       "section": "S17P2P3",
       "title": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection er...",
       "status": "blocked",

@@ -138,7 +138,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0058")]
+    [Requirement("RFC9464-S4-P3-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ReplyMayDiscardRequestWithTooManyRepeatedAttributes()
@@ -158,7 +158,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0058")]
+    [Requirement("RFC9464-S4-P3-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ResponseOptionsRejectInvalidDuplicateDiscardThreshold()

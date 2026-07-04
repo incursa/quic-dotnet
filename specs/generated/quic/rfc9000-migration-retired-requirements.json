@@ -345,12 +345,12 @@
       "id": "REQ-QUIC-RFC9000-S10P2P3-0006",
       "title": "Replace 0x1d CONNECTION_CLOSE in handshake packets",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0595"
+        "RFC9000-S10-2-3-P3-S2-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0595 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S10-2-3-P3-S2-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P6-0001",
@@ -2094,12 +2094,12 @@
       "id": "REQ-QUIC-RFC9000-S3P2-0011",
       "title": "Create lower-numbered same-type streams first",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0109"
+        "RFC9000-S3-2-P6-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0109 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S3-2-P6-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S4P4-0004",
@@ -2347,12 +2347,12 @@
       "id": "REQ-QUIC-RFC9000-S10P3-0012",
       "title": "Discard undersized QUIC packets",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0623"
+        "RFC9000-S10-3-P14-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0623 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S10-3-P14-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S7-0011",
@@ -3964,12 +3964,12 @@
       "id": "REQ-QUIC-RFC9000-S17P2P1-0013",
       "title": "Set the Version field to zero",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0971"
+        "RFC9000-S17-2-1-P6-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0971 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S17-2-1-P6-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S7P2-0005",

@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P6P2-0003">Persistent congestion SHOULD NOT start until there is at least one RTT sample.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-6-2-P4-R01">Persistent congestion SHOULD NOT start until there is at least one RTT sample.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P6P2-0003")]
-public sealed class REQ_QUIC_RFC9002_S7P6P2_0003
+[Requirement("RFC9002-S7-6-2-P4-R01")]
+public sealed class RFC9002_S7_6_2_P4_R01
 {
     public static TheoryData<PersistentCongestionGateCase> PersistentCongestionGateCases => new()
     {

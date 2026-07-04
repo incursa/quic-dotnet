@@ -100,7 +100,7 @@
 - `REQ-QUIC-RFC9000-S5P2P3-0001`: No preferred-address migration or load-balancing runtime exists in this slice.
 - `REQ-QUIC-RFC9000-S5P2P3-0003`: No preferred-address migration or load-balancing runtime exists in this slice.
 - `REQ-QUIC-RFC9000-0278`: No preferred-address migration or load-balancing runtime exists in this slice.
-- `REQ-QUIC-RFC9000-S5P2P3-0006`: No preferred-address migration or load-balancing runtime exists in this slice.
+- `RFC9000-S5-2-3-P4-R01`: No preferred-address migration or load-balancing runtime exists in this slice.
 
 ## Risks or Follow-up Notes
 

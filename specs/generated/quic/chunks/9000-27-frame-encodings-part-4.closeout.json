@@ -926,7 +926,7 @@
     "notes": "Requires connection-ID lifecycle, duplicate tracking, and retirement bookkeeping outside the frame codec."
   },
   {
-    "requirement_id": "REQ-QUIC-RFC9000-S19P15-0021",
+    "requirement_id": "RFC9000-S19-15-P10-S2-R01",
     "status": "blocked",
     "implementation_refs": [],
     "test_refs": [],

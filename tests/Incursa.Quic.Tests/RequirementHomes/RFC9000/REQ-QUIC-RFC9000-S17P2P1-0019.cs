@@ -20,7 +20,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0007">The Destination Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0008">The Source Connection ID Length field MUST be 8 bits long.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0009">The Source Connection ID field MUST be between 0 and 2040 bits long.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0971">The Version field of a Version Negotiation packet MUST be set to 0x00000000.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-1-P6-R01">The Version field of a Version Negotiation packet MUST be set to 0x00000000.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P1-0019">The Version Negotiation packet MUST NOT include the Packet Number and Length fields present in other packets that use the long header form.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P1-0012">A Version Negotiation packet MUST echo the connection IDs selected by the client.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0284">If the version selected by the client is not acceptable to the server, the server MUST respond with a Version Negotiation packet that includes a list of versions the server will accept.</workbench-requirement>
@@ -37,7 +37,7 @@ public sealed class REQ_QUIC_RFC9000_S17P2P1_0019
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0009")]
-    [Requirement("REQ-QUIC-RFC9000-0971")]
+    [Requirement("RFC9000-S17-2-1-P6-R01")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P1-0019")]
     [Requirement("REQ-QUIC-RFC9000-S5P1-0012")]
     [Requirement("REQ-QUIC-RFC9000-0284")]

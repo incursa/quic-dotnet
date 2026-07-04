@@ -56,7 +56,7 @@ public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0043")]
+    [Requirement("RFC9298-S3-1-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void SocketLifecycle_DiscardsUnmatchedPacketsOnNonConnectedSocket()
@@ -68,7 +68,7 @@ public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0043")]
+    [Requirement("RFC9298-S3-1-P4-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void SocketLifecycle_DoesNotDiscardMatchedPacketsOnNonConnectedSocket()

@@ -22,7 +22,7 @@
 | `REQ-QUIC-RFC9000-S17P2P1-0010` | The value in the Unused field MUST be set to an arbitrary value by the server | implemented and tested | implementation and test evidence | The unused-field wire image is covered by the requirement-home tests. |
 | `REQ-QUIC-RFC9000-0969` | Clients MUST ignore the value of this field | implemented and tested | implementation and test evidence | Version Negotiation parsing accepts arbitrary Unused-field values and preserves them without making parse decisions based on those bits. |
 | `REQ-QUIC-RFC9000-S17P2P1-0012` | Where QUIC might be multiplexed with other protocols (see [RFC7983]), servers SHOULD set... | implemented and tested | implementation and test evidence | The most-significant unused bit is covered by the requirement-home tests. |
-| `REQ-QUIC-RFC9000-0971` | The Version field of a Version Negotiation packet MUST be set to 0x00000000 | implemented and tested | implementation and test evidence | Version zero is parsed as a Version Negotiation packet. |
+| `RFC9000-S17-2-1-P6-R01` | The Version field of a Version Negotiation packet MUST be set to 0x00000000 | implemented and tested | implementation and test evidence | Version zero is parsed as a Version Negotiation packet. |
 | `REQ-QUIC-RFC9000-0972` | The server MUST include the value from the Source Connection ID field of the packet it re... | implemented and tested | implementation and test evidence | The response echoes the client's source connection ID into the destination field. |
 | `REQ-QUIC-RFC9000-S17P2P1-0015` | The value for Source Connection ID MUST be copied from the Destination Connection ID of t... | implemented and tested | implementation and test evidence | The response echoes the client's destination connection ID into the source field. |
 | `RFC9000-S17-2-1-P8-R01` | Version-specific rules for the connection ID therefore MUST NOT influence a decision abou... | implemented and tested | implementation and test evidence | Version Negotiation send decisions are independent of version-specific connection-ID rules. |
@@ -73,12 +73,12 @@
 | `REQ-QUIC-RFC9000-S17P2P3-0015` | The Length field MUST be encoded as a variable-length integer | implemented and tested | implementation and test evidence | The parser requires a parseable varint length before accepting the packet. |
 | `REQ-QUIC-RFC9000-S17P2P3-0016` | The Packet Number field MUST be between 8 and 32 bits long | implemented and tested | implementation and test evidence | The parser validates the packet-number bytes implied by the packet-number-length bits. |
 | `REQ-QUIC-RFC9000-1006` | A client SHOULD attempt to resend data in 0-RTT packets after it sends a new Initial packet | blocked | explicit blocker note | Blocked by missing 0-RTT transmission state, packet number management, and resend coordination. |
-| `REQ-QUIC-RFC9000-S17P2P3-0018` | New packet numbers MUST be used for any new packets that are sent; as described in Sectio... | blocked | explicit blocker note | Blocked by missing 0-RTT transmission state, packet number management, and resend coordination. |
+| `RFC9000-S17-2-3-P5-S2-R01` | New packet numbers MUST be used for any new packets that are sent; as described in Sectio... | blocked | explicit blocker note | Blocked by missing 0-RTT transmission state, packet number management, and resend coordination. |
 | `REQ-QUIC-RFC9000-1009` | A client MUST NOT send 0-RTT packets once it starts processing 1-RTT packets from the server | blocked | explicit blocker note | Blocked by missing 0-RTT transmission state, packet number management, and resend coordination. |
 | `REQ-QUIC-RFC9000-S17P2P3-0020` | This means that 0-RTT packets MUST NOT contain any response to frames from 1-RTT packets | blocked | explicit blocker note | Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state. |
 | `REQ-QUIC-RFC9000-S17P2P3-0021` | For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can onl... | blocked | explicit blocker note | Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state. |
 | `REQ-QUIC-RFC9000-1011` | An acknowledgment for a 1-RTT packet MUST be carried in a 1-RTT packet | blocked | explicit blocker note | Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state. |
-| `REQ-QUIC-RFC9000-S17P2P3-0023` | A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection er... | blocked | explicit blocker note | Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state. |
+| `RFC9000-S17-2-3-P8-R01` | A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection er... | blocked | explicit blocker note | Blocked by missing 0-RTT/1-RTT ACK handling, remembered transport limits, and connection state. |
 
 ## Consistency Check
 
@@ -91,7 +91,7 @@
 
 - Blocked: 18 requirements.
 - S17P2P2: `REQ-QUIC-RFC9000-0985`, `REQ-QUIC-RFC9000-0986`, `REQ-QUIC-RFC9000-S17P2P2-0020`, `REQ-QUIC-RFC9000-S17P2P2-0021`, `REQ-QUIC-RFC9000-S17P2P2-0022`, `RFC9000-S17-2-2-P9-S2-R01`, `REQ-QUIC-RFC9000-S17P2P2-0024`, `REQ-QUIC-RFC9000-S17P2P2-0025`, `REQ-QUIC-RFC9000-S17P2P2-0026`
-- S17P2P3: `REQ-QUIC-RFC9000-S17P2P3-0003`, `REQ-QUIC-RFC9000-S17P2P3-0004`, `REQ-QUIC-RFC9000-1006`, `REQ-QUIC-RFC9000-S17P2P3-0018`, `REQ-QUIC-RFC9000-1009`, `REQ-QUIC-RFC9000-S17P2P3-0020`, `REQ-QUIC-RFC9000-S17P2P3-0021`, `REQ-QUIC-RFC9000-1011`, `REQ-QUIC-RFC9000-S17P2P3-0023`
+- S17P2P3: `REQ-QUIC-RFC9000-S17P2P3-0003`, `REQ-QUIC-RFC9000-S17P2P3-0004`, `REQ-QUIC-RFC9000-1006`, `RFC9000-S17-2-3-P5-S2-R01`, `REQ-QUIC-RFC9000-1009`, `REQ-QUIC-RFC9000-S17P2P3-0020`, `REQ-QUIC-RFC9000-S17P2P3-0021`, `REQ-QUIC-RFC9000-1011`, `RFC9000-S17-2-3-P8-R01`
 
 ## Tests Run And Results
 

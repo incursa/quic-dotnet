@@ -382,10 +382,10 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S17P2P3-0014` | The Source Connection ID field MUST be between 0 and 160 bits long |
 | `REQ-QUIC-RFC9000-S17P2P3-0015` | The Length field MUST be encoded as a variable-length integer |
 | `REQ-QUIC-RFC9000-S17P2P3-0016` | The Packet Number field MUST be between 8 and 32 bits long |
-| `REQ-QUIC-RFC9000-S17P2P3-0018` | New packet numbers MUST be used for any new packets that are sent; as described in Section 17... |
+| `RFC9000-S17-2-3-P5-S2-R01` | New packet numbers MUST be used for any new packets that are sent; as described in Section 17... |
 | `REQ-QUIC-RFC9000-S17P2P3-0020` | This means that 0-RTT packets MUST NOT contain any response to frames from 1-RTT packets |
 | `REQ-QUIC-RFC9000-S17P2P3-0021` | For instance, a client MUST NOT send an ACK frame in a 0-RTT packet, because that can only ac... |
-| `REQ-QUIC-RFC9000-S17P2P3-0023` | A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error... |
+| `RFC9000-S17-2-3-P8-R01` | A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error... |
 | `REQ-QUIC-RFC9000-S17P2P4-0001` | A Handshake packet MUST use long headers with a type value of 0x02, followed by the Length an... |
 | `REQ-QUIC-RFC9000-S17P2P4-0002` | The first byte MUST contain the Reserved and Packet Number Length bits; see Section 17.2 |
 | `REQ-QUIC-RFC9000-S17P2P4-0003` | It MUST be used to carry cryptographic handshake messages and acknowledgments from the server... |
@@ -557,7 +557,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S19P15-0013` | A 128-bit value that will be used for a stateless reset when the associated connection ID MUS... |
 | `REQ-QUIC-RFC9000-S19P15-0016` | Receipt of the same frame multiple times MUST NOT be treated as a connection error |
 | `REQ-QUIC-RFC9000-S19P15-0017` | A receiver MAY use the sequence number supplied in the NEW_CONNECTION_ID frame to handle rece... |
-| `REQ-QUIC-RFC9000-S19P15-0021` | Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO... |
+| `RFC9000-S19-15-P10-S2-R01` | Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO... |
 | `REQ-QUIC-RFC9000-S19P16-0001` | An endpoint sends a RETIRE_CONNECTION_ID frame (type=0x19) to MUST indicate that it will no l... |
 | `REQ-QUIC-RFC9000-S19P16-0002` | This MUST include the connection ID provided during the handshake |
 | `REQ-QUIC-RFC9000-S19P16-0003` | New connection IDs MAY be delivered to a peer using the NEW_CONNECTION_ID frame (Section 19.15) |
@@ -595,7 +595,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S19P2-0001` | Endpoints MAY use PING frames (type=0x01) to verify that their peers are still alive or to ch... |
 | `REQ-QUIC-RFC9000-S19P2-0002` | PING frames are formatted as shown in Figure 24, which shows that PING frames MUST have no co... |
 | `REQ-QUIC-RFC9000-S19P2-0003` | The Type field MUST be encoded as a variable-length integer with value 0x01 |
-| `REQ-QUIC-RFC9000-S19P2-0004` | The PING frame MAY be used to keep a connection alive when an application or application prot... |
+| `RFC9000-S19-2-P4-R01` | The PING frame MAY be used to keep a connection alive when an application or application prot... |
 | `REQ-QUIC-RFC9000-S19P20-0001` | The server MUST use a HANDSHAKE_DONE frame (type=0x1e) to signal confirmation of the handshak... |
 | `REQ-QUIC-RFC9000-S19P20-0002` | HANDSHAKE_DONE frames are formatted as shown in Figure 44, which shows that HANDSHAKE_DONE fr... |
 | `REQ-QUIC-RFC9000-S19P20-0003` | The Type field MUST be encoded as a variable-length integer with value 0x1e |
@@ -757,7 +757,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S22P3-0004` | Define Parameter Name |
 | `REQ-QUIC-RFC9000-S22P4-0001` | Use Specification Required for frame types |
 | `REQ-QUIC-RFC9000-S22P4-0002` | Use stricter policy for low frame-type codepoints |
-| `REQ-QUIC-RFC9000-S22P4-0003` | Include Frame Type Name for frame types |
+| `RFC9000-S22-4-P3-R01` | Include Frame Type Name for frame types |
 | `REQ-QUIC-RFC9000-S22P4-0004` | Define Frame Type Name |
 | `REQ-QUIC-RFC9000-S22P4-0005` | In addition to the advice in Section 22.1, specifications for new permanent registrations SHO... |
 | `REQ-QUIC-RFC9000-S22P4-0006` | Describe frame field semantics in specifications |
@@ -807,12 +807,12 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S3P1-0013` | Enter Data Recvd after all data is acknowledged |
 | `REQ-QUIC-RFC9000-S3P1-0014` | Allow application abandonment of stream transmission |
 | `REQ-QUIC-RFC9000-S3P1-0015` | Send RESET_STREAM when abandoning transmission |
-| `REQ-QUIC-RFC9000-S3P1-0016` | Permit RESET_STREAM as the first frame |
+| `RFC9000-S3-1-P10-R01` | Permit RESET_STREAM as the first frame |
 | `REQ-QUIC-RFC9000-S3P1-0017` | Enter Reset Recvd after RESET_STREAM is acknowledged |
 | `REQ-QUIC-RFC9000-S3P2-0001` | Do not track unobservable sending-part states |
 | `REQ-QUIC-RFC9000-S3P2-0002` | Track data delivery to the application |
 | `REQ-QUIC-RFC9000-S3P2-0005` | Start receiving parts in Recv |
-| `REQ-QUIC-RFC9000-S3P2-0006` | Enter Recv when the peer-side sending part opens |
+| `RFC9000-S3-2-P4-R01` | Enter Recv when the peer-side sending part opens |
 | `REQ-QUIC-RFC9000-S3P2-0007` | Open bidirectional streams on peer flow-control or stop-sending frames |
 | `REQ-QUIC-RFC9000-S3P2-0008` | Interpret MAX_STREAM_DATA on an unopened stream as peer opening |
 | `REQ-QUIC-RFC9000-S3P2-0009` | Interpret STOP_SENDING on an unopened stream as a peer desire to stop reception |
@@ -933,7 +933,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S5P2P3-0001` | Allow out-of-band forwarding for simple load balancers |
 | `REQ-QUIC-RFC9000-S5P2P3-0002` | Allow preferred-address migration for dedicated server addresses |
 | `REQ-QUIC-RFC9000-S5P2P3-0003` | Allow clients to decline preferred addresses |
-| `REQ-QUIC-RFC9000-S5P2P3-0006` | Avoid stateless reset oracles in simple load balancing |
+| `RFC9000-S5-2-3-P4-R01` | Avoid stateless reset oracles in simple load balancing |
 | `REQ-QUIC-RFC9000-S5P3-0001` | Allow clients to open connections |
 | `REQ-QUIC-RFC9000-S5P3-0002` | Allow clients to enable Early Data |
 | `REQ-QUIC-RFC9000-S5P3-0003` | Allow clients to learn Early Data acceptance |
@@ -1084,7 +1084,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S9P6P2-0006` | Do not use preferred-address values for other connections |
 | `REQ-QUIC-RFC9000-S9P6P2-0007` | Use these for other connections, including connections that are resumed from the current connection |
 | `REQ-QUIC-RFC9000-S9P6P2-0009` | Respond to PATH_CHALLENGE with PATH_RESPONSE |
-| `REQ-QUIC-RFC9000-S9P6P2-0010` | Move Exclusively to the Preferred Address After Validation |
+| `RFC9000-S9-6-2-P2-S3-R01` | Move Exclusively to the Preferred Address After Validation |
 | `REQ-QUIC-RFC9000-S9P6P2-0011` | Restrict Preferred-Address Values to the Current Connection |
 | `REQ-QUIC-RFC9000-S9P6P3-0005` | Servers SHOULD initiate path validation to the client's new address upon receiving a probe packet from a different address |
 | `REQ-QUIC-RFC9000-S9P6P3-0007` | Keep preferred-address connection IDs path-agnostic |

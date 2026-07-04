@@ -14,7 +14,7 @@
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 URI Template validation.",
   "verifies": [
     "RFC9484-S3-P6-S1-R01",
-    "REQ-QUIC-RFC9484-0007",
+    "RFC9484-S3-P5-2-S1-R01",
     "RFC9484-S3-P7-S1-R01",
     "REQ-QUIC-RFC9484-0009",
     "REQ-QUIC-RFC9484-0010"

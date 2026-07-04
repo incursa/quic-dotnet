@@ -7,7 +7,7 @@
 - Stateless-reset response sizing and amplification guardrails: `REQ-QUIC-RFC9000-S10P3-0009`, `REQ-QUIC-RFC9000-S10P3-0010`, `REQ-QUIC-RFC9000-0622`, `REQ-QUIC-RFC9000-S10P3-0027`, `REQ-QUIC-RFC9000-S10P3-0028`, `REQ-QUIC-RFC9000-S10P3P3-0001`
 - Endpoint-host Stateless Reset response floors for unattributed packets and long-header packets: `RFC9000-S10-3-P1-S2-R01`, `RFC9000-S10-3-P15-S1-R01`
 - Trailing-token detection, token-match draining, and no-send transitions: `REQ-QUIC-RFC9000-S10P3P1-0001`, `REQ-QUIC-RFC9000-S10P3P1-0003`, `REQ-QUIC-RFC9000-S10P3P1-0007`, `REQ-QUIC-RFC9000-S10P3P1-0008`, `REQ-QUIC-RFC9000-0629`, `REQ-QUIC-RFC9000-0639`, `RFC9000-S10-3-1-P5-S1-R01`
-- Packet parser coverage for too-small invalid packets: `REQ-QUIC-RFC9000-0623`
+- Packet parser coverage for too-small invalid packets: `RFC9000-S10-3-P14-S1-R01`
 - Existing codec coverage traced into this chunk: `REQ-QUIC-RFC9000-S10P3-0017`, `REQ-QUIC-RFC9000-S10P3-0018`
 
 ## Files Changed

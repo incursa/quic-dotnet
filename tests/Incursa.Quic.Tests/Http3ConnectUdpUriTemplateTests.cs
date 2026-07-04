@@ -7,8 +7,8 @@ public sealed class Http3ConnectUdpUriTemplateTests
 {
     [Fact]
     [Requirement("RFC9298-S2-P5-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9298-0003")]
-    [Requirement("REQ-QUIC-RFC9298-0004")]
+    [Requirement("RFC9298-S2-P4-2-R01")]
+    [Requirement("RFC9298-S2-P4-2-R02")]
     [Requirement("REQ-QUIC-RFC9298-0005")]
     [Requirement("REQ-QUIC-RFC9298-0006")]
     [Requirement("REQ-QUIC-RFC9298-0008")]
@@ -70,8 +70,8 @@ public sealed class Http3ConnectUdpUriTemplateTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0003")]
-    [Requirement("REQ-QUIC-RFC9298-0004")]
+    [Requirement("RFC9298-S2-P4-2-R01")]
+    [Requirement("RFC9298-S2-P4-2-R02")]
     [Requirement("REQ-QUIC-RFC9298-0005")]
     [Requirement("REQ-QUIC-RFC9298-0006")]
     [Requirement("REQ-QUIC-RFC9298-0008")]

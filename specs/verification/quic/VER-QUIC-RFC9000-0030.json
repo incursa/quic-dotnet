@@ -18,7 +18,7 @@
     "REQ-QUIC-RFC9000-S19P15-0016",
     "REQ-QUIC-RFC9000-S19P15-0017",
     "REQ-QUIC-RFC9000-19150004",
-    "REQ-QUIC-RFC9000-S19P15-0021",
+    "RFC9000-S19-15-P10-S2-R01",
     "REQ-QUIC-RFC9000-19150007",
     "REQ-QUIC-RFC9000-19150008"
   ],
@@ -47,7 +47,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0016.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0017.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-15-P10-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-19150008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicConnectionIdLifecycleTestSupport.cs",

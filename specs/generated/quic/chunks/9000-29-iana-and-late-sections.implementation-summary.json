@@ -58,7 +58,7 @@
     },
     {
       "requirement_id": [
-        "REQ-QUIC-RFC9000-S22P4-0003",
+        "RFC9000-S22-4-P3-R01",
         "REQ-QUIC-RFC9000-S22P4-0004",
         "REQ-QUIC-RFC9000-S22P4-0006"
       ],

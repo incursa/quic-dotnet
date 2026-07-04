@@ -230,7 +230,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P1-0016",
+      "requirement_id": "RFC9000-S3-1-P10-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -293,7 +293,7 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0006",
+      "requirement_id": "RFC9000-S3-2-P4-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -344,16 +344,16 @@
       "notes": "The higher-level stream ownership and orchestration surface needed for this clause is still missing."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0109",
+      "requirement_id": "RFC9000-S3-2-P6-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Focused proof now covers lower-numbered peer stream creation on both MAX_STREAM_DATA and STOP_SENDING paths."
@@ -709,7 +709,7 @@
     "REQ-QUIC-RFC9000-S3P1-0013",
     "REQ-QUIC-RFC9000-S3P1-0014",
     "REQ-QUIC-RFC9000-S3P1-0015",
-    "REQ-QUIC-RFC9000-S3P1-0016",
+    "RFC9000-S3-1-P10-R01",
     "REQ-QUIC-RFC9000-S3P1-0017",
     "REQ-QUIC-RFC9000-S3P2-0001",
     "REQ-QUIC-RFC9000-S3P2-0002",

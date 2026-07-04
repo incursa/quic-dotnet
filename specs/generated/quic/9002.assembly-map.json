@@ -1484,7 +1484,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0003",
+      "requirement_id": "RFC9002-S6-2-1-P5-S1-R01",
       "title": "Keep PTO above granularity",
       "source_batches": [
         "5-8"
@@ -1507,7 +1507,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0004",
+      "requirement_id": "RFC9002-S6-2-1-P6-S1-R01",
       "title": "Use the earlier PTO across Initial and Handshake spaces",
       "source_batches": [
         "5-8"
@@ -1530,7 +1530,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0005",
+      "requirement_id": "RFC9002-S6-2-1-P7-S1-R01",
       "title": "Defer application-data PTO until handshake confirmation",
       "source_batches": [
         "5-8"
@@ -3158,7 +3158,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0003",
+      "requirement_id": "RFC9002-S7-6-2-P4-R01",
       "title": "Delay persistent congestion until at least one RTT sample exists",
       "source_batches": [
         "5-8"
@@ -3227,7 +3227,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S7P6P2-0006",
+      "requirement_id": "RFC9002-S7-6-2-P6-R01",
       "title": "Reset cwnd to the minimum on persistent congestion",
       "source_batches": [
         "5-8"

@@ -776,7 +776,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0109",
+      "id": "RFC9000-S3-2-P6-R01",
       "title": "Create lower-numbered same-type streams first",
       "statement": "Before a stream is created, all streams of the same type with lower-numbered stream IDs MUST be created.",
       "coverage": {
@@ -801,9 +801,9 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs::TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs::TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0109.cs::TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit"
         ],
         "upstream_refs": [
           "RFC9000 3.2 RFC9000-S3P2-B7-P7-S1",
@@ -5252,8 +5252,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P2-B2-P2-S2",
@@ -5318,7 +5318,7 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P2-B4-P4-S2",
@@ -6045,7 +6045,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0595",
+      "id": "RFC9000-S10-2-3-P3-S2-R01",
       "title": "Replace 0x1d CONNECTION_CLOSE in handshake packets",
       "statement": "A CONNECTION_CLOSE of type 0x1d MUST be replaced by a CONNECTION_CLOSE of type 0x1c when sending the frame in Initial or Handshake packets.",
       "coverage": {
@@ -6212,7 +6212,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9000-0623",
+      "id": "RFC9000-S10-3-P14-S1-R01",
       "title": "Discard undersized QUIC packets",
       "statement": "Endpoints MUST discard packets that are too small to be valid QUIC packets.",
       "coverage": {
@@ -6232,8 +6232,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0623.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0623.cs::TryParseShortHeader_RejectsEmptyInput"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P14-S1-R01.cs::TryParseShortHeader_AcceptsAValidShortHeaderPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P14-S1-R01.cs::TryParseShortHeader_RejectsEmptyInput"
         ],
         "upstream_refs": [
           "RFC9000-S10P3-B15-P15-S1",
@@ -8864,7 +8864,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0971",
+      "id": "RFC9000-S17-2-1-P6-R01",
       "title": "Set the Version field to zero",
       "statement": "The Version field of a Version Negotiation packet MUST be set to 0x00000000.",
       "coverage": {
@@ -8884,8 +8884,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0971.cs::TryParseVersionNegotiation_ExposesZeroVersionAsVersionNegotiationState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0971.cs::TryParseVersionNegotiation_RejectsNonZeroVersionField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P6-R01.cs::TryParseVersionNegotiation_ExposesZeroVersionAsVersionNegotiationState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P6-R01.cs::TryParseVersionNegotiation_RejectsNonZeroVersionField"
         ],
         "upstream_refs": [
           "RFC9000-S17P2P1-B7-P7-S1",
@@ -23617,7 +23617,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P3-0018",
+      "id": "RFC9000-S17-2-3-P5-S2-R01",
       "title": "New packet numbers MUST be used for any new packets that are sent; as described in Section 17...",
       "statement": "New packet numbers MUST be used for any new packets that are sent; as described in Section 17.2.5.3, reusing packet numbers could compromise packet protection.",
       "coverage": {
@@ -23641,8 +23641,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0018.cs::ZeroRttPacketNumbersAdvanceMonotonicallyAcrossBackToBackEmissions",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0018.cs::ZeroRttPacketBuilderRejectsEmptyPayloadsAndWrongEncryptionLevel"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-3-P5-S2-R01.cs::ZeroRttPacketNumbersAdvanceMonotonicallyAcrossBackToBackEmissions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-3-P5-S2-R01.cs::ZeroRttPacketBuilderRejectsEmptyPayloadsAndWrongEncryptionLevel"
         ]
       }
     },
@@ -23708,7 +23708,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P3-0023",
+      "id": "RFC9000-S17-2-3-P8-R01",
       "title": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error...",
       "statement": "A server SHOULD treat a violation of remembered limits (Section 7.4.1) as a connection error of an appropriate type (for instance, a FLOW_CONTROL_ERROR for exceeding stream data limits).",
       "coverage": {
@@ -23732,8 +23732,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0023.cs::TryReceiveStreamFrame_ReportsAConnectionErrorForRememberedLimitViolations",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P3-0023.cs::TryReceiveStreamFrame_AllowsDataWithinRememberedLimits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-3-P8-R01.cs::TryReceiveStreamFrame_ReportsAConnectionErrorForRememberedLimitViolations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-3-P8-R01.cs::TryReceiveStreamFrame_AllowsDataWithinRememberedLimits"
         ]
       }
     },
@@ -29295,7 +29295,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P15-0021",
+      "id": "RFC9000-S19-15-P10-S2-R01",
       "title": "Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CO...",
       "statement": "Once a sender MUST indicate a Retire Prior To value, smaller values sent in subsequent NEW_CONNECTION_ID frames have no effect.",
       "coverage": {
@@ -29322,7 +29322,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.15"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P15-0021.cs::TryAcceptNewConnectionId_SmallerSubsequentRetirePriorToDoesNotRetireAdditionalConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-15-P10-S2-R01.cs::TryAcceptNewConnectionId_SmallerSubsequentRetirePriorToDoesNotRetireAdditionalConnectionIds"
         ]
       }
     },
@@ -30511,7 +30511,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P2-0004",
+      "id": "RFC9000-S19-2-P4-R01",
       "title": "The PING frame MAY be used to keep a connection alive when an application or application prot...",
       "statement": "The PING frame MAY be used to keep a connection alive when an application or application protocol wishes to prevent the connection from timing out; see Section 10.1.2.",
       "coverage": {
@@ -30538,7 +30538,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P2-0004.cs::TryFormatPingFrame_ProducesAckElicitingKeepAliveProbe"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-2-P4-R01.cs::TryFormatPingFrame_ProducesAckElicitingKeepAliveProbe"
         ]
       }
     },
@@ -34383,9 +34383,9 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes"
         ],
         "upstream_refs": [
           "RFC 9000 §21.5.6 RFC9000-S21.5.6-B5-P4-S1",
@@ -35543,7 +35543,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P4-0003",
+      "id": "RFC9000-S22-4-P3-R01",
       "title": "Include Frame Type Name for frame types",
       "statement": "Permanent registrations in this registry MUST include the Frame Type Name field.",
       "coverage": {
@@ -35567,7 +35567,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P4-0003.cs::FrameRegistry_IncludesTheFrameTypeNameField"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-4-P3-R01.cs::FrameRegistry_IncludesTheFrameTypeNameField"
         ]
       }
     },
@@ -37055,7 +37055,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P1-0016",
+      "id": "RFC9000-S3-1-P10-R01",
       "title": "Permit RESET_STREAM as the first frame",
       "statement": "An endpoint MAY send a RESET_STREAM as the first frame that mentions a stream, causing the sending part of that stream to open and then immediately transition to the Reset Sent state.",
       "coverage": {
@@ -37079,9 +37079,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_OpensTheNextLocalStreamWhenResetIsTheFirstFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0016.cs::TryAbortLocalStreamWrites_OpensTheFirstLocalUnidirectionalStreamWhenResetIsTheFirstFrame"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-1-P10-R01.cs::TryAbortLocalStreamWrites_OpensTheNextLocalStreamWhenResetIsTheFirstFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-1-P10-R01.cs::TryAbortLocalStreamWrites_RejectsPeerInitiatedStreams",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-1-P10-R01.cs::TryAbortLocalStreamWrites_OpensTheFirstLocalUnidirectionalStreamWhenResetIsTheFirstFrame"
         ]
       }
     },
@@ -37206,7 +37206,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0006",
+      "id": "RFC9000-S3-2-P4-R01",
       "title": "Enter Recv when the peer-side sending part opens",
       "statement": "For a bidirectional stream, the receiving part MUST enter the Recv state when the sending part initiated by the endpoint enters the Ready state.",
       "coverage": {
@@ -37230,8 +37230,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs::TryApplyMaxStreamDataFrame_LeavesLocalUnidirectionalReceiveStateUnchanged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P4-R01.cs::TryApplyMaxStreamDataFrame_EntersRecvWhenPeerSideSendingPartOpens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P4-R01.cs::TryApplyMaxStreamDataFrame_LeavesLocalUnidirectionalReceiveStateUnchanged"
         ]
       }
     },
@@ -40979,7 +40979,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P3-0006",
+      "id": "RFC9000-S5-2-3-P4-R01",
       "title": "Avoid stateless reset oracles in simple load balancing",
       "statement": "Server deployments that use this simple form of load balancing MUST avoid the creation of a stateless reset oracle.",
       "coverage": {
@@ -45566,7 +45566,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+      "id": "RFC9000-S9-6-2-P2-S3-R01",
       "title": "Move Exclusively to the Preferred Address After Validation",
       "statement": "Once the server has completed path validation and has received a non-probing packet with a new largest packet number on its preferred address, the server MUST send non-probing packets to the client exclusively from its preferred IP address.",
       "coverage": {
@@ -45593,9 +45593,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerKeepsSendingNonProbingPacketsFromTheOriginalAddressBeforePreferredAddressValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToTheChosenIpv6PreferredAddressAfterValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs::ServerMovesNonProbingPacketsToThePreferredAddressAfterValidationCompletes"
         ]
       }
     },

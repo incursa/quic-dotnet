@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P6P2-0006">When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-6-2-P6-R01">When persistent congestion is declared, the sender's congestion window MUST be reduced to the minimum congestion window.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P6P2-0006")]
-public sealed class REQ_QUIC_RFC9002_S7P6P2_0006
+[Requirement("RFC9002-S7-6-2-P6-R01")]
+public sealed class RFC9002_S7_6_2_P6_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

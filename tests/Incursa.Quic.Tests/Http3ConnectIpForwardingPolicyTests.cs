@@ -197,7 +197,7 @@ public sealed class Http3ConnectIpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0178")]
+    [Requirement("RFC9484-S7-2-P7-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_UsesIcmpv6EchoRequestsToVerifyLinkMtu()
@@ -207,7 +207,7 @@ public sealed class Http3ConnectIpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0178")]
+    [Requirement("RFC9484-S7-2-P7-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotProbeMtuWithSufficientOutOfBandGuarantee()

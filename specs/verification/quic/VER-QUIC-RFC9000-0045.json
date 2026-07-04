@@ -15,7 +15,7 @@
   "verifies": [
     "REQ-QUIC-RFC9000-0529",
     "REQ-QUIC-RFC9000-S9P6P2-0009",
-    "REQ-QUIC-RFC9000-S9P6P2-0010"
+    "RFC9000-S9-6-2-P2-S3-R01"
   ],
   "scope": "This verification covers the current single-active-path runtime behavior for preferred-address validation before migration, matching PATH_RESPONSE emission on the preferred-address candidate path, and exclusive non-probing sends after validated IPv4 or IPv6 preferred-address cutover.",
   "expected_result": "The chosen preferred address remains a candidate path and does not promote before validation, a protected PATH_CHALLENGE on that candidate path receives a matching PATH_RESPONSE on the same path, and once validation completes later non-probing sends are emitted only on the chosen preferred-address path.",
@@ -35,7 +35,7 @@
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0529.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P6P2-0010.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P2-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicPathMigrationRecoveryTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS8P2PathValidationTestSupport.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0529|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0009|FullyQualifiedName~REQ_QUIC_RFC9000_S9P6P2_0010\"",

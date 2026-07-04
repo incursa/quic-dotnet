@@ -155,7 +155,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P2-0004",
+      "requirement_id": "RFC9000-S19-2-P4-R01",
       "section": "S19P2",
       "title": "The PING frame MAY be used to keep a connection alive when an application or application prot...",
       "status": "not implemented",

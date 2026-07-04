@@ -479,7 +479,7 @@
       "notes": "This needs client/server migration validation, source-address tracking, and path-probe orchestration that the repo does not yet model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P6P2-0010",
+      "requirement_id": "RFC9000-S9-6-2-P2-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

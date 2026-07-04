@@ -32,7 +32,7 @@
     "REQ-QUIC-RFC9000-1009",
     "REQ-QUIC-RFC9000-S17P2P3-0021",
     "REQ-QUIC-RFC9000-1011",
-    "REQ-QUIC-RFC9000-S17P2P3-0023"
+    "RFC9000-S17-2-3-P8-R01"
   ],
   "scope": "This verification covers focused 0-RTT packet-format parser and builder proof for the listed S17P2P3 requirements.",
   "expected_result": "S17P2P3 requirement-home tests prove the long-header 0-RTT type, first-byte bit fields, connection-ID length boundaries, Length and Packet Number field validation, first-flight 0-RTT ordering, suppression after 1-RTT processing, ACK exclusion, and remembered-limit error behavior.",

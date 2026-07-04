@@ -1238,7 +1238,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9464-0058",
+      "id": "RFC9464-S4-P3-2-S1-R01",
       "title": "Allow discarding requests with too many repeated attributes",
       "statement": "The responder MAY discard the full request if the count of repeated attributes exceeds an implementation-specific threshold.",
       "coverage": {

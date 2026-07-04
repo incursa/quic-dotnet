@@ -23,7 +23,7 @@
     "REQ-QUIC-RFC9484-0060",
     "REQ-QUIC-RFC9484-0061",
     "REQ-QUIC-RFC9484-0062",
-    "REQ-QUIC-RFC9484-0063",
+    "RFC9484-S4-5-P2-2-R01",
     "REQ-QUIC-RFC9484-0064"
   ],
   "scope": "This verification covers Extended CONNECT use, server Extended CONNECT setting policy, CONNECT method, `connect-ip` protocol token, proxy authority, non-empty path and scheme, URI Template-derived scheme/path values, malformed-request rejection, 2xx response validation, Capsule Protocol response requirements, and aborting failed proxying attempts.",

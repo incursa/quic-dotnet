@@ -27,7 +27,7 @@
 - `REQ-QUIC-RFC9000-S19P2-0001` - not implemented
 - `REQ-QUIC-RFC9000-S19P2-0002` - not implemented
 - `REQ-QUIC-RFC9000-S19P2-0003` - not implemented
-- `REQ-QUIC-RFC9000-S19P2-0004` - not implemented
+- `RFC9000-S19-2-P4-R01` - not implemented
 
 ### S19P3 (20 requirements)
 - `REQ-QUIC-RFC9000-S19P3-0001` - not implemented
