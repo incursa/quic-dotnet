@@ -261,7 +261,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0070")]
+    [Requirement("RFC9463-S5-2-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ParameterRequestListDataRequestsOptionV4Dnr()
@@ -270,7 +270,7 @@ public sealed class EncryptedDnsDiscoveryDhcpv4OptionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0070")]
+    [Requirement("RFC9463-S5-2-P1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ParameterRequestListDataDoesNotRequestUnknownOrDhcpv6DnrCode()

@@ -1288,7 +1288,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0007",
+      "id": "RFC9001-S6-P3-S2-R02",
       "title": "Decrypt the packet with the changed Key Phase",
       "statement": "An endpoint that notices a changed Key Phase bit MUST decrypt the packet that contains the changed value.",
       "coverage": {
@@ -1315,13 +1315,13 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs::TryOpenProtectedApplicationDataPacket_DecryptsTheFirstObservedPhaseOnePacketWithSuccessorMaterial",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0007.cs::TryOpenProtectedApplicationDataPacket_DoesNotDecryptATamperedSuccessorPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S2-R02.cs::TryOpenProtectedApplicationDataPacket_DecryptsTheFirstObservedPhaseOnePacketWithSuccessorMaterial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S2-R02.cs::TryOpenProtectedApplicationDataPacket_DoesNotDecryptATamperedSuccessorPacket"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0008",
+      "id": "RFC9001-S6-P4-S1-R01",
       "title": "Update both endpoints on key update",
       "statement": "Initiating a key update MUST result in both endpoints updating keys.",
       "coverage": {
@@ -1348,9 +1348,9 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveServerRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0008.cs::ActiveClientRuntimeRejectsRepeatingTheSameKeyUpdate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P4-S1-R01.cs::ActiveClientRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P4-S1-R01.cs::ActiveServerRuntimeInstallsSuccessorMaterialWhenItInitiatesAKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P4-S1-R01.cs::ActiveClientRuntimeRejectsRepeatingTheSameKeyUpdate"
         ]
       }
     },
@@ -1763,7 +1763,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P2-0002",
+      "id": "RFC9001-S6-2-P2-S3-R01",
       "title": "Update send keys after peer-initiated key updates",
       "statement": "If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.",
       "coverage": {
@@ -1788,17 +1788,17 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveServerRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeDoesNotAcknowledgeATamperedPeerUpdatedKeyPacketWithOldSendKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForARepeatedPeerUpdatedKeyPacketWithPhaseTwoSendKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFourUpdatedPacketWithPhaseFourSendKeys",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0002.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFiveUpdatedPacketWithPhaseFiveSendKeys"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveClientRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveServerRuntimeProtectsTheAckForAPeerUpdatedKeyPacketWithUpdatedSendKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveClientRuntimeDoesNotAcknowledgeATamperedPeerUpdatedKeyPacketWithOldSendKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveClientRuntimeProtectsTheAckForARepeatedPeerUpdatedKeyPacketWithPhaseTwoSendKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFourUpdatedPacketWithPhaseFourSendKeys",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs::ActiveClientRuntimeProtectsTheAckForAPeerPhaseFiveUpdatedPacketWithPhaseFiveSendKeys"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P2-0003",
+      "id": "RFC9001-S6-2-P3-S5-R01",
       "title": "Allow KEY_UPDATE_ERROR for unconfirmed consecutive peer updates",
       "statement": "An endpoint MAY treat consecutive peer key updates that occur before confirmation of the prior update as a connection error of type KEY_UPDATE_ERROR.",
       "coverage": {
@@ -1822,10 +1822,10 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::ActiveClientRuntimeKeepsTheFirstPeerUpdatePathAvailable",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::ActiveRuntimeDropsApparentConsecutivePeerUpdateBeforeConfirmationWithoutClosing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::ActiveClientRuntimeDropsSecondSuccessorPeerUpdateBeforeCurrentPhaseConfirmationWithoutClosing",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P2-0003.cs::FuzzApparentConsecutivePeerUpdatesBeforeConfirmation_RandomizedPayloadSizesDoNotClose"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P3-S5-R01.cs::ActiveClientRuntimeKeepsTheFirstPeerUpdatePathAvailable",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P3-S5-R01.cs::ActiveRuntimeDropsApparentConsecutivePeerUpdateBeforeConfirmationWithoutClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P3-S5-R01.cs::ActiveClientRuntimeDropsSecondSuccessorPeerUpdateBeforeCurrentPhaseConfirmationWithoutClosing",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P3-S5-R01.cs::FuzzApparentConsecutivePeerUpdatesBeforeConfirmation_RandomizedPayloadSizesDoNotClose"
         ]
       }
     },
@@ -1939,7 +1939,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P4-0001",
+      "id": "RFC9001-S6-4-P1-S1-R01",
       "title": "Never send packets with old keys",
       "statement": "An endpoint MUST NOT send packets protected with old keys.",
       "coverage": {
@@ -1963,10 +1963,10 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveServerRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::ActiveClientRuntimeDoesNotSendOldKeyAckForTamperedPeerUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0001.cs::FuzzPeerUpdateAckSends_RandomizedPayloadsNeverOpenWithOldKeys"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P1-S1-R01.cs::ActiveClientRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P1-S1-R01.cs::ActiveServerRuntimeSendsPeerUpdateAcksWithNewKeysOnly",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P1-S1-R01.cs::ActiveClientRuntimeDoesNotSendOldKeyAckForTamperedPeerUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P1-S1-R01.cs::FuzzPeerUpdateAckSends_RandomizedPayloadsNeverOpenWithOldKeys"
         ]
       }
     },
@@ -2002,7 +2002,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P4-0003",
+      "id": "RFC9001-S6-4-P2-S2-R01",
       "title": "Reject old-key packets that violate packet-number ordering",
       "statement": "If an endpoint successfully removes protection with old keys after newer keys were used for lower packet numbers, it MUST treat that condition as a connection error of type KEY_UPDATE_ERROR.",
       "coverage": {
@@ -2026,10 +2026,10 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveServerRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::ActiveClientRuntimeDoesNotRaiseKeyUpdateErrorForALowerRecoveredOldKeyPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P4-0003.cs::FuzzOldKeyPacketOrderingViolations_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S2-R01.cs::ActiveClientRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S2-R01.cs::ActiveServerRuntimeRejectsOldKeyPacketsThatViolatePacketNumberOrdering",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S2-R01.cs::ActiveClientRuntimeDoesNotRaiseKeyUpdateErrorForALowerRecoveredOldKeyPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-4-P2-S2-R01.cs::FuzzOldKeyPacketOrderingViolations_RaiseKeyUpdateErrorAcrossRepresentativePayloadSizes"
         ]
       }
     },

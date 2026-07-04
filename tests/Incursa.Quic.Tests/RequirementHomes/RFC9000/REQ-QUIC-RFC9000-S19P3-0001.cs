@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P1-0004">On receiving an IP packet with an ECT(0), ECT(1), or ECN-CE codepoint, an ECN-enabled endpoint MUST access the ECN field and increase the corresponding ECT(0), ECT(1), or ECN-CE count.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P1-0005">These ECN counts MUST be included in subsequent ACK frames.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S13-4-1-P3-S2-R01">These ECN counts MUST be included in subsequent ACK frames.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0001">QUIC implementations MUST properly handle ACK frame types 0x02 and 0x03.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0002">The ACK frame MUST contain one or more ACK Ranges.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3-0003">If the frame type is 0x03, ACK frames also MUST contain the cumulative count of QUIC packets with associated ECN marks received on the connection up until this point.</workbench-requirement>
@@ -47,7 +47,7 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P3P2-0007">The ECN-CE Count field MUST be variable-length integer representing the total number of packets received with the ECN-CE codepoint in the packet number space of the ACK frame.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
+    [Requirement("RFC9000-S13-4-1-P3-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0003")]
@@ -135,7 +135,7 @@ public sealed class REQ_QUIC_RFC9000_S19P3_0001
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0004")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P1-0005")]
+    [Requirement("RFC9000-S13-4-1-P3-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0001")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-S19P3-0003")]

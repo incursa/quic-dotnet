@@ -8,7 +8,7 @@ namespace Incursa.Quic.Tests;
 public sealed class EncryptedDnsDiscoveryGenericInformationTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0002")]
+    [Requirement("RFC9463-S3-1-3-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9463-0006")]
     [Requirement("REQ-QUIC-RFC9463-0012")]
     [Requirement("REQ-QUIC-RFC9463-0013")]
@@ -30,7 +30,7 @@ public sealed class EncryptedDnsDiscoveryGenericInformationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0002")]
+    [Requirement("RFC9463-S3-1-3-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9463-0006")]
     [Requirement("REQ-QUIC-RFC9463-0012")]
     [Requirement("REQ-QUIC-RFC9463-0013")]

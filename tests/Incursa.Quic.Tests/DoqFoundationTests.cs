@@ -10,7 +10,7 @@ namespace Incursa.Quic.Tests;
 public sealed class DoqFoundationTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0004")]
+    [Requirement("RFC9250-S4-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ApplicationProtocolUsesDoqAlpn()
@@ -159,7 +159,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0004")]
+    [Requirement("RFC9250-S4-1-P1-S1-R01")]
     [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -178,7 +178,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0004")]
+    [Requirement("RFC9250-S4-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ClientOptionsRejectExplicitNonDoqAlpn()
@@ -196,7 +196,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0004")]
+    [Requirement("RFC9250-S4-1-P1-S1-R01")]
     [Requirement("RFC9250-S4-1-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

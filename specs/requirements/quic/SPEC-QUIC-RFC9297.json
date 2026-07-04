@@ -501,7 +501,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0025",
+      "id": "RFC9297-S2-1-1-P4-S4-R01",
       "title": "Maximum SETTINGS_H3_DATAGRAM value",
       "statement": "The SETTINGS_H3_DATAGRAM setting parameter MUST NOT have a value greater than 1.",
       "coverage": {

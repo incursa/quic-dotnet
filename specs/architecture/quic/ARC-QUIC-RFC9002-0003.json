@@ -24,8 +24,8 @@
   "purpose": "Describe how the Retry-recovery reset slice satisfies the remaining RFC 9002 Section 6.3 requirements by clearing client congestion and loss-recovery state while preserving the handshake transcript for the replay path.",
   "satisfies": [
     "REQ-QUIC-RFC9002-S6P3-0001",
-    "REQ-QUIC-RFC9002-S6P3-0002",
-    "REQ-QUIC-RFC9002-S6P3-0003"
+    "RFC9002-S6-3-P2-S1-R01",
+    "RFC9002-S6-3-P2-S2-R01"
   ],
   "design_summary": "The client Retry path resets congestion and loss-recovery state while preserving handshake transcript bytes needed to replay the bootstrap ClientHello, keeping Retry handling limited to the RFC 9002 Section 6.3 requirements."
 }

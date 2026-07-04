@@ -80,7 +80,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0103")]
+    [Requirement("RFC9298-S6-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_MarksIpHeadersNotEctWhenCongestionControlDisabled()
@@ -89,7 +89,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0103")]
+    [Requirement("RFC9298-S6-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_DoesNotUseEctWhenCongestionControlDisabled()

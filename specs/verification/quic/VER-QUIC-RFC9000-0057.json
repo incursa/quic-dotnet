@@ -16,8 +16,8 @@
     "REQ-QUIC-RFC9000-S7P2-0004",
     "RFC9000-S7-2-P3-S2-R01",
     "RFC9000-S7-2-P3-S3-R01",
-    "REQ-QUIC-RFC9000-S7P2-0007",
-    "REQ-QUIC-RFC9000-0315"
+    "RFC9000-S7-2-P5-S1-R01",
+    "RFC9000-S7-2-P6-S1-R01"
   ],
   "scope": "This verification covers only the client first-flight connection-ID floor before the client processes any server Initial or Retry packet.",
   "expected_result": "The requirement-home tests show the client host generates an independent, non-zero first Initial Destination Connection ID, keeps it at the implementation's 8-byte minimum, does not reuse it across separate connection hosts, preserves it across Initial bootstrap and recovery retransmission before server receipt, and keeps 0-RTT first-flight Destination and Source Connection IDs aligned with the first Initial packet while rejecting 0-RTT formatting without an Initial Destination Connection ID.",
@@ -41,8 +41,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0315.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_0004|FullyQualifiedName~REQ_QUIC_RFC9000_0309|FullyQualifiedName~REQ_QUIC_RFC9000_0310|FullyQualifiedName~REQ_QUIC_RFC9000_0315\"",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-build -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S7P2_\"",
     "dotnet build Incursa.Quic.slnx -c Release",

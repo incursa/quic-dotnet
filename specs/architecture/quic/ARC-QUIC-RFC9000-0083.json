@@ -16,7 +16,7 @@
   "satisfies": [
     "RFC9000-S17-4-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P4-0008",
-    "REQ-QUIC-RFC9000-S17P4-0009",
+    "RFC9000-S17-4-P7-R01",
     "RFC9000-S17-4-P8-S1-R01"
   ],
   "key_components": [
@@ -30,7 +30,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P4SpinBitTestSupport.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P4-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P7-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P8-S1-R01.cs"
   ],
   "design_summary": "Each runtime path record carries a spin-bit state containing the stored spin value and the highest received 1-RTT packet number that affected it. The 1-RTT receive path updates that state only when the packet number advances for the path, with servers storing the received bit and clients storing its inverse. All runtime 1-RTT emission seams pass the path's stored value into short-header packet construction.",
@@ -50,7 +50,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, REQ-QUIC-RFC9000-S17P4-0009, and RFC9000-S17-4-P8-S1-R01, plus the missing RFC9000-S17-4-P4-S2-R01 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, RFC9000-S17-4-P7-R01, and RFC9000-S17-4-P8-S1-R01, plus the missing RFC9000-S17-4-P4-S2-R01 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

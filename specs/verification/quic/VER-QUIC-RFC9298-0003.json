@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for the RFC 9298 UDP Proxying HTTP Datagram and Context ID surface.",
   "verifies": [
-    "REQ-QUIC-RFC9298-0073",
+    "RFC9298-S4-P1-S3-R01",
     "REQ-QUIC-RFC9298-0074",
     "REQ-QUIC-RFC9298-0075",
     "REQ-QUIC-RFC9298-0076",
@@ -56,7 +56,7 @@
     "src/Incursa.Quic.Http3/Http3ConnectUdpDatagramPolicy.cs",
     "src/Incursa.Quic.Http3/Http3ConnectUdpUnknownContextAction.cs",
     "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0073.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs"
   ],
   "status_summary": "The RFC 9298 UDP Proxying HTTP Datagram and Context ID surface is trace-owned and verified by focused local gates. Live UDP socket lifecycle, forwarding, congestion, ECN, target filtering, and HTTP/1.1 upgrade behavior remain future RFC 9298 slices."
 }

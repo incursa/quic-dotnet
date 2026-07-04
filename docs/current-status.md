@@ -273,7 +273,7 @@ The loopback-hygiene and address-use guidance proof surface is now closed for
 `RFC9000-S21-5-6-P2-S2-R01` and `RFC9000-S21-5-6-P3-S3-R01`.
 
 The transport-parameter registry policy slice is now closed for
-`REQ-QUIC-RFC9000-S22P3-0001` and `REQ-QUIC-RFC9000-S22P3-0002`.
+`REQ-QUIC-RFC9000-S22P3-0001` and `RFC9000-S22-3-P2-R02`.
 
 The codepoint-reclamation policy slice is now closed for
 `RFC9000-S22-1-3-P2-S1-R01` through `REQ-QUIC-RFC9000-1501`.
@@ -640,7 +640,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 ECT(1)+CE Too-Small Validation Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S13P4P2P1-0005` is now `trace_clean` under the existing
+`RFC9000-S13-4-2-1-P3-S2-R01` is now `trace_clean` under the existing
 ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
 `WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
 ownership. The closure adds direct focused positive proof that an ECT(1)
@@ -662,7 +662,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 ECT(0)+CE Too-Small Validation Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S13P4P2P1-0004` is now `trace_clean` under the existing
+`RFC9000-S13-4-2-1-P3-S1-R01` is now `trace_clean` under the existing
 ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
 `WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
 ownership. The closure adds direct focused positive proof that an ECT(0)
@@ -958,11 +958,11 @@ Follow-on metadata cleanup moved nine already-proved requirements from
 `covered_but_missing_xrefs` to `trace_clean` by attaching focused
 requirement-home evidence under `trace.x_test_refs`: `RFC9000-S10-2-1-P5-R01`,
 `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`,
-`REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-S12P1-0006`,
+`RFC9000-S11-1-P2-S2-R01`, `REQ-QUIC-RFC9000-S12P1-0006`,
 `REQ-QUIC-RFC9000-S12P1-0007`, `RFC9000-S12-2-P4-S1-R01`,
 `REQ-QUIC-RFC9000-S12P3-0009`, and `REQ-QUIC-RFC9000-0710`.
 Adjacent stale refs for `RFC9000-S11-P1-S1-R01`,
-`RFC9000-S11-1-P1-S1-R01`, and `REQ-QUIC-RFC9000-0663` were
+`RFC9000-S11-1-P1-S1-R01`, and `RFC9000-S11-1-P2-S1-R01` were
 corrected to their direct requirement homes without changing their clean
 state.
 
@@ -1050,7 +1050,7 @@ arbitrary reordered receive windows, hosted interop readiness, or closure of
 deferred fuzz obligations.
 
 Follow-on S17P4 spin-bit per-path state closure on 2026-05-06 closes
-`REQ-QUIC-RFC9000-S17P4-0008`, `REQ-QUIC-RFC9000-S17P4-0009`,
+`REQ-QUIC-RFC9000-S17P4-0008`, `RFC9000-S17-4-P7-R01`,
 and `RFC9000-S17-4-P8-S1-R01` under `ARC-QUIC-RFC9000-0083`,
 `WI-QUIC-RFC9000-0083`, and `VER-QUIC-RFC9000-0083`. The proof covers
 protected 1-RTT runtime/wire behavior for emitting the stored path spin
@@ -1879,7 +1879,7 @@ The next useful lanes are:
 - If the goal is harder protocol proof, start with the 221 new-test-needed
   requirements or the 45 partially-covered requirements, for example
   `RFC9000-S10-2-1-P5-S3-R01`,
-  `REQ-QUIC-RFC9000-S10P2P1-0009`, or
+  `RFC9000-S10-2-1-P2-S1-R01`, or
   `REQ-QUIC-RFC9000-0708`.
 - Resolve the 54 blocked requirements only through the recorded gap families,
   notably connection close, stateless reset, migration/path-validation, and

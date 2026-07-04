@@ -17,8 +17,8 @@
     "REQ-QUIC-RFC9000-S7P2-0004",
     "RFC9000-S7-2-P3-S2-R01",
     "RFC9000-S7-2-P3-S3-R01",
-    "REQ-QUIC-RFC9000-S7P2-0007",
-    "REQ-QUIC-RFC9000-0315"
+    "RFC9000-S7-2-P5-S1-R01",
+    "RFC9000-S7-2-P6-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicClientConnectionHost.cs",
@@ -28,8 +28,8 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0004.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0007.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0315.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs"
   ],
   "design_summary": "The client host creates separate cryptographic-random 8-byte values for the first Initial Destination Connection ID and the client-selected Source Connection ID used for routing. The runtime configures Initial packet protection from the first Initial Destination Connection ID and installs the client Source Connection ID into the handshake coordinator. Until a server packet is processed, Initial bootstrap packets and Initial recovery retransmissions continue to use the same first Initial Destination Connection ID. The 0-RTT builder shares the same first-flight connection-ID state and refuses to build a 0-RTT packet when no first Initial Destination Connection ID is available.",
   "data_and_state_considerations": "The first Initial Destination Connection ID is retained by QuicClientConnectionHost and copied into QuicConnectionRuntime initial packet-protection state. The client Source Connection ID is retained separately as the endpoint route ID and handshake source ID. The 0-RTT path reuses the handshake coordinator's initial Destination Connection ID and Source Connection ID rather than inventing independent first-flight identifiers.",

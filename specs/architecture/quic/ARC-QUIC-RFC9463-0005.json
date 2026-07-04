@@ -13,12 +13,12 @@
     "VER-QUIC-RFC9463-0005"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9463-0015",
+    "RFC9463-S3-2-P1-S1-R01",
     "REQ-QUIC-RFC9463-0016",
     "REQ-QUIC-RFC9463-0017",
     "REQ-QUIC-RFC9463-0018",
     "REQ-QUIC-RFC9463-0019",
-    "REQ-QUIC-RFC9463-0020"
+    "RFC9463-S3-3-P3-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryClientPolicy.cs",

@@ -23,7 +23,7 @@
   "supplemental_sections": [
     {
       "heading": "Related Code And Tests",
-      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0002.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0003.cs\n- tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs"
+      "content": "- src/Incursa.Quic/QuicConnectionRuntime.cs\n- src/Incursa.Quic/QuicConnectionSendRuntime.cs\n- src/Incursa.Quic/QuicCongestionControlState.cs\n- src/Incursa.Quic/QuicRecoveryTiming.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P3-0001.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P2-S1-R01.cs\n- tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-3-P2-S2-R01.cs\n- tests/Incursa.Quic.Tests/QuicRetryIntegrityUnitTests.cs"
     }
   ],
   "planned_changes": "- The client sender and recovery runtime reset when Retry is processed.\n- The TLS handshake transcript remains available so the replay bootstrap can resend the original ClientHello.\n- The requirement-home tests assert concrete runtime state before and after Retry.",
@@ -32,7 +32,7 @@
   ],
   "addresses": [
     "REQ-QUIC-RFC9002-S6P3-0001",
-    "REQ-QUIC-RFC9002-S6P3-0002",
-    "REQ-QUIC-RFC9002-S6P3-0003"
+    "RFC9002-S6-3-P2-S1-R01",
+    "RFC9002-S6-3-P2-S2-R01"
   ]
 }

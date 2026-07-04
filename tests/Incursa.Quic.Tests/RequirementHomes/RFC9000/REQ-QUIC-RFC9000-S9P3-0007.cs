@@ -94,7 +94,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0483")]
+    [Requirement("RFC9000-S9-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending()

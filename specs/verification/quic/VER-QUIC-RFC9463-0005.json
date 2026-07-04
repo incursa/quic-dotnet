@@ -13,12 +13,12 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9463 client discovery policy surface.",
   "verifies": [
-    "REQ-QUIC-RFC9463-0015",
+    "RFC9463-S3-2-P1-S1-R01",
     "REQ-QUIC-RFC9463-0016",
     "REQ-QUIC-RFC9463-0017",
     "REQ-QUIC-RFC9463-0018",
     "REQ-QUIC-RFC9463-0019",
-    "REQ-QUIC-RFC9463-0020"
+    "RFC9463-S3-3-P3-S1-R01"
   ],
   "scope": "This verification covers RFC 8106 DHCP-before-Router-Advertisement source precedence, service-priority ordering within a discovery source, encrypted DNS preference when Do53 resolvers are also learned from the same network, explicit local configuration that prefers Do53, Do53 fallback after encrypted connection establishment failure, PKIX plus ADN certificate validation, and default versus explicit trust-anchor mode.",
   "preconditions": [

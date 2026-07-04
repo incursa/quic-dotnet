@@ -16,7 +16,7 @@
     "REQ-QUIC-RFC9000-S14P3-0001",
     "REQ-QUIC-RFC9000-S14P3-0002",
     "RFC9000-S14-3-P2-S1-R01",
-    "REQ-QUIC-RFC9000-S14P3-0004"
+    "RFC9000-S14-3-P3-S1-R01"
   ],
   "scope": "This verification covers the bounded RFC 9000 Section 14.3 DPLPMTUD helper subset: PMTU probe packet-number tracking, acknowledgment/loss outcomes, padding-based probe sizing, BASE_PLPMTU initialization, and per-address-pair MPS isolation. It excludes automatic probe scheduling, packet-builder integration, OS ICMP ingress, alternative-path search, and public API claims.",
   "expected_result": "The helper starts each path at QUIC v1's 1200-byte BASE_PLPMTU, tracks only probes larger than the current per-path MPS, promotes MPS only on acknowledgment of the matching address-pair probe, records loss without promotion, computes nonzero PADDING bytes for padding probes with ack-eliciting payload, and keeps path outcomes isolated.",
@@ -36,7 +36,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-3-P2-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0004.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-3-P3-S1-R01.cs",
     "benchmarks/QuicDplpmtudStateBenchmarks.cs",
     "artifacts/bb/20260422-2343-dplpmtud-dry/",
     "dotnet test Incursa.Quic.slnx --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S14P3\"",

@@ -18,7 +18,7 @@
     "REQ-QUIC-RFC9000-0317",
     "RFC9000-S7-2-P8-S1-R01",
     "RFC9000-S7-2-P8-S2-R01",
-    "REQ-QUIC-RFC9000-S7P2-0013",
+    "RFC9000-S7-2-P8-S3-R01",
     "RFC9000-S7-2-P8-S3-R02"
   ],
   "scope": "This verification covers RFC 9000 Section 7.2 server Source Connection ID adoption and conflicting-source continuity during connection establishment, plus the server first-client-Initial Destination Connection ID derivation and the NEW_CONNECTION_ID-only later-change boundary.",
@@ -50,7 +50,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0317.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S2-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R02.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0146.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0004.cs",

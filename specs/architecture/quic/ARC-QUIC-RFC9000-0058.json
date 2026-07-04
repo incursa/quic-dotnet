@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9000-0317",
     "RFC9000-S7-2-P8-S1-R01",
     "RFC9000-S7-2-P8-S2-R01",
-    "REQ-QUIC-RFC9000-S7P2-0013",
+    "RFC9000-S7-2-P8-S3-R01",
     "RFC9000-S7-2-P8-S3-R02"
   ],
   "key_components": [
@@ -37,7 +37,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0317.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S2-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P2-0013.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R02.cs"
   ],
   "design_summary": "The client runtime records the first server Source Connection ID accepted from a server Initial or Retry packet and installs that first value as the handshake Destination Connection ID for subsequent client sends, including 0-RTT packet formatting after server Initial receipt. It separately records the first valid server Initial Source Connection ID for the later conflicting-source discard rule. If Retry is received first, the Retry Source Connection ID remains the outbound Destination Connection ID while the first subsequent valid server Initial establishes the Source Connection ID that later Initial and Handshake packets must match. Once that valid server Initial Source Connection ID is observed, the default RFC path rejects later establishing long-header packets that carry a different Source Connection ID before they can alter handshake state or deferred Handshake buffering. Later Retry attempts are rejected after either a Retry or a valid server Initial has already been processed. The server runtime derives its outbound Destination Connection ID from the Source Connection ID in the first client Initial that bootstraps the server handshake. Further post-adoption Destination Connection ID changes remain owned by NEW_CONNECTION_ID frame processing.",

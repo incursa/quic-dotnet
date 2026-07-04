@@ -13,7 +13,7 @@
     "VER-QUIC-RFC9463-0001"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9463-0001",
+    "RFC9463-S3-1-1-P1-R01",
     "REQ-QUIC-RFC9463-0008",
     "REQ-QUIC-RFC9463-0009",
     "REQ-QUIC-RFC9463-0010",
@@ -33,7 +33,7 @@
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
     "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-0001.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/RFC9463-S3-1-1-P1-R01.cs"
   ],
   "design_summary": "The first RFC 9463 slice is a scalar helper in `Incursa.Quic.Dns`, not a DHCP or Router Advertisement packet codec. `EncryptedDnsDiscoveryOptionCodes` owns the IANA-assigned code points and lifetime constants, while `EncryptedDnsDiscoveryOption` validates that an option has an authentication domain name, has at least one usable resolver address after host-side loopback/multicast filtering, rejects `ipv4hint` and `ipv6hint` SvcParam keys, and exposes service priority as a `ushort`.",
   "data_and_state_considerations": "The helper is pure and stores normalized input snapshots only. It does not perform network I/O, parse DHCP messages, parse Neighbor Discovery options, encode RFC 8415 DNS wire names, or mutate resolver configuration. The lifetime value is preserved as a 32-bit unsigned integer so later RA ingestion can apply expiry or retirement policy without widening the type.",

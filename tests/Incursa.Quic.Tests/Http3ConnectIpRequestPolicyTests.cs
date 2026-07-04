@@ -168,7 +168,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0053")]
+    [Requirement("RFC9484-S4-4-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void Http3RequestBuilder_UsesExtendedConnect()
@@ -180,7 +180,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0054")]
+    [Requirement("RFC9484-S4-4-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ServerPolicy_RequiresExtendedConnectSetting()
@@ -189,7 +189,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0054")]
+    [Requirement("RFC9484-S4-4-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ServerPolicy_DoesNotAllowOmittingExtendedConnectSetting()
@@ -233,7 +233,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0053")]
+    [Requirement("RFC9484-S4-4-P1-R01")]
     [Requirement("REQ-QUIC-RFC9484-0056")]
     [Requirement("REQ-QUIC-RFC9484-0061")]
     [CoverageType(RequirementCoverageType.Negative)]

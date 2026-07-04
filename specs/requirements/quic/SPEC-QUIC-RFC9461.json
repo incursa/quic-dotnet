@@ -585,7 +585,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0026",
+      "id": "RFC9461-S8-2-P2-S3-R01",
       "title": "Prefer SVCB-reliant behavior after successful resolution",
       "statement": "If use of this specification is optional, clients SHOULD switch to SVCB-reliant behavior when SVCB resolution succeeds.",
       "coverage": {

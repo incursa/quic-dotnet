@@ -23,7 +23,7 @@
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "src/Incursa.Quic.Dns/DoqStream.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-P1-S1-R01.cs"
   ],
   "design_summary": "The DoQ stream helper can now read exactly one length-prefixed DNS message and require the peer's STREAM FIN before returning it to the adapter. The client validates response DNS Message ID zero after the response stream FIN is observed, while the server validates query DNS Message ID zero after the client stream FIN is observed. Protocol failures abort the affected stream with `DOQ_PROTOCOL_ERROR` and request fatal connection closure with the same DoQ application error code.",
   "data_and_state_considerations": "The one-message-until-FIN reader accumulates at most one representable DoQ frame. Extra bytes after the first frame prove multiple messages on a stream and fail before DNS handler dispatch. A FIN before the declared length is fully available fails as an incomplete DoQ message.",

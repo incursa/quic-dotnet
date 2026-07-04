@@ -11,12 +11,12 @@ public sealed class REQ_QUIC_RFC9000_S8P2P2_0005
     ///   <workbench-requirement requirementId="RFC9000-S8-2-1-P5-S1-R01">An endpoint MUST expand datagrams that contain a PATH_CHALLENGE frame to at least the smallest allowed maximum datagram size of 1200 bytes, unless the anti-amplification limit for the path does not permit sending a datagram of this size.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S8-2-2-P3-S1-R01">An endpoint MUST expand datagrams that contain a PATH_RESPONSE frame to at least the smallest allowed maximum datagram size of 1200 bytes.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S8-2-2-P3-S3-R01">However, an endpoint MUST NOT expand the datagram containing the PATH_RESPONSE if the resulting data exceeds the anti-amplification limit.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P3P1-0001">Until a peer&apos;s address is deemed valid, an endpoint MUST limit the amount of data it sends to that address.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S9-3-1-P2-S2-R01">Until a peer&apos;s address is deemed valid, an endpoint MUST limit the amount of data it sends to that address.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("RFC9000-S8-2-1-P5-S1-R01")]
     [Requirement("RFC9000-S8-2-2-P3-S1-R01")]
     [Requirement("RFC9000-S8-2-2-P3-S3-R01")]
-    [Requirement("REQ-QUIC-RFC9000-S9P3P1-0001")]
+    [Requirement("RFC9000-S9-3-1-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatPathValidationDatagramPadding_WritesRepeatedPaddingFramesWhenAmplificationBudgetAllows()
     {

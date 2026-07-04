@@ -61,7 +61,7 @@ public sealed class REQ_QUIC_RFC9000_1036
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     [Requirement("RFC9000-S17-2-5-2-P1-R01")]
-    [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0005")]
+    [Requirement("RFC9000-S17-2-5-2-P3-R01")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P5P2-0006")]
     public void ClientProcessesRetryWithMaximumSourceConnectionIdAndMinimumToken()
     {

@@ -8,7 +8,7 @@ namespace Incursa.Quic.Tests;
 public sealed class EncryptedDnsDiscoveryClientPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0015")]
+    [Requirement("RFC9463-S3-2-P1-S1-R01")]
     [Requirement("REQ-QUIC-RFC9463-0018")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -33,7 +33,7 @@ public sealed class EncryptedDnsDiscoveryClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0015")]
+    [Requirement("RFC9463-S3-2-P1-S1-R01")]
     [Requirement("REQ-QUIC-RFC9463-0018")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -108,7 +108,7 @@ public sealed class EncryptedDnsDiscoveryClientPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0019")]
-    [Requirement("REQ-QUIC-RFC9463-0020")]
+    [Requirement("RFC9463-S3-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CertificateValidationRequiresPkixAndAdnMatchWithDefaultTrustAnchors()
@@ -129,7 +129,7 @@ public sealed class EncryptedDnsDiscoveryClientPolicyTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0019")]
-    [Requirement("REQ-QUIC-RFC9463-0020")]
+    [Requirement("RFC9463-S3-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void CertificateValidationFailsWithoutAdnMatchAndCanUseExplicitTrustAnchors()

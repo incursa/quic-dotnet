@@ -173,7 +173,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0004",
+      "id": "RFC9250-S4-1-P1-S1-R01",
       "title": "Indicate DoQ support with ALPN token doq",
       "statement": "During connection establishment, DoQ support MUST be indicated by selecting the Application-Layer Protocol Negotiation (ALPN) token \"doq\" in the crypto handshake.",
       "coverage": {
@@ -482,7 +482,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0014",
+      "id": "RFC9250-S4-2-P6-S1-R02",
       "title": "Signal end of client stream with STREAM FIN",
       "statement": "A client MUST indicate through the STREAM FIN mechanism that no further data will be sent on that stream.",
       "coverage": {

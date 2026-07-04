@@ -45,9 +45,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0323">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0004">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S3-R01">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0332">If a zero-length connection ID is selected, the corresponding transport parameter MUST be included with a zero-length value.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0164">A receiver MUST set initial limits for all streams through transport parameters during the handshake.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0003">Initial limits MUST be set in the transport parameters.</workbench-requirement>
@@ -92,9 +92,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-0277")]
     [Requirement("REQ-QUIC-RFC9000-0229")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-0323")]
+    [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
+    [Requirement("RFC9000-S7-3-P2-S3-R01")]
     [Requirement("REQ-QUIC-RFC9000-0332")]
     [Requirement("REQ-QUIC-RFC9000-0164")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
@@ -214,9 +214,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0323">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0004">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S3-R01">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0332">If a zero-length connection ID is selected, the corresponding transport parameter MUST be included with a zero-length value.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0164">A receiver MUST set initial limits for all streams through transport parameters during the handshake.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0003">Initial limits MUST be set in the transport parameters.</workbench-requirement>
@@ -261,9 +261,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-0277")]
     [Requirement("REQ-QUIC-RFC9000-0229")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-0323")]
+    [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
+    [Requirement("RFC9000-S7-3-P2-S3-R01")]
     [Requirement("REQ-QUIC-RFC9000-0332")]
     [Requirement("REQ-QUIC-RFC9000-0164")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]
@@ -376,9 +376,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0323">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0004">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S3-R01">If it sends a Retry packet, a server MUST also include the Source Connection ID field from the Retry packet in the retry_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0332">If a zero-length connection ID is selected, the corresponding transport parameter MUST be included with a zero-length value.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0164">A receiver MUST set initial limits for all streams through transport parameters during the handshake.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S4P6-0003">Initial limits MUST be set in the transport parameters.</workbench-requirement>
@@ -423,9 +423,9 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-0277")]
     [Requirement("REQ-QUIC-RFC9000-0229")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
-    [Requirement("REQ-QUIC-RFC9000-0323")]
+    [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0004")]
+    [Requirement("RFC9000-S7-3-P2-S3-R01")]
     [Requirement("REQ-QUIC-RFC9000-0332")]
     [Requirement("REQ-QUIC-RFC9000-0164")]
     [Requirement("REQ-QUIC-RFC9000-S4P6-0003")]

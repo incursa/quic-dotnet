@@ -469,7 +469,7 @@ function Get-RequirementGapMappings {
                 'REQ-QUIC-RFC9000-1376',
                 'REQ-QUIC-RFC9000-1377',
                 'REQ-QUIC-RFC9000-1378',
-                'REQ-QUIC-RFC9000-1379',
+                'RFC9000-S19-21-P3-S1-R01',
                 'RFC9000-S19-21-P4-S1-R01',
                 'RFC9000-S19-21-P4-S1-R02',
                 'REQ-QUIC-RFC9000-1383',
@@ -524,7 +524,7 @@ function Get-RequirementGapMappings {
             RequirementIds     = @(
                 'RFC9000-S22-1-3-P2-S1-R01',
                 'RFC9000-S22-1-3-P2-S2-R01',
-                'REQ-QUIC-RFC9000-1500',
+                'RFC9000-S22-1-3-P3-S1-R01',
                 'REQ-QUIC-RFC9000-1501'
             )
         },
@@ -549,7 +549,7 @@ function Get-RequirementGapMappings {
             RequirementPrefixes = @()
             RequirementIds     = @(
                 'REQ-QUIC-RFC9000-S22P3-0001',
-                'REQ-QUIC-RFC9000-S22P3-0002'
+                'RFC9000-S22-3-P2-R02'
             )
         },
         [pscustomobject]@{
@@ -589,7 +589,7 @@ function Get-RequirementGapMappings {
             Summary            = 'RFC 9002 0-RTT rejection and secret-discard timing clauses remain blocked without TLS handshake orchestration and key-lifecycle state.'
             RequirementPrefixes = @()
             RequirementIds     = @(
-                'REQ-QUIC-RFC9002-S6P4-0003',
+                'RFC9002-S6-4-P3-S1-R01',
                 'REQ-QUIC-RFC9002-S6P4-0004'
             )
         }

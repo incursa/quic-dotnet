@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P4-0003">An endpoint MUST discard recovery state for all in-flight 0-RTT packets when 0-RTT is rejected.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-4-P3-S1-R01">An endpoint MUST discard recovery state for all in-flight 0-RTT packets when 0-RTT is rejected.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P4-0003")]
-public sealed class REQ_QUIC_RFC9002_S6P4_0003_KeyLifecycle
+[Requirement("RFC9002-S6-4-P3-S1-R01")]
+public sealed class RFC9002_S6_4_P3_S1_R01_KeyLifecycle
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

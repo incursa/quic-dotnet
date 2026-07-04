@@ -91,7 +91,7 @@ public sealed class EncryptedDnsDiscoveryOptionTests
     [InlineData("192.0.2.53")]
     [InlineData("[2001:db8::53]")]
     [InlineData("resolver..example")]
-    [Requirement("REQ-QUIC-RFC9463-0001")]
+    [Requirement("RFC9463-S3-1-1-P1-R01")]
     [Requirement("REQ-QUIC-RFC9463-0010")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -107,7 +107,7 @@ public sealed class EncryptedDnsDiscoveryOptionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9463-0001")]
+    [Requirement("RFC9463-S3-1-1-P1-R01")]
     [Requirement("REQ-QUIC-RFC9463-0010")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

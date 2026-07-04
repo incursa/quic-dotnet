@@ -1528,7 +1528,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0073",
+      "id": "RFC9298-S4-P1-S3-R01",
       "title": "Start HTTP Datagrams with Context ID",
       "statement": "All HTTP Datagrams associated with UDP Proxying request streams MUST start with a Context ID field.",
       "coverage": {
@@ -2129,7 +2129,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0103",
+      "id": "RFC9298-S6-P3-S2-R01",
       "title": "Mark IP headers Not-ECT when congestion control is disabled",
       "statement": "If a client or UDP proxy with a connection containing a UDP Proxying request stream disables congestion control, it MUST mark all IP headers with the Not-ECT codepoint.",
       "coverage": {

@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, requirement-home trace tests, SpecTrace JSON validation, and diff hygiene for the RFC 9463 encrypted DNS scalar option surface.",
   "verifies": [
-    "REQ-QUIC-RFC9463-0001",
+    "RFC9463-S3-1-1-P1-R01",
     "REQ-QUIC-RFC9463-0008",
     "REQ-QUIC-RFC9463-0009",
     "REQ-QUIC-RFC9463-0010",
@@ -45,7 +45,7 @@
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOption.cs",
     "src/Incursa.Quic.Dns/EncryptedDnsDiscoveryOptionCodes.cs",
     "tests/Incursa.Quic.Tests/EncryptedDnsDiscoveryOptionTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/REQ-QUIC-RFC9463-0001.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9463/RFC9463-S3-1-1-P1-R01.cs"
   ],
   "status_summary": "The RFC 9463 encrypted DNS scalar option policy floor is trace-owned and verified. DHCPv6, DHCPv4, and Neighbor Discovery wire codecs, RFC 8415 domain-name encoding, full RFC 9460 SvcParam handling, and resolver provisioning remain future work."
 }

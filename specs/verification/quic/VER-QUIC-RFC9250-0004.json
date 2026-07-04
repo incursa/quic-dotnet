@@ -34,7 +34,7 @@
     "src/Incursa.Quic.Dns/DoqServer.cs",
     "src/Incursa.Quic.Dns/DoqStream.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0004.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-1-P1-S1-R01.cs"
   ],
   "status_summary": "The one-query DoQ path now proves `DOQ_PROTOCOL_ERROR` enforcement for non-zero DNS Message ID, incomplete DoQ frames, and multiple queries on one stream."
 }

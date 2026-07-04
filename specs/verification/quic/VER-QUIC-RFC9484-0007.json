@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 HTTP/2 and HTTP/3 Extended CONNECT policy.",
   "verifies": [
-    "REQ-QUIC-RFC9484-0053",
-    "REQ-QUIC-RFC9484-0054",
+    "RFC9484-S4-4-P1-R01",
+    "RFC9484-S4-4-P1-S1-R01",
     "REQ-QUIC-RFC9484-0055",
     "REQ-QUIC-RFC9484-0056",
     "REQ-QUIC-RFC9484-0057",

@@ -14,15 +14,15 @@
     "VER-QUIC-RFC9000-0028"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-0238",
-    "REQ-QUIC-RFC9000-0239"
+    "RFC9000-S5-1-1-P8-S1-R01",
+    "RFC9000-S5-1-1-P8-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Routing.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0238.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0239.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S1-R01.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs"
   ],
   "design_summary": "The runtime treats a local transport-parameter Initial Source Connection ID value with length zero as the local zero-length connection-ID selection. Once that fact is present, explicit local connection-ID issue events and replacement issuance after first use of a routed local CID are rejected before route, token, or NEW_CONNECTION_ID effects can be produced. For the peer-selected side, the runtime treats a peer transport-parameter Initial Source Connection ID value with length zero as requiring an empty Destination Connection ID on outbound packets. Peer transport-parameter commit installs the empty handshake destination ID so shared 1-RTT packet protection uses the zero-length DCID, and CurrentPeerDestinationConnectionId also reports empty before peer-issued CID, preferred-address, or handshake fallback state can override it.",
   "data_and_state_considerations": "Zero-length mode is derived from committed transport-parameter state rather than from ad hoc packet parsing. Local issuance suppression reads the committed local Initial Source Connection ID. Outbound peer selection reads the committed peer Initial Source Connection ID and updates the handshake coordinator's destination ID during peer transport-parameter commit so existing application-data send paths remain the single packet construction seam.",

@@ -17,7 +17,7 @@
     "REQ-QUIC-RFC9000-0317",
     "RFC9000-S7-2-P8-S1-R01",
     "RFC9000-S7-2-P8-S2-R01",
-    "REQ-QUIC-RFC9000-S7P2-0013",
+    "RFC9000-S7-2-P8-S3-R01",
     "RFC9000-S7-2-P8-S3-R02"
   ],
   "summary": "Close the RFC 9000 Section 7.2 server Source Connection ID adoption and continuity floor for client and server establishment paths.",

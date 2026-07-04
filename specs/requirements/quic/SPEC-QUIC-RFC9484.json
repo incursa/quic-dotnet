@@ -1101,7 +1101,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0053",
+      "id": "RFC9484-S4-4-P1-R01",
       "title": "HTTP/2 and HTTP/3 IP proxying uses Extended CONNECT",
       "statement": "When using HTTP/2 or HTTP/3, IP proxying requests MUST use HTTP Extended CONNECT.",
       "coverage": {
@@ -1125,7 +1125,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0054",
+      "id": "RFC9484-S4-4-P1-S1-R01",
       "title": "Servers send an HTTP Setting",
       "statement": "Servers MUST send an HTTP Setting, as specified in [EXT-CONNECT2] and [EXT-CONNECT3].",
       "coverage": {

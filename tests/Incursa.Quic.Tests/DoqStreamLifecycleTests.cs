@@ -19,7 +19,7 @@ public sealed class DoqStreamLifecycleTests
     [Requirement("REQ-QUIC-RFC9250-0008")]
     [Requirement("REQ-QUIC-RFC9250-0009")]
     [Requirement("RFC9250-S4-2-P6-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0014")]
+    [Requirement("RFC9250-S4-2-P6-S1-R02")]
     [Requirement("RFC9250-S4-2-P7-R01")]
     [Requirement("RFC9250-S4-2-P7-R02")]
     [Requirement("REQ-QUIC-RFC9250-0022")]
@@ -347,7 +347,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("RFC9250-S4-2-P6-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0014")]
+    [Requirement("RFC9250-S4-2-P6-S1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task QueryAsyncSendsSelectedStreamQueryAndFin()
@@ -372,7 +372,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("RFC9250-S4-2-P6-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0014")]
+    [Requirement("RFC9250-S4-2-P6-S1-R02")]
     [Requirement("RFC9250-S4-2-P9-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

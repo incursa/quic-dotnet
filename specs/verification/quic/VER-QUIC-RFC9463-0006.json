@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9463 generic DNR information surface.",
   "verifies": [
-    "REQ-QUIC-RFC9463-0002",
+    "RFC9463-S3-1-3-P2-S2-R01",
     "REQ-QUIC-RFC9463-0003",
     "REQ-QUIC-RFC9463-0004",
     "REQ-QUIC-RFC9463-0005",

@@ -123,7 +123,7 @@ public sealed class DnsServiceBindingClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0026")]
+    [Requirement("RFC9461-S8-2-P2-S3-R01")]
     [Requirement("REQ-QUIC-RFC9461-0027")]
     [Requirement("REQ-QUIC-RFC9461-0031")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -140,7 +140,7 @@ public sealed class DnsServiceBindingClientPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0026")]
+    [Requirement("RFC9461-S8-2-P2-S3-R01")]
     [Requirement("REQ-QUIC-RFC9461-0027")]
     [Requirement("REQ-QUIC-RFC9461-0031")]
     [CoverageType(RequirementCoverageType.Negative)]

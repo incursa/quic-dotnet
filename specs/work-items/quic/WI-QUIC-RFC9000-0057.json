@@ -15,8 +15,8 @@
     "REQ-QUIC-RFC9000-S7P2-0004",
     "RFC9000-S7-2-P3-S2-R01",
     "RFC9000-S7-2-P3-S3-R01",
-    "REQ-QUIC-RFC9000-S7P2-0007",
-    "REQ-QUIC-RFC9000-0315"
+    "RFC9000-S7-2-P5-S1-R01",
+    "RFC9000-S7-2-P6-S1-R01"
   ],
   "summary": "Close the RFC 9000 Section 7.2 client first-flight connection-ID floor before server Initial or Retry processing.",
   "planned_changes": "- Add focused requirement-home tests for first Initial Destination Connection ID generation, minimum length, pre-server-receipt reuse, and 0-RTT alignment.\n- Add a shared S7P2 first-flight test helper for client host CID inspection, client runtime bootstrap, recovery-timer retransmission, and first-flight packet formatting.\n- Link the focused proof to dedicated architecture and verification artifacts.\n- Keep server-first-receipt adoption, conflicting Source Connection ID discard, Retry adoption, and preferred-address migration out of scope.",

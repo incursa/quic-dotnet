@@ -1,0 +1,72 @@
+// Copyright (c) 2026 Incursa LLC.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+namespace Incursa.Quic.Tests;
+
+/// <workbench-requirements generated="true" source="workbench quality sync">
+///   <workbench-requirement requirementId="RFC9002-S6-1-2-P1-S1-R01">Once a later packet within the same packet number space has been acknowledged, an endpoint SHOULD declare an earlier packet lost if it was sent a threshold amount of time in the past.</workbench-requirement>
+/// </workbench-requirements>
+[Requirement("RFC9002-S6-1-2-P1-S1-R01")]
+public sealed class RFC9002_S6_1_2_P1_S1_R01
+{
+    public static TheoryData<RemainingLossDelayCase> RemainingLossDelayCases => new()
+    {
+        new(1_000, 2_124, 800, 1_000, 1),
+        new(1_000, 2_125, 800, 1_000, 0),
+        new(5_000, 5_999, 1, 1, 1),
+        new(5_000, 6_000, 1, 1, 0),
+    };
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Positive)]
+    public void TryComputeRemainingLossDelayMicros_ReportsNoRemainingDelayAfterTheLossThresholdHasElapsed()
+    {
+        Assert.True(QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+            packetSentAtMicros: 1_000,
+            nowMicros: 2_300,
+            latestRttMicros: 800,
+            smoothedRttMicros: 1_000,
+            out ulong remainingLossDelayMicros));
+
+        Assert.Equal(0UL, remainingLossDelayMicros);
+    }
+
+    [Theory]
+    [MemberData(nameof(RemainingLossDelayCases))]
+    [CoverageType(RequirementCoverageType.Edge)]
+    [Trait("Category", "Property")]
+    public void TryComputeRemainingLossDelayMicros_ReachesZeroAtTheLossDeadline(RemainingLossDelayCase scenario)
+    {
+        Assert.True(QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+            packetSentAtMicros: scenario.PacketSentAtMicros,
+            nowMicros: scenario.NowMicros,
+            latestRttMicros: scenario.LatestRttMicros,
+            smoothedRttMicros: scenario.SmoothedRttMicros,
+            out ulong remainingLossDelayMicros));
+
+        Assert.Equal(scenario.ExpectedRemainingLossDelayMicros, remainingLossDelayMicros);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Negative)]
+    public void TryComputeRemainingLossDelayMicros_RejectsAZeroTimerGranularity()
+    {
+        ArgumentOutOfRangeException exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            QuicRecoveryTiming.TryComputeRemainingLossDelayMicros(
+                packetSentAtMicros: 1_000,
+                nowMicros: 2_000,
+                latestRttMicros: 800,
+                smoothedRttMicros: 1_000,
+                out _,
+                timerGranularityMicros: 0));
+
+        Assert.Equal("timerGranularityMicros", exception.ParamName);
+    }
+
+    public sealed record RemainingLossDelayCase(
+        ulong PacketSentAtMicros,
+        ulong NowMicros,
+        ulong LatestRttMicros,
+        ulong SmoothedRttMicros,
+        ulong ExpectedRemainingLossDelayMicros);
+}

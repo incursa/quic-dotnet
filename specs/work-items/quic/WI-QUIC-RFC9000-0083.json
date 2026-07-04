@@ -14,7 +14,7 @@
   "addresses": [
     "RFC9000-S17-4-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P4-0008",
-    "REQ-QUIC-RFC9000-S17P4-0009",
+    "RFC9000-S17-4-P7-R01",
     "RFC9000-S17-4-P8-S1-R01"
   ],
   "summary": "Close the focused S17P4 spin-bit per-path state proof set with runtime/wire evidence.",
