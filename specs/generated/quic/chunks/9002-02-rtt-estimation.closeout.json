@@ -11,8 +11,8 @@
   "audit_result": "pass_with_explicit_defer",
   "reconciliation_artifact_present": false,
   "coverage_summary": {
-    "total_in_scope": 25,
-    "implemented_and_tested": 24,
+    "total_in_scope": 27,
+    "implemented_and_tested": 26,
     "deferred": 1,
     "blocked": 0,
     "uncovered": 0
@@ -230,7 +230,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
+      "requirement_id": "RFC9002-S5-3-P12-S1-R01",
       "section_token": "S5P3",
       "status": "implemented_and_tested",
       "implementation_evidence": [
@@ -241,7 +241,29 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
+      "requirement_id": "RFC9002-S5-3-P12-S2-R01",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt"
+      ]
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S1-R01",
+      "section_token": "S5P3",
+      "status": "implemented_and_tested",
+      "implementation_evidence": [
+        "src/Incursa.Quic/QuicRttEstimator.cs"
+      ],
+      "test_evidence": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample"
+      ]
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S2-R01",
       "section_token": "S5P3",
       "status": "implemented_and_tested",
       "implementation_evidence": [
@@ -316,8 +338,10 @@
       "REQ-QUIC-RFC9002-S5P3-0004",
       "REQ-QUIC-RFC9002-S5P3-0005",
       "REQ-QUIC-RFC9002-S5P3-0006",
-      "REQ-QUIC-RFC9002-S5P3-0007",
-      "REQ-QUIC-RFC9002-S5P3-0008",
+      "RFC9002-S5-3-P12-S1-R01",
+      "RFC9002-S5-3-P12-S2-R01",
+      "RFC9002-S5-3-P15-S1-R01",
+      "RFC9002-S5-3-P15-S2-R01",
       "REQ-QUIC-RFC9002-S5P3-0009",
       "RFC9002-S5-3-P13-S1-R01",
       "REQ-QUIC-RFC9002-S5P3-0011",

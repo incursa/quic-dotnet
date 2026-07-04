@@ -1233,9 +1233,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P3-0007",
-      "title": "Initialize smoothed RTT and variation",
-      "statement": "When the RTT estimator is initialized, `smoothed_rtt` MUST be set to `kInitialRtt` and `rttvar` to `kInitialRtt / 2`.",
+      "id": "RFC9002-S5-3-P12-S1-R01",
+      "title": "Initialize smoothed RTT to the initial RTT",
+      "statement": "`smoothed_rtt` is initialized to `kInitialRtt`.",
       "coverage": {
         "positive": "required",
         "negative": "optional",
@@ -1253,19 +1253,47 @@
           "VER-QUIC-RFC9002-0001"
         ],
         "upstream_refs": [
-          "RFC 9002 §5.3 RFC9002-S5.3-B15-P10-S1",
-          "RFC 9002 §5.3 RFC9002-S5.3-B16-P0-S1",
+          "RFC 9002 §5.3 RFC9002-S5-3-P12-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0007.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P3-0008",
-      "title": "Reset the estimator on the first post-init sample",
-      "statement": "On the first RTT sample after initialization, `smoothed_rtt` MUST be set to `latest_rtt` and `rttvar` to `latest_rtt / 2`.",
+      "id": "RFC9002-S5-3-P12-S2-R01",
+      "title": "Initialize RTT variation to half the initial RTT",
+      "statement": "`rttvar` is initialized to `kInitialRtt / 2`.",
+      "coverage": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9002-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9002-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9002-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9002 §5.3 RFC9002-S5-3-P12-S2",
+          "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
+        ]
+      }
+    },
+    {
+      "id": "RFC9002-S5-3-P15-S1-R01",
+      "title": "Seed smoothed RTT from the first RTT sample",
+      "statement": "`smoothed_rtt` is set to `latest_rtt` on the first RTT sample after initialization.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1283,14 +1311,44 @@
           "VER-QUIC-RFC9002-0001"
         ],
         "upstream_refs": [
-          "RFC 9002 §5.3 RFC9002-S5.3-B18-P12-S1",
-          "RFC 9002 §5.3 RFC9002-S5.3-B19-P0-S1",
+          "RFC 9002 §5.3 RFC9002-S5-3-P15-S1",
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0008.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
+        ]
+      }
+    },
+    {
+      "id": "RFC9002-S5-3-P15-S2-R01",
+      "title": "Seed RTT variation from the first RTT sample",
+      "statement": "`rttvar` is set to `latest_rtt / 2` on the first RTT sample after initialization.",
+      "coverage": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "required",
+        "fuzz": "deferred"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9002-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9002-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9002-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9002 §5.3 RFC9002-S5-3-P15-S2",
+          "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
         ]
       }
     },

@@ -12,11 +12,11 @@
 - `S5`: `REQ-QUIC-RFC9002-S5-0001`
 - `S5P1`: `REQ-QUIC-RFC9002-S5P1-0001`, `REQ-QUIC-RFC9002-S5P1-0002`, `REQ-QUIC-RFC9002-S5P1-0003`, `REQ-QUIC-RFC9002-S5P1-0004`, `REQ-QUIC-RFC9002-S5P1-0005`
 - `S5P2`: `RFC9002-S5-2-P2-S1-R01`, `RFC9002-S5-2-P2-S2-R01`, `REQ-QUIC-RFC9002-S5P2-0003`, `REQ-QUIC-RFC9002-S5P2-0004`, `RFC9002-S5-2-P5-S1-R01`, `RFC9002-S5-2-P6-S1-R01`, `RFC9002-S5-2-P6-S2-R01`
-- `S5P3`: `REQ-QUIC-RFC9002-S5P3-0001`, `RFC9002-S5-3-P3-S2-R01`, `RFC9002-S5-3-P4-S2-R01`, `REQ-QUIC-RFC9002-S5P3-0004`, `REQ-QUIC-RFC9002-S5P3-0005`, `REQ-QUIC-RFC9002-S5P3-0006`, `REQ-QUIC-RFC9002-S5P3-0007`, `REQ-QUIC-RFC9002-S5P3-0008`, `REQ-QUIC-RFC9002-S5P3-0009`, `RFC9002-S5-3-P13-S1-R01`, `REQ-QUIC-RFC9002-S5P3-0011`, `REQ-QUIC-RFC9002-S5P3-0012`
+- `S5P3`: `REQ-QUIC-RFC9002-S5P3-0001`, `RFC9002-S5-3-P3-S2-R01`, `RFC9002-S5-3-P4-S2-R01`, `REQ-QUIC-RFC9002-S5P3-0004`, `REQ-QUIC-RFC9002-S5P3-0005`, `REQ-QUIC-RFC9002-S5P3-0006`, `RFC9002-S5-3-P12-S1-R01`, `RFC9002-S5-3-P12-S2-R01`, `RFC9002-S5-3-P15-S1-R01`, `RFC9002-S5-3-P15-S2-R01`, `REQ-QUIC-RFC9002-S5P3-0009`, `RFC9002-S5-3-P13-S1-R01`, `REQ-QUIC-RFC9002-S5P3-0011`, `REQ-QUIC-RFC9002-S5P3-0012`
 
 ## Coverage Summary
-- Total in scope: 25
-- Implemented and tested: 24
+- Total in scope: 27
+- Implemented and tested: 26
 - Deferred: 1
 - Blocked: 0
 - Uncovered: 0
@@ -49,8 +49,10 @@
 - `REQ-QUIC-RFC9002-S5P3-0004` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_SubtractsLocalProcessingDelayBeforeHandshakeConfirmationOnSubsequentSamples`.
 - `REQ-QUIC-RFC9002-S5P3-0005` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt`.
 - `REQ-QUIC-RFC9002-S5P3-0006` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt`.
-- `REQ-QUIC-RFC9002-S5P3-0007` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::ConstructorAndReset_SeedTheEstimatorWithTheInitialRtt`.
-- `REQ-QUIC-RFC9002-S5P3-0008` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_UsesTheLargestNewlyAcknowledgedAckElicitingPacketAsTheFirstSample`.
+- `RFC9002-S5-3-P12-S1-R01` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt`.
+- `RFC9002-S5-3-P12-S2-R01` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt`.
+- `RFC9002-S5-3-P15-S1-R01` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample`.
+- `RFC9002-S5-3-P15-S2-R01` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample`.
 - `REQ-QUIC-RFC9002-S5P3-0009` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt`.
 - `RFC9002-S5-3-P13-S1-R01` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_ClampsAckDelayAfterHandshakeConfirmationAndDoesNotReduceAdjustedRttBelowMinRtt`.
 - `REQ-QUIC-RFC9002-S5P3-0011` - implemented and tested. Evidence: `src/Incursa.Quic/QuicRttEstimator.cs`, `tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs::TryUpdateFromAck_CanIgnoreAckDelayForInitialPackets`.

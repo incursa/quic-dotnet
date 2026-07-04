@@ -941,8 +941,8 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
-      "title": "Initialize smoothed RTT and variation",
+      "requirement_id": "RFC9002-S5-3-P12-S1-R01",
+      "title": "Initialize smoothed RTT to the initial RTT",
       "source_batches": [
         "5-8"
       ],
@@ -950,12 +950,10 @@
         "5.3"
       ],
       "source_sentence_ids": [
-        "RFC9002-S5.3-B15-P10-S1",
-        "RFC9002-S5.3-B16-P0-S1"
+        "RFC9002-S5-3-P12-S1"
       ],
       "source_refs": [
-        "RFC 9002 §5.3 RFC9002-S5.3-B15-P10-S1",
-        "RFC 9002 §5.3 RFC9002-S5.3-B16-P0-S1",
+        "RFC 9002 §5.3 RFC9002-S5-3-P12-S1",
         "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
       ],
       "merged_from_draft_ids": [
@@ -963,11 +961,13 @@
       ],
       "rejected_draft_ids": [],
       "overlap_candidates": [],
-      "notes": []
+      "notes": [
+        "Split from the legacy combined RTT initialization requirement."
+      ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
-      "title": "Reset the estimator on the first post-init sample",
+      "requirement_id": "RFC9002-S5-3-P12-S2-R01",
+      "title": "Initialize RTT variation to half the initial RTT",
       "source_batches": [
         "5-8"
       ],
@@ -975,12 +975,35 @@
         "5.3"
       ],
       "source_sentence_ids": [
-        "RFC9002-S5.3-B18-P12-S1",
-        "RFC9002-S5.3-B19-P0-S1"
+        "RFC9002-S5-3-P12-S2"
       ],
       "source_refs": [
-        "RFC 9002 §5.3 RFC9002-S5.3-B18-P12-S1",
-        "RFC 9002 §5.3 RFC9002-S5.3-B19-P0-S1",
+        "RFC 9002 §5.3 RFC9002-S5-3-P12-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-041"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": [
+        "Split from the legacy combined RTT initialization requirement."
+      ]
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S1-R01",
+      "title": "Seed smoothed RTT from the first RTT sample",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5-3-P15-S1"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5-3-P15-S1",
         "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
       ],
       "merged_from_draft_ids": [
@@ -988,7 +1011,34 @@
       ],
       "rejected_draft_ids": [],
       "overlap_candidates": [],
-      "notes": []
+      "notes": [
+        "Split from the legacy combined first-sample seeding requirement."
+      ]
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S2-R01",
+      "title": "Seed RTT variation from the first RTT sample",
+      "source_batches": [
+        "5-8"
+      ],
+      "source_sections": [
+        "5.3"
+      ],
+      "source_sentence_ids": [
+        "RFC9002-S5-3-P15-S2"
+      ],
+      "source_refs": [
+        "RFC 9002 §5.3 RFC9002-S5-3-P15-S2",
+        "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
+      ],
+      "merged_from_draft_ids": [
+        "TMP-9002-042"
+      ],
+      "rejected_draft_ids": [],
+      "overlap_candidates": [],
+      "notes": [
+        "Split from the legacy combined first-sample seeding requirement."
+      ]
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",

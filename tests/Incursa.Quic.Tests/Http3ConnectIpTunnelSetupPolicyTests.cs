@@ -74,7 +74,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0034")]
+    [Requirement("RFC9484-S4-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TunnelSetup_RequiresDnsResolutionBeforeResponseForDnsTargets()
@@ -85,7 +85,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0034")]
+    [Requirement("RFC9484-S4-1-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_DoesNotRequireDnsResolutionForIpTargets()

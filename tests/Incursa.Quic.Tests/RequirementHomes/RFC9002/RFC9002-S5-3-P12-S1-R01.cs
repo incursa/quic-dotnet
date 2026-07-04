@@ -4,10 +4,12 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S5P3-0007">When the RTT estimator is initialized, `smoothed_rtt` MUST be set to `kInitialRtt` and `rttvar` to `kInitialRtt / 2`.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-3-P12-S1-R01">`smoothed_rtt` is initialized to `kInitialRtt`.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-3-P12-S2-R01">`rttvar` is initialized to `kInitialRtt / 2`.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S5P3-0007")]
-public sealed class REQ_QUIC_RFC9002_S5P3_0007
+[Requirement("RFC9002-S5-3-P12-S1-R01")]
+[Requirement("RFC9002-S5-3-P12-S2-R01")]
+public sealed class RFC9002_S5_3_P12_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

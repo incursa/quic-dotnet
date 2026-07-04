@@ -125,7 +125,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("RFC9484-S4-1-P3-S2-R01")]
+    [Requirement("REQ-QUIC-RFC9484-0030")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RequestPolicy_AllowsIpProxyRejection()
@@ -134,7 +134,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("RFC9484-S4-1-P3-S2-R01")]
+    [Requirement("REQ-QUIC-RFC9484-0030")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RequestPolicy_RejectionPermissionDoesNotRequireRejection()

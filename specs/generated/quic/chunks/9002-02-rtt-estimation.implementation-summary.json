@@ -64,8 +64,10 @@
       "REQ-QUIC-RFC9002-S5P3-0004",
       "REQ-QUIC-RFC9002-S5P3-0005",
       "REQ-QUIC-RFC9002-S5P3-0006",
-      "REQ-QUIC-RFC9002-S5P3-0007",
-      "REQ-QUIC-RFC9002-S5P3-0008",
+      "RFC9002-S5-3-P12-S1-R01",
+      "RFC9002-S5-3-P12-S2-R01",
+      "RFC9002-S5-3-P15-S1-R01",
+      "RFC9002-S5-3-P15-S2-R01",
       "REQ-QUIC-RFC9002-S5P3-0009",
       "RFC9002-S5-3-P13-S1-R01",
       "REQ-QUIC-RFC9002-S5P3-0011",
@@ -474,7 +476,7 @@
       "notes": "Resetting the estimator reuses the configured initial RTT for a new path."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0007",
+      "requirement_id": "RFC9002-S5-3-P12-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicRttEstimator.cs",
@@ -492,10 +494,31 @@
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
       ],
       "remaining_gap": null,
-      "notes": "The constructor seeds smoothed_rtt and rttvar from the initial RTT."
+      "notes": "Split from the legacy combined RTT initialization requirement."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0008",
+      "requirement_id": "RFC9002-S5-3-P12-S2-R01",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "ConstructorAndReset_InitializeEstimatorFromTheConfiguredInitialRtt"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Split from the legacy combined RTT initialization requirement."
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicRttEstimator.cs",
@@ -513,7 +536,28 @@
         "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
       ],
       "remaining_gap": null,
-      "notes": "The first post-init RTT sample resets smoothed_rtt and rttvar to the latest observed RTT."
+      "notes": "Split from the legacy combined first-sample seeding requirement."
+    },
+    {
+      "requirement_id": "RFC9002-S5-3-P15-S2-R01",
+      "completion_status": "implemented_and_tested",
+      "files_changed": [
+        "src/Incursa.Quic/QuicRttEstimator.cs",
+        "src/Incursa.Quic/PublicAPI.Unshipped.txt",
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs",
+        "benchmarks/QuicRttEstimatorBenchmarks.cs",
+        "benchmarks/README.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.md",
+        "specs/generated/quic/chunks/9002-02-rtt-estimation.implementation-summary.json"
+      ],
+      "tests_covering_requirement": [
+        "TryUpdateFromAck_SeedsTheFirstSampleFromTheLargestAcknowledgedPacket"
+      ],
+      "direct_refs_added_or_updated": [
+        "tests/Incursa.Quic.Tests/QuicRttEstimatorTests.cs"
+      ],
+      "remaining_gap": null,
+      "notes": "Split from the legacy combined first-sample seeding requirement."
     },
     {
       "requirement_id": "REQ-QUIC-RFC9002-S5P3-0009",
