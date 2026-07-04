@@ -37,7 +37,7 @@
 | `REQ-QUIC-RFC9000-S17P2-0026` | While type-specific semantics for this version are described in the following sections, sever... | partially implemented | partial implementation | The later packet-type-specific long-header fields are not parsed in this chunk. |
 | `REQ-QUIC-RFC9000-S17P2-0027` | Two bits (those with a mask of 0x0c) of byte 0 MUST be reserved across multiple packet types | implemented and tested | implementation and test evidence | The reserved bits are surfaced as a dedicated `ReservedBits` property; enforcement remains deferred to later packet-protection work. |
 | `REQ-QUIC-RFC9000-S17P1-0001` | When present in long or short packet headers, they MUST be encoded in 1 to 4 bytes | not implemented | explicit blocker note | No packet-number encoding surface exists. |
-| `REQ-QUIC-RFC9000-S17P1-0002` | Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b... | not implemented | explicit blocker note | No packet-number-space acknowledgement state exists. |
+| `RFC9000-S17-1-P3-R01` | Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b... | not implemented | explicit blocker note | No packet-number-space acknowledgement state exists. |
 | `RFC9000-S17-1-P4-R01` | After an acknowledgment is received for a packet number space, the sender MUST use a packet n... | not implemented | explicit blocker note | No sender-side packet-number sizing policy exists. |
 | `RFC9000-S17-1-P4-S2-R01` | An endpoint SHOULD use a large enough packet number encoding to allow the packet number to be... | not implemented | explicit blocker note | No packet-number recovery heuristic exists. |
 | `REQ-QUIC-RFC9000-S17P2-0010` | Long headers MUST be used for packets that are sent prior to the establishment of 1-RTT keys | not implemented | explicit blocker note | No sender-path logic for pre-1-RTT packet selection. |
@@ -62,7 +62,7 @@
 - Covered: 24 requirements.
 - Partial: `REQ-QUIC-RFC9000-S17P2-0026`.
 - Needs review: `REQ-QUIC-RFC9000-S17P2-0022`, `REQ-QUIC-RFC9000-S17P2-0030`.
-- Blocked: `REQ-QUIC-RFC9000-S17P1-0001`, `REQ-QUIC-RFC9000-S17P1-0002`, `RFC9000-S17-1-P4-R01`, `RFC9000-S17-1-P4-S2-R01`, `REQ-QUIC-RFC9000-S17P2-0010`, `REQ-QUIC-RFC9000-S17P2-0011`, `REQ-QUIC-RFC9000-S17P2-0028`, `REQ-QUIC-RFC9000-S17P2-0029`, `REQ-QUIC-RFC9000-S17P2-0031`, `REQ-QUIC-RFC9000-S17P2-0032`, `REQ-QUIC-RFC9000-S17P2-0033`.
+- Blocked: `REQ-QUIC-RFC9000-S17P1-0001`, `RFC9000-S17-1-P3-R01`, `RFC9000-S17-1-P4-R01`, `RFC9000-S17-1-P4-S2-R01`, `REQ-QUIC-RFC9000-S17P2-0010`, `REQ-QUIC-RFC9000-S17P2-0011`, `REQ-QUIC-RFC9000-S17P2-0028`, `REQ-QUIC-RFC9000-S17P2-0029`, `REQ-QUIC-RFC9000-S17P2-0031`, `REQ-QUIC-RFC9000-S17P2-0032`, `REQ-QUIC-RFC9000-S17P2-0033`.
 
 ## Tests Run And Results
 

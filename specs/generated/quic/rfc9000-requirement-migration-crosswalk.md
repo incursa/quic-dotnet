@@ -124,7 +124,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P3P3-0002` | Allow a reset-send limit |
 | `RFC9000-S11-P1-S1-R01` | that detects an error SHOULD signal the existence of that error to its peer |
 | `RFC9000-S11-P2-S1-R01` | The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error |
-| `REQ-QUIC-RFC9000-S11P1-0001` | Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19 |
+| `RFC9000-S11-1-P1-S1-R01` | Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19 |
 | `REQ-QUIC-RFC9000-S11P1-0003` | Use CONNECTION_CLOSE type 0x1c for transport errors |
 | `REQ-QUIC-RFC9000-S11P1-0005` | Limiting the number of retransmissions and the time over which this final packet is sent limits the effort expended on terminated connections |
 | `REQ-QUIC-RFC9000-S11P1-0006` | An endpoint that continues to receive data for a terminated connection MUST attempt the stateless reset process |
@@ -295,7 +295,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S15-0003` | Identify this specification as version 0x00000001 |
 | `REQ-QUIC-RFC9000-S17-0001` | All numeric values MUST be encoded in network byte order (that is, big endian), and all field... |
 | `REQ-QUIC-RFC9000-S17P1-0001` | When present in long or short packet headers, they MUST be encoded in 1 to 4 bytes |
-| `REQ-QUIC-RFC9000-S17P1-0002` | Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b... |
+| `RFC9000-S17-1-P3-R01` | Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b... |
 | `RFC9000-S17-1-P4-R01` | After an acknowledgment is received for a packet number space, the sender MUST use a packet n... |
 | `REQ-QUIC-RFC9000-S17P2-0001` | The Header Form field MUST be 1 bits long with value 1 |
 | `REQ-QUIC-RFC9000-S17P2-0002` | The Fixed Bit field MUST be 1 bits long with value 1 |
@@ -425,7 +425,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... |
 | `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0006` | A server MAY either discard or buffer 0-RTT packets that it receives |
-| `REQ-QUIC-RFC9000-S17P2P5P2-0003` | Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;... |
+| `RFC9000-S17-2-5-2-P2-R01` | Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;... |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0005` | The client responds to a Retry packet with an Initial packet that MUST include the provided R... |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0006` | A client MUST set the Destination Connection ID field of this Initial packet to the value fro... |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0007` | It also MUST set the Token field to the token provided in the Retry packet |
@@ -720,7 +720,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S21-5-3-P2-R01` | A client MUST NOT send non-probing frames to a preferred address prior to validating that add... |
 | `RFC9000-S21-5-6-P4-S1-R01` | Endpoints MAY choose to reduce the risk of request forgery by not including values from NEW_T... |
 | `REQ-QUIC-RFC9000-S21P5P6-0005` | Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat... |
-| `REQ-QUIC-RFC9000-S21P6-0001` | QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the... |
+| `RFC9000-S21-6-P2-R01` | QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the... |
 | `RFC9000-S21-9-P4-R01` | While there are legitimate uses for all messages, implementations SHOULD track cost of proces... |
 | `REQ-QUIC-RFC9000-S21P9-0002` | Endpoints MAY respond to this condition with a connection error or by dropping packets |
 | `REQ-QUIC-RFC9000-S22P1P1-0001` | Require only codepoint value and contact information for provisional registration requests |
@@ -929,7 +929,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S5-2-2-P1-S1-R01` | Send Version Negotiation for large unsupported packets |
 | `RFC9000-S5-2-2-P2-S4-R01` | Prefer Version Negotiation when possible |
 | `REQ-QUIC-RFC9000-S5P2P2-0005` | Match supported-version packets by connection ID or address tuple |
-| `REQ-QUIC-RFC9000-S5P2P2-0009` | Ignore premature Handshake packets from clients |
+| `RFC9000-S5-2-2-P6-S2-R01` | Ignore premature Handshake packets from clients |
 | `REQ-QUIC-RFC9000-S5P2P3-0001` | Allow out-of-band forwarding for simple load balancers |
 | `REQ-QUIC-RFC9000-S5P2P3-0002` | Allow preferred-address migration for dedicated server addresses |
 | `REQ-QUIC-RFC9000-S5P2P3-0003` | Allow clients to decline preferred addresses |

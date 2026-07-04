@@ -12,7 +12,7 @@
   "verifies": [
     "REQ-QUIC-RFC9002-S6-0001",
     "RFC9002-S6-2-2-P3-S2-R01",
-    "REQ-QUIC-RFC9002-S6P4-0001",
+    "RFC9002-S6-4-P1-S1-R01",
     "RFC9002-S6-4-P1-S1-R02",
     "REQ-QUIC-RFC9002-S6P4-0003",
     "REQ-QUIC-RFC9002-S6P4-0004",
@@ -34,7 +34,7 @@
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-P3-S2-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R02.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0004.cs",

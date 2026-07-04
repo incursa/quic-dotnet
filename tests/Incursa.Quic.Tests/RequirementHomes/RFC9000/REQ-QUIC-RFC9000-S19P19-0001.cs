@@ -153,7 +153,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P19-0011">The Frame Type field MUST be variable-length integer encoding the type of frame that triggered the error.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1361">The application-specific variant of CONNECTION_CLOSE (type 0x1d) MUST NOT include this field.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S19P19-0014">The Reason Phrase Length field MUST be variable-length integer specifying the length of the reason phrase in bytes.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11P1-0001">Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19.19).</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S11-1-P1-S1-R01">Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19.19).</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0663">Application-specific protocol errors MUST be signaled using the CONNECTION_CLOSE frame with a frame type of 0x1d.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11P1-0003">Transport errors, including all those described in this document, MUST be carried in the CONNECTION_CLOSE frame with a frame type of 0x1c.</workbench-requirement>
     /// </workbench-requirements>
@@ -174,7 +174,7 @@ public sealed class REQ_QUIC_RFC9000_S19P19_0001
     [Requirement("REQ-QUIC-RFC9000-S19P19-0011")]
     [Requirement("REQ-QUIC-RFC9000-1361")]
     [Requirement("REQ-QUIC-RFC9000-S19P19-0014")]
-    [Requirement("REQ-QUIC-RFC9000-S11P1-0001")]
+    [Requirement("RFC9000-S11-1-P1-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-0663")]
     [Requirement("REQ-QUIC-RFC9000-S11P1-0003")]
     [CoverageType(RequirementCoverageType.Fuzz)]

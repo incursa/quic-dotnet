@@ -262,7 +262,7 @@ public sealed class EncryptedDnsDiscoveryNeighborDiscoveryOptionTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0106")]
     [Requirement("RFC9463-S6-2-P2-R01")]
-    [Requirement("REQ-QUIC-RFC9463-0108")]
+    [Requirement("RFC9463-S6-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DecodeManyReturnsSeparateOptionsSortedByServicePriority()
@@ -283,7 +283,7 @@ public sealed class EncryptedDnsDiscoveryNeighborDiscoveryOptionTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9463-0106")]
     [Requirement("RFC9463-S6-2-P2-R01")]
-    [Requirement("REQ-QUIC-RFC9463-0108")]
+    [Requirement("RFC9463-S6-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DecodeManyCanRejectInvalidOptionWhenSilentDiscardIsDisabled()

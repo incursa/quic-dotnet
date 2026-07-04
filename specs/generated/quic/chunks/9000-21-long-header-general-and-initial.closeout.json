@@ -32,7 +32,7 @@
     "REQ-QUIC-RFC9000-S17P2-0022",
     "REQ-QUIC-RFC9000-S17P2-0026",
     "REQ-QUIC-RFC9000-S17P1-0001",
-    "REQ-QUIC-RFC9000-S17P1-0002",
+    "RFC9000-S17-1-P3-R01",
     "RFC9000-S17-1-P4-R01",
     "RFC9000-S17-1-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P2-0010",
@@ -636,7 +636,7 @@
       "notes": "No live packet-number surface exists under src, tests, or benchmarks."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P1-0002",
+      "requirement_id": "RFC9000-S17-1-P3-R01",
       "section": "S17P1",
       "title": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b...",
       "status": "blocked",

@@ -91,7 +91,7 @@
 - `REQ-QUIC-RFC9000-0271`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `RFC9000-S5-2-2-P5-S1-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `RFC9000-S5-2-2-P6-S1-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
-- `REQ-QUIC-RFC9000-S5P2P2-0009`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
+- `RFC9000-S5-2-2-P6-S2-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 - `RFC9000-S5-2-2-P7-R01`: No server-side packet acceptance, Version Negotiation send path, or handshake orchestration exists.
 
 ### `S5P2P3`

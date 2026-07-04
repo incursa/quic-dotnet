@@ -1005,7 +1005,7 @@ public sealed class EncryptedDnsProvisioningAttributeTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9464-0074")]
-    [Requirement("REQ-QUIC-RFC9464-0075")]
+    [Requirement("RFC9464-S5-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DigestInfoComputesSha2256SubjectPublicKeyInfoDigest()
@@ -1021,7 +1021,7 @@ public sealed class EncryptedDnsProvisioningAttributeTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9464-0074")]
-    [Requirement("REQ-QUIC-RFC9464-0075")]
+    [Requirement("RFC9464-S5-P2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DigestInfoRejectsEmptySpkiDigestInputAndUnknownHashIdentifier()

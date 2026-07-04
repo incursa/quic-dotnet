@@ -14,7 +14,7 @@
     "VER-QUIC-RFC9000-0084"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S17P1-0002",
+    "RFC9000-S17-1-P3-R01",
     "RFC9000-S17-1-P4-R01",
     "RFC9000-S17-1-P4-S2-R01"
   ],
@@ -22,7 +22,7 @@
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "src/Incursa.Quic/QuicPacketParser.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-S2-R01.cs"
   ],
@@ -43,7 +43,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused generated S17P1 packet-number encoding proof tail for REQ-QUIC-RFC9000-S17P1-0002 through RFC9000-S17-1-P4-S2-R01. It does not claim adaptive packet-number encoding, public packet-number control APIs, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the focused generated S17P1 packet-number encoding proof tail for RFC9000-S17-1-P3-R01 through RFC9000-S17-1-P4-S2-R01. It does not claim adaptive packet-number encoding, public packet-number control APIs, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

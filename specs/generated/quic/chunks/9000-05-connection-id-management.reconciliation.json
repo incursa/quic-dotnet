@@ -494,7 +494,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0009",
+      "requirement_id": "RFC9000-S5-2-2-P6-S2-R01",
       "status": "not implemented",
       "implementation_refs": [],
       "test_refs": [],

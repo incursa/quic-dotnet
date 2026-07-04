@@ -3,8 +3,8 @@
 ## Requirements Completed
 
 - Connection-close wire support for signaling connection-wide errors: `RFC9000-S11-P1-S1-R01`, `RFC9000-S11-P2-S1-R01`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`
-- CONNECTION_CLOSE frame type selection and parsing for transport/application closes: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
-- Connection-close non-ack-eliciting classification fix for application closes: `REQ-QUIC-RFC9000-S11P1-0001`
+- CONNECTION_CLOSE frame type selection and parsing for transport/application closes: `RFC9000-S11-1-P1-S1-R01`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`
+- Connection-close non-ack-eliciting classification fix for application closes: `RFC9000-S11-1-P1-S1-R01`
 - Stateless-reset suppression and runtime routing proof: `RFC9000-S11-P3-S2-R01`
 
 ## Files Changed

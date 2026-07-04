@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests for opcode classification, client-side 0-RTT gating, server-side signaled 0-RTT refusal behavior, and existing test regression checks.",
   "verifies": [
-    "REQ-QUIC-RFC9250-0076",
+    "RFC9250-S4-5-P1-R01",
     "RFC9250-S4-5-P2-R01",
     "REQ-QUIC-RFC9250-0078",
     "REQ-QUIC-RFC9250-0079",
@@ -41,7 +41,7 @@
     "src/Incursa.Quic.Dns/DoqQueryContext.cs",
     "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-5-P1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0080.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0082.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0083.cs"

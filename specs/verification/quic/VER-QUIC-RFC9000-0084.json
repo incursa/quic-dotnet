@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused S17P1 requirement-home tests over protected Initial, Handshake, and Application Data packet-number encoding and open paths, followed by Release build, regenerated QUIC coverage triage, SpecTrace JSON validation, full Release test suite, and whitespace diff checking.",
   "verifies": [
-    "REQ-QUIC-RFC9000-S17P1-0002",
+    "RFC9000-S17-1-P3-R01",
     "RFC9000-S17-1-P4-R01",
     "RFC9000-S17-1-P4-S2-R01"
   ],
@@ -36,7 +36,7 @@
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "src/Incursa.Quic/QuicPacketParser.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P1TestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P4-S2-R01.cs",
     "dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_S17P1_\"",

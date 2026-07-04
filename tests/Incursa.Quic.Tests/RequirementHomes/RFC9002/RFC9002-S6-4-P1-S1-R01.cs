@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P4-0001">The sender MUST discard all recovery state associated with packets sent with discarded Initial or Handshake keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-4-P1-S1-R01">The sender MUST discard all recovery state associated with packets sent with discarded Initial or Handshake keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P4-0001")]
+[Requirement("RFC9002-S6-4-P1-S1-R01")]
 public sealed class REQ_QUIC_RFC9002_S6P4_0001
 {
     [Fact]

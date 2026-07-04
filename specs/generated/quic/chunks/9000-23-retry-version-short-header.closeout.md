@@ -64,7 +64,7 @@
 | `RFC9000-S17-2-5-1-P3-S3-R01` | A server MUST NOT send more than one Retry packet in response to a single UDP datagram | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-2-P1-R01` | A client MUST accept and process at most one Retry packet for each connection attempt | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `RFC9000-S17-2-5-2-P1-S1-R01` | After the client has received and processed an Initial or Retry packet from the server, it MU... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P2P5P2-0003` | Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
+| `RFC9000-S17-2-5-2-P2-R01` | Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `RFC9000-S17-2-5-2-P2-S2-R01` | A client MUST discard a Retry packet with a zero-length Retry Token field | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0005` | The client responds to a Retry packet with an Initial packet that MUST include the provided R... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P2-0006` | A client MUST set the Destination Connection ID field of this Initial packet to the value fro... | not implemented | explicit blocker note | Client Retry processing and token-bearing Initial re-send behavior are not implemented yet. |
@@ -170,7 +170,7 @@
 - `RFC9000-S17-2-5-1-P3-S3-R01`
 - `RFC9000-S17-2-5-2-P1-R01`
 - `RFC9000-S17-2-5-2-P1-S1-R01`
-- `REQ-QUIC-RFC9000-S17P2P5P2-0003`
+- `RFC9000-S17-2-5-2-P2-R01`
 - `RFC9000-S17-2-5-2-P2-S2-R01`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0005`
 - `REQ-QUIC-RFC9000-S17P2P5P2-0006`

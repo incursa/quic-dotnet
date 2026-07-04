@@ -110,7 +110,7 @@
     "REQ-QUIC-RFC9000-0271",
     "RFC9000-S5-2-2-P5-S1-R01",
     "RFC9000-S5-2-2-P6-S1-R01",
-    "REQ-QUIC-RFC9000-S5P2P2-0009",
+    "RFC9000-S5-2-2-P6-S2-R01",
     "RFC9000-S5-2-2-P7-R01",
     "REQ-QUIC-RFC9000-S5P2P3-0001",
     "REQ-QUIC-RFC9000-S5P2P3-0003",
@@ -711,7 +711,7 @@
       "notes": "The repo only exposes packet parsers/models for this area."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S5P2P2-0009",
+      "requirement_id": "RFC9000-S5-2-2-P6-S2-R01",
       "section": "S5P2P2",
       "status": "blocked",
       "completion_status": "not implemented",

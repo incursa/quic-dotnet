@@ -252,7 +252,7 @@ The stream-fragmentation guidance proof surface is now closed for
 `RFC9000-S21-7-P4-R01`.
 
 The Slowloris mitigation guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P6-0001`.
+`RFC9000-S21-6-P2-R01`.
 
 The packet-processing-cost guidance proof surface is now closed for
 `RFC9000-S21-9-P4-R01` and `REQ-QUIC-RFC9000-S21P9-0002`.
@@ -962,7 +962,7 @@ requirement-home evidence under `trace.x_test_refs`: `RFC9000-S10-2-1-P5-R01`,
 `REQ-QUIC-RFC9000-S12P1-0007`, `RFC9000-S12-2-P4-S1-R01`,
 `REQ-QUIC-RFC9000-S12P3-0009`, and `REQ-QUIC-RFC9000-0710`.
 Adjacent stale refs for `RFC9000-S11-P1-S1-R01`,
-`REQ-QUIC-RFC9000-S11P1-0001`, and `REQ-QUIC-RFC9000-0663` were
+`RFC9000-S11-1-P1-S1-R01`, and `REQ-QUIC-RFC9000-0663` were
 corrected to their direct requirement homes without changing their clean
 state.
 
@@ -1032,7 +1032,7 @@ restarts, public token-management APIs, hosted interop readiness, or closure of
 unrelated deferred fuzz obligations.
 
 Follow-on S17P1 packet-number encoding completion on 2026-05-06 closes
-`REQ-QUIC-RFC9000-S17P1-0002`, `RFC9000-S17-1-P4-R01`,
+`RFC9000-S17-1-P3-R01`, `RFC9000-S17-1-P4-R01`,
 and `RFC9000-S17-1-P4-S2-R01` under
 `ARC-QUIC-RFC9000-0084`, `WI-QUIC-RFC9000-0084`, and
 `VER-QUIC-RFC9000-0084`. The proof covers protected packet behavior for

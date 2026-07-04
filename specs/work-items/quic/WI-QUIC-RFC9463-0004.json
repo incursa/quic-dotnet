@@ -43,7 +43,7 @@
     "REQ-QUIC-RFC9463-0105",
     "REQ-QUIC-RFC9463-0106",
     "RFC9463-S6-2-P2-R01",
-    "REQ-QUIC-RFC9463-0108"
+    "RFC9463-S6-2-P2-S1-R01"
   ],
   "summary": "Add trace-owned byte-level support for the RFC 9463 Neighbor Discovery encrypted DNS option.",
   "planned_changes": "- Add `EncryptedDnsDiscoveryNeighborDiscoveryOption` for Router Advertisement encrypted DNS option bytes.\n- Encode and decode Type, Length, Service Priority, Lifetime, ADN Length, RFC 8415 authentication-domain-name, IPv6 Addr Length/address list, SvcParams Length, and RFC 9460 SvcParams.\n- Support lifetime semantics, default lifetime calculation, ADN-only mode, zero padding to an 8-octet boundary, default port lookup, multiple option processing, service-priority sorting, and invalid-option discard.\n- Add focused positive and negative tests plus canonical xrefs.",

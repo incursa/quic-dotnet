@@ -13,7 +13,7 @@
     "VER-QUIC-RFC9250-0013"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9250-0076",
+    "RFC9250-S4-5-P1-R01",
     "RFC9250-S4-5-P2-R01",
     "REQ-QUIC-RFC9250-0078",
     "REQ-QUIC-RFC9250-0079",

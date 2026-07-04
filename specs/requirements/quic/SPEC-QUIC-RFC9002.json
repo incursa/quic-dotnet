@@ -3016,7 +3016,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P4-0001",
+      "id": "RFC9002-S6-4-P1-S1-R01",
       "title": "Discard recovery state when protection keys go away",
       "statement": "The sender MUST discard all recovery state associated with packets sent with discarded Initial or Handshake keys.",
       "coverage": {
@@ -3040,8 +3040,8 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeRecoveryPlansFromTheRuntimeLedger",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P4-0001.cs::TryDiscardPacketNumberSpace_LeavesApplicationRecoveryStateAloneWhenNoEarlyKeysWereTracked"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R01.cs::TryDiscardPacketNumberSpace_RemovesQueuedInitialAndHandshakeRecoveryPlansFromTheRuntimeLedger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P1-S1-R01.cs::TryDiscardPacketNumberSpace_LeavesApplicationRecoveryStateAloneWhenNoEarlyKeysWereTracked"
         ]
       }
     },
@@ -3477,7 +3477,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P2-0005",
+      "id": "RFC9002-S7-2-P4-S2-R01",
       "title": "Recommend a two-packet minimum congestion window",
       "statement": "The minimum congestion window SHOULD be 2 * max_datagram_size.",
       "coverage": {
@@ -3501,9 +3501,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_UsesTwoDatagramsAtTheDefaultPathSize",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_ScalesAcrossBoundaryValues",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P2-0005.cs::ComputeMinimumCongestionWindowBytes_RejectsZeroDatagramSizes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P4-S2-R01.cs::ComputeMinimumCongestionWindowBytes_UsesTwoDatagramsAtTheDefaultPathSize",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P4-S2-R01.cs::ComputeMinimumCongestionWindowBytes_ScalesAcrossBoundaryValues",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-2-P4-S2-R01.cs::ComputeMinimumCongestionWindowBytes_RejectsZeroDatagramSizes"
         ]
       }
     },

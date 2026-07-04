@@ -6,9 +6,9 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P6-0001">QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-6-P2-R01">QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P6-0001")]
+[Requirement("RFC9000-S21-6-P2-R01")]
 public sealed class REQ_QUIC_RFC9000_S21P6_0001
 {
     [Fact]
@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9000_S21P6_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P6-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-6-P2-R01");
 
         Assert.Equal("QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.6 RFC9000-S21.6-B3-P2-S1", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S21P6_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P6-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-6-P2-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S21P6_0001
         JsonElement requirement = document.RootElement
             .GetProperty("requirements")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("id").GetString() == "REQ-QUIC-RFC9000-S21P6-0001");
+            .Single(entry => entry.GetProperty("id").GetString() == "RFC9000-S21-6-P2-R01");
 
         string statement = requirement.GetProperty("statement").GetString() ?? string.Empty;
 

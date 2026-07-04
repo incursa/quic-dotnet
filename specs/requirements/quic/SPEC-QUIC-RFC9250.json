@@ -2360,7 +2360,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0076",
+      "id": "RFC9250-S4-5-P1-R01",
       "title": "Allow session resumption and 0-RTT when supported",
       "statement": "A client MAY use session resumption and 0-RTT if the server supports them.",
       "coverage": {
@@ -2386,9 +2386,9 @@
           "VER-QUIC-RFC9250-0013"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::SessionResumptionAndZeroRttTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::ClientPolicyAllowsOptInZeroRttForReplayableQueries",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0076.cs::ClientPolicyDoesNotUseZeroRttOrTicketsUnconditionally",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-5-P1-R01.cs::SessionResumptionAndZeroRttTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-5-P1-R01.cs::ClientPolicyAllowsOptInZeroRttForReplayableQueries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S4-5-P1-R01.cs::ClientPolicyDoesNotUseZeroRttOrTicketsUnconditionally",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AllowsZeroRttForReplayableQueryOpcode",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::RejectsZeroRttForNonReplayableOpcodeBeforeOpeningStream"
         ]

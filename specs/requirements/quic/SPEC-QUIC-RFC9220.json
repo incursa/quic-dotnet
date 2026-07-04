@@ -135,7 +135,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9220-0004",
+      "id": "RFC9220-S3-P3-S1-R01",
       "title": "Provide optional problem-details information",
       "statement": "A server MAY provide more information via a \"problem details\" response.",
       "coverage": {

@@ -501,7 +501,7 @@
       "statement": "The most appropriate error code (Section 20) SHOULD be included in the frame that signals the error."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11P1-0001",
+      "id": "RFC9000-S11-1-P1-S1-R01",
       "title": "Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19",
       "statement": "Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19.19)."
     },
@@ -1356,7 +1356,7 @@
       "statement": "When present in long or short packet headers, they MUST be encoded in 1 to 4 bytes."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P1-0002",
+      "id": "RFC9000-S17-1-P3-R01",
       "title": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b...",
       "statement": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below."
     },
@@ -2006,7 +2006,7 @@
       "statement": "A server MAY either discard or buffer 0-RTT packets that it receives."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P2-0003",
+      "id": "RFC9000-S17-2-5-2-P2-R01",
       "title": "Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;...",
       "statement": "Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated; see Section 5.8 of [QUIC-TLS]."
     },
@@ -3481,7 +3481,7 @@
       "statement": "Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P6-0001",
+      "id": "RFC9000-S21-6-P2-R01",
       "title": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the...",
       "statement": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected."
     },
@@ -4526,7 +4526,7 @@
       "statement": "Packets with a supported version or no Version field MUST be matched to a connection using the connection ID or, for packets with zero-length connection IDs, the local address and port."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P2-0009",
+      "id": "RFC9000-S5-2-2-P6-S2-R01",
       "title": "Ignore premature Handshake packets from clients",
       "statement": "Servers SHOULD ignore any Handshake packets sent before the client receives a server response."
     },

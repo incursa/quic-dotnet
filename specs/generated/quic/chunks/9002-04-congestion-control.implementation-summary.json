@@ -12,7 +12,7 @@
     "REQ-QUIC-RFC9002-S7P2-0002",
     "RFC9002-S7-2-P2-S1-R01",
     "RFC9002-S7-2-P2-S2-R01",
-    "REQ-QUIC-RFC9002-S7P2-0005",
+    "RFC9002-S7-2-P4-S2-R01",
     "REQ-QUIC-RFC9002-S7P3P1-0001",
     "REQ-QUIC-RFC9002-S7P3P1-0002",
     "REQ-QUIC-RFC9002-S7P3P1-0003",
@@ -180,7 +180,7 @@
         "REQ-QUIC-RFC9002-S7P2-0002",
         "RFC9002-S7-2-P2-S1-R01",
         "RFC9002-S7-2-P2-S2-R01",
-        "REQ-QUIC-RFC9002-S7P2-0005",
+        "RFC9002-S7-2-P4-S2-R01",
         "REQ-QUIC-RFC9002-S7-0005"
       ],
       "test": "Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent"

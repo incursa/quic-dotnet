@@ -23,7 +23,7 @@ Section tokens: `S17`, `S17P1`, `S17P2`
 ### S17P1
 
 - `REQ-QUIC-RFC9000-S17P1-0001` - not implemented; no packet-number encoding surface exists.
-- `REQ-QUIC-RFC9000-S17P1-0002` - not implemented; no packet-number-space acknowledgement state exists.
+- `RFC9000-S17-1-P3-R01` - not implemented; no packet-number-space acknowledgement state exists.
 - `RFC9000-S17-1-P4-R01` - not implemented; no sender-side packet-number sizing policy exists.
 - `RFC9000-S17-1-P4-S2-R01` - not implemented; no packet-number recovery heuristic exists.
 

@@ -432,7 +432,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0019",
+      "id": "RFC9461-S5-P3-S3-R01",
       "title": "Publish an equivalent HTTPS RR",
       "statement": "Service operators SHOULD publish an equivalent HTTPS RR.",
       "coverage": {

@@ -14,7 +14,7 @@
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, DNS package build, full solution test, and diff hygiene for the RFC 9461 client-policy/operator-guidance surface.",
   "verifies": [
     "RFC9461-S5-P3-S1-R01",
-    "REQ-QUIC-RFC9461-0019",
+    "RFC9461-S5-P3-S3-R01",
     "REQ-QUIC-RFC9461-0020",
     "REQ-QUIC-RFC9461-0021",
     "RFC9461-S8-1-P2-R01",

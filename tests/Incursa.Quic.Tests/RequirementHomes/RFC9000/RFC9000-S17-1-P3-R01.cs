@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P1-0002">Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-1-P3-R01">Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P1-0002")]
+[Requirement("RFC9000-S17-1-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_S17P1_0002
 {
     [Fact]

@@ -1603,7 +1603,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9464-0075",
+      "id": "RFC9464-S5-P2-R01",
       "title": "Support SHA2-256",
       "statement": "Implementations MUST support SHA2-256.",
       "coverage": {

@@ -2404,7 +2404,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9463-0108",
+      "id": "RFC9463-S6-2-P2-S1-R01",
       "title": "Process instances by service priority",
       "statement": "These instances MUST be processed in service-priority order, where a smaller service priority value indicates a higher preference.",
       "coverage": {

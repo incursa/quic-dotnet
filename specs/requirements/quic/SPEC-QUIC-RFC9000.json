@@ -15582,7 +15582,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11P1-0001",
+      "id": "RFC9000-S11-1-P1-S1-R01",
       "title": "Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19",
       "statement": "Errors that result in the connection being unusable, such as an obvious violation of protocol semantics or corruption of state that affects an entire connection, MUST be signaled using a CONNECTION_CLOSE frame (Section 19.19).",
       "coverage": {
@@ -15606,7 +15606,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-11.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S11P1-0001.cs::UnusableConnectionErrorsAreSignaledUsingConnectionCloseFrames"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-1-P1-S1-R01.cs::UnusableConnectionErrorsAreSignaledUsingConnectionCloseFrames"
         ]
       }
     },
@@ -20981,7 +20981,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P1-0002",
+      "id": "RFC9000-S17-1-P3-R01",
       "title": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST b...",
       "statement": "Prior to receiving an acknowledgment for a packet number space, the full packet number MUST be included; it is not to be truncated, as described below.",
       "coverage": {
@@ -21008,10 +21008,10 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedInitialPacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedHandshakePacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryOpenInitialPacket_RejectsTruncatedPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0002.cs::TryBuildProtectedInitialPacket_UsesFourByteBoundaryPacketNumberBeforeAnyAcknowledgment"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs::TryBuildProtectedInitialPacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs::TryBuildProtectedHandshakePacket_UsesFourBytePacketNumbersBeforeAnyAcknowledgment",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs::TryOpenInitialPacket_RejectsTruncatedPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-1-P3-R01.cs::TryBuildProtectedInitialPacket_UsesFourByteBoundaryPacketNumberBeforeAnyAcknowledgment"
         ]
       }
     },
@@ -24924,7 +24924,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P2-0003",
+      "id": "RFC9000-S17-2-5-2-P2-R01",
       "title": "Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated;...",
       "statement": "Clients MUST discard Retry packets that have a Retry Integrity Tag that cannot be validated; see Section 5.8 of [QUIC-TLS].",
       "coverage": {
@@ -24951,8 +24951,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserAcceptsRetryPacketsWithValidIntegrityTags",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P2-0003.cs::RetryMetadataParserRejectsRetryPacketsWithTamperedIntegrityTags"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P2-R01.cs::RetryMetadataParserAcceptsRetryPacketsWithValidIntegrityTags",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-2-P2-R01.cs::RetryMetadataParserRejectsRetryPacketsWithTamperedIntegrityTags"
         ]
       }
     },
@@ -34425,7 +34425,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P6-0001",
+      "id": "RFC9000-S21-6-P2-R01",
       "title": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the...",
       "statement": "QUIC deployments SHOULD provide mitigations for the Slowloris attacks, such as increasing the maximum number of clients the server will allow, limiting the number of connections a single IP address is allowed to make, imposing restrictions on the minimum transfer speed a connection is allowed to have, and restricting the length of time an endpoint is allowed to stay connected.",
       "coverage": {
@@ -34449,9 +34449,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_DescribesSlowlorisMitigationsForDeployments",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_DoesNotClaimTransportRuntimeAutonomyForDeploymentPolicy",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P6-0001.cs::RequirementStatement_StaysBoundedToDeploymentMitigationExamples"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-6-P2-R01.cs::RequirementStatement_DescribesSlowlorisMitigationsForDeployments",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-6-P2-R01.cs::RequirementStatement_DoesNotClaimTransportRuntimeAutonomyForDeploymentPolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-6-P2-R01.cs::RequirementStatement_StaysBoundedToDeploymentMitigationExamples"
         ]
       }
     },
@@ -40858,7 +40858,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P2P2-0009",
+      "id": "RFC9000-S5-2-2-P6-S2-R01",
       "title": "Ignore premature Handshake packets from clients",
       "statement": "Servers SHOULD ignore any Handshake packets sent before the client receives a server response.",
       "coverage": {
@@ -40885,7 +40885,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-5.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P2-0009.cs::ClassifyUnroutedDatagram_DropsPrematureClientHandshakePackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S2-R01.cs::ClassifyUnroutedDatagram_DropsPrematureClientHandshakePackets"
         ]
       }
     },

@@ -38,7 +38,7 @@
     "REQ-QUIC-RFC9464-0048",
     "REQ-QUIC-RFC9464-0049",
     "REQ-QUIC-RFC9464-0074",
-    "REQ-QUIC-RFC9464-0075"
+    "RFC9464-S5-P2-R01"
   ],
   "scope": "This verification covers ENCDNS_IP* attribute field order, length-field value, RFC 9460 SvcParam wire key/length/value encoding, reserved-bit-tolerant decoding, AliasMode zero rejection, CFG_REPLY/CFG_SET zero-address rejection, forbidden hint service parameters by numeric key, ENCDNS_DIGEST_INFO request field order, reply/set digest field order, registered hash algorithm identifiers, digest ADN scoping for multiple ADNs, zero-length CFG_ACK data, and SHA2-256 DER SPKI digest computation.",
   "preconditions": [

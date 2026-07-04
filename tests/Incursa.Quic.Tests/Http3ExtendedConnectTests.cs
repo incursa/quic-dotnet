@@ -118,7 +118,7 @@ public sealed class Http3ExtendedConnectTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9220-0004")]
+    [Requirement("RFC9220-S3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UnsupportedProtocolResponse_CanIncludeProblemDetails()
