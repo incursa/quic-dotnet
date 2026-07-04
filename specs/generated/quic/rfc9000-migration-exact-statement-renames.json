@@ -3551,7 +3551,7 @@
     {
       "classification": "rename-with-lineage",
       "live_requirement_id": "REQ-QUIC-RFC9000-S9P4-0010",
-      "staged_requirement_id": "REQ-QUIC-RFC9000-0513",
+      "staged_requirement_id": "RFC9000-S9-4-P5-S4-R01",
       "statement": "This timer SHOULD be set as described in Section 6.2.1 of [QUIC-RECOVERY].",
       "derived_from": "REQ-QUIC-RFC9000-S9P4-0010",
       "supersedes": [

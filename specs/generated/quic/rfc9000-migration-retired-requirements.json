@@ -3986,12 +3986,12 @@
       "id": "REQ-QUIC-RFC9000-S9P4-0010",
       "title": "Set timer as described in QUIC-RECOVERY",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0513"
+        "RFC9000-S9-4-P5-S4-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0513 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S9-4-P5-S4-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S9P2-0002",

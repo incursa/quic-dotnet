@@ -4994,7 +4994,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0513",
+      "id": "RFC9000-S9-4-P5-S4-R01",
       "title": "Set timer as described in QUIC-RECOVERY",
       "statement": "This timer SHOULD be set as described in Section 6.2.1 of [QUIC-RECOVERY].",
       "coverage": {
@@ -5014,8 +5014,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline"
         ],
         "upstream_refs": [
           "RFC 9000 9.4 RFC9000-S9P4-B5-P5-S4",

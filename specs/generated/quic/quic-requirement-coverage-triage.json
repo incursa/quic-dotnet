@@ -30909,7 +30909,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0513",
+      "requirement_id": "RFC9000-S9-4-P5-S4-R01",
       "artifact_id": "SPEC-QUIC-RFC9000",
       "rfc": "RFC9000",
       "section_prefix": "S9P4",
@@ -30929,8 +30929,8 @@
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 2,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
@@ -30950,12 +30950,12 @@
       "gap_blockers": [],
       "evidence": [
         {
-          "requirement_id": "REQ-QUIC-RFC9000-0513",
+          "requirement_id": "RFC9000-S9-4-P5-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs",
-          "class": "REQ_QUIC_RFC9000_0513",
-          "member": "REQ_QUIC_RFC9000_0513.InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs",
+          "class": "RFC9000_S9_4_P5_S4_R01",
+          "member": "RFC9000_S9_4_P5_S4_R01.InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
           "method": "InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
           "line": 44,
           "kinds": [
@@ -30966,18 +30966,18 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-0513"
+            "RFC9000-S9-4-P5-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-0513",
+          "requirement_id": "RFC9000-S9-4-P5-S4-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs",
-          "class": "REQ_QUIC_RFC9000_0513",
-          "member": "REQ_QUIC_RFC9000_0513.InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs",
+          "class": "RFC9000_S9_4_P5_S4_R01",
+          "member": "RFC9000_S9_4_P5_S4_R01.InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
           "method": "InitialPathValidationTimerDoesNotUseAnImmediateOrUnsetDeadline",
           "line": 44,
           "kinds": [
@@ -30988,18 +30988,18 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-0513"
+            "RFC9000-S9-4-P5-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-0513",
+          "requirement_id": "RFC9000-S9-4-P5-S4-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs",
-          "class": "REQ_QUIC_RFC9000_0513",
-          "member": "REQ_QUIC_RFC9000_0513.InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs",
+          "class": "RFC9000_S9_4_P5_S4_R01",
+          "member": "RFC9000_S9_4_P5_S4_R01.InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
           "method": "InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
           "line": 14,
           "kinds": [
@@ -31010,18 +31010,18 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-0513"
+            "RFC9000-S9-4-P5-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
         },
         {
-          "requirement_id": "REQ-QUIC-RFC9000-0513",
+          "requirement_id": "RFC9000-S9-4-P5-S4-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0513.cs",
-          "class": "REQ_QUIC_RFC9000_0513",
-          "member": "REQ_QUIC_RFC9000_0513.InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs::InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S4-R01.cs",
+          "class": "RFC9000_S9_4_P5_S4_R01",
+          "member": "RFC9000_S9_4_P5_S4_R01.InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
           "method": "InitialPathValidationTimerUsesTheCurrentProbeTimeoutBudget",
           "line": 14,
           "kinds": [
@@ -31032,7 +31032,7 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-0513"
+            "RFC9000-S9-4-P5-S4-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true

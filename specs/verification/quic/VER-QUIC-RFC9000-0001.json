@@ -457,7 +457,7 @@
     "REQ-QUIC-RFC9000-S9P4-0007",
     "REQ-QUIC-RFC9000-S9P4-0008",
     "REQ-QUIC-RFC9000-S9P4-0009",
-    "REQ-QUIC-RFC9000-0513",
+    "RFC9000-S9-4-P5-S4-R01",
     "RFC9000-S9-4-P5-S4-R02",
     "RFC9000-S9-5-P2-R01",
     "RFC9000-S9-5-P3-R01",
@@ -2017,7 +2017,7 @@
     },
     {
       "heading": "2026-05-22 Migration Tail and Retry-Handshake Statement Topoff",
-      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0481|FullyQualifiedName~REQ_QUIC_RFC9000_0513|FullyQualifiedName~REQ_QUIC_RFC9000_0519|FullyQualifiedName~REQ_QUIC_RFC9000_1051\"` passed the focused migration-tail and retry-handshake statement proof.\n- `RFC9000-S9-3-P2-S1-R01` now has focused negative proof that permitted migration does not route subsequent stream packets back to the old peer address once a non-probing packet identifies the migrated address.\n- `REQ-QUIC-RFC9000-0513` now has focused negative proof that the path-validation timer is neither unset nor immediate, and remains scheduled on the PathValidation timer at the candidate deadline.\n- `REQ-QUIC-RFC9000-0519` now has focused negative proof that the canonical requirement statement does not permit frequent address changes.\n- `RFC9000-S17-2-5-3-P2-S3-R01` now has focused positive proof that the canonical requirement statement allows discarding a packet carrying a different cryptographic handshake message, complementing the runtime discard proof.\n- Regenerated coverage triage should mark all four requirements trace_clean once refreshed.\n- This remains bounded to migrated-address routing, path-validation timer scheduling, canonical address-change guidance, and Retry handshake-message wording; it does not claim broader migration policy or full Retry interop completion."
+      "content": "- `dotnet test tests\\Incursa.Quic.Tests\\Incursa.Quic.Tests.csproj -c Release -m:1 --filter \"FullyQualifiedName~REQ_QUIC_RFC9000_0481|FullyQualifiedName~RFC9000_S9_4_P5_S4_R01|FullyQualifiedName~REQ_QUIC_RFC9000_0519|FullyQualifiedName~REQ_QUIC_RFC9000_1051\"` passed the focused migration-tail and retry-handshake statement proof.\n- `RFC9000-S9-3-P2-S1-R01` now has focused negative proof that permitted migration does not route subsequent stream packets back to the old peer address once a non-probing packet identifies the migrated address.\n- `RFC9000-S9-4-P5-S4-R01` now has focused negative proof that the path-validation timer is neither unset nor immediate, and remains scheduled on the PathValidation timer at the candidate deadline.\n- `REQ-QUIC-RFC9000-0519` now has focused negative proof that the canonical requirement statement does not permit frequent address changes.\n- `RFC9000-S17-2-5-3-P2-S3-R01` now has focused positive proof that the canonical requirement statement allows discarding a packet carrying a different cryptographic handshake message, complementing the runtime discard proof.\n- Regenerated coverage triage should mark all four requirements trace_clean once refreshed.\n- This remains bounded to migrated-address routing, path-validation timer scheduling, canonical address-change guidance, and Retry handshake-message wording; it does not claim broader migration policy or full Retry interop completion."
     },
     {
       "heading": "2026-05-10 S7-0005 Distinct Handshake Key Shares",
