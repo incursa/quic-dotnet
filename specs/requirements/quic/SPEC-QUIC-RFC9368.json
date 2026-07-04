@@ -53,12 +53,41 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9368-S3-0002",
-      "title": "Reject malformed Version Information",
-      "statement": "An endpoint that receives Version Information MUST treat zero Chosen Version values, zero Available Version values, misaligned payload lengths, and a client-sent list that omits the Chosen Version as parsing failures.",
+      "id": "RFC9368-S4-P3-S1-R01",
+      "title": "Parse peer Version Information",
+      "statement": "Both endpoints MUST parse their peer's Version Information during the handshake.",
       "coverage": {
         "positive": "required",
-        "negative": "required",
+        "negative": "not_applicable",
+        "edge": "not_applicable",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S1-R01.cs::TryParseTransportParameters_AcceptsPeerVersionInformationPayload"
+        ]
+      }
+    },
+    {
+      "id": "RFC9368-S4-P3-S2-R01",
+      "title": "Close on Version Information parsing failure",
+      "statement": "If parsing Version Information fails, such as when it is too short or its length is not divisible by four, the endpoint MUST close the connection.",
+      "coverage": {
+        "positive": "not_applicable",
+        "negative": "not_applicable",
         "edge": "required",
         "fuzz": "required"
       },
@@ -73,16 +102,71 @@
           "VER-QUIC-RFC9368-0001"
         ],
         "upstream_refs": [
-          "RFC 9368 §3",
-          "https://www.rfc-editor.org/rfc/rfc9368.html#section-3"
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_AcceptsAValidVersionInformationPayload",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0002.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
+        ]
+      }
+    },
+    {
+      "id": "RFC9368-S4-P3-S3-R01",
+      "title": "Reject zero Version Information values",
+      "statement": "If an endpoint receives a Chosen Version equal to zero, or any Available Version equal to zero, it MUST treat it as a parsing failure.",
+      "coverage": {
+        "positive": "not_applicable",
+        "negative": "required",
+        "edge": "not_applicable",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S3-R01.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroChosenVersion",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S3-R01.cs::TryParseTransportParameters_RejectsVersionInformationWithZeroAvailableVersion"
+        ]
+      }
+    },
+    {
+      "id": "RFC9368-S4-P3-S4-R01",
+      "title": "Reject missing client Chosen Version preference",
+      "statement": "If a server receives Version Information where the Chosen Version is not included in Available Versions, it MUST treat it as a parsing failure.",
+      "coverage": {
+        "positive": "not_applicable",
+        "negative": "required",
+        "edge": "not_applicable",
+        "fuzz": "not_applicable"
+      },
+      "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0001"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0001"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0001"
+        ],
+        "upstream_refs": [
+          "RFC 9368 §4",
+          "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
+        ],
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S4-R01.cs::TryParseTransportParameters_RejectsClientSentVersionInformationWithoutChosenVersionInAvailableVersions"
         ]
       }
     },
@@ -156,6 +240,10 @@
     }
   ],
   "supplemental_sections": [
+    {
+      "heading": "RFC 9368 Section 4.3 Split Mapping",
+      "content": "The retired local requirement REQ-QUIC-RFC9368-S3-0002 mixed several parser-failure obligations. It has been split across RFC9368-S4-P3-S1-R01, RFC9368-S4-P3-S2-R01, RFC9368-S4-P3-S3-R01, and RFC9368-S4-P3-S4-R01. The S4-P3-S2 evidence proves malformed Version Information is detected as a parser failure at the transport-parameter codec boundary; a future runtime-close pass should add explicit frame/error-code proof if deeper connection-close evidence is required."
+    },
     {
       "heading": "Implementation Boundary",
       "content": "This slice owns the authenticated Version Information floor and the compatible-version runtime-selection flow. It keeps the original-version authentication path alive long enough to validate the client's Version Information, then switches the server and client runtime state to the negotiated version when compatible negotiation succeeds. Retry and 0-RTT compatibility follow-ons remain separate future work."
