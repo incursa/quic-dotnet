@@ -493,7 +493,7 @@ function Get-RequirementGapMappings {
                 'RFC9000-S21-5-P8-S2-R01',
                 'RFC9000-S21-5-6-P2-S2-R01',
                 'RFC9000-S21-5-6-P3-S3-R01',
-                'REQ-QUIC-RFC9000-S21P5P6-0005',
+                'RFC9000-S21-5-6-P5-S3-R01',
                 'RFC9000-S21-5-6-P5-S4-R01',
                 'RFC9000-S21-6-P2-R01',
                 'RFC9000-S21-7-P4-R01',
@@ -525,7 +525,7 @@ function Get-RequirementGapMappings {
                 'RFC9000-S22-1-3-P2-S1-R01',
                 'RFC9000-S22-1-3-P2-S2-R01',
                 'RFC9000-S22-1-3-P3-S1-R01',
-                'REQ-QUIC-RFC9000-1501'
+                'RFC9000-S22-1-3-P4-S1-R01'
             )
         },
         [pscustomobject]@{

@@ -609,7 +609,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0027",
+      "id": "RFC9461-S8-2-P2-S4-R01",
       "title": "Allow dependent specifications to adjust fallback behavior",
       "statement": "Specifications making use of this mapping MAY adjust this fallback behavior to suit their requirements.",
       "coverage": {

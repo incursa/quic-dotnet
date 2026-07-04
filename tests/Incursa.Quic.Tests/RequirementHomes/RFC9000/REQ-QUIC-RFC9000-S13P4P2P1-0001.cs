@@ -66,7 +66,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P3-S1-R01">ECN validation MUST fail if the sum of the increase in ECT(0) and ECN-CE counts is less than the number of newly acknowledged packets that were originally sent with an ECT(0) marking.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P3-S2-R01">ECN validation MUST fail if the sum of the increases to ECT(1) and ECN-CE counts is less than the number of newly acknowledged packets sent with an ECT(1) marking.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P2-0001">If validation fails, then the endpoint MUST disable ECN.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P2-0004">Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S13-4-2-2-P3-S1-R01">Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("REQ-QUIC-RFC9000-S13P4-0001")]
     [Requirement("RFC9000-S13-4-P2-S1-R01")]
@@ -79,7 +79,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0008")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0004")]
+    [Requirement("RFC9000-S13-4-2-2-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace()

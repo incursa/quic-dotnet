@@ -12455,7 +12455,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9000-1501",
+      "id": "RFC9000-S22-1-3-P4-S1-R01",
       "title": "Allow removal when no use is identified",
       "statement": "If no use of the codepoint was identified and no request was made to update the registration, the codepoint MAY be removed from the registry.",
       "coverage": {
@@ -12475,8 +12475,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1501.cs::RequirementStatement_UsesRemovalPermissionWhenNoUseIsIdentified",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1501.cs::RequirementStatement_DoesNotAllowRemovalWhenUseOrUpdateRequestExists"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P4-S1-R01.cs::RequirementStatement_UsesRemovalPermissionWhenNoUseIsIdentified",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-3-P4-S1-R01.cs::RequirementStatement_DoesNotAllowRemovalWhenUseOrUpdateRequestExists"
         ],
         "upstream_refs": [
           "RFC 9000 section 22.1.3 RFC9000-S22P1P3-B4-P4-S1",
@@ -13662,7 +13662,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P2-0002",
+      "id": "RFC9000-S10-2-2-P2-S1-R01",
       "title": "That receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate",
       "statement": "An endpoint that receives a CONNECTION_CLOSE frame MAY send a single packet containing a CONNECTION_CLOSE frame before entering the draining state, using a NO_ERROR code if appropriate.",
       "coverage": {
@@ -13686,9 +13686,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_EmitsANoErrorReplyBeforeDraining",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotEmitAnotherClosePacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WithoutAmplificationBudgetStillEntersDrainingWithoutReply",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_EmitsANoErrorReplyBeforeDraining",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotEmitAnotherClosePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_WithoutAmplificationBudgetStillEntersDrainingWithoutReply",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::ReceivedConnectionCloseTransitionsTheRuntimeToDraining",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::DrainingAfterClosingPreservesTheExistingTerminalEndTime"
         ]
@@ -13725,7 +13725,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2P2-0004",
+      "id": "RFC9000-S10-2-2-P3-S1-R01",
       "title": "Enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining",
       "statement": "An endpoint MAY enter the draining state from the closing state if it receives a CONNECTION_CLOSE frame, which indicates that the peer is also closing or draining.",
       "coverage": {
@@ -13749,7 +13749,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0004.cs::TryEnterClosingState_ThenTryEnterDrainingState_ReplacesClosingWithDrainingAndStopsSendingPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P3-S1-R01.cs::TryEnterClosingState_ThenTryEnterDrainingState_ReplacesClosingWithDrainingAndStopsSendingPackets"
         ]
       }
     },
@@ -13780,9 +13780,9 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_TransitionsTheRuntimeToDraining",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0005.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotChangeStateAgain",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_EmitsANoErrorReplyBeforeDraining",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotEmitAnotherClosePacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P2P2-0002.cs::ReceivedConnectionCloseFrame_WithoutAmplificationBudgetStillEntersDrainingWithoutReply",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_EmitsANoErrorReplyBeforeDraining",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_WhileAlreadyDrainingDoesNotEmitAnotherClosePacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs::ReceivedConnectionCloseFrame_WithoutAmplificationBudgetStillEntersDrainingWithoutReply",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::ReceivedConnectionCloseTransitionsTheRuntimeToDraining",
           "tests/Incursa.Quic.Tests/RequirementHomes/CRT/REQ-QUIC-CRT-0026.cs::DrainingAfterClosingPreservesTheExistingTerminalEndTime"
         ]
@@ -19837,7 +19837,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+      "id": "RFC9000-S13-4-2-2-P2-S1-R01",
       "title": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection",
       "statement": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection.",
       "coverage": {
@@ -19865,12 +19865,12 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P5-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AllowsReorderedAckFramesAndLaterRevalidation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs::TryValidateAcknowledgedEcnCounts_CanReenableValidationAfterAFailure"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-2-P2-S1-R01.cs::TryValidateAcknowledgedEcnCounts_CanReenableValidationAfterAFailure"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P2-0004",
+      "id": "RFC9000-S13-4-2-2-P3-S1-R01",
       "title": "Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable",
       "statement": "Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable.",
       "coverage": {
@@ -19894,7 +19894,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0004.cs::TryValidateAcknowledgedEcnCounts_AllowsSubsequentEctUseAfterSuccessfulValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-2-P3-S1-R01.cs::TryValidateAcknowledgedEcnCounts_AllowsSubsequentEctUseAfterSuccessfulValidation"
         ]
       }
     },
@@ -34394,7 +34394,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P5P6-0005",
+      "id": "RFC9000-S21-5-6-P5-S3-R01",
       "title": "Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that mat...",
       "statement": "Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address.",
       "coverage": {
@@ -34418,9 +34418,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-21.5.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DescribesPortHygieneGuidance",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S21P5P6-0005.cs::RequirementStatement_StaysBoundedToPreValidationPortHygiene"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P5-S3-R01.cs::RequirementStatement_DescribesPortHygieneGuidance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P5-S3-R01.cs::RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S21-5-6-P5-S3-R01.cs::RequirementStatement_StaysBoundedToPreValidationPortHygiene"
         ]
       }
     },

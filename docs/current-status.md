@@ -267,7 +267,7 @@ The future server-migration forgery-countermeasures guidance proof surface is
 now closed for `RFC9000-S21-5-P8-S2-R01`.
 
 The port-hygiene and problematic-CID guidance proof surface is now closed for
-`REQ-QUIC-RFC9000-S21P5P6-0005` and `RFC9000-S21-5-6-P5-S4-R01`.
+`RFC9000-S21-5-6-P5-S3-R01` and `RFC9000-S21-5-6-P5-S4-R01`.
 
 The loopback-hygiene and address-use guidance proof surface is now closed for
 `RFC9000-S21-5-6-P2-S2-R01` and `RFC9000-S21-5-6-P3-S3-R01`.
@@ -276,7 +276,7 @@ The transport-parameter registry policy slice is now closed for
 `REQ-QUIC-RFC9000-S22P3-0001` and `RFC9000-S22-3-P2-R02`.
 
 The codepoint-reclamation policy slice is now closed for
-`RFC9000-S22-1-3-P2-S1-R01` through `REQ-QUIC-RFC9000-1501`.
+`RFC9000-S22-1-3-P2-S1-R01` through `RFC9000-S22-1-3-P4-S1-R01`.
 
 The codepoint-selection policy slice is now closed for
 `RFC9000-S22-1-2-P1-R01` through `RFC9000-S22-1-2-P4-S2-R01`.
@@ -597,7 +597,7 @@ native/control-message receive path or equivalent platform-specific proof.
 
 ## 2026-05-08 S13 ECN Continuation-After-Success Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S13P4P2P2-0004` is now `trace_clean` under the existing
+`RFC9000-S13-4-2-2-P3-S1-R01` is now `trace_clean` under the existing
 ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
 `WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
 ownership. The closure adds direct focused positive proof that successful

@@ -6,17 +6,17 @@ using System.Text.Json;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S21P5P6-0005">Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S21-5-6-P5-S3-R01">Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S21P5P6-0005")]
-public sealed class REQ_QUIC_RFC9000_S21P5P6_0005
+[Requirement("RFC9000-S21-5-6-P5-S3-R01")]
+public sealed class RFC9000_S21_5_6_P5_S3_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RequirementStatement_DescribesPortHygieneGuidance()
     {
-        JsonElement requirement = GetRequirement("REQ-QUIC-RFC9000-S21P5P6-0005");
+        JsonElement requirement = GetRequirement("RFC9000-S21-5-6-P5-S3-R01");
 
         Assert.Equal("Endpoints MAY choose to avoid sending datagrams to these ports or not send datagrams that match these patterns prior to validating the destination address.", requirement.GetProperty("statement").GetString());
         Assert.Equal("RFC 9000 §21.5.6 RFC9000-S21.5.6-B6-P5-S3", requirement.GetProperty("trace").GetProperty("upstream_refs")[0].GetString());
@@ -27,7 +27,7 @@ public sealed class REQ_QUIC_RFC9000_S21P5P6_0005
     [Trait("Category", "Negative")]
     public void RequirementStatement_DoesNotClaimRuntimeFilteringEnforcement()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-S21P5P6-0005").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P5-S3-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.DoesNotContain("public API", statement);
         Assert.DoesNotContain("runtime enforcement", statement);
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S21P5P6_0005
     [Trait("Category", "Edge")]
     public void RequirementStatement_StaysBoundedToPreValidationPortHygiene()
     {
-        string statement = GetRequirement("REQ-QUIC-RFC9000-S21P5P6-0005").GetProperty("statement").GetString() ?? string.Empty;
+        string statement = GetRequirement("RFC9000-S21-5-6-P5-S3-R01").GetProperty("statement").GetString() ?? string.Empty;
 
         Assert.Contains("avoid sending datagrams", statement);
         Assert.Contains("these ports", statement);

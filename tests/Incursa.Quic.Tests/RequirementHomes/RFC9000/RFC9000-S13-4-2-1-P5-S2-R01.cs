@@ -9,11 +9,11 @@ public sealed class REQ_QUIC_RFC9000_0845
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P5-S2-R01">An endpoint MUST NOT fail ECN validation as a result of processing an ACK frame that does not increase the largest acknowledged packet number.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P2-0003">Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S13-4-2-2-P2-S1-R01">Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-2-P3-S2-R01">Network routing and path elements can change mid-connection; an endpoint MUST disable ECN if validation later fails.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("RFC9000-S13-4-2-1-P5-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
+    [Requirement("RFC9000-S13-4-2-2-P2-S1-R01")]
     [Requirement("RFC9000-S13-4-2-2-P3-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [CoverageType(RequirementCoverageType.Negative)]

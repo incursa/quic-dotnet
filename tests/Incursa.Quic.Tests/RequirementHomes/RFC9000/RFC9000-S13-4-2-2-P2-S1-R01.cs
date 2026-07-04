@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
-public sealed class REQ_QUIC_RFC9000_S13P4P2P2_0003
+[Requirement("RFC9000-S13-4-2-2-P2-S1-R01")]
+public sealed class RFC9000_S13_4_2_2_P2_S1_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0003")]
+    [Requirement("RFC9000-S13-4-2-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryValidateAcknowledgedEcnCounts_CanReenableValidationAfterAFailure()

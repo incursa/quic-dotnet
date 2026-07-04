@@ -22,7 +22,7 @@
     "REQ-QUIC-RFC9000-S13P4P2P1-0007",
     "REQ-QUIC-RFC9000-S13P4P2P1-0008",
     "REQ-QUIC-RFC9000-S13P4P2P2-0001",
-    "REQ-QUIC-RFC9000-S13P4P2P2-0003",
+    "RFC9000-S13-4-2-2-P2-S1-R01",
     "RFC9000-S13-4-2-2-P3-S2-R01"
   ],
   "summary": "Carve direct proof, fuzz topoffs, and permanent benchmark coverage for the helper-backed RFC 9000 ECN ACK-count validation floor without claiming broader endpoint ECN deployment.",
