@@ -987,7 +987,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S8-1-P4-S2-R01` | For the purposes of avoiding amplification prior to address validation, servers MUST count all of the payload bytes received in datagrams that are uniquely attributed to a single connection |
 | `RFC9000-S8-1-P6-S3-R01` | To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO) |
 | `REQ-QUIC-RFC9000-S8P1-0006` | Specifically, the client MUST send an Initial packet in a UDP datagram that contains at least 1200 bytes if it does not have Handshake keys, and otherwise send a Handshake packet |
-| `REQ-QUIC-RFC9000-S8P1-0007` | Probe on PTO to avoid handshake deadlock |
+| `RFC9000-S8-1-P6-S3-R01` | Probe on PTO to avoid handshake deadlock |
 | `REQ-QUIC-RFC9000-S8P1P2-0001` | This token MUST be repeated by the client in all Initial packets it sends for that connection after it receives the Retry packet |
 | `REQ-QUIC-RFC9000-S8P1P2-0002` | Instead, the server SHOULD immediately close (Section 10 |
 | `REQ-QUIC-RFC9000-S8P1P2-0003` | Validate Retry token returns |

@@ -39,7 +39,7 @@
   "remaining_open_requirements": [
     "RFC9000-S8-1-P6-S3-R01",
     "REQ-QUIC-RFC9000-S8P1-0006",
-    "REQ-QUIC-RFC9000-S8P1-0007",
+    "RFC9000-S8-1-P6-S3-R01",
     "RFC9000-S8-1-1-P1-R01",
     "REQ-QUIC-RFC9000-S8P1P2-0001",
     "REQ-QUIC-RFC9000-S8P1P2-0002",
@@ -180,7 +180,7 @@
       "notes": "This depends on connection-state and key-availability logic that is not present in the current codebase slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S8P1-0007",
+      "requirement_id": "RFC9000-S8-1-P6-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

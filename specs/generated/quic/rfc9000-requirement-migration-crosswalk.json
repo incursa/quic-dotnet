@@ -4816,7 +4816,7 @@
       "statement": "Specifically, the client MUST send an Initial packet in a UDP datagram that contains at least 1200 bytes if it does not have Handshake keys, and otherwise send a Handshake packet."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S8P1-0007",
+      "id": "RFC9000-S8-1-P6-S3-R01",
       "title": "Probe on PTO to avoid handshake deadlock",
       "statement": "To prevent deadlock, clients MUST send a packet on a Probe Timeout (PTO)."
     },

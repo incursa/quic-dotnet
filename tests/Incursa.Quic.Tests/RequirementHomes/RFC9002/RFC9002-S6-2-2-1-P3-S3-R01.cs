@@ -10,7 +10,7 @@ namespace Incursa.Quic.Tests;
 public sealed class REQ_QUIC_RFC9002_S6P2P2P1_0005
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S8P1-0007")]
+    [Requirement("RFC9000-S8-1-P6-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TrySelectInitialOrHandshakeProbeTimeoutMicros_SelectsHandshakeWhenHandshakeKeysAreAvailable()

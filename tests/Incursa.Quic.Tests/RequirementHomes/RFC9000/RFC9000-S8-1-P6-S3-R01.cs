@@ -56,7 +56,6 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0005
     ///   <workbench-requirement requirementId="RFC9000-S8-1-P6-S3-R01">To prevent this deadlock, clients MUST send a packet on a Probe Timeout (PTO); see Section 6.2 of [QUIC-RECOVERY].</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("RFC9000-S8-1-P6-S3-R01")]
-    [Requirement("REQ-QUIC-RFC9000-S8P1-0007")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RecoveryTimerExpired_ReplaysTheBootstrapInitialWhenNoNewClientCryptoIsAvailable()
