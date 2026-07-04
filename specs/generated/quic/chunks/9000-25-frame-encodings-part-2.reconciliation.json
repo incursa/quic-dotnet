@@ -623,7 +623,7 @@
       "notes": "No live implementation or test evidence was found under the selected roots."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S19P4-0002",
+      "requirement_id": "RFC9000-S19-4-P2-S2-R01",
       "section": "S19P4",
       "title": "A receiver of RESET_STREAM MAY discard any data that it already received on that stream",
       "status": "not implemented",

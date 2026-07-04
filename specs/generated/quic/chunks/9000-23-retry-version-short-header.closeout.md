@@ -54,7 +54,7 @@
 | `REQ-QUIC-RFC9000-S17P2P5-0014` | The value in the Unused field is set to an arbitrary value by the server; a client MUST ignor... | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5-0015` | In addition to the fields from the long header, it MUST contain these additional fields: | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5-0016` | An opaque token that the server MAY use to validate the client's address | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0001` | The server MUST include a connection ID of its choice in the Source Connection ID field | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
+| `RFC9000-S17-2-5-1-P2-S1-R02` | The server MUST include a connection ID of its choice in the Source Connection ID field | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-1-P2-S1-R01` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
@@ -160,7 +160,7 @@
 - `REQ-QUIC-RFC9000-S17P2P5-0014`
 - `REQ-QUIC-RFC9000-S17P2P5-0015`
 - `REQ-QUIC-RFC9000-S17P2P5-0016`
-- `REQ-QUIC-RFC9000-S17P2P5P1-0001`
+- `RFC9000-S17-2-5-1-P2-S1-R02`
 - `RFC9000-S17-2-5-1-P2-S1-R01`
 - `RFC9000-S17-2-5-1-P2-S2-R01`
 - `RFC9000-S17-2-5-1-P2-S3-R01`

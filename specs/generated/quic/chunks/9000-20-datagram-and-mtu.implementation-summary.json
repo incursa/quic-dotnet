@@ -162,7 +162,7 @@
       "notes": "Validation failure now disables ECN until re-enabled explicitly."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+      "requirement_id": "RFC9000-S13-4-2-1-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicEcnMarking.cs",
@@ -178,7 +178,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -206,7 +206,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -256,7 +256,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -284,7 +284,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -312,7 +312,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -340,7 +340,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",
@@ -368,7 +368,7 @@
         "QuicFrameCodecTests"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+        "RFC9000-S13-4-2-1-P1-S2-R01",
         "REQ-QUIC-RFC9000-S13P4P2P1-0002",
         "REQ-QUIC-RFC9000-S13P4P2P1-0004",
         "REQ-QUIC-RFC9000-S13P4P2P1-0005",

@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P6-0009">After AEAD-limit terminal discard, an endpoint MUST suppress stateless-reset response emission when a later received packet does not resolve to a retained route or resolves only to route state without a remembered stateless-reset token for the same remote address and port.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-6-P4-S4-R01">After AEAD-limit terminal discard, an endpoint MUST suppress stateless-reset response emission when a later received packet does not resolve to a retained route or resolves only to route state without a remembered stateless-reset token for the same remote address and port.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P6-0009")]
-public sealed class REQ_QUIC_RFC9001_S6P6_0009
+[Requirement("RFC9001-S6-6-P4-S4-R01")]
+public sealed class RFC9001_S6_6_P4_S4_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

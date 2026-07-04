@@ -920,7 +920,7 @@ public sealed class DoqFoundationTests
 
     [Fact]
     [Requirement("RFC9250-S5-1-P1-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [Requirement("RFC9250-S5-2-P1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void StrictProfileDoesNotSelectFallbackTransport()
@@ -934,7 +934,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [Requirement("RFC9250-S5-2-P1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0092")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -963,7 +963,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0087")]
+    [Requirement("RFC9250-S5-2-P1-R01")]
     [Requirement("REQ-QUIC-RFC9250-0092")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

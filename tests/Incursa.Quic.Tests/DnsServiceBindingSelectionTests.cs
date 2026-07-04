@@ -208,7 +208,7 @@ public sealed class DnsServiceBindingSelectionTests
 
     [Fact]
     [Requirement("RFC9461-S5-P1-R01")]
-    [Requirement("REQ-QUIC-RFC9461-0013")]
+    [Requirement("RFC9461-S5-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DohPathIsRelativeTemplateWithDnsVariable()
@@ -226,7 +226,7 @@ public sealed class DnsServiceBindingSelectionTests
     [InlineData("/dns-query")]
     [InlineData("")]
     [Requirement("RFC9461-S5-P1-R01")]
-    [Requirement("REQ-QUIC-RFC9461-0013")]
+    [Requirement("RFC9461-S5-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DohPathRejectsAbsoluteOrVariableLessTemplates(string dohPathTemplate)
@@ -239,7 +239,7 @@ public sealed class DnsServiceBindingSelectionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0014")]
+    [Requirement("RFC9461-S5-P1-S2-R02")]
     [Requirement("RFC9461-S5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -258,7 +258,7 @@ public sealed class DnsServiceBindingSelectionTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9461-0014")]
+    [Requirement("RFC9461-S5-P1-S2-R02")]
     [Requirement("RFC9461-S5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

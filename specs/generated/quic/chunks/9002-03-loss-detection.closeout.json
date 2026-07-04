@@ -41,7 +41,7 @@
       "REQ-QUIC-RFC9002-S6P2P1-0003",
       "REQ-QUIC-RFC9002-S6P2P1-0004",
       "REQ-QUIC-RFC9002-S6P2P1-0005",
-      "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "RFC9002-S6-2-1-P8-S1-R01",
       "REQ-QUIC-RFC9002-S6P2P1-0007",
       "REQ-QUIC-RFC9002-S6P2P1-0008",
       "REQ-QUIC-RFC9002-S6P2P1-0009",
@@ -98,7 +98,7 @@
       "REQ-QUIC-RFC9002-S6P2P1-0003",
       "REQ-QUIC-RFC9002-S6P2P1-0004",
       "REQ-QUIC-RFC9002-S6P2P1-0005",
-      "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "RFC9002-S6-2-1-P8-S1-R01",
       "REQ-QUIC-RFC9002-S6P2P1-0007",
       "REQ-QUIC-RFC9002-S6P2P1-0008",
       "REQ-QUIC-RFC9002-S6P2P1-0009",
@@ -181,7 +181,7 @@
       "REQ-QUIC-RFC9002-S6P2P1-0003",
       "REQ-QUIC-RFC9002-S6P2P1-0004",
       "REQ-QUIC-RFC9002-S6P2P1-0005",
-      "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "RFC9002-S6-2-1-P8-S1-R01",
       "REQ-QUIC-RFC9002-S6P2P1-0007",
       "REQ-QUIC-RFC9002-S6P2P1-0008",
       "REQ-QUIC-RFC9002-S6P2P1-0009",
@@ -250,7 +250,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0004.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0005.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0007.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0008.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0009.cs",
@@ -669,21 +669,21 @@
       "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S6P2P1-0006",
+      "requirement_id": "RFC9002-S6-2-1-P8-S1-R01",
       "title": "Restart PTO on send, acknowledgment, or key discard",
       "section_token": "S6P2P1",
       "status": "implemented and tested",
       "implementation_evidence": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs::ResetProbeTimeoutBackoffCount_RestartsPtoAfterASendOrKeyDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs::ResetProbeTimeoutBackoffCount_LeavesTheBackoffUnchangedWhenNoRestartEventOccurs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs::ResetProbeTimeoutBackoffCount_PreservesAZeroBackoffWhenRestarted",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs::TrackSentPacket_DoesNotRestartThePtoForNonAckElicitingPackets"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Requirement-home proof passed under the focused RFC 9002 Section 6 filter; linked artifacts retain the bounded scope and proof plan."

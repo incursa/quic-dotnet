@@ -3,8 +3,8 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0001")]
-public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
+[Requirement("RFC9000-S13-4-2-1-P1-S2-R01")]
+public sealed class RFC9000_S13_4_2_1_P1_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -62,7 +62,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2-0001">To ensure connectivity in the presence of such devices, an endpoint MUST validate the ECN counts for each network path and disable the use of ECN on that path if errors are detected.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2-0006">Implementations that use the ECT(1) codepoint MUST perform ECN validation using the reported ECT(1) counts.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P1-0006">Each packet number space MUST maintain separate acknowledgment state and separate ECN counts.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P1-0001">An endpoint that receives an ACK frame with ECN counts MUST validate the counts before using them.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P1-S2-R01">An endpoint that receives an ACK frame with ECN counts MUST validate the counts before using them.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P3-S1-R01">ECN validation MUST fail if the sum of the increase in ECT(0) and ECN-CE counts is less than the number of newly acknowledged packets that were originally sent with an ECT(0) marking.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S13-4-2-1-P3-S2-R01">ECN validation MUST fail if the sum of the increases to ECT(1) and ECN-CE counts is less than the number of newly acknowledged packets sent with an ECT(1) marking.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P4P2P2-0001">If validation fails, then the endpoint MUST disable ECN.</workbench-requirement>
@@ -73,7 +73,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     [Requirement("REQ-QUIC-RFC9000-S13P4P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2-0006")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P1-0006")]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0001")]
+    [Requirement("RFC9000-S13-4-2-1-P1-S2-R01")]
     [Requirement("RFC9000-S13-4-2-1-P3-S1-R01")]
     [Requirement("RFC9000-S13-4-2-1-P3-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
@@ -112,7 +112,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0001")]
+    [Requirement("RFC9000-S13-4-2-1-P1-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0002")]
     [Requirement("RFC9000-S13-4-2-1-P3-S1-R01")]
     [Requirement("RFC9000-S13-4-2-1-P3-S2-R01")]

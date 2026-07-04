@@ -17,7 +17,7 @@
     "RFC9484-S4-P5-S1-R01",
     "REQ-QUIC-RFC9484-0028",
     "REQ-QUIC-RFC9484-0029",
-    "REQ-QUIC-RFC9484-0030",
+    "RFC9484-S4-1-P3-S2-R01",
     "REQ-QUIC-RFC9484-0041"
   ],
   "summary": "Add CONNECT-IP request initiation, URI expansion, encryption, recipient action, rejection, and non-success response abort policy.",

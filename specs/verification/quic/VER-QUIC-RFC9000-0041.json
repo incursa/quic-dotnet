@@ -14,7 +14,7 @@
   "verification_method": "Focused S19P4/S19P5 requirement-home tests, regenerated QUIC coverage triage, Release build, and SpecTrace JSON validation.",
   "verifies": [
     "REQ-QUIC-RFC9000-1205",
-    "REQ-QUIC-RFC9000-S19P4-0002",
+    "RFC9000-S19-4-P2-S2-R01",
     "RFC9000-S19-4-P3-S1-R01",
     "REQ-QUIC-RFC9000-S19P4-0004",
     "REQ-QUIC-RFC9000-S19P4-0005",

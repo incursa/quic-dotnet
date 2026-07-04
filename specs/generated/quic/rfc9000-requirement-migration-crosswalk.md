@@ -116,7 +116,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S10-3-2-P4-S2-R01` | Use a recoverable connection ID length with static-key tokens |
 | `REQ-QUIC-RFC9000-S10P3P2-0004` | Disallow zero-length connection IDs for static-key tokens |
 | `RFC9000-S10-3-2-P5-S2-R01` | Do not reuse the connection ID and static key combination |
-| `REQ-QUIC-RFC9000-S10P3P2-0008` | Allow duplicate stateless reset tokens to signal protocol violation |
+| `RFC9000-S10-3-2-P6-S2-R01` | Allow duplicate stateless reset tokens to signal protocol violation |
 | `REQ-QUIC-RFC9000-S10P3P2-0009` | Allow per-connection random secrets |
 | `REQ-QUIC-RFC9000-S10P3P2-0010` | Allow static-key token generation |
 | `REQ-QUIC-RFC9000-S10P3P2-0012` | Forbid zero-length connection IDs |
@@ -152,7 +152,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S12P3-0003` | Version Negotiation (Section 17 |
 | `REQ-QUIC-RFC9000-S12P3-0004` | Initial packets can only be sent with Initial packet protection keys and acknowledged in packets that are also Initial packets |
 | `REQ-QUIC-RFC9000-S12P3-0005` | Similarly, Handshake packets are sent at the Handshake encryption level and can only be acknowledged in Handshake packets |
-| `REQ-QUIC-RFC9000-S12P3-0006` | numbers in each space start at packet number 0 |
+| `RFC9000-S12-3-P7-S2-R02` | numbers in each space start at packet number 0 |
 | `REQ-QUIC-RFC9000-S12P3-0009` | Allow Stateless Reset after packet-number exhaustion |
 | `REQ-QUIC-RFC9000-S12P3-0012` | Duplicate suppression MUST happen after removing packet protection for the reasons described in Section 9 |
 | `REQ-QUIC-RFC9000-S12P4-0005` | Keep frames within one packet |
@@ -249,7 +249,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P4P2-0004` | Validate ECN for each new connection and path change |
 | `REQ-QUIC-RFC9000-S13P4P2-0005` | Implementations MAY use other methods defined in RFCs |
 | `REQ-QUIC-RFC9000-S13P4P2-0006` | Validate ECN using ECT(1) counts when ECT(1) is used |
-| `REQ-QUIC-RFC9000-S13P4P2P1-0001` | Validate ECN counts before using them |
+| `RFC9000-S13-4-2-1-P1-S2-R01` | Validate ECN counts before using them |
 | `REQ-QUIC-RFC9000-S13P4P2P1-0002` | Fail ECN validation when counts are missing for newly acknowledged ECT packets |
 | `REQ-QUIC-RFC9000-S13P4P2P1-0003` | This check detects a network element that zeroes the ECN field or a peer that does not report ECN markings |
 | `REQ-QUIC-RFC9000-S13P4P2P1-0004` | Fail ECN validation when ECT(0) and CE counts are too small |
@@ -340,7 +340,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S17P2P1-0010` | The value in the Unused field MUST be set to an arbitrary value by the server |
 | `REQ-QUIC-RFC9000-S17P2P1-0012` | Where QUIC might be multiplexed with other protocols (see [RFC7983]), servers SHOULD set the... |
 | `REQ-QUIC-RFC9000-S17P2P1-0015` | The value for Source Connection ID MUST be copied from the Destination Connection ID of the r... |
-| `REQ-QUIC-RFC9000-S17P2P1-0016` | Version-specific rules for the connection ID therefore MUST NOT influence a decision about wh... |
+| `RFC9000-S17-2-1-P8-R01` | Version-specific rules for the connection ID therefore MUST NOT influence a decision about wh... |
 | `REQ-QUIC-RFC9000-S17P2P1-0018` | It is only sent in response to a packet that MUST indicate an unsupported version; see Sectio... |
 | `REQ-QUIC-RFC9000-S17P2P1-0019` | The Version Negotiation packet MUST NOT include the Packet Number and Length fields present i... |
 | `REQ-QUIC-RFC9000-S17P2P2-0001` | An Initial packet MUST use long headers with a type value of 0x00 |
@@ -420,7 +420,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S17P2P5-0014` | The value in the Unused field is set to an arbitrary value by the server; a client MUST ignor... |
 | `REQ-QUIC-RFC9000-S17P2P5-0015` | In addition to the fields from the long header, it MUST contain these additional fields: |
 | `REQ-QUIC-RFC9000-S17P2P5-0016` | An opaque token that the server MAY use to validate the client's address |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0001` | The server MUST include a connection ID of its choice in the Source Connection ID field |
+| `RFC9000-S17-2-5-1-P2-S1-R02` | The server MUST include a connection ID of its choice in the Source Connection ID field |
 | `RFC9000-S17-2-5-1-P2-S1-R01` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... |
 | `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... |
 | `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... |
@@ -635,7 +635,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S19P3P2-0005` | The ECT0 Count field MUST be variable-length integer representing the total number of packets... |
 | `REQ-QUIC-RFC9000-S19P3P2-0006` | The ECT1 Count field MUST be variable-length integer representing the total number of packets... |
 | `REQ-QUIC-RFC9000-S19P3P2-0007` | The ECN-CE Count field MUST be variable-length integer representing the total number of packe... |
-| `REQ-QUIC-RFC9000-S19P4-0002` | A receiver of RESET_STREAM MAY discard any data that it already received on that stream |
+| `RFC9000-S19-4-P2-S2-R01` | A receiver of RESET_STREAM MAY discard any data that it already received on that stream |
 | `REQ-QUIC-RFC9000-S19P4-0004` | The Type field MUST be encoded as a variable-length integer with value 0x04 |
 | `REQ-QUIC-RFC9000-S19P4-0005` | The Stream ID field MUST be encoded as a variable-length integer |
 | `REQ-QUIC-RFC9000-S19P4-0006` | The Application Protocol Error Code field MUST be encoded as a variable-length integer |
@@ -967,7 +967,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S7P2-0013` | Allow further Destination Connection ID changes only from NEW_CONNECTION_ID frames |
 | `RFC9000-S7-2-P8-S3-R02` | Discard subsequent Initial packets with a different Source Connection ID |
 | `REQ-QUIC-RFC9000-S7P3-0001` | Authenticate connection ID choices through transport parameters |
-| `REQ-QUIC-RFC9000-S7P3-0003` | Echo the client Initial Destination Connection ID in original_destination_connection_id |
+| `RFC9000-S7-3-P2-S2-R01` | Echo the client Initial Destination Connection ID in original_destination_connection_id |
 | `REQ-QUIC-RFC9000-S7P3-0004` | Echo the Retry Source Connection ID when Retry is used |
 | `RFC9000-S7-3-P3-S1-R01` | The values provided by a peer for these transport parameters MUST match the values that an endpoint used in the Destination and Source Connection ID fields of Initial packets that it sent (and received, for servers) |
 | `RFC9000-S7-3-P4-S1-R01` | Treat the absence of the initial_source_connection_id transport parameter from either endpoint or the absence of the original_destination_connection_id transport parameter from the server as a connection error of type TRANSPORT_PARAMETER_ERROR |
@@ -1037,7 +1037,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S9P1-0002` | Probe New Local Addresses Before Migration |
 | `REQ-QUIC-RFC9000-S9P2-0003` | Reset Congestion State on Migration |
 | `REQ-QUIC-RFC9000-S9P2-0004` | Retain State for Port-Only Changes |
-| `REQ-QUIC-RFC9000-S9P2-0005` | Validate ECN Capability After Migration |
+| `RFC9000-S9-2-P5-S1-R01` | Validate ECN Capability After Migration |
 | `REQ-QUIC-RFC9000-S9P3-0001` | If the recipient permits the migration, it MUST send subsequent packets to the new peer address and MUST initiate path validation (Section 8 |
 | `RFC9000-S9-3-P4-S1-R01` | Allow data on an unvalidated peer address |
 | `REQ-QUIC-RFC9000-S9P3-0003` | Protect unvalidated peer-address traffic |

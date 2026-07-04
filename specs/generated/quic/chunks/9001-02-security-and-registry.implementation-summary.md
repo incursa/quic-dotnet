@@ -49,7 +49,7 @@ This is the helper-backed ceiling for the chunk in the current repository shape.
 ## Remaining Open Requirements In Scope
 - `RFC9001-S6-P1-S1-R01`
 - `REQ-QUIC-RFC9001-S6-0003`
-- `REQ-QUIC-RFC9001-S6-0006` through `RFC9001-S6-P5-S3-R01`
+- `RFC9001-S6-P3-S2-R01` through `RFC9001-S6-P5-S3-R01`
 - `RFC9001-S7-P2-S3-R01`
 - `REQ-QUIC-RFC9001-S7-0002`
 - `REQ-QUIC-RFC9001-S8-0002`

@@ -243,17 +243,17 @@
       "notes": "The response echoes the client destination connection ID into the source field."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "requirement_id": "RFC9000-S17-2-1-P8-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "src/Incursa.Quic/QuicVersionNegotiation.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs"
       ],
       "remaining_gap": null,
       "notes": "Version Negotiation send decisions are independent of version-specific connection-ID rules."

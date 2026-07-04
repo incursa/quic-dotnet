@@ -34,7 +34,7 @@
   - `REQ-QUIC-RFC9002-S6P2P1-0003`
   - `REQ-QUIC-RFC9002-S6P2P1-0004`
   - `REQ-QUIC-RFC9002-S6P2P1-0005`
-  - `REQ-QUIC-RFC9002-S6P2P1-0006`
+  - `RFC9002-S6-2-1-P8-S1-R01`
   - `REQ-QUIC-RFC9002-S6P2P1-0007`
   - `REQ-QUIC-RFC9002-S6P2P1-0008`
   - `REQ-QUIC-RFC9002-S6P2P1-0009`
@@ -78,7 +78,7 @@
 
 ## Files Changed
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P2P5P3TestSupport.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P2P1-0006.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-1-P8-S1-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-4-P5-S2-R01.cs`
 - `specs/requirements/quic/SPEC-QUIC-RFC9002.json`
 - `specs/requirements/quic/SPEC-QUIC-RFC9002.md`

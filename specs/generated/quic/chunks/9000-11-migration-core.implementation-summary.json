@@ -193,7 +193,7 @@
       "notes": "No migration controller exists to reset or retain congestion, RTT, or ECN state."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P2-0005",
+      "requirement_id": "RFC9000-S9-2-P5-S1-R01",
       "completion_status": "blocked_by_technical_dependency",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -424,7 +424,7 @@
     "REQ-QUIC-RFC9000-0475",
     "REQ-QUIC-RFC9000-S9P2-0003",
     "REQ-QUIC-RFC9000-S9P2-0004",
-    "REQ-QUIC-RFC9000-S9P2-0005",
+    "RFC9000-S9-2-P5-S1-R01",
     "REQ-QUIC-RFC9000-S9P3-0001",
     "RFC9000-S9-3-P4-S1-R01",
     "REQ-QUIC-RFC9000-S9P3-0003",

@@ -9,7 +9,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectUdpTunnelSetupPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0036")]
+    [Requirement("RFC9298-S3-1-P2-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TunnelSetup_ExtractsDecodedTargetAndUdpSocketEndpoint()
@@ -29,7 +29,7 @@ public sealed class Http3ConnectUdpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0036")]
+    [Requirement("RFC9298-S3-1-P2-2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_RejectsRequestsThatDoNotMatchTemplate()

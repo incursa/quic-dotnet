@@ -74,7 +74,7 @@
 
 ### S19P4 (11 requirements)
 - `REQ-QUIC-RFC9000-1205` - not implemented
-- `REQ-QUIC-RFC9000-S19P4-0002` - not implemented
+- `RFC9000-S19-4-P2-S2-R01` - not implemented
 - `RFC9000-S19-4-P3-S1-R01` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0004` - not implemented
 - `REQ-QUIC-RFC9000-S19P4-0005` - not implemented

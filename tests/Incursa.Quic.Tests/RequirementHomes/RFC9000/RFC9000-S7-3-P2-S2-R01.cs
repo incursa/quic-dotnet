@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
-public sealed class REQ_QUIC_RFC9000_S7P3_0003
+[Requirement("RFC9000-S7-3-P2-S2-R01")]
+public sealed class RFC9000_S7_3_P2_S2_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
+    [Requirement("RFC9000-S7-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     public void TryFormatTransportParameters_EmitsOriginalDestinationConnectionIdFromServer()
     {
@@ -25,7 +25,7 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
+    [Requirement("RFC9000-S7-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     public void TryFormatTransportParameters_RejectsOriginalDestinationConnectionIdFromClient()
     {
@@ -45,7 +45,7 @@ public sealed class REQ_QUIC_RFC9000_S7P3_0003
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
+    [Requirement("RFC9000-S7-3-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     public void TryFormatTransportParameters_RoundTripsMaximumLengthOriginalDestinationConnectionId()
     {

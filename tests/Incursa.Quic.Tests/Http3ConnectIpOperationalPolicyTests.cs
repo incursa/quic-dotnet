@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectIpOperationalPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0186")]
+    [Requirement("RFC9484-S9-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_DefinesCapsuleTypesForConfigurationExchange()
@@ -15,7 +15,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0186")]
+    [Requirement("RFC9484-S9-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotRequireCapsuleTypeWithoutConfigurationExchange()
@@ -116,7 +116,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0192")]
+    [Requirement("RFC9484-S10-1-P1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_AllowsIpPacketsWithinConnectionAndPmtuLimit()
@@ -125,7 +125,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0192")]
+    [Requirement("RFC9484-S10-1-P1-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_RejectsIpPacketsBeyondConnectionOrPmtuLimit()

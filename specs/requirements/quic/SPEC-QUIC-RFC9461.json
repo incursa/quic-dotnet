@@ -294,7 +294,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0013",
+      "id": "RFC9461-S5-P1-S2-R01",
       "title": "Require a dns variable in the URI Template",
       "statement": "The URI Template MUST contain a `dns` variable.",
       "coverage": {
@@ -315,7 +315,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9461-0014",
+      "id": "RFC9461-S5-P1-S2-R02",
       "title": "Require valid :path expansion",
       "statement": "The URI Template MUST expand to a valid and functional `:path` value.",
       "coverage": {

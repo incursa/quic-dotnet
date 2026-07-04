@@ -15342,7 +15342,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P2-0008",
+      "id": "RFC9000-S10-3-2-P6-S2-R01",
       "title": "Allow duplicate stateless reset tokens to signal protocol violation",
       "statement": "Endpoints are not required to compare new values against all previous values, but a duplicate value MAY be treated as a connection error of type PROTOCOL_VIOLATION.",
       "coverage": {
@@ -15366,8 +15366,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0008.cs::TryRegisterStatelessResetToken_RejectsReusingTheSameTokenForASecondConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P2-0008.cs::TryRetireStatelessResetToken_AllowsTheSameTokenToBeReusedAfterTheOriginalRegistrationIsRemoved"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-2-P6-S2-R01.cs::TryRegisterStatelessResetToken_RejectsReusingTheSameTokenForASecondConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-2-P6-S2-R01.cs::TryRetireStatelessResetToken_AllowsTheSameTokenToBeReusedAfterTheOriginalRegistrationIsRemoved"
         ]
       }
     },
@@ -16425,7 +16425,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P3-0006",
+      "id": "RFC9000-S12-3-P7-S2-R02",
       "title": "numbers in each space start at packet number 0",
       "statement": "Packet numbers in each MUST space start at packet number 0.",
       "coverage": {
@@ -16449,7 +16449,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-12.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S12P3-0006.cs::PacketNumbersStartAtZeroInEachSpace"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P7-S2-R02.cs::PacketNumbersStartAtZeroInEachSpace"
         ]
       }
     },
@@ -19116,9 +19116,9 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace"
         ],
         "upstream_refs": [
           "RFC 9000 §13.4 RFC9000-S13.4-B3-P2-S1",
@@ -19454,8 +19454,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath"
         ]
       }
     },
@@ -19521,7 +19521,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+      "id": "RFC9000-S13-4-2-1-P1-S2-R01",
       "title": "Validate ECN counts before using them",
       "statement": "An endpoint that receives an ACK frame with ECN counts MUST validate the counts before using them.",
       "coverage": {
@@ -19548,11 +19548,11 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_RejectsImpossibleCountsBeforeStateUse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_IgnoresStaleAckCountsWhenLargestAcknowledgedDoesNotAdvance",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -19587,7 +19587,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AckOmitsEcnCounts",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AckOmitsEcnCounts",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs::TryValidateAcknowledgedEcnCounts_AllowsMissingCountsWhenNoEctPacketIsNewlyAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -19619,7 +19619,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.4.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsValidCountsBeforeStateUse",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedCountsStayZeroForAckedEctPackets"
         ]
       }
@@ -19655,7 +19655,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S1-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct0IncreaseThatCoversNewlyAcknowledgedEct0Packets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S1-R01.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0AndCeIncreaseIsTooSmall",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S1-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct0PacketsReportedAsCe",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -19690,7 +19690,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct1IncreaseThatCoversNewlyAcknowledgedEct1Packets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S2-R01.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1AndCeIncreaseIsTooSmall",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P3-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsEct1PacketsReportedAsCe",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -19723,10 +19723,10 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_AllowsMatchingCountsWithinSentTotals",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedEct0CountExceedsSentEct0Packets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs::TryValidateAcknowledgedEcnCounts_FailsWhenReportedEct1CountExceedsSentEct1Packets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -19759,10 +19759,10 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_AllowsZeroCountsForNeverAppliedEctCodepoints",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::TryValidateAcknowledgedEcnCounts_AcceptsMatchingCountsForEachPacketNumberSpace",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct1CountIsReportedButEct1WasNeverApplied",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0008.cs::TryValidateAcknowledgedEcnCounts_FailsWhenEct0CountIsReportedButEct0WasNeverApplied",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0001.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P1-S2-R01.cs::Fuzz_TryValidateAcknowledgedEcnCounts_RejectsRepresentativeInvalidAckCountDeltas"
         ]
       }
     },
@@ -22333,7 +22333,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "id": "RFC9000-S17-2-1-P8-R01",
       "title": "Version-specific rules for the connection ID therefore MUST NOT influence a decision about wh...",
       "statement": "Version-specific rules for the connection ID therefore MUST NOT influence a decision about whether to send a Version Negotiation packet.",
       "coverage": {
@@ -22357,8 +22357,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs::ShouldSendVersionNegotiation_ReturnsTrueForAnUnsupportedClientVersionWithEnoughDatagramSpace",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs::ShouldSendVersionNegotiation_ReturnsFalseForASupportedClientVersion"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs::ShouldSendVersionNegotiation_ReturnsTrueForAnUnsupportedClientVersionWithEnoughDatagramSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs::ShouldSendVersionNegotiation_ReturnsFalseForASupportedClientVersion"
         ]
       }
     },
@@ -24776,7 +24776,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0001",
+      "id": "RFC9000-S17-2-5-1-P2-S1-R02",
       "title": "The server MUST include a connection ID of its choice in the Source Connection ID field",
       "statement": "The server MUST include a connection ID of its choice in the Source Connection ID field.",
       "coverage": {
@@ -24800,7 +24800,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-17.2.5.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P5P1-0001.cs::TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-1-P2-S1-R02.cs::TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId"
         ]
       }
     },
@@ -31772,7 +31772,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P4-0002",
+      "id": "RFC9000-S19-4-P2-S2-R01",
       "title": "A receiver of RESET_STREAM MAY discard any data that it already received on that stream",
       "statement": "A receiver of RESET_STREAM MAY discard any data that it already received on that stream.",
       "coverage": {
@@ -31796,7 +31796,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P4-0002.cs::TryReceiveResetStreamFrame_DiscardsBufferedDataAfterReset"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P2-S2-R01.cs::TryReceiveResetStreamFrame_DiscardsBufferedDataAfterReset"
         ]
       }
     },
@@ -41937,7 +41937,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P3-0003",
+      "id": "RFC9000-S7-3-P2-S2-R01",
       "title": "Echo the client Initial Destination Connection ID in original_destination_connection_id",
       "statement": "A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.",
       "coverage": {
@@ -41964,9 +41964,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_EmitsOriginalDestinationConnectionIdFromServer",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_RejectsOriginalDestinationConnectionIdFromClient",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S7P3-0003.cs::TryFormatTransportParameters_RoundTripsMaximumLengthOriginalDestinationConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S2-R01.cs::TryFormatTransportParameters_EmitsOriginalDestinationConnectionIdFromServer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S2-R01.cs::TryFormatTransportParameters_RejectsOriginalDestinationConnectionIdFromClient",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P2-S2-R01.cs::TryFormatTransportParameters_RoundTripsMaximumLengthOriginalDestinationConnectionId"
         ]
       }
     },
@@ -44114,7 +44114,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P2-0005",
+      "id": "RFC9000-S9-2-P5-S1-R01",
       "title": "Validate ECN Capability After Migration",
       "statement": "An endpoint MUST validate ECN capability as described in Section 13.4 when it migrates to a new path.",
       "coverage": {
@@ -44138,8 +44138,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P2-0005.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressReenablesEcnValidationOnTheNewPath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-2-P5-S1-R01.cs::MigratingToANewLocalAddressResetsPriorEcnValidationCountsBeforeRevalidatingTheNewPath"
         ]
       }
     },

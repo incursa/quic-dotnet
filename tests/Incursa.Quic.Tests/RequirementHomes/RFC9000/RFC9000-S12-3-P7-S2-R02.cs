@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S12P3-0006">Packet numbers in each MUST space start at packet number 0.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-3-P7-S2-R02">Packet numbers in each MUST space start at packet number 0.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S12P3-0006")]
-public sealed class REQ_QUIC_RFC9000_S12P3_0006
+[Requirement("RFC9000-S12-3-P7-S2-R02")]
+public sealed class RFC9000_S12_3_P7_S2_R02
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

@@ -1193,7 +1193,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0037",
+      "id": "RFC9250-S4-3-1-P1-S4-R02",
       "title": "Discard response after late STOP_SENDING",
       "statement": "If the server response has already been sent, the client MUST discard the incoming response.",
       "coverage": {
@@ -4047,7 +4047,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0087",
+      "id": "RFC9250-S5-2-P1-R01",
       "title": "Opportunistic usage profile fallback",
       "statement": "An implementation using the Opportunistic usage profile SHOULD fall back to DoT or cleartext DNS if the DoQ connection attempt fails.",
       "coverage": {
@@ -4071,8 +4071,8 @@
           "VER-QUIC-RFC9250-0016"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0087.cs::DoqOpportunisticFallbackTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0087.cs::DoqOpportunisticFallbackPolicyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P1-R01.cs::DoqOpportunisticFallbackTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-2-P1-R01.cs::DoqOpportunisticFallbackPolicyCodeAndTestsAreTraceLinked",
           "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::StrictProfileDoesNotSelectFallbackTransport",
           "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
           "tests/Incursa.Quic.Tests/DoqFoundationTests.cs::OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted"

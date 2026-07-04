@@ -18,7 +18,7 @@
     "RFC9484-S4-P5-S1-R01",
     "REQ-QUIC-RFC9484-0028",
     "REQ-QUIC-RFC9484-0029",
-    "REQ-QUIC-RFC9484-0030",
+    "RFC9484-S4-1-P3-S2-R01",
     "REQ-QUIC-RFC9484-0041"
   ],
   "scope": "This verification covers connect-ip token tunnel initiation, single-stream association, URI Template expansion before dispatch, required encryption modes, configured upstream forwarding, local IP-proxy action, proxy rejection permission, and client aborts on non-successful proxying responses.",

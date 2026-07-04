@@ -4,18 +4,18 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P1-0001">The server MUST include a connection ID of its choice in the Source Connection ID field.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-5-1-P2-S1-R02">The server MUST include a connection ID of its choice in the Source Connection ID field.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0001")]
-public sealed class REQ_QUIC_RFC9000_S17P2P5P1_0001
+[Requirement("RFC9000-S17-2-5-1-P2-S1-R02")]
+public sealed class RFC9000_S17_2_5_1_P2_S1_R02
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P5P1-0001">The server MUST include a connection ID of its choice in the Source Connection ID field.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-5-1-P2-S1-R02">The server MUST include a connection ID of its choice in the Source Connection ID field.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S17P2P5P1-0001")]
+    [Requirement("RFC9000-S17-2-5-1-P2-S1-R02")]
     public void TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId()
     {
         byte[] clientInitialDestinationConnectionId =

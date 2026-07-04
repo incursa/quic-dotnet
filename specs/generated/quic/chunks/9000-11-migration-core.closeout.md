@@ -45,7 +45,7 @@
   - Blocker: This behavior needs a connection-migration state machine that can gate handshake confirmation, peer-address changes, and local-address selection before the rule can be enforced.
 - `S9P1`: `REQ-QUIC-RFC9000-S9P1-0001`, `REQ-QUIC-RFC9000-S9P1-0002`
   - Blocker: This behavior needs a migration-aware send path that can probe a new local address before moving traffic.
-- `S9P2`: `REQ-QUIC-RFC9000-0476`, `REQ-QUIC-RFC9000-0475`, `REQ-QUIC-RFC9000-S9P2-0003`, `REQ-QUIC-RFC9000-S9P2-0004`, `REQ-QUIC-RFC9000-S9P2-0005`
+- `S9P2`: `REQ-QUIC-RFC9000-0476`, `REQ-QUIC-RFC9000-0475`, `REQ-QUIC-RFC9000-S9P2-0003`, `REQ-QUIC-RFC9000-S9P2-0004`, `RFC9000-S9-2-P5-S1-R01`
   - Blocker: This behavior needs migration-aware congestion, RTT, and ECN reset state on the new path.
 - `S9P3`: `REQ-QUIC-RFC9000-S9P3-0001`, `RFC9000-S9-3-P4-S1-R01`, `REQ-QUIC-RFC9000-S9P3-0003`, `RFC9000-S9-3-P4-S2-R01`, `RFC9000-S9-3-P7-S1-R01`, `RFC9000-S9-3-P2-S1-R01`, `REQ-QUIC-RFC9000-S9P3-0007`, `REQ-QUIC-RFC9000-0483`, `REQ-QUIC-RFC9000-S9P3-0009`, `REQ-QUIC-RFC9000-S9P3-0010`, `REQ-QUIC-RFC9000-0488`
   - Blocker: Blocked by the missing connection-migration state machine and send-path orchestration.

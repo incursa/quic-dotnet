@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P3P2-0008">Endpoints are not required to compare new values against all previous values, but a duplicate value MAY be treated as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-2-P6-S2-R01">Endpoints are not required to compare new values against all previous values, but a duplicate value MAY be treated as a connection error of type PROTOCOL_VIOLATION.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P3P2-0008")]
-public sealed class REQ_QUIC_RFC9000_S10P3P2_0008
+[Requirement("RFC9000-S10-3-2-P6-S2-R01")]
+public sealed class RFC9000_S10_3_2_P6_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]

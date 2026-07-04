@@ -219,7 +219,7 @@
       "notes": "The repository still lacks the send-path packet-number allocator."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0007",
+      "requirement_id": "RFC9002-S3-P1-S4-R02",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

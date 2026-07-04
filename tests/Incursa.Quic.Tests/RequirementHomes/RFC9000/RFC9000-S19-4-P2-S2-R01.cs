@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S19P4-0002")]
-public sealed class REQ_QUIC_RFC9000_S19P4_0002
+[Requirement("RFC9000-S19-4-P2-S2-R01")]
+public sealed class RFC9000_S19_4_P2_S2_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S19P4-0002")]
+    [Requirement("RFC9000-S19-4-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReceiveResetStreamFrame_DiscardsBufferedDataAfterReset()

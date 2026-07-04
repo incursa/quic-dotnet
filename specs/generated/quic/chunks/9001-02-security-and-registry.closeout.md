@@ -60,7 +60,7 @@ The helper-backed ceiling now includes `REQ-QUIC-RFC9001-S6-0004` as closed by r
   - Remaining gap: the repo still lacks handshake-confirmation state and the 1-RTT key-update subsystem needed to initiate a safe key update.
 - `REQ-QUIC-RFC9001-S6-0003` `Initialize Key Phase to zero`
   - Remaining gap: the repo does not yet format 1-RTT packets with a key-update state machine, so the initial Key Phase value is not a live implementation concern yet.
-- `REQ-QUIC-RFC9001-S6-0006` `Update keys when Key Phase changes`
+- `RFC9001-S6-P3-S2-R01` `Update keys when Key Phase changes`
   - Remaining gap: the repo does not yet have key-update logic that can swap packet-protection keys when the Key Phase bit changes.
 - `REQ-QUIC-RFC9001-S6-0007` `Decrypt the packet with the changed Key Phase`
   - Remaining gap: the repo does not yet implement packet decryption or the changed-Key-Phase recovery path needed by this clause.

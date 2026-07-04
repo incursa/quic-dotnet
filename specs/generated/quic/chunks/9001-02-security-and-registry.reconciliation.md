@@ -23,7 +23,7 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 - `REQ-QUIC-RFC9001-S6-0003` Initialize Key Phase to zero - `blocked`
 - `REQ-QUIC-RFC9001-S6-0004` Toggle Key Phase on each update - `implemented and tested`
 - `RFC9001-S6-P3-S1-R01` Let Key Phase detect key changes - `partially implemented`
-- `REQ-QUIC-RFC9001-S6-0006` Update keys when Key Phase changes - `blocked`
+- `RFC9001-S6-P3-S2-R01` Update keys when Key Phase changes - `blocked`
 - `REQ-QUIC-RFC9001-S6-0007` Decrypt the packet with the changed Key Phase - `blocked`
 - `REQ-QUIC-RFC9001-S6-0008` Update both endpoints on key update - `blocked`
 - `RFC9001-S6-P5-S2-R01` Prohibit TLS KeyUpdate messages - `blocked`

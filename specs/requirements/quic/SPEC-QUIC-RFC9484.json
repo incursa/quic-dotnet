@@ -618,7 +618,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0030",
+      "id": "RFC9484-S4-1-P3-S2-R01",
       "title": "Allow rejection of IP proxying requests",
       "statement": "An IP proxy MAY reject the IP proxying request.",
       "coverage": {
@@ -3947,7 +3947,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0186",
+      "id": "RFC9484-S9-P1-S1-R01",
       "title": "Define new capsule types for configuration exchange",
       "statement": "Extensions SHOULD define new capsule types for configuration exchange when needed.",
       "coverage": {
@@ -4083,7 +4083,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0192",
+      "id": "RFC9484-S10-1-P1-R02",
       "title": "Limit QUIC DATAGRAM frame payload size",
       "statement": "QUIC DATAGRAM frames MUST carry only packets up to the length determined by the QUIC connection configuration and the Path MTU (PMTU).",
       "coverage": {

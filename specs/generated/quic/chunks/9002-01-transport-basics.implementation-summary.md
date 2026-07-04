@@ -61,7 +61,7 @@
 - `REQ-QUIC-RFC9002-S3-0001` - Needs a transmit/composer surface to prove emitted packets always carry packet-level headers; the current refs only cover header parsing and modeling.
 - `REQ-QUIC-RFC9002-S3-0005` - Needs sender-side packet-number allocation state.
 - `REQ-QUIC-RFC9002-S3-0006` - Needs sender-side packet-number sequencing.
-- `REQ-QUIC-RFC9002-S3-0007` - Needs sender-side packet-number gap policy.
+- `RFC9002-S3-P1-S4-R02` - Needs sender-side packet-number gap policy.
 - `REQ-QUIC-RFC9002-S3-0009` - Needs retransmission and loss-detection policy.
 - `REQ-QUIC-RFC9002-S3-0010` - Needs retransmission-in-new-packets logic.
 - `REQ-QUIC-RFC9002-S3-0013` - Needs CRYPTO-aware ACK timer shortening.

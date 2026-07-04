@@ -144,7 +144,7 @@
       "reason": "Enforcing one token per CID needs a token registry."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3P2-0008",
+      "requirement_id": "RFC9000-S10-3-2-P6-S2-R01",
       "reason": "Treating duplicates as protocol violations needs connection-level token issuance state."
     },
     {

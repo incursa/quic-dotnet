@@ -212,7 +212,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Fact]
     [Requirement("RFC9297-S2-1-1-P4-R01")]
     [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0024")]
+    [Requirement("RFC9297-S2-1-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramSupport_AcceptsNondecreasingZeroRttSettings()
@@ -225,7 +225,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Fact]
     [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
     [Requirement("RFC9297-S2-1-1-P4-S3-R02")]
-    [Requirement("REQ-QUIC-RFC9297-0024")]
+    [Requirement("RFC9297-S2-1-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramSupport_RejectsLoweredZeroRttSettings()
@@ -239,7 +239,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Fact]
     [Requirement("RFC9297-S2-1-1-P4-S2-R01")]
     [Requirement("RFC9297-S2-1-1-P4-S3-R02")]
-    [Requirement("REQ-QUIC-RFC9297-0024")]
+    [Requirement("RFC9297-S2-1-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramSupport_LoweredZeroRttSettingsMapToSettingsError()

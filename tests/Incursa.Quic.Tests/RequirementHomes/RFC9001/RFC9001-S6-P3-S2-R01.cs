@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6-0006">An endpoint that notices a changed Key Phase bit MUST update keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-P3-S2-R01">An endpoint that notices a changed Key Phase bit MUST update keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6-0006")]
-public sealed class REQ_QUIC_RFC9001_S6_0006
+[Requirement("RFC9001-S6-P3-S2-R01")]
+public sealed class RFC9001_S6_P3_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

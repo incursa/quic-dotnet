@@ -48,7 +48,7 @@
 - `RFC9000-S10-3-2-P5-S2-R01`: Preventing reuse of the CID/static-key pair needs endpoint state and allocation policy.
 - `RFC9000-S10-3-2-P5-S4-R01`: Preventing reuse of reset CIDs across shared static keys needs cross-endpoint policy state.
 - `RFC9000-S10-3-2-P6-S1-R01`: Enforcing one token per CID needs a token registry.
-- `REQ-QUIC-RFC9000-S10P3P2-0008`: Treating duplicates as protocol violations needs connection-level token issuance state.
+- `RFC9000-S10-3-2-P6-S2-R01`: Treating duplicates as protocol violations needs connection-level token issuance state.
 - `REQ-QUIC-RFC9000-S10P3P3-0002`: Reset-send limiting requires stateful accounting of emitted Stateless Resets.
 
 ## Reference Audit

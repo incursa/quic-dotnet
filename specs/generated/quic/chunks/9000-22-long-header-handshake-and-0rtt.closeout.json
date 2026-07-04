@@ -367,7 +367,7 @@
       "notes": "The response echoes the client destination connection ID into the source field."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "requirement_id": "RFC9000-S17-2-1-P8-R01",
       "section": "S17P2P1",
       "title": "Version-specific rules for the connection ID therefore MUST NOT influence a decision abou...",
       "status": "covered",
@@ -377,7 +377,7 @@
         "src/Incursa.Quic/QuicVersionNegotiation.cs:79-174"
       ],
       "test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P1-0016.cs:16-35"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-1-P8-R01.cs:16-35"
       ],
       "direct_refs_state": "canonical",
       "remaining_gap": null,

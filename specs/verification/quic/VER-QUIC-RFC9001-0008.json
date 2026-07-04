@@ -12,10 +12,10 @@
     "REQ-QUIC-RFC9001-S6P6-0006 remains the retained-route response floor baseline.",
     "REQ-QUIC-RFC9001-S6P6-0007 remains the malformed-formatting suppression baseline.",
     "REQ-QUIC-RFC9001-S6P6-0008 remains the known-token loop-suppression baseline.",
-    "REQ-QUIC-RFC9001-S6P6-0009 defines the suppressive no-retained-route/no-token cell being verified."
+    "RFC9001-S6-6-P4-S4-R01 defines the suppressive no-retained-route/no-token cell being verified."
   ],
   "procedure": [
-    "Run focused requirement-home tests for REQ-QUIC-RFC9001-S6P6-0009.",
+    "Run focused requirement-home tests for RFC9001-S6-6-P4-S4-R01.",
     "Run the retained-route, malformed-formatting, and known-token matrix guards for REQ-QUIC-RFC9001-S6P6-0006 through REQ-QUIC-RFC9001-S6P6-0008.",
     "Run `dotnet run -c Release --project benchmarks/Incursa.Quic.Benchmarks.csproj -- --job Dry --filter \"*QuicStatelessResetBenchmarks*\" --artifacts artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/bdn` to refresh the permanent stateless-reset benchmark evidence.",
     "Render the touched SpecTrace Markdown views from JSON and run the render check for those scopes.",
@@ -23,7 +23,7 @@
   ],
   "expected_result": "Later packets that do not resolve to a retained route or that resolve only to route state without a remembered token return TokenUnavailable and suppress stateless-reset response emission. The retained-route positive floor continues to emit when route, token, and gates permit emission, the known-token loop-suppression cell remains separate, and the permanent benchmark suite preserves the retained-route lookup miss and no-token miss paths without claiming a broader ambiguity model.",
   "verifies": [
-    "REQ-QUIC-RFC9001-S6P6-0009"
+    "RFC9001-S6-6-P4-S4-R01"
   ],
   "related_artifacts": [
     "SPEC-QUIC-RFC9001",
@@ -32,7 +32,7 @@
     "WI-QUIC-RFC9001-0008"
   ],
   "evidence": [
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R01.cs",
     "benchmarks/QuicStatelessResetBenchmarks.cs",
     "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/benchmark.log",
     "artifacts/v/20260425-rfc9001-s6p6-non-retained-suppression/focused-rfc9001-s6p6-non-retained-suppression-tests.log",

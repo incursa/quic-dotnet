@@ -74,7 +74,7 @@
       "notes": "The formatter emits initial_source_connection_id and the parser preserves it; the fuzz lane now traces the same behavior across representative values."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S7P3-0003",
+      "requirement_id": "RFC9000-S7-3-P2-S2-R01",
       "title": "Echo the client Initial Destination Connection ID in original_destination_connection_id",
       "completion_status": "implemented and tested",
       "files_changed": [
@@ -88,8 +88,8 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> REQ-QUIC-RFC9000-S7P3-0003",
-        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> REQ-QUIC-RFC9000-S7P3-0003"
+        "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs::TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress -> RFC9000-S7-3-P2-S2-R01",
+        "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs::Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation -> RFC9000-S7-3-P2-S2-R01"
       ],
       "remaining_gap": null,
       "notes": "The server-side transport-parameter round trip already includes original_destination_connection_id and the parser preserves the value unchanged."

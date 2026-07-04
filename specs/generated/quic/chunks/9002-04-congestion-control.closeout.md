@@ -42,7 +42,7 @@
 - `RFC9002-S7-2-P4-S2-R01` - Recommend a two-packet minimum congestion window. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: Constructor_SeedsTheControllerWithTheInitialWindowAndKeepsInstancesIndependent.
 
 ### S7P3P1
-- `REQ-QUIC-RFC9002-S7P3P1-0001` - Enter recovery on loss or ECN-CE increase. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals.
+- `RFC9002-S7-3-1-P3-S1-R01` - Enter recovery on loss or ECN-CE increase. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals.
 - `REQ-QUIC-RFC9002-S7P3P1-0002` - Enter slow start when the window is below threshold. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals.
 - `REQ-QUIC-RFC9002-S7P3P1-0003` - Increase cwnd by acknowledged bytes in slow start. Status: implemented and tested. Evidence: src/Incursa.Quic/QuicCongestionControlState.cs, src/Incursa.Quic/PublicAPI.Unshipped.txt; tests: TryRegisterLossAndProcessEcn_EnterRecoveryOnlyForEligibleSignals.
 

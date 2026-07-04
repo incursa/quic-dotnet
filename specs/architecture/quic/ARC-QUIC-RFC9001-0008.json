@@ -15,14 +15,14 @@
     "VER-QUIC-RFC9001-0008"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9001-S6P6-0009"
+    "RFC9001-S6-6-P4-S4-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
     "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicStatelessReset.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0009.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R01.cs",
     "benchmarks/QuicStatelessResetBenchmarks.cs"
   ],
   "risks": [

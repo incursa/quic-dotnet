@@ -863,7 +863,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9463-0039",
+      "id": "RFC9463-S4-2-P1-R01",
       "title": "Request OPTION_V6_DNR",
       "statement": "The DHCPv6 client MUST include OPTION_V6_DNR in an Option Request Option (ORO).",
       "coverage": {

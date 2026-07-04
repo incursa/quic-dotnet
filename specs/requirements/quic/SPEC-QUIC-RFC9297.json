@@ -480,7 +480,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0024",
+      "id": "RFC9297-S2-1-1-P4-S3-R01",
       "title": "Validate stored SETTINGS_H3_DATAGRAM during 0-RTT",
       "statement": "If a client stores the value of the SETTINGS_H3_DATAGRAM setting with its 0-RTT state, the client MUST validate that the new value of the SETTINGS_H3_DATAGRAM setting sent by the server in the handshake is greater than or equal to the stored value.",
       "coverage": {

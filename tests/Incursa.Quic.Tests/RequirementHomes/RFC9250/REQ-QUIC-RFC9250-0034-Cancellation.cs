@@ -23,7 +23,7 @@ public sealed class REQ_QUIC_RFC9250_0034_Cancellation
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0037")]
+    [Requirement("RFC9250-S4-3-1-P1-S4-R02")]
     [Requirement("RFC9250-S4-3-1-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9298 tunnel setup policy.",
   "verifies": [
-    "REQ-QUIC-RFC9298-0036",
+    "RFC9298-S3-1-P2-2-S1-R01",
     "REQ-QUIC-RFC9298-0037",
     "REQ-QUIC-RFC9298-0038",
     "RFC9298-S3-1-P4-S5-R01",

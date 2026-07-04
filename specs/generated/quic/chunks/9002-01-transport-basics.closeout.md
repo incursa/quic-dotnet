@@ -41,7 +41,7 @@
 - `REQ-QUIC-RFC9002-S3-0001` Attach packet-level headers to transmissions.
 - `REQ-QUIC-RFC9002-S3-0005` Prohibit packet number reuse.
 - `REQ-QUIC-RFC9002-S3-0006` Send packet numbers monotonically.
-- `REQ-QUIC-RFC9002-S3-0007` Allow intentional packet number gaps.
+- `RFC9002-S3-P1-S4-R02` Allow intentional packet number gaps.
 - `REQ-QUIC-RFC9002-S3-0009` Ensure reliable delivery outcome.
 - `REQ-QUIC-RFC9002-S3-0010` Allow retransmission in new packets.
 - `REQ-QUIC-RFC9002-S3-0013` Shorten CRYPTO acknowledgment timers.
@@ -70,7 +70,7 @@
 - `REQ-QUIC-RFC9002-S3-0001`: blocked by the absence of a transmit/composer surface.
 - `REQ-QUIC-RFC9002-S3-0005`: blocked by missing sender-side packet-number allocation state.
 - `REQ-QUIC-RFC9002-S3-0006`: blocked by missing sender-side packet-number sequencing.
-- `REQ-QUIC-RFC9002-S3-0007`: blocked by missing sender-side packet-number gap policy.
+- `RFC9002-S3-P1-S4-R02`: blocked by missing sender-side packet-number gap policy.
 - `REQ-QUIC-RFC9002-S3-0009`: blocked by missing retransmission and loss-detection policy.
 - `REQ-QUIC-RFC9002-S3-0010`: blocked by missing retransmission-in-new-packets logic.
 - `REQ-QUIC-RFC9002-S3-0013`: blocked by missing CRYPTO-aware ACK timer shortening.

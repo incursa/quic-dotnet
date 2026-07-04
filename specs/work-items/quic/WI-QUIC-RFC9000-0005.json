@@ -18,7 +18,7 @@
     "REQ-QUIC-RFC9000-0475",
     "REQ-QUIC-RFC9000-S9P2-0003",
     "REQ-QUIC-RFC9000-S9P2-0004",
-    "REQ-QUIC-RFC9000-S9P2-0005"
+    "RFC9000-S9-2-P5-S1-R01"
   ],
   "summary": "Keep the RFC 9000 migration slice traceable while the runtime probes new local addresses before normal use and resets congestion, RTT, and ECN validation state when migration promotion lands.",
   "planned_changes": "- Add or preserve candidate-path probing for new local addresses before migration promotion.\n- Keep the active-path recovery reset helper tied to the migration path so congestion, RTT, and ECN validation restart from initial values on a new path.\n- Retain the port-only preservation branch so a port-only change can keep the prior recovery snapshot and ECN validation history.\n- Add requirement-home tests that prove new-local-address probing, deferred promotion, migration reset, port-only retention, and ECN revalidation on the migrated path.",
@@ -30,7 +30,7 @@
     "Generalized multipath scheduling or any broader route-selection policy beyond one active path plus candidates.",
     "Changing unrelated handshake, stream, or endpoint-binding behavior."
   ],
-  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-0476, REQ-QUIC-RFC9000-0475, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, and REQ-QUIC-RFC9000-S9P2-0005. Unrelated connection and handshake state remain untouched.",
+  "completion_notes": "This packet now proves REQ-QUIC-RFC9000-S9P1-0001, REQ-QUIC-RFC9000-S9P1-0002, REQ-QUIC-RFC9000-0476, REQ-QUIC-RFC9000-0475, REQ-QUIC-RFC9000-S9P2-0003, REQ-QUIC-RFC9000-S9P2-0004, and RFC9000-S9-2-P5-S1-R01. Unrelated connection and handshake state remain untouched.",
   "design_links": [
     "ARC-QUIC-RFC9000-0005"
   ]

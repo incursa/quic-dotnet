@@ -684,7 +684,7 @@ generated-triage CRLF normalization warnings.
 
 ## 2026-05-08 S13 ECN Validation-Before-Use Topoff Closure Note
 
-`REQ-QUIC-RFC9000-S13P4P2P1-0001` is now `trace_clean` under the existing
+`RFC9000-S13-4-2-1-P1-S2-R01` is now `trace_clean` under the existing
 ECN validation artifact family `ARC-QUIC-RFC9000-0011`,
 `WI-QUIC-RFC9000-0011`, and `VER-QUIC-RFC9000-0011`, alongside the baseline
 ownership. The closure adds direct focused positive, negative, and edge proof

@@ -48,7 +48,7 @@
       "REQ-QUIC-RFC9000-0475",
       "REQ-QUIC-RFC9000-S9P2-0003",
       "REQ-QUIC-RFC9000-S9P2-0004",
-      "REQ-QUIC-RFC9000-S9P2-0005",
+      "RFC9000-S9-2-P5-S1-R01",
       "REQ-QUIC-RFC9000-S9P3-0001",
       "RFC9000-S9-3-P4-S1-R01",
       "REQ-QUIC-RFC9000-S9P3-0003",
@@ -90,7 +90,7 @@
       "REQ-QUIC-RFC9000-0475",
       "REQ-QUIC-RFC9000-S9P2-0003",
       "REQ-QUIC-RFC9000-S9P2-0004",
-      "REQ-QUIC-RFC9000-S9P2-0005",
+      "RFC9000-S9-2-P5-S1-R01",
       "REQ-QUIC-RFC9000-S9P3-0001",
       "RFC9000-S9-3-P4-S1-R01",
       "REQ-QUIC-RFC9000-S9P3-0003",
@@ -176,7 +176,7 @@
         "REQ-QUIC-RFC9000-0475",
         "REQ-QUIC-RFC9000-S9P2-0003",
         "REQ-QUIC-RFC9000-S9P2-0004",
-        "REQ-QUIC-RFC9000-S9P2-0005"
+        "RFC9000-S9-2-P5-S1-R01"
       ],
       "tests_covering_requirement": [],
       "direct_refs_added_or_updated": [],

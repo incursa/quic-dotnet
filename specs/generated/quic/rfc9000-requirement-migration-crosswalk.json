@@ -461,7 +461,7 @@
       "statement": "This method for choosing the stateless reset token means that the combination of connection ID and static key MUST NOT be used for another connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3P2-0008",
+      "id": "RFC9000-S10-3-2-P6-S2-R01",
       "title": "Allow duplicate stateless reset tokens to signal protocol violation",
       "statement": "Endpoints are not required to compare new values against all previous values, but a duplicate value MAY be treated as a connection error of type PROTOCOL_VIOLATION."
     },
@@ -641,7 +641,7 @@
       "statement": "Handshake packets MUST be sent at the Handshake encryption level and be acknowledged only in Handshake packets."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S12P3-0006",
+      "id": "RFC9000-S12-3-P7-S2-R02",
       "title": "numbers in each space start at packet number 0",
       "statement": "Packet numbers in each MUST space start at packet number 0."
     },
@@ -1126,7 +1126,7 @@
       "statement": "Implementations that use the ECT(1) codepoint MUST perform ECN validation using the reported ECT(1) counts."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P1-0001",
+      "id": "RFC9000-S13-4-2-1-P1-S2-R01",
       "title": "Validate ECN counts before using them",
       "statement": "An endpoint that receives an ACK frame with ECN counts MUST validate the counts before using them."
     },
@@ -1581,7 +1581,7 @@
       "statement": "The value for Source Connection ID MUST be copied from the Destination Connection ID of the received packet, which is initially randomly selected by a client."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P1-0016",
+      "id": "RFC9000-S17-2-1-P8-R01",
       "title": "Version-specific rules for the connection ID therefore MUST NOT influence a decision about wh...",
       "statement": "Version-specific rules for the connection ID therefore MUST NOT influence a decision about whether to send a Version Negotiation packet."
     },
@@ -1981,7 +1981,7 @@
       "statement": "An opaque token that the server MAY use to validate the client's address."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0001",
+      "id": "RFC9000-S17-2-5-1-P2-S1-R02",
       "title": "The server MUST include a connection ID of its choice in the Source Connection ID field",
       "statement": "The server MUST include a connection ID of its choice in the Source Connection ID field."
     },
@@ -3056,7 +3056,7 @@
       "statement": "The ECN-CE Count field MUST be variable-length integer representing the total number of packets received with the ECN-CE codepoint in the packet number space of the ACK frame."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P4-0002",
+      "id": "RFC9000-S19-4-P2-S2-R01",
       "title": "A receiver of RESET_STREAM MAY discard any data that it already received on that stream",
       "statement": "A receiver of RESET_STREAM MAY discard any data that it already received on that stream."
     },
@@ -4716,7 +4716,7 @@
       "statement": "The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S7P3-0003",
+      "id": "RFC9000-S7-3-P2-S2-R01",
       "title": "Echo the client Initial Destination Connection ID in original_destination_connection_id",
       "statement": "A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter."
     },
@@ -5066,7 +5066,7 @@
       "statement": "When the only change in the peer's address is its port number, an endpoint MAY retain its congestion control state and round-trip estimate instead of reverting to initial values."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P2-0005",
+      "id": "RFC9000-S9-2-P5-S1-R01",
       "title": "Validate ECN Capability After Migration",
       "statement": "An endpoint MUST validate ECN capability as described in Section 13.4 when it migrates to a new path."
     },
