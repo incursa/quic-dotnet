@@ -87,27 +87,17 @@
       "statement": "If parsing Version Information fails, such as when it is too short or its length is not divisible by four, the endpoint MUST close the connection.",
       "coverage": {
         "positive": "not_applicable",
-        "negative": "not_applicable",
+        "negative": "required",
         "edge": "required",
-        "fuzz": "required"
+        "fuzz": "optional"
       },
       "trace": {
-        "satisfied_by": [
-          "ARC-QUIC-RFC9368-0001"
-        ],
-        "implemented_by": [
-          "WI-QUIC-RFC9368-0001"
-        ],
-        "verified_by": [
-          "VER-QUIC-RFC9368-0001"
-        ],
         "upstream_refs": [
           "RFC 9368 §4",
           "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
         ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::TryParseTransportParameters_RejectsVersionInformationWithMisalignedLength",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::Fuzz_TryParseTransportParameters_RejectsMalformedVersionInformationAcrossRepresentativeShapes"
+        "x_gap_refs": [
+          "specs/requirements/quic/REQUIREMENT-GAPS.md#rfc9368-version-information-parse-failure-close"
         ]
       }
     },
@@ -242,7 +232,7 @@
   "supplemental_sections": [
     {
       "heading": "RFC 9368 Section 4.3 Split Mapping",
-      "content": "The retired local requirement REQ-QUIC-RFC9368-S3-0002 mixed several parser-failure obligations. It has been split across RFC9368-S4-P3-S1-R01, RFC9368-S4-P3-S2-R01, RFC9368-S4-P3-S3-R01, and RFC9368-S4-P3-S4-R01. The S4-P3-S2 evidence proves malformed Version Information is detected as a parser failure at the transport-parameter codec boundary; a future runtime-close pass should add explicit frame/error-code proof if deeper connection-close evidence is required."
+      "content": "The retired local requirement REQ-QUIC-RFC9368-S3-0002 mixed several parser-failure obligations. It has been split across RFC9368-S4-P3-S1-R01, RFC9368-S4-P3-S2-R01, RFC9368-S4-P3-S3-R01, and RFC9368-S4-P3-S4-R01. RFC9368-S4-P3-S2-R01 remains an explicit gap because current tests only prove malformed Version Information is detected as a parser failure at the transport-parameter codec boundary; they do not prove endpoint connection-close behavior."
     },
     {
       "heading": "Implementation Boundary",

@@ -3,8 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("RFC9368-S4-P3-S2-R01")]
-public sealed class RFC9368_S4_P3_S2_R01
+public sealed class QuicVersionInformationParserUnitTests
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]

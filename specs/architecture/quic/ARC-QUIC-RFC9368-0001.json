@@ -15,7 +15,6 @@
   "satisfies": [
     "REQ-QUIC-RFC9368-S3-0001",
     "RFC9368-S4-P3-S1-R01",
-    "RFC9368-S4-P3-S2-R01",
     "RFC9368-S4-P3-S3-R01",
     "RFC9368-S4-P3-S4-R01"
   ],
@@ -30,7 +29,7 @@
     "src/Incursa.Quic/QuicZeroRttTransportParameterPolicy.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs"
   ],
-  "design_summary": "The RFC 9368 floor adds a first-class `QuicVersionInformation` payload to `QuicTransportParameters` and teaches the transport-parameter codec to format and parse `version_information` with non-zero chosen and available versions. The codec rejects malformed Version Information values, including zero versions, misaligned lengths, and client-sent Available Versions lists that omit the Chosen Version. The client and listener bootstrap paths seed the authenticated snapshot so the local transport-parameter state can advertise the version list, while `QuicTransportTlsBridgeState`, the resumption ticket store, and the zero-RTT transport-parameter policy clone the same structure so the authenticated metadata survives commit and replay boundaries. The runtime already enforces the floor-level chosen-version consistency checks when peer transport parameters are committed. The broader compatible-version restart/selection flow described by RFC 9368 Section 4 remains separate from this floor slice and will need its own state transition design if it is expanded later.",
+  "design_summary": "The RFC 9368 floor adds a first-class `QuicVersionInformation` payload to `QuicTransportParameters` and teaches the transport-parameter codec to format and parse `version_information` with non-zero chosen and available versions. The codec rejects malformed Version Information values, including zero versions and client-sent Available Versions lists that omit the Chosen Version. The client and listener bootstrap paths seed the authenticated snapshot so the local transport-parameter state can advertise the version list, while `QuicTransportTlsBridgeState`, the resumption ticket store, and the zero-RTT transport-parameter policy clone the same structure so the authenticated metadata survives commit and replay boundaries. The runtime already enforces the floor-level chosen-version consistency checks when peer transport parameters are committed. The broader compatible-version restart/selection flow described by RFC 9368 Section 4 remains separate from this floor slice and will need its own state transition design if it is expanded later.",
   "risks": [
     "If the floor is mistaken for full compatible-version selection, the repo will appear to support RFC 9368 more broadly than it actually does.",
     "The snapshot and resumption helpers must keep cloning the nested version arrays or the authenticated version metadata will drift between commit boundaries.",
@@ -39,7 +38,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This architecture stays inside the authenticated transport-parameter floor. The RFC9368-S4-P3-S2-R01 evidence proves malformed Version Information is rejected as a parser failure at the codec boundary; dedicated connection-close frame and QUIC v1 TRANSPORT_PARAMETER_ERROR proof remains separate from this floor slice."
+      "content": "This architecture stays inside the authenticated transport-parameter floor. Dedicated connection-close frame and QUIC v1 TRANSPORT_PARAMETER_ERROR proof for Version Information parser failures remains tracked in REQUIREMENT-GAPS.md."
     }
   ]
 }

@@ -391,6 +391,14 @@ function Get-RequirementGapMappings {
             RequirementIds     = @()
         },
         [pscustomobject]@{
+            Slug               = 'rfc9368-version-information-parse-failure-close'
+            Summary            = 'RFC 9368 Version Information parser failures remain blocked without focused endpoint close and QUIC v1 TRANSPORT_PARAMETER_ERROR proof.'
+            RequirementPrefixes = @()
+            RequirementIds     = @(
+                'RFC9368-S4-P3-S2-R01'
+            )
+        },
+        [pscustomobject]@{
             Slug               = '9000-02-stream-creation-by-sending-data'
             Summary            = 'Stream-creation by sending data remains blocked without a faithful data-first proof path.'
             RequirementPrefixes = @()

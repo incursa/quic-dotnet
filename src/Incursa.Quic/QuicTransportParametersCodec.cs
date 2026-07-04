@@ -36,7 +36,6 @@ internal static class QuicTransportParametersCodec
     // SEE: spec:RFC9000-S7-4-P6-R01
     // SEE: spec:REQ-QUIC-RFC9000-1162
     // SEE: spec:REQ-QUIC-RFC9368-S3-0001
-    // SEE: spec:RFC9368-S4-P3-S2-R01
     // SEE: spec:RFC9368-S4-P3-S3-R01
     // SEE: spec:RFC9368-S4-P3-S4-R01
     private const ulong OriginalDestinationConnectionIdId = 0x00;

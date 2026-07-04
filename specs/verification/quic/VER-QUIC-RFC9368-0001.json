@@ -15,11 +15,10 @@
   "verifies": [
     "REQ-QUIC-RFC9368-S3-0001",
     "RFC9368-S4-P3-S1-R01",
-    "RFC9368-S4-P3-S2-R01",
     "RFC9368-S4-P3-S3-R01",
     "RFC9368-S4-P3-S4-R01"
   ],
-  "scope": "This verification covers the RFC 9368 authenticated Version Information floor only. It proves formatting, parsing, malformed-value rejection, and the snapshot/clone evidence needed to keep the authenticated transport-parameter metadata stable. For RFC9368-S4-P3-S2-R01, the requirement-home evidence proves malformed Version Information is detected as a parser failure at the transport-parameter codec boundary; dedicated runtime-close and QUIC v1 TRANSPORT_PARAMETER_ERROR proof remains a separate follow-up. It does not verify the full compatible-version restart/selection flow from RFC 9368 Section 4 or any RFC 9369-specific packet-format changes.",
+  "scope": "This verification covers the RFC 9368 authenticated Version Information floor only. It proves formatting, parsing, malformed-value rejection, and the snapshot/clone evidence needed to keep the authenticated transport-parameter metadata stable. It does not verify RFC9368-S4-P3-S2-R01 endpoint-close behavior, the full compatible-version restart/selection flow from RFC 9368 Section 4, or any RFC 9369-specific packet-format changes.",
   "preconditions": [
     "The repository remains in the JSON-only SpecTrace workflow.",
     "The RFC 9368 split requirement-home tests exist under tests/Incursa.Quic.Tests/RequirementHomes/RFC9368.",
@@ -37,7 +36,6 @@
   "evidence": [
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/REQ-QUIC-RFC9368-S3-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S3-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S4-R01.cs",
     "tests/Incursa.Quic.Tests/QuicTransportParametersCodecUnitTests.cs",
@@ -55,5 +53,5 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "benchmarks/QuicTransportParametersBenchmarks.cs"
   ],
-  "status_summary": "Passed. The RFC 9368 authenticated Version Information floor now has focused requirement-home proof split across atomic Section 4.3 requirements, snapshot-preservation evidence, fuzz coverage, benchmark dry runs, generated coverage triage, and trace-validation refresh. Runtime-close and QUIC v1 transport-error typing for parser failures remains outside this floor verification."
+  "status_summary": "Passed. The RFC 9368 authenticated Version Information floor now has focused requirement-home proof split across the implemented Section 4.3 parser requirements, snapshot-preservation evidence, fuzz coverage, benchmark dry runs, generated coverage triage, and trace-validation refresh. Runtime-close and QUIC v1 transport-error typing for parser failures remains outside this floor verification and is tracked in REQUIREMENT-GAPS.md."
 }

@@ -14,7 +14,6 @@
   "addresses": [
     "REQ-QUIC-RFC9368-S3-0001",
     "RFC9368-S4-P3-S1-R01",
-    "RFC9368-S4-P3-S2-R01",
     "RFC9368-S4-P3-S3-R01",
     "RFC9368-S4-P3-S4-R01"
   ],
@@ -33,5 +32,5 @@
     "The QUIC v2 wire-format and cryptographic deltas from RFC 9369.",
     "Higher-layer application adaptation for version negotiation beyond the authenticated transport-parameter floor."
   ],
-  "completion_notes": "Complete. The authenticated Version Information floor now has requirement-home, snapshot-preservation, fuzz, benchmark, and trace-validation evidence split across the atomic Section 4.3 parser requirements, while the compatible-version runtime and parser-failure close/error-code follow-ups remain separate."
+  "completion_notes": "Complete. The authenticated Version Information floor now has requirement-home, snapshot-preservation, fuzz, benchmark, and trace-validation evidence split across the implemented Section 4.3 parser requirements, while the compatible-version runtime and parser-failure close/error-code follow-ups remain separate."
 }
