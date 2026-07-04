@@ -20665,7 +20665,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2P1-0004",
+      "id": "RFC9000-S14-2-1-P4-S3-R01",
       "title": "Validate ICMP messages with addresses, ports, and connection IDs",
       "statement": "ICMP message validation MUST include matching IP addresses and UDP ports and, when possible, connection IDs to an active QUIC session.",
       "coverage": {
@@ -20689,8 +20689,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-14.2.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsQuotedPacketsThatMatchTheActivePathAddressAndPort",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P2P1-0004.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresTheQuotedPacketToMatchTheActivePathAddressAndPort"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S3-R01.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_AcceptsQuotedPacketsThatMatchTheActivePathAddressAndPort",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S3-R01.cs::TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresTheQuotedPacketToMatchTheActivePathAddressAndPort"
         ]
       }
     },

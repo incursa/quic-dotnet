@@ -285,7 +285,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S14-2-P5-S2-R01` | Maintain a maximum datagram size per address pair when doing PMTU discovery |
 | `RFC9000-S14-2-P6-S1-R01` | Allow conservative maximum datagram size estimates |
 | `RFC9000-S14-2-1-P4-S2-R01` | Use the quoted packet to associate ICMP messages with a connection |
-| `REQ-QUIC-RFC9000-S14P2P1-0004` | Validate ICMP messages with addresses, ports, and connection IDs |
+| `RFC9000-S14-2-1-P4-S3-R01` | Validate ICMP messages with addresses, ports, and connection IDs |
 | `RFC9000-S14-2-1-P5-S1-R01` | Do not increase PMTU based on ICMP messages |
 | `REQ-QUIC-RFC9000-S14P3-0001` | DPLPMTUD [DPLPMTUD] relies on tracking loss or acknowledgment of QUIC packets that are carried in PMTU probes |
 | `REQ-QUIC-RFC9000-S14P3-0002` | PMTU probes for DPLPMTUD that use the PADDING frame implement "Probing using padding data", as defined in Section 4 |

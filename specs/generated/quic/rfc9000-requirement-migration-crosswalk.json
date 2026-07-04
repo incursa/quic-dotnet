@@ -1306,7 +1306,7 @@
       "statement": "This validation SHOULD use the quoted packet supplied in the payload of an ICMP message to associate the message with a corresponding transport connection."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P2P1-0004",
+      "id": "RFC9000-S14-2-1-P4-S3-R01",
       "title": "Validate ICMP messages with addresses, ports, and connection IDs",
       "statement": "ICMP message validation MUST include matching IP addresses and UDP ports and, when possible, connection IDs to an active QUIC session."
     },
