@@ -24,6 +24,8 @@ function Get-RelativeRepoPath {
     return [System.IO.Path]::GetRelativePath($RepoRoot, $Path).Replace("\", "/")
 }
 
+$RequirementIdPattern = '(?:REQ-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d{4,}|RFC\d{4,}-S\d+(?:-\d+)*(?:-P\d+(?:-\d+)*(?:-S\d+)?)?-R\d{2,})'
+
 function Get-RequirementSectionPrefix {
     param(
         [string]$RequirementId,
@@ -188,7 +190,7 @@ function Get-RequirementsFromAttributes {
             continue
         }
 
-        foreach ($match in [regex]::Matches($attribute.Text, 'REQ-QUIC-RFC\d+-(?:S[A-Z0-9P]+-)?\d{4,}'))
+        foreach ($match in [regex]::Matches($attribute.Text, $script:RequirementIdPattern))
         {
             $ids.Add($match.Value)
         }

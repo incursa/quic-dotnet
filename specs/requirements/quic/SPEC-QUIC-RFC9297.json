@@ -237,7 +237,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0012",
+      "id": "RFC9297-S2-1-P3-4-S2-R01",
       "title": "Allow empty HTTP Datagram Payload fields",
       "statement": "The HTTP Datagram Payload field MAY be empty.",
       "coverage": {
@@ -248,7 +248,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9297-S2P1-B5-P5-S2",
+          "RFC 9297 section 2.1 RFC9297:section-2.1-3.4 sentence 2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-2.1"
         ],
         "x_test_refs": [
@@ -603,7 +603,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0030",
+      "id": "RFC9297-S3-2-P4-2-S1-R01",
       "title": "Capsule type encoding",
       "statement": "The Capsule Type field MUST be a variable-length integer indicating the type of the capsule.",
       "coverage": {
@@ -614,7 +614,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9297 3.2 RFC9297-S3P2-B6-P6-S1",
+          "RFC 9297 section 3.2 RFC9297:section-3.2-4.2 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.2"
         ],
         "x_test_refs": [
@@ -1350,7 +1350,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0065",
+      "id": "RFC9297-S3-5-P3-2-S2-R01",
       "title": "HTTP Datagram Payload may be empty",
       "statement": "The HTTP Datagram Payload field MAY be empty.",
       "coverage": {
@@ -1361,7 +1361,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9297 section 3.5 RFC9297-S3P5-B4-P4-S2",
+          "RFC 9297 section 3.5 RFC9297:section-3.5-3.2 sentence 2",
           "https://www.rfc-editor.org/rfc/rfc9297.html#section-3.5"
         ],
         "x_test_refs": [
