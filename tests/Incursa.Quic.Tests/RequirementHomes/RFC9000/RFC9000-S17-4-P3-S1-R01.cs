@@ -4,18 +4,18 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P4-0003">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P3-S1-R01">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P4-0003")]
+[Requirement("RFC9000-S17-4-P3-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S17P4_0003
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P4-0003">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P3-S1-R01">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S17P4-0003")]
+    [Requirement("RFC9000-S17-4-P3-S1-R01")]
     public void TryBuildProtectedApplicationDataPacket_DisablesTheSpinBitForUnsupportedEndpoints()
     {
         QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
@@ -52,9 +52,9 @@ public sealed class REQ_QUIC_RFC9000_S17P4_0003
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P4-0003">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-4-P3-S1-R01">An endpoint that does not support this feature MUST disable it, as defined below.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-S17P4-0003")]
+    [Requirement("RFC9000-S17-4-P3-S1-R01")]
     public void TryOpenProtectedApplicationDataPacket_IgnoresTheIncomingSpinBitWhenUnsupported(bool incomingSpinBit)
     {
         QuicTlsPacketProtectionMaterial material = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(

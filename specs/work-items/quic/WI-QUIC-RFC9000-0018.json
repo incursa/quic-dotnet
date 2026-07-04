@@ -14,7 +14,7 @@
   "addresses": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "RFC9000-S13-2-1-P5-S1-R01",
-    "REQ-QUIC-RFC9000-S13P2P1-0012"
+    "RFC9000-S13-2-1-P6-S1-R01"
   ],
   "summary": "Implement and prove the active-path 1-RTT Application Data ACK piggyback floor for ordinary ack-eliciting sends while preserving ACK-only feedback-loop protection.",
   "planned_changes": "- Add an active-path 1-RTT application send composition step that prepends a pending Application Data ACK frame to ordinary ack-eliciting payloads.\n- Keep retransmission planning tied to the original retransmittable plaintext payload rather than the ACK-prefixed packet payload.\n- Make ACK-generation state suppress duplicate ACK-only or repeated piggyback triggers after any ACK frame covers the latest ack-eliciting receipt.\n- Keep ACK-only sends non-ack-eliciting and non-retransmittable, with no injected PING or STREAM frames.\n- Add direct requirement-home positive, negative, edge, and deterministic fuzz/property coverage for S13P2P1-0009, S13P2P1-0010, and S13P2P1-0012.\n- Add a permanent BenchmarkDotNet suite for the ACK piggyback policy checks and preserve local benchmark evidence.",

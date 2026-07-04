@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P6-0001">Endpoints MUST count the number of encrypted packets for each set of packet protection keys.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-6-P4-S1-R01">Endpoints MUST count the number of encrypted packets for each set of packet protection keys.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P6-0001")]
+[Requirement("RFC9001-S6-6-P4-S1-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P6_0001
 {
     [Fact]

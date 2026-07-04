@@ -50,7 +50,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P1-0006` | Restart idle timer on fresh ack-eliciting send |
 | `REQ-QUIC-RFC9000-S10P1P1-0001` | Allow liveness probes |
 | `REQ-QUIC-RFC9000-S10P1P2-0002` | Allow deferring idle timeout |
-| `REQ-QUIC-RFC9000-S10P2-0001` | These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY] |
+| `RFC9000-S10-2-P5-S2-R01` | These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY] |
 | `RFC9000-S10-2-P6-S2-R01` | That have some alternative means to ensure that late-arriving packets do not induce a response, such as those that are able to close the UDP socket, MAY end these states earlier to allow for faster resource recovery |
 | `REQ-QUIC-RFC9000-S10P2-0007` | Close all streams on CONNECTION_CLOSE |
 | `REQ-QUIC-RFC9000-S10P2-0008` | Reset open streams implicitly |
@@ -128,7 +128,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S11P1-0003` | Use CONNECTION_CLOSE type 0x1c for transport errors |
 | `REQ-QUIC-RFC9000-S11P1-0005` | Limiting the number of retransmissions and the time over which this final packet is sent limits the effort expended on terminated connections |
 | `REQ-QUIC-RFC9000-S11P1-0006` | An endpoint that continues to receive data for a terminated connection MUST attempt the stateless reset process |
-| `REQ-QUIC-RFC9000-S11P1-0007` | As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet |
+| `RFC9000-S11-1-P5-S1-R01` | As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet |
 | `REQ-QUIC-RFC9000-S11P2-0001` | If an application-level error affects a single stream but otherwise leaves the connection in a recoverable state, the endpoint can send a RESET_STREAM frame (Section 19 |
 | `RFC9000-S11-2-P2-S2-R01` | RESET_STREAM MUST only be instigated by the application protocol that uses QUIC |
 | `REQ-QUIC-RFC9000-S11P2-0003` | Allow stream termination only by the application protocol |
@@ -185,11 +185,11 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P2P1-0003` | uses the receiver's max_ack_delay value in determining timeouts for timer-based retransmission, as detailed in Section 6 |
 | `RFC9000-S13-2-1-P2-R02` | Acknowledge 0-RTT and 1-RTT packets within max_ack_delay |
 | `RFC9000-S13-2-1-P2-R01` | Acknowledge Initial and Handshake packets immediately |
-| `REQ-QUIC-RFC9000-S13P2P1-0006` | Do not send multiple ACK-only packets in response to one ack-eliciting packet |
+| `RFC9000-S13-2-1-P3-R01` | Do not send multiple ACK-only packets in response to one ack-eliciting packet |
 | `REQ-QUIC-RFC9000-S13P2P1-0007` | Do not send non-ack-eliciting packets in response to non-ack-eliciting packets |
 | `REQ-QUIC-RFC9000-S13P2P1-0008` | Non-ack-eliciting packets are eventually acknowledged when the endpoint sends an ACK frame in response to other events |
 | `REQ-QUIC-RFC9000-S13P2P1-0009` | that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments are included in packets with ack-eliciting frames |
-| `REQ-QUIC-RFC9000-S13P2P1-0012` | Avoid infinite feedback loops when adding ack-eliciting frames |
+| `RFC9000-S13-2-1-P6-S1-R01` | Avoid infinite feedback loops when adding ack-eliciting frames |
 | `REQ-QUIC-RFC9000-S13P2P1-0013` | Send ACK frames without delay for out-of-order or gap-detecting packets |
 | `REQ-QUIC-RFC9000-S13P2P2-0001` | determines how frequently to send acknowledgments in response to ack-eliciting packets |
 | `REQ-QUIC-RFC9000-S13P2P3-0001` | When an ACK frame is sent, one or more ranges of acknowledged packets are included |
@@ -260,7 +260,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S13P4P2P2-0002` | It stops setting the ECT codepoint in IP packets that it sends, assuming that either the network path or the peer does not support ECN |
 | `REQ-QUIC-RFC9000-S13P4P2P2-0003` | Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection |
 | `REQ-QUIC-RFC9000-S13P4P2P2-0004` | Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable |
-| `REQ-QUIC-RFC9000-S13P4P2P2-0005` | Network routing and path elements can change mid-connection |
+| `RFC9000-S13-4-2-2-P3-S2-R01` | Network routing and path elements can change mid-connection |
 | `REQ-QUIC-RFC9000-S14-0002` | The datagram size includes one or more QUIC packet headers and protected payloads, but not the UDP or IP headers |
 | `REQ-QUIC-RFC9000-S14-0003` | Define maximum datagram size as the largest UDP payload across a path |
 | `REQ-QUIC-RFC9000-S14-0005` | Use PMTUD or DPLPMTUD to discover larger datagram sizes |
@@ -273,7 +273,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S14P1-0004` | Sending UDP datagrams of this size ensures that the network path supports a reasonable Path Maximum Transmission Unit (PMTU), in both directions |
 | `RFC9000-S14-1-P3-S1-R01` | Allow oversized Initial datagrams when the path and peer support them |
 | `RFC9000-S14-1-P4-S1-R01` | Discard undersized Initial packets at the server |
-| `REQ-QUIC-RFC9000-S14P1-0007` | Allow servers to close on undersized Initial packets |
+| `RFC9000-S14-1-P4-S2-R01` | Allow servers to close on undersized Initial packets |
 | `RFC9000-S14-1-P5-S1-R01` | Limit bytes sent before validating the client address |
 | `REQ-QUIC-RFC9000-S14P2-0001` | The UDP payload includes one or more QUIC packet headers and protected payloads |
 | `REQ-QUIC-RFC9000-S14P2-0002` | The largest UDP payload an endpoint sends at any given time is referred to as the endpoint's maximum datagram size |
@@ -421,7 +421,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S17P2P5-0015` | In addition to the fields from the long header, it MUST contain these additional fields: |
 | `REQ-QUIC-RFC9000-S17P2P5-0016` | An opaque token that the server MAY use to validate the client's address |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0001` | The server MUST include a connection ID of its choice in the Source Connection ID field |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0002` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... |
+| `RFC9000-S17-2-5-1-P2-S1-R01` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... |
 | `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... |
 | `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0006` | A server MAY either discard or buffer 0-RTT packets that it receives |
@@ -456,8 +456,8 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S17P3P1-0023` | 1-RTT packets always MUST include a 1-RTT protected payload |
 | `REQ-QUIC-RFC9000-S17P4-0001` | On-path observers MAY measure the time between two spin bit toggle events to estimate the end... |
 | `REQ-QUIC-RFC9000-S17P4-0002` | The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initi... |
-| `REQ-QUIC-RFC9000-S17P4-0003` | An endpoint that does not support this feature MUST disable it, as defined below |
-| `REQ-QUIC-RFC9000-S17P4-0005` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... |
+| `RFC9000-S17-4-P3-S1-R01` | An endpoint that does not support this feature MUST disable it, as defined below |
+| `RFC9000-S17-4-P4-S2-R01` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... |
 | `REQ-QUIC-RFC9000-S17P4-0008` | If the spin bit is enabled for the connection, the endpoint maintains a spin value for each n... |
 | `REQ-QUIC-RFC9000-S17P4-0009` | When a server receives a 1-RTT packet that increases the highest packet number seen by the se... |
 | `REQ-QUIC-RFC9000-S18-0002` | They MUST be encoded as a sequence of transport parameters, as shown in Figure 20: |
@@ -713,7 +713,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S21P1P1P1-0002` | Limit bytes sent to unvalidated addresses |
 | `REQ-QUIC-RFC9000-S21P2-0001` | Disallow address change during handshake |
 | `REQ-QUIC-RFC9000-S21P2-0002` | Discard packets that cannot be authenticated |
-| `REQ-QUIC-RFC9000-S21P3-0001` | Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of addr... |
+| `RFC9000-S21-3-P2-R01` | Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of addr... |
 | `RFC9000-S21-4-P1-S2-R01` | An endpoint MAY skip packet numbers when sending packets to detect this behavior |
 | `REQ-QUIC-RFC9000-S21P5-0001` | For request forgery to be effective, an attacker MUST be able to influence what packets the p... |
 | `RFC9000-S21-5-P7-S2-R01` | QUIC servers SHOULD NOT be deployed in networks that do not deploy ingress filtering [BCP38]... |
@@ -902,7 +902,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `RFC9000-S5-1-1-P4-S4-R01` | Allow temporary CID excess only with immediate retirement requirements |
 | `RFC9000-S5-1-1-P5-S2-R01` | Close on too many active CIDs |
 | `RFC9000-S5-1-1-P6-S3-R01` | Allow limiting the total number of issued CIDs |
-| `REQ-QUIC-RFC9000-S5P1P1-0018` | Allow limiting CID issuance to reduce per-path state |
+| `RFC9000-S5-1-1-P6-S4-R01` | Allow limiting CID issuance to reduce per-path state |
 | `RFC9000-S5-1-1-P7-S1-R01` | Keep enough peer-usable CIDs for migration |
 | `REQ-QUIC-RFC9000-S5P1P2-0002` | Consume CIDs in response to migration |
 | `REQ-QUIC-RFC9000-S5P1P2-0003` | Maintain a set of peer-issued CIDs |

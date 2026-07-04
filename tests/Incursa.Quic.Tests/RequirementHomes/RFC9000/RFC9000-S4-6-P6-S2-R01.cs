@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0204">An endpoint MUST NOT wait to receive STREAMS_BLOCKED before advertising additional credit.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S4-6-P6-S2-R01">An endpoint MUST NOT wait to receive STREAMS_BLOCKED before advertising additional credit.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0204")]
+[Requirement("RFC9000-S4-6-P6-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_0204
 {
     [Fact]

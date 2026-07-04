@@ -67,7 +67,7 @@
       "REQ-QUIC-RFC9000-S13P4P2P2-0002",
       "REQ-QUIC-RFC9000-S13P4P2P2-0003",
       "REQ-QUIC-RFC9000-S13P4P2P2-0004",
-      "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+      "RFC9000-S13-4-2-2-P3-S2-R01"
     ],
     "S14": [
       "REQ-QUIC-RFC9000-0851",
@@ -87,7 +87,7 @@
       "REQ-QUIC-RFC9000-S14P1-0004",
       "RFC9000-S14-1-P3-S1-R01",
       "RFC9000-S14-1-P4-S1-R01",
-      "REQ-QUIC-RFC9000-S14P1-0007",
+      "RFC9000-S14-1-P4-S2-R01",
       "RFC9000-S14-1-P5-S1-R01"
     ],
     "S14P2": [
@@ -188,7 +188,7 @@
           "REQ-QUIC-RFC9000-S13P4P2P2-0001",
           "REQ-QUIC-RFC9000-S13P4P2P2-0003",
           "REQ-QUIC-RFC9000-S13P4P2P2-0004",
-          "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+          "RFC9000-S13-4-2-2-P3-S2-R01"
         ],
         "files": [
           "src/Incursa.Quic/QuicEcnValidationState.cs",
@@ -302,7 +302,7 @@
           "REQ-QUIC-RFC9000-S14P1-0004",
           "RFC9000-S14-1-P3-S1-R01",
           "RFC9000-S14-1-P4-S1-R01",
-          "REQ-QUIC-RFC9000-S14P1-0007"
+          "RFC9000-S14-1-P4-S2-R01"
         ],
         "reason": "The remaining Initial-path and anti-amplification behaviors are not modeled yet."
       },

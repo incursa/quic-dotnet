@@ -534,7 +534,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0026",
+      "id": "RFC9484-S4-P3-S1-R01",
       "title": "Expand URI templates for IP proxying requests",
       "statement": "When sending its IP proxying request, the client SHALL perform URI Template expansion to determine the path and query of its request.",
       "coverage": {
@@ -3737,7 +3737,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0177",
+      "id": "RFC9484-S7-2-P6-S2-R01",
       "title": "Ensure IPv6 tunnel MTU of at least 1280 bytes",
       "statement": "IP proxying endpoints that operate as routers and support IPv6 MUST ensure the IP tunnel link MTU is at least 1280 bytes.",
       "coverage": {
@@ -3996,7 +3996,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9484-0188",
+      "id": "RFC9484-S10-P1-S1-R02",
       "title": "Avoid extra packet batching",
       "statement": "IP proxying endpoints SHOULD NOT queue packets to increase batching beyond the minimal amount required to take advantage of hardware offloads.",
       "coverage": {

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P4-0005">Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use of the spin bit for a random selection of at least one in every 16 network paths, or for one in every 16 connection IDs, in order to ensure that QUIC connections that disable the spin bit are commonly observed on the network.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-4-P4-S2-R01">Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use of the spin bit for a random selection of at least one in every 16 network paths, or for one in every 16 connection IDs, in order to ensure that QUIC connections that disable the spin bit are commonly observed on the network.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S17P4-0005")]
+[Requirement("RFC9000-S17-4-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S17P4_0005
 {
     [Fact]

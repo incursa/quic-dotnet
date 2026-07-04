@@ -300,7 +300,7 @@
       "notes": "Initial and Handshake packets are marked for immediate ACK generation as soon as they are recorded."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0006",
+      "requirement_id": "RFC9000-S13-2-1-P3-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketNumberSpace.cs",
@@ -405,7 +405,7 @@
       "notes": "The helper delays ACK emission for non-ack-eliciting traffic, attempts to piggyback ACKs with other outgoing frames, and only decides to ACK immediately after the second ack-eliciting packet or the delay timer elapses."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0012",
+      "requirement_id": "RFC9000-S13-2-1-P6-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -945,7 +945,7 @@
     "RFC9000-S13-1-P3-R01",
     "REQ-QUIC-RFC9000-S13P2P1-0003",
     "REQ-QUIC-RFC9000-S13P2P1-0009",
-    "REQ-QUIC-RFC9000-S13P2P1-0012",
+    "RFC9000-S13-2-1-P6-S1-R01",
     "REQ-QUIC-RFC9000-13234",
     "REQ-QUIC-RFC9000-S13P2P3-0006",
     "REQ-QUIC-RFC9000-S13P2P3-0013",

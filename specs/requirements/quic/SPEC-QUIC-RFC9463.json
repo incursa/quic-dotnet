@@ -959,7 +959,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0043",
+      "id": "RFC9463-S4-2-P3-R01",
       "title": "Silently discard invalid OPTION_V6_DNR values",
       "statement": "The DHCPv6 client MUST silently discard any OPTION_V6_DNR that fails Section 3.1.8 validation.",
       "coverage": {
@@ -1597,7 +1597,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9463-0071",
+      "id": "RFC9463-S5-2-P2-R01",
       "title": "Receive Multiple DNR Instance Data Entries",
       "statement": "The DHCPv4 client MUST be prepared to receive multiple \"DNR Instance Data\" entries in OPTION_V4_DNR.",
       "coverage": {

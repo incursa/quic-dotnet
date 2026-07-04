@@ -8,9 +8,9 @@ using System.Net.Sockets;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S14P1-0007">A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S14-1-P4-S2-R01">A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S14P1-0007")]
+[Requirement("RFC9000-S14-1-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S14P1_0007
 {
     private const int InitialRouteDatagramOverhead = 20;

@@ -131,7 +131,7 @@
       "statement": "An implementation of QUIC MAY provide applications with an option to defer an idle timeout."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P2-0001",
+      "id": "RFC9000-S10-2-P5-S2-R01",
       "title": "These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY]",
       "statement": "These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY]."
     },
@@ -521,7 +521,7 @@
       "statement": "An endpoint that continues to receive data for a terminated connection MUST attempt the stateless reset process (Section 10.3)."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S11P1-0007",
+      "id": "RFC9000-S11-1-P5-S1-R01",
       "title": "As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet",
       "statement": "As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet."
     },
@@ -806,7 +806,7 @@
       "statement": "An endpoint MUST acknowledge all ack-eliciting Initial and Handshake packets immediately."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P1-0006",
+      "id": "RFC9000-S13-2-1-P3-R01",
       "title": "Do not send multiple ACK-only packets in response to one ack-eliciting packet",
       "statement": "Since packets containing only ACK frames are not congestion controlled, an endpoint MUST NOT send more than one such packet in response to receiving an ack-eliciting packet."
     },
@@ -826,7 +826,7 @@
       "statement": "An endpoint that is only sending ACK frames will not receive acknowledgments from its peer unless those acknowledgments MUST be included in packets with ack-eliciting frames."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P1-0012",
+      "id": "RFC9000-S13-2-1-P6-S1-R01",
       "title": "Avoid infinite feedback loops when adding ack-eliciting frames",
       "statement": "In that case, an endpoint MUST NOT send an ack-eliciting frame in all packets that would otherwise be non-ack-eliciting."
     },
@@ -1181,7 +1181,7 @@
       "statement": "Upon successful validation, an endpoint MAY continue to set an ECT codepoint in subsequent packets it sends, with the expectation that the path is ECN capable."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P4P2P2-0005",
+      "id": "RFC9000-S13-4-2-2-P3-S2-R01",
       "title": "Network routing and path elements can change mid-connection",
       "statement": "Network routing and path elements can change mid-connection; an endpoint MUST disable ECN if validation later fails."
     },
@@ -1246,7 +1246,7 @@
       "statement": "A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S14P1-0007",
+      "id": "RFC9000-S14-1-P4-S2-R01",
       "title": "Allow servers to close on undersized Initial packets",
       "statement": "A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION."
     },
@@ -1986,7 +1986,7 @@
       "statement": "The server MUST include a connection ID of its choice in the Source Connection ID field."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P2P5P1-0002",
+      "id": "RFC9000-S17-2-5-1-P2-S1-R01",
       "title": "This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the...",
       "statement": "This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the client."
     },
@@ -2161,12 +2161,12 @@
       "statement": "The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initial RTT of a connection by observing the handshake."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P4-0003",
+      "id": "RFC9000-S17-4-P3-S1-R01",
       "title": "An endpoint that does not support this feature MUST disable it, as defined below",
       "statement": "An endpoint that does not support this feature MUST disable it, as defined below."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S17P4-0005",
+      "id": "RFC9000-S17-4-P4-S2-R01",
       "title": "Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use...",
       "statement": "Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use of the spin bit for a random selection of at least one in every 16 network paths, or for one in every 16 connection IDs, in order to ensure that QUIC connections that disable the spin bit are commonly observed on the network."
     },
@@ -3446,7 +3446,7 @@
       "statement": "Packets that cannot be authenticated MUST be discarded."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S21P3-0001",
+      "id": "RFC9000-S21-3-P2-R01",
       "title": "Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of addr...",
       "statement": "Servers SHOULD provide mitigations for this attack by limiting the usage and lifetime of address validation tokens; see Section 8.1.3."
     },
@@ -4391,7 +4391,7 @@
       "statement": "An endpoint MAY limit the total number of connection IDs issued for each connection to avoid the risk of running out of connection IDs."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S5P1P1-0018",
+      "id": "RFC9000-S5-1-1-P6-S4-R01",
       "title": "Allow limiting CID issuance to reduce per-path state",
       "statement": "An endpoint MAY also limit the issuance of connection IDs to reduce the amount of per-path state it maintains."
     },

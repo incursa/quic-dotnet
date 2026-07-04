@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P7-0003">Senders SHOULD limit bursts to the initial congestion window.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-7-P2-S3-R01">Senders SHOULD limit bursts to the initial congestion window.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P7-0003")]
+[Requirement("RFC9002-S7-7-P2-S3-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P7_0003
 {
     [Fact]

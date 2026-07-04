@@ -15,7 +15,7 @@
   "verifies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "RFC9000-S13-2-1-P5-S1-R01",
-    "REQ-QUIC-RFC9000-S13P2P1-0012"
+    "RFC9000-S13-2-1-P6-S1-R01"
   ],
   "scope": "This verification covers active-path 1-RTT Application Data packet composition when ACK-generation state already contains pending ack-eliciting Application Data receipts, plus ACK-only feedback-loop protection for the same supported lane.",
   "expected_result": "Focused tests prove that pending Application Data ACK state is piggybacked onto outbound stream-open and stream-write packets, no ACK frame is invented when no ACK is pending, ACK-only packets emitted after inbound 1-RTT PING contain only ACK plus padding and remain non-ack-eliciting/non-retransmittable, and a sent piggybacked ACK suppresses duplicate ACK-only or repeated piggyback triggers until a newer ack-eliciting packet arrives. BenchmarkDotNet Dry and Short jobs validate the permanent ACK piggyback policy benchmark suite without making public or MSQUIC comparison claims. SpecTrace render/check must pass for the touched artifacts; repository-wide JSON validation output is preserved even if the current core profile still reports standing residual Markdown and unresolved-reference backlog outside the focused runtime proof.",
@@ -38,7 +38,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P6-S1-R01.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-ack-piggyback-policy/focused-rfc9000-ack-piggyback-tests.log",
     "artifacts/v/20260425-rfc9000-ack-piggyback-policy/full-rfc9000-s13p2p1-tests.log",

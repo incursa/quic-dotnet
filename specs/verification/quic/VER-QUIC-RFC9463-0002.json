@@ -35,7 +35,7 @@
     "RFC9463-S4-2-P2-R01",
     "REQ-QUIC-RFC9463-0041",
     "RFC9463-S4-2-P2-S1-R01",
-    "REQ-QUIC-RFC9463-0043",
+    "RFC9463-S4-2-P3-R01",
     "RFC9463-S4-2-P4-R01"
   ],
   "scope": "This verification covers OPTION_V6_DNR option code and length fields, service-priority storage, RFC 8415 authentication-domain-name wire formatting, IPv6 Addr Length and address-list encoding, SvcParams encoding and alpn preference, default port lookup when the port SvcParam is absent, computed SvcParams field length, ADN-only mode field omission, OPTION_ORO request data, multiple OPTION_V6_DNR instances, service-priority ordering, invalid-option discard, and loopback/multicast address discard behavior.",

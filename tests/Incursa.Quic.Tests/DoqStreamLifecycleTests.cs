@@ -258,7 +258,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("RFC9250-S4-2-P5-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0012")]
+    [Requirement("RFC9250-S4-2-P5-S3-R01")]
     [Requirement("REQ-QUIC-RFC9250-0017")]
     [Requirement("REQ-QUIC-RFC9250-0099")]
     [Requirement("REQ-QUIC-RFC9250-0100")]
@@ -289,7 +289,7 @@ public sealed class DoqStreamLifecycleTests
 
     [Fact]
     [Requirement("RFC9250-S4-2-P5-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9250-0012")]
+    [Requirement("RFC9250-S4-2-P5-S3-R01")]
     [Requirement("REQ-QUIC-RFC9250-0017")]
     [Requirement("REQ-QUIC-RFC9250-0099")]
     [Requirement("REQ-QUIC-RFC9250-0100")]
@@ -522,7 +522,7 @@ public sealed class DoqStreamLifecycleTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0034")]
     [Requirement("REQ-QUIC-RFC9250-0035")]
-    [Requirement("REQ-QUIC-RFC9250-0036")]
+    [Requirement("RFC9250-S4-3-1-P1-S1-R02")]
     [Requirement("REQ-QUIC-RFC9250-0037")]
     [Requirement("REQ-QUIC-RFC9250-0038")]
     [CoverageType(RequirementCoverageType.Negative)]
@@ -1263,7 +1263,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0106")]
+    [Requirement("RFC9250-S5-5-3-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task AddressValidationTokenPolicyAllowsTokenWithSessionResumption()
@@ -1283,7 +1283,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0106")]
+    [Requirement("RFC9250-S5-5-3-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault()

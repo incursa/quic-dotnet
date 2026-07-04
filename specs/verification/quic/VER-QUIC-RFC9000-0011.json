@@ -25,7 +25,7 @@
     "REQ-QUIC-RFC9000-S13P4P2P2-0001",
     "REQ-QUIC-RFC9000-S13P4P2P2-0003",
     "REQ-QUIC-RFC9000-S13P4P2P2-0004",
-    "REQ-QUIC-RFC9000-S13P4P2P2-0005"
+    "RFC9000-S13-4-2-2-P3-S2-R01"
   ],
   "scope": "This verification covers the supported sender-side helper floor for validating ACK ECN counts before use, failing missing or impossible counters, ignoring reordered ACK frames that do not advance largest acknowledged, disabling ECN on validation failure, leaving ECN enabled after successful validation for bounded subsequent ECT helper use, and explicitly allowing later helper revalidation.",
   "expected_result": "Focused tests prove positive, negative, edge, and deterministic fuzz coverage for ECN validation counts; the BenchmarkDotNet Dry suite executes the representative success and failure branches; the proof stays limited to helper-backed validation and does not claim endpoint ECN deployment.",
@@ -57,7 +57,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0001.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0004.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P2-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-2-P3-S2-R01.cs",
     "benchmarks/QuicEcnValidationBenchmarks.cs",
     "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/focused-rfc9000-ecn-validation-tests.log",
     "artifacts/v/20260425-rfc9000-ecn-ack-count-validation/quic-ecn-validation-benchmark-dry.log",

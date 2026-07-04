@@ -1056,7 +1056,7 @@ and `RFC9000-S17-4-P8-S1-R01` under `ARC-QUIC-RFC9000-0083`,
 protected 1-RTT runtime/wire behavior for emitting the stored path spin
 value, server receive-side storage of the received spin bit when the packet
 number advances, and client receive-side storage of the inverse spin bit when
-the packet number advances. `REQ-QUIC-RFC9000-S17P4-0005` also gained the
+the packet number advances. `RFC9000-S17-4-P4-S2-R01` also gained the
 missing zero-length connection-ID randomized-disablement edge proof.
 Regenerated coverage triage marks all four requirements as `trace_clean` and
 reports 1,320 of 1,771 QUIC requirements trace-clean overall, leaving 451

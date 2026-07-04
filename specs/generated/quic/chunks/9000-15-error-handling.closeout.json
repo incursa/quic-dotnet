@@ -34,7 +34,7 @@
       "REQ-QUIC-RFC9000-0665",
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
-      "REQ-QUIC-RFC9000-S11P1-0007",
+      "RFC9000-S11-1-P5-S1-R01",
       "RFC9000-S11-1-P5-S3-R01"
     ],
     "S11P2": [
@@ -61,7 +61,7 @@
       "REQ-QUIC-RFC9000-0665",
       "REQ-QUIC-RFC9000-S11P1-0005",
       "REQ-QUIC-RFC9000-S11P1-0006",
-      "REQ-QUIC-RFC9000-S11P1-0007",
+      "RFC9000-S11-1-P5-S1-R01",
       "RFC9000-S11-1-P5-S3-R01",
       "REQ-QUIC-RFC9000-S11P2-0001",
       "RFC9000-S11-2-P2-S2-R01",
@@ -153,7 +153,7 @@
       "reason": "Attempting stateless reset after close needs receive-path and stateful termination logic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S11P1-0007",
+      "requirement_id": "RFC9000-S11-1-P5-S1-R01",
       "reason": "Invalid Initial discard depends on handshake authentication and packet-processing pipeline."
     },
     {

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S11P1-0007">As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S11-1-P5-S1-R01">As the AEAD for Initial packets does not provide strong authentication, an endpoint MAY discard an invalid Initial packet.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S11P1-0007")]
+[Requirement("RFC9000-S11-1-P5-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S11P1_0007
 {
     [Fact]

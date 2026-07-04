@@ -7,7 +7,7 @@ public sealed class Http3DatagramLifecyclePolicyTests
 {
     [Fact]
     [Requirement("RFC9297-S2-P5-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0007")]
+    [Requirement("RFC9297-S2-P6-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramLifecycle_AllowsSupportingRequestsAndExtensionOverrides()
@@ -24,7 +24,7 @@ public sealed class Http3DatagramLifecyclePolicyTests
     [Requirement("RFC9297-S2-P5-R01")]
     [Requirement("RFC9297-S2-P6-R01")]
     [Requirement("RFC9297-S2-P6-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0007")]
+    [Requirement("RFC9297-S2-P6-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramLifecycle_AbortsUnsupportedRequestsWithH3DatagramError()

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P1-0012">In that case, an endpoint MUST NOT send an ack-eliciting frame in all packets that would otherwise be non-ack-eliciting.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P6-S1-R01">In that case, an endpoint MUST NOT send an ack-eliciting frame in all packets that would otherwise be non-ack-eliciting.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P1-0012")]
+[Requirement("RFC9000-S13-2-1-P6-S1-R01")]
 public sealed class REQ_QUIC_RFC9000_S13P2P1_0012
 {
     [Fact]

@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S7P7-0005">Packets containing only ACK frames SHOULD therefore not be paced.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S7-7-P4-S2-R01">Packets containing only ACK frames SHOULD therefore not be paced.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S7P7-0005")]
+[Requirement("RFC9002-S7-7-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9002_S7P7_0005
 {
     [Fact]

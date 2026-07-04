@@ -172,7 +172,7 @@
       "section_token": "S10P2",
       "status": "partially_implemented",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-S10P2-0001",
+        "RFC9000-S10-2-P5-S2-R01",
         "RFC9000-S10-2-P6-S2-R01",
         "RFC9000-S10-2-P6-S3-R01",
         "RFC9000-S10-2-P7-S1-R01",
@@ -186,7 +186,7 @@
         "REQ-QUIC-RFC9000-S10P2-0012"
       ],
       "implemented_requirement_ids": [
-        "REQ-QUIC-RFC9000-S10P2-0001",
+        "RFC9000-S10-2-P5-S2-R01",
         "RFC9000-S10-2-P6-S3-R01"
       ],
       "blocked_requirement_ids": [

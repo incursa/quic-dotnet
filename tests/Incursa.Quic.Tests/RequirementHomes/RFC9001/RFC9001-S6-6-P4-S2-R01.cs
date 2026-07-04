@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P6-0002">If encrypted packet count with the same key exceeds the AEAD confidentiality limit, the endpoint MUST stop using that key.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-6-P4-S2-R01">If encrypted packet count with the same key exceeds the AEAD confidentiality limit, the endpoint MUST stop using that key.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P6-0002")]
+[Requirement("RFC9001-S6-6-P4-S2-R01")]
 public sealed class REQ_QUIC_RFC9001_S6P6_0002
 {
     [Fact]

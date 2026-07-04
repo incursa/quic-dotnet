@@ -24,7 +24,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`
 - `REQ-QUIC-RFC9000-S4P5-0001` through `RFC9000-S4-5-P5-S2-R01`
 - `REQ-QUIC-RFC9000-S4P6-0001` through `RFC9000-S4-6-P6-R01`
-- `REQ-QUIC-RFC9000-0204`
+- `RFC9000-S4-6-P6-S2-R01`
 
 ## Requirements Partial
 
@@ -37,7 +37,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 ## Reference Audit
 
 - Source requirement refs found: none.
-- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-0159`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-0177`, `RFC9000-S4-2-P2-S1-R01` through `REQ-QUIC-RFC9000-0180`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`, `REQ-QUIC-RFC9000-S4P5-0001` through `RFC9000-S4-5-P5-S2-R01`, and `REQ-QUIC-RFC9000-S4P6-0001` through `REQ-QUIC-RFC9000-0204`.
+- Test requirement refs found: `REQ-QUIC-RFC9000-S4-0001` through `REQ-QUIC-RFC9000-0159`, `REQ-QUIC-RFC9000-S4P1-0001` through `REQ-QUIC-RFC9000-0177`, `RFC9000-S4-2-P2-S1-R01` through `REQ-QUIC-RFC9000-0180`, `REQ-QUIC-RFC9000-S4P4-0001` through `REQ-QUIC-RFC9000-0186`, `REQ-QUIC-RFC9000-S4P5-0001` through `RFC9000-S4-5-P5-S2-R01`, and `REQ-QUIC-RFC9000-S4P6-0001` through `RFC9000-S4-6-P6-S2-R01`.
 - Stale requirement refs found: none.
 - The accidental RFC 9001 tags in `QuicFrameCodecPart3Tests.cs` and `QuicFrameCodecFuzzTests.cs` were corrected to `REQ-QUIC-RFC9000-0158`.
 

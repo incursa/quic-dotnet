@@ -3,11 +3,11 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-0381")]
+[Requirement("RFC9000-S8-1-1-P1-R01")]
 public sealed class REQ_QUIC_RFC9000_0381
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0381")]
+    [Requirement("RFC9000-S8-1-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IssuedNewToken_CarriesNewTokenProvenance()
@@ -24,7 +24,7 @@ public sealed class REQ_QUIC_RFC9000_0381
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0381")]
+    [Requirement("RFC9000-S8-1-1-P1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UnknownTokenBytes_DoNotIdentifyAsNewTokenProvenance()

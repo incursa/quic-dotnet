@@ -55,7 +55,7 @@
 | `REQ-QUIC-RFC9000-S17P2P5-0015` | In addition to the fields from the long header, it MUST contain these additional fields: | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5-0016` | An opaque token that the server MAY use to validate the client's address | not implemented | explicit blocker note | Retry packet type 0x03, integrity-tag handling, token parsing, and server/client Retry semantics are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P2P5P1-0001` | The server MUST include a connection ID of its choice in the Source Connection ID field | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P2P5P1-0002` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
+| `RFC9000-S17-2-5-1-P2-S1-R01` | This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-1-P2-S2-R01` | A client MUST discard a Retry packet that contains a Source Connection ID field that is ident... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `RFC9000-S17-2-5-1-P2-S3-R01` | The client MUST use the value from the Source Connection ID field of the Retry packet in the... | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
 | `REQ-QUIC-RFC9000-1033` | A server MAY send Retry packets in response to Initial and 0-RTT packets | not implemented | explicit blocker note | Server Retry generation behavior is not implemented yet. |
@@ -105,9 +105,9 @@
 | `REQ-QUIC-RFC9000-S17P3P1-0023` | 1-RTT packets always MUST include a 1-RTT protected payload | not implemented | explicit blocker note | 1-RTT packet number parsing and the short-header payload/state machine are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0001` | On-path observers MAY measure the time between two spin bit toggle events to estimate the end... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0002` | The spin bit MUST only be present in 1-RTT packets, since it is possible to measure the initi... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P4-0003` | An endpoint that does not support this feature MUST disable it, as defined below | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P3-S1-R01` | An endpoint that does not support this feature MUST disable it, as defined below | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `RFC9000-S17-4-P4-S1-R01` | Implementations MUST allow administrators of clients and servers to disable the spin bit eith... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
-| `REQ-QUIC-RFC9000-S17P4-0005` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
+| `RFC9000-S17-4-P4-S2-R01` | Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `RFC9000-S17-4-P5-R01` | Allow any spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `RFC9000-S17-4-P5-R02` | Ignore any incoming spin value when disabled | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
 | `REQ-QUIC-RFC9000-S17P4-0008` | If the spin bit is enabled for the connection, the endpoint maintains a spin value for each n... | not implemented | explicit blocker note | Spin-bit enable/disable behavior and packet-number-driven spin toggling are not implemented yet. |
@@ -161,7 +161,7 @@
 - `REQ-QUIC-RFC9000-S17P2P5-0015`
 - `REQ-QUIC-RFC9000-S17P2P5-0016`
 - `REQ-QUIC-RFC9000-S17P2P5P1-0001`
-- `REQ-QUIC-RFC9000-S17P2P5P1-0002`
+- `RFC9000-S17-2-5-1-P2-S1-R01`
 - `RFC9000-S17-2-5-1-P2-S2-R01`
 - `RFC9000-S17-2-5-1-P2-S3-R01`
 - `REQ-QUIC-RFC9000-1033`
@@ -197,9 +197,9 @@
 - `REQ-QUIC-RFC9000-S17P3P1-0023`
 - `REQ-QUIC-RFC9000-S17P4-0001`
 - `REQ-QUIC-RFC9000-S17P4-0002`
-- `REQ-QUIC-RFC9000-S17P4-0003`
+- `RFC9000-S17-4-P3-S1-R01`
 - `RFC9000-S17-4-P4-S1-R01`
-- `REQ-QUIC-RFC9000-S17P4-0005`
+- `RFC9000-S17-4-P4-S2-R01`
 - `RFC9000-S17-4-P5-R01`
 - `RFC9000-S17-4-P5-R02`
 - `REQ-QUIC-RFC9000-S17P4-0008`

@@ -14,7 +14,7 @@
     "VER-QUIC-RFC9000-0083"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S17P4-0005",
+    "RFC9000-S17-4-P4-S2-R01",
     "REQ-QUIC-RFC9000-S17P4-0008",
     "REQ-QUIC-RFC9000-S17P4-0009",
     "RFC9000-S17-4-P8-S1-R01"
@@ -28,7 +28,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
     "src/Incursa.Quic/QuicHandshakeFlowCoordinator.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicS17P4SpinBitTestSupport.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0005.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P4-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P4-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P8-S1-R01.cs"
@@ -50,7 +50,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, REQ-QUIC-RFC9000-S17P4-0009, and RFC9000-S17-4-P8-S1-R01, plus the missing REQ-QUIC-RFC9000-S17P4-0005 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the focused generated S17P4 per-path spin-bit proof set: REQ-QUIC-RFC9000-S17P4-0008, REQ-QUIC-RFC9000-S17P4-0009, and RFC9000-S17-4-P8-S1-R01, plus the missing RFC9000-S17-4-P4-S2-R01 edge proof. It does not claim broader spin-bit privacy policy, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

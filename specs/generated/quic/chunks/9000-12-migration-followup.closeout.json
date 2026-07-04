@@ -226,7 +226,7 @@
       "section_token": "S9P6P3",
       "status": "blocked_by_technical_dependency",
       "requirement_ids": [
-        "REQ-QUIC-RFC9000-0538",
+        "RFC9000-S9-6-3-P1-S1-R01",
         "RFC9000-S9-6-3-P2-S1-R01",
         "RFC9000-S9-6-3-P2-S2-R01",
         "REQ-QUIC-RFC9000-0541",
@@ -240,7 +240,7 @@
       ],
       "implemented_requirement_ids": [],
       "blocked_requirement_ids": [
-        "REQ-QUIC-RFC9000-0538",
+        "RFC9000-S9-6-3-P1-S1-R01",
         "RFC9000-S9-6-3-P2-S1-R01",
         "RFC9000-S9-6-3-P2-S2-R01",
         "REQ-QUIC-RFC9000-0541",

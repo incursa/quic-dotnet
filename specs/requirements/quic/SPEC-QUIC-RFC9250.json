@@ -422,7 +422,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0012",
+      "id": "RFC9250-S4-2-P5-S3-R01",
       "title": "Process queries as they arrive",
       "statement": "Servers SHOULD process queries as they arrive.",
       "coverage": {
@@ -1164,7 +1164,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0036",
+      "id": "RFC9250-S4-3-1-P1-S1-R02",
       "title": "Prefer DOQ_REQUEST_CANCELLED for cancellation",
       "statement": "A DoQ client that cancels an outstanding request SHOULD use the error code DOQ_REQUEST_CANCELLED.",
       "coverage": {
@@ -2908,7 +2908,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0106",
+      "id": "RFC9250-S5-5-3-P4-S3-R01",
       "title": "Use address validation tokens only with resumption",
       "statement": "Clients SHOULD only use the address validation tokens when they are also using session resumption.",
       "coverage": {
@@ -2932,8 +2932,8 @@
           "VER-QUIC-RFC9250-0014"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs::DoqAddressValidationTokenPolicyTraceArtifactsAreLinked",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0106.cs::DoqAddressValidationTokenPolicyCodeAndTestsAreTraceLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-3-P4-S3-R01.cs::DoqAddressValidationTokenPolicyTraceArtifactsAreLinked",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/RFC9250-S5-5-3-P4-S3-R01.cs::DoqAddressValidationTokenPolicyCodeAndTestsAreTraceLinked",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AddressValidationTokenPolicyAllowsTokenWithSessionResumption",
           "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs::AddressValidationTokenPolicyRejectsTokenWithoutSessionResumptionByDefault"
         ]

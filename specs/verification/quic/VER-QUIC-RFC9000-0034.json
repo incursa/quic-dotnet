@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused requirement-home tests, fuzz/property mutation coverage, Release build, permanent BenchmarkDotNet Dry harness validation, regenerated coverage triage, SpecTrace JSON validation, and full no-build solution tests.",
   "verifies": [
-    "REQ-QUIC-RFC9000-0381",
+    "RFC9000-S8-1-1-P1-R01",
     "RFC9000-S8-1-3-P3-S2-R01",
     "RFC9000-S8-1-3-P10-S1-R01",
     "RFC9000-S8-1-3-P10-S2-R01",
@@ -43,7 +43,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Lifecycle.cs",
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0381.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-1-P1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P3-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S2-R01.cs",

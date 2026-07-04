@@ -21,7 +21,7 @@
 ## Scope Inventory
 
 - `S11`: `RFC9000-S11-P1-S1-R01`, `RFC9000-S11-P2-S1-R01`, `REQ-QUIC-RFC9000-0659`, `REQ-QUIC-RFC9000-0658`, `RFC9000-S11-P3-S2-R01`
-- `S11P1`: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-0665`, `REQ-QUIC-RFC9000-S11P1-0005`, `REQ-QUIC-RFC9000-S11P1-0006`, `REQ-QUIC-RFC9000-S11P1-0007`, `RFC9000-S11-1-P5-S3-R01`
+- `S11P1`: `REQ-QUIC-RFC9000-S11P1-0001`, `REQ-QUIC-RFC9000-0663`, `REQ-QUIC-RFC9000-S11P1-0003`, `REQ-QUIC-RFC9000-0665`, `REQ-QUIC-RFC9000-S11P1-0005`, `REQ-QUIC-RFC9000-S11P1-0006`, `RFC9000-S11-1-P5-S1-R01`, `RFC9000-S11-1-P5-S3-R01`
 - `S11P2`: `REQ-QUIC-RFC9000-S11P2-0001`, `RFC9000-S11-2-P2-S2-R01`, `REQ-QUIC-RFC9000-S11P2-0003`, `REQ-QUIC-RFC9000-S11P2-0004`, `RFC9000-S11-2-P4-S1-R01`
 
 ## Evidence
@@ -47,7 +47,7 @@
 - `REQ-QUIC-RFC9000-0665`: explicitly deferred in the implementation summary because retransmission after termination needs a send path.
 - `REQ-QUIC-RFC9000-S11P1-0005`: explicitly deferred in the implementation summary because bounding terminal retransmissions needs connection-lifecycle policy.
 - `REQ-QUIC-RFC9000-S11P1-0006`: explicitly deferred in the implementation summary because stateless reset after close needs receive-path and stateful termination logic.
-- `REQ-QUIC-RFC9000-S11P1-0007`: explicitly deferred in the implementation summary because invalid Initial discard depends on handshake authentication and packet-processing pipeline.
+- `RFC9000-S11-1-P5-S1-R01`: explicitly deferred in the implementation summary because invalid Initial discard depends on handshake authentication and packet-processing pipeline.
 - `RFC9000-S11-1-P5-S3-R01`: explicitly deferred in the implementation summary because safe discard after revert needs a reversible receive pipeline.
 - `REQ-QUIC-RFC9000-S11P2-0001`: explicitly deferred in the implementation summary because RESET_STREAM instigation needs application-protocol and stream-state orchestration.
 - `RFC9000-S11-2-P2-S2-R01`: explicitly deferred in the implementation summary because only the application protocol can instigate RESET_STREAM.

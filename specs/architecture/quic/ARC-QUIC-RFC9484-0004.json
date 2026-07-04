@@ -14,7 +14,7 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9484-0025",
-    "REQ-QUIC-RFC9484-0026",
+    "RFC9484-S4-P3-S1-R01",
     "RFC9484-S4-P5-S1-R01",
     "REQ-QUIC-RFC9484-0028",
     "REQ-QUIC-RFC9484-0029",

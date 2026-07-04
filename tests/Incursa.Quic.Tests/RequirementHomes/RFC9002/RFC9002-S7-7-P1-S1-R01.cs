@@ -27,12 +27,12 @@ public sealed class REQ_QUIC_RFC9002_S7P7_0001
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
-    [Requirement("REQ-QUIC-RFC9002-S7-0001")]
+    [Requirement("RFC9002-S7-P3-R01")]
     [Requirement("RFC9002-S7-7-P1-S1-R01")]
     [Requirement("RFC9002-S7-7-P2-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9002-S7P7-0003")]
+    [Requirement("RFC9002-S7-7-P2-S3-R01")]
     [Requirement("RFC9002-S7-7-P2-S4-R01")]
-    [Requirement("REQ-QUIC-RFC9002-S7P7-0005")]
+    [Requirement("RFC9002-S7-7-P4-S2-R01")]
     public void TryComputePacingIntervalAndBurstLimit_HonorThePacingAndBurstHelpers()
     {
         Assert.True(QuicCongestionControlState.TryComputePacingIntervalMicros(

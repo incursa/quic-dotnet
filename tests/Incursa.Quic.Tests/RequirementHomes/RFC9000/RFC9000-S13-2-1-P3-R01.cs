@@ -4,9 +4,9 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P1-0006">Since packets containing only ACK frames are not congestion controlled, an endpoint MUST NOT send more than one such packet in response to receiving an ack-eliciting packet.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S13-2-1-P3-R01">Since packets containing only ACK frames are not congestion controlled, an endpoint MUST NOT send more than one such packet in response to receiving an ack-eliciting packet.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P1-0006")]
+[Requirement("RFC9000-S13-2-1-P3-R01")]
 public sealed class REQ_QUIC_RFC9000_S13P2P1_0006
 {
     [Fact]

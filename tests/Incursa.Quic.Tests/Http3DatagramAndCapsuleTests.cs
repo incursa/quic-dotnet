@@ -319,7 +319,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Requirement("REQ-QUIC-RFC9297-0035")]
     [Requirement("RFC9297-S3-3-P1-R01")]
     [Requirement("RFC9297-S3-3-P2-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0051")]
+    [Requirement("RFC9297-S3-3-P3-R01")]
     [Requirement("REQ-QUIC-RFC9297-0061")]
     [Requirement("REQ-QUIC-RFC9297-0062")]
     [Requirement("REQ-QUIC-RFC9297-0063")]
@@ -356,7 +356,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Requirement("REQ-QUIC-RFC9297-0035")]
     [Requirement("RFC9297-S3-3-P1-R01")]
     [Requirement("RFC9297-S3-3-P2-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0051")]
+    [Requirement("RFC9297-S3-3-P3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void CapsuleCodec_RejectsTruncatedKnownCapsuleAsMalformedMessage()
@@ -369,7 +369,7 @@ public sealed class Http3DatagramAndCapsuleTests
     [Fact]
     [Requirement("RFC9297-S3-3-P1-R01")]
     [Requirement("RFC9297-S3-3-P2-S1-R01")]
-    [Requirement("REQ-QUIC-RFC9297-0051")]
+    [Requirement("RFC9297-S3-3-P3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void CapsuleCodec_ParsesCompleteCapsulesWithoutMalformedMessageError()

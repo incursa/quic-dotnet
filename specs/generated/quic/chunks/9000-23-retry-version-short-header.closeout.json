@@ -81,7 +81,7 @@
     "REQ-QUIC-RFC9000-S17P2P5-0015",
     "REQ-QUIC-RFC9000-S17P2P5-0016",
     "REQ-QUIC-RFC9000-S17P2P5P1-0001",
-    "REQ-QUIC-RFC9000-S17P2P5P1-0002",
+    "RFC9000-S17-2-5-1-P2-S1-R01",
     "RFC9000-S17-2-5-1-P2-S2-R01",
     "RFC9000-S17-2-5-1-P2-S3-R01",
     "REQ-QUIC-RFC9000-1033",
@@ -117,9 +117,9 @@
     "REQ-QUIC-RFC9000-S17P3P1-0023",
     "REQ-QUIC-RFC9000-S17P4-0001",
     "REQ-QUIC-RFC9000-S17P4-0002",
-    "REQ-QUIC-RFC9000-S17P4-0003",
+    "RFC9000-S17-4-P3-S1-R01",
     "RFC9000-S17-4-P4-S1-R01",
-    "REQ-QUIC-RFC9000-S17P4-0005",
+    "RFC9000-S17-4-P4-S2-R01",
     "RFC9000-S17-4-P5-R01",
     "RFC9000-S17-4-P5-R02",
     "REQ-QUIC-RFC9000-S17P4-0008",
@@ -1101,7 +1101,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P2P5P1-0002",
+      "requirement_id": "RFC9000-S17-2-5-1-P2-S1-R01",
       "section": "S17P2P5P1",
       "title": "This value MUST NOT be equal to the Destination Connection ID field of the packet sent by the...",
       "status": "blocked",
@@ -2102,7 +2102,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0003",
+      "requirement_id": "RFC9000-S17-4-P3-S1-R01",
       "section": "S17P4",
       "title": "An endpoint that does not support this feature MUST disable it, as defined below",
       "status": "blocked",
@@ -2130,7 +2130,7 @@
       "notes": "No direct implementation or test evidence in the current chunk."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S17P4-0005",
+      "requirement_id": "RFC9000-S17-4-P4-S2-R01",
       "section": "S17P4",
       "title": "Even when the spin bit is not disabled by the administrator, endpoints MUST disable their use...",
       "status": "blocked",

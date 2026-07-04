@@ -74,7 +74,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0011.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0204.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-S2-R01.cs"
   ],
   "tests_run": [
     {
@@ -225,7 +225,7 @@
       "notes": "Initial stream limits, monotonic MAX_STREAMS handling, and blocked-stream signaling are now covered at the helper layer."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0204",
+      "requirement_id": "RFC9000-S4-6-P6-S2-R01",
       "completion_status": "implemented_and_tested",
       "tests_covering_requirement": [
         "TryPeekPeerStreamCapacityRelease_OffersMoreUnidirectionalCreditAfterThePeerStreamCloses",

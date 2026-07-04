@@ -972,12 +972,12 @@
       "id": "REQ-QUIC-RFC9000-S8P1P1-0001",
       "title": "Construct tokens for server provenance",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0381"
+        "RFC9000-S8-1-1-P1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0381 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S8-1-1-P1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S14-0001",
@@ -1555,12 +1555,12 @@
       "id": "REQ-QUIC-RFC9000-S4P6-0013",
       "title": "Do not wait for STREAMS_BLOCKED before advertising credit",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0204"
+        "RFC9000-S4-6-P6-S2-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0204 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S4-6-P6-S2-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S9P3-0008",
@@ -2941,12 +2941,12 @@
       "id": "REQ-QUIC-RFC9000-S9P6P3-0001",
       "title": "Validate both server addresses concurrently after client migration",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0538"
+        "RFC9000-S9-6-3-P1-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0538 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S9-6-3-P1-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S17P2P2-0019",

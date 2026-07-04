@@ -16,7 +16,7 @@
   "satisfies": [
     "REQ-QUIC-RFC9000-S13P2P1-0009",
     "RFC9000-S13-2-1-P5-S1-R01",
-    "REQ-QUIC-RFC9000-S13P2P1-0012"
+    "RFC9000-S13-2-1-P6-S1-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicAckGenerationState.cs",
@@ -24,7 +24,7 @@
     "src/Incursa.Quic/QuicConnectionRuntime.Streams.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P6-S1-R01.cs",
     "benchmarks/QuicAckPiggybackPolicyBenchmarks.cs"
   ],
   "design_summary": "The active-path 1-RTT application send helper checks the existing ACK-generation state before protecting an ordinary ack-eliciting Application Data payload. When Application Data ACK state is due for inclusion, it formats only the ACK frame bytes, prepends them to the outgoing payload, protects the composed packet, and records the sent packet with the original retransmittable payload so later 1-RTT retransmission does not replay the non-retransmittable ACK frame. ACK-generation state records the largest ack-eliciting packet number covered by any sent ACK frame, including ACKs carried on ack-eliciting packets, so the same trigger does not create a duplicate ACK-only packet or repeated piggyback loop. The ACK-only send path remains explicitly non-ack-eliciting and does not inject PING or STREAM frames.",
@@ -54,7 +54,7 @@
     },
     {
       "heading": "Related Code And Tests",
-      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs)\n- [`RFC9000-S13-2-1-P5-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0012.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0012.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
+      "content": "- [`QuicAckGenerationState.cs`](../../../src/Incursa.Quic/QuicAckGenerationState.cs)\n- [`QuicConnectionRuntime.Protocol.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs)\n- [`QuicConnectionRuntime.Streams.cs`](../../../src/Incursa.Quic/QuicConnectionRuntime.Streams.cs)\n- [`REQ-QUIC-RFC9000-S13P2P1-0009.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0009.cs)\n- [`RFC9000-S13-2-1-P5-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P5-S1-R01.cs)\n- [`RFC9000-S13-2-1-P6-S1-R01.cs`](../../../tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P6-S1-R01.cs)\n- [`QuicAckPiggybackPolicyBenchmarks.cs`](../../../benchmarks/QuicAckPiggybackPolicyBenchmarks.cs)"
     }
   ]
 }

@@ -360,7 +360,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9461-0016",
+      "id": "RFC9461-S5-P2-S2-R01",
       "title": "Direct HTTP requests to the dohpath expansion resource",
       "statement": "HTTP requests MUST be directed to the resource produced by expanding the `dohpath` URI Template.",
       "coverage": {

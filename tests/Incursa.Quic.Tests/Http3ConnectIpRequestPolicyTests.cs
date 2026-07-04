@@ -28,7 +28,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0026")]
+    [Requirement("RFC9484-S4-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RequestPolicy_ExpandsUriTemplateForRequestPathAndQuery()
@@ -43,7 +43,7 @@ public sealed class Http3ConnectIpRequestPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0026")]
+    [Requirement("RFC9484-S4-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RequestPolicy_RejectsExpansionWithUnresolvedVariables()

@@ -34,7 +34,7 @@
     "RFC9463-S4-2-P2-R01",
     "REQ-QUIC-RFC9463-0041",
     "RFC9463-S4-2-P2-S1-R01",
-    "REQ-QUIC-RFC9463-0043",
+    "RFC9463-S4-2-P3-R01",
     "RFC9463-S4-2-P4-R01"
   ],
   "summary": "Add trace-owned byte-level support for RFC 9463 DHCPv6 OPTION_V6_DNR.",

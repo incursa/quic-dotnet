@@ -6,9 +6,9 @@ using System.Diagnostics;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S10P2-0001">These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY].</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-2-P5-S2-R01">These states SHOULD persist for at least three times the current PTO interval as defined in [QUIC-RECOVERY].</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S10P2-0001")]
+[Requirement("RFC9000-S10-2-P5-S2-R01")]
 public sealed class REQ_QUIC_RFC9000_S10P2_0001
 {
     [Theory]

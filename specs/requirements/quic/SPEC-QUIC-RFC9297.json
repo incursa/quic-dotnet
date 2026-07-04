@@ -135,7 +135,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0007",
+      "id": "RFC9297-S2-P6-S2-R01",
       "title": "Allow HTTP extensions to override HTTP Datagram requirements",
       "statement": "HTTP extensions MAY override the HTTP Datagram requirements by defining a negotiation mechanism and semantics for HTTP Datagrams.",
       "coverage": {
@@ -1052,7 +1052,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9297-0051",
+      "id": "RFC9297-S3-3-P3-R01",
       "title": "Treat truncated capsules after clean stream termination as malformed",
       "statement": "If a Capsule stream is cleanly terminated and its last Capsule is truncated, this MUST be treated as a malformed or incomplete message.",
       "coverage": {

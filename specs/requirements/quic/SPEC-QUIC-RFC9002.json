@@ -3141,7 +3141,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7-0001",
+      "id": "RFC9002-S7-P3-R01",
       "title": "Require alternate controllers to obey RFC 8085",
       "statement": "If a sender uses a different controller than the one specified in this document, the chosen controller MUST conform to the congestion-control guidelines in Section 3.1 of RFC 8085.",
       "coverage": {
@@ -3165,7 +3165,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7-0001.cs::SenderFlowControllerUsesTheBuiltInRfc9002ControllerWhenNoAlternateControllerSurfaceExists"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-P3-R01.cs::SenderFlowControllerUsesTheBuiltInRfc9002ControllerWhenNoAlternateControllerSurfaceExists"
         ]
       }
     },
@@ -3957,7 +3957,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P5-0002",
+      "id": "RFC9002-S7-5-P1-S2-R01",
       "title": "Count probe packets as additional flight",
       "statement": "A sender MUST count these packets as being additionally in flight.",
       "coverage": {
@@ -3981,7 +3981,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.5"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P5-0002.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-5-P1-S2-R01.cs::RegisterPacketSent_CountsProbePacketsAsAdditionalBytesInFlight",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::PathChallengeForASecondPortRebindBypassesAFullCongestionWindow"
         ]
       }
@@ -4343,7 +4343,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P7-0003",
+      "id": "RFC9002-S7-7-P2-S3-R01",
       "title": "Limit bursts to the initial congestion window",
       "statement": "Senders SHOULD limit bursts to the initial congestion window.",
       "coverage": {
@@ -4367,9 +4367,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_CapsTheBurstAtTheInitialCongestionWindow",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_RejectsZeroInitialCongestionWindowBytes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0003.cs::TryGetBurstLimitBytes_PreservesTheInitialCongestionWindowWhenTheHigherLimitMatchesIt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S3-R01.cs::TryGetBurstLimitBytes_CapsTheBurstAtTheInitialCongestionWindow",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S3-R01.cs::TryGetBurstLimitBytes_RejectsZeroInitialCongestionWindowBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P2-S3-R01.cs::TryGetBurstLimitBytes_PreservesTheInitialCongestionWindowWhenTheHigherLimitMatchesIt"
         ]
       }
     },
@@ -4403,7 +4403,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S7P7-0005",
+      "id": "RFC9002-S7-7-P4-S2-R01",
       "title": "Do not pace pure ACK packets",
       "statement": "Packets containing only ACK frames SHOULD therefore not be paced.",
       "coverage": {
@@ -4427,7 +4427,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-7.7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S7P7-0005.cs::TryComputePacingIntervalMicros_DoesNotPaceAckOnlyPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-7-P4-S2-R01.cs::TryComputePacingIntervalMicros_DoesNotPaceAckOnlyPackets"
         ]
       }
     },
