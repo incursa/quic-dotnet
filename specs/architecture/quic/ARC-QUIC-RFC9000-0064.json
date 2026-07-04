@@ -14,7 +14,7 @@
     "VER-QUIC-RFC9000-0064"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9000-S22P1P1-0001",
+    "RFC9000-S22-1-1-P1-R01",
     "REQ-QUIC-RFC9000-S22P1P1-0002",
     "REQ-QUIC-RFC9000-S22P1P1-0003",
     "REQ-QUIC-RFC9000-S22P1P1-0004",
@@ -31,7 +31,7 @@
   ],
   "key_components": [
     "src/Incursa.Quic/QuicIanaRegistrationPolicy.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-1-P1-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0002.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0003.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0004.cs",

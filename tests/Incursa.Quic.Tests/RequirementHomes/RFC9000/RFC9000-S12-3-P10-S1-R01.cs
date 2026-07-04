@@ -6,10 +6,10 @@ using System.Reflection;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0708">Subsequent packets sent in the same packet number space MUST increase the packet number by at least one.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S12-3-P10-S1-R01">A QUIC endpoint MUST NOT reuse a packet number within the same packet number space in one connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0708")]
-public sealed class REQ_QUIC_RFC9000_0708
+[Requirement("RFC9000-S12-3-P10-S1-R01")]
+public sealed class RFC9000_S12_3_P10_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

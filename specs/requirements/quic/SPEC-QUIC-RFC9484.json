@@ -3806,7 +3806,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0180",
+      "id": "RFC9484-S7-2-1-P1-S2-R01",
       "title": "Use ICMP to signal forwarding errors",
       "statement": "IP proxying endpoints SHOULD signal forwarding errors to their peer by generating ICMP packets and sending them using HTTP Datagrams.",
       "coverage": {

@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S22P1P1-0001">Provisional registration requests MUST require only the codepoint value and contact information.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S22-1-1-P1-R01">Provisional registration requests MUST require only the codepoint value and contact information.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S22P1P1-0001")]
-public sealed class REQ_QUIC_RFC9000_S22P1P1_0001
+[Requirement("RFC9000-S22-1-1-P1-R01")]
+public sealed class RFC9000_S22_1_1_P1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

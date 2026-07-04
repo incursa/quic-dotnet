@@ -73,7 +73,7 @@ public sealed class REQ_QUIC_RFC9000_S13P2P4_0001
     [Requirement("REQ-QUIC-RFC9000-13235")]
     [Requirement("REQ-QUIC-RFC9000-S13P2P3-0008")]
     [Requirement("REQ-QUIC-RFC9000-13236")]
-    [Requirement("REQ-QUIC-RFC9000-S13P2P3-0011")]
+    [Requirement("RFC9000-S13-2-3-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryBuildAckFrame_WithASingleRangeLimitKeepsOnlyTheNewestAckRange()

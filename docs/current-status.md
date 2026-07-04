@@ -1410,7 +1410,7 @@ parameter test refs so the canonical `x_test_refs` point only at the
 requirement-owned max_idle_timeout tests. It did not add new runtime behavior.
 
 Follow-on S22P1P1 closure on 2026-05-05 closes
-`REQ-QUIC-RFC9000-S22P1P1-0001` through
+`RFC9000-S22-1-1-P1-R01` through
 `REQ-QUIC-RFC9000-S22P1P1-0014` under
 `ARC-QUIC-RFC9000-0064`, `WI-QUIC-RFC9000-0064`, and
 `VER-QUIC-RFC9000-0064`. The proof covers the bounded RFC 9000 IANA
@@ -1880,7 +1880,7 @@ The next useful lanes are:
   requirements or the 45 partially-covered requirements, for example
   `RFC9000-S10-2-1-P5-S3-R01`,
   `RFC9000-S10-2-1-P2-S1-R01`, or
-  `REQ-QUIC-RFC9000-0708`.
+  `RFC9000-S12-3-P10-S1-R01`.
 - Resolve the 54 blocked requirements only through the recorded gap families,
   notably connection close, stateless reset, migration/path-validation, and
   RFC 9001 TLS/packet-space work.

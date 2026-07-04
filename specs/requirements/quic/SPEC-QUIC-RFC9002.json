@@ -1511,9 +1511,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S6P1P1-0001",
+      "id": "RFC9002-S6-1-1-P1-S1-R01",
       "title": "Recommend a packet threshold of three",
-      "statement": "The packet reordering threshold SHOULD be 3.",
+      "statement": "The initial value for the packet reordering threshold (kPacketThreshold) is RECOMMENDED to be 3.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1535,9 +1535,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-6.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_DeclaresPacketsOlderThanTheRecommendedThreshold",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_DoesNotUseAThresholdAboveThreeAtTheBoundary",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S6P1P1-0001.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheThreePacketBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-1-P1-S1-R01.cs::ShouldDeclarePacketLostByPacketThreshold_DeclaresPacketsOlderThanTheRecommendedThreshold",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-1-P1-S1-R01.cs::ShouldDeclarePacketLostByPacketThreshold_DoesNotUseAThresholdAboveThreeAtTheBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-1-1-P1-S1-R01.cs::ShouldDeclarePacketLostByPacketThreshold_UsesTheThreePacketBoundary"
         ]
       }
     },

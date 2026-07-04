@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-/// <workbench-requirement requirementId="REQ-QUIC-RFC9000-S13P2P3-0011">Receivers MAY discard all ACK Ranges if they retain the largest packet number that has been successfully processed.</workbench-requirement>
+/// <workbench-requirement requirementId="RFC9000-S13-2-3-P6-S1-R01">Receivers can discard all ACK Ranges, but they MUST retain the largest packet number that has been successfully processed.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S13P2P3-0011")]
-public sealed class REQ_QUIC_RFC9000_S13P2P3_0011
+[Requirement("RFC9000-S13-2-3-P6-S1-R01")]
+public sealed class RFC9000_S13_2_3_P6_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]

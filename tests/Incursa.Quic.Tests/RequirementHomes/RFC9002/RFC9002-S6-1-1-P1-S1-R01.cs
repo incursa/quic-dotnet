@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S6P1P1-0001">The packet reordering threshold SHOULD be 3.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S6-1-1-P1-S1-R01">The initial value for the packet reordering threshold (kPacketThreshold) is RECOMMENDED to be 3.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S6P1P1-0001")]
-public sealed class REQ_QUIC_RFC9002_S6P1P1_0001
+[Requirement("RFC9002-S6-1-1-P1-S1-R01")]
+public sealed class RFC9002_S6_1_1_P1_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

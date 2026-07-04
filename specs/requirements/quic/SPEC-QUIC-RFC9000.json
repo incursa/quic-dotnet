@@ -6781,9 +6781,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0708",
+      "id": "RFC9000-S12-3-P10-S1-R01",
       "title": "Increase packet numbers by at least one",
-      "statement": "Subsequent packets sent in the same packet number space MUST increase the packet number by at least one.",
+      "statement": "A QUIC endpoint MUST NOT reuse a packet number within the same packet number space in one connection.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -6801,11 +6801,11 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0708.cs::PacketNumbersIncreaseByAtLeastOneInEachSpace",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0708.cs::RecoveryTimerExpired_RebuiltCryptoProbesAdvancePacketNumbersInBothSpaces",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0708.cs::RecoveryTimerExpired_RebuiltApplicationProbeAdvancesThePacketNumberForLostStreamData",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0708.cs::TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0708.cs::TryBuildProtectedApplicationDataPacket_UsesTheUintMaxValuePacketNumberBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P10-S1-R01.cs::PacketNumbersIncreaseByAtLeastOneInEachSpace",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P10-S1-R01.cs::RecoveryTimerExpired_RebuiltCryptoProbesAdvancePacketNumbersInBothSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P10-S1-R01.cs::RecoveryTimerExpired_RebuiltApplicationProbeAdvancesThePacketNumberForLostStreamData",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P10-S1-R01.cs::TryBuildProtectedApplicationDataPacket_ReturnsFalseWhenThePacketNumberSpaceIsExhausted",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-3-P10-S1-R01.cs::TryBuildProtectedApplicationDataPacket_UsesTheUintMaxValuePacketNumberBoundary"
         ],
         "upstream_refs": [
           "RFC9000-S12P3-B10-P10-S3",
@@ -17851,9 +17851,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S13P2P3-0011",
+      "id": "RFC9000-S13-2-3-P6-S1-R01",
       "title": "Retain the largest successfully processed packet number",
-      "statement": "Receivers MAY discard all ACK Ranges if they retain the largest packet number that has been successfully processed.",
+      "statement": "Receivers can discard all ACK Ranges, but they MUST retain the largest packet number that has been successfully processed.",
       "coverage": {
         "positive": "optional",
         "negative": "required",
@@ -17875,8 +17875,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-13.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0011.cs::TryBuildAckFrame_DoesNotDiscardEveryRangeWhenMoreThanOneRangeIsRetained",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P3-0011.cs::TryBuildAckFrame_CanDiscardAllOlderRangesWhenOnlyTheLargestPacketNumberIsRetained"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-3-P6-S1-R01.cs::TryBuildAckFrame_DoesNotDiscardEveryRangeWhenMoreThanOneRangeIsRetained",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-3-P6-S1-R01.cs::TryBuildAckFrame_CanDiscardAllOlderRangesWhenOnlyTheLargestPacketNumberIsRetained"
         ]
       }
     },
@@ -30671,9 +30671,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S19P21-0002",
+      "id": "RFC9000-S19-21-P1-R01",
       "title": "An endpoint therefore needs to understand the syntax of all frames before it MAY successfully...",
-      "statement": "An endpoint therefore needs to understand the syntax of all frames before it MAY successfully process a packet.",
+      "statement": "An endpoint MUST understand the syntax of all frames before it can successfully process a packet.",
       "coverage": {
         "positive": "optional",
         "negative": "required",
@@ -30695,8 +30695,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-19.21"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_ConsumesOnlyTheDeclaredFrameSyntax",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P21-0002.cs::TryParseTypeOnlyFrames_RejectsEmptyAndMismatchedTypes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P1-R01.cs::TryParseTypeOnlyFrames_ConsumesOnlyTheDeclaredFrameSyntax",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-21-P1-R01.cs::TryParseTypeOnlyFrames_RejectsEmptyAndMismatchedTypes"
         ]
       }
     },
@@ -34518,7 +34518,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S22P1P1-0001",
+      "id": "RFC9000-S22-1-1-P1-R01",
       "title": "Require only codepoint value and contact information for provisional registration requests",
       "statement": "Provisional registration requests MUST require only the codepoint value and contact information.",
       "coverage": {
@@ -34545,7 +34545,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-22.1.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S22P1P1-0001.cs::ProvisionalRegistrationRequests_RequireOnlyCodepointValueAndContactInformation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S22-1-1-P1-R01.cs::ProvisionalRegistrationRequests_RequireOnlyCodepointValueAndContactInformation"
         ]
       }
     },
