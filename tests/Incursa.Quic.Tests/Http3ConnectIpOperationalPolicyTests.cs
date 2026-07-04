@@ -96,7 +96,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0191")]
+    [Requirement("RFC9484-S10-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_UsesQuicDatagramFramesWhenAvailable()
@@ -105,7 +105,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9484-0191")]
+    [Requirement("RFC9484-S10-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [InlineData(false, true)]
@@ -152,7 +152,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0194")]
+    [Requirement("RFC9484-S10-1-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void OperationalPolicy_DropsOversizedIpPackets()
@@ -161,7 +161,7 @@ public sealed class Http3ConnectIpOperationalPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0194")]
+    [Requirement("RFC9484-S10-1-P1-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void OperationalPolicy_DoesNotDropIpPacketsThatFit()

@@ -22,7 +22,7 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 - `REQ-QUIC-RFC9001-S6-0002` Identify packet protection keys with Key Phase - `implemented and tested`
 - `REQ-QUIC-RFC9001-S6-0003` Initialize Key Phase to zero - `blocked`
 - `REQ-QUIC-RFC9001-S6-0004` Toggle Key Phase on each update - `implemented and tested`
-- `REQ-QUIC-RFC9001-S6-0005` Let Key Phase detect key changes - `partially implemented`
+- `RFC9001-S6-P3-S1-R01` Let Key Phase detect key changes - `partially implemented`
 - `REQ-QUIC-RFC9001-S6-0006` Update keys when Key Phase changes - `blocked`
 - `REQ-QUIC-RFC9001-S6-0007` Decrypt the packet with the changed Key Phase - `blocked`
 - `REQ-QUIC-RFC9001-S6-0008` Update both endpoints on key update - `blocked`
@@ -66,7 +66,7 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 - `tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs`
 - `tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs`
 
 ## Generated Inputs Consulted
 
@@ -85,6 +85,6 @@ Section tokens: `S6`, `S7`, `S8`, `S9`, `S10`
 
 ## Remaining Gaps
 
-- `REQ-QUIC-RFC9001-S6-0005` still needs edge proof.
+- `RFC9001-S6-P3-S1-R01` still needs edge proof.
 - The blocked S6 items remain blocked until handshake-confirmation, key-update, or TLS message-processing support exists.
 - `RFC9001-S7-P2-S3-R01` and `REQ-QUIC-RFC9001-S9-0001` remain deferred as policy and document-scope items.

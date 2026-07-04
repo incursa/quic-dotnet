@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P1-0004">An endpoint MUST NOT initiate a key update before confirming the handshake.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-1-P4-S1-R01">An endpoint MUST NOT initiate a key update before confirming the handshake.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P1-0004")]
-public sealed class REQ_QUIC_RFC9001_S6P1_0004
+[Requirement("RFC9001-S6-1-P4-S1-R01")]
+public sealed class RFC9001_S6_1_P4_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]

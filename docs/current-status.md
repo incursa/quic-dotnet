@@ -1135,7 +1135,7 @@ broader stream-management parity, or hosted interop readiness.
 
 Follow-on S4P6 max_streams oversized close-policy tail closure on 2026-05-06
 closes `RFC9000-S4-6-P2-S1-R01` and
-`REQ-QUIC-RFC9000-S4P6-0007` under `ARC-QUIC-RFC9000-0078`,
+`RFC9000-S4-6-P2-S2-R01` under `ARC-QUIC-RFC9000-0078`,
 `WI-QUIC-RFC9000-0078`, and `VER-QUIC-RFC9000-0078`. The proof covers valid
 `2^60` initial max_streams transport-parameter values committing without
 closing, typed oversized initial max_streams inputs closing with
@@ -1180,7 +1180,7 @@ non-clean. `S4P6` now has seven remaining non-clean requirements:
 metadata-only xref cleanup for `REQ-QUIC-RFC9000-S4P6-0002` through
 `REQ-QUIC-RFC9000-S4P6-0005`, and missing-proof work for
 `REQ-QUIC-RFC9000-S4P6-0001`, `RFC9000-S4-6-P2-S1-R01`, and
-`REQ-QUIC-RFC9000-S4P6-0007`. This closure does not claim automatic
+`RFC9000-S4-6-P2-S2-R01`. This closure does not claim automatic
 stream-limit autotuning, public stream API widening, broader stream-credit
 policy, hosted interop readiness, or closure of the deferred S4P6-0010 fuzz
 expectation.
@@ -1201,7 +1201,7 @@ QUIC requirements trace-clean overall, leaving 472 non-clean. `S4P6` now has
 nine remaining non-clean requirements: metadata-only xref cleanup for
 `REQ-QUIC-RFC9000-S4P6-0002` through `REQ-QUIC-RFC9000-S4P6-0005`, and
 missing-proof work for `REQ-QUIC-RFC9000-S4P6-0001`,
-`RFC9000-S4-6-P2-S1-R01`, `REQ-QUIC-RFC9000-S4P6-0007`,
+`RFC9000-S4-6-P2-S1-R01`, `RFC9000-S4-6-P2-S2-R01`,
 `REQ-QUIC-RFC9000-S4P6-0010`, and `REQ-QUIC-RFC9000-S4P6-0011`. This closure
 does not claim automatic stream-limit autotuning, public stream API widening,
 broader stream-management parity, hosted interop readiness, or closure of the
@@ -1228,7 +1228,7 @@ Follow-on S5P1P1 connection-ID sequence and active-set floor closure on
 2026-05-06 closes `REQ-QUIC-RFC9000-0220`,
 `REQ-QUIC-RFC9000-0221`, `REQ-QUIC-RFC9000-0222`,
 `REQ-QUIC-RFC9000-S5P1P1-0008`, `REQ-QUIC-RFC9000-S5P1P1-0009`,
-`REQ-QUIC-RFC9000-0229`, `RFC9000-S5-1-1-P4-S4-R01`,
+`RFC9000-S5-1-1-P4-S2-R01`, `RFC9000-S5-1-1-P4-S4-R01`,
 and `RFC9000-S5-1-1-P6-S1-R01` under `ARC-QUIC-RFC9000-0074`,
 `WI-QUIC-RFC9000-0074`, and `VER-QUIC-RFC9000-0074`. The proof covers
 initial CID sequence 0 retirement, preferred-address CID sequence 1 retirement,

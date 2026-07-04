@@ -124,7 +124,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "requirement_id": "RFC9002-S3-P1-S1-R01",
       "title": "Indicate encryption level in packet headers",
       "source_batches": [
         "1-4"
@@ -147,7 +147,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "requirement_id": "RFC9002-S3-P1-S1-R02",
       "title": "Carry packet numbers in packet headers",
       "source_batches": [
         "1-4"
@@ -170,7 +170,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "requirement_id": "RFC9002-S3-P1-S2-R01",
       "title": "Map encryption level to packet number space",
       "source_batches": [
         "1-4"
@@ -1014,7 +1014,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "requirement_id": "RFC9002-S5-3-P13-S1-R01",
       "title": "Update RTT estimates on subsequent samples",
       "source_batches": [
         "5-8"

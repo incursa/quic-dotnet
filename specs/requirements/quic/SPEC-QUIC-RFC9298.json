@@ -30,7 +30,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0002",
+      "id": "RFC9298-S2-P5-S1-R01",
       "title": "Limit URI Template level",
       "statement": "The URI Template MUST be a level 3 template or lower.",
       "coverage": {
@@ -803,7 +803,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0039",
+      "id": "RFC9298-S3-1-P4-S5-R01",
       "title": "Reject request on errors",
       "statement": "If errors occur during this process, the UDP proxy MUST reject the request.",
       "coverage": {
@@ -1568,7 +1568,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0075",
+      "id": "RFC9298-S4-P2-S2-R01",
       "title": "Encode Context IDs as varints",
       "statement": "Context IDs MUST be encoded as variable-length integers; see Section 16 of [QUIC].",
       "coverage": {
@@ -1589,7 +1589,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0076",
+      "id": "RFC9298-S4-P2-S3-R01",
       "title": "Dynamically allocate non-zero Context IDs",
       "statement": "Non-zero Context ID values MUST be dynamically allocated.",
       "coverage": {
@@ -1609,7 +1609,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0077",
+      "id": "RFC9298-S4-P2-S3-R02",
       "title": "Reserve Context ID 0 for UDP payloads",
       "statement": "The Context ID value of 0 MUST be reserved for UDP payloads.",
       "coverage": {
@@ -1849,7 +1849,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0089",
+      "id": "RFC9298-S5-P4-S4-R01",
       "title": "UDP Proxying Payload may be empty",
       "statement": "The UDP Proxying Payload field MAY be empty.",
       "coverage": {
@@ -2189,7 +2189,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0106",
+      "id": "RFC9298-S6-1-P1-S1-R01",
       "title": "Transmit UDP payloads in QUIC DATAGRAM frames",
       "statement": "When using HTTP/3 with the QUIC Datagram extension, UDP payloads MUST be transmitted in QUIC DATAGRAM frames.",
       "coverage": {
@@ -2212,7 +2212,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9298-0107",
+      "id": "RFC9298-S6-1-P1-S2-R01",
       "title": "Limit QUIC DATAGRAM payload size",
       "statement": "QUIC DATAGRAM frames MUST carry UDP payloads only up to a length determined by the QUIC connection configuration and the Path MTU (PMTU).",
       "coverage": {

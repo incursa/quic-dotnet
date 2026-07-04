@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0640">If the last 16 bytes of the datagram are identical in value to a stateless reset token, the endpoint MUST NOT send any further packets on this connection.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S10-3-1-P5-S1-R01">If the last 16 bytes of the datagram are identical in value to a stateless reset token, the endpoint MUST NOT send any further packets on this connection.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0640")]
-public sealed class REQ_QUIC_RFC9000_0640
+[Requirement("RFC9000-S10-3-1-P5-S1-R01")]
+public sealed class RFC9000_S10_3_1_P5_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

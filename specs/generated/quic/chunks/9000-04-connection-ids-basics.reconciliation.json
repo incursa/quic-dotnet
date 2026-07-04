@@ -402,7 +402,7 @@
       "notes": "This section depends on connection state that the current parser-only implementation does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0229",
+      "requirement_id": "RFC9000-S5-1-1-P4-S2-R01",
       "status": "implemented and tested",
       "implementation_refs": [
         "src/Incursa.Quic/QuicTransportParametersCodec.cs:73-152,161-454",

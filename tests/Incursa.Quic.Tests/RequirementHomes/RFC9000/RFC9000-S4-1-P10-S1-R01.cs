@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0174">A sender MUST ignore any MAX_STREAM_DATA or MAX_DATA frames that do not increase flow control limits.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S4-1-P10-S1-R01">A sender MUST ignore any MAX_STREAM_DATA or MAX_DATA frames that do not increase flow control limits.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0174")]
-public sealed class REQ_QUIC_RFC9000_0174
+[Requirement("RFC9000-S4-1-P10-S1-R01")]
+public sealed class RFC9000_S4_1_P10_S1_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0174")]
+    [Requirement("RFC9000-S4-1-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryApplyMaxFlowControlFrames_AppliesIncreasingLimits()
@@ -32,7 +32,7 @@ public sealed class REQ_QUIC_RFC9000_0174
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-0174")]
+    [Requirement("RFC9000-S4-1-P10-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryApplyMaxFlowControlFrames_IgnoresNonIncreasingLimits()

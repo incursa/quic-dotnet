@@ -148,7 +148,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0135")]
+    [Requirement("RFC9484-S4-7-3-P10-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RouteRange_ProtocolZeroAllowsAllProtocols()
@@ -160,7 +160,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0135")]
+    [Requirement("RFC9484-S4-7-3-P10-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteRange_NonZeroProtocolDoesNotAllowAllProtocols()
@@ -169,7 +169,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0136")]
+    [Requirement("RFC9484-S4-7-3-P10-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RouteRange_NonZeroProtocolRepresentsNextHeaderValue()
@@ -178,7 +178,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0136")]
+    [Requirement("RFC9484-S4-7-3-P10-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteRange_NonZeroProtocolRejectsDifferentNonIcmpProtocol()
@@ -187,7 +187,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9484-0137")]
+    [Requirement("RFC9484-S4-7-3-P10-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(Http3ConnectIpProtocolScope.IcmpV4ProtocolNumber)]
@@ -198,7 +198,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0137")]
+    [Requirement("RFC9484-S4-7-3-P10-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteRange_IcmpExceptionDoesNotAllowEveryProtocol()
@@ -257,7 +257,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0140")]
+    [Requirement("RFC9484-S4-7-3-P13-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RouteAdvertisement_MissingPriorRangeIsWithdrawn()
@@ -266,7 +266,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0140")]
+    [Requirement("RFC9484-S4-7-3-P13-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteAdvertisement_PresentPriorRangeIsNotWithdrawn()

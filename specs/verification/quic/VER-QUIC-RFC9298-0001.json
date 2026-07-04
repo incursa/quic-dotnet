@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, HTTP/3 package build, and diff hygiene for the RFC 9298 URI Template and target surface.",
   "verifies": [
-    "REQ-QUIC-RFC9298-0002",
+    "RFC9298-S2-P5-S1-R01",
     "REQ-QUIC-RFC9298-0003",
     "REQ-QUIC-RFC9298-0004",
     "REQ-QUIC-RFC9298-0005",
@@ -50,7 +50,7 @@
   "procedure": [
     "Run `dotnet build src/Incursa.Quic.Http3/Incursa.Quic.Http3.csproj -c Release --no-restore`.",
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9298_0002|FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~RFC9298_S2_P5_S1_R01|FullyQualifiedName~Http3ConnectUdpUriTemplateTests\"`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
     "Run `git diff --check`."
@@ -61,7 +61,7 @@
     "src/Incursa.Quic.Http3/Http3ConnectUdpTarget.cs",
     "src/Incursa.Quic.Http3/Http3ConnectUdpRequestTarget.cs",
     "tests/Incursa.Quic.Tests/Http3ConnectUdpUriTemplateTests.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0002.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S2-P5-S1-R01.cs"
   ],
   "status_summary": "The RFC 9298 URI Template and target validation floor is trace-owned and verified by focused local gates. Request construction, context-id framing, UDP socket lifecycle, forwarding, congestion, and ECN behavior remain future RFC 9298 slices."
 }

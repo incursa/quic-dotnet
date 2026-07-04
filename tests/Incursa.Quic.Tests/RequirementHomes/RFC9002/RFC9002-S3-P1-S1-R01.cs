@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0002">The packet-level header MUST indicate the encryption level.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S3-P1-S1-R01">The packet-level header MUST indicate the encryption level.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S3-0002")]
-public sealed class REQ_QUIC_RFC9002_S3_0002
+[Requirement("RFC9002-S3-P1-S1-R01")]
+public sealed class RFC9002_S3_P1_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

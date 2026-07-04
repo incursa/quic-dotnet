@@ -34,7 +34,7 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0053")]
+    [Requirement("RFC9250-S4-3-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IncompleteLengthPrefixedMessageIsFatalProtocolError()
@@ -49,7 +49,7 @@ public sealed class REQ_QUIC_RFC9250_0052_ProtocolErrors
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0053")]
+    [Requirement("RFC9250-S4-3-3-P3-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void CompleteLengthPrefixedMessageDecodes()

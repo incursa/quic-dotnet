@@ -109,7 +109,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0057")]
+    [Requirement("RFC9464-S4-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ReplyIgnoresDuplicateIdenticalRequestAttributesAfterFirst()
@@ -126,7 +126,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0057")]
+    [Requirement("RFC9464-S4-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ReplyRejectsNonRequestAttributes()
@@ -171,9 +171,9 @@ public sealed class EncryptedDnsProvisioningResponderTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9464-0052")]
-    [Requirement("REQ-QUIC-RFC9464-0059")]
+    [Requirement("RFC9464-S4-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9464-0060")]
-    [Requirement("REQ-QUIC-RFC9464-0061")]
+    [Requirement("RFC9464-S4-P5-S3-R01")]
     [Requirement("REQ-QUIC-RFC9464-0062")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -194,7 +194,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9464-0052")]
-    [Requirement("REQ-QUIC-RFC9464-0059")]
+    [Requirement("RFC9464-S4-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9464-0060")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -208,7 +208,7 @@ public sealed class EncryptedDnsProvisioningResponderTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9464-0061")]
+    [Requirement("RFC9464-S4-P5-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ResponseOptionsRejectReplyConfigurationsWithoutAlpnByDefault()

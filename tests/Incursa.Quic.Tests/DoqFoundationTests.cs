@@ -630,7 +630,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IsReplayableOpcode_QueryIsReplayable()
@@ -639,7 +639,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IsReplayableOpcode_NotifyIsReplayable()
@@ -648,7 +648,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IsReplayableOpcode_OtherOpcodesAreNotReplayable()
@@ -663,7 +663,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IsReplayableQuery_DetectsQueryOpcodeFromPayload()
@@ -674,7 +674,7 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0078")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IsReplayableQuery_DetectsNonQueryOpcode()

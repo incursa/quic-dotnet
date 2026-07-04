@@ -168,7 +168,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S3-0002",
+      "id": "RFC9002-S3-P1-S1-R01",
       "title": "Indicate encryption level in packet headers",
       "statement": "The packet-level header MUST indicate the encryption level.",
       "coverage": {
@@ -192,12 +192,12 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0002.cs::TryParseLongHeader_ExposesTheEncryptionLevelBits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S1-R01.cs::TryParseLongHeader_ExposesTheEncryptionLevelBits"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S3-0003",
+      "id": "RFC9002-S3-P1-S1-R02",
       "title": "Carry packet numbers in packet headers",
       "statement": "The packet-level header MUST include a packet sequence number.",
       "coverage": {
@@ -221,14 +221,14 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0003.cs::TryParseShortHeader_PreservesASinglePacketNumberByte"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S1-R02.cs::TryParseShortHeader_PreservesThePacketSequenceNumberBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S1-R02.cs::TryParseShortHeader_RejectsPacketsWithoutHeaderBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S1-R02.cs::TryParseShortHeader_PreservesASinglePacketNumberByte"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S3-0004",
+      "id": "RFC9002-S3-P1-S2-R01",
       "title": "Map encryption level to packet number space",
       "statement": "The encryption level MUST indicate the packet number space.",
       "coverage": {
@@ -252,9 +252,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-3-1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0004.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S2-R01.cs::TryGetPacketNumberSpace_MapsSupportedEncryptionLevelsToPacketNumberSpaces",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S2-R01.cs::TryGetPacketNumberSpace_RejectsVersionNegotiationPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S2-R01.cs::TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader"
         ]
       }
     },
@@ -1326,7 +1326,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "id": "RFC9002-S5-3-P13-S1-R01",
       "title": "Update RTT estimates on subsequent samples",
       "statement": "On subsequent RTT samples, an endpoint MUST set adjusted_rtt to latest_rtt - ack_delay when latest_rtt is at least min_rtt + ack_delay and otherwise set adjusted_rtt to latest_rtt, then update smoothed_rtt to 7/8 of its prior value plus 1/8 of adjusted_rtt and update rttvar to 3/4 of its prior value plus 1/4 of abs(smoothed_rtt - adjusted_rtt).",
       "coverage": {
@@ -1351,9 +1351,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P3-0010.cs::TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P13-S1-R01.cs::TryUpdateFromAck_UpdatesSmoothedRttAndRttVarFromAdjustedSubsequentSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P13-S1-R01.cs::TryUpdateFromAck_UsesLatestRttWhenAckDelayWouldDropBelowMinRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P13-S1-R01.cs::TryUpdateFromAck_SubtractsAckDelayWhenSampleExactlyMeetsMinRttThreshold"
         ]
       }
     },

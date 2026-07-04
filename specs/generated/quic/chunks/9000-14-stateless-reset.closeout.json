@@ -36,7 +36,7 @@
       "REQ-QUIC-RFC9000-0623",
       "REQ-QUIC-RFC9000-S10P3-0013",
       "REQ-QUIC-RFC9000-S10P3-0014",
-      "REQ-QUIC-RFC9000-S10P3-0015",
+      "RFC9000-S10-3-P15-S1-R01",
       "REQ-QUIC-RFC9000-S10P3-0016",
       "REQ-QUIC-RFC9000-S10P3-0017",
       "REQ-QUIC-RFC9000-S10P3-0018",
@@ -64,7 +64,7 @@
       "REQ-QUIC-RFC9000-0629",
       "REQ-QUIC-RFC9000-S10P3P1-0010",
       "REQ-QUIC-RFC9000-0639",
-      "REQ-QUIC-RFC9000-0640"
+      "RFC9000-S10-3-1-P5-S1-R01"
     ],
     "S10P3P2": [
       "REQ-QUIC-RFC9000-S10P3P2-0001",
@@ -116,7 +116,7 @@
       "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-0629",
       "REQ-QUIC-RFC9000-0639",
-      "REQ-QUIC-RFC9000-0640",
+      "RFC9000-S10-3-1-P5-S1-R01",
       "REQ-QUIC-RFC9000-S10P3P2-0001",
       "REQ-QUIC-RFC9000-S10P3P2-0002",
       "REQ-QUIC-RFC9000-S10P3P2-0004",
@@ -124,7 +124,7 @@
       "REQ-QUIC-RFC9000-S10P3P2-0010",
       "REQ-QUIC-RFC9000-0644",
       "REQ-QUIC-RFC9000-S10P3P2-0012",
-      "REQ-QUIC-RFC9000-S10P3-0015",
+      "RFC9000-S10-3-P15-S1-R01",
       "REQ-QUIC-RFC9000-S10P3P3-0001"
     ],
     "deferred_requirement_ids": [
@@ -178,7 +178,7 @@
       "REQ-QUIC-RFC9000-S10P3P1-0008",
       "REQ-QUIC-RFC9000-0629",
       "REQ-QUIC-RFC9000-0639",
-      "REQ-QUIC-RFC9000-0640",
+      "RFC9000-S10-3-1-P5-S1-R01",
       "REQ-QUIC-RFC9000-S10P3P2-0001",
       "REQ-QUIC-RFC9000-S10P3P2-0002",
       "REQ-QUIC-RFC9000-S10P3P2-0004",
@@ -186,7 +186,7 @@
       "REQ-QUIC-RFC9000-S10P3P2-0010",
       "REQ-QUIC-RFC9000-0644",
       "REQ-QUIC-RFC9000-S10P3P2-0012",
-      "REQ-QUIC-RFC9000-S10P3-0015",
+      "RFC9000-S10-3-P15-S1-R01",
       "REQ-QUIC-RFC9000-S10P3P3-0001"
     ],
     "summary_remaining_gap_requirement_ids": [
@@ -209,7 +209,7 @@
     ],
     "missing_from_summary": [],
     "extra_in_summary": [],
-    "notes": "The implementation summary now explicitly traces RFC9000-S10-3-P1-S2-R01, REQ-QUIC-RFC9000-S10P3-0015, and REQ-QUIC-RFC9000-S10P3-0025 plus the matched-token drain/no-send lifecycle clauses in requirement-home tests, while the remaining deferred requirements stay explicit blockers."
+    "notes": "The implementation summary now explicitly traces RFC9000-S10-3-P1-S2-R01, RFC9000-S10-3-P15-S1-R01, and REQ-QUIC-RFC9000-S10P3-0025 plus the matched-token drain/no-send lifecycle clauses in requirement-home tests, while the remaining deferred requirements stay explicit blockers."
   },
   "reference_audit": {
     "source_requirement_refs_found": [],
@@ -239,9 +239,9 @@
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-S10P3-0015"
+          "RFC9000-S10-3-P15-S1-R01"
         ]
       },
       {
@@ -263,9 +263,9 @@
         ]
       },
       {
-        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs",
+        "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs",
         "requirement_ids": [
-          "REQ-QUIC-RFC9000-0640"
+          "RFC9000-S10-3-1-P5-S1-R01"
         ]
       }
     ],
@@ -283,11 +283,11 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs"
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs"
     ],
     "notes": [
       "The focused stateless-reset requirement-home run passed with 23 tests.",

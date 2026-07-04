@@ -9,9 +9,9 @@
 - `REQ-QUIC-RFC9001-S10-0003` Include CH and EE in TLS 1.3 column
 
 ## Requirements Partially Completed
-- `REQ-QUIC-RFC9001-S6-0005` Let Key Phase detect key changes
+- `RFC9001-S6-P3-S1-R01` Let Key Phase detect key changes
 
-This is the helper-backed ceiling for the chunk in the current repository shape. `REQ-QUIC-RFC9001-S6-0004` is now closed by focused requirement-home proof, `REQ-QUIC-RFC9001-S6-0005` has focused positive and negative proof but still needs edge coverage, and the remaining S6/S7/S8/S9 clauses stay blocked or deferred until the repo has handshake-confirmation, key-update, and TLS-authentication surfaces.
+This is the helper-backed ceiling for the chunk in the current repository shape. `REQ-QUIC-RFC9001-S6-0004` is now closed by focused requirement-home proof, `RFC9001-S6-P3-S1-R01` has focused positive and negative proof but still needs edge coverage, and the remaining S6/S7/S8/S9 clauses stay blocked or deferred until the repo has handshake-confirmation, key-update, and TLS-authentication surfaces.
 
 ## Files Changed
 - [QuicTransportParametersCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicTransportParametersCodec.cs)
@@ -24,7 +24,7 @@ This is the helper-backed ceiling for the chunk in the current repository shape.
 - [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs)
 - [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs)
 - [REQ-QUIC-RFC9001-S6-0004.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs)
-- [REQ-QUIC-RFC9001-S6-0005.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs)
+- [RFC9001-S6-P3-S1-R01.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs)
 - [9001-02-security-and-registry.implementation-summary.md](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.md)
 - [9001-02-security-and-registry.implementation-summary.json](C:/src/incursa/quic-dotnet/specs/generated/quic/chunks/9001-02-security-and-registry.implementation-summary.json)
 
@@ -36,7 +36,7 @@ This is the helper-backed ceiling for the chunk in the current repository shape.
 - [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added `QuicTransportParametersCodec_ExposesTheRegisteredTlsExtensionMetadata` for the RFC 9001 S10 registry constants and updated transport-parameter round-trip tests with `REQ-QUIC-RFC9001-S8-0001`.
 - [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs): updated `Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation` with `REQ-QUIC-RFC9001-S8-0001`.
 - [REQ-QUIC-RFC9001-S6-0004.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0004.cs): added `ActiveClientRuntimeTogglesOutboundKeyPhaseAfterInstallingSuccessorMaterial` and `ActiveClientRuntimeRejectsRepeatingTheSameOneRttKeyUpdate` for `REQ-QUIC-RFC9001-S6-0004`.
-- [REQ-QUIC-RFC9001-S6-0005.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs): added `TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket` and `TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets` for `REQ-QUIC-RFC9001-S6-0005`.
+- [RFC9001-S6-P3-S1-R01.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs): added `TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket` and `TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets` for `RFC9001-S6-P3-S1-R01`.
 
 ## Tests Run And Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
@@ -56,7 +56,7 @@ This is the helper-backed ceiling for the chunk in the current repository shape.
 - `REQ-QUIC-RFC9001-S9-0001`
 
 ## Risks Or Follow-up Notes
-- `REQ-QUIC-RFC9001-S6-0005` still needs edge proof before it can be closed without over-claiming behavior.
+- `RFC9001-S6-P3-S1-R01` still needs edge proof before it can be closed without over-claiming behavior.
 - `REQ-QUIC-RFC9001-S8-0002` still needs TLS transcript/authentication plumbing; the codec-layer round-trip does not provide cryptographic authentication.
 - The RFC 9001 S10 registry row is now surfaced as helper metadata constants, but that is still a code representation of the registry entry, not an upstream IANA process.
 - The benchmark lane still shows the existing transport-parameter parse/format hot paths are intact; no performance regression was introduced by the metadata-only change.

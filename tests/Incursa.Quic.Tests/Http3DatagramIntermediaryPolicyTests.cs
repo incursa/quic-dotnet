@@ -78,8 +78,8 @@ public sealed class Http3DatagramIntermediaryPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0068")]
-    [Requirement("REQ-QUIC-RFC9297-0069")]
+    [Requirement("RFC9297-S3-5-P6-S2-R01")]
+    [Requirement("RFC9297-S3-5-P6-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void IntermediaryPolicy_ReencodesBetweenDatagramFramesAndCapsulesWhenIdentified()
@@ -93,8 +93,8 @@ public sealed class Http3DatagramIntermediaryPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9297-0068")]
-    [Requirement("REQ-QUIC-RFC9297-0069")]
+    [Requirement("RFC9297-S3-5-P6-S2-R01")]
+    [Requirement("RFC9297-S3-5-P6-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void IntermediaryPolicy_RefusesReencodingBeforeCapsuleProtocolIdentification()

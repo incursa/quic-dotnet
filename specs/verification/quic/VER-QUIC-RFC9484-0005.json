@@ -13,11 +13,11 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 tunnel setup and lifetime policy.",
   "verifies": [
-    "REQ-QUIC-RFC9484-0031",
+    "RFC9484-S4-1-P3-S3-R01",
     "REQ-QUIC-RFC9484-0032",
-    "REQ-QUIC-RFC9484-0033",
+    "RFC9484-S4-1-P4-S1-R01",
     "REQ-QUIC-RFC9484-0034",
-    "REQ-QUIC-RFC9484-0035",
+    "RFC9484-S4-1-P4-S3-R01",
     "REQ-QUIC-RFC9484-0036",
     "REQ-QUIC-RFC9484-0037",
     "REQ-QUIC-RFC9484-0038",
@@ -30,7 +30,7 @@
   ],
   "procedure": [
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpTunnelSetupPolicyTests\"`.",
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0031|FullyQualifiedName~Http3ConnectIpTunnelSetupPolicyTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~RFC9484_S4_1_P3_S3_R01|FullyQualifiedName~Http3ConnectIpTunnelSetupPolicyTests\"`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
     "Run `git diff --check`."

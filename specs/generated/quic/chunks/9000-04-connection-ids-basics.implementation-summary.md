@@ -11,7 +11,7 @@ Section tokens: `S5, S5P1, S5P1P1`
 - `REQ-QUIC-RFC9000-S5P1-0008`: long-header CID fields are parsed and preserved.
 - `REQ-QUIC-RFC9000-S5P1-0012`: Version Negotiation formatting/parsing echoes connection IDs and supported versions.
 - `REQ-QUIC-RFC9000-S5P1P1-0005`: `NEW_CONNECTION_ID` frame wire encoding/decoding is covered.
-- `REQ-QUIC-RFC9000-0229`: `active_connection_id_limit` transport-parameter encoding/decoding is covered.
+- `RFC9000-S5-1-1-P4-S2-R01`: `active_connection_id_limit` transport-parameter encoding/decoding is covered.
 
 ## Files Changed
 

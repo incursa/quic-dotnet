@@ -52,7 +52,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0152")]
+    [Requirement("RFC9484-S5-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9484-0161")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -64,7 +64,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0152")]
+    [Requirement("RFC9484-S5-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9484-0161")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -76,8 +76,8 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0153")]
-    [Requirement("REQ-QUIC-RFC9484-0154")]
+    [Requirement("RFC9484-S5-P2-S3-R01")]
+    [Requirement("RFC9484-S5-P2-S3-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_AllocatesDynamicNonZeroContextIds()
@@ -91,8 +91,8 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0153")]
-    [Requirement("REQ-QUIC-RFC9484-0154")]
+    [Requirement("RFC9484-S5-P2-S3-R01")]
+    [Requirement("RFC9484-S5-P2-S3-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_RejectsDynamicAllocationOfContextIdZero()

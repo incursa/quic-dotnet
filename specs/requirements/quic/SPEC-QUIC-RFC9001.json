@@ -1221,7 +1221,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6-0005",
+      "id": "RFC9001-S6-P3-S1-R01",
       "title": "Let Key Phase detect key changes",
       "statement": "The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.",
       "coverage": {
@@ -1248,9 +1248,9 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6-0005.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForTamperedPhaseOnePackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs::TryOpenProtectedApplicationDataPacket_DetectsTheChangedKeyPhaseWithoutTheTriggeringPacket",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForPhaseZeroPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-P3-S1-R01.cs::TryOpenProtectedApplicationDataPacket_DoesNotReportAKeyPhaseChangeForTamperedPhaseOnePackets"
         ]
       }
     },
@@ -1509,7 +1509,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P1-0004",
+      "id": "RFC9001-S6-1-P4-S1-R01",
       "title": "Forbid local key updates before handshake confirmation",
       "statement": "An endpoint MUST NOT initiate a key update before confirming the handshake.",
       "coverage": {
@@ -1533,12 +1533,12 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0004.cs::EstablishingClientRuntimeCannotDeriveOrInstallALocalKeyUpdateBeforeHandshakeConfirmation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P4-S1-R01.cs::EstablishingClientRuntimeCannotDeriveOrInstallALocalKeyUpdateBeforeHandshakeConfirmation"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P1-0005",
+      "id": "RFC9001-S6-1-P4-S2-R01",
       "title": "Gate repeated local updates on current-phase acknowledgment",
       "statement": "An endpoint MUST NOT initiate another key update until it has received an acknowledgment for a packet protected with keys from the current key phase.",
       "coverage": {
@@ -1562,7 +1562,7 @@
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0005.cs::RuntimeRejectsASecondLocalUpdateBeforeCurrentPhaseAcknowledgmentSupportExists"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P4-S2-R01.cs::RuntimeRejectsASecondLocalUpdateBeforeCurrentPhaseAcknowledgmentSupportExists"
         ]
       }
     },

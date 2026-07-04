@@ -380,7 +380,7 @@
       "notes": "This section depends on connection state that the current parser-only implementation does not model."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0229",
+      "requirement_id": "RFC9000-S5-1-1-P4-S2-R01",
       "completion_status": "implemented and tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs",
@@ -393,7 +393,7 @@
         "tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs:Fuzz_TransportParameters_RoundTripsRepresentativeValuesAndRejectsTruncation"
       ],
       "direct_refs_added_or_updated": [
-        "REQ-QUIC-RFC9000-0229"
+        "RFC9000-S5-1-1-P4-S2-R01"
       ],
       "remaining_gap": null,
       "notes": "Active connection ID limit coverage now includes a client-role format/parse test in addition to the existing server-role round-trip and fuzz tests."

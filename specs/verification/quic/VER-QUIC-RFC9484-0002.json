@@ -13,9 +13,9 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9484 URI Template validation.",
   "verifies": [
-    "REQ-QUIC-RFC9484-0006",
+    "RFC9484-S3-P6-S1-R01",
     "REQ-QUIC-RFC9484-0007",
-    "REQ-QUIC-RFC9484-0008",
+    "RFC9484-S3-P7-S1-R01",
     "REQ-QUIC-RFC9484-0009",
     "REQ-QUIC-RFC9484-0010"
   ],
@@ -25,7 +25,7 @@
   ],
   "procedure": [
     "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~Http3ConnectIpUriTemplateTests\"`.",
-    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~REQ_QUIC_RFC9484_0006|FullyQualifiedName~Http3ConnectIpUriTemplateTests\"`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter \"FullyQualifiedName~RFC9484_S3_P6_S1_R01|FullyQualifiedName~Http3ConnectIpUriTemplateTests\"`.",
     "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
     "Run `pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
     "Run `git diff --check`."

@@ -5,8 +5,8 @@
 - Stateless reset token generation and truncation helpers: `REQ-QUIC-RFC9000-S10P3-0003`, `REQ-QUIC-RFC9000-0607`, `REQ-QUIC-RFC9000-S10P3-0016`, `REQ-QUIC-RFC9000-S10P3P2-0001`, `REQ-QUIC-RFC9000-S10P3P2-0002`, `REQ-QUIC-RFC9000-S10P3P2-0004`, `REQ-QUIC-RFC9000-S10P3P2-0009`, `REQ-QUIC-RFC9000-S10P3P2-0010`, `REQ-QUIC-RFC9000-0644`, `REQ-QUIC-RFC9000-S10P3P2-0012`
 - Stateless reset packet layout, tail token placement, fixed-bit handling, and visible-prefix sizing: `REQ-QUIC-RFC9000-S10P3-0005`, `REQ-QUIC-RFC9000-S10P3-0006`, `REQ-QUIC-RFC9000-S10P3-0007`, `REQ-QUIC-RFC9000-S10P3-0008`, `REQ-QUIC-RFC9000-S10P3-0013`, `REQ-QUIC-RFC9000-S10P3-0021`, `REQ-QUIC-RFC9000-S10P3-0022`, `REQ-QUIC-RFC9000-S10P3-0023`, `REQ-QUIC-RFC9000-S10P3-0024`, `REQ-QUIC-RFC9000-S10P3-0025`, `REQ-QUIC-RFC9000-S10P3-0026`
 - Stateless-reset response sizing and amplification guardrails: `REQ-QUIC-RFC9000-S10P3-0009`, `REQ-QUIC-RFC9000-S10P3-0010`, `REQ-QUIC-RFC9000-0622`, `REQ-QUIC-RFC9000-S10P3-0027`, `REQ-QUIC-RFC9000-S10P3-0028`, `REQ-QUIC-RFC9000-S10P3P3-0001`
-- Endpoint-host Stateless Reset response floors for unattributed packets and long-header packets: `RFC9000-S10-3-P1-S2-R01`, `REQ-QUIC-RFC9000-S10P3-0015`
-- Trailing-token detection, token-match draining, and no-send transitions: `REQ-QUIC-RFC9000-S10P3P1-0001`, `REQ-QUIC-RFC9000-S10P3P1-0003`, `REQ-QUIC-RFC9000-S10P3P1-0007`, `REQ-QUIC-RFC9000-S10P3P1-0008`, `REQ-QUIC-RFC9000-0629`, `REQ-QUIC-RFC9000-0639`, `REQ-QUIC-RFC9000-0640`
+- Endpoint-host Stateless Reset response floors for unattributed packets and long-header packets: `RFC9000-S10-3-P1-S2-R01`, `RFC9000-S10-3-P15-S1-R01`
+- Trailing-token detection, token-match draining, and no-send transitions: `REQ-QUIC-RFC9000-S10P3P1-0001`, `REQ-QUIC-RFC9000-S10P3P1-0003`, `REQ-QUIC-RFC9000-S10P3P1-0007`, `REQ-QUIC-RFC9000-S10P3P1-0008`, `REQ-QUIC-RFC9000-0629`, `REQ-QUIC-RFC9000-0639`, `RFC9000-S10-3-1-P5-S1-R01`
 - Packet parser coverage for too-small invalid packets: `REQ-QUIC-RFC9000-0623`
 - Existing codec coverage traced into this chunk: `REQ-QUIC-RFC9000-S10P3-0017`, `REQ-QUIC-RFC9000-S10P3-0018`
 
@@ -22,28 +22,28 @@
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/QuicStatelessResetEndpointHostTestSupport.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs`
 
 ## Tests Added Or Updated
 
 - Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs` to prove the endpoint host sends a Stateless Reset for an unattributed packet.
-- Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs` to prove the endpoint host sends a Stateless Reset for a long-header packet.
+- Added `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs` to prove the endpoint host sends a Stateless Reset for a long-header packet.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs` to prove the three-times amplification ceiling with positive and negative coverage.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs` to prove that a matched stateless reset token enters draining and disables further sends.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs` to add negative token-mismatch coverage for the draining transition.
-- Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs` to prove positive, negative, and edge no-send behavior after a matched reset token.
+- Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs` to prove positive, negative, and edge no-send behavior after a matched reset token.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs` to add a negative short-datagram token-detection case.
 - Updated `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs` to add negative zero and negative-length packet-sizing cases.
 - Existing `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs` already provides the positive, edge, and negative coverage for the 38-bit unpredictable-bits floor, and this summary now traces it explicitly.
 
 ## Tests Run And Results
 
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0010|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0015|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_0639|FullyQualifiedName~REQ_QUIC_RFC9000_0640"`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0010|FullyQualifiedName~RFC9000_S10_3_P15_S1_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0025|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3_0028|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3P1_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S10P3P1_0008|FullyQualifiedName~REQ_QUIC_RFC9000_0639|FullyQualifiedName~RFC9000_S10_3_1_P5_S1_R01"`
   Result: passed, 23 tests passed, 0 failed, 0 skipped.
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore`
   Result: still surfaces unrelated baseline failures outside this slice.

@@ -43,7 +43,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1157">The value of the active_connection_id_limit parameter MUST be at least 2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P3-0002">If servers can use a dedicated server IP address or port other than the one that the client initially connects to, they MAY use the preferred_address transport parameter to request that clients move connections to that dedicated address.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P4-S2-R01">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
@@ -90,7 +90,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-1157")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-0277")]
-    [Requirement("REQ-QUIC-RFC9000-0229")]
+    [Requirement("RFC9000-S5-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
     [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
@@ -212,7 +212,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1157">The value of the active_connection_id_limit parameter MUST be at least 2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P3-0002">If servers can use a dedicated server IP address or port other than the one that the client initially connects to, they MAY use the preferred_address transport parameter to request that clients move connections to that dedicated address.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P4-S2-R01">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
@@ -259,7 +259,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-1157")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-0277")]
-    [Requirement("REQ-QUIC-RFC9000-0229")]
+    [Requirement("RFC9000-S5-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
     [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]
@@ -374,7 +374,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-1157">The value of the active_connection_id_limit parameter MUST be at least 2.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S5P2P3-0002">If servers can use a dedicated server IP address or port other than the one that the client initially connects to, they MAY use the preferred_address transport parameter to request that clients move connections to that dedicated address.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0277">A server in a deployment that does not implement a solution to maintain connection continuity when the client address changes SHOULD indicate that migration is not supported by using the disable_active_migration transport parameter.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0229">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P4-S2-R01">Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0001">The choice each endpoint makes about connection IDs during the handshake MUST be authenticated by including all values in transport parameters.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S7-3-P2-S1-R01">Each endpoint MUST include the value of the Source Connection ID field from the first Initial packet it sent in the initial_source_connection_id transport parameter.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S7P3-0003">A server MUST include the Destination Connection ID field from the first Initial packet it received from the client in the original_destination_connection_id transport parameter.</workbench-requirement>
@@ -421,7 +421,7 @@ public sealed class REQ_QUIC_RFC9000_S18_0002
     [Requirement("REQ-QUIC-RFC9000-1157")]
     [Requirement("REQ-QUIC-RFC9000-S5P2P3-0002")]
     [Requirement("REQ-QUIC-RFC9000-0277")]
-    [Requirement("REQ-QUIC-RFC9000-0229")]
+    [Requirement("RFC9000-S5-1-1-P4-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0001")]
     [Requirement("RFC9000-S7-3-P2-S1-R01")]
     [Requirement("REQ-QUIC-RFC9000-S7P3-0003")]

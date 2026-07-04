@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectIpUriTemplateTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0006")]
+    [Requirement("RFC9484-S3-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UriTemplate_AcceptsLevelThreeTemplate()
@@ -17,7 +17,7 @@ public sealed class Http3ConnectIpUriTemplateTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0006")]
+    [Requirement("RFC9484-S3-P6-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UriTemplate_RejectsForbiddenLevelFourOperators()
@@ -46,7 +46,7 @@ public sealed class Http3ConnectIpUriTemplateTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0008")]
+    [Requirement("RFC9484-S3-P7-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UriTemplate_AcceptsTemplateWithNonEmptyComponents()
@@ -59,7 +59,7 @@ public sealed class Http3ConnectIpUriTemplateTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0008")]
+    [Requirement("RFC9484-S3-P7-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UriTemplate_RejectsTemplateWithMissingPathComponent()

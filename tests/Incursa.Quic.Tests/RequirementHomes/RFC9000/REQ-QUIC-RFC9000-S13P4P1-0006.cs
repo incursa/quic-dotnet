@@ -9,7 +9,7 @@ public sealed class REQ_QUIC_RFC9000_S13P4P1_0006
     [Fact]
     [Requirement("RFC9000-S13-2-6-P1-S1-R01")]
     [Requirement("RFC9000-S13-2-6-P1-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9002-S3-0004")]
+    [Requirement("RFC9002-S3-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void PacketNumberSpaces_AreTrackedIndependently()

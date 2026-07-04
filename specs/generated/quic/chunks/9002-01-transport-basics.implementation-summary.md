@@ -9,7 +9,7 @@
 
 ## Requirements Completed
 - `S2`: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`
-- `S3`: `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
+- `S3`: `RFC9002-S3-P1-S1-R01`, `RFC9002-S3-P1-S1-R02`, `RFC9002-S3-P1-S2-R01`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
 
 ## Files Changed
 - [QuicFrameCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicFrameCodec.cs)
@@ -44,11 +44,11 @@
 - [src/Incursa.Quic/QuicFrameCodec.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicFrameCodec.cs): no in-scope requirement refs, which matches the repo convention for this slice.
 - [src/Incursa.Quic/QuicPacketParser.cs](C:/src/incursa/quic-dotnet/src/Incursa.Quic/QuicPacketParser.cs): no in-scope requirement refs, which matches the repo convention for this slice.
 - [src/Incursa.Quic/PublicAPI.Unshipped.txt](C:/src/incursa/quic-dotnet/src/Incursa.Quic/PublicAPI.Unshipped.txt): no in-scope requirement refs, which matches the repo convention for this slice.
-- [tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs): uses `REQ-QUIC-RFC9002-S2-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0011`, and `REQ-QUIC-RFC9002-S3-0012`.
+- [tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs): uses `REQ-QUIC-RFC9002-S2-0003`, `RFC9002-S3-P1-S2-R01`, `REQ-QUIC-RFC9002-S3-0011`, and `REQ-QUIC-RFC9002-S3-0012`.
 - [tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs): uses `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S3-0008`, and `REQ-QUIC-RFC9002-S3-0017`.
-- [tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001`, `REQ-QUIC-RFC9002-S3-0002`, and `REQ-QUIC-RFC9002-S3-0003`.
-- [tests/Incursa.Quic.Tests/QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs): uses `REQ-QUIC-RFC9002-S3-0002` and `REQ-QUIC-RFC9002-S3-0004`.
-- [tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001` and `REQ-QUIC-RFC9002-S3-0003`.
+- [tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001`, `RFC9002-S3-P1-S1-R01`, and `RFC9002-S3-P1-S1-R02`.
+- [tests/Incursa.Quic.Tests/QuicPacketParserTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicPacketParserTests.cs): uses `RFC9002-S3-P1-S1-R01` and `RFC9002-S3-P1-S2-R01`.
+- [tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs): uses `REQ-QUIC-RFC9002-S3-0001` and `RFC9002-S3-P1-S1-R02`.
 - [tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs): uses `REQ-QUIC-RFC9002-S3-0016`.
 - Stale or wrong requirement IDs: none found.
 

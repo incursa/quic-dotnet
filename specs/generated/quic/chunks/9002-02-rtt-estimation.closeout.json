@@ -263,7 +263,7 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S5P3-0010",
+      "requirement_id": "RFC9002-S5-3-P13-S1-R01",
       "section_token": "S5P3",
       "status": "implemented_and_tested",
       "implementation_evidence": [
@@ -319,7 +319,7 @@
       "REQ-QUIC-RFC9002-S5P3-0007",
       "REQ-QUIC-RFC9002-S5P3-0008",
       "REQ-QUIC-RFC9002-S5P3-0009",
-      "REQ-QUIC-RFC9002-S5P3-0010",
+      "RFC9002-S5-3-P13-S1-R01",
       "REQ-QUIC-RFC9002-S5P3-0011",
       "REQ-QUIC-RFC9002-S5P3-0012"
     ],

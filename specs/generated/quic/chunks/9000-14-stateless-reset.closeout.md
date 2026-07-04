@@ -24,12 +24,12 @@
 - `REQ-QUIC-RFC9000-S10P3-0025` is traced in [`REQ-QUIC-RFC9000-S10P3-0025.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3-0028` is traced in [`REQ-QUIC-RFC9000-S10P3-0028.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs#L1).
 - `RFC9000-S10-3-P1-S2-R01` is traced in [`RFC9000-S10-3-P1-S2-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs#L1).
-- `REQ-QUIC-RFC9000-S10P3-0015` is traced in [`REQ-QUIC-RFC9000-S10P3-0015.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs#L1).
+- `RFC9000-S10-3-P15-S1-R01` is traced in [`RFC9000-S10-3-P15-S1-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0001` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3-0010` is traced in [`REQ-QUIC-RFC9000-S10P3-0010.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0010.cs#L1).
 - `REQ-QUIC-RFC9000-S10P3P1-0008` is traced in [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs#L1).
 - `REQ-QUIC-RFC9000-0639` is traced in [`REQ-QUIC-RFC9000-0639.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs#L1).
-- `REQ-QUIC-RFC9000-0640` is traced in [`REQ-QUIC-RFC9000-0640.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs#L1).
+- `RFC9000-S10-3-1-P5-S1-R01` is traced in [`RFC9000-S10-3-1-P5-S1-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs#L1).
 - The focused stateless-reset run passed with `23` tests, and the full `Incursa.Quic.Tests` suite still surfaces unrelated baseline failures outside this slice.
 
 ## Deferred Requirements
@@ -59,11 +59,11 @@
   - [`RFC9000-S10-3-P1-S2-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs) - `RFC9000-S10-3-P1-S2-R01`
   - [`REQ-QUIC-RFC9000-S10P3-0025.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0025.cs) - `REQ-QUIC-RFC9000-S10P3-0025`
   - [`REQ-QUIC-RFC9000-S10P3-0028.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0028.cs) - `REQ-QUIC-RFC9000-S10P3-0028`
-  - [`REQ-QUIC-RFC9000-S10P3-0015.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs) - `REQ-QUIC-RFC9000-S10P3-0015`
+  - [`RFC9000-S10-3-P15-S1-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs) - `RFC9000-S10-3-P15-S1-R01`
   - [`REQ-QUIC-RFC9000-S10P3P1-0001.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0001.cs) - `REQ-QUIC-RFC9000-S10P3P1-0001`
   - [`REQ-QUIC-RFC9000-S10P3P1-0008.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P1-0008.cs) - `REQ-QUIC-RFC9000-S10P3P1-0008`
   - [`REQ-QUIC-RFC9000-0639.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0639.cs) - `REQ-QUIC-RFC9000-0639`
-  - [`REQ-QUIC-RFC9000-0640.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs) - `REQ-QUIC-RFC9000-0640`
+  - [`RFC9000-S10-3-1-P5-S1-R01.cs`](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs) - `RFC9000-S10-3-1-P5-S1-R01`
 - Stale or wrong in-scope requirement refs found: none.
 
 ## Conclusion

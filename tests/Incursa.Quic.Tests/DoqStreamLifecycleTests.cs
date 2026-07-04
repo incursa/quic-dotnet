@@ -707,7 +707,7 @@ public sealed class DoqStreamLifecycleTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0067")]
     [Requirement("REQ-QUIC-RFC9250-0068")]
-    [Requirement("REQ-QUIC-RFC9250-0069")]
+    [Requirement("RFC9250-S4-4-P6-S3-R01")]
     [Requirement("REQ-QUIC-RFC9250-0102")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -735,8 +735,8 @@ public sealed class DoqStreamLifecycleTests
     [Fact]
     [Requirement("REQ-QUIC-RFC9250-0067")]
     [Requirement("REQ-QUIC-RFC9250-0068")]
-    [Requirement("REQ-QUIC-RFC9250-0069")]
-    [Requirement("REQ-QUIC-RFC9250-0070")]
+    [Requirement("RFC9250-S4-4-P6-S3-R01")]
+    [Requirement("RFC9250-S4-4-P6-S4-R01")]
     [Requirement("REQ-QUIC-RFC9250-0102")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -768,7 +768,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0070")]
+    [Requirement("RFC9250-S4-4-P6-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task OpensReplacementConnectionWhenIdleTimeIsNotLowEnough()
@@ -1159,7 +1159,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0110")]
+    [Requirement("RFC9250-S5-6-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task OutOfOrderResponseDelivery()
@@ -1188,7 +1188,7 @@ public sealed class DoqStreamLifecycleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9250-0110")]
+    [Requirement("RFC9250-S5-6-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public async Task LaterStreamResponseDoesNotWaitForBlockedEarlierStream()

@@ -114,7 +114,7 @@ public sealed class Http3ConnectUdpTunnelSetupPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0039")]
+    [Requirement("RFC9298-S3-1-P4-S5-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, false)]
@@ -125,7 +125,7 @@ public sealed class Http3ConnectUdpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0039")]
+    [Requirement("RFC9298-S3-1-P4-S5-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_DoesNotRejectRequestWithoutSetupErrors()

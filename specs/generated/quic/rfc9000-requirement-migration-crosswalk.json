@@ -321,7 +321,7 @@
       "statement": "Endpoints MUST treat any packet ending in a valid stateless reset token as a Stateless Reset."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3-0015",
+      "id": "RFC9000-S10-3-P15-S1-R01",
       "title": "Allow Stateless Reset in response to long-header packets",
       "statement": "An endpoint MAY send a Stateless Reset in response to a packet with a long header."
     },
@@ -3976,12 +3976,12 @@
       "statement": "As data is consumed by the application and buffer space becomes available, the endpoint MUST send MAX_STREAM_DATA frames to allow the peer to send more data."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0015",
+      "id": "RFC9000-S3-2-P7-S1-R01",
       "title": "Recognize final size when FIN arrives",
       "statement": "When a STREAM frame with a FIN bit is received, the final size of the stream MUST be known."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0016",
+      "id": "RFC9000-S3-2-P7-S2-R01",
       "title": "Enter Size Known after FIN",
       "statement": "The receiving part of the stream MUST then enter the Size Known state."
     },
@@ -4011,7 +4011,7 @@
       "statement": "Once the application receives the signal indicating that the stream was reset, the receiving part of the stream MUST transition to the Reset Read state."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P3-0001",
+      "id": "RFC9000-S3-3-P2-S1-R01",
       "title": "Forbid terminal-state transmit frames",
       "statement": "A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state."
     },
@@ -4236,7 +4236,7 @@
       "statement": "If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S4P6-0007",
+      "id": "RFC9000-S4-6-P2-S2-R01",
       "title": "Close on oversized stream-count values in frames",
       "statement": "If an oversized max_streams value is received in a frame, the connection MUST be closed immediately with FRAME_ENCODING_ERROR."
     },
@@ -5166,17 +5166,17 @@
       "statement": "When the only change in the peer's address is its port number, an endpoint MAY retain its congestion control state and round-trip estimate instead of reverting to initial values."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0007",
+      "id": "RFC9000-S9-4-P5-S1-R01",
       "title": "Allow Probe-Packet Loss Exceptions",
       "statement": "A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0008",
+      "id": "RFC9000-S9-4-P5-S2-R01",
       "title": "Allow a Separate PATH_CHALLENGE Timer",
       "statement": "An endpoint MAY set a separate timer when a PATH_CHALLENGE is sent, and the timer is canceled if the corresponding PATH_RESPONSE is received."
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0009",
+      "id": "RFC9000-S9-4-P5-S3-R01",
       "title": "Allow Retrying PATH_CHALLENGE on Timeout",
       "statement": "If the timer fires before the PATH_RESPONSE is received, an endpoint MAY send a new PATH_CHALLENGE and restart the timer for a longer period of time."
     },

@@ -13,7 +13,7 @@
   ],
   "addresses": [
     "RFC9000-S4-6-P2-S1-R01",
-    "REQ-QUIC-RFC9000-S4P6-0007"
+    "RFC9000-S4-6-P2-S2-R01"
   ],
   "summary": "Close the S4P6 max_streams oversized close-policy tail by proving initial max_streams transport-parameter boundary handling and protected MAX_STREAMS oversized-frame close behavior.",
   "planned_changes": "- Add focused runtime and codec proof for accepting initial max_streams at the 2^60 boundary and closing typed oversized transport-parameter inputs with TRANSPORT_PARAMETER_ERROR.\n- Add focused parser and protected Application Data proof for accepting valid MAX_STREAMS boundary values and closing oversized MAX_STREAMS frames with FRAME_ENCODING_ERROR.\n- Add focused architecture and verification artifacts and regenerate QUIC requirement coverage triage.",
@@ -32,5 +32,5 @@
     "Hosted interop readiness.",
     "Closing the deferred S4P6-0006 and S4P6-0007 fuzz expectations."
   ],
-  "completion_notes": "Completed as a focused S4P6 proof for RFC9000-S4-6-P2-S1-R01 and REQ-QUIC-RFC9000-S4P6-0007."
+  "completion_notes": "Completed as a focused S4P6 proof for RFC9000-S4-6-P2-S1-R01 and RFC9000-S4-6-P2-S2-R01."
 }

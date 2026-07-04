@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectUdpUriTemplateTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0002")]
+    [Requirement("RFC9298-S2-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9298-0003")]
     [Requirement("REQ-QUIC-RFC9298-0004")]
     [Requirement("REQ-QUIC-RFC9298-0005")]
@@ -36,7 +36,7 @@ public sealed class Http3ConnectUdpUriTemplateTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0002")]
+    [Requirement("RFC9298-S2-P5-S1-R01")]
     [Requirement("REQ-QUIC-RFC9298-0011")]
     [Requirement("REQ-QUIC-RFC9298-0012")]
     [Requirement("REQ-QUIC-RFC9298-0013")]

@@ -1421,7 +1421,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0068",
+      "id": "RFC9297-S3-5-P6-S2-R01",
       "title": "Intermediary may re-encode DATAGRAM Capsules",
       "statement": "An intermediary MAY send a DATAGRAM Capsule to forward an HTTP Datagram that was received in a QUIC DATAGRAM frame and vice versa.",
       "coverage": {
@@ -1445,7 +1445,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9297-0069",
+      "id": "RFC9297-S3-5-P6-S3-R01",
       "title": "Intermediaries require Capsule Protocol identification before re-encoding",
       "statement": "Intermediaries MUST not perform this re-encoding unless they have identified the use of the Capsule Protocol on the corresponding request stream.",
       "coverage": {

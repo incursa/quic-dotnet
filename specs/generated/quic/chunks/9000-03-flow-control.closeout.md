@@ -66,7 +66,7 @@ Selection rule: include only requirements whose IDs match RFC `9000` and whose s
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0003.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0004.cs`
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0005.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs`
 
 ## Tests Run
 

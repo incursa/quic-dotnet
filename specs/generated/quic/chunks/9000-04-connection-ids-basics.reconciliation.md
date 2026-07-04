@@ -57,7 +57,7 @@ Section tokens: `S5, S5P1, S5P1P1`
 - `REQ-QUIC-RFC9000-S5P1P1-0008` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `REQ-QUIC-RFC9000-S5P1P1-0009` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `RFC9000-S5-1-1-P4-S1-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
-- `REQ-QUIC-RFC9000-0229` - implemented and tested; The transport-parameter codec already parses, formats, and fuzzes active_connection_id_limit.
+- `RFC9000-S5-1-1-P4-S2-R01` - implemented and tested; The transport-parameter codec already parses, formats, and fuzzes active_connection_id_limit.
 - `RFC9000-S5-1-1-P4-S3-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `RFC9000-S5-1-1-P4-S4-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
 - `RFC9000-S5-1-1-P5-S2-R01` - not implemented; This section depends on connection state that the current parser-only implementation does not model.
@@ -114,7 +114,7 @@ Section tokens: `S5, S5P1, S5P1P1`
 ## Gaps Fixed in This Pass
 
 - Added `REQ-QUIC-RFC9000-S5P1-0012` to the Version Negotiation response formatter positive and fuzz tests.
-- Reclassified the existing `NEW_CONNECTION_ID` and `active_connection_id_limit` coverage as implemented and tested for `REQ-QUIC-RFC9000-S5P1P1-0005` and `REQ-QUIC-RFC9000-0229`.
+- Reclassified the existing `NEW_CONNECTION_ID` and `active_connection_id_limit` coverage as implemented and tested for `REQ-QUIC-RFC9000-S5P1P1-0005` and `RFC9000-S5-1-1-P4-S2-R01`.
 - Kept the pass additive: no legacy requirement IDs were replaced, and no out-of-scope short-header or transport-parameter tags were changed.
 
 ## Remaining Gaps

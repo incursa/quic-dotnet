@@ -2156,12 +2156,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S3P3-0001", "RFC9000-S3-3-P2-S2-R01", "REQ-QUIC-RFC9000-S3P3-0005")
+            requirement_families = @("RFC9000-S3-3-P2-S1-R01", "RFC9000-S3-3-P2-S2-R01", "REQ-QUIC-RFC9000-S3P3-0005")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S3_3_P2_S1_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0001|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S3_3_P2_S1_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0002|FullyQualifiedName~REQ_QUIC_RFC9000_S3P3_0005"'
             )
             success_gates = @(
                 "terminal send-state transitions reject STREAM, STREAM_DATA_BLOCKED, and RESET_STREAM once the send side is closed",
@@ -2621,12 +2621,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0008", "REQ-QUIC-RFC9000-S9P4-0009", "RFC9000-S9-4-P5-S4-R01", "RFC9000-S9-4-P5-S4-R02")
+            requirement_families = @("RFC9000-S9-4-P5-S2-R01", "RFC9000-S9-4-P5-S3-R01", "RFC9000-S9-4-P5-S4-R01", "RFC9000-S9-4-P5-S4-R02")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~RFC9000_S9_4_P5_S4_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S9_4_P5_S2_R01|FullyQualifiedName~RFC9000_S9_4_P5_S3_R01|FullyQualifiedName~RFC9000_S9_4_P5_S4_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0008|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0009|FullyQualifiedName~RFC9000_S9_4_P5_S4_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S9_4_P5_S2_R01|FullyQualifiedName~RFC9000_S9_4_P5_S3_R01|FullyQualifiedName~RFC9000_S9_4_P5_S4_R01|FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0011"'
             )
             success_gates = @(
                 "PATH_CHALLENGE timers remain conservative and retry cleanly when PATH_RESPONSE is missing",
@@ -2659,12 +2659,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic/QuicTls",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9000-S9P4-0007")
+            requirement_families = @("RFC9000-S9-4-P5-S1-R01")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0007"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S9_4_P5_S1_R01"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S9P4_0007"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9000_S9_4_P5_S1_R01"'
             )
             success_gates = @(
                 "probe packets stay exempt from normal loss-induced congestion reduction only where the requirement allows",
@@ -2734,12 +2734,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9001-S6-0004", "REQ-QUIC-RFC9001-S6-0005")
+            requirement_families = @("REQ-QUIC-RFC9001-S6-0004", "RFC9001-S6-P3-S1-R01")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~RFC9001_S6_P3_S1_R01"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0004|FullyQualifiedName~RFC9001_S6_P3_S1_R01"'
             )
             success_gates = @(
                 "the managed client/runtime can signal a key-phase change and a recipient can observe the change through the existing packet parser",
@@ -2773,12 +2773,12 @@ function Get-LaneTemplateDefinitions {
                 "src/Incursa.Quic.InteropHarness",
                 "specs/generated"
             )
-            requirement_families = @("REQ-QUIC-RFC9001-S6-0005")
+            requirement_families = @("RFC9001-S6-P3-S1-R01")
             verification_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9001_S6_P3_S1_R01"'
             )
             merge_check_commands = @(
-                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~REQ_QUIC_RFC9001_S6_0005"'
+                'dotnet test Incursa.Quic.slnx --filter "FullyQualifiedName~RFC9001_S6_P3_S1_R01"'
             )
             success_gates = @(
                 "the recipient-detection edge cases for the key-phase floor are fully proven",

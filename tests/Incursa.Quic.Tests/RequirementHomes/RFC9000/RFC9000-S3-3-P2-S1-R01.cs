@@ -4,13 +4,13 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P3-0001">A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-3-P2-S1-R01">A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
-public sealed class REQ_QUIC_RFC9000_S3P3_0001
+[Requirement("RFC9000-S3-3-P2-S1-R01")]
+public sealed class RFC9000_S3_3_P2_S1_R01
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryAbortLocalStreamWrites_AllowsResetStreamBeforeTerminalState()
@@ -39,7 +39,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsStreamFramesAfterResetRecvd()
@@ -76,7 +76,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsResetRecvdStreams()
@@ -105,7 +105,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryReserveSendCapacity_RejectsStreamFramesAfterDataSent()
@@ -153,7 +153,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsDataSentStreams()
@@ -193,7 +193,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsDataRecvdStreams()
@@ -230,7 +230,7 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0001
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S3P3-0001")]
+    [Requirement("RFC9000-S3-3-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TryAbortLocalStreamWrites_RejectsResetSentStreams()

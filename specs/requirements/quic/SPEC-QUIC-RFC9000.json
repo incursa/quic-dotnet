@@ -1274,7 +1274,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0174",
+      "id": "RFC9000-S4-1-P10-S1-R01",
       "title": "Ignore non-increasing flow-control frames",
       "statement": "A sender MUST ignore any MAX_STREAM_DATA or MAX_DATA frames that do not increase flow control limits.",
       "coverage": {
@@ -1294,8 +1294,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0174.cs::TryApplyMaxFlowControlFrames_AppliesIncreasingLimits",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0174.cs::TryApplyMaxFlowControlFrames_IgnoresNonIncreasingLimits"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-1-P10-S1-R01.cs::TryApplyMaxFlowControlFrames_AppliesIncreasingLimits",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-1-P10-S1-R01.cs::TryApplyMaxFlowControlFrames_IgnoresNonIncreasingLimits"
         ],
         "upstream_refs": [
           "RFC 9000 section 4.1 RFC9000-S4P1-B10-P10-S1",
@@ -1991,7 +1991,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0229",
+      "id": "RFC9000-S5-1-1-P4-S2-R01",
       "title": "Advertise active connection ID limit",
       "statement": "Endpoints MUST advertise the number of active connection IDs they are willing to maintain using the active_connection_id_limit transport parameter.",
       "coverage": {
@@ -2014,8 +2014,8 @@
           "VER-QUIC-RFC9000-0074"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0229.cs::TryFormatTransportParameters_DoesNotEmitActiveConnectionIdLimitWhenUnset",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0229.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P4-S2-R01.cs::TryFormatTransportParameters_DoesNotEmitActiveConnectionIdLimitWhenUnset",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P4-S2-R01.cs::TryFormatTransportParameters_EmitsActiveConnectionIdLimitForClients"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.1.1 RFC9000-S5P1P1-B4-P4-S2",
@@ -3108,7 +3108,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0305",
+      "id": "RFC9000-S7-2-P2-S1-R01",
       "title": "Handshake uses long header packets to establish connection IDs",
       "statement": "During the handshake, packets with the long header MUST be used to establish the connection IDs used by both endpoints.",
       "coverage": {
@@ -3128,8 +3128,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0305.cs::ShortHeaderPacketsCannotEstablishHandshakeConnectionIds",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0305.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P2-S1-R01.cs::ShortHeaderPacketsCannotEstablishHandshakeConnectionIds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P2-S1-R01.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-0001.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload"
         ],
         "upstream_refs": [
@@ -6305,7 +6305,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0640",
+      "id": "RFC9000-S10-3-1-P5-S1-R01",
       "title": "Stop sending packets after a stateless reset token match",
       "statement": "If the last 16 bytes of the datagram are identical in value to a stateless reset token, the endpoint MUST NOT send any further packets on this connection.",
       "coverage": {
@@ -6325,9 +6325,9 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0640.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs::TryHandlePotentialStatelessReset_DisablesSendingOnAMatchingToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs::TryHandlePotentialStatelessReset_KeepsSendingEnabledWhenTheTokenDoesNotMatch",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-1-P5-S1-R01.cs::TryHandlePotentialStatelessReset_StaysNonSendableAfterARepeatedMatch"
         ],
         "upstream_refs": [
           "RFC9000 section 10.3.1 RFC9000-S10P3P1-B5-P5-S1",
@@ -9047,7 +9047,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-0990",
+      "id": "RFC9000-S17-2-2-P9-S2-R01",
       "title": "Allow multiple server Initial packets",
       "statement": "A server MAY send multiple Initial packets.",
       "coverage": {
@@ -9067,8 +9067,8 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0990.cs::TryBuildProtectedInitialPacketForHandshakeDestination_RejectsServerInitialsWithoutASourceConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0990.cs::TryBuildProtectedInitialPacketForHandshakeDestination_AllowsTheServerToSendMultipleInitialPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-2-P9-S2-R01.cs::TryBuildProtectedInitialPacketForHandshakeDestination_RejectsServerInitialsWithoutASourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-2-P9-S2-R01.cs::TryBuildProtectedInitialPacketForHandshakeDestination_AllowsTheServerToSendMultipleInitialPackets"
         ],
         "upstream_refs": [
           "RFC 9000 17.2.2 RFC9000-S17P2P2-B9-P9-S2",
@@ -14483,7 +14483,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S10P3-0015",
+      "id": "RFC9000-S10-3-P15-S1-R01",
       "title": "Allow Stateless Reset in response to long-header packets",
       "statement": "An endpoint MAY send a Stateless Reset in response to a packet with a long header.",
       "coverage": {
@@ -14507,8 +14507,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-10.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::TryCreateStatelessResetDatagram_AllowsLongHeaderSizedTriggers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::EndpointHostSendsStatelessResetForALongHeaderPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs::TryCreateStatelessResetDatagram_AllowsLongHeaderSizedTriggers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs::EndpointHostSendsStatelessResetForALongHeaderPacket"
         ]
       }
     },
@@ -15055,7 +15055,7 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs::EndpointHostSendsStatelessResetForAnUnattributedPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs::ReceiveDatagram_DispatchesPotentialStatelessResetDatagramsIntoTheRuntime",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs::ReceiveDatagram_RoutesPotentialStatelessResetDatagramsWhenThePacketCanBeAssociatedWithAnActiveConnection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3-0015.cs::EndpointHostSendsStatelessResetForALongHeaderPacket"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs::EndpointHostSendsStatelessResetForALongHeaderPacket"
         ]
       }
     },
@@ -20884,7 +20884,7 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-4-P2-S2-R01.cs::TryRegisterLoss_IgnoresProbePacketLossForCongestionControl",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S1-R01.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary"
         ]
       }
     },
@@ -37418,7 +37418,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0015",
+      "id": "RFC9000-S3-2-P7-S1-R01",
       "title": "Recognize final size when FIN arrives",
       "statement": "When a STREAM frame with a FIN bit is received, the final size of the stream MUST be known.",
       "coverage": {
@@ -37442,14 +37442,14 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_MarksFinalSizeKnownWhenFinArrives",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_LeavesFinalSizeUnknownWithoutFin",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs::TryReceiveStreamFrame_MarksFinalSizeKnownOnZeroLengthFin"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs::TryReceiveStreamFrame_MarksFinalSizeKnownWhenFinArrives",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs::TryReceiveStreamFrame_LeavesFinalSizeUnknownWithoutFin",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs::TryReceiveStreamFrame_MarksFinalSizeKnownOnZeroLengthFin"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P2-0016",
+      "id": "RFC9000-S3-2-P7-S2-R01",
       "title": "Enter Size Known after FIN",
       "statement": "The receiving part of the stream MUST then enter the Size Known state.",
       "coverage": {
@@ -37474,7 +37474,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.2"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs::TryReceiveStreamFrame_EntersSizeKnownWhenFinArrives"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs::TryReceiveStreamFrame_EntersSizeKnownWhenFinArrives"
         ]
       }
     },
@@ -37633,7 +37633,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S3P3-0001",
+      "id": "RFC9000-S3-3-P2-S1-R01",
       "title": "Forbid terminal-state transmit frames",
       "statement": "A sender MUST NOT send STREAM, STREAM_DATA_BLOCKED, or RESET_STREAM frames from a terminal state.",
       "coverage": {
@@ -37657,8 +37657,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-3.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs::TryAbortLocalStreamWrites_AllowsResetStreamBeforeTerminalState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetRecvd"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S1-R01.cs::TryAbortLocalStreamWrites_AllowsResetStreamBeforeTerminalState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S1-R01.cs::TryReserveSendCapacity_RejectsStreamFramesAfterResetRecvd"
         ]
       }
     },
@@ -39020,7 +39020,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S4P6-0007",
+      "id": "RFC9000-S4-6-P2-S2-R01",
       "title": "Close on oversized stream-count values in frames",
       "statement": "If an oversized max_streams value is received in a frame, the connection MUST be closed immediately with FRAME_ENCODING_ERROR.",
       "coverage": {
@@ -39047,9 +39047,9 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-4.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
         ]
       }
     },
@@ -41458,7 +41458,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs::BridgeStateCommitsSnapshotsOnlyAfterPeerFinishedVerification",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S8-0002.cs::BridgeDriverRequiresPeerFinishedVerificationBeforeCommittingPeerTransportParameters",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0305.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P2-S1-R01.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds"
         ]
       }
     },
@@ -41547,7 +41547,7 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0305.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P2-S1-R01.cs::HandshakePacketsUseLongHeadersToEstablishBothConnectionIds"
         ]
       }
     },
@@ -44725,7 +44725,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0007",
+      "id": "RFC9000-S9-4-P5-S1-R01",
       "title": "Allow Probe-Packet Loss Exceptions",
       "statement": "A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.",
       "coverage": {
@@ -44749,14 +44749,14 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::ProbePacketLossLeavesRecoveryStateUnchangedAtThePathValidationBoundary",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0007.cs::IsolatedProbePacketLossDoesNotReduceTheCongestionWindow"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S1-R01.cs::ProbePacketLossLeavesRecoveryStateUnchangedAtThePathValidationBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S1-R01.cs::NonProbePacketLossStillReducesCongestionAtTheSameBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S1-R01.cs::IsolatedProbePacketLossDoesNotReduceTheCongestionWindow"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0008",
+      "id": "RFC9000-S9-4-P5-S2-R01",
       "title": "Allow a Separate PATH_CHALLENGE Timer",
       "statement": "An endpoint MAY set a separate timer when a PATH_CHALLENGE is sent, and the timer is canceled if the corresponding PATH_RESPONSE is received.",
       "coverage": {
@@ -44780,12 +44780,12 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0008.cs::ValidatingANewPathArmsASeparatePathValidationTimerThatCancelsOnSuccess"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S2-R01.cs::ValidatingANewPathArmsASeparatePathValidationTimerThatCancelsOnSuccess"
         ]
       }
     },
     {
-      "id": "REQ-QUIC-RFC9000-S9P4-0009",
+      "id": "RFC9000-S9-4-P5-S3-R01",
       "title": "Allow Retrying PATH_CHALLENGE on Timeout",
       "statement": "If the timer fires before the PATH_RESPONSE is received, an endpoint MAY send a new PATH_CHALLENGE and restart the timer for a longer period of time.",
       "coverage": {
@@ -44809,8 +44809,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.4"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::TimerExpiryAtTheDeadlineRetransmitsAChallengeAndRearmsTheTimer",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P4-0009.cs::StaleTimerAfterTheResponseDoesNotRetransmit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S3-R01.cs::TimerExpiryAtTheDeadlineRetransmitsAChallengeAndRearmsTheTimer",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P5-S3-R01.cs::StaleTimerAfterTheResponseDoesNotRetransmit"
         ]
       }
     },

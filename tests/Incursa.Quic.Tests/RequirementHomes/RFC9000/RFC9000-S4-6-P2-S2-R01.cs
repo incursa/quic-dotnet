@@ -3,13 +3,13 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9000-S4P6-0007")]
-public sealed class REQ_QUIC_RFC9000_S4P6_0007
+[Requirement("RFC9000-S4-6-P2-S2-R01")]
+public sealed class RFC9000_S4_6_P2_S2_R01
 {
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0007")]
+    [Requirement("RFC9000-S4-6-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount(bool isBidirectional)
@@ -31,7 +31,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0007
     [Theory]
     [InlineData(0x12)]
     [InlineData(0x13)]
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0007")]
+    [Requirement("RFC9000-S4-6-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame(byte frameType)
@@ -51,7 +51,7 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0007
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9000-S4P6-0007")]
+    [Requirement("RFC9000-S4-6-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit()

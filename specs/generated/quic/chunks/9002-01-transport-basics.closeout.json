@@ -26,9 +26,9 @@
       "REQ-QUIC-RFC9002-S2-0003",
       "REQ-QUIC-RFC9002-S2-0004",
       "REQ-QUIC-RFC9002-S3-0001",
-      "REQ-QUIC-RFC9002-S3-0002",
-      "REQ-QUIC-RFC9002-S3-0003",
-      "REQ-QUIC-RFC9002-S3-0004",
+      "RFC9002-S3-P1-S1-R01",
+      "RFC9002-S3-P1-S1-R02",
+      "RFC9002-S3-P1-S2-R01",
       "REQ-QUIC-RFC9002-S3-0005",
       "REQ-QUIC-RFC9002-S3-0006",
       "REQ-QUIC-RFC9002-S3-0007",
@@ -49,9 +49,9 @@
       "REQ-QUIC-RFC9002-S2-0003",
       "REQ-QUIC-RFC9002-S2-0004",
       "REQ-QUIC-RFC9002-S3-0001",
-      "REQ-QUIC-RFC9002-S3-0002",
-      "REQ-QUIC-RFC9002-S3-0003",
-      "REQ-QUIC-RFC9002-S3-0004",
+      "RFC9002-S3-P1-S1-R01",
+      "RFC9002-S3-P1-S1-R02",
+      "RFC9002-S3-P1-S2-R01",
       "REQ-QUIC-RFC9002-S3-0005",
       "REQ-QUIC-RFC9002-S3-0006",
       "REQ-QUIC-RFC9002-S3-0007",
@@ -76,9 +76,9 @@
       "REQ-QUIC-RFC9002-S2-0002",
       "REQ-QUIC-RFC9002-S2-0003",
       "REQ-QUIC-RFC9002-S3-0001",
-      "REQ-QUIC-RFC9002-S3-0002",
-      "REQ-QUIC-RFC9002-S3-0003",
-      "REQ-QUIC-RFC9002-S3-0004",
+      "RFC9002-S3-P1-S1-R01",
+      "RFC9002-S3-P1-S1-R02",
+      "RFC9002-S3-P1-S2-R01",
       "REQ-QUIC-RFC9002-S3-0008",
       "REQ-QUIC-RFC9002-S3-0011",
       "REQ-QUIC-RFC9002-S3-0012",
@@ -164,7 +164,7 @@
       "notes": "The long- and short-header parser/model tests carry the RFC 9002 ID, but the requirement remains blocked because the repo still lacks a packet transmit/composer surface."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "requirement_id": "RFC9002-S3-P1-S1-R01",
       "title": "Indicate encryption level in packet headers",
       "completion_status": "implemented and tested",
       "tests_covering_requirement": [
@@ -180,7 +180,7 @@
       "notes": "The packet parser resolves the packet-number space from the header form and long-header packet type, and rejects Version Negotiation and Retry packets."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "requirement_id": "RFC9002-S3-P1-S1-R02",
       "title": "Carry packet numbers in packet headers",
       "completion_status": "implemented and tested",
       "tests_covering_requirement": [
@@ -196,7 +196,7 @@
       "notes": "The packet-header tests assert that packet-number length bits are preserved in both long and short header representations."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "requirement_id": "RFC9002-S3-P1-S2-R01",
       "title": "Map encryption level to packet number space",
       "completion_status": "implemented and tested",
       "tests_covering_requirement": [

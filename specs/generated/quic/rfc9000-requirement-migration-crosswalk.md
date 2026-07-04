@@ -88,7 +88,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S10P3-0010` | Make short-packet Stateless Resets one byte shorter |
 | `REQ-QUIC-RFC9000-S10P3-0013` | Format Stateless Resets with a short header |
 | `REQ-QUIC-RFC9000-S10P3-0014` | Treat any packet ending in a valid reset token as a Stateless Reset |
-| `REQ-QUIC-RFC9000-S10P3-0015` | Allow Stateless Reset in response to long-header packets |
+| `RFC9000-S10-3-P15-S1-R01` | Allow Stateless Reset in response to long-header packets |
 | `REQ-QUIC-RFC9000-S10P3-0016` | Make reset tokens hard to guess |
 | `REQ-QUIC-RFC9000-S10P3-0017` | Advertise reset tokens in NEW_CONNECTION_ID |
 | `REQ-QUIC-RFC9000-S10P3-0018` | Permit server transport-parameter reset tokens |
@@ -819,14 +819,14 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S3P2-0010` | Allow reordered peer flow-control or stop-sending frames |
 | `REQ-QUIC-RFC9000-S3P2-0013` | Buffer received stream data for ordered delivery |
 | `REQ-QUIC-RFC9000-S3P2-0014` | Advertise more receive credit as data is consumed |
-| `REQ-QUIC-RFC9000-S3P2-0015` | Recognize final size when FIN arrives |
-| `REQ-QUIC-RFC9000-S3P2-0016` | Enter Size Known after FIN |
+| `RFC9000-S3-2-P7-S1-R01` | Recognize final size when FIN arrives |
+| `RFC9000-S3-2-P7-S2-R01` | Enter Size Known after FIN |
 | `REQ-QUIC-RFC9000-S3P2-0018` | Discard further stream frames after all data is received |
 | `REQ-QUIC-RFC9000-S3P2-0020` | Enter Data Read after delivery to the application |
 | `REQ-QUIC-RFC9000-S3P2-0021` | Enter Reset Recvd on RESET_STREAM in Recv or Size Known |
 | `REQ-QUIC-RFC9000-S3P2-0023` | Remain in Data Recvd when RESET_STREAM is suppressed |
 | `REQ-QUIC-RFC9000-S3P2-0024` | Enter Reset Read after the application receives reset notification |
-| `REQ-QUIC-RFC9000-S3P3-0001` | Forbid terminal-state transmit frames |
+| `RFC9000-S3-3-P2-S1-R01` | Forbid terminal-state transmit frames |
 | `RFC9000-S3-3-P2-S2-R01` | Forbid post-reset transmission of STREAM frames |
 | `REQ-QUIC-RFC9000-S3P3-0003` | Allow delayed receipt of state-changing frames |
 | `REQ-QUIC-RFC9000-S3P3-0004` | Limit MAX_STREAM_DATA to Recv |
@@ -871,7 +871,7 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S4P6-0004` | Advertise later stream limits with MAX_STREAMS |
 | `REQ-QUIC-RFC9000-S4P6-0005` | Apply separate limits by stream direction |
 | `RFC9000-S4-6-P2-S1-R01` | Close on oversized stream-count values in transport parameters |
-| `REQ-QUIC-RFC9000-S4P6-0007` | Close on oversized stream-count values in frames |
+| `RFC9000-S4-6-P2-S2-R01` | Close on oversized stream-count values in frames |
 | `REQ-QUIC-RFC9000-S4P6-0010` | Ignore smaller advertised stream limits |
 | `REQ-QUIC-RFC9000-S4P6-0011` | Ignore non-increasing MAX_STREAMS frames |
 | `REQ-QUIC-RFC9000-S5-0001` | Treat a QUIC connection as shared client-server state |
@@ -1057,9 +1057,9 @@ Live IDs not present in staged remain for explicit review; they were not guessed
 | `REQ-QUIC-RFC9000-S9P4-0003` | Retain congestion state for port-only changes |
 | `REQ-QUIC-RFC9000-S9P4-0004` | Keep ACK coverage across multiple paths |
 | `REQ-QUIC-RFC9000-S9P4-0005` | Retain State for Port-Only Peer Changes |
-| `REQ-QUIC-RFC9000-S9P4-0007` | Allow Probe-Packet Loss Exceptions |
-| `REQ-QUIC-RFC9000-S9P4-0008` | Allow a Separate PATH_CHALLENGE Timer |
-| `REQ-QUIC-RFC9000-S9P4-0009` | Allow Retrying PATH_CHALLENGE on Timeout |
+| `RFC9000-S9-4-P5-S1-R01` | Allow Probe-Packet Loss Exceptions |
+| `RFC9000-S9-4-P5-S2-R01` | Allow a Separate PATH_CHALLENGE Timer |
+| `RFC9000-S9-4-P5-S3-R01` | Allow Retrying PATH_CHALLENGE on Timeout |
 | `RFC9000-S9-4-P5-S4-R02` | Do Not Make the PATH_CHALLENGE Timer More Aggressive |
 | `RFC9000-S9-5-P2-R01` | At any time, endpoints MAY change the Destination Connection ID they transmit with to a value that has not been used on another path |
 | `RFC9000-S9-5-P4-R01` | Prevent connection-id reuse across destination addresses |

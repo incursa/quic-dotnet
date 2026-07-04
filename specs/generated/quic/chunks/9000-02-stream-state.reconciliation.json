@@ -105,8 +105,8 @@
       "REQ-QUIC-RFC9000-0110",
       "REQ-QUIC-RFC9000-S3P2-0013",
       "REQ-QUIC-RFC9000-S3P2-0014",
-      "REQ-QUIC-RFC9000-S3P2-0015",
-      "REQ-QUIC-RFC9000-S3P2-0016",
+      "RFC9000-S3-2-P7-S1-R01",
+      "RFC9000-S3-2-P7-S2-R01",
       "REQ-QUIC-RFC9000-0113",
       "REQ-QUIC-RFC9000-S3P2-0018",
       "REQ-QUIC-RFC9000-0115",
@@ -115,7 +115,7 @@
       "REQ-QUIC-RFC9000-0120",
       "REQ-QUIC-RFC9000-S3P2-0023",
       "REQ-QUIC-RFC9000-S3P2-0024",
-      "REQ-QUIC-RFC9000-S3P3-0001",
+      "RFC9000-S3-3-P2-S1-R01",
       "RFC9000-S3-3-P2-S2-R01",
       "REQ-QUIC-RFC9000-S3P3-0003",
       "REQ-QUIC-RFC9000-S3P3-0004",
@@ -185,8 +185,8 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0110.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0013.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0018.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0115.cs",
@@ -195,7 +195,7 @@
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0120.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0023.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0024.cs",
-      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs",
+      "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S1-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S2-R01.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0003.cs",
       "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0004.cs",
@@ -801,40 +801,40 @@
       "notes": "Reading buffered data advertises more receive credit."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
+      "requirement_id": "RFC9000-S3-2-P7-S1-R01",
       "section": "S3P2",
       "title": "Recognize final size when FIN arrives",
       "status": "implemented and tested",
       "completion_status": "implemented and tested",
       "evidence_type": "helper-layer evidence and requirement-home tests",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs"
       ],
       "direct_refs_state": "present",
       "remaining_gap": null,
       "notes": "Focused proof now covers the FIN boundary, the non-FIN negative, and the zero-length FIN edge."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+      "requirement_id": "RFC9000-S3-2-P7-S2-R01",
       "section": "S3P2",
       "title": "Enter Size Known after FIN",
       "status": "implemented and tested",
       "completion_status": "implemented and tested",
       "evidence_type": "helper-layer evidence and requirement-home tests",
       "files_changed": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs"
       ],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs"
       ],
       "direct_refs_state": "present",
       "remaining_gap": null,
@@ -981,7 +981,7 @@
       "notes": "Acknowledging a reset transitions the receive part into ResetRead."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0001",
+      "requirement_id": "RFC9000-S3-3-P2-S1-R01",
       "section": "S3P3",
       "title": "Forbid terminal-state transmit frames",
       "status": "blocked",
@@ -989,7 +989,7 @@
       "evidence_type": "explicit blocker note",
       "files_changed": [],
       "tests_covering_requirement": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P3-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-3-P2-S1-R01.cs"
       ],
       "direct_refs_added_or_updated": [],
       "direct_refs_state": "present",
@@ -1354,12 +1354,12 @@
     "REQ-QUIC-RFC9000-S3P2-0010",
     "REQ-QUIC-RFC9000-0110",
     "REQ-QUIC-RFC9000-S3P2-0013",
-    "REQ-QUIC-RFC9000-S3P2-0015",
+    "RFC9000-S3-2-P7-S1-R01",
     "REQ-QUIC-RFC9000-S3P2-0018",
     "REQ-QUIC-RFC9000-S3P2-0021",
     "REQ-QUIC-RFC9000-0120",
     "REQ-QUIC-RFC9000-S3P2-0023",
-    "REQ-QUIC-RFC9000-S3P3-0001",
+    "RFC9000-S3-3-P2-S1-R01",
     "RFC9000-S3-3-P2-S2-R01",
     "REQ-QUIC-RFC9000-S3P3-0003",
     "REQ-QUIC-RFC9000-S3P3-0004",
@@ -1401,7 +1401,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0007.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0006.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0014.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0016.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0113.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0115.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0020.cs",

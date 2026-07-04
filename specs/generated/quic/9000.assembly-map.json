@@ -1809,7 +1809,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0015",
+      "requirement_id": "RFC9000-S3-2-P7-S1-R01",
       "title": "Recognize final size when FIN arrives",
       "source_batches": [
         "2-5"
@@ -1832,7 +1832,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P2-0016",
+      "requirement_id": "RFC9000-S3-2-P7-S2-R01",
       "title": "Enter Size Known after FIN",
       "source_batches": [
         "2-5"
@@ -2039,7 +2039,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S3P3-0001",
+      "requirement_id": "RFC9000-S3-3-P2-S1-R01",
       "title": "Forbid terminal-state transmit frames",
       "source_batches": [
         "2-5"
@@ -2936,7 +2936,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0174",
+      "requirement_id": "RFC9000-S4-1-P10-S1-R01",
       "title": "Ignore non-increasing MAX frames",
       "source_batches": [
         "2-5"
@@ -3534,7 +3534,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S4P6-0007",
+      "requirement_id": "RFC9000-S4-6-P2-S2-R01",
       "title": "Close on oversized stream-count values in frames",
       "source_batches": [
         "2-5"
@@ -4456,7 +4456,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0229",
+      "requirement_id": "RFC9000-S5-1-1-P4-S2-R01",
       "title": "Advertise active CID limits with transport parameters",
       "source_batches": [
         "2-5"
@@ -6640,7 +6640,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0305",
+      "requirement_id": "RFC9000-S7-2-P2-S1-R01",
       "title": "Use long-header packets to establish connection IDs during the handshake",
       "source_batches": [
         "6-10"
@@ -10252,7 +10252,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0007",
+      "requirement_id": "RFC9000-S9-4-P5-S1-R01",
       "title": "Allow Probe-Packet Loss Exceptions",
       "source_batches": [
         "9"
@@ -10275,7 +10275,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0008",
+      "requirement_id": "RFC9000-S9-4-P5-S2-R01",
       "title": "Allow a Separate PATH_CHALLENGE Timer",
       "source_batches": [
         "9"
@@ -10298,7 +10298,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0009",
+      "requirement_id": "RFC9000-S9-4-P5-S3-R01",
       "title": "Allow Retrying PATH_CHALLENGE on Timeout",
       "source_batches": [
         "9"
@@ -13158,7 +13158,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S10P3-0015",
+      "requirement_id": "RFC9000-S10-3-P15-S1-R01",
       "title": "Allow Stateless Reset in response to long-header packets",
       "source_batches": [
         "6-10",
@@ -13767,7 +13767,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0640",
+      "requirement_id": "RFC9000-S10-3-1-P5-S1-R01",
       "title": "Stop sending after token match",
       "source_batches": [
         "10"
@@ -22005,7 +22005,7 @@
       "notes": []
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0990",
+      "requirement_id": "RFC9000-S17-2-2-P9-S2-R01",
       "title": "A server MAY send multiple Initial packets",
       "source_batches": [
         "16-20"
@@ -34055,9 +34055,9 @@
     {
       "draftId": "REQ-RFC9000-S103-0021",
       "disposition": "merged",
-      "reason": "Merged into REQ-QUIC-RFC9000-S10P3-0015 because the candidate was an exact same-section duplicate after canonical normalization.",
+      "reason": "Merged into RFC9000-S10-3-P15-S1-R01 because the candidate was an exact same-section duplicate after canonical normalization.",
       "replacementRequirementIds": [
-        "REQ-QUIC-RFC9000-S10P3-0015"
+        "RFC9000-S10-3-P15-S1-R01"
       ]
     },
     {

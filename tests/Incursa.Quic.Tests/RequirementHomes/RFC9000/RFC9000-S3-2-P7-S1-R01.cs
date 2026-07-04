@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S3P2-0015">When a STREAM frame with a FIN bit is received, the final size of the stream MUST be known.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S3-2-P7-S1-R01">When a STREAM frame with a FIN bit is received, the final size of the stream MUST be known.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S3P2-0015")]
-public sealed class REQ_QUIC_RFC9000_S3P2_0015
+[Requirement("RFC9000-S3-2-P7-S1-R01")]
+public sealed class RFC9000_S3_2_P7_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

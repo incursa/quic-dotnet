@@ -1663,7 +1663,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0053",
+      "id": "RFC9250-S4-3-3-P3-S1-R01",
       "title": "Protocol error: STREAM FIN before complete message",
       "statement": "If a client or server receives a STREAM FIN before receiving all the bytes for a message indicated in the 2-octet length field, it MUST treat this as a fatal error.",
       "coverage": {
@@ -2144,7 +2144,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0069",
+      "id": "RFC9250-S4-4-P6-S3-R01",
       "title": "Send query over existing connection when idle time permits",
       "statement": "If the client's idle time is sufficiently lower than the idle timer, the client SHOULD send the DNS query over the existing connection.",
       "coverage": {
@@ -2174,7 +2174,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9250-0070",
+      "id": "RFC9250-S4-4-P6-S4-R01",
       "title": "Open a new connection when idle time is not low enough",
       "statement": "If the client's idle time is not sufficiently lower than the idle timer, the client SHOULD establish a new connection and send the query over that connection.",
       "coverage": {
@@ -2431,7 +2431,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0078",
+      "id": "RFC9250-S4-5-P2-S2-R01",
       "title": "Classify QUERY and NOTIFY transactions as replayable",
       "statement": "Transactions with an OPCODE of QUERY or NOTIFY MUST be considered replayable.",
       "coverage": {
@@ -3039,7 +3039,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9250-0110",
+      "id": "RFC9250-S5-6-P1-S2-R01",
       "title": "Send responses promptly on the specific stream",
       "statement": "A DoQ implementation SHOULD send responses on the specific stream as soon as possible, without waiting for availability of responses for previously opened streams.",
       "coverage": {

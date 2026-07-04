@@ -52,7 +52,7 @@
 | `REQ-QUIC-RFC9000-S17P2P2-0020` | This protection does not provide confidentiality or integrity against attackers that can... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
 | `REQ-QUIC-RFC9000-S17P2P2-0021` | The client and server use the Initial packet type for any packet that MUST contain an ini... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
 | `REQ-QUIC-RFC9000-S17P2P2-0022` | This MUST include all cases where a new packet containing the initial cryptographic messa... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
-| `REQ-QUIC-RFC9000-0990` | A server MAY send multiple Initial packets | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
+| `RFC9000-S17-2-2-P9-S2-R01` | A server MAY send multiple Initial packets | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
 | `REQ-QUIC-RFC9000-S17P2P2-0024` | The payload of an Initial packet MUST include a CRYPTO frame (or frames) containing a cry... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
 | `REQ-QUIC-RFC9000-S17P2P2-0025` | An endpoint that receives an Initial packet containing other frames MAY either discard th... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
 | `REQ-QUIC-RFC9000-S17P2P2-0026` | The first packet sent by a client always includes a CRYPTO frame that MUST contain the st... | blocked | explicit blocker note | Blocked by missing Initial packet protection, CRYPTO frame parsing, and connection-level handshake state. |
@@ -90,7 +90,7 @@
 ## Remaining Open Requirements
 
 - Blocked: 18 requirements.
-- S17P2P2: `REQ-QUIC-RFC9000-0985`, `REQ-QUIC-RFC9000-0986`, `REQ-QUIC-RFC9000-S17P2P2-0020`, `REQ-QUIC-RFC9000-S17P2P2-0021`, `REQ-QUIC-RFC9000-S17P2P2-0022`, `REQ-QUIC-RFC9000-0990`, `REQ-QUIC-RFC9000-S17P2P2-0024`, `REQ-QUIC-RFC9000-S17P2P2-0025`, `REQ-QUIC-RFC9000-S17P2P2-0026`
+- S17P2P2: `REQ-QUIC-RFC9000-0985`, `REQ-QUIC-RFC9000-0986`, `REQ-QUIC-RFC9000-S17P2P2-0020`, `REQ-QUIC-RFC9000-S17P2P2-0021`, `REQ-QUIC-RFC9000-S17P2P2-0022`, `RFC9000-S17-2-2-P9-S2-R01`, `REQ-QUIC-RFC9000-S17P2P2-0024`, `REQ-QUIC-RFC9000-S17P2P2-0025`, `REQ-QUIC-RFC9000-S17P2P2-0026`
 - S17P2P3: `REQ-QUIC-RFC9000-S17P2P3-0003`, `REQ-QUIC-RFC9000-S17P2P3-0004`, `REQ-QUIC-RFC9000-1006`, `REQ-QUIC-RFC9000-S17P2P3-0018`, `REQ-QUIC-RFC9000-1009`, `REQ-QUIC-RFC9000-S17P2P3-0020`, `REQ-QUIC-RFC9000-S17P2P3-0021`, `REQ-QUIC-RFC9000-1011`, `REQ-QUIC-RFC9000-S17P2P3-0023`
 
 ## Tests Run And Results

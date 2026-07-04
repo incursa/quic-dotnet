@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0003">The packet-level header MUST include a packet sequence number.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S3-P1-S1-R02">The packet-level header MUST include a packet sequence number.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S3-0003")]
-public sealed class REQ_QUIC_RFC9002_S3_0003
+[Requirement("RFC9002-S3-P1-S1-R02")]
+public sealed class RFC9002_S3_P1_S1_R02
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

@@ -25,9 +25,9 @@
 - [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added positive and negative connection-ID binding validation coverage for `RFC9000-S7-3-P3-S1-R01` through `REQ-QUIC-RFC9000-S7P3-0008`.
 - [QuicTransportParametersTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersTests.cs): added trace refs for transport-parameter serialization/parsing coverage tied to `REQ-QUIC-RFC9000-S7P3-0001` through `REQ-QUIC-RFC9000-S7P3-0004`.
 - [QuicTransportParametersFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicTransportParametersFuzzTests.cs): added S7P3 trace refs, including zero-length connection-ID coverage for `REQ-QUIC-RFC9000-0332`.
-- [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): added long-header CID trace for `REQ-QUIC-RFC9000-0305`.
+- [QuicLongHeaderPacketTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs): added long-header CID trace for `RFC9000-S7-2-P2-S1-R01`.
 - [QuicVersionNegotiationTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicVersionNegotiationTests.cs): added Version Negotiation echo trace for `REQ-QUIC-RFC9000-S7P2-0002`.
-- [QuicHeaderFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs): added broad fuzz trace refs for `REQ-QUIC-RFC9000-0305` and `REQ-QUIC-RFC9000-S7P2-0002`.
+- [QuicHeaderFuzzTests.cs](C:/src/incursa/quic-dotnet/tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs): added broad fuzz trace refs for `RFC9000-S7-2-P2-S1-R01` and `REQ-QUIC-RFC9000-S7P2-0002`.
 
 ## Tests Run And Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj`
@@ -36,7 +36,7 @@
 
 ## Remaining Open Requirements In Scope
 - `REQ-QUIC-RFC9000-S7-0001` through `REQ-QUIC-RFC9000-0295`
-- `REQ-QUIC-RFC9000-0305` through `RFC9000-S7-2-P8-S3-R02`
+- `RFC9000-S7-2-P2-S1-R01` through `RFC9000-S7-2-P8-S3-R02`
 - No `S7P3` requirements remain open.
 
 ## Risks Or Follow-Up Notes

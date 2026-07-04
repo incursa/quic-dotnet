@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0004">The encryption level MUST indicate the packet number space.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S3-P1-S2-R01">The encryption level MUST indicate the packet number space.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9002-S3-0004")]
-public sealed class REQ_QUIC_RFC9002_S3_0004
+[Requirement("RFC9002-S3-P1-S2-R01")]
+public sealed class RFC9002_S3_P1_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -52,9 +52,9 @@ public sealed class REQ_QUIC_RFC9002_S3_0004
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0004">The encryption level MUST indicate the packet number space.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9002-S3-P1-S2-R01">The encryption level MUST indicate the packet number space.</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9002-S3-0004")]
+    [Requirement("RFC9002-S3-P1-S2-R01")]
     public void TryGetPacketNumberSpace_AcceptsTheShortestValidShortHeader()
     {
         byte[] packet = [0x40];

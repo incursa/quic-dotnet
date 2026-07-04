@@ -113,7 +113,7 @@
       "notes": "The path-agnostic ACK generator can still cover all processed packets because ACK state is tracked by packet-number space rather than path."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0007",
+      "requirement_id": "RFC9000-S9-4-P5-S1-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -122,7 +122,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0008",
+      "requirement_id": "RFC9000-S9-4-P5-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],
@@ -131,7 +131,7 @@
       "notes": "This needs a migration-aware path tracker to separate old-path packets from new-path congestion/RTT state, plus path-aware timer and ACK handling."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-S9P4-0009",
+      "requirement_id": "RFC9000-S9-4-P5-S3-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6-0005">The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-P3-S1-R01">The Key Phase bit MUST allow a recipient to detect a change in keying material without needing to receive the first packet that triggered the change.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6-0005")]
-public sealed class REQ_QUIC_RFC9001_S6_0005
+[Requirement("RFC9001-S6-P3-S1-R01")]
+public sealed class RFC9001_S6_P3_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

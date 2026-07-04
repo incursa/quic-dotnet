@@ -12,7 +12,7 @@
     "VER-QUIC-RFC9250-0020"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9250-0110"
+    "RFC9250-S5-6-P1-S2-R01"
   ],
   "summary": "Add verification test confirming the server sends responses per-stream without connection-level ordering.",
   "planned_changes": "- Update SPEC trace link for REQ-0110.\n- Add a test where the first handler is delayed and the second responds immediately; assert the second response is received first.\n- Document that no code changes are required.",

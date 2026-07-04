@@ -136,7 +136,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0106")]
+    [Requirement("RFC9298-S6-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_UsesQuicDatagramFramesWhenAvailable()
@@ -145,7 +145,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9298-0106")]
+    [Requirement("RFC9298-S6-1-P1-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [InlineData(false, true)]
@@ -156,7 +156,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0107")]
+    [Requirement("RFC9298-S6-1-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ForwardingPolicy_AllowsPayloadsWithinQuicDatagramLimit()
@@ -165,7 +165,7 @@ public sealed class Http3ConnectUdpForwardingPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0107")]
+    [Requirement("RFC9298-S6-1-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ForwardingPolicy_RejectsPayloadsBeyondQuicDatagramLimit()

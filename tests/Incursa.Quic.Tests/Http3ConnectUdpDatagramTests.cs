@@ -52,7 +52,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0075")]
+    [Requirement("RFC9298-S4-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9298-0087")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -64,7 +64,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0075")]
+    [Requirement("RFC9298-S4-P2-S2-R01")]
     [Requirement("REQ-QUIC-RFC9298-0087")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
@@ -76,8 +76,8 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0076")]
-    [Requirement("REQ-QUIC-RFC9298-0077")]
+    [Requirement("RFC9298-S4-P2-S3-R01")]
+    [Requirement("RFC9298-S4-P2-S3-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_AllocatesDynamicNonZeroContextIds()
@@ -92,8 +92,8 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0076")]
-    [Requirement("REQ-QUIC-RFC9298-0077")]
+    [Requirement("RFC9298-S4-P2-S3-R01")]
+    [Requirement("RFC9298-S4-P2-S3-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_RejectsDynamicAllocationOfContextIdZero()
@@ -314,7 +314,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0089")]
+    [Requirement("RFC9298-S5-P4-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void DatagramPayload_AllowsEmptyUdpProxyingPayload()
@@ -325,7 +325,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0089")]
+    [Requirement("RFC9298-S5-P4-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void DatagramPayload_RejectsNullPayload()

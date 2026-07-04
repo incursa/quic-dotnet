@@ -15,7 +15,7 @@
   ],
   "satisfies": [
     "REQ-QUIC-RFC9250-0052",
-    "REQ-QUIC-RFC9250-0053",
+    "RFC9250-S4-3-3-P3-S1-R01",
     "REQ-QUIC-RFC9250-0055"
   ],
   "key_components": [

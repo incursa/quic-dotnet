@@ -16,14 +16,14 @@
   ],
   "satisfies": [
     "RFC9000-S4-6-P2-S1-R01",
-    "REQ-QUIC-RFC9000-S4P6-0007"
+    "RFC9000-S4-6-P2-S2-R01"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs",
     "src/Incursa.Quic/QuicFrameCodec.cs",
     "src/Incursa.Quic/QuicTransportParametersCodec.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0007.cs"
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs"
   ],
   "design_summary": "Transport-parameter and MAX_STREAMS frame values are bounded at 2^60. Valid boundary values are accepted and committed, while oversized typed transport-parameter values fail closed with TRANSPORT_PARAMETER_ERROR and malformed protected MAX_STREAMS application frames fail closed with FRAME_ENCODING_ERROR.",
   "data_and_state_considerations": "Peer initial max_streams values are validated before being committed to the stream registry so invalid typed TLS bridge inputs cannot inflate peer stream limits. The protected Application Data parser identifies malformed MAX_STREAMS frame types even when full frame parsing fails and carries the triggering frame type into the close metadata.",
@@ -40,7 +40,7 @@
   "supplemental_sections": [
     {
       "heading": "Boundary",
-      "content": "This design closes the S4P6 max_streams oversized close-policy tail for RFC9000-S4-6-P2-S1-R01 and REQ-QUIC-RFC9000-S4P6-0007 only. It does not claim cumulative incoming-stream admission proof, metadata-only S4P6 xref cleanup, automatic stream-limit autotuning, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
+      "content": "This design closes the S4P6 max_streams oversized close-policy tail for RFC9000-S4-6-P2-S1-R01 and RFC9000-S4-6-P2-S2-R01 only. It does not claim cumulative incoming-stream admission proof, metadata-only S4P6 xref cleanup, automatic stream-limit autotuning, public API widening, hosted interop readiness, or closure of deferred fuzz obligations."
     }
   ]
 }

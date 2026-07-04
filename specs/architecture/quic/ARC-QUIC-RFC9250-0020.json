@@ -13,7 +13,7 @@
     "VER-QUIC-RFC9250-0020"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9250-0110"
+    "RFC9250-S5-6-P1-S2-R01"
   ],
   "key_components": [
     "tests/Incursa.Quic.Tests/DoqStreamLifecycleTests.cs"

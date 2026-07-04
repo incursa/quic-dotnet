@@ -10,14 +10,14 @@ Section tokens: `S5, S5P1, S5P1P1`
 
 - No stale requirement IDs remain in the scoped tests.
 - No requirement-tagged source refs were found under `src/Incursa.Quic`.
-- Current direct test traits use the imported IDs `REQ-QUIC-RFC9000-S5P1-0008`, `REQ-QUIC-RFC9000-S5P1-0012`, `REQ-QUIC-RFC9000-0215`, `REQ-QUIC-RFC9000-S5P1P1-0005`, and `REQ-QUIC-RFC9000-0229`.
+- Current direct test traits use the imported IDs `REQ-QUIC-RFC9000-S5P1-0008`, `REQ-QUIC-RFC9000-S5P1-0012`, `REQ-QUIC-RFC9000-0215`, `REQ-QUIC-RFC9000-S5P1P1-0005`, and `RFC9000-S5-1-1-P4-S2-R01`.
 
 ## Requirements Completed
 
 - `REQ-QUIC-RFC9000-S5P1-0008`: long-header CID fields are parsed and preserved; the trace coverage was already in place from the prior pass and remains valid.
 - `REQ-QUIC-RFC9000-S5P1-0012`: Version Negotiation echoes the client's connection IDs; the formatter test plus parser/property/fuzz coverage now carry the imported ID.
 - `REQ-QUIC-RFC9000-S5P1P1-0005`: additional connection IDs are communicated with `NEW_CONNECTION_ID` frames; the existing frame codec tests and fuzz coverage are now tagged with the imported ID.
-- `REQ-QUIC-RFC9000-0229`: endpoints advertise `active_connection_id_limit` with transport parameters; the coverage now includes a client-role round-trip test in addition to the existing server-role and fuzz coverage.
+- `RFC9000-S5-1-1-P4-S2-R01`: endpoints advertise `active_connection_id_limit` with transport parameters; the coverage now includes a client-role round-trip test in addition to the existing server-role and fuzz coverage.
 
 ## Files Changed
 
@@ -56,7 +56,7 @@ Section tokens: `S5, S5P1, S5P1P1`
   - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_ParsesAndFormatsTheEncodedFields`
   - `QuicFrameCodecPart4Tests.TryParseNewConnectionIdFrame_AcceptsBoundaryConnectionIdLengths`
   - `QuicFrameCodecPart4FuzzTests.Fuzz_FrameCodecPart4_RoundTripsRepresentativeFrameShapesAndRejectsTruncation`
-- `REQ-QUIC-RFC9000-0229`
+- `RFC9000-S5-1-1-P4-S2-R01`
   - `QuicTransportParametersTests.TryFormatTransportParameters_WritesExactTupleSequence`
   - `QuicTransportParametersTests.TryFormatTransportParameters_EmitsActiveConnectionIdLimitWhenSendingAsClient`
   - `QuicTransportParametersTests.TryParseTransportParameters_RoundTripsKnownFieldsAndPreferredAddress`

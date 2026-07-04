@@ -29,8 +29,8 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0007
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0004">The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0006">The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC8999-S5P1-0008">The remainder of a QUIC long header packet MUST contain version-specific content.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0002">The packet-level header MUST indicate the encryption level.</workbench-requirement>
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9002-S3-0003">The packet-level header MUST include a packet sequence number.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9002-S3-P1-S1-R01">The packet-level header MUST indicate the encryption level.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9002-S3-P1-S1-R02">The packet-level header MUST include a packet sequence number.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0001">An Initial packet MUST use long headers with a type value of 0x00.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0003">The Fixed Bit field MUST be 1 bits long with value 1.</workbench-requirement>
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S17P2P2-0004">The Long Packet Type field MUST be 2 bits long with value 0.</workbench-requirement>
@@ -52,8 +52,8 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_0007
     [Requirement("REQ-QUIC-RFC8999-S5P1-0004")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0006")]
     [Requirement("REQ-QUIC-RFC8999-S5P1-0008")]
-    [Requirement("REQ-QUIC-RFC9002-S3-0002")]
-    [Requirement("REQ-QUIC-RFC9002-S3-0003")]
+    [Requirement("RFC9002-S3-P1-S1-R01")]
+    [Requirement("RFC9002-S3-P1-S1-R02")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0001")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0003")]
     [Requirement("REQ-QUIC-RFC9000-S17P2P2-0004")]

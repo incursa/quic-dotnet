@@ -9,7 +9,7 @@
 ## Requirements Completed
 - S3: `REQ-QUIC-RFC9000-S3-0001`, `REQ-QUIC-RFC9000-S3-0002`
 - S3P1: `REQ-QUIC-RFC9000-S3P1-0001`, `REQ-QUIC-RFC9000-S3P1-0002`, `REQ-QUIC-RFC9000-S3P1-0003`, `REQ-QUIC-RFC9000-S3P1-0007`, `REQ-QUIC-RFC9000-0082`, `REQ-QUIC-RFC9000-0083`
-- S3P2: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-0109`, `REQ-QUIC-RFC9000-0110`, `REQ-QUIC-RFC9000-S3P2-0014`, `REQ-QUIC-RFC9000-S3P2-0015`, `REQ-QUIC-RFC9000-S3P2-0016`, `REQ-QUIC-RFC9000-0113`, `REQ-QUIC-RFC9000-0115`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
+- S3P2: `REQ-QUIC-RFC9000-S3P2-0005`, `REQ-QUIC-RFC9000-S3P2-0006`, `REQ-QUIC-RFC9000-S3P2-0008`, `REQ-QUIC-RFC9000-S3P2-0009`, `REQ-QUIC-RFC9000-0109`, `REQ-QUIC-RFC9000-0110`, `REQ-QUIC-RFC9000-S3P2-0014`, `RFC9000-S3-2-P7-S1-R01`, `RFC9000-S3-2-P7-S2-R01`, `REQ-QUIC-RFC9000-0113`, `REQ-QUIC-RFC9000-0115`, `REQ-QUIC-RFC9000-S3P2-0020`, `REQ-QUIC-RFC9000-S3P2-0024`
 - S3P3: none
 - S3P4: none
 - S3P5: none
@@ -23,7 +23,7 @@
 
 ## Files Changed
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs`
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.json`
 - `specs/requirements/quic/SPEC-QUIC-RFC9000.md`
 - `specs/requirements/quic/REQUIREMENT-GAPS.md`
@@ -38,7 +38,7 @@
 
 ## Tests Added or Updated
 - `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P1-0003.cs`
-- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3P2-0015.cs`
+- `tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P7-S1-R01.cs`
 
 ## Tests Run and Results
 - `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P1_0003"`
@@ -46,7 +46,7 @@
 - Failed: 0
 - Skipped: 0
 - Duration: 39 ms
-- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~REQ_QUIC_RFC9000_S3P2_0015"`
+- `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj --no-restore --filter "FullyQualifiedName~RFC9000_S3_2_P7_S1_R01"`
 - Passed: 4
 - Failed: 0
 - Skipped: 0

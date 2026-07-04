@@ -6,7 +6,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectIpTunnelSetupPolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0031")]
+    [Requirement("RFC9484-S4-1-P3-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TunnelSetup_ExtractsDecodedTargetAndIpprotoVariables()
@@ -18,7 +18,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0031")]
+    [Requirement("RFC9484-S4-1-P3-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_AllowsOmittedOptionalTunnelVariables()
@@ -50,7 +50,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0033")]
+    [Requirement("RFC9484-S4-1-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TunnelSetup_ValidatesDecodedTunnelVariablesAgainstSection46()
@@ -62,7 +62,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9484-0033")]
+    [Requirement("RFC9484-S4-1-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     [InlineData("2001:db8::1/64", "*")]
@@ -96,7 +96,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Theory]
-    [Requirement("REQ-QUIC-RFC9484-0035")]
+    [Requirement("RFC9484-S4-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     [InlineData(true, false, false)]
@@ -111,7 +111,7 @@ public sealed class Http3ConnectIpTunnelSetupPolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0035")]
+    [Requirement("RFC9484-S4-1-P4-S3-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void TunnelSetup_DoesNotRejectRequestWithoutProcessingErrors()

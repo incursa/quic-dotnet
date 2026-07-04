@@ -3,7 +3,7 @@
 
 namespace Incursa.Quic.Tests;
 
-[Requirement("REQ-QUIC-RFC9298-0002")]
+[Requirement("RFC9298-S2-P5-S1-R01")]
 [Requirement("REQ-QUIC-RFC9298-0003")]
 [Requirement("REQ-QUIC-RFC9298-0004")]
 [Requirement("REQ-QUIC-RFC9298-0005")]
@@ -31,7 +31,7 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9298-0030")]
 [Requirement("REQ-QUIC-RFC9298-0031")]
 [Requirement("REQ-QUIC-RFC9298-0032")]
-public sealed class REQ_QUIC_RFC9298_0002
+public sealed class RFC9298_S2_P5_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -46,11 +46,11 @@ public sealed class REQ_QUIC_RFC9298_0002
         Assert.Contains("ARC-QUIC-RFC9298-0001", spec, StringComparison.Ordinal);
         Assert.Contains("WI-QUIC-RFC9298-0001", spec, StringComparison.Ordinal);
         Assert.Contains("VER-QUIC-RFC9298-0001", spec, StringComparison.Ordinal);
-        Assert.Contains("REQ-QUIC-RFC9298-0002", architecture, StringComparison.Ordinal);
+        Assert.Contains("RFC9298-S2-P5-S1-R01", architecture, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9298-0032", architecture, StringComparison.Ordinal);
-        Assert.Contains("REQ-QUIC-RFC9298-0002", workItem, StringComparison.Ordinal);
+        Assert.Contains("RFC9298-S2-P5-S1-R01", workItem, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9298-0032", workItem, StringComparison.Ordinal);
-        Assert.Contains("REQ-QUIC-RFC9298-0002", verification, StringComparison.Ordinal);
+        Assert.Contains("RFC9298-S2-P5-S1-R01", verification, StringComparison.Ordinal);
         Assert.Contains("REQ-QUIC-RFC9298-0032", verification, StringComparison.Ordinal);
     }
 

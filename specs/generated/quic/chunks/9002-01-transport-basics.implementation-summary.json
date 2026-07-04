@@ -55,9 +55,9 @@
       "REQ-QUIC-RFC9002-S2-0002",
       "REQ-QUIC-RFC9002-S2-0003",
       "REQ-QUIC-RFC9002-S3-0001",
-      "REQ-QUIC-RFC9002-S3-0002",
-      "REQ-QUIC-RFC9002-S3-0003",
-      "REQ-QUIC-RFC9002-S3-0004",
+      "RFC9002-S3-P1-S1-R01",
+      "RFC9002-S3-P1-S1-R02",
+      "RFC9002-S3-P1-S2-R01",
       "REQ-QUIC-RFC9002-S3-0008",
       "REQ-QUIC-RFC9002-S3-0011",
       "REQ-QUIC-RFC9002-S3-0012",
@@ -140,7 +140,7 @@
       "notes": "The packet-header models and parser tests exist, but there is no packet emission pipeline in this slice."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0002",
+      "requirement_id": "RFC9002-S3-P1-S1-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",
@@ -161,7 +161,7 @@
       "notes": "The new packet-parser helper maps the supported header forms to the correct packet-number space and rejects version negotiation and Retry packets."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0003",
+      "requirement_id": "RFC9002-S3-P1-S1-R02",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs",
@@ -180,7 +180,7 @@
       "notes": "The packet-header tests assert that packet-number length bits are preserved in both long and short header representations."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9002-S3-0004",
+      "requirement_id": "RFC9002-S3-P1-S2-R01",
       "completion_status": "implemented_and_tested",
       "files_changed": [
         "src/Incursa.Quic/QuicPacketParser.cs",

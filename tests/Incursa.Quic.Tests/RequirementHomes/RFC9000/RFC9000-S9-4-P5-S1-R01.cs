@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P4-0007">A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S9-4-P5-S1-R01">A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-S9P4-0007")]
-public sealed class REQ_QUIC_RFC9000_S9P4_0007
+[Requirement("RFC9000-S9-4-P5-S1-R01")]
+public sealed class RFC9000_S9_4_P5_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -41,7 +41,7 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0007
 
     [Fact]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S9P4-0007">A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S9-4-P5-S1-R01">A sender MAY make exceptions for probe packets so their loss detection is independent and does not unduly cause the congestion controller to reduce its sending rate.</workbench-requirement>
     ///   <workbench-requirement requirementId="RFC9000-S14-4-P2-S2-R01">Loss of a QUIC packet that is carried in a PMTU probe SHOULD NOT trigger a congestion control reaction.</workbench-requirement>
     /// </workbench-requirements>
     [Requirement("RFC9000-S14-4-P2-S2-R01")]

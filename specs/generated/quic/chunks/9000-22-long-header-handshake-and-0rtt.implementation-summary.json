@@ -662,7 +662,7 @@
       "notes": "These are packet-type and packet-protection behaviors that the repository does not implement yet."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0990",
+      "requirement_id": "RFC9000-S17-2-2-P9-S2-R01",
       "completion_status": "blocked",
       "files_changed": [],
       "tests_covering_requirement": [],

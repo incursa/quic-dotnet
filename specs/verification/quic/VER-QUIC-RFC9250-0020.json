@@ -13,7 +13,7 @@
   ],
   "verification_method": "Focused integration test where a delayed first handler proves out-of-order response delivery.",
   "verifies": [
-    "REQ-QUIC-RFC9250-0110"
+    "RFC9250-S5-6-P1-S2-R01"
   ],
   "scope": "This verification covers per-stream response dispatch preventing head-of-line blocking.",
   "preconditions": [

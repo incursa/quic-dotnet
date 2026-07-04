@@ -20,7 +20,7 @@
     "scope_match": true,
     "src_requirement_refs": [],
     "tests_requirement_ref_ids": [
-      "REQ-QUIC-RFC9000-0305",
+      "RFC9000-S7-2-P2-S1-R01",
       "REQ-QUIC-RFC9000-S7P2-0002",
       "REQ-QUIC-RFC9000-S7P3-0001",
       "REQ-QUIC-RFC9000-0323",
@@ -350,7 +350,7 @@
       "notes": "No TLS handshake, packet-protection, or key-derivation surface exists yet in src/Incursa.Quic."
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9000-0305",
+      "requirement_id": "RFC9000-S7-2-P2-S1-R01",
       "title": "S7P2 0001",
       "completion_status": "blocked by concrete dependency",
       "files_changed": [],
@@ -359,8 +359,8 @@
         "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation"
       ],
       "direct_refs_added_or_updated": [
-        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload -> REQ-QUIC-RFC9000-0305",
-        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation -> REQ-QUIC-RFC9000-0305"
+        "tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs::TryParseLongHeader_RoundTripsLengthEncodedConnectionIdsAndPayload -> RFC9000-S7-2-P2-S1-R01",
+        "tests/Incursa.Quic.Tests/QuicHeaderFuzzTests.cs::Fuzz_LongHeaderParsing_RoundTripsValidInputsAndRejectsTruncation -> RFC9000-S7-2-P2-S1-R01"
       ],
       "remaining_gap": "Packet-format evidence exists for the long-header and Version Negotiation helpers, but the endpoint connection-state logic required to actually establish and propagate handshake connection IDs is still absent.",
       "notes": "The current repository has packet-format evidence for the connection-ID fields, but no endpoint state machine that actually manages handshake CID progression."

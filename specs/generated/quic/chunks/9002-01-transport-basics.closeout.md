@@ -22,9 +22,9 @@
 
 - `REQ-QUIC-RFC9002-S2-0002` Classify non-control frames as ack-eliciting.
 - `REQ-QUIC-RFC9002-S2-0003` Acknowledge ack-eliciting packets promptly.
-- `REQ-QUIC-RFC9002-S3-0002` Indicate encryption level in packet headers.
-- `REQ-QUIC-RFC9002-S3-0003` Carry packet numbers in packet headers.
-- `REQ-QUIC-RFC9002-S3-0004` Map encryption level to packet number space.
+- `RFC9002-S3-P1-S1-R01` Indicate encryption level in packet headers.
+- `RFC9002-S3-P1-S1-R02` Carry packet numbers in packet headers.
+- `RFC9002-S3-P1-S2-R01` Map encryption level to packet number space.
 - `REQ-QUIC-RFC9002-S3-0008` Permit mixed frame types per packet.
 - `REQ-QUIC-RFC9002-S3-0011` Acknowledge all packets.
 - `REQ-QUIC-RFC9002-S3-0012` Delay acknowledgment for non-ack-eliciting packets.
@@ -51,7 +51,7 @@
 ## Reference Audit
 
 - Source requirement refs found: none
-- Test requirement refs found: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`, `REQ-QUIC-RFC9002-S3-0001`, `REQ-QUIC-RFC9002-S3-0002`, `REQ-QUIC-RFC9002-S3-0003`, `REQ-QUIC-RFC9002-S3-0004`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
+- Test requirement refs found: `REQ-QUIC-RFC9002-S2-0002`, `REQ-QUIC-RFC9002-S2-0003`, `REQ-QUIC-RFC9002-S3-0001`, `RFC9002-S3-P1-S1-R01`, `RFC9002-S3-P1-S1-R02`, `RFC9002-S3-P1-S2-R01`, `REQ-QUIC-RFC9002-S3-0008`, `REQ-QUIC-RFC9002-S3-0011`, `REQ-QUIC-RFC9002-S3-0012`, `REQ-QUIC-RFC9002-S3-0016`, `REQ-QUIC-RFC9002-S3-0017`
 - Source files checked for requirement IDs: `src/Incursa.Quic/QuicFrameCodec.cs`, `src/Incursa.Quic/QuicPacketParser.cs`, `src/Incursa.Quic/PublicAPI.Unshipped.txt`
 - Test files with requirement traits: `tests/Incursa.Quic.Tests/QuicAckGenerationStateTests.cs`, `tests/Incursa.Quic.Tests/QuicFrameCodecTests.cs`, `tests/Incursa.Quic.Tests/QuicLongHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/QuicPacketParserTests.cs`, `tests/Incursa.Quic.Tests/QuicShortHeaderPacketTests.cs`, `tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S3-0016.cs`
 - Stale or wrong refs found: none

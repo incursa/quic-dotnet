@@ -21,7 +21,7 @@
     "REQ-QUIC-RFC9000-0222",
     "REQ-QUIC-RFC9000-S5P1P1-0008",
     "REQ-QUIC-RFC9000-S5P1P1-0009",
-    "REQ-QUIC-RFC9000-0229",
+    "RFC9000-S5-1-1-P4-S2-R01",
     "RFC9000-S5-1-1-P4-S4-R01",
     "RFC9000-S5-1-1-P6-S1-R01"
   ],
@@ -36,7 +36,7 @@
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0222.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0008.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1P1-0009.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0229.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P4-S2-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P4-S4-R01.cs",
     "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P6-S1-R01.cs"
   ],

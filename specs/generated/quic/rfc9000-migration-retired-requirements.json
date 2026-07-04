@@ -675,12 +675,12 @@
       "id": "REQ-QUIC-RFC9000-S4P1-0013",
       "title": "Ignore non-increasing flow-control frames",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0174"
+        "RFC9000-S4-1-P10-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0174 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S4-1-P10-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S13P3-0036",
@@ -785,12 +785,12 @@
       "id": "REQ-QUIC-RFC9000-S17P2P2-0023",
       "title": "Allow multiple server Initial packets",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0990"
+        "RFC9000-S17-2-2-P9-S2-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0990 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S17-2-2-P9-S2-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S17P2P5P1-0007",
@@ -2226,12 +2226,12 @@
       "id": "REQ-QUIC-RFC9000-S7P2-0001",
       "title": "Handshake uses long header packets to establish connection IDs",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0305"
+        "RFC9000-S7-2-P2-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0305 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S7-2-P2-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S19P3P1-0001",
@@ -2325,12 +2325,12 @@
       "id": "REQ-QUIC-RFC9000-S5P1P1-0011",
       "title": "Advertise active connection ID limit",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0229"
+        "RFC9000-S5-1-1-P4-S2-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0229 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S5-1-1-P4-S2-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S2P2-0003",
@@ -2809,12 +2809,12 @@
       "id": "REQ-QUIC-RFC9000-S10P3P1-0012",
       "title": "Stop sending packets after a stateless reset token match",
       "replaced_by": [
-        "REQ-QUIC-RFC9000-0640"
+        "RFC9000-S10-3-1-P5-S1-R01"
       ],
       "notes": [
         "RFC9000 exact-statement migration adopted the incoming staged ID as canonical for this unchanged obligation."
       ],
-      "x_lineage": "REQ-QUIC-RFC9000-0640 derived_from and supersedes this retired ID."
+      "x_lineage": "RFC9000-S10-3-1-P5-S1-R01 derived_from and supersedes this retired ID."
     },
     {
       "id": "REQ-QUIC-RFC9000-S5P2P2-0008",

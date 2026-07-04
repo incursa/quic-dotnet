@@ -4,15 +4,15 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0990">A server MAY send multiple Initial packets</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9000-S17-2-2-P9-S2-R01">A server MAY send multiple Initial packets</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9000-0990")]
-public sealed class REQ_QUIC_RFC9000_0990
+[Requirement("RFC9000-S17-2-2-P9-S2-R01")]
+public sealed class RFC9000_S17_2_2_P9_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
-    [Requirement("REQ-QUIC-RFC9000-0990")]
+    [Requirement("RFC9000-S17-2-2-P9-S2-R01")]
     public void TryBuildProtectedInitialPacketForHandshakeDestination_RejectsServerInitialsWithoutASourceConnectionId()
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(
@@ -36,9 +36,9 @@ public sealed class REQ_QUIC_RFC9000_0990
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     /// <workbench-requirements generated="true" source="workbench quality sync">
-    ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-0990">A server MAY send multiple Initial packets</workbench-requirement>
+    ///   <workbench-requirement requirementId="RFC9000-S17-2-2-P9-S2-R01">A server MAY send multiple Initial packets</workbench-requirement>
     /// </workbench-requirements>
-    [Requirement("REQ-QUIC-RFC9000-0990")]
+    [Requirement("RFC9000-S17-2-2-P9-S2-R01")]
     public void TryBuildProtectedInitialPacketForHandshakeDestination_AllowsTheServerToSendMultipleInitialPackets()
     {
         Assert.True(QuicInitialPacketProtection.TryCreate(

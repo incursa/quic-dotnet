@@ -114,7 +114,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0006",
+      "id": "RFC9484-S3-P6-S1-R01",
       "title": "Limit URI Template level to 3 or lower",
       "statement": "The URI Template MUST be a level 3 template or lower.",
       "coverage": {
@@ -156,7 +156,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0008",
+      "id": "RFC9484-S3-P7-S1-R01",
       "title": "Require non-empty URI Template components",
       "statement": "The URI Template MUST include non-empty scheme, authority, and path components.",
       "coverage": {
@@ -639,7 +639,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0031",
+      "id": "RFC9484-S4-1-P3-S3-R01",
       "title": "Extract tunnel variables from the reconstructed URI",
       "statement": "An IP proxy MUST extract the optional `target` and `ipproto` variables from the reconstructed URI, decode their percent-encoding, and establish an IP tunnel.",
       "coverage": {
@@ -681,7 +681,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0033",
+      "id": "RFC9484-S4-1-P4-S1-R01",
       "title": "Validate decoded tunnel variables",
       "statement": "IP proxies MUST validate the decoded `target` and `ipproto` variables against Section 4.6.",
       "coverage": {
@@ -723,7 +723,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0035",
+      "id": "RFC9484-S4-1-P4-S3-R01",
       "title": "Reject requests when processing errors occur",
       "statement": "If errors occur during this process, the IP proxy MUST reject the request.",
       "coverage": {
@@ -2839,7 +2839,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0135",
+      "id": "RFC9484-S4-7-3-P10-S2-R01",
       "title": "Zero IP Protocol value semantics",
       "statement": "If the IP Protocol field value is 0, all protocols MUST be allowed.",
       "coverage": {
@@ -2860,7 +2860,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0136",
+      "id": "RFC9484-S4-7-3-P10-S3-R01",
       "title": "Nonzero IP Protocol values",
       "statement": "If the IP Protocol field value is not 0, it MUST represent an allowable next header value carried in IP headers that are sent directly in HTTP Datagrams (the outermost IP headers).",
       "coverage": {
@@ -2881,7 +2881,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0137",
+      "id": "RFC9484-S4-7-3-P10-S4-R01",
       "title": "Always allow ICMP traffic",
       "statement": "ICMP traffic MUST always be allowed, regardless of the IP Protocol field value.",
       "coverage": {
@@ -2944,7 +2944,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0140",
+      "id": "RFC9484-S4-7-3-P13-S3-R01",
       "title": "Withdrawn range semantics",
       "statement": "If a given address range was present in a prior capsule but the most recently received ROUTE_ADVERTISEMENT capsule does not contain it, the receiver MUST consider that range withdrawn.",
       "coverage": {
@@ -3195,7 +3195,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0152",
+      "id": "RFC9484-S5-P2-S2-R01",
       "title": "Encode Context IDs as variable-length integers",
       "statement": "Context IDs MUST be encoded as variable-length integers.",
       "coverage": {
@@ -3216,7 +3216,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0153",
+      "id": "RFC9484-S5-P2-S3-R01",
       "title": "Allocate non-zero Context IDs dynamically",
       "statement": "Non-zero Context ID values MUST be dynamically allocated.",
       "coverage": {
@@ -3237,7 +3237,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0154",
+      "id": "RFC9484-S5-P2-S3-R02",
       "title": "Reserve Context ID 0 for IP payloads",
       "statement": "The Context ID value of 0 MUST be reserved for IP payloads.",
       "coverage": {
@@ -4062,7 +4062,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0191",
+      "id": "RFC9484-S10-1-P1-S1-R01",
       "title": "Transmit IP packets in QUIC DATAGRAM frames",
       "statement": "When using HTTP/3 with the QUIC Datagram extension, IP packets MUST be transmitted in QUIC DATAGRAM frames.",
       "coverage": {
@@ -4125,7 +4125,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0194",
+      "id": "RFC9484-S10-1-P1-S4-R01",
       "title": "Drop oversized IP packets",
       "statement": "When an IP packet will not fit inside a QUIC DATAGRAM frame, the endpoint SHOULD drop the IP packet.",
       "coverage": {

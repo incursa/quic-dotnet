@@ -1217,7 +1217,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9464-0057",
+      "id": "RFC9464-S4-P4-S1-R01",
       "title": "Ignore duplicate identical attributes after the first",
       "statement": "If the request includes multiple bitwise identical attributes, the responder SHOULD process only the first occurrence and ignore the rest.",
       "coverage": {
@@ -1259,7 +1259,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9464-0059",
+      "id": "RFC9464-S4-P5-S1-R01",
       "title": "Return ENCDNS_IP* attributes when supported and allowed",
       "statement": "For each ENCDNS_IP* attribute from the CFG_REQUEST, if the responder supports the corresponding address family and there are no policy restrictions, the responder MUST send back one or more ENCDNS_IP* attributes in the CFG_REPLY with an appropriate list of IP addresses, service parameters, and an ADN.",
       "coverage": {
@@ -1301,7 +1301,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9464-0061",
+      "id": "RFC9464-S4-P5-S3-R01",
       "title": "Prefer the alpn service parameter",
       "statement": "The service parameters SHOULD include at least the \"alpn\" service parameter.",
       "coverage": {
