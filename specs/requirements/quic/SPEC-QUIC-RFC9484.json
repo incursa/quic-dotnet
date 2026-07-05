@@ -2377,9 +2377,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0113",
-      "title": "Encode IP Version as an 8-bit integer",
-      "statement": "The IP Version field MUST be encoded as an unsigned 8-bit integer.",
+      "id": "RFC9484-S4-7-2-P6-4-S1-R02",
+      "title": "Encode ADDRESS_REQUEST IP Version as an unsigned 8-bit integer",
+      "statement": "The ADDRESS_REQUEST IP Version field MUST be encoded as an unsigned 8-bit integer.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2388,7 +2388,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9484 4.7.2 RFC9484-S4P7P2-B9-P9-S1",
+          "RFC 9484 section 4.7.2 RFC9484:section-4.7.2-6.4 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.2"
         ],
         "x_test_refs": [
@@ -2818,9 +2818,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0134",
-      "title": "IP Protocol field encoding",
-      "statement": "The IP Protocol field MUST be encoded as an unsigned 8-bit integer.",
+      "id": "RFC9484-S4-7-3-P6-6-S1-R01",
+      "title": "Encode ROUTE_ADVERTISEMENT IP Protocol as an unsigned 8-bit integer",
+      "statement": "The ROUTE_ADVERTISEMENT IP Protocol field MUST be encoded as an unsigned 8-bit integer.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2829,7 +2829,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9484 4.7.3 RFC9484-S4P7P3-B10-P10-S1",
+          "RFC 9484 section 4.7.3 RFC9484:section-4.7.3-6.6 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
         ],
         "x_test_refs": [
@@ -2923,9 +2923,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0139",
+      "id": "RFC9484-S4-7-3-P9-S2-R01",
       "title": "ROUTE_ADVERTISEMENT supersession",
-      "statement": "If multiple ROUTE_ADVERTISEMENT capsules are sent in one direction, each ROUTE_ADVERTISEMENT capsule MUST supersede prior ones.",
+      "statement": "If multiple ROUTE_ADVERTISEMENT capsules are sent in one direction, each ROUTE_ADVERTISEMENT capsule MUST supersede prior ROUTE_ADVERTISEMENT capsules.",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -2934,7 +2934,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9484 4.7.3 RFC9484-S4P7P3-B13-P13-S2",
+          "RFC 9484 section 4.7.3 RFC9484:section-4.7.3-9 sentence 2",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-4.7.3"
         ],
         "x_test_refs": [
@@ -3174,7 +3174,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9484-0151",
+      "id": "RFC9484-S5-P2-S1-R01",
       "title": "Limit Context ID size to 62 bits",
       "statement": "Context IDs MUST be 62-bit integers (0 to 2^62-1).",
       "coverage": {
@@ -3185,7 +3185,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9484 section 5 RFC9484-S5-B2-P2-S1",
+          "RFC 9484 section 5 RFC9484:section-5-2 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9484.html#section-5"
         ],
         "x_test_refs": [

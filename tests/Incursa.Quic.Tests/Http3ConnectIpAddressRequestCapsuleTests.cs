@@ -155,7 +155,7 @@ public sealed class Http3ConnectIpAddressRequestCapsuleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9484-0108")]
-    [Requirement("REQ-QUIC-RFC9484-0113")]
+    [Requirement("RFC9484-S4-7-2-P6-4-S1-R02")]
     [Requirement("RFC9484-S4-7-2-P6-4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -167,7 +167,7 @@ public sealed class Http3ConnectIpAddressRequestCapsuleTests
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9484-0108")]
-    [Requirement("REQ-QUIC-RFC9484-0113")]
+    [Requirement("RFC9484-S4-7-2-P6-4-S1-R02")]
     [Requirement("RFC9484-S4-7-2-P6-4-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]

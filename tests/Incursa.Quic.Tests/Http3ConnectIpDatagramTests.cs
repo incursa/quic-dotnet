@@ -30,7 +30,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0151")]
+    [Requirement("RFC9484-S5-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextId_AllowsLargestSixtyTwoBitValue()
@@ -41,7 +41,7 @@ public sealed class Http3ConnectIpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0151")]
+    [Requirement("RFC9484-S5-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextId_RejectsValuesBeyondSixtyTwoBits()

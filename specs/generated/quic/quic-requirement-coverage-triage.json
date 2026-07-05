@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T19:49:37.4101186-06:00",
+  "generated_at": "2026-07-04T19:55:13.2211625-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-04T19:49:37.4071026-06:00",
+    "generated_at": "2026-07-04T19:55:13.2179841-06:00",
     "total_requirements": 2677,
     "by_state": {
       "covered_but_proof_too_broad": 4,
@@ -346777,8 +346777,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -346801,8 +346801,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -346825,8 +346825,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -346849,8 +346849,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -347383,145 +347383,6 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0112"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9484-0113",
-      "artifact_id": "SPEC-QUIC-RFC9484",
-      "rfc": "RFC9484",
-      "section_prefix": "S4P7P2",
-      "title": "Encode IP Version as an 8-bit integer",
-      "statement": "The IP Version field MUST be encoded as an unsigned 8-bit integer.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0113",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
-          "class": "Http3ConnectIpAddressRequestCapsuleTests",
-          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-          "method": "RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-          "line": 162,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0113",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
-          "class": "Http3ConnectIpAddressRequestCapsuleTests",
-          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-          "method": "RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
-          "line": 162,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0113",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
-          "class": "Http3ConnectIpAddressRequestCapsuleTests",
-          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_RejectsUnsupportedIpVersion",
-          "method": "RequestedAddress_RejectsUnsupportedIpVersion",
-          "line": 174,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0113",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
-          "class": "Http3ConnectIpAddressRequestCapsuleTests",
-          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_RejectsUnsupportedIpVersion",
-          "method": "RequestedAddress_RejectsUnsupportedIpVersion",
-          "line": 174,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -350052,137 +349913,6 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9484-0134",
-      "artifact_id": "SPEC-QUIC-RFC9484",
-      "rfc": "RFC9484",
-      "section_prefix": "S4P7P3",
-      "title": "IP Protocol field encoding",
-      "statement": "The IP Protocol field MUST be encoded as an unsigned 8-bit integer.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
-        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0134",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
-          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
-          "line": 136,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0134"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0134",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
-          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
-          "line": 136,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0134"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0134",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
-          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
-          "line": 145,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0134"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0134",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
-          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
-          "line": 145,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0134"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9484-0138",
       "artifact_id": "SPEC-QUIC-RFC9484",
       "rfc": "RFC9484",
@@ -350311,137 +350041,6 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0138"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9484-0139",
-      "artifact_id": "SPEC-QUIC-RFC9484",
-      "rfc": "RFC9484",
-      "section_prefix": "S4P7P3",
-      "title": "ROUTE_ADVERTISEMENT supersession",
-      "statement": "If multiple ROUTE_ADVERTISEMENT capsules are sent in one direction, each ROUTE_ADVERTISEMENT capsule MUST supersede prior ones.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0139",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
-          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
-          "line": 252,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0139"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0139",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
-          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
-          "line": 252,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0139"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0139",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-          "line": 239,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0139"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0139",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
-          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
-          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
-          "line": 239,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0139"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -351475,137 +351074,6 @@
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0150",
             "REQ-QUIC-RFC9484-0160"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9484-0151",
-      "artifact_id": "SPEC-QUIC-RFC9484",
-      "rfc": "RFC9484",
-      "section_prefix": "S5",
-      "title": "Limit Context ID size to 62 bits",
-      "statement": "Context IDs MUST be 62-bit integers (0 to 2^62-1).",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue",
-        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0151",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
-          "class": "Http3ConnectIpDatagramTests",
-          "member": "Http3ConnectIpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
-          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
-          "line": 36,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0151"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0151",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
-          "class": "Http3ConnectIpDatagramTests",
-          "member": "Http3ConnectIpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
-          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
-          "line": 36,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0151"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0151",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
-          "class": "Http3ConnectIpDatagramTests",
-          "member": "Http3ConnectIpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0151"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9484-0151",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
-          "class": "Http3ConnectIpDatagramTests",
-          "member": "Http3ConnectIpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9484-0151"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -469455,8 +468923,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -469479,8 +468947,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -469503,8 +468971,8 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -469527,8 +468995,147 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9484-0108",
-            "REQ-QUIC-RFC9484-0113",
-            "RFC9484-S4-7-2-P6-4-S1-R01"
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+      "artifact_id": "SPEC-QUIC-RFC9484",
+      "rfc": "RFC9484",
+      "section_prefix": "unsectioned",
+      "title": "Encode ADDRESS_REQUEST IP Version as an unsigned 8-bit integer",
+      "statement": "The ADDRESS_REQUEST IP Version field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+          "class": "Http3ConnectIpAddressRequestCapsuleTests",
+          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 162,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0108",
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+          "class": "Http3ConnectIpAddressRequestCapsuleTests",
+          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "method": "RequestedAddress_EncodesIpVersionAsUnsignedByteFourOrSix",
+          "line": 162,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0108",
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+          "class": "Http3ConnectIpAddressRequestCapsuleTests",
+          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_RejectsUnsupportedIpVersion",
+          "method": "RequestedAddress_RejectsUnsupportedIpVersion",
+          "line": 174,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0108",
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-2-P6-4-S1-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs::RequestedAddress_RejectsUnsupportedIpVersion",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpAddressRequestCapsuleTests.cs",
+          "class": "Http3ConnectIpAddressRequestCapsuleTests",
+          "member": "Http3ConnectIpAddressRequestCapsuleTests.RequestedAddress_RejectsUnsupportedIpVersion",
+          "method": "RequestedAddress_RejectsUnsupportedIpVersion",
+          "line": 174,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9484-0108",
+            "RFC9484-S4-7-2-P6-4-S1-R01",
+            "RFC9484-S4-7-2-P6-4-S1-R02"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470053,6 +469660,268 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9484-S4-7-3-P13-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9484-S4-7-3-P6-6-S1-R01",
+      "artifact_id": "SPEC-QUIC-RFC9484",
+      "rfc": "RFC9484",
+      "section_prefix": "unsectioned",
+      "title": "Encode ROUTE_ADVERTISEMENT IP Protocol as an unsigned 8-bit integer",
+      "statement": "The ROUTE_ADVERTISEMENT IP Protocol field MUST be encoded as an unsigned 8-bit integer.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9484-S4-7-3-P6-6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "line": 136,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P6-6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P6-6-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "method": "RouteRange_EncodesIpProtocolAsUnsignedByte",
+          "line": 136,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P6-6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P6-6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "line": 145,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P6-6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P6-6-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "method": "RouteRange_RejectsProtocolOutsideUnsignedByte",
+          "line": 145,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P6-6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9484-S4-7-3-P9-S2-R01",
+      "artifact_id": "SPEC-QUIC-RFC9484",
+      "rfc": "RFC9484",
+      "section_prefix": "unsectioned",
+      "title": "ROUTE_ADVERTISEMENT supersession",
+      "statement": "If multiple ROUTE_ADVERTISEMENT capsules are sent in one direction, each ROUTE_ADVERTISEMENT capsule MUST supersede prior ROUTE_ADVERTISEMENT capsules.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9484-S4-7-3-P9-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "line": 252,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P9-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P9-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "method": "RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded",
+          "line": 252,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P9-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P9-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "line": 239,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P9-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S4-7-3-P9-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs::RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpRouteAdvertisementCapsuleTests.cs",
+          "class": "Http3ConnectIpRouteAdvertisementCapsuleTests",
+          "member": "Http3ConnectIpRouteAdvertisementCapsuleTests.RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "method": "RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes",
+          "line": 239,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S4-7-3-P9-S2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -470708,6 +470577,137 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9484-S4-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9484-S5-P2-S1-R01",
+      "artifact_id": "SPEC-QUIC-RFC9484",
+      "rfc": "RFC9484",
+      "section_prefix": "unsectioned",
+      "title": "Limit Context ID size to 62 bits",
+      "statement": "Context IDs MUST be 62-bit integers (0 to 2^62-1).",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue",
+        "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9484-S5-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+          "class": "Http3ConnectIpDatagramTests",
+          "member": "Http3ConnectIpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
+          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
+          "line": 36,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S5-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S5-P2-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+          "class": "Http3ConnectIpDatagramTests",
+          "member": "Http3ConnectIpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
+          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
+          "line": 36,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S5-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S5-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+          "class": "Http3ConnectIpDatagramTests",
+          "member": "Http3ConnectIpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S5-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9484-S5-P2-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectIpDatagramTests.cs",
+          "class": "Http3ConnectIpDatagramTests",
+          "member": "Http3ConnectIpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9484-S5-P2-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false

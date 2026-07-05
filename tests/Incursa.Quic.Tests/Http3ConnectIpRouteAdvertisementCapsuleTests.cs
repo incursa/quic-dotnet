@@ -130,7 +130,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0134")]
+    [Requirement("RFC9484-S4-7-3-P6-6-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RouteRange_EncodesIpProtocolAsUnsignedByte()
@@ -139,7 +139,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0134")]
+    [Requirement("RFC9484-S4-7-3-P6-6-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteRange_RejectsProtocolOutsideUnsignedByte()
@@ -233,7 +233,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0139")]
+    [Requirement("RFC9484-S4-7-3-P9-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void RouteAdvertisement_LatestCapsuleSupersedesPriorRoutes()
@@ -246,7 +246,7 @@ public sealed class Http3ConnectIpRouteAdvertisementCapsuleTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9484-0139")]
+    [Requirement("RFC9484-S4-7-3-P9-S2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void RouteAdvertisement_DoesNotMergePriorRoutesWhenSuperseded()
