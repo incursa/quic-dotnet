@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T17:52:04.7301068-06:00",
+    "generated_at": "2026-07-05T17:57:34.3457068-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 2090,
-      "full_executable_proof": 587
+      "deferred_proof_not_executed": 2082,
+      "full_executable_proof": 595
     },
     "by_rfc": [
       {
         "rfc": "RFC8999",
         "total": 8,
         "by_proof_state": {
-          "deferred_proof_not_executed": 8
+          "full_executable_proof": 8
         }
       },
       {
@@ -164,9 +164,9 @@
       "rfc": "RFC8999",
       "title": "Header Form Bit",
       "statement": "The first bit of a QUIC long header packet MUST be set to 1.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -178,6 +178,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -187,12 +188,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0001.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0284.cs"
@@ -209,9 +209,9 @@
       "rfc": "RFC8999",
       "title": "Version-Specific Bits",
       "statement": "The other seven bits in the first byte of a QUIC long header packet MUST be version-specific.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -223,6 +223,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -232,12 +233,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0002.cs"
       ],
       "spec_test_ref_count": 3,
@@ -252,9 +252,9 @@
       "rfc": "RFC8999",
       "title": "Version Field",
       "statement": "The four bytes after the first byte in a QUIC long header packet MUST contain a 32-bit Version field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -266,6 +266,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -275,12 +276,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0003.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0284.cs"
@@ -297,9 +297,9 @@
       "rfc": "RFC8999",
       "title": "Destination Connection ID Length Encoding",
       "statement": "The byte after the Version field MUST encode the Destination Connection ID length as an 8-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -311,6 +311,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -320,12 +321,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0004.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0284.cs"
@@ -342,9 +342,9 @@
       "rfc": "RFC8999",
       "title": "Destination Connection ID Size",
       "statement": "The Destination Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -356,17 +356,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0005.cs"
       ],
       "spec_test_ref_count": 3,
@@ -381,9 +381,9 @@
       "rfc": "RFC8999",
       "title": "Source Connection ID Length Encoding",
       "statement": "The byte after the Destination Connection ID field MUST encode the Source Connection ID length as an 8-bit unsigned integer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -395,6 +395,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -405,12 +406,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 7,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 8,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0006.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0284.cs"
@@ -427,9 +427,9 @@
       "rfc": "RFC8999",
       "title": "Source Connection ID Size",
       "statement": "The Source Connection ID field MUST follow its length byte and be between 0 and 255 bytes long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -441,17 +441,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0007.cs"
       ],
       "spec_test_ref_count": 3,
@@ -466,9 +466,9 @@
       "rfc": "RFC8999",
       "title": "Version-Specific Remainder",
       "statement": "The remainder of a QUIC long header packet MUST contain version-specific content.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -477,6 +477,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -486,12 +487,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC8999/REQ-QUIC-RFC8999-S5P1-0008.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0283.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0284.cs"

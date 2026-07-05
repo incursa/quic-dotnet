@@ -6,14 +6,14 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 2090 |
-| full_executable_proof | 587 |
+| deferred_proof_not_executed | 2082 |
+| full_executable_proof | 595 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| RFC8999 | 8 | 0 | 0 | 8 | 0 |
+| RFC8999 | 8 | 8 | 0 | 0 | 0 |
 | RFC9000 | 1450 | 421 | 0 | 1029 | 0 |
 | RFC9001 | 96 | 68 | 0 | 28 | 0 |
 | RFC9002 | 226 | 41 | 0 | 185 | 0 |
@@ -38,14 +38,6 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Requirement | RFC | Proof state | Missing required | Deferred missing |
 | --- | --- | --- | --- | --- |
-| `REQ-QUIC-RFC8999-S5P1-0001` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0002` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0003` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0004` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0005` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0006` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0007` | RFC8999 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC8999-S5P1-0008` | RFC8999 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0019` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0020` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0021` | RFC9000 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +80,11 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9000-0186` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0194` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0215` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0219` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0220` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0221` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0222` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0240` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0244` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0245` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0247` | RFC9000 | deferred_proof_not_executed |  | fuzz |
