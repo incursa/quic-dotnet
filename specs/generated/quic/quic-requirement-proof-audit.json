@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T17:18:30.6178209-06:00",
-    "repo_root": "C:\\shared\\src\\incursa\\quic-dotnet",
+    "generated_at": "2026-07-05T17:52:04.7301068-06:00",
+    "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 2114,
-      "full_executable_proof": 563
+      "deferred_proof_not_executed": 2090,
+      "full_executable_proof": 587
     },
     "by_rfc": [
       {
@@ -67,8 +67,7 @@
         "rfc": "RFC9221",
         "total": 33,
         "by_proof_state": {
-          "deferred_proof_not_executed": 24,
-          "full_executable_proof": 9
+          "full_executable_proof": 33
         }
       },
       {
@@ -48006,9 +48005,9 @@
       "rfc": "RFC9221",
       "title": "Advertise DATAGRAM receive support",
       "statement": "An endpoint that supports receiving DATAGRAM frames MUST advertise the max_datagram_frame_size transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -48017,6 +48016,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -48024,12 +48024,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs"
       ],
@@ -48041,9 +48040,9 @@
       "rfc": "RFC9221",
       "title": "Interpret DATAGRAM transport parameter size",
       "statement": "The max_datagram_frame_size transport parameter value MUST represent the maximum complete DATAGRAM frame size, including frame type, length, and payload.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48054,6 +48053,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -48061,12 +48061,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs"
       ],
@@ -48078,9 +48077,9 @@
       "rfc": "RFC9221",
       "title": "Default missing DATAGRAM parameter to unsupported",
       "statement": "The absence of the max_datagram_frame_size transport parameter MUST indicate that DATAGRAM frames are unsupported.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48090,6 +48089,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -48098,12 +48098,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs"
       ],
@@ -48115,9 +48114,9 @@
       "rfc": "RFC9221",
       "title": "Require peer DATAGRAM support before sending",
       "statement": "An endpoint MUST NOT send DATAGRAM frames until it has received a non-zero max_datagram_frame_size transport parameter from its peer during the handshake or from a previous handshake when 0-RTT is used.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48129,17 +48128,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0004.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs"
       ],
@@ -48154,9 +48153,9 @@
       "rfc": "RFC9221",
       "title": "Bound sent DATAGRAM frames by peer limit",
       "statement": "An endpoint MUST NOT send a DATAGRAM frame larger than the max_datagram_frame_size value it received from its peer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48168,17 +48167,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0005.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs"
       ],
@@ -48193,9 +48192,9 @@
       "rfc": "RFC9221",
       "title": "Reject DATAGRAM without local support",
       "statement": "An endpoint that receives a DATAGRAM frame when it has not indicated support with max_datagram_frame_size MUST terminate the connection with PROTOCOL_VIOLATION.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48207,17 +48206,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0006.cs"
       ],
       "spec_test_ref_count": 3,
@@ -48232,9 +48231,9 @@
       "rfc": "RFC9221",
       "title": "Reject DATAGRAM larger than local limit",
       "statement": "An endpoint that receives a DATAGRAM frame larger than the max_datagram_frame_size value it sent MUST terminate the connection with PROTOCOL_VIOLATION.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48246,17 +48245,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0007.cs"
       ],
       "spec_test_ref_count": 3,
@@ -48271,9 +48270,9 @@
       "rfc": "RFC9221",
       "title": "Treat DATAGRAM size as unidirectional",
       "statement": "The max_datagram_frame_size transport parameter MUST be treated as a unidirectional limit and indication of support.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48284,6 +48283,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -48291,12 +48291,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0001.cs"
       ],
@@ -48308,9 +48307,9 @@
       "rfc": "RFC9221",
       "title": "Store DATAGRAM size with 0-RTT state",
       "statement": "A client that stores server DATAGRAM 0-RTT state MAY store the server's max_datagram_frame_size transport parameter value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -48319,6 +48318,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -48326,12 +48326,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs"
       ],
@@ -48343,9 +48342,9 @@
       "rfc": "RFC9221",
       "title": "Reject reduced 0-RTT DATAGRAM size",
       "statement": "If a client stores max_datagram_frame_size with 0-RTT state, the client MUST reject a server value that is lower than the stored value with PROTOCOL_VIOLATION.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48357,6 +48356,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -48365,12 +48365,11 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S3-0009.cs"
       ],
@@ -48382,10 +48381,9 @@
       "rfc": "RFC9221",
       "title": "Define application reaction to missing DATAGRAM support",
       "statement": "Application protocols that use DATAGRAM frames MUST define how they react to the absence of the max_datagram_frame_size transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_negative_proof",
-        "consider_edge_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -48394,17 +48392,17 @@
         "edge"
       ],
       "focused_kinds": [
+        "edge",
+        "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "negative",
-        "edge"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48660,9 +48658,9 @@
       "rfc": "RFC9221",
       "title": "Deliver received DATAGRAM promptly",
       "statement": "A valid received DATAGRAM frame SHOULD be delivered to the application immediately when the endpoint can process and store it.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -48671,16 +48669,16 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48691,9 +48689,9 @@
       "rfc": "RFC9221",
       "title": "Keep DATAGRAM connection scoped",
       "statement": "DATAGRAM frames MUST be treated as connection-scoped application data rather than stream-associated data at the QUIC layer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -48702,16 +48700,16 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0001.cs"
       ],
@@ -48723,10 +48721,9 @@
       "rfc": "RFC9221",
       "title": "Leave DATAGRAM multiplexing to application protocol",
       "statement": "The QUIC transport implementation MUST leave DATAGRAM payload multiplexing semantics to the application protocol.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_negative_proof",
-        "consider_edge_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -48735,17 +48732,17 @@
         "edge"
       ],
       "focused_kinds": [
+        "edge",
+        "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "negative",
-        "edge"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48756,11 +48753,9 @@
       "rfc": "RFC9221",
       "title": "Allow receiver DATAGRAM drop under pressure",
       "statement": "A receiver that cannot process or store a DATAGRAM frame MAY drop the frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_positive_proof",
-        "consider_negative_proof",
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -48770,18 +48765,18 @@
         "fuzz"
       ],
       "focused_kinds": [
-        "edge"
+        "edge",
+        "fuzz",
+        "negative",
+        "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "positive",
-        "negative",
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48792,9 +48787,9 @@
       "rfc": "RFC9221",
       "title": "Send application DATAGRAM promptly",
       "statement": "When an application sends a datagram over a QUIC connection, QUIC SHOULD send the DATAGRAM frame as soon as congestion control and packet assembly permit.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -48803,16 +48798,16 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0005.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48823,10 +48818,9 @@
       "rfc": "RFC9221",
       "title": "Allow DATAGRAM coalescing",
       "statement": "DATAGRAM frames MAY be coalesced with other QUIC frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_edge_proof",
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -48835,17 +48829,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "edge",
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48856,9 +48850,9 @@
       "rfc": "RFC9221",
       "title": "Forbid DATAGRAM fragmentation",
       "statement": "DATAGRAM frames MUST NOT be fragmented across QUIC packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -48869,16 +48863,16 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5-0007.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48916,9 +48910,9 @@
       "rfc": "RFC9221",
       "title": "Do not retransmit DATAGRAM frames",
       "statement": "DATAGRAM frames MUST NOT be retransmitted by transport loss recovery.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -48930,17 +48924,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P2-0002.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48951,10 +48945,9 @@
       "rfc": "RFC9221",
       "title": "Delay ACKs for DATAGRAM-only packets within max_ack_delay",
       "statement": "A receiver SHOULD support delaying ACK frames within max_ack_delay in response to packets that only contain DATAGRAM frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_negative_proof",
-        "consider_edge_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -48963,17 +48956,17 @@
         "edge"
       ],
       "focused_kinds": [
+        "edge",
+        "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "negative",
-        "edge"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -48984,10 +48977,9 @@
       "rfc": "RFC9221",
       "title": "Treat DATAGRAM ACK notification as transport-only",
       "statement": "Any DATAGRAM acknowledgment notification MUST NOT be treated as proof that the receiver application processed the payload.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_positive_proof",
-        "consider_edge_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -48997,17 +48989,17 @@
         "edge"
       ],
       "focused_kinds": [
-        "negative"
+        "edge",
+        "negative",
+        "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "positive",
-        "edge"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
@@ -49018,9 +49010,9 @@
       "rfc": "RFC9221",
       "title": "Exclude DATAGRAM from flow-control limits",
       "statement": "DATAGRAM frames MUST NOT contribute to stream-level or connection-wide flow-control limits.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49032,17 +49024,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S5P3-0001.cs"
       ],
       "spec_test_ref_count": 1,
@@ -49109,9 +49101,9 @@
       "rfc": "RFC9221",
       "title": "Protect DATAGRAM application data",
       "statement": "All application data transmitted with DATAGRAM frames MUST be protected by 0-RTT or 1-RTT keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -49120,16 +49112,16 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-S6-0001.cs"
       ],
       "spec_test_ref_count": 1,
@@ -49140,10 +49132,9 @@
       "rfc": "RFC9221",
       "title": "Require 0-RTT DATAGRAM application profile",
       "statement": "Application protocols that allow DATAGRAM frames to be sent in 0-RTT MUST define an acceptable 0-RTT use profile before enabling that behavior.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_positive_proof",
-        "consider_edge_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -49152,17 +49143,17 @@
         "edge"
       ],
       "focused_kinds": [
-        "negative"
+        "edge",
+        "negative",
+        "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "positive",
-        "edge"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9221/REQ-QUIC-RFC9221-FocusedClosure.cs"
       ],
       "spec_test_ref_count": 1,
