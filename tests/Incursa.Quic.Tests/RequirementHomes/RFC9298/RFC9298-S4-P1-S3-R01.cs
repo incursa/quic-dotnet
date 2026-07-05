@@ -4,12 +4,12 @@
 namespace Incursa.Quic.Tests;
 
 [Requirement("RFC9298-S4-P1-S3-R01")]
-[Requirement("REQ-QUIC-RFC9298-0074")]
+[Requirement("RFC9298-S4-P2-S1-R01")]
 [Requirement("RFC9298-S4-P2-S2-R01")]
 [Requirement("RFC9298-S4-P2-S3-R01")]
 [Requirement("RFC9298-S4-P2-S3-R02")]
-[Requirement("REQ-QUIC-RFC9298-0078")]
-[Requirement("REQ-QUIC-RFC9298-0079")]
+[Requirement("RFC9298-S4-P2-S4-R01")]
+[Requirement("RFC9298-S4-P2-S4-R02")]
 [Requirement("RFC9298-S4-P2-S5-R03")]
 [Requirement("REQ-QUIC-RFC9298-0081")]
 [Requirement("RFC9298-S4-P2-S5-R01")]
@@ -17,7 +17,6 @@ namespace Incursa.Quic.Tests;
 [Requirement("RFC9298-S4-P3-S2-R01")]
 [Requirement("REQ-QUIC-RFC9298-0085")]
 [Requirement("REQ-QUIC-RFC9298-0086")]
-[Requirement("REQ-QUIC-RFC9298-0087")]
 [Requirement("RFC9298-S5-P3-2-S1-R01")]
 [Requirement("RFC9298-S5-P4-S4-R01")]
 [Requirement("RFC9298-S5-P4-R01")]

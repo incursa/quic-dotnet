@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T17:09:51.3480255-06:00",
+  "generated_at": "2026-07-04T19:41:54.1240117-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,16 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-04T17:09:51.3441897-06:00",
-    "total_requirements": 2678,
+    "generated_at": "2026-07-04T19:41:54.1211311-06:00",
+    "total_requirements": 2677,
     "by_state": {
       "covered_but_proof_too_broad": 4,
-      "trace_clean": 2673,
+      "trace_clean": 2672,
       "uncovered_blocked": 1
     },
     "by_work_queue_tag": {
       "blocked": 1,
-      "clean": 2673,
+      "clean": 2672,
       "new_tests_needed": 5,
       "restructure_needed": 4
     },
@@ -128,9 +128,9 @@
       },
       {
         "rfc": "RFC9298",
-        "total": 117,
+        "total": 116,
         "by_state": {
-          "trace_clean": 117
+          "trace_clean": 116
         }
       },
       {
@@ -290884,137 +290884,6 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9298-0037",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S3P1",
-      "title": "Respond before target packet",
-      "statement": "The UDP proxy MUST respond to the request without waiting for a packet from the target.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRespondBeforeSocketOpen"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0037",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
-          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
-          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-          "method": "TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-          "line": 50,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0037"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0037",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
-          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
-          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-          "method": "TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
-          "line": 50,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0037"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0037",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
-          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
-          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_DoesNotRespondBeforeSocketOpen",
-          "method": "TunnelSetup_DoesNotRespondBeforeSocketOpen",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0037"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0037",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRespondBeforeSocketOpen",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
-          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
-          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_DoesNotRespondBeforeSocketOpen",
-          "method": "TunnelSetup_DoesNotRespondBeforeSocketOpen",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0037"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9298-0040",
       "artifact_id": "SPEC-QUIC-RFC9298",
       "rfc": "RFC9298",
@@ -291139,268 +291008,6 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9298-0040"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0041",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S3P1",
-      "title": "Validate source address on non-connected sockets",
-      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the IP source address on received packets to ensure they match the client's request.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0041",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-          "line": 14,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0041"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0041",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
-          "line": 14,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0041"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0041",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
-          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
-          "line": 26,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0041"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0041",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
-          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
-          "line": 26,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0041"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0042",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S3P1",
-      "title": "Validate source port on non-connected sockets",
-      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the UDP source port on received packets to ensure they match the client's request.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0042",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-          "line": 38,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0042"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0042",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
-          "line": 38,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0042"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0042",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
-          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
-          "line": 50,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0042"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0042",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
-          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
-          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
-          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
-          "line": 50,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0042"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -292714,11 +292321,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -292747,11 +292354,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -292886,11 +292493,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -292919,11 +292526,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293058,11 +292665,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293091,11 +292698,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293230,11 +292837,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293263,11 +292870,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293405,11 +293012,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293438,11 +293045,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293580,11 +293187,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293613,11 +293220,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293752,11 +293359,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -293785,183 +293392,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0060",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S3P3",
-      "title": "Include Connection header field value Upgrade in response",
-      "statement": "The response MUST include a Connection header field with value \"Upgrade\".",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 5,
-        "focused": 3,
-        "broad": 2,
-        "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0060",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
-          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
-          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_IncludesConnectionUpgradeToken",
-          "method": "UpgradeResponse_IncludesConnectionUpgradeToken",
-          "line": 132,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0060"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0060",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
-          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
-          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-          "line": 143,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0060"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0060",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
-          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
-          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
-          "line": 143,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0060"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0060",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
-          "class": "REQ_QUIC_RFC9298_0053",
-          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
-          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
-          "line": 44,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0053",
-            "REQ-QUIC-RFC9298-0054",
-            "REQ-QUIC-RFC9298-0055",
-            "REQ-QUIC-RFC9298-0056",
-            "REQ-QUIC-RFC9298-0057",
-            "REQ-QUIC-RFC9298-0058",
-            "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
-            "REQ-QUIC-RFC9298-0061",
-            "REQ-QUIC-RFC9298-0062",
-            "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0060",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
-          "class": "REQ_QUIC_RFC9298_0053",
-          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
-          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
-          "line": 23,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0053",
-            "REQ-QUIC-RFC9298-0054",
-            "REQ-QUIC-RFC9298-0055",
-            "REQ-QUIC-RFC9298-0056",
-            "REQ-QUIC-RFC9298-0057",
-            "REQ-QUIC-RFC9298-0058",
-            "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
-            "REQ-QUIC-RFC9298-0061",
-            "REQ-QUIC-RFC9298-0062",
-            "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294096,11 +293531,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294129,11 +293564,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294268,11 +293703,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294301,11 +293736,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294440,11 +293875,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294473,11 +293908,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294612,11 +294047,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -294645,11 +294080,11 @@
             "REQ-QUIC-RFC9298-0057",
             "REQ-QUIC-RFC9298-0058",
             "REQ-QUIC-RFC9298-0059",
-            "REQ-QUIC-RFC9298-0060",
             "REQ-QUIC-RFC9298-0061",
             "REQ-QUIC-RFC9298-0062",
             "REQ-QUIC-RFC9298-0063",
-            "REQ-QUIC-RFC9298-0064"
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -296371,588 +295806,6 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9298-0074",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S4",
-      "title": "Use 62-bit Context IDs",
-      "statement": "Context IDs MUST be 62-bit integers in the range 0 to 2^62-1.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 5,
-        "focused": 3,
-        "broad": 2,
-        "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0074",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
-          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
-          "line": 36,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0074",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0074",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0074",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0074",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0078",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S4",
-      "title": "Allocate even-numbered Context IDs on the client",
-      "statement": "Non-zero even-numbered Context IDs MUST be client-allocated.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientAllocatesEvenContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientRejectsOddContextIds",
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 5,
-        "focused": 3,
-        "broad": 2,
-        "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0078",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientAllocatesEvenContextIds",
-          "method": "ContextRegistry_ClientAllocatesEvenContextIds",
-          "line": 111,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0078"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0078",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientRejectsOddContextIds",
-          "method": "ContextRegistry_ClientRejectsOddContextIds",
-          "line": 124,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0078"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0078",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientAllocatesEvenContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientRejectsOddContextIds",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientRejectsOddContextIds",
-          "method": "ContextRegistry_ClientRejectsOddContextIds",
-          "line": 124,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0078"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0078",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0078",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0079",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S4",
-      "title": "Allocate odd-numbered Context IDs on the proxy",
-      "statement": "Odd-numbered Context IDs MUST be proxy-allocated.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyAllocatesOddContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyRejectsEvenContextIds",
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 5,
-        "focused": 3,
-        "broad": 2,
-        "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0079",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyAllocatesOddContextIds",
-          "method": "ContextRegistry_ProxyAllocatesOddContextIds",
-          "line": 135,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0079"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0079",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyRejectsEvenContextIds",
-          "method": "ContextRegistry_ProxyRejectsEvenContextIds",
-          "line": 148,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0079"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0079",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyAllocatesOddContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyRejectsEvenContextIds",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyRejectsEvenContextIds",
-          "method": "ContextRegistry_ProxyRejectsEvenContextIds",
-          "line": 148,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0079"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0079",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0079",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9298-0081",
       "artifact_id": "SPEC-QUIC-RFC9298",
       "rfc": "RFC9298",
@@ -296998,7 +295851,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_AllowsAnyAllocationOrder",
           "method": "ContextRegistry_AllowsAnyAllocationOrder",
-          "line": 189,
+          "line": 187,
           "kinds": [
             "positive"
           ],
@@ -297020,7 +295873,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_DoesNotRequireMonotonicAllocationOrder",
           "method": "ContextRegistry_DoesNotRequireMonotonicAllocationOrder",
-          "line": 203,
+          "line": 201,
           "kinds": [
             "negative"
           ],
@@ -297042,7 +295895,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_DoesNotRequireMonotonicAllocationOrder",
           "method": "ContextRegistry_DoesNotRequireMonotonicAllocationOrder",
-          "line": 203,
+          "line": 201,
           "kinds": [
             "negative"
           ],
@@ -297064,7 +295917,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -297073,22 +295926,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297108,7 +295960,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -297117,22 +295969,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297192,7 +296043,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_AllocatedContextIdsAreUsableByEitherEndpoint",
           "method": "ContextRegistry_AllocatedContextIdsAreUsableByEitherEndpoint",
-          "line": 234,
+          "line": 232,
           "kinds": [
             "positive"
           ],
@@ -297214,7 +296065,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_UnknownNonZeroContextIdsAreNotUsable",
           "method": "ContextRegistry_UnknownNonZeroContextIdsAreNotUsable",
-          "line": 247,
+          "line": 245,
           "kinds": [
             "negative"
           ],
@@ -297236,7 +296087,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_UnknownNonZeroContextIdsAreNotUsable",
           "method": "ContextRegistry_UnknownNonZeroContextIdsAreNotUsable",
-          "line": 247,
+          "line": 245,
           "kinds": [
             "negative"
           ],
@@ -297258,7 +296109,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -297267,22 +296118,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297302,7 +296152,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -297311,22 +296161,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297386,7 +296235,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_ContextIdFollowsQuarterStreamIdInHttp3Datagram",
           "method": "DatagramPayload_ContextIdFollowsQuarterStreamIdInHttp3Datagram",
-          "line": 278,
+          "line": 276,
           "kinds": [
             "positive"
           ],
@@ -297408,7 +296257,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId",
           "method": "DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId",
-          "line": 289,
+          "line": 287,
           "kinds": [
             "negative"
           ],
@@ -297430,7 +296279,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId",
           "method": "DatagramPayload_RejectsHttp3DatagramWithoutContextIdAfterQuarterStreamId",
-          "line": 289,
+          "line": 287,
           "kinds": [
             "negative"
           ],
@@ -297452,7 +296301,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -297461,22 +296310,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297496,7 +296344,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -297505,22 +296353,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297649,7 +296496,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -297658,22 +296505,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297693,7 +296539,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -297702,219 +296548,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9298-0087",
-      "artifact_id": "SPEC-QUIC-RFC9298",
-      "rfc": "RFC9298",
-      "section_prefix": "S5",
-      "title": "Context ID is a variable-length integer",
-      "statement": "The Context ID field MUST be encoded as a variable-length integer.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger",
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 5,
-        "focused": 3,
-        "broad": 2,
-        "by_kind": {
-          "positive": 3,
-          "negative": 2,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0087",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_IsEncodedAsVariableLengthInteger",
-          "method": "ContextId_IsEncodedAsVariableLengthInteger",
-          "line": 59,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
-            "RFC9298-S4-P2-S2-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0087",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsTruncatedVariableLengthInteger",
-          "method": "ContextId_RejectsTruncatedVariableLengthInteger",
-          "line": 71,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
-            "RFC9298-S4-P2-S2-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0087",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger",
-          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
-          "class": "Http3ConnectUdpDatagramTests",
-          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsTruncatedVariableLengthInteger",
-          "method": "ContextId_RejectsTruncatedVariableLengthInteger",
-          "line": 71,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
-            "RFC9298-S4-P2-S2-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": false
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0087",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
-            "RFC9298-S4-P2-S5-R01",
-            "RFC9298-S4-P2-S5-R03",
-            "RFC9298-S4-P3-S2-R01",
-            "RFC9298-S5-P3-2-S1-R01",
-            "RFC9298-S5-P4-R01",
-            "RFC9298-S5-P4-S1-R01",
-            "RFC9298-S5-P4-S4-R01"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9298-0087",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
-          "class": "RFC9298_S4_P1_S3_R01",
-          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "broad",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
-            "REQ-QUIC-RFC9298-0081",
-            "REQ-QUIC-RFC9298-0083",
-            "REQ-QUIC-RFC9298-0085",
-            "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
-            "REQ-QUIC-RFC9298-0092",
-            "REQ-QUIC-RFC9298-0093",
-            "REQ-QUIC-RFC9298-0094",
-            "REQ-QUIC-RFC9298-0095",
-            "RFC9298-S4-P1-S3-R01",
-            "RFC9298-S4-P2-S2-R01",
-            "RFC9298-S4-P2-S3-R01",
-            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -297974,7 +296622,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_AllowsMaximumLegalPayloadLength",
           "method": "UdpPayload_AllowsMaximumLegalPayloadLength",
-          "line": 369,
+          "line": 367,
           "kinds": [
             "positive"
           ],
@@ -297997,7 +296645,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
           "method": "UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
-          "line": 381,
+          "line": 379,
           "kinds": [
             "negative"
           ],
@@ -298020,7 +296668,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
           "method": "UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
-          "line": 381,
+          "line": 379,
           "kinds": [
             "negative"
           ],
@@ -298043,7 +296691,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -298052,22 +296700,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298087,7 +296734,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -298096,22 +296743,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298171,7 +296817,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_AllowsMaximumLegalPayloadLength",
           "method": "UdpPayload_AllowsMaximumLegalPayloadLength",
-          "line": 369,
+          "line": 367,
           "kinds": [
             "positive"
           ],
@@ -298194,7 +296840,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
           "method": "UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
-          "line": 381,
+          "line": 379,
           "kinds": [
             "negative"
           ],
@@ -298217,7 +296863,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
           "method": "UdpPayload_RejectsOversizedContextIdZeroPayloadsWithDatagramError",
-          "line": 381,
+          "line": 379,
           "kinds": [
             "negative"
           ],
@@ -298240,7 +296886,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -298249,22 +296895,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298284,7 +296929,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -298293,22 +296938,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298368,7 +297012,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DiscardsPayloadsLargerThanKnownOutgoingLimit",
           "method": "DatagramPolicy_DiscardsPayloadsLargerThanKnownOutgoingLimit",
-          "line": 393,
+          "line": 391,
           "kinds": [
             "positive"
           ],
@@ -298390,7 +297034,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_ForwardsPayloadsWithinKnownOutgoingLimit",
           "method": "DatagramPolicy_ForwardsPayloadsWithinKnownOutgoingLimit",
-          "line": 402,
+          "line": 400,
           "kinds": [
             "negative"
           ],
@@ -298412,7 +297056,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_ForwardsPayloadsWithinKnownOutgoingLimit",
           "method": "DatagramPolicy_ForwardsPayloadsWithinKnownOutgoingLimit",
-          "line": 402,
+          "line": 400,
           "kinds": [
             "negative"
           ],
@@ -298434,7 +297078,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -298443,22 +297087,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298478,7 +297121,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -298487,22 +297130,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298562,7 +297204,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DiscardsDatagramCapsuleWhenCarriedDatagramIsDiscarded",
           "method": "DatagramPolicy_DiscardsDatagramCapsuleWhenCarriedDatagramIsDiscarded",
-          "line": 412,
+          "line": 410,
           "kinds": [
             "positive"
           ],
@@ -298584,7 +297226,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DoesNotApplyCapsuleDiscardPolicyToNonCapsuleTransport",
           "method": "DatagramPolicy_DoesNotApplyCapsuleDiscardPolicyToNonCapsuleTransport",
-          "line": 421,
+          "line": 419,
           "kinds": [
             "negative"
           ],
@@ -298606,7 +297248,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DoesNotApplyCapsuleDiscardPolicyToNonCapsuleTransport",
           "method": "DatagramPolicy_DoesNotApplyCapsuleDiscardPolicyToNonCapsuleTransport",
-          "line": 421,
+          "line": 419,
           "kinds": [
             "negative"
           ],
@@ -298628,7 +297270,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -298637,22 +297279,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -298672,7 +297313,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -298681,22 +297322,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -455771,6 +454411,137 @@
       ]
     },
     {
+      "requirement_id": "RFC9298-S3-1-P3-S2-R01",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Respond before target packet",
+      "statement": "The UDP proxy MUST respond to the request without waiting for a packet from the target.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRespondBeforeSocketOpen"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S3-1-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
+          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "method": "TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "line": 50,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P3-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
+          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "method": "TunnelSetup_CanRespondWithoutWaitingForTargetPacket",
+          "line": 50,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
+          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_DoesNotRespondBeforeSocketOpen",
+          "method": "TunnelSetup_DoesNotRespondBeforeSocketOpen",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P3-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs::TunnelSetup_DoesNotRespondBeforeSocketOpen",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpTunnelSetupPolicyTests.cs",
+          "class": "Http3ConnectUdpTunnelSetupPolicyTests",
+          "member": "Http3ConnectUdpTunnelSetupPolicyTests.TunnelSetup_DoesNotRespondBeforeSocketOpen",
+          "method": "TunnelSetup_DoesNotRespondBeforeSocketOpen",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
       "requirement_id": "RFC9298-S3-1-P3-S3-R01",
       "artifact_id": "SPEC-QUIC-RFC9298",
       "rfc": "RFC9298",
@@ -455895,6 +454666,268 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9298-S3-1-P3-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Validate source address on non-connected sockets",
+      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the IP source address on received packets to ensure they match the client's request.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket",
+          "line": 14,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket",
+          "line": 26,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Validate source port on non-connected sockets",
+      "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the UDP source port on received packets to ensure they match the client's request.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+        "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket",
+          "line": 38,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-1-P4-S1-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs::SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpSocketLifecyclePolicyTests.cs",
+          "class": "Http3ConnectUdpSocketLifecyclePolicyTests",
+          "member": "Http3ConnectUdpSocketLifecyclePolicyTests.SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "method": "SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket",
+          "line": 50,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-1-P4-S1-R03"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -456164,6 +455197,178 @@
       ]
     },
     {
+      "requirement_id": "RFC9298-S3-3-P2-2-R01",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Include Connection header field value Upgrade in response",
+      "statement": "The response SHALL include a Connection header field with value \"Upgrade\".",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
+        "by_kind": {
+          "positive": 3,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S3-3-P2-2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_IncludesConnectionUpgradeToken",
+          "method": "UpgradeResponse_IncludesConnectionUpgradeToken",
+          "line": 132,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-3-P2-2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-3-P2-2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "line": 143,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-3-P2-2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-3-P2-2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_IncludesConnectionUpgradeToken tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs::UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpHttp11UpgradePolicyTests.cs",
+          "class": "Http3ConnectUdpHttp11UpgradePolicyTests",
+          "member": "Http3ConnectUdpHttp11UpgradePolicyTests.UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "method": "UpgradeResponse_RejectsMissingConnectionUpgradeToken",
+          "line": 143,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S3-3-P2-2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S3-3-P2-2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298Http11UpgradePolicyCodeAndTestsAreTraceLinked",
+          "line": 44,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9298-S3-3-P2-2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/REQ-QUIC-RFC9298-0053.cs",
+          "class": "REQ_QUIC_RFC9298_0053",
+          "member": "REQ_QUIC_RFC9298_0053.Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "method": "Rfc9298Http11UpgradePolicyTraceArtifactsAreLinked",
+          "line": 23,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0053",
+            "REQ-QUIC-RFC9298-0054",
+            "REQ-QUIC-RFC9298-0055",
+            "REQ-QUIC-RFC9298-0056",
+            "REQ-QUIC-RFC9298-0057",
+            "REQ-QUIC-RFC9298-0058",
+            "REQ-QUIC-RFC9298-0059",
+            "REQ-QUIC-RFC9298-0061",
+            "REQ-QUIC-RFC9298-0062",
+            "REQ-QUIC-RFC9298-0063",
+            "REQ-QUIC-RFC9298-0064",
+            "RFC9298-S3-3-P2-2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
       "requirement_id": "RFC9298-S4-P1-S3-R01",
       "artifact_id": "SPEC-QUIC-RFC9298",
       "rfc": "RFC9298",
@@ -456278,7 +455483,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -456287,22 +455492,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456322,7 +455526,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -456331,22 +455535,213 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9298-S4-P2-S1-R01",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Use 62-bit Context IDs",
+      "statement": "Context IDs MUST be 62-bit integers in the range 0 to 2^62-1.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
+        "by_kind": {
+          "positive": 3,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S4-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextId_AllowsLargestSixtyTwoBitValue",
+          "method": "ContextId_AllowsLargestSixtyTwoBitValue",
+          "line": 36,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_AllowsLargestSixtyTwoBitValue tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "method": "ContextId_RejectsValuesBeyondSixtyTwoBits",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "line": 54,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "line": 33,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456406,7 +455801,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextId_IsEncodedAsVariableLengthInteger",
           "method": "ContextId_IsEncodedAsVariableLengthInteger",
-          "line": 59,
+          "line": 58,
           "kinds": [
             "positive"
           ],
@@ -456415,7 +455810,6 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
             "RFC9298-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
@@ -456429,7 +455823,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsTruncatedVariableLengthInteger",
           "method": "ContextId_RejectsTruncatedVariableLengthInteger",
-          "line": 71,
+          "line": 69,
           "kinds": [
             "negative"
           ],
@@ -456438,7 +455832,6 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
             "RFC9298-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
@@ -456452,7 +455845,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextId_RejectsTruncatedVariableLengthInteger",
           "method": "ContextId_RejectsTruncatedVariableLengthInteger",
-          "line": 71,
+          "line": 69,
           "kinds": [
             "negative"
           ],
@@ -456461,7 +455854,6 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0087",
             "RFC9298-S4-P2-S2-R01"
           ],
           "requirement_tagged": true,
@@ -456475,7 +455867,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -456484,22 +455876,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456519,7 +455910,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -456528,22 +455919,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456603,7 +455993,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_AllocatesDynamicNonZeroContextIds",
           "method": "ContextRegistry_AllocatesDynamicNonZeroContextIds",
-          "line": 83,
+          "line": 81,
           "kinds": [
             "positive"
           ],
@@ -456626,7 +456016,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
           "method": "ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
-          "line": 99,
+          "line": 97,
           "kinds": [
             "negative"
           ],
@@ -456649,7 +456039,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
           "method": "ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
-          "line": 99,
+          "line": 97,
           "kinds": [
             "negative"
           ],
@@ -456672,7 +456062,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -456681,22 +456071,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456716,7 +456105,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -456725,22 +456114,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456800,7 +456188,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_AllocatesDynamicNonZeroContextIds",
           "method": "ContextRegistry_AllocatesDynamicNonZeroContextIds",
-          "line": 83,
+          "line": 81,
           "kinds": [
             "positive"
           ],
@@ -456823,7 +456211,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
           "method": "ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
-          "line": 99,
+          "line": 97,
           "kinds": [
             "negative"
           ],
@@ -456846,7 +456234,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
           "method": "ContextRegistry_RejectsDynamicAllocationOfContextIdZero",
-          "line": 99,
+          "line": 97,
           "kinds": [
             "negative"
           ],
@@ -456869,7 +456257,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -456878,22 +456266,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456913,7 +456300,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -456922,22 +456309,405 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9298-S4-P2-S4-R01",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Allocate even-numbered Context IDs on the client",
+      "statement": "Non-zero even-numbered Context IDs MUST be client-allocated.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientAllocatesEvenContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientRejectsOddContextIds",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
+        "by_kind": {
+          "positive": 3,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientAllocatesEvenContextIds",
+          "method": "ContextRegistry_ClientAllocatesEvenContextIds",
+          "line": 109,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientRejectsOddContextIds",
+          "method": "ContextRegistry_ClientRejectsOddContextIds",
+          "line": 122,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientAllocatesEvenContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ClientRejectsOddContextIds",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ClientRejectsOddContextIds",
+          "method": "ContextRegistry_ClientRejectsOddContextIds",
+          "line": 122,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "line": 54,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "line": 33,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9298-S4-P2-S4-R02",
+      "artifact_id": "SPEC-QUIC-RFC9298",
+      "rfc": "RFC9298",
+      "section_prefix": "unsectioned",
+      "title": "Allocate odd-numbered Context IDs on the proxy",
+      "statement": "Odd-numbered Context IDs MUST be proxy-allocated.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 1,
+      "spec_test_refs": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyAllocatesOddContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyRejectsEvenContextIds",
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 5,
+        "focused": 3,
+        "broad": 2,
+        "by_kind": {
+          "positive": 3,
+          "negative": 2,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyAllocatesOddContextIds",
+          "method": "ContextRegistry_ProxyAllocatesOddContextIds",
+          "line": 133,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyRejectsEvenContextIds",
+          "method": "ContextRegistry_ProxyRejectsEvenContextIds",
+          "line": 146,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyAllocatesOddContextIds tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextRegistry_ProxyRejectsEvenContextIds",
+          "file": "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs",
+          "class": "Http3ConnectUdpDatagramTests",
+          "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ProxyRejectsEvenContextIds",
+          "method": "ContextRegistry_ProxyRejectsEvenContextIds",
+          "line": 146,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9298-S4-P2-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
+          "line": 54,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
+            "RFC9298-S4-P2-S5-R01",
+            "RFC9298-S4-P2-S5-R03",
+            "RFC9298-S4-P3-S2-R01",
+            "RFC9298-S5-P3-2-S1-R01",
+            "RFC9298-S5-P4-R01",
+            "RFC9298-S5-P4-S1-R01",
+            "RFC9298-S5-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9298-S4-P2-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9298/RFC9298-S4-P1-S3-R01.cs",
+          "class": "RFC9298_S4_P1_S3_R01",
+          "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
+          "line": 33,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "broad",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9298-0081",
+            "REQ-QUIC-RFC9298-0083",
+            "REQ-QUIC-RFC9298-0085",
+            "REQ-QUIC-RFC9298-0086",
+            "REQ-QUIC-RFC9298-0092",
+            "REQ-QUIC-RFC9298-0093",
+            "REQ-QUIC-RFC9298-0094",
+            "REQ-QUIC-RFC9298-0095",
+            "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
+            "RFC9298-S4-P2-S2-R01",
+            "RFC9298-S4-P2-S3-R01",
+            "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -456997,7 +456767,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_AllowsDistinctContextIds",
           "method": "ContextRegistry_AllowsDistinctContextIds",
-          "line": 220,
+          "line": 218,
           "kinds": [
             "positive"
           ],
@@ -457019,7 +456789,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
           "method": "ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
-          "line": 176,
+          "line": 174,
           "kinds": [
             "negative"
           ],
@@ -457042,7 +456812,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
           "method": "ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
-          "line": 176,
+          "line": 174,
           "kinds": [
             "negative"
           ],
@@ -457065,7 +456835,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -457074,22 +456844,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457109,7 +456878,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -457118,22 +456887,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457193,7 +456961,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
           "method": "ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
-          "line": 176,
+          "line": 174,
           "kinds": [
             "negative"
           ],
@@ -457216,7 +456984,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
           "method": "ContextRegistry_RejectsReallocationInsideOneRequestNamespace",
-          "line": 176,
+          "line": 174,
           "kinds": [
             "negative"
           ],
@@ -457239,7 +457007,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.ContextRegistry_ScopesContextIdsPerRequestNamespace",
           "method": "ContextRegistry_ScopesContextIdsPerRequestNamespace",
-          "line": 159,
+          "line": 157,
           "kinds": [
             "positive"
           ],
@@ -457261,7 +457029,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -457270,22 +457038,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457305,7 +457072,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -457314,22 +457081,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457389,7 +457155,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_AllowsFutureHeaderOrCapsuleRegistrationMechanisms",
           "method": "DatagramPolicy_AllowsFutureHeaderOrCapsuleRegistrationMechanisms",
-          "line": 260,
+          "line": 258,
           "kinds": [
             "positive"
           ],
@@ -457411,7 +457177,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism",
           "method": "DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism",
-          "line": 269,
+          "line": 267,
           "kinds": [
             "negative"
           ],
@@ -457433,7 +457199,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism",
           "method": "DatagramPolicy_DoesNotTreatAbsentExtensionSignalAsRegistrationMechanism",
-          "line": 269,
+          "line": 267,
           "kinds": [
             "negative"
           ],
@@ -457455,7 +457221,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -457464,22 +457230,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457499,7 +457264,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -457508,22 +457273,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457583,7 +457347,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_UnknownContextIdCanBeBufferedTemporarily",
           "method": "DatagramPolicy_UnknownContextIdCanBeBufferedTemporarily",
-          "line": 302,
+          "line": 300,
           "kinds": [
             "positive"
           ],
@@ -457605,7 +457369,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable",
           "method": "DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable",
-          "line": 311,
+          "line": 309,
           "kinds": [
             "negative"
           ],
@@ -457627,7 +457391,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable",
           "method": "DatagramPolicy_UnknownContextIdDropsSilentlyWhenBufferUnavailable",
-          "line": 311,
+          "line": 309,
           "kinds": [
             "negative"
           ],
@@ -457649,7 +457413,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -457658,22 +457422,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457693,7 +457456,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -457702,22 +457465,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457777,7 +457539,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
           "method": "UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
-          "line": 357,
+          "line": 355,
           "kinds": [
             "negative"
           ],
@@ -457800,7 +457562,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
           "method": "UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
-          "line": 357,
+          "line": 355,
           "kinds": [
             "negative"
           ],
@@ -457823,7 +457585,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload",
           "method": "UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload",
-          "line": 341,
+          "line": 339,
           "kinds": [
             "positive"
           ],
@@ -457846,7 +457608,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -457855,22 +457617,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457890,7 +457651,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -457899,22 +457660,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -457974,7 +457734,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
           "method": "UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
-          "line": 357,
+          "line": 355,
           "kinds": [
             "negative"
           ],
@@ -457997,7 +457757,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
           "method": "UdpPayload_NonZeroContextIdIsNotReservedForUdpPackets",
-          "line": 357,
+          "line": 355,
           "kinds": [
             "negative"
           ],
@@ -458020,7 +457780,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload",
           "method": "UdpPayload_UsesContextIdZeroAndCarriesUnmodifiedPayload",
-          "line": 341,
+          "line": 339,
           "kinds": [
             "positive"
           ],
@@ -458043,7 +457803,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -458052,22 +457812,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -458087,7 +457846,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -458096,22 +457855,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -458171,7 +457929,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_AllowsEmptyUdpProxyingPayload",
           "method": "DatagramPayload_AllowsEmptyUdpProxyingPayload",
-          "line": 320,
+          "line": 318,
           "kinds": [
             "positive"
           ],
@@ -458193,7 +457951,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_RejectsNullPayload",
           "method": "DatagramPayload_RejectsNullPayload",
-          "line": 331,
+          "line": 329,
           "kinds": [
             "negative"
           ],
@@ -458215,7 +457973,7 @@
           "class": "Http3ConnectUdpDatagramTests",
           "member": "Http3ConnectUdpDatagramTests.DatagramPayload_RejectsNullPayload",
           "method": "DatagramPayload_RejectsNullPayload",
-          "line": 331,
+          "line": 329,
           "kinds": [
             "negative"
           ],
@@ -458237,7 +457995,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
           "method": "Rfc9298DatagramContextCodeAndTestsAreTraceLinked",
-          "line": 55,
+          "line": 54,
           "kinds": [
             "positive"
           ],
@@ -458246,22 +458004,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",
@@ -458281,7 +458038,7 @@
           "class": "RFC9298_S4_P1_S3_R01",
           "member": "RFC9298_S4_P1_S3_R01.Rfc9298DatagramContextTraceArtifactsAreLinked",
           "method": "Rfc9298DatagramContextTraceArtifactsAreLinked",
-          "line": 34,
+          "line": 33,
           "kinds": [
             "positive"
           ],
@@ -458290,22 +458047,21 @@
           ],
           "strength": "broad",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9298-0074",
-            "REQ-QUIC-RFC9298-0078",
-            "REQ-QUIC-RFC9298-0079",
             "REQ-QUIC-RFC9298-0081",
             "REQ-QUIC-RFC9298-0083",
             "REQ-QUIC-RFC9298-0085",
             "REQ-QUIC-RFC9298-0086",
-            "REQ-QUIC-RFC9298-0087",
             "REQ-QUIC-RFC9298-0092",
             "REQ-QUIC-RFC9298-0093",
             "REQ-QUIC-RFC9298-0094",
             "REQ-QUIC-RFC9298-0095",
             "RFC9298-S4-P1-S3-R01",
+            "RFC9298-S4-P2-S1-R01",
             "RFC9298-S4-P2-S2-R01",
             "RFC9298-S4-P2-S3-R01",
             "RFC9298-S4-P2-S3-R02",
+            "RFC9298-S4-P2-S4-R01",
+            "RFC9298-S4-P2-S4-R02",
             "RFC9298-S4-P2-S5-R01",
             "RFC9298-S4-P2-S5-R03",
             "RFC9298-S4-P3-S2-R01",

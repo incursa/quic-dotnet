@@ -30,7 +30,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0074")]
+    [Requirement("RFC9298-S4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextId_AllowsLargestSixtyTwoBitValue()
@@ -41,7 +41,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0074")]
+    [Requirement("RFC9298-S4-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextId_RejectsValuesBeyondSixtyTwoBits()
@@ -53,7 +53,6 @@ public sealed class Http3ConnectUdpDatagramTests
 
     [Fact]
     [Requirement("RFC9298-S4-P2-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9298-0087")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextId_IsEncodedAsVariableLengthInteger()
@@ -65,7 +64,6 @@ public sealed class Http3ConnectUdpDatagramTests
 
     [Fact]
     [Requirement("RFC9298-S4-P2-S2-R01")]
-    [Requirement("REQ-QUIC-RFC9298-0087")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextId_RejectsTruncatedVariableLengthInteger()
@@ -105,7 +103,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0078")]
+    [Requirement("RFC9298-S4-P2-S4-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_ClientAllocatesEvenContextIds()
@@ -118,7 +116,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0078")]
+    [Requirement("RFC9298-S4-P2-S4-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_ClientRejectsOddContextIds()
@@ -129,7 +127,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0079")]
+    [Requirement("RFC9298-S4-P2-S4-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ContextRegistry_ProxyAllocatesOddContextIds()
@@ -142,7 +140,7 @@ public sealed class Http3ConnectUdpDatagramTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0079")]
+    [Requirement("RFC9298-S4-P2-S4-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void ContextRegistry_ProxyRejectsEvenContextIds()

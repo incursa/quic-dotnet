@@ -761,7 +761,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0037",
+      "id": "RFC9298-S3-1-P3-S2-R01",
       "title": "Respond before target packet",
       "statement": "The UDP proxy MUST respond to the request without waiting for a packet from the target.",
       "coverage": {
@@ -772,7 +772,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S3P1-B4-P4-S3",
+          "RFC 9298 section 3.1 RFC9298:section-3.1-3 sentence 2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
         ],
         "x_test_refs": [
@@ -845,7 +845,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0041",
+      "id": "RFC9298-S3-1-P4-S1-R02",
       "title": "Validate source address on non-connected sockets",
       "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the IP source address on received packets to ensure they match the client's request.",
       "coverage": {
@@ -856,7 +856,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S3P1-B5-P5-S2",
+          "RFC 9298 section 3.1 RFC9298:section-3.1-4 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
         ],
         "x_test_refs": [
@@ -866,7 +866,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0042",
+      "id": "RFC9298-S3-1-P4-S1-R03",
       "title": "Validate source port on non-connected sockets",
       "statement": "If the UDP proxy uses a non-connected socket, it MUST validate the UDP source port on received packets to ensure they match the client's request.",
       "coverage": {
@@ -877,7 +877,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S3P1-B5-P5-S2",
+          "RFC 9298 section 3.1 RFC9298:section-3.1-4 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.1"
         ],
         "x_test_refs": [
@@ -1238,9 +1238,9 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0060",
+      "id": "RFC9298-S3-3-P2-2-R01",
       "title": "Include Connection header field value Upgrade in response",
-      "statement": "The response MUST include a Connection header field with value \"Upgrade\".",
+      "statement": "The response SHALL include a Connection header field with value \"Upgrade\".",
       "coverage": {
         "positive": "required",
         "negative": "required",
@@ -1249,7 +1249,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC 9298 section 3.3 RFC9298-S3P3-B3-P3-S1",
+          "RFC 9298 section 3.3 RFC9298:section-3.3-2.2",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-3.3"
         ],
         "x_test_refs": [
@@ -1548,7 +1548,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0074",
+      "id": "RFC9298-S4-P2-S1-R01",
       "title": "Use 62-bit Context IDs",
       "statement": "Context IDs MUST be 62-bit integers in the range 0 to 2^62-1.",
       "coverage": {
@@ -1559,7 +1559,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S4-B2-P2-S1",
+          "RFC 9298 section 4 RFC9298:section-4-2 sentence 0",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
         ],
         "x_test_refs": [
@@ -1629,7 +1629,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0078",
+      "id": "RFC9298-S4-P2-S4-R01",
       "title": "Allocate even-numbered Context IDs on the client",
       "statement": "Non-zero even-numbered Context IDs MUST be client-allocated.",
       "coverage": {
@@ -1640,7 +1640,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S4-B2-P2-S4",
+          "RFC 9298 section 4 RFC9298:section-4-2 sentence 3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
         ],
         "x_test_refs": [
@@ -1649,7 +1649,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9298-0079",
+      "id": "RFC9298-S4-P2-S4-R02",
       "title": "Allocate odd-numbered Context IDs on the proxy",
       "statement": "Odd-numbered Context IDs MUST be proxy-allocated.",
       "coverage": {
@@ -1660,7 +1660,7 @@
       },
       "trace": {
         "upstream_refs": [
-          "RFC9298-S4-B2-P2-S4",
+          "RFC 9298 section 4 RFC9298:section-4-2 sentence 3",
           "https://www.rfc-editor.org/rfc/rfc9298.html#section-4"
         ],
         "x_test_refs": [
@@ -1805,26 +1805,6 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_StartsWithContextIdBeforePayload tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::DatagramPayload_RejectsMissingContextId"
-        ]
-      }
-    },
-    {
-      "id": "REQ-QUIC-RFC9298-0087",
-      "title": "Context ID is a variable-length integer",
-      "statement": "The Context ID field MUST be encoded as a variable-length integer.",
-      "coverage": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "trace": {
-        "upstream_refs": [
-          "RFC 9298 section 5 RFC9298-S5-B4-P4-S1",
-          "https://www.rfc-editor.org/rfc/rfc9298.html#section-5"
-        ],
-        "x_test_refs": [
-          "tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_IsEncodedAsVariableLengthInteger tests/Incursa.Quic.Tests/Http3ConnectUdpDatagramTests.cs::ContextId_RejectsTruncatedVariableLengthInteger"
         ]
       }
     },

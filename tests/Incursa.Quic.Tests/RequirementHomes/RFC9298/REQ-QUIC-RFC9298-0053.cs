@@ -10,7 +10,7 @@ namespace Incursa.Quic.Tests;
 [Requirement("REQ-QUIC-RFC9298-0057")]
 [Requirement("REQ-QUIC-RFC9298-0058")]
 [Requirement("REQ-QUIC-RFC9298-0059")]
-[Requirement("REQ-QUIC-RFC9298-0060")]
+[Requirement("RFC9298-S3-3-P2-2-R01")]
 [Requirement("REQ-QUIC-RFC9298-0061")]
 [Requirement("REQ-QUIC-RFC9298-0062")]
 [Requirement("REQ-QUIC-RFC9298-0063")]

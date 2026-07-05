@@ -13,8 +13,8 @@
   ],
   "verification_method": "Focused unit tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene for RFC 9298 socket lifecycle and forwarding policy.",
   "verifies": [
-    "REQ-QUIC-RFC9298-0041",
-    "REQ-QUIC-RFC9298-0042",
+    "RFC9298-S3-1-P4-S1-R02",
+    "RFC9298-S3-1-P4-S1-R03",
     "RFC9298-S3-1-P4-S2-R01",
     "REQ-QUIC-RFC9298-0044",
     "REQ-QUIC-RFC9298-0045",

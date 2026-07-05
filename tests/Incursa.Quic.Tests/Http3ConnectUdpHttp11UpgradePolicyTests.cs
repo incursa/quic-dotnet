@@ -126,7 +126,7 @@ public sealed class Http3ConnectUdpHttp11UpgradePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0060")]
+    [Requirement("RFC9298-S3-3-P2-2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void UpgradeResponse_IncludesConnectionUpgradeToken()
@@ -137,7 +137,7 @@ public sealed class Http3ConnectUdpHttp11UpgradePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0060")]
+    [Requirement("RFC9298-S3-3-P2-2-R01")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void UpgradeResponse_RejectsMissingConnectionUpgradeToken()

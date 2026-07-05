@@ -8,7 +8,7 @@ namespace Incursa.Quic.Tests;
 public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
 {
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0041")]
+    [Requirement("RFC9298-S3-1-P4-S1-R02")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void SocketLifecycle_AcceptsMatchingSourceAddressOnNonConnectedSocket()
@@ -20,7 +20,7 @@ public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0041")]
+    [Requirement("RFC9298-S3-1-P4-S1-R02")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void SocketLifecycle_RejectsMismatchedSourceAddressOnNonConnectedSocket()
@@ -32,7 +32,7 @@ public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0042")]
+    [Requirement("RFC9298-S3-1-P4-S1-R03")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void SocketLifecycle_AcceptsMatchingSourcePortOnNonConnectedSocket()
@@ -44,7 +44,7 @@ public sealed class Http3ConnectUdpSocketLifecyclePolicyTests
     }
 
     [Fact]
-    [Requirement("REQ-QUIC-RFC9298-0042")]
+    [Requirement("RFC9298-S3-1-P4-S1-R03")]
     [CoverageType(RequirementCoverageType.Negative)]
     [Trait("Category", "Negative")]
     public void SocketLifecycle_RejectsMismatchedSourcePortOnNonConnectedSocket()
