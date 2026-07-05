@@ -19,6 +19,7 @@ internal sealed class QuicTlsTranscriptProgress
 {
     private const ushort HandshakeTranscriptUnavailableAlertDescription = 0x0010;
     private const ushort HandshakeTranscriptParseFailureAlertDescription = 0x0032;
+    internal const ushort QuicTransportParameterParseFailureAlertDescription = 0x0108;
     private const ushort NoApplicationProtocolAlertDescription = 0x0078;
     private const int HandshakeHeaderLength = 4;
     private const int UInt16Length = 2;
@@ -1081,12 +1082,17 @@ internal sealed class QuicTlsTranscriptProgress
             }
             else if (extensionType == QuicTransportParametersCodec.QuicTransportParametersExtensionType)
             {
-                if (foundTransportParameters
-                    || !QuicTransportParametersCodec.TryParseTransportParameters(
-                        extensionValue,
-                        receiverRole,
-                        out QuicTransportParameters parsedTransportParameters))
+                if (foundTransportParameters)
                 {
+                    return false;
+                }
+
+                if (!QuicTransportParametersCodec.TryParseTransportParameters(
+                    extensionValue,
+                    receiverRole,
+                    out QuicTransportParameters parsedTransportParameters))
+                {
+                    currentParseFailureAlertDescription = QuicTransportParameterParseFailureAlertDescription;
                     return false;
                 }
 
@@ -1310,6 +1316,7 @@ internal sealed class QuicTlsTranscriptProgress
                     receiverRole,
                     out QuicTransportParameters parsedTransportParameters))
                 {
+                    currentParseFailureAlertDescription = QuicTransportParameterParseFailureAlertDescription;
                     return false;
                 }
 

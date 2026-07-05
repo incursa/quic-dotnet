@@ -1,0 +1,39 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "VER-QUIC-RFC9368-0003",
+  "artifact_type": "verification",
+  "status": "passed",
+  "title": "QUIC RFC 9368 Version Information Parse-Failure Close Verification",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0003",
+    "WI-QUIC-RFC9368-0003"
+  ],
+  "verification_method": "Focused RFC9368-S4-P3-S2-R01 requirement-home tests, RFC 9368 requirement-home tests, SpecTrace JSON validation, generated coverage triage, and diff hygiene.",
+  "verifies": [
+    "RFC9368-S4-P3-S2-R01"
+  ],
+  "scope": "This verification covers the RFC 9368 requirement that malformed peer Version Information parsing failures close the connection. It proves the transcript parser marks malformed version_information transport parameters as transport-parameter parse failures and the runtime closes locally with TRANSPORT_PARAMETER_ERROR.",
+  "preconditions": [
+    "The transport-parameter codec rejects malformed Version Information values.",
+    "The TLS transcript parser receives peer quic_transport_parameters during the handshake.",
+    "The connection runtime consumes fatal TLS updates through the local-close path."
+  ],
+  "procedure": [
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~RFC9368_S4_P3_S2_R01`.",
+    "Run `dotnet test tests/Incursa.Quic.Tests/Incursa.Quic.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~RFC9368`.",
+    "Run `pwsh -NoProfile -File scripts/Validate-SpecTraceJson.ps1 -RepoRoot . -Profiles core`.",
+    "Run `pwsh -NoProfile -File scripts/spec-trace/Generate-QuicRequirementCoverageTriage.ps1 -RepoRoot .`.",
+    "Run `git diff --check`."
+  ],
+  "expected_result": "Malformed peer Version Information produces a fatal transcript step classified as a QUIC transport-parameter parse failure, the runtime local close uses TRANSPORT_PARAMETER_ERROR, the RFC 9368 requirement-home suite passes, SpecTrace JSON validates, generated coverage reports RFC9368-S4-P3-S2-R01 as traceable, and diff hygiene remains clean.",
+  "evidence": [
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs"
+  ],
+  "status_summary": "Passed. Focused RFC9368-S4-P3-S2-R01 tests prove both parser classification and local TRANSPORT_PARAMETER_ERROR close behavior."
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "WI-QUIC-RFC9368-0003",
+  "artifact_type": "work_item",
+  "status": "complete",
+  "title": "QUIC RFC 9368 Version Information Parse-Failure Close Work Item",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "ARC-QUIC-RFC9368-0003",
+    "VER-QUIC-RFC9368-0003"
+  ],
+  "addresses": [
+    "RFC9368-S4-P3-S2-R01"
+  ],
+  "summary": "Close the RFC 9368 parse-failure gap by mapping malformed peer Version Information to a transport-parameter parse-failure fatal marker and proving the connection runtime closes locally with TRANSPORT_PARAMETER_ERROR.",
+  "planned_changes": "- Distinguish malformed QUIC transport-parameter parsing from generic TLS transcript parse failures.\n- Map the transport-parameter parse-failure marker to QUIC TRANSPORT_PARAMETER_ERROR in the transport-facing TLS bridge.\n- Add focused RFC 9368 requirement-home tests for non-four-byte-aligned and too-short Version Information values.\n- Remove the explicit RFC9368-S4-P3-S2-R01 gap entry and refresh generated coverage triage.",
+  "verification_plan": "Run the focused RFC9368-S4-P3-S2-R01 requirement-home tests, run the RFC 9368 requirement-home suite, validate SpecTrace JSON, refresh generated QUIC requirement coverage triage, and run `git diff --check`.",
+  "verification_links": [
+    "VER-QUIC-RFC9368-0003"
+  ],
+  "design_links": [
+    "ARC-QUIC-RFC9368-0003"
+  ],
+  "out_of_scope": [
+    "Retry-compatible version negotiation interactions.",
+    "0-RTT compatibility follow-ons.",
+    "Changing Version Information encoding rules beyond classifying parser failures."
+  ]
+}

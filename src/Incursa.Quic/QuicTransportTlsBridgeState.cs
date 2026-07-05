@@ -334,6 +334,13 @@ internal sealed class QuicTransportTlsBridgeState
                     return false;
                 }
 
+                if (update.AlertDescription.Value == QuicTlsTranscriptProgress.QuicTransportParameterParseFailureAlertDescription)
+                {
+                    return TryRecordFatalAlert(
+                        QuicTransportErrorCode.TransportParameterError,
+                        "TLS handshake transport parameters failed parsing.");
+                }
+
                 return TryRecordFatalAlert(QuicTransportErrorCode.ProtocolViolation, $"TLS alert {update.AlertDescription.Value}.");
 
             case QuicTlsUpdateKind.ProhibitedKeyUpdateViolation:

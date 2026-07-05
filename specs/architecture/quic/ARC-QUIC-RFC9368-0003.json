@@ -1,0 +1,35 @@
+{
+  "$schema": "https://github.com/incursa/spec-trace/raw/refs/heads/main/model/model.schema.json",
+  "artifact_id": "ARC-QUIC-RFC9368-0003",
+  "artifact_type": "architecture",
+  "status": "implemented",
+  "title": "QUIC RFC 9368 Version Information Parse-Failure Close Architecture",
+  "owner": "quic-maintainers",
+  "domain": "quic",
+  "purpose": "Describe how malformed peer Version Information is promoted from transport-parameter parser failure into a local TRANSPORT_PARAMETER_ERROR close.",
+  "related_artifacts": [
+    "SPEC-QUIC-RFC9368",
+    "WI-QUIC-RFC9368-0003",
+    "VER-QUIC-RFC9368-0003"
+  ],
+  "satisfies": [
+    "RFC9368-S4-P3-S2-R01"
+  ],
+  "key_components": [
+    "src/Incursa.Quic/QuicTransportParametersCodec.cs",
+    "src/Incursa.Quic/QuicTlsTranscriptProgress.cs",
+    "src/Incursa.Quic/QuicTransportTlsBridgeState.cs",
+    "src/Incursa.Quic/QuicConnectionRuntime.Protocol.cs"
+  ],
+  "design_summary": "The transport-parameter codec remains the canonical parser for Version Information values. When the TLS transcript parser encounters a quic_transport_parameters extension whose Version Information tuple fails codec validation, it marks the fatal transcript step with an internal transport-parameter parse-failure alert marker instead of the generic transcript parse-failure marker. The transport-facing TLS bridge maps that marker to QUIC TRANSPORT_PARAMETER_ERROR, and the connection runtime consumes the fatal TLS update through the normal local-close path so malformed peer Version Information closes the connection.",
+  "risks": [
+    "If malformed transport parameters are collapsed back into generic TLS parse failures, RFC 9368 parse-failure closes can regress to PROTOCOL_VIOLATION.",
+    "If tests only assert codec rejection, they do not prove endpoint close behavior."
+  ],
+  "supplemental_sections": [
+    {
+      "heading": "Boundary",
+      "content": "This slice covers malformed Version Information in peer transport parameters during the handshake. It does not change compatible-version selection or Retry and 0-RTT behavior."
+    }
+  ]
+}

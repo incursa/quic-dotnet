@@ -11,30 +11,30 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2676 |
+| trace_clean | 2677 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
 | covered_but_proof_too_broad | 0 |
 | partially_covered | 0 |
-| uncovered_blocked | 1 |
+| uncovered_blocked | 0 |
 | uncovered_unblocked | 0 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2676 |
+| clean | 2677 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
 | restructure_needed | 0 |
-| new_tests_needed | 1 |
-| blocked | 1 |
+| new_tests_needed | 0 |
+| blocked | 0 |
 
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes: 0 requirements. Examples: .
 - Restructure-needed proof: 0 requirements. Examples: .
-- New proof or implementation work: 1 requirements. Examples: .
-- Blocked by recorded gap families: 1 requirements. Examples: RFC9368-S4-P3-S2-R01.
+- New proof or implementation work: 0 requirements. Examples: .
+- Blocked by recorded gap families: 0 requirements. Examples: .
 
 ## RFC Breakdown
 
@@ -54,7 +54,7 @@
 | RFC9298 | 116 | 116 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9308 | 10 | 10 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9312 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9368 | 7 | 6 | 0 | 0 | 0 | 0 | 1 | 0 |
+| RFC9368 | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9369 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9461 | 42 | 42 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9463 | 120 | 120 | 0 | 0 | 0 | 0 | 0 | 0 |

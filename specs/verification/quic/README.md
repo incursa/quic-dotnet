@@ -123,6 +123,7 @@ Each canonical artifact is authored in `.json`.
 - [`VER-QUIC-RFC9312-0001.json`](VER-QUIC-RFC9312-0001.json): canonical RFC 9312 manageability diagnostics verification source
 - [`VER-QUIC-RFC9368-0001.json`](VER-QUIC-RFC9368-0001.json): canonical RFC 9368 compatible-version floor verification source
 - [`VER-QUIC-RFC9368-0002.json`](VER-QUIC-RFC9368-0002.json): canonical RFC 9368 compatible-version runtime-selection verification source
+- [`VER-QUIC-RFC9368-0003.json`](VER-QUIC-RFC9368-0003.json): canonical RFC 9368 Version Information parse-failure close verification source
 - [`VER-QUIC-RFC9369-0001.json`](VER-QUIC-RFC9369-0001.json): canonical RFC 9369 QUIC v2 static floor verification source
 - [`VER-QUIC-RFC9001-0002.json`](VER-QUIC-RFC9001-0002.json): canonical RFC 9001 TLS KeyUpdate prohibition verification source
 - [`VER-QUIC-RFC9001-0003.json`](VER-QUIC-RFC9001-0003.json): canonical RFC 9001 1-RTT Key Update lifecycle verification source

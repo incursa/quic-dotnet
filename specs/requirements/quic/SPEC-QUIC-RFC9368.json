@@ -16,7 +16,10 @@
     "VER-QUIC-RFC9368-0001",
     "ARC-QUIC-RFC9368-0002",
     "WI-QUIC-RFC9368-0002",
-    "VER-QUIC-RFC9368-0002"
+    "VER-QUIC-RFC9368-0002",
+    "ARC-QUIC-RFC9368-0003",
+    "WI-QUIC-RFC9368-0003",
+    "VER-QUIC-RFC9368-0003"
   ],
   "requirements": [
     {
@@ -92,12 +95,22 @@
         "fuzz": "optional"
       },
       "trace": {
+        "satisfied_by": [
+          "ARC-QUIC-RFC9368-0003"
+        ],
+        "implemented_by": [
+          "WI-QUIC-RFC9368-0003"
+        ],
+        "verified_by": [
+          "VER-QUIC-RFC9368-0003"
+        ],
         "upstream_refs": [
           "RFC 9368 §4",
           "https://www.rfc-editor.org/rfc/rfc9368.html#section-4"
         ],
-        "x_gap_refs": [
-          "specs/requirements/quic/REQUIREMENT-GAPS.md#rfc9368-version-information-parse-failure-close"
+        "x_test_refs": [
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::MalformedPeerVersionInformation_ClosesConnectionWithTransportParameterError",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9368/RFC9368-S4-P3-S2-R01.cs::TooShortPeerVersionInformation_ClosesConnectionWithTransportParameterError"
         ]
       }
     },
@@ -232,7 +245,7 @@
   "supplemental_sections": [
     {
       "heading": "RFC 9368 Section 4.3 Split Mapping",
-      "content": "The retired local requirement REQ-QUIC-RFC9368-S3-0002 mixed several parser-failure obligations. It has been split across RFC9368-S4-P3-S1-R01, RFC9368-S4-P3-S2-R01, RFC9368-S4-P3-S3-R01, and RFC9368-S4-P3-S4-R01. RFC9368-S4-P3-S2-R01 remains an explicit gap because current tests only prove malformed Version Information is detected as a parser failure at the transport-parameter codec boundary; they do not prove endpoint connection-close behavior."
+      "content": "The retired local requirement REQ-QUIC-RFC9368-S3-0002 mixed several parser-failure obligations. It has been split across RFC9368-S4-P3-S1-R01, RFC9368-S4-P3-S2-R01, RFC9368-S4-P3-S3-R01, and RFC9368-S4-P3-S4-R01. RFC9368-S4-P3-S2-R01 is now covered by the runtime-close slice that classifies malformed peer Version Information as a QUIC transport-parameter parsing failure and closes the connection with TRANSPORT_PARAMETER_ERROR."
     },
     {
       "heading": "Implementation Boundary",
