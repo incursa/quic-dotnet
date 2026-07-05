@@ -1257,7 +1257,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt"
         ]
       }
     },
@@ -1286,7 +1286,7 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S2-R01.cs::Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt"
         ]
       }
     },
@@ -1346,9 +1346,9 @@
           "https://www.rfc-editor.org/rfc/rfc9002.html#section-5.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples"
         ]
       }
     },

@@ -4,14 +4,14 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
-///   <workbench-requirement requirementId="RFC9002-S5-3-P15-S1-R01">`smoothed_rtt` is set to `latest_rtt` on the first RTT sample after initialization.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9002-S5-3-P15-S2-R01">`rttvar` is set to `latest_rtt / 2` on the first RTT sample after initialization.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("RFC9002-S5-3-P15-S1-R01")]
-public sealed class RFC9002_S5_3_P15_S1_R01
+[Requirement("RFC9002-S5-3-P15-S2-R01")]
+public sealed class RFC9002_S5_3_P15_S2_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
-    public void TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample()
+    public void TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample()
     {
         QuicRttEstimator estimator = new();
 
@@ -23,13 +23,12 @@ public sealed class RFC9002_S5_3_P15_S1_R01
 
         Assert.True(estimator.HasRttSample);
         Assert.Equal(1_500UL, estimator.LatestRttMicros);
-        Assert.Equal(1_500UL, estimator.MinRttMicros);
-        Assert.Equal(1_500UL, estimator.SmoothedRttMicros);
+        Assert.Equal(750UL, estimator.RttVarMicros);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
-    public void TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample()
+    public void TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample()
     {
         QuicRttEstimator estimator = new();
 
@@ -41,13 +40,12 @@ public sealed class RFC9002_S5_3_P15_S1_R01
 
         Assert.True(estimator.HasRttSample);
         Assert.Equal(0UL, estimator.LatestRttMicros);
-        Assert.Equal(0UL, estimator.MinRttMicros);
-        Assert.Equal(0UL, estimator.SmoothedRttMicros);
+        Assert.Equal(0UL, estimator.RttVarMicros);
     }
 
     [Fact]
     [CoverageType(RequirementCoverageType.Negative)]
-    public void TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples()
+    public void TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples()
     {
         QuicRttEstimator estimator = new();
 
@@ -64,7 +62,6 @@ public sealed class RFC9002_S5_3_P15_S1_R01
             newlyAcknowledgedAckElicitingPacket: true));
 
         Assert.Equal(500UL, estimator.LatestRttMicros);
-        Assert.Equal(0UL, estimator.MinRttMicros);
-        Assert.Equal(62UL, estimator.SmoothedRttMicros);
+        Assert.Equal(125UL, estimator.RttVarMicros);
     }
 }

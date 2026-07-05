@@ -11,29 +11,29 @@
 
 | State | Count |
 | --- | ---: |
-| trace_clean | 2672 |
+| trace_clean | 2676 |
 | missing_coverage_contract | 0 |
 | covered_but_missing_xrefs | 0 |
-| covered_but_proof_too_broad | 4 |
+| covered_but_proof_too_broad | 0 |
 | partially_covered | 0 |
 | uncovered_blocked | 1 |
 | uncovered_unblocked | 0 |
 
 | Work queue tag | Count |
 | --- | ---: |
-| clean | 2672 |
+| clean | 2676 |
 | coverage_contract_needed | 0 |
 | metadata_only | 0 |
-| restructure_needed | 4 |
-| new_tests_needed | 5 |
+| restructure_needed | 0 |
+| new_tests_needed | 1 |
 | blocked | 1 |
 
 ## Queue
 
 - Missing coverage contracts: 0 requirements. Examples: .
 - Metadata-only fixes: 0 requirements. Examples: .
-- Restructure-needed proof: 4 requirements. Examples: RFC9002-S5-3-P12-S1-R01, RFC9002-S5-3-P12-S2-R01, RFC9002-S5-3-P15-S1-R01, RFC9002-S5-3-P15-S2-R01.
-- New proof or implementation work: 5 requirements. Examples: RFC9002-S5-3-P12-S1-R01, RFC9002-S5-3-P12-S2-R01, RFC9002-S5-3-P15-S1-R01, RFC9002-S5-3-P15-S2-R01.
+- Restructure-needed proof: 0 requirements. Examples: .
+- New proof or implementation work: 1 requirements. Examples: .
 - Blocked by recorded gap families: 1 requirements. Examples: RFC9368-S4-P3-S2-R01.
 
 ## RFC Breakdown
@@ -43,7 +43,7 @@
 | RFC8999 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9000 | 1450 | 1450 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9001 | 96 | 96 | 0 | 0 | 0 | 0 | 0 | 0 |
-| RFC9002 | 226 | 222 | 0 | 0 | 4 | 0 | 0 | 0 |
+| RFC9002 | 226 | 226 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9114 | 8 | 8 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9204 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
 | RFC9220 | 31 | 31 | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T19:55:13.2211625-06:00",
+  "generated_at": "2026-07-04T23:46:37.1173164-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,18 +34,16 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-04T19:55:13.2179841-06:00",
+    "generated_at": "2026-07-04T23:46:37.1129615-06:00",
     "total_requirements": 2677,
     "by_state": {
-      "covered_but_proof_too_broad": 4,
-      "trace_clean": 2672,
+      "trace_clean": 2676,
       "uncovered_blocked": 1
     },
     "by_work_queue_tag": {
       "blocked": 1,
-      "clean": 2672,
-      "new_tests_needed": 5,
-      "restructure_needed": 4
+      "clean": 2676,
+      "new_tests_needed": 1
     },
     "by_rfc": [
       {
@@ -73,8 +71,7 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_state": {
-          "covered_but_proof_too_broad": 4,
-          "trace_clean": 222
+          "trace_clean": 226
         }
       },
       {
@@ -425052,20 +425049,19 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
-        "focused": 0,
-        "broad": 2,
+        "focused": 2,
+        "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
@@ -425074,9 +425070,7 @@
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -425086,19 +425080,18 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs",
           "class": "RFC9002_S5_3_P12_S1_R01",
-          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "method": "Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "line": 16,
+          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
+          "method": "Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P12-S1-R01",
-            "RFC9002-S5-3-P12-S2-R01"
+            "RFC9002-S5-3-P12-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425106,22 +425099,21 @@
         {
           "requirement_id": "RFC9002-S5-3-P12-S1-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs",
           "class": "RFC9002_S5_3_P12_S1_R01",
-          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "method": "Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "line": 16,
+          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
+          "method": "Constructor_InitializesSmoothedRttFromTheConfiguredInitialRtt",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P12-S1-R01",
-            "RFC9002-S5-3-P12-S2-R01"
+            "RFC9002-S5-3-P12-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425141,20 +425133,19 @@
         "edge": "optional",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
+      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S2-R01.cs::Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 2,
-        "focused": 0,
-        "broad": 2,
+        "focused": 2,
+        "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
@@ -425163,9 +425154,7 @@
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -425173,20 +425162,19 @@
           "requirement_id": "RFC9002-S5-3-P12-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs",
-          "class": "RFC9002_S5_3_P12_S1_R01",
-          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "method": "Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "line": 16,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S2-R01.cs",
+          "class": "RFC9002_S5_3_P12_S2_R01",
+          "member": "RFC9002_S5_3_P12_S2_R01.Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
+          "method": "Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P12-S1-R01",
             "RFC9002-S5-3-P12-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425195,21 +425183,20 @@
         {
           "requirement_id": "RFC9002-S5-3-P12-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs::Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S1-R01.cs",
-          "class": "RFC9002_S5_3_P12_S1_R01",
-          "member": "RFC9002_S5_3_P12_S1_R01.Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "method": "Constructor_InitializesSmoothedRttAndVariationFromTheConfiguredInitialRtt",
-          "line": 16,
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S2-R01.cs::Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P12-S2-R01.cs",
+          "class": "RFC9002_S5_3_P12_S2_R01",
+          "member": "RFC9002_S5_3_P12_S2_R01.Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
+          "method": "Constructor_InitializesRttVariationToHalfTheConfiguredInitialRtt",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P12-S1-R01",
             "RFC9002-S5-3-P12-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425406,13 +425393,12 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
@@ -425422,8 +425408,8 @@
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 6,
-        "focused": 0,
-        "broad": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
@@ -425432,11 +425418,7 @@
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -425448,17 +425430,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
           "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "line": 54,
+          "line": 50,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425471,17 +425452,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
           "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "line": 54,
+          "line": 50,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425494,17 +425474,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
           "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "line": 16,
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425517,17 +425496,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
           "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "line": 16,
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425540,17 +425518,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
           "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "line": 35,
+          "line": 32,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425563,17 +425540,16 @@
           "class": "RFC9002_S5_3_P15_S1_R01",
           "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
           "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "line": 35,
+          "line": 32,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
-            "RFC9002-S5-3-P15-S2-R01"
+            "RFC9002-S5-3-P15-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -425593,24 +425569,23 @@
         "edge": "required",
         "fuzz": "deferred"
       },
-      "state": "covered_but_proof_too_broad",
-      "primary_issue": "test_structure",
+      "state": "trace_clean",
+      "primary_issue": "none",
       "work_queue_tags": [
-        "new_tests_needed",
-        "restructure_needed"
+        "clean"
       ],
-      "rationale": "Evidence exists, but every proof path is broad or class-level, so the requirement still needs narrower proof slices.",
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
       "spec_test_ref_count": 3,
       "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
         "total": 6,
-        "focused": 0,
-        "broad": 6,
+        "focused": 6,
+        "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
@@ -425619,11 +425594,7 @@
           "benchmark": 0,
           "unspecified": 0
         },
-        "missing_required_kinds": [
-          "positive",
-          "negative",
-          "edge"
-        ]
+        "missing_required_kinds": []
       },
       "gap_blockers": [],
       "evidence": [
@@ -425631,20 +425602,19 @@
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "line": 54,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples",
+          "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples",
+          "line": 48,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425653,21 +425623,20 @@
         {
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleInitializationBranchForLaterSamples",
-          "line": 54,
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples",
+          "method": "TryUpdateFromAck_DoesNotReuseTheFirstSampleVariationBranchForLaterSamples",
+          "line": 48,
           "kinds": [
             "negative"
           ],
           "categories": [
             "Negative"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425677,20 +425646,19 @@
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "line": 16,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "method": "TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425699,21 +425667,20 @@
         {
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheFirstPostInitSample",
-          "line": 16,
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "method": "TryUpdateFromAck_SeedsRttVariationFromHalfTheFirstPostInitSample",
+          "line": 14,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425723,20 +425690,19 @@
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "requirement_attribute",
           "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "line": 35,
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "method": "TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "line": 31,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
@@ -425745,21 +425711,20 @@
         {
           "requirement_id": "RFC9002-S5-3-P15-S2-R01",
           "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs::TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S1-R01.cs",
-          "class": "RFC9002_S5_3_P15_S1_R01",
-          "member": "RFC9002_S5_3_P15_S1_R01.TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "method": "TryUpdateFromAck_SeedsTheEstimatorFromTheZeroDurationFirstSample",
-          "line": 35,
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs::TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S5-3-P15-S2-R01.cs",
+          "class": "RFC9002_S5_3_P15_S2_R01",
+          "member": "RFC9002_S5_3_P15_S2_R01.TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "method": "TryUpdateFromAck_SeedsRttVariationFromTheZeroDurationFirstSample",
+          "line": 31,
           "kinds": [
             "edge"
           ],
           "categories": [
             "Edge"
           ],
-          "strength": "broad",
+          "strength": "focused",
           "associated_requirement_ids": [
-            "RFC9002-S5-3-P15-S1-R01",
             "RFC9002-S5-3-P15-S2-R01"
           ],
           "requirement_tagged": true,
