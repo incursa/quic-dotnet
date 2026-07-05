@@ -24,7 +24,7 @@
   "addresses": [
     "RFC9001-S6-6-P4-S4-R01"
   ],
-  "planned_changes": "- Keep packets that do not resolve to a retained route suppressive instead of advancing them toward stateless-reset emission.\n- Keep packets that resolve only to route state without a remembered token suppressive instead of fabricating a response datagram.\n- Keep the positive retained-route floor from `REQ-QUIC-RFC9001-S6P6-0006` separate from this suppressive topoff.\n- Add requirement-home coverage for unknown-route suppression, missing-token suppression, a retained-route boundary check, and deterministic fuzz coverage over route/token presence.\n- Keep the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for retained-route lookup miss and no-token miss paths.",
+  "planned_changes": "- Keep packets that do not resolve to a retained route suppressive instead of advancing them toward stateless-reset emission.\n- Keep packets that resolve only to route state without a remembered token suppressive instead of fabricating a response datagram.\n- Keep the positive retained-route floor from `RFC9001-S6-6-P4-S4-R02` separate from this suppressive topoff.\n- Add requirement-home coverage for unknown-route suppression, missing-token suppression, a retained-route boundary check, and deterministic fuzz coverage over route/token presence.\n- Keep the permanent `QuicStatelessResetBenchmarks` suite as the hot-path evidence source for retained-route lookup miss and no-token miss paths.",
   "out_of_scope": [
     "Positive emission for non-retained packets",
     "A new ambiguity-detection route model",

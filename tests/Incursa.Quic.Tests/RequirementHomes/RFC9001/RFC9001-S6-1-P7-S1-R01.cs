@@ -4,10 +4,10 @@
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P1-0006">The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-1-P7-S1-R01">The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P1-0006")]
-public sealed class REQ_QUIC_RFC9001_S6P1_0006
+[Requirement("RFC9001-S6-1-P7-S1-R01")]
+public sealed class RFC9001_S6_1_P7_S1_R01
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

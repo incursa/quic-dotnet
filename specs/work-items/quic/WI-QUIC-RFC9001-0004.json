@@ -22,7 +22,7 @@
     "VER-QUIC-RFC9001-0004"
   ],
   "addresses": [
-    "REQ-QUIC-RFC9001-S6P6-0006"
+    "RFC9001-S6-6-P4-S4-R02"
   ],
   "planned_changes": "- Keep the retained-route response floor exact after AEAD-limit terminal discard.\n- Align endpoint-helper emission, connected endpoint host forwarding, and listener host forwarding on the same retained-route lookup, token ownership, loop-prevention, and rate-budget gates.\n- Add requirement-home coverage for matching-route emission, remote-address mismatch suppression, remote-port mismatch suppression, loop-prevention suppression, and rate-budget suppression.\n- Preserve the existing permanent `QuicStatelessResetBenchmarks` evidence as the hot-path floor for retained-route lookup hit/miss and stateless-reset formatting.\n- Keep broader stateless-reset response behavior outside the retained-route floor blocked until separately traced.",
   "out_of_scope": [

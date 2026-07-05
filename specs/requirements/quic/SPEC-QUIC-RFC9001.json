@@ -1567,7 +1567,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P1-0006",
+      "id": "RFC9001-S6-1-P7-S1-R01",
       "title": "Update receive keys when initiating a key update",
       "statement": "The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.",
       "coverage": {
@@ -1587,12 +1587,12 @@
           "VER-QUIC-RFC9001-0003"
         ],
         "upstream_refs": [
-          "RFC 9001 §6.1 RFC9001-S6.1-B7-P5-S1",
+          "RFC 9001 section 6.1 RFC9001:section-6.1-7 sentence 1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate"
         ]
       }
     },
@@ -2480,7 +2480,7 @@
       }
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P6-0006",
+      "id": "RFC9001-S6-6-P4-S4-R02",
       "title": "Gate retained-route stateless-reset responses",
       "statement": "After AEAD-limit terminal discard, an endpoint MUST emit a stateless reset for a later received packet only when the packet resolves to a retained route linked to a remembered stateless-reset token for the same remote address and port and the loop-prevention and emission-rate gates permit the response; otherwise it suppresses the response.",
       "coverage": {
@@ -2500,27 +2500,27 @@
           "VER-QUIC-RFC9001-0004"
         ],
         "upstream_refs": [
-          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "RFC 9001 section 6.6 RFC9001:section-6.6-4 sentence 4",
           "RFC 9000 §10.3.1 RFC9000-S10.3.1-B2-P1-S2",
           "RFC 9000 §10.3.3 RFC9000-S10.3.3-B3-P2-S1",
           "RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers"
         ]
       }
     },
@@ -2562,7 +2562,7 @@
       ]
     },
     {
-      "id": "REQ-QUIC-RFC9001-S6P6-0008",
+      "id": "RFC9001-S6-6-P4-S4-R03",
       "title": "Suppress reset responses to known reset triggers",
       "statement": "After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.",
       "coverage": {
@@ -2582,18 +2582,18 @@
           "VER-QUIC-RFC9001-0007"
         ],
         "upstream_refs": [
-          "RFC 9001 §6.6 RFC9001-S6.6-B5-P4-S4",
+          "RFC 9001 section 6.6 RFC9001:section-6.6-4 sentence 4",
           "RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S1",
           "RFC 9000 §10.3.3 RFC9000-S10.3.3-B4-P3-S2",
           "https://www.rfc-editor.org/rfc/rfc9001.html#section-6.6"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint"
         ]
       },
       "notes": [

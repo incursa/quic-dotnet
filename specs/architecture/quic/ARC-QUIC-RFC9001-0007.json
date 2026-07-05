@@ -14,7 +14,7 @@
     "VER-QUIC-RFC9001-0007"
   ],
   "satisfies": [
-    "REQ-QUIC-RFC9001-S6P6-0008"
+    "RFC9001-S6-6-P4-S4-R03"
   ],
   "key_components": [
     "src/Incursa.Quic/QuicConnectionRuntimeEndpoint.cs",
@@ -22,7 +22,7 @@
     "src/Incursa.Quic/QuicConnectionEndpointHost.cs",
     "src/Incursa.Quic/QuicListenerHost.cs",
     "src/Incursa.Quic/QuicStatelessReset.cs",
-    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
+    "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
     "benchmarks/QuicStatelessResetBenchmarks.cs"
   ],
   "risks": [
@@ -30,7 +30,7 @@
     "If shape-only detection suppresses retained-route packets without a matching retained token, valid post-stop response eligibility can be weakened.",
     "If loop suppression consumes the rate budget before suppression, later eligible packets can be rate-limited incorrectly."
   ],
-  "design_summary": "The retained-route emission helper first resolves the retained route and same remote endpoint using the existing REQ-QUIC-RFC9001-S6P6-0006 lookup boundary. Once the retained binding is known, it checks whether the triggering datagram has Stateless Reset shape and whether the trailing token matches that binding's retained token. A match returns an explicit non-emitted loop-suppressed disposition before rate-budget reservation or formatting. Different trailing tokens, non-reset-shaped packets, missing routes, and remote endpoint mismatches remain governed by the existing retained-route, token-unavailable, and formatting branches.",
+  "design_summary": "The retained-route emission helper first resolves the retained route and same remote endpoint using the existing RFC9001-S6-6-P4-S4-R02 lookup boundary. Once the retained binding is known, it checks whether the triggering datagram has Stateless Reset shape and whether the trailing token matches that binding's retained token. A match returns an explicit non-emitted loop-suppressed disposition before rate-budget reservation or formatting. Different trailing tokens, non-reset-shaped packets, missing routes, and remote endpoint mismatches remain governed by the existing retained-route, token-unavailable, and formatting branches.",
   "alternatives_considered": [
     "Suppress every short-header packet with Stateless Reset shape. Rejected because ordinary short-header packets can share the same structural shape and only a matching retained token makes this a known reset trigger.",
     "Rely only on response length loop prevention. Rejected because the helper has enough retained token state to suppress a known reset-to-reset response before formatting.",

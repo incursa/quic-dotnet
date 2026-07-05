@@ -8,10 +8,10 @@ using System.Net.Sockets;
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="manual trace slice">
-///   <workbench-requirement requirementId="REQ-QUIC-RFC9001-S6P6-0008">After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.</workbench-requirement>
+///   <workbench-requirement requirementId="RFC9001-S6-6-P4-S4-R03">After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.</workbench-requirement>
 /// </workbench-requirements>
-[Requirement("REQ-QUIC-RFC9001-S6P6-0008")]
-public sealed class REQ_QUIC_RFC9001_S6P6_0008
+[Requirement("RFC9001-S6-6-P4-S4-R03")]
+public sealed class RFC9001_S6_6_P4_S4_R03
 {
     [Fact]
     [CoverageType(RequirementCoverageType.Positive)]

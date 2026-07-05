@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T19:41:54.1240117-06:00",
+  "generated_at": "2026-07-04T19:49:37.4101186-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-04T19:41:54.1211311-06:00",
+    "generated_at": "2026-07-04T19:49:37.4071026-06:00",
     "total_requirements": 2677,
     "by_state": {
       "covered_but_proof_too_broad": 4,
@@ -201582,137 +201582,6 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6P1-0006",
-      "artifact_id": "SPEC-QUIC-RFC9001",
-      "rfc": "RFC9001",
-      "section_prefix": "S6P1",
-      "title": "Update receive keys when initiating a key update",
-      "statement": "The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "optional",
-        "edge": "optional",
-        "fuzz": "deferred"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 4,
-        "focused": 4,
-        "broad": 0,
-        "by_kind": {
-          "positive": 4,
-          "negative": 0,
-          "edge": 0,
-          "fuzz": 0,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P1-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P1_0006",
-          "member": "REQ_QUIC_RFC9001_S6P1_0006.ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "method": "ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "line": 15,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P1-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P1-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P1_0006",
-          "member": "REQ_QUIC_RFC9001_S6P1_0006.ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "method": "ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "line": 15,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P1-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P1-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P1_0006",
-          "member": "REQ_QUIC_RFC9001_S6P1_0006.ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "method": "ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "line": 24,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P1-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P1-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P1_0006",
-          "member": "REQ_QUIC_RFC9001_S6P1_0006.ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "method": "ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
-          "line": 24,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P1-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9001-S6P1-0007",
       "artifact_id": "SPEC-QUIC-RFC9001",
       "rfc": "RFC9001",
@@ -206390,677 +206259,6 @@
       ]
     },
     {
-      "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-      "artifact_id": "SPEC-QUIC-RFC9001",
-      "rfc": "RFC9001",
-      "section_prefix": "S6P6",
-      "title": "Gate retained-route stateless-reset responses",
-      "statement": "After AEAD-limit terminal discard, an endpoint MUST emit a stateless reset for a later received packet only when the packet resolves to a retained route linked to a remembered stateless-reset token for the same remote address and port and the loop-prevention and emission-rate gates permit the response; otherwise it suppresses the response.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "required"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 14,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 28,
-        "focused": 28,
-        "broad": 0,
-        "by_kind": {
-          "positive": 2,
-          "negative": 22,
-          "edge": 0,
-          "fuzz": 4,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "method": "EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "line": 19,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "method": "EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
-          "line": 19,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 98,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 98,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 47,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "method": "EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "line": 150,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "method": "EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "line": 150,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "method": "EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "line": 124,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "method": "EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "line": 124,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 343,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 343,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 290,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 290,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "method": "EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "line": 396,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "method": "EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
-          "line": 396,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "line": 173,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
-          "line": 173,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "line": 246,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
-          "line": 246,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 551,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
-          "line": 551,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 446,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
-          "line": 446,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "method": "ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "line": 501,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0006",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0006.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0006",
-          "member": "REQ_QUIC_RFC9001_S6P6_0006.ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "method": "ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
-          "line": 501,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0006"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
       "requirement_id": "REQ-QUIC-RFC9001-S6P6-0007",
       "artifact_id": "SPEC-QUIC-RFC9001",
       "rfc": "RFC9001",
@@ -207275,317 +206473,6 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9001-S6P6-0007"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        }
-      ]
-    },
-    {
-      "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-      "artifact_id": "SPEC-QUIC-RFC9001",
-      "rfc": "RFC9001",
-      "section_prefix": "S6P6",
-      "title": "Suppress reset responses to known reset triggers",
-      "statement": "After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.",
-      "coverage_expectations": {
-        "positive": "required",
-        "negative": "required",
-        "edge": "optional",
-        "fuzz": "required"
-      },
-      "state": "trace_clean",
-      "primary_issue": "none",
-      "work_queue_tags": [
-        "clean"
-      ],
-      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 6,
-      "spec_test_refs": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint"
-      ],
-      "unresolved_test_refs": [],
-      "evidence_summary": {
-        "total": 12,
-        "focused": 12,
-        "broad": 0,
-        "by_kind": {
-          "positive": 6,
-          "negative": 4,
-          "edge": 0,
-          "fuzz": 2,
-          "benchmark": 0,
-          "unspecified": 0
-        },
-        "missing_required_kinds": []
-      },
-      "gap_blockers": [],
-      "evidence": [
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "method": "EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "method": "EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
-          "line": 73,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "method": "EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "line": 101,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "method": "EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "line": 101,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "method": "EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "line": 45,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "method": "EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
-          "line": 45,
-          "kinds": [
-            "negative"
-          ],
-          "categories": [
-            "Negative"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "method": "EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "line": 19,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "method": "EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
-          "line": 19,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
-          "method": "FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
-          "line": 200,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
-          "method": "FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
-          "line": 200,
-          "kinds": [
-            "fuzz"
-          ],
-          "categories": [
-            "Fuzz"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "requirement_attribute",
-          "x_test_ref": "",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "method": "ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "line": 150,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
-          ],
-          "requirement_tagged": true,
-          "class_level_only": true
-        },
-        {
-          "requirement_id": "REQ-QUIC-RFC9001-S6P6-0008",
-          "source": "spec_xref",
-          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P6-0008.cs",
-          "class": "REQ_QUIC_RFC9001_S6P6_0008",
-          "member": "REQ_QUIC_RFC9001_S6P6_0008.ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "method": "ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
-          "line": 150,
-          "kinds": [
-            "positive"
-          ],
-          "categories": [
-            "Positive"
-          ],
-          "strength": "focused",
-          "associated_requirement_ids": [
-            "REQ-QUIC-RFC9001-S6P6-0008"
           ],
           "requirement_tagged": true,
           "class_level_only": true
@@ -417887,6 +416774,137 @@
       ]
     },
     {
+      "requirement_id": "RFC9001-S6-1-P7-S1-R01",
+      "artifact_id": "SPEC-QUIC-RFC9001",
+      "rfc": "RFC9001",
+      "section_prefix": "unsectioned",
+      "title": "Update receive keys when initiating a key update",
+      "statement": "The endpoint that initiates a key update MUST also update the keys it uses for receiving packets.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "optional",
+        "edge": "optional",
+        "fuzz": "deferred"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 4,
+        "focused": 4,
+        "broad": 0,
+        "by_kind": {
+          "positive": 4,
+          "negative": 0,
+          "edge": 0,
+          "fuzz": 0,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9001-S6-1-P7-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs",
+          "class": "RFC9001_S6_1_P7_S1_R01",
+          "member": "RFC9001_S6_1_P7_S1_R01.ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "method": "ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-1-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-1-P7-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs",
+          "class": "RFC9001_S6_1_P7_S1_R01",
+          "member": "RFC9001_S6_1_P7_S1_R01.ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "method": "ActiveClientRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "line": 15,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-1-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-1-P7-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs",
+          "class": "RFC9001_S6_1_P7_S1_R01",
+          "member": "RFC9001_S6_1_P7_S1_R01.ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "method": "ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "line": 24,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-1-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-1-P7-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs::ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-1-P7-S1-R01.cs",
+          "class": "RFC9001_S6_1_P7_S1_R01",
+          "member": "RFC9001_S6_1_P7_S1_R01.ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "method": "ActiveServerRuntimeInstallsSuccessorReceiveKeysWhenItInitiatesAKeyUpdate",
+          "line": 24,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-1-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
       "requirement_id": "RFC9001-S6-2-P2-S3-R01",
       "artifact_id": "SPEC-QUIC-RFC9001",
       "rfc": "RFC9001",
@@ -422459,6 +421477,988 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "RFC9001-S6-6-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+      "artifact_id": "SPEC-QUIC-RFC9001",
+      "rfc": "RFC9001",
+      "section_prefix": "S10P3P1",
+      "title": "Gate retained-route stateless-reset responses",
+      "statement": "After AEAD-limit terminal discard, an endpoint MUST emit a stateless reset for a later received packet only when the packet resolves to a retained route linked to a remembered stateless-reset token for the same remote address and port and the loop-prevention and emission-rate gates permit the response; otherwise it suppresses the response.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 14,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 28,
+        "focused": 28,
+        "broad": 0,
+        "by_kind": {
+          "positive": 2,
+          "negative": 22,
+          "edge": 0,
+          "fuzz": 4,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "method": "EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "method": "EndpointAutomaticallyCreatesStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortMatches",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 98,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 98,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 47,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "method": "EndpointDoesNotCreateStatelessResetForRetainedRouteAfterAeadLimitDiscardWithoutLoopPreventionState",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "method": "EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "line": 150,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "method": "EndpointDoesNotCreateStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "line": 150,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "method": "EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "line": 124,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "method": "EndpointDoesNotCreateStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "line": 124,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 343,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 343,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 290,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "EndpointHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 290,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "method": "EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "line": 396,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "method": "EndpointHostDoesNotSendStatelessResetForUnknownRetainedRouteAfterAeadLimitDiscard",
+          "line": 396,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "line": 173,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_RequiresAddressAndPortMatchLoopBudgetAndRateBudget",
+          "line": 173,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "line": 246,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "method": "FuzzEndpointRetainedRouteStatelessResetResponse_SuppressesUnknownRoutesAndMissingTokens",
+          "line": 246,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 551,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemoteAddressDiffers",
+          "line": 551,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 446,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "method": "ListenerHostDoesNotSendStatelessResetForRetainedRouteAfterAeadLimitDiscardWhenRemotePortDiffers",
+          "line": 446,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "method": "ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "line": 501,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R02",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs::ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R02.cs",
+          "class": "RFC9001_S6_6_P4_S4_R02",
+          "member": "RFC9001_S6_6_P4_S4_R02.ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "method": "ListenerHostDoesNotSendStatelessResetForRouteWithoutRememberedTokenAfterAeadLimitDiscard",
+          "line": 501,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        }
+      ]
+    },
+    {
+      "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+      "artifact_id": "SPEC-QUIC-RFC9001",
+      "rfc": "RFC9001",
+      "section_prefix": "S10P3P3",
+      "title": "Suppress reset responses to known reset triggers",
+      "statement": "After AEAD-limit terminal discard, when a later retained-route trigger has Stateless Reset shape and its trailing token matches the retained token for the same remote address and port, the endpoint MUST suppress stateless-reset response emission rather than emitting another stateless reset.",
+      "coverage_expectations": {
+        "positive": "required",
+        "negative": "required",
+        "edge": "optional",
+        "fuzz": "required"
+      },
+      "state": "trace_clean",
+      "primary_issue": "none",
+      "work_queue_tags": [
+        "clean"
+      ],
+      "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
+      "spec_test_ref_count": 6,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint"
+      ],
+      "unresolved_test_refs": [],
+      "evidence_summary": {
+        "total": 12,
+        "focused": 12,
+        "broad": 0,
+        "by_kind": {
+          "positive": 6,
+          "negative": 4,
+          "edge": 0,
+          "fuzz": 2,
+          "benchmark": 0,
+          "unspecified": 0
+        },
+        "missing_required_kinds": []
+      },
+      "gap_blockers": [],
+      "evidence": [
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "method": "EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "method": "EndpointDoesNotTreatNonResetShapedRetainedRoutePacketsAsKnownResets",
+          "line": 73,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "method": "EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "line": 101,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "method": "EndpointHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "line": 101,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "method": "EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "method": "EndpointStillEmitsRetainedRouteResponseWhenTriggerCarriesADifferentToken",
+          "line": 45,
+          "kinds": [
+            "negative"
+          ],
+          "categories": [
+            "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "method": "EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "method": "EndpointSuppressesRetainedRouteResponseWhenTriggerCarriesTheRetainedToken",
+          "line": 19,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
+          "method": "FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
+          "method": "FuzzEndpointRetainedRouteKnownResetSuppression_RequiresMatchingTokenRouteAndRemoteEndpoint",
+          "line": 200,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "method": "ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "line": 150,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9001-S6-6-P4-S4-R03",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs::ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-6-P4-S4-R03.cs",
+          "class": "RFC9001_S6_6_P4_S4_R03",
+          "member": "RFC9001_S6_6_P4_S4_R03.ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "method": "ListenerHostDoesNotSendAResetInResponseToAKnownResetTrigger",
+          "line": 150,
+          "kinds": [
+            "positive"
+          ],
+          "categories": [
+            "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9001-S6-6-P4-S4-R03"
           ],
           "requirement_tagged": true,
           "class_level_only": true
