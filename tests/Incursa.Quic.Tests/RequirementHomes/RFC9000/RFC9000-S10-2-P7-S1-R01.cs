@@ -54,6 +54,43 @@ public sealed class REQ_QUIC_RFC9000_0570
         Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-P7-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TerminalLifetimeExpiryDiscardsConnectionStateAcrossSampledTerminalStates()
+    {
+        long[] observedTicks = [1, 11, 37, 101];
+        bool[] terminalTransitions = [true, false];
+
+        foreach (long nowTicks in observedTicks)
+        {
+            foreach (bool useLocalCloseRequest in terminalTransitions)
+            {
+                QuicConnectionRuntime runtime = CreateRuntime();
+                ApplyTerminalTransition(runtime, useLocalCloseRequest, nowTicks);
+
+                QuicConnectionTimerKind timerKind = useLocalCloseRequest
+                    ? QuicConnectionTimerKind.CloseLifetime
+                    : QuicConnectionTimerKind.DrainLifetime;
+                long dueTicks = runtime.TimerState.GetDueTicks(timerKind)!.Value;
+                ulong generation = runtime.TimerState.GetGeneration(timerKind);
+
+                QuicConnectionTransitionResult result = runtime.Transition(
+                    new QuicConnectionTimerExpiredEvent(
+                        ObservedAtTicks: dueTicks,
+                        timerKind,
+                        generation),
+                    nowTicks: dueTicks);
+
+                Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+                Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+                Assert.False(runtime.CanSendOrdinaryPackets);
+                Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
+            }
+        }
+    }
+
     private static QuicConnectionTransitionResult ApplyTerminalTransition(
         QuicConnectionRuntime runtime,
         bool useLocalCloseRequest,
