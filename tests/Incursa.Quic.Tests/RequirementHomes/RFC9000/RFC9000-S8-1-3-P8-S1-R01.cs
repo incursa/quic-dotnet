@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Incursa LLC.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Net;
+
 namespace Incursa.Quic.Tests;
 
 /// <workbench-requirements generated="true" source="workbench quality sync">
@@ -53,5 +55,55 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0013
             QuicAddressValidationTokenSource.NewToken,
             out QuicClientAddressValidationToken? token));
         Assert.Null(token);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewToken_IsConsumedOnlyOnceAcrossConnectionAttemptVariants()
+    {
+        QuicClientAddressValidationToken token = QuicS8P1P3TokenLifecycleTestSupport.CreateNewTokenFor();
+
+        AssertConsume(
+            token,
+            QuicS8P1P3TokenLifecycleTestSupport.OtherEndPoint,
+            QuicVersionNegotiation.Version1,
+            expectedSuccess: false,
+            expectedToken: []);
+        AssertConsume(
+            token,
+            QuicS8P1P3TokenLifecycleTestSupport.ApplicableEndPoint,
+            QuicVersionNegotiation.Version1 + 1,
+            expectedSuccess: false,
+            expectedToken: []);
+        AssertConsume(
+            token,
+            QuicS8P1P3TokenLifecycleTestSupport.ApplicableEndPoint,
+            QuicVersionNegotiation.Version1,
+            expectedSuccess: true,
+            QuicS8P1P3TokenLifecycleTestSupport.NewToken);
+        AssertConsume(
+            token,
+            QuicS8P1P3TokenLifecycleTestSupport.OtherEndPoint,
+            QuicVersionNegotiation.Version1,
+            expectedSuccess: false,
+            expectedToken: []);
+        AssertConsume(
+            token,
+            QuicS8P1P3TokenLifecycleTestSupport.ApplicableEndPoint,
+            QuicVersionNegotiation.Version1,
+            expectedSuccess: false,
+            expectedToken: []);
+    }
+
+    private static void AssertConsume(
+        QuicClientAddressValidationToken token,
+        IPEndPoint endpoint,
+        uint version,
+        bool expectedSuccess,
+        ReadOnlySpan<byte> expectedToken)
+    {
+        Assert.Equal(expectedSuccess, token.TryConsume(endpoint, version, out ReadOnlyMemory<byte> consumedToken));
+        Assert.True(consumedToken.Span.SequenceEqual(expectedToken));
     }
 }
