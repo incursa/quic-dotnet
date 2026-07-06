@@ -137,6 +137,39 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0002
         AssertOpenedInitialPacketNumber(protectedPacket, serverProtection, packetNumber);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryBuildProtectedHandshakePackets_IncludeFullPacketNumberBeforeAcknowledgment()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P1TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P1TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake,
+            out QuicTlsPacketProtectionMaterial handshakeMaterial));
+
+        foreach (ulong packetNumberToSend in new[]
+        {
+            0UL,
+            1UL,
+            255UL,
+            256UL,
+            65_535UL,
+            65_536UL,
+            uint.MaxValue,
+        })
+        {
+            AssertInitialPacketCarriesFourBytePacketNumber(clientProtection, serverProtection, packetNumberToSend);
+            AssertHandshakePacketCarriesFourBytePacketNumber(handshakeMaterial, packetNumberToSend);
+        }
+    }
+
     private static void AssertOpenedInitialPacketNumber(
         ReadOnlySpan<byte> protectedPacket,
         QuicInitialPacketProtection protection,
@@ -154,6 +187,26 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0002
             openedPacket.AsSpan(payloadOffset - 4, 4)));
     }
 
+    private static void AssertInitialPacketCarriesFourBytePacketNumber(
+        QuicInitialPacketProtection clientProtection,
+        QuicInitialPacketProtection serverProtection,
+        ulong packetNumberToSend)
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateInitialCoordinator();
+        QuicS17P1TestSupport.SetNextHandshakePacketNumber(coordinator, packetNumberToSend);
+        byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x70, 20);
+
+        Assert.True(coordinator.TryBuildProtectedInitialPacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            clientProtection,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal(packetNumberToSend, packetNumber);
+        AssertOpenedInitialPacketNumber(protectedPacket, serverProtection, packetNumberToSend);
+    }
+
     private static void AssertOpenedHandshakePacketNumber(
         ReadOnlySpan<byte> protectedPacket,
         QuicTlsPacketProtectionMaterial material,
@@ -169,5 +222,24 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0002
             out _));
         Assert.Equal(expectedPacketNumber, QuicS17P1TestSupport.ReadPacketNumber(
             openedPacket.AsSpan(payloadOffset - 4, 4)));
+    }
+
+    private static void AssertHandshakePacketCarriesFourBytePacketNumber(
+        QuicTlsPacketProtectionMaterial handshakeMaterial,
+        ulong packetNumberToSend)
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateHandshakeCoordinator();
+        QuicS17P1TestSupport.SetNextHandshakePacketNumber(coordinator, packetNumberToSend);
+        byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(0x80, 20);
+
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            cryptoPayload,
+            cryptoPayloadOffset: 0,
+            handshakeMaterial,
+            out ulong packetNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal(packetNumberToSend, packetNumber);
+        AssertOpenedHandshakePacketNumber(protectedPacket, handshakeMaterial, packetNumberToSend);
     }
 }
