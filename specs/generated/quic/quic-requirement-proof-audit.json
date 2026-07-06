@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:09:02.0997561-06:00",
+    "generated_at": "2026-07-06T17:12:31.5888748-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 892,
-      "full_executable_proof": 1785
+      "deferred_proof_not_executed": 886,
+      "full_executable_proof": 1791
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 13,
-          "full_executable_proof": 213
+          "deferred_proof_not_executed": 7,
+          "full_executable_proof": 219
         }
       },
       {
@@ -87746,9 +87746,9 @@
       "rfc": "RFC9002",
       "title": "Hold the congestion window steady during recovery",
       "statement": "During a recovery period, the congestion window MUST NOT change in response to new losses or increases in the ECN-CE count.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87758,18 +87758,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P4-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P4-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -87782,9 +87782,9 @@
       "rfc": "RFC9002",
       "title": "Leave recovery when a recovery-period packet is acknowledged",
       "statement": "A recovery period MUST end and the sender enter congestion avoidance when a packet sent during the recovery period is acknowledged.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -87794,18 +87794,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P5-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P5-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-2-P5-S1-R01.cs::TryRegisterAcknowledgedPacket_EntersCongestionAvoidanceWhenARecoveryPeriodPacketIsAcknowledged"
@@ -87815,9 +87815,9 @@
       "rfc": "RFC9002",
       "title": "Limit congestion-avoidance growth to one datagram per acknowledged window",
       "statement": "A sender in congestion avoidance MUST limit the increase to the congestion window to at most one maximum datagram size for each congestion window that is acknowledged.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87829,18 +87829,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-3-P2-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-3-P2-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -87853,9 +87853,9 @@
       "rfc": "RFC9002",
       "title": "Ignore undecryptable packet loss before keys are available",
       "statement": "Endpoints MAY ignore the loss of Handshake, 0-RTT, and 1-RTT packets that might have arrived before the peer had packet protection keys to process those packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -87866,16 +87866,16 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S3-R01.cs"
       ],
       "spec_test_ref_count": 1,
@@ -87886,9 +87886,9 @@
       "rfc": "RFC9002",
       "title": "Do not ignore later packet loss",
       "statement": "Endpoints MUST NOT ignore the loss of packets that were sent after the earliest acknowledged packet in a given packet number space.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87900,17 +87900,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S3-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-4-P1-S4-R01.cs"
       ],
@@ -87925,9 +87925,9 @@
       "rfc": "RFC9002",
       "title": "Do not block probe packets with congestion control",
       "statement": "Probe packets MUST NOT be blocked by the congestion controller.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -87938,18 +87938,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-3-S7-5-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S7-5-P1-S1-R01.cs"
       ],
       "spec_test_ref_count": 2,
