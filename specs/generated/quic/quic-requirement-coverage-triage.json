@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T05:16:49.4263885-06:00",
+  "generated_at": "2026-07-06T05:19:50.6695278-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T05:16:49.4226565-06:00",
+    "generated_at": "2026-07-06T05:19:50.6661400-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -412216,14 +412216,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 6,
+        "total": 10,
+        "focused": 7,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -412356,6 +412356,28 @@
             "REQ-QUIC-RFC9000-S19P14-0005",
             "REQ-QUIC-RFC9000-S19P14-0006",
             "REQ-QUIC-RFC9000-S19P14-0007",
+            "RFC9000-S4-6-P6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S4-6-P6-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0203",
+          "member": "REQ_QUIC_RFC9000_0203.Fuzz_TryOpenLocalStream_ReturnsStreamsBlockedFrameWhenPeerLimitsAreExhausted",
+          "method": "Fuzz_TryOpenLocalStream_ReturnsStreamsBlockedFrameWhenPeerLimitsAreExhausted",
+          "line": 53,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
             "RFC9000-S4-6-P6-R01"
           ],
           "requirement_tagged": true,

@@ -45,4 +45,48 @@ public sealed class REQ_QUIC_RFC9000_0203
         Assert.True(blockedFrame.IsBidirectional);
         Assert.Equal(1UL, blockedFrame.MaximumStreams);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-6-P6-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryOpenLocalStream_ReturnsStreamsBlockedFrameWhenPeerLimitsAreExhausted()
+    {
+        foreach ((bool bidirectional, ulong peerStreamLimit) in new[]
+        {
+            (true, 0UL),
+            (true, 1UL),
+            (true, 2UL),
+            (true, 5UL),
+            (false, 0UL),
+            (false, 1UL),
+            (false, 2UL),
+            (false, 5UL),
+        })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerBidirectionalStreamLimit: bidirectional ? peerStreamLimit : 8UL,
+                peerUnidirectionalStreamLimit: bidirectional ? 8UL : peerStreamLimit);
+
+            for (ulong streamIndex = 0; streamIndex < peerStreamLimit; streamIndex++)
+            {
+                Assert.True(state.TryOpenLocalStream(
+                    bidirectional,
+                    out QuicStreamId openedStreamId,
+                    out QuicStreamsBlockedFrame openedBlockedFrame));
+
+                Assert.Equal(default, openedBlockedFrame);
+                Assert.Equal(bidirectional, openedStreamId.IsBidirectional);
+            }
+
+            Assert.False(state.TryOpenLocalStream(
+                bidirectional,
+                out QuicStreamId blockedStreamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+
+            Assert.Equal(default, blockedStreamId);
+            Assert.Equal(bidirectional, blockedFrame.IsBidirectional);
+            Assert.Equal(peerStreamLimit, blockedFrame.MaximumStreams);
+        }
+    }
 }
