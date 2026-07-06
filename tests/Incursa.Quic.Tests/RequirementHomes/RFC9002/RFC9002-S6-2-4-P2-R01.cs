@@ -687,6 +687,172 @@ public sealed class REQ_QUIC_RFC9002_S6P2P4_0004
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_RecoveryProbeSequence_CoalescesOtherSpacesAcrossRepresentativePayloads()
+    {
+        foreach ((byte handshakeSeed, int handshakeLength, string requestText) in new (byte, int, string)[]
+        {
+            (0x41, 8, "GET /fuzz-cross-space-a\r\n"),
+            (0x52, 16, "GET /fuzz-cross-space-bb\r\n"),
+            (0x63, 24, "GET /fuzz-cross-space-ccc\r\n"),
+        })
+        {
+            using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            List<QuicConnectionEffect> outboundEffects = [];
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Client,
+                ApplicationPacketConnectionId,
+                out QuicInitialPacketProtection initialPacketProtection));
+
+            QuicHandshakeFlowCoordinator cryptoProbeCoordinator = new(
+                ApplicationPacketConnectionId,
+                ApplicationPacketSourceConnectionId);
+            Assert.True(cryptoProbeCoordinator.TrySetHandshakeDestinationConnectionId(ApplicationPacketConnectionId));
+
+            byte[] initialCrypto = CreateSequentialBytes(0x30, 16);
+            Assert.True(cryptoProbeCoordinator.TryBuildProtectedInitialPacket(
+                initialCrypto,
+                0,
+                initialPacketProtection,
+                out ulong initialPacketNumber,
+                out byte[] initialPacketBytes));
+
+            Assert.True(runtime.TlsState.TryGetHandshakeProtectPacketProtectionMaterial(out QuicTlsPacketProtectionMaterial handshakeMaterial));
+            byte[] handshakeCrypto = CreateSequentialBytes(handshakeSeed, handshakeLength);
+            Assert.True(cryptoProbeCoordinator.TryBuildProtectedHandshakePacket(
+                handshakeCrypto,
+                0,
+                handshakeMaterial,
+                out ulong handshakePacketNumber,
+                out byte[] handshakePacketBytes));
+
+            ulong constrainedMaximumDatagramSizeBytes = (ulong)initialPacketBytes.Length;
+            Assert.True(runtime.TrySetActivePathMaximumDatagramSize(constrainedMaximumDatagramSizeBytes));
+            Assert.Equal(
+                constrainedMaximumDatagramSizeBytes,
+                runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+
+            SeedOutstandingRecoveryPacket(
+                runtime,
+                QuicPacketNumberSpace.Handshake,
+                handshakePacketNumber,
+                handshakePacketBytes,
+                sentAtMicros: 1,
+                QuicTlsEncryptionLevel.Handshake);
+            SeedOutstandingRecoveryPacket(
+                runtime,
+                QuicPacketNumberSpace.Initial,
+                initialPacketNumber,
+                initialPacketBytes,
+                sentAtMicros: 2,
+                QuicTlsEncryptionLevel.Initial);
+
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 9,
+                    runtime.ActivePath.Value.Identity,
+                    new byte[(int)constrainedMaximumDatagramSizeBytes]),
+                nowTicks: 9).StateChanged);
+            outboundEffects.Clear();
+
+            QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            outboundEffects.Clear();
+
+            byte[] requestPayload = Encoding.ASCII.GetBytes(requestText);
+            await stream.WriteAsync(requestPayload, 0, requestPayload.Length);
+            outboundEffects.Clear();
+
+            await stream.CompleteWritesAsync().AsTask();
+            QuicConnectionSendDatagramEffect requestEffect = Assert.Single(
+                outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+            Assert.True(
+                initialPacketBytes.Length + handshakePacketBytes.Length
+                    > (long)constrainedMaximumDatagramSizeBytes);
+            Assert.True(
+                requestEffect.Datagram.Length + handshakePacketBytes.Length
+                    <= (long)constrainedMaximumDatagramSizeBytes);
+
+            List<QuicConnectionEffect>? firstProbeEffects = [];
+            Assert.True(InvokeTrySendRecoveryProbeDatagram(
+                runtime,
+                QuicPacketNumberSpace.Handshake,
+                nowTicks: 10,
+                ref firstProbeEffects));
+            QuicConnectionSendDatagramEffect handshakeProbeEffect = Assert.Single(
+                firstProbeEffects!.OfType<QuicConnectionSendDatagramEffect>());
+            Assert.True(QuicPacketParser.TryGetPacketLength(
+                handshakeProbeEffect.Datagram.Span,
+                out int handshakeProbePacketLength));
+            ReadOnlyMemory<byte> handshakeProbePacket = handshakeProbeEffect.Datagram[..handshakeProbePacketLength];
+
+            Assert.True(cryptoProbeCoordinator.TryOpenHandshakePacket(
+                handshakeProbePacket.Span,
+                handshakeMaterial,
+                out byte[] openedHandshakePacket,
+                out int handshakePayloadOffset,
+                out int handshakePayloadLength));
+            Assert.True(TryParseCryptoFrameAfterControlFrames(
+                openedHandshakePacket.AsSpan(handshakePayloadOffset, handshakePayloadLength),
+                out QuicCryptoFrame handshakeProbeFrame,
+                out _));
+            Assert.Equal(0UL, handshakeProbeFrame.Offset);
+            Assert.True(handshakeCrypto.AsSpan().SequenceEqual(handshakeProbeFrame.CryptoData));
+
+            List<QuicConnectionEffect>? remainingProbeEffects = [];
+            Assert.True(InvokeTrySendAdditionalRecoveryProbeDatagram(
+                runtime,
+                QuicPacketNumberSpace.Handshake,
+                QuicPacketNumberSpace.Initial,
+                QuicPacketNumberSpace.ApplicationData,
+                nowTicks: 11,
+                initialAndHandshakeAlreadyCoalesced: false,
+                ref remainingProbeEffects));
+            QuicConnectionSendDatagramEffect remainingProbeEffect = Assert.Single(
+                remainingProbeEffects!.OfType<QuicConnectionSendDatagramEffect>());
+            (ReadOnlyMemory<byte> handshakeRepairPacket, ReadOnlyMemory<byte> applicationRepairPacket) =
+                SplitCoalescedHandshakeAndApplicationProbeDatagram(remainingProbeEffect);
+
+            Assert.True(cryptoProbeCoordinator.TryOpenHandshakePacket(
+                handshakeRepairPacket.Span,
+                handshakeMaterial,
+                out byte[] openedHandshakeRepairPacket,
+                out int handshakeRepairPayloadOffset,
+                out int handshakeRepairPayloadLength));
+            Assert.True(TryParseCryptoFrameAfterControlFrames(
+                openedHandshakeRepairPacket.AsSpan(handshakeRepairPayloadOffset, handshakeRepairPayloadLength),
+                out QuicCryptoFrame handshakeRepairFrame,
+                out _));
+            Assert.Equal(0UL, handshakeRepairFrame.Offset);
+            Assert.True(handshakeCrypto.AsSpan().SequenceEqual(handshakeRepairFrame.CryptoData));
+            Assert.True(
+                TryOpenSingleStreamFrame(runtime, applicationRepairPacket, out QuicStreamFrame applicationProbeFrame, out _));
+            Assert.Equal(0UL, applicationProbeFrame.StreamId.Value);
+            Assert.Equal(0UL, applicationProbeFrame.Offset);
+            Assert.True(applicationProbeFrame.StreamData.SequenceEqual(requestPayload));
+            Assert.Contains(
+                runtime.SendRuntime.SentPackets.Values,
+                packet => packet.PacketNumberSpace == QuicPacketNumberSpace.Handshake
+                    && packet.ProbePacket
+                    && packet.PacketBytes.Span.SequenceEqual(handshakeRepairPacket.Span));
+            Assert.Contains(
+                runtime.SendRuntime.SentPackets.Values,
+                packet => packet.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                    && packet.ProbePacket
+                    && packet.PacketBytes.Span.SequenceEqual(applicationRepairPacket.Span));
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void HandleRecoveryTimerExpired_CoalescesInitialAndHandshakeProbesWhenTheObservedPathCanCarryBoth()
