@@ -45,4 +45,47 @@ public sealed class REQ_QUIC_RFC9000_S10P1P2_0002
         Assert.Equal(120UL, state.IdleTimeoutDeadlineMicros);
         Assert.True(state.HasAckElicitingPacketBeenSentSinceLastPeerPacket);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0010")]
+    public void Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity()
+    {
+        foreach ((ulong timeoutMicros, ulong peerPacketAt, ulong firstLocalSendAt, ulong secondLocalSendAt) in new[]
+        {
+            (20UL, 5UL, 8UL, 10UL),
+            (100UL, 40UL, 60UL, 70UL),
+            (1_000UL, 250UL, 750UL, 900UL),
+            (ulong.MaxValue - 10UL, 4UL, 8UL, 9UL),
+        })
+        {
+            QuicIdleTimeoutState state = new(timeoutMicros);
+
+            state.RecordPeerPacketProcessed(peerPacketAt);
+            Assert.Equal(peerPacketAt, state.IdleTimerRestartAtMicros);
+            Assert.False(state.HasAckElicitingPacketBeenSentSinceLastPeerPacket);
+
+            state.RecordAckElicitingPacketSent(firstLocalSendAt);
+            ulong expectedDeferredDeadline = SaturatingAdd(firstLocalSendAt, timeoutMicros);
+
+            Assert.Equal(firstLocalSendAt, state.IdleTimerRestartAtMicros);
+            Assert.Equal(expectedDeferredDeadline, state.IdleTimeoutDeadlineMicros);
+            Assert.True(state.HasAckElicitingPacketBeenSentSinceLastPeerPacket);
+            Assert.False(state.HasTimedOut(expectedDeferredDeadline));
+
+            state.RecordAckElicitingPacketSent(secondLocalSendAt);
+
+            Assert.Equal(firstLocalSendAt, state.IdleTimerRestartAtMicros);
+            Assert.Equal(expectedDeferredDeadline, state.IdleTimeoutDeadlineMicros);
+            Assert.True(state.HasAckElicitingPacketBeenSentSinceLastPeerPacket);
+        }
+    }
+
+    private static ulong SaturatingAdd(ulong left, ulong right)
+    {
+        return ulong.MaxValue - left < right
+            ? ulong.MaxValue
+            : left + right;
+    }
 }

@@ -91,4 +91,46 @@ public sealed class REQ_QUIC_RFC9000_S5P1_0010
         Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, result.Disposition);
         Assert.Equal(handle, result.Handle);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("REQ-QUIC-RFC9000-S5P1-0011")]
+    [Requirement("REQ-QUIC-RFC9000-S5P2P3-0001")]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength()
+    {
+        for (int length = 1; length <= 8; length++)
+        {
+            using QuicConnectionRuntimeEndpoint endpoint = new(1);
+            using QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle handle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity registeredPath = QuicS5P2P2ServerPreAcceptanceTestSupport.CreatePathIdentity(
+                remoteAddress: $"203.0.113.{60 + length}",
+                localAddress: $"192.0.2.{60 + length}",
+                remotePort: 4440 + length,
+                localPort: 4433);
+            byte[] destinationConnectionId = Enumerable.Range(0, length)
+                .Select(index => (byte)(0x40 + length + index))
+                .ToArray();
+
+            Assert.True(endpoint.TryRegisterConnection(handle, runtime));
+            Assert.True(endpoint.TryUpdateEndpointBinding(handle, registeredPath));
+            Assert.True(endpoint.TryRegisterConnectionId(handle, destinationConnectionId));
+
+            QuicConnectionIngressResult routed = endpoint.ReceiveDatagram(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.BuildShortHeaderDatagram(destinationConnectionId),
+                registeredPath);
+
+            Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, routed.Disposition);
+            Assert.Equal(handle, routed.Handle);
+
+            byte[] truncatedConnectionId = destinationConnectionId[..^1];
+            QuicConnectionIngressResult unroutable = endpoint.ReceiveDatagram(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.BuildShortHeaderDatagram(truncatedConnectionId),
+                registeredPath);
+
+            Assert.Equal(QuicConnectionIngressDisposition.Unroutable, unroutable.Disposition);
+            Assert.Null(unroutable.Handle);
+        }
+    }
 }

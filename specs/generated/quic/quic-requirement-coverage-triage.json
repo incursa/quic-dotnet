@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T12:43:26.0327938-06:00",
+  "generated_at": "2026-07-06T12:51:12.8442112-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T12:43:26.0295671-06:00",
+    "generated_at": "2026-07-06T12:51:12.8408077-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -19029,22 +19029,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 1,
+          "fuzz": 3,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -19052,6 +19053,54 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0348",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+          "class": "REQ_QUIC_RFC9000_0348",
+          "member": "REQ_QUIC_RFC9000_0348.Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "method": "Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0348",
+            "REQ-QUIC-RFC9000-S5-0004",
+            "REQ-QUIC-RFC9000-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-0348",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+          "class": "REQ_QUIC_RFC9000_0348",
+          "member": "REQ_QUIC_RFC9000_0348.Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "method": "Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0348",
+            "REQ-QUIC-RFC9000-S5-0004",
+            "REQ-QUIC-RFC9000-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-0348",
           "source": "requirement_attribute",
@@ -53409,14 +53458,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 1,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -53424,6 +53473,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S10P1P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S10P1P2_0002.Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "method": "Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "line": 53,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P1P2-0002",
+            "REQ-QUIC-RFC9000-S5P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S10P1P2-0002",
           "source": "requirement_attribute",
@@ -192372,14 +192444,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -192387,6 +192459,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5-0004",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+          "class": "REQ_QUIC_RFC9000_0348",
+          "member": "REQ_QUIC_RFC9000_0348.Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "method": "Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0348",
+            "REQ-QUIC-RFC9000-S5-0004",
+            "REQ-QUIC-RFC9000-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S5-0004",
           "source": "requirement_attribute",
@@ -192560,14 +192656,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -192575,6 +192671,30 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5-0005",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs",
+          "class": "REQ_QUIC_RFC9000_0348",
+          "member": "REQ_QUIC_RFC9000_0348.Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "method": "Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0348",
+            "REQ-QUIC-RFC9000-S5-0004",
+            "REQ-QUIC-RFC9000-S5-0005"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S5-0005",
           "source": "requirement_attribute",
@@ -194169,22 +194289,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointLeavesShortHeaderPacketsUnroutableWhenTheDestinationConnectionIdLengthDoesNotMatchAnyRegisteredRoute",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesShortHeaderPacketsUsingTheRegisteredDestinationConnectionIdLength",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesTheShortestRegisteredShortHeaderDestinationConnectionIdLength"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesTheShortestRegisteredShortHeaderDestinationConnectionIdLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 1,
+          "fuzz": 3,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -194326,6 +194447,54 @@
           ],
           "categories": [
             "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1-0010",
+            "REQ-QUIC-RFC9000-S5P1-0011",
+            "REQ-QUIC-RFC9000-S5P2P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0010",
+          "member": "REQ_QUIC_RFC9000_S5P1_0010.Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "method": "Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "line": 100,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1-0010",
+            "REQ-QUIC-RFC9000-S5P1-0011",
+            "REQ-QUIC-RFC9000-S5P2P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0010",
+          "member": "REQ_QUIC_RFC9000_S5P1_0010.Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "method": "Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "line": 100,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -194390,14 +194559,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 1,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -194539,6 +194708,30 @@
           ],
           "categories": [
             "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1-0010",
+            "REQ-QUIC-RFC9000-S5P1-0011",
+            "REQ-QUIC-RFC9000-S5P2P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P1-0011",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0010",
+          "member": "REQ_QUIC_RFC9000_S5P1_0010.Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "method": "Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "line": 100,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -199114,14 +199307,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -199263,6 +199456,30 @@
           ],
           "categories": [
             "Edge"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P1-0010",
+            "REQ-QUIC-RFC9000-S5P1-0011",
+            "REQ-QUIC-RFC9000-S5P2P3-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P3-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1_0010",
+          "member": "REQ_QUIC_RFC9000_S5P1_0010.Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "method": "Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength",
+          "line": 100,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -200625,22 +200842,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_AllowsDeferredIdleTimeoutAfterPeerActivity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_DoesNotKeepExtendingTheDeadlineForRepeatedLocalTraffic",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-P1-S1-R01.cs::RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-P1-S1-R01.cs::RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -200648,6 +200866,52 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P3-0010",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S10P1P2_0002.Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "method": "Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "line": 53,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P1P2-0002",
+            "REQ-QUIC-RFC9000-S5P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P3-0010",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S10P1P2_0002",
+          "member": "REQ_QUIC_RFC9000_S10P1P2_0002.Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "method": "Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity",
+          "line": 53,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S10P1P2-0002",
+            "REQ-QUIC-RFC9000-S5P3-0010"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S5P3-0010",
           "source": "requirement_attribute",

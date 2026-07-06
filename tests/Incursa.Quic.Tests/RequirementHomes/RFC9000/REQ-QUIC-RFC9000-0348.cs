@@ -56,4 +56,46 @@ public sealed class REQ_QUIC_RFC9000_0348
 
         Assert.False(QuicZeroRttTransportParameterPolicy.HasNonZeroClientApplicationDataAllowance(parameters));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S5-0005")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit()
+    {
+        for (ulong connectionData = 0; connectionData <= 3; connectionData++)
+        {
+            for (ulong clientBidirectionalData = 0; clientBidirectionalData <= 3; clientBidirectionalData++)
+            {
+                for (ulong bidirectionalStreams = 0; bidirectionalStreams <= 2; bidirectionalStreams++)
+                {
+                    for (ulong clientUnidirectionalData = 0; clientUnidirectionalData <= 3; clientUnidirectionalData++)
+                    {
+                        for (ulong unidirectionalStreams = 0; unidirectionalStreams <= 2; unidirectionalStreams++)
+                        {
+                            QuicTransportParameters parameters = new()
+                            {
+                                InitialMaxData = connectionData,
+                                InitialMaxStreamDataBidiRemote = clientBidirectionalData,
+                                InitialMaxStreamsBidi = bidirectionalStreams,
+                                InitialMaxStreamDataBidiLocal = 3,
+                                InitialMaxStreamDataUni = clientUnidirectionalData,
+                                InitialMaxStreamsUni = unidirectionalStreams,
+                            };
+
+                            bool expected =
+                                connectionData > 0 &&
+                                ((clientBidirectionalData > 0 && bidirectionalStreams > 0) ||
+                                 (clientUnidirectionalData > 0 && unidirectionalStreams > 0));
+
+                            Assert.Equal(
+                                expected,
+                                QuicZeroRttTransportParameterPolicy.HasNonZeroClientApplicationDataAllowance(parameters));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

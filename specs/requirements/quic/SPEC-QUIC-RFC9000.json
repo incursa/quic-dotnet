@@ -3707,7 +3707,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::NonZeroBidirectionalAllowancePermitsClientApplicationDataForZeroRtt",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::ZeroConnectionDataAllowanceDoesNotPermitClientApplicationDataForZeroRtt",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::OnlyServerInitiatedBidirectionalCreditDoesNotPermitClientApplicationDataForZeroRtt",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0348.cs::Fuzz_ClientZeroRttApplicationDataAllowanceRequiresConnectionAndClientStreamCredit"
         ],
         "upstream_refs": [
           "RFC9000-S7P4P1-B14-P14-S2",
@@ -39630,7 +39631,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointLeavesShortHeaderPacketsUnroutableWhenTheDestinationConnectionIdLengthDoesNotMatchAnyRegisteredRoute",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesShortHeaderPacketsUsingTheRegisteredDestinationConnectionIdLength",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesTheShortestRegisteredShortHeaderDestinationConnectionIdLength"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::EndpointRoutesTheShortestRegisteredShortHeaderDestinationConnectionIdLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P1-0010.cs::Fuzz_EndpointRoutesShortHeadersByRegisteredDestinationConnectionIdLength"
         ]
       }
     },
@@ -41332,7 +41334,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_AllowsDeferredIdleTimeoutAfterPeerActivity",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::RecordAckElicitingPacketSent_DoesNotKeepExtendingTheDeadlineForRepeatedLocalTraffic",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-P1-S1-R01.cs::RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-P1-S1-R01.cs::RecordPeerPacketProcessed_SaturatesTheDeadlineAtUlongMaxValue",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P1P2-0002.cs::Fuzz_AckElicitingMaintenanceCanDeferIdleTimeoutOnceAfterPeerActivity"
         ]
       }
     },

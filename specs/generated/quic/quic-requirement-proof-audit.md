@@ -6,15 +6,15 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 1066 |
-| full_executable_proof | 1611 |
+| deferred_proof_not_executed | 1063 |
+| full_executable_proof | 1614 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 1409 | 0 | 41 | 0 |
+| RFC9000 | 1450 | 1412 | 0 | 38 | 0 |
 | RFC9001 | 96 | 72 | 0 | 24 | 0 |
 | RFC9002 | 226 | 57 | 0 | 169 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |
@@ -38,10 +38,7 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Requirement | RFC | Proof state | Missing required | Deferred missing |
 | --- | --- | --- | --- | --- |
-| `REQ-QUIC-RFC9000-S5-0005` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-S5-0006` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-S5P2P3-0001` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-S5P3-0010` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-S7-0006` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-S7-0007` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S17-2-5-3-P4-S6-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +85,6 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9001-S4-0006` | RFC9001 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9001-S4-0007` | RFC9001 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9001-S6-0002` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S6-0003` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S6-0004` | RFC9001 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9001-S6P1-0001` | RFC9001 | deferred_proof_not_executed |  | fuzz |
