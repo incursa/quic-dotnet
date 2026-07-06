@@ -47,4 +47,32 @@ public sealed class REQ_QUIC_RFC9000_0265
 
         Assert.Equal(QuicListenerPreAcceptanceDatagramAction.Drop, action);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S5-2-2-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses()
+    {
+        int[] datagramPayloadSizes =
+        [
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + 1,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + 128,
+        ];
+
+        foreach (int datagramPayloadSize in datagramPayloadSizes)
+        {
+            Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.UnsupportedVersion,
+                datagramPayloadSize,
+                QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+                hasAlreadySentVersionNegotiation: true));
+            Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                QuicS5P2P2ServerPreAcceptanceTestSupport.UnsupportedVersion,
+                datagramPayloadSize,
+                QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+                hasAlreadySentVersionNegotiation: false));
+        }
+    }
 }

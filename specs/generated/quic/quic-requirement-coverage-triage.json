@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T11:48:23.7779780-06:00",
+  "generated_at": "2026-07-06T11:53:01.9372683-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T11:48:23.7726585-06:00",
+    "generated_at": "2026-07-06T11:53:01.9336891-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -420052,21 +420052,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_AcceptsVersion1Packets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -420161,6 +420162,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-1-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0264",
+          "member": "REQ_QUIC_RFC9000_0264.TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions",
+          "method": "TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions",
+          "line": 38,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-1-P3-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0264",
+          "member": "REQ_QUIC_RFC9000_0264.TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions",
+          "method": "TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions",
+          "line": 38,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -420386,22 +420431,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_AllowsSuppressingRepeatedResponses",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_DoesNotSuppressTheFirstEligibleResponse",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -420540,6 +420586,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0265",
+          "member": "REQ_QUIC_RFC9000_0265.ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses",
+          "method": "ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P1-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0265",
+          "member": "REQ_QUIC_RFC9000_0265.ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses",
+          "method": "ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses",
+          "line": 55,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -420562,21 +420652,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DropsUndersizedUnsupportedVersionPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -420671,6 +420762,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P1-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0267",
+          "member": "REQ_QUIC_RFC9000_0267.ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets",
+          "method": "ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets",
+          "line": 47,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P1-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P1-S3-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0267",
+          "member": "REQ_QUIC_RFC9000_0267.ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets",
+          "method": "ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets",
+          "line": 47,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P1-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },

@@ -31,6 +31,24 @@ public sealed class REQ_QUIC_RFC9000_0264
         Assert.False(QuicPacketParser.TryGetPacketNumberSpace(packet, out _));
     }
 
+    [Fact]
+    [Requirement("RFC9000-S5-2-1-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions()
+    {
+        uint[] unsupportedVersions = [0, 2, 0xA0A0A0A0, 0xFFFFFFFF];
+
+        foreach (uint unsupportedVersion in unsupportedVersions)
+        {
+            byte[] packet = BuildSelectedVersionPacket(unsupportedVersion);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+            Assert.Equal(unsupportedVersion, header.Version);
+            Assert.False(QuicPacketParser.TryGetPacketNumberSpace(packet, out _));
+        }
+    }
+
     private static byte[] BuildSelectedVersionPacket(uint version)
     {
         return QuicHeaderTestData.BuildLongHeader(

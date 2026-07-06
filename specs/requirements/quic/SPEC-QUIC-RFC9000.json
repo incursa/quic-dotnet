@@ -2560,7 +2560,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_AcceptsVersion1Packets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.1 RFC9000-S5P2P1-B3-P3-S1",
@@ -2594,7 +2595,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_AllowsSuppressingRepeatedResponses",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_DoesNotSuppressTheFirstEligibleResponse",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.2 RFC9000-S5P2P2-B1-P1-S1",
@@ -2627,7 +2629,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DropsUndersizedUnsupportedVersionPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.2 RFC9000-S5P2P2-B1-P1-S2",

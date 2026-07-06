@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:48:33.1164663-06:00",
+    "generated_at": "2026-07-06T11:53:15.5814059-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1102,
-      "full_executable_proof": 1575
+      "deferred_proof_not_executed": 1099,
+      "full_executable_proof": 1578
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 77,
-          "full_executable_proof": 1373
+          "deferred_proof_not_executed": 74,
+          "full_executable_proof": 1376
         }
       },
       {
@@ -80200,9 +80200,9 @@
       "rfc": "RFC9000",
       "title": "Discard packets with a different version",
       "statement": "If a client receives a packet that uses a different version than it initially selected, it MUST discard that packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80212,23 +80212,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_AcceptsVersion1Packets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpace_RejectsPacketsWithDifferentSelectedVersions",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-1-P3-S1-R01.cs::TryGetPacketNumberSpaceFuzz_RejectsPacketsWithDifferentSelectedVersions"
       ]
     },
     {
@@ -80273,9 +80273,9 @@
       "rfc": "RFC9000",
       "title": "Limit Version Negotiation responses",
       "statement": "A server MAY limit the number of packets to which it responds with a Version Negotiation packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80286,24 +80286,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_AllowsSuppressingRepeatedResponses",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiation_DoesNotSuppressTheFirstEligibleResponse",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ClassifyUnroutedDatagram_DropsLargeUnsupportedPacketsAfterTheLimitIsReached",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S2-R01.cs::ShouldSendVersionNegotiationFuzz_SuppressesRepeatedEligibleResponses"
       ]
     },
     {
@@ -80311,9 +80311,9 @@
       "rfc": "RFC9000",
       "title": "Drop smaller unsupported-version packets",
       "statement": "Servers MUST drop smaller packets that specify unsupported versions.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80323,23 +80323,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DropsUndersizedUnsupportedVersionPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagram_DoesNotDropLargeUnsupportedVersionPacketsBeforeNegotiation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P1-S3-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUndersizedUnsupportedVersionPackets"
       ]
     },
     {
