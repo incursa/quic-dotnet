@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:15:12.5725341-06:00",
+    "generated_at": "2026-07-06T06:17:42.2200473-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1265,
-      "full_executable_proof": 1412
+      "deferred_proof_not_executed": 1264,
+      "full_executable_proof": 1413
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 240,
-          "full_executable_proof": 1210
+          "deferred_proof_not_executed": 239,
+          "full_executable_proof": 1211
         }
       },
       {
@@ -82172,9 +82172,9 @@
       "rfc": "RFC9000",
       "title": "Allow the handshake to proceed after successful validation",
       "statement": "If the validation succeeds, the server SHOULD then allow the handshake to proceed.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -82184,15 +82184,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-3-P10-S4-R01.cs"

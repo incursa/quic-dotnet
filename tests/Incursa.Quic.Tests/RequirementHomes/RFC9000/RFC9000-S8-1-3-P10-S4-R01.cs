@@ -71,6 +71,30 @@ public sealed class REQ_QUIC_RFC9000_8135
             scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S8-1-3-P10-S4-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_ValidNewTokenVariantsAllowTheServerHandshakeToProceedWithoutRetry()
+    {
+        foreach (TimeSpan validTokenAge in new[] { TimeSpan.Zero, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(4) })
+        {
+            QuicAddressValidationTokenProtector protector = CreateProtector();
+            await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+                await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync(protector);
+            byte[] token = scenario.IssueNewTokenForClient(DateTimeOffset.UtcNow.Subtract(validTokenAge));
+
+            scenario.SendInitialWithToken(token);
+
+            await scenario.WaitForCallbackAsync();
+            Assert.True(scenario.ListenerHost.NewTokenValidationAttempted);
+            Assert.True(scenario.ListenerHost.NewTokenValidationSucceeded);
+            Assert.False(scenario.ListenerHost.RetryBootstrapIssued);
+            Assert.True(scenario.CallbackEntered.IsCompleted);
+            Assert.Equal(0, scenario.ListenerHost.NewTokenValidationFailureCode);
+        }
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
