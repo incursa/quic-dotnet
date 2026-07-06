@@ -142,6 +142,26 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0126")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_DoqAlpnIdentificationSequenceMatchesOnlyDoqToken()
+    {
+        foreach ((string token, bool expectedMatch) in new[]
+        {
+            ("doq", true),
+            ("h3", false),
+            ("dot", false),
+            ("doq-h3", false),
+            ("DOQ", false),
+        })
+        {
+            Assert.Equal(expectedMatch, DoqDefaults.Alpn.SequenceEqual(System.Text.Encoding.ASCII.GetBytes(token)));
+            Assert.Equal(expectedMatch, DoqDefaults.ApplicationProtocol.Equals(new SslApplicationProtocol(token)));
+        }
+    }
+
+    [Fact]
     [Requirement("RFC9250-S4-1-1-P1-R01")]
     [Requirement("RFC9250-S4-1-1-P2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
@@ -786,6 +806,30 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("RFC9250-S4-2-1-P3-S1-R01")]
+    [Requirement("RFC9250-S4-2-1-P3-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MessageIdNormalizationAndGenerationPreservePayloadAcrossRepresentativeIds()
+    {
+        byte[] source = [0xaa, 0xbb, 0x01, 0x02, 0x03, 0x04];
+
+        foreach (ushort messageId in new ushort[] { 0, 1, 0x1234, 0xabcd, ushort.MaxValue })
+        {
+            byte[] forDoq = DoqMessage.NormalizeToDoq(source);
+            byte[] forwarded = DoqMessage.GenerateMessageId(forDoq, messageId);
+
+            Assert.Equal(0, forDoq[0]);
+            Assert.Equal(0, forDoq[1]);
+            Assert.Equal((byte)(messageId >> 8), forwarded[0]);
+            Assert.Equal((byte)messageId, forwarded[1]);
+            Assert.Equal(source[2..], forwarded[2..]);
+        }
+
+        Assert.Equal([0xaa, 0xbb, 0x01, 0x02, 0x03, 0x04], source);
+    }
+
+    [Fact]
     [Requirement("RFC9250-S4-5-P2-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -841,6 +885,26 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0124")]
+    [Requirement("REQ-QUIC-RFC9250-0141")]
+    [Requirement("RFC9250-S4-5-P2-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ReplayableOpcodeClassificationAllowsOnlyQueryAndNotify()
+    {
+        foreach (int opcode in Enumerable.Range(0, 16))
+        {
+            bool expectedReplayable = opcode is 0 or 4;
+            byte[] query = [0x00, 0x00, (byte)(opcode << 3), 0x00, 0x00, 0x01];
+
+            Assert.Equal(expectedReplayable, DoqDefaults.IsReplayableOpcode(opcode));
+            Assert.Equal(expectedReplayable, DoqDefaults.IsReplayableQuery(query));
+        }
+
+        Assert.False(DoqDefaults.IsReplayableQuery([0x00]));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0081")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -867,6 +931,44 @@ public sealed class DoqFoundationTests
         Assert.True(options.EnableAntiReplay);
         Assert.Equal(0, options.MaxQueuedZeroRttTransactions);
         Assert.Null(options.ZeroRttStreamDetector);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0081")]
+    [Requirement("REQ-QUIC-RFC9250-0093")]
+    [Requirement("REQ-QUIC-RFC9250-0094")]
+    [Requirement("RFC9250-S5-5-3-P5-S1-R01")]
+    [Requirement("RFC9250-S5-5-3-P5-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_DoqServerPolicyDefaultsAndOverridesPreserveResumptionRetryAndValidationControls()
+    {
+        DoqServerOptions defaults = new();
+
+        Assert.True(defaults.ResumptionTicketLifetime > TimeSpan.Zero);
+        Assert.True(defaults.EnableAntiReplay);
+        Assert.Equal(0, defaults.MaxQueuedZeroRttTransactions);
+        Assert.True(defaults.EnforceAmplificationLimit);
+        Assert.True(defaults.UseRetryPackets);
+        Assert.True(defaults.UseAddressValidationForFutureConnections);
+
+        DoqServerOptions configured = new()
+        {
+            EnableAntiReplay = false,
+            EnforceAmplificationLimit = false,
+            MaxQueuedZeroRttTransactions = 3,
+            ResumptionTicketLifetime = TimeSpan.FromHours(12),
+            UseAddressValidationForFutureConnections = false,
+            UseRetryPackets = false,
+        };
+
+        Assert.False(configured.EnableAntiReplay);
+        Assert.False(configured.EnforceAmplificationLimit);
+        Assert.Equal(3, configured.MaxQueuedZeroRttTransactions);
+        Assert.Equal(TimeSpan.FromHours(12), configured.ResumptionTicketLifetime);
+        Assert.False(configured.UseAddressValidationForFutureConnections);
+        Assert.False(configured.UseRetryPackets);
+        Assert.Throws<ArgumentOutOfRangeException>(() => configured.ResumptionTicketLifetime = TimeSpan.Zero);
     }
 
     [Fact]
@@ -1066,6 +1168,40 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0089")]
+    [Requirement("REQ-QUIC-RFC9250-0090")]
+    [Requirement("REQ-QUIC-RFC9250-0091")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_FallbackCacheTracksEndpointSpecificBackoffAndAllowsExplicitRetry()
+    {
+        DoqFallbackCache cache = new(TimeSpan.FromMinutes(5));
+
+        foreach (string endpoint in new[] { "resolver.example:853", "resolver.example:8853", "other.example:853" })
+        {
+            Assert.False(cache.IsBackedOff(endpoint));
+            Assert.Equal(TimeSpan.Zero, cache.GetRemainingBackoff(endpoint));
+        }
+
+        cache.RecordFailure("resolver.example:853");
+        cache.RecordFailure("resolver.example:8853");
+
+        Assert.True(cache.IsBackedOff("resolver.example:853"));
+        Assert.True(cache.GetRemainingBackoff("resolver.example:853") > TimeSpan.Zero);
+        Assert.True(cache.IsBackedOff("resolver.example:8853"));
+        Assert.False(cache.IsBackedOff("other.example:853"));
+
+        cache.BackoffPeriod = TimeSpan.FromMinutes(1);
+        Assert.True(cache.GetRemainingBackoff("resolver.example:853") <= TimeSpan.FromMinutes(1));
+
+        cache.ClearFailure("resolver.example:853");
+        Assert.False(cache.IsBackedOff("resolver.example:853"));
+
+        cache.ClearAll();
+        Assert.False(cache.IsBackedOff("resolver.example:8853"));
+    }
+
+    [Fact]
     [Requirement("RFC9250-S5-1-P1-S2-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -1146,6 +1282,33 @@ public sealed class DoqFoundationTests
             endpointKeyPinned: true);
 
         Assert.Equal(DoqFallbackTransport.None, transport);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0092")]
+    [Requirement("RFC9250-S5-1-P1-S2-R01")]
+    [Requirement("RFC9250-S5-2-P1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_FallbackPolicyKeepsStrictProfilePinnedEndpointsAndCleartextPermissionConservative()
+    {
+        foreach ((DoqClientProfile profile, bool dotAvailable, bool cleartextAllowed, bool keyPinned, DoqFallbackTransport expected) in new[]
+        {
+            (DoqClientProfile.Strict, true, true, false, DoqFallbackTransport.None),
+            (DoqClientProfile.Strict, false, true, false, DoqFallbackTransport.None),
+            (DoqClientProfile.Opportunistic, true, true, false, DoqFallbackTransport.DnsOverTls),
+            (DoqClientProfile.Opportunistic, true, false, true, DoqFallbackTransport.DnsOverTls),
+            (DoqClientProfile.Opportunistic, false, true, false, DoqFallbackTransport.CleartextDns),
+            (DoqClientProfile.Opportunistic, false, false, false, DoqFallbackTransport.None),
+            (DoqClientProfile.Opportunistic, false, true, true, DoqFallbackTransport.None),
+        })
+        {
+            Assert.Equal(expected, DoqFallbackPolicy.SelectTransportAfterDoqFailure(
+                profile,
+                dotAvailable,
+                cleartextAllowed,
+                keyPinned));
+        }
     }
 
     [Fact]
@@ -1310,6 +1473,7 @@ public sealed class DoqFoundationTests
     [Requirement("REQ-QUIC-RFC9250-0095")]
     [Requirement("REQ-QUIC-RFC9250-0096")]
     [Requirement("REQ-QUIC-RFC9250-0097")]
+    [Requirement("REQ-QUIC-RFC9250-0125")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit()

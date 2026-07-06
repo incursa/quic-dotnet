@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:38:04.6338616-06:00",
+    "generated_at": "2026-07-06T17:43:00.0073538-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 844,
-      "full_executable_proof": 1833
+      "deferred_proof_not_executed": 826,
+      "full_executable_proof": 1851
     },
     "by_rfc": [
       {
@@ -73,8 +73,8 @@
         "rfc": "RFC9250",
         "total": 141,
         "by_proof_state": {
-          "deferred_proof_not_executed": 97,
-          "full_executable_proof": 44
+          "deferred_proof_not_executed": 79,
+          "full_executable_proof": 62
         }
       },
       {
@@ -50573,9 +50573,9 @@
       "rfc": "RFC9250",
       "title": "Allow session resumption with or without 0-RTT",
       "statement": "Servers MAY support session resumption with or without 0-RTT using the mechanisms described in Section 4.6.1 of [RFC9001].",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50585,15 +50585,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -50765,9 +50764,9 @@
       "rfc": "RFC9250",
       "title": "Key-pinned endpoints retry DoQ aggressively",
       "statement": "Key-pinned endpoints SHOULD retry DoQ more aggressively after a failure.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50777,15 +50776,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -50803,9 +50801,9 @@
       "rfc": "RFC9250",
       "title": "DoQ failure cache",
       "statement": "An implementation using the Opportunistic profile SHOULD record DoQ failures in a cache and avoid repeated attempts.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50815,15 +50813,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -50839,9 +50836,9 @@
       "rfc": "RFC9250",
       "title": "Configurable backoff timeout",
       "statement": "The backoff timeout MUST be configurable.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50851,15 +50848,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -50875,9 +50871,9 @@
       "rfc": "RFC9250",
       "title": "Be conservative when falling back to cleartext",
       "statement": "Implementations SHOULD be conservative when falling back to cleartext DNS.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50887,15 +50883,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -50916,9 +50911,9 @@
       "rfc": "RFC9250",
       "title": "Enforce amplification limit",
       "statement": "Servers supporting 0-RTT MUST enforce the 3x anti-amplification limit specified in RFC 9000.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50928,15 +50923,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -50954,9 +50948,9 @@
       "rfc": "RFC9250",
       "title": "Use QUIC Retry and address validation",
       "statement": "Servers SHOULD use QUIC Retry and address validation to protect against amplification attacks.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -50966,15 +50960,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -51812,9 +51805,9 @@
       "rfc": "RFC9250",
       "title": "State-preserving 0-RTT transactions",
       "statement": "Transactions allowed by Section 4.5 MUST preserve the long-term state of the server.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51824,15 +51817,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -51848,9 +51840,9 @@
       "rfc": "RFC9250",
       "title": "Mitigate traffic analysis attacks",
       "statement": "Implementations SHOULD use the mechanisms defined in Section 5.4 to mitigate this attack.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51860,15 +51852,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -51884,9 +51875,9 @@
       "rfc": "RFC9250",
       "title": "Use the DoQ ALPN identification sequence",
       "statement": "The DoQ ALPN identification sequence MUST be 0x64 0x6F 0x71 (\"doq\").",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -51896,6 +51887,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -51904,10 +51896,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -52448,9 +52438,9 @@
       "rfc": "RFC9250",
       "title": "Allow NOTIFY in 0-RTT data",
       "statement": "A NOTIFY MAY be sent in 0-RTT data.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -52460,15 +52450,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -88580,9 +88569,9 @@
       "rfc": "RFC9250",
       "title": "Generate Message ID when forwarding from DoQ",
       "statement": "When forwarding a DNS message from DoQ over another transport, a DNS Message ID MUST be generated according to the rules of the protocol that is in use.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88592,15 +88581,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -88618,9 +88606,9 @@
       "rfc": "RFC9250",
       "title": "Set Message ID to zero when forwarding to DoQ",
       "statement": "When forwarding a DNS message from another transport over DoQ, the Message ID MUST be set to 0.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -88630,15 +88618,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -89779,9 +89766,9 @@
       "rfc": "RFC9250",
       "title": "Classify QUERY and NOTIFY transactions as replayable",
       "statement": "Transactions with an OPCODE of QUERY or NOTIFY MUST be considered replayable.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -89791,15 +89778,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -89818,9 +89804,9 @@
       "rfc": "RFC9250",
       "title": "Use a Strict usage profile for DoQ stubs",
       "statement": "DoQ stubs SHOULD use a Strict usage profile.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -89830,15 +89816,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs"
@@ -89854,9 +89839,9 @@
       "rfc": "RFC9250",
       "title": "Opportunistic usage profile fallback",
       "statement": "An implementation using the Opportunistic usage profile SHOULD fall back to DoT or cleartext DNS if the DoQ connection attempt fails.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -89866,15 +89851,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -90044,9 +90028,9 @@
       "rfc": "RFC9250",
       "title": "Issue long-lived resumption tickets",
       "statement": "Servers SHOULD issue session resumption tickets with a sufficiently long lifetime.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90056,15 +90040,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
@@ -90082,9 +90065,9 @@
       "rfc": "RFC9250",
       "title": "Implement anti-replay mechanisms",
       "statement": "Servers SHOULD implement the anti-replay mechanisms specified in Section 8 of RFC8446.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -90094,15 +90077,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
