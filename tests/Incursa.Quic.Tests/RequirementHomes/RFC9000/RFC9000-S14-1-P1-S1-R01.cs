@@ -49,4 +49,50 @@ public sealed class REQ_QUIC_RFC9000_S14P1_0001
 
         Assert.Equal(0, bytesWritten);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-0856")]
+    [Requirement("REQ-QUIC-RFC9000-S6-0002")]
+    public void TryFormatVersion1InitialDatagramPaddingFuzz_WritesExactlyEnoughPaddingToReachTheMinimumPayloadSize()
+    {
+        foreach (int currentPayloadLength in new[]
+        {
+            0,
+            1,
+            63,
+            511,
+            1_187,
+            1_199,
+            1_200,
+            1_201,
+            1_456,
+        })
+        {
+            Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(
+                currentPayloadLength,
+                out int paddingLength));
+
+            Assert.Equal(Math.Max(0, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - currentPayloadLength), paddingLength);
+
+            byte[] destination = new byte[paddingLength];
+            Assert.True(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(
+                currentPayloadLength,
+                destination,
+                out int bytesWritten));
+
+            Assert.Equal(paddingLength, bytesWritten);
+            Assert.True(currentPayloadLength + bytesWritten >= QuicVersionNegotiation.Version1MinimumDatagramPayloadSize);
+            Assert.All(destination, static value => Assert.Equal(0, value));
+
+            if (paddingLength > 0)
+            {
+                Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(
+                    currentPayloadLength,
+                    destination.AsSpan(0, paddingLength - 1),
+                    out _));
+            }
+        }
+    }
 }
