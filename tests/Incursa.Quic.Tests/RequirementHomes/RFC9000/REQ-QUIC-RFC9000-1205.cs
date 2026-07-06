@@ -65,4 +65,37 @@ public sealed class REQ_QUIC_RFC9000_1205
 
         await stream.DisposeAsync();
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1205")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ResetStreamFrameCarriesAbruptSendTerminationFieldsWithType04()
+    {
+        byte[] destination = new byte[64];
+        foreach ((ulong streamId, ulong errorCode, ulong finalSize) in ResetStreamCases())
+        {
+            QuicResetStreamFrame frame = new(streamId, errorCode, finalSize);
+
+            Assert.True(QuicFrameCodec.TryFormatResetStreamFrame(frame, destination, out int bytesWritten));
+            Assert.Equal(0x04, destination[0]);
+            Assert.True(QuicFrameCodec.TryParseResetStreamFrame(
+                destination.AsSpan(0, bytesWritten),
+                out QuicResetStreamFrame parsed,
+                out int bytesConsumed));
+
+            Assert.Equal(bytesWritten, bytesConsumed);
+            Assert.Equal(streamId, parsed.StreamId);
+            Assert.Equal(errorCode, parsed.ApplicationProtocolErrorCode);
+            Assert.Equal(finalSize, parsed.FinalSize);
+        }
+    }
+
+    private static IEnumerable<(ulong StreamId, ulong ErrorCode, ulong FinalSize)> ResetStreamCases()
+    {
+        yield return (0, 0, 0);
+        yield return (4, 0x99, 1_024);
+        yield return (16, 0x4000, 65_535);
+        yield return (63, 0x1234_5678, 1_000_000);
+    }
 }

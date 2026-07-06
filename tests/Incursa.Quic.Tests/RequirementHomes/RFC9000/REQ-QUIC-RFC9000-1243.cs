@@ -41,4 +41,28 @@ public sealed class REQ_QUIC_RFC9000_1243
 
         QuicS19P7NewTokenFrameTestSupport.AssertParses(encoded, [0x01], expectedBytesConsumed: encoded.Length);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewTokenFramesAcceptOnlyNonEmptyTokens()
+    {
+        byte[] destination = new byte[128];
+        foreach (int tokenLength in new[] { 1, 2, 4, 16, 32, 63 })
+        {
+            byte[] token = QuicS19P7NewTokenFrameTestSupport.CreateSequentialToken(tokenLength);
+            QuicNewTokenFrame frame = new(token);
+
+            Assert.True(QuicFrameCodec.TryFormatNewTokenFrame(frame, destination, out int bytesWritten));
+            Assert.Equal(QuicS19P7NewTokenFrameTestSupport.NewTokenFrameType, destination[0]);
+            QuicS19P7NewTokenFrameTestSupport.AssertParses(
+                destination.AsSpan(0, bytesWritten),
+                token,
+                expectedBytesConsumed: bytesWritten);
+        }
+
+        Assert.False(QuicFrameCodec.TryFormatNewTokenFrame(new QuicNewTokenFrame([]), destination, out _));
+        QuicS19P7NewTokenFrameTestSupport.AssertRejects(
+            QuicS19P7NewTokenFrameTestSupport.BuildNewTokenFrameWithTokenLength(0, []));
+    }
 }

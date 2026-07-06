@@ -59,4 +59,28 @@ public sealed class REQ_QUIC_RFC9000_1245
         Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
         Assert.DoesNotContain(validationResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClientNeverBuildsOutboundNewTokenWhileServerCanBuildRepresentativeTokens()
+    {
+        foreach (int tokenLength in new[] { 1, 2, 4, 16, 32 })
+        {
+            byte[] token = QuicS19P7NewTokenFrameTestSupport.CreateSequentialToken(tokenLength);
+            using QuicConnectionRuntime clientRuntime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+            Assert.False(clientRuntime.TryBuildOutboundNewTokenPayload(token, out byte[] clientPayload));
+            Assert.Empty(clientPayload);
+
+            using QuicConnectionRuntime serverRuntime = QuicS9P3TokenEmissionTestSupport.CreateServerRuntimeReadyForTokenEmission();
+            Assert.True(serverRuntime.TryBuildOutboundNewTokenPayload(token, out byte[] serverPayload));
+            Assert.True(QuicFrameCodec.TryParseNewTokenFrame(
+                serverPayload,
+                out QuicNewTokenFrame parsed,
+                out int bytesConsumed));
+            Assert.True(bytesConsumed <= serverPayload.Length);
+            Assert.True(token.AsSpan().SequenceEqual(parsed.Token));
+        }
+    }
 }
