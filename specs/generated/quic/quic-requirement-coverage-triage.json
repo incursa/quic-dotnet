@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:42:19.8453604-06:00",
+  "generated_at": "2026-07-06T09:45:46.9215313-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:42:19.8415507-06:00",
+    "generated_at": "2026-07-06T09:45:46.9177611-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -432600,14 +432600,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-2-P1-S1-R01.cs::TryFormatPathResponseFrame_EchoesChallengeData",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -432658,6 +432658,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-2-P1-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P2-PathResponse-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure.PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "method": "PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "line": 17,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-2-P1-S1-R01",
+            "RFC9000-S8-2-2-P1-S2-R01",
+            "RFC9000-S8-2-2-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -432687,14 +432711,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -432789,6 +432813,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-2-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P2-PathResponse-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure.PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "method": "PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "line": 17,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-2-P1-S1-R01",
+            "RFC9000-S8-2-2-P1-S2-R01",
+            "RFC9000-S8-2-2-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -432818,14 +432866,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -432920,6 +432968,30 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-2-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P2-PathResponse-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure.PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "method": "PathChallengeResponseFuzz_EchoesDataImmediatelyOnTheReceivedPath",
+          "line": 17,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-2-P1-S1-R01",
+            "RFC9000-S8-2-2-P1-S2-R01",
+            "RFC9000-S8-2-2-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -432949,14 +433021,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -433066,6 +433138,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-2-P2-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-2-P2-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8P2P2-PathResponse-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure",
+          "member": "RFC9000_S8P2P2_PathResponse_DeferredFuzzClosure.InitiatorPathResponseFuzz_AcceptsOnlyMatchingCandidatePathWithoutPeerViolation",
+          "method": "InitiatorPathResponseFuzz_AcceptsOnlyMatchingCandidatePathWithoutPeerViolation",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
