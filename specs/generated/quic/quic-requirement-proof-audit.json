@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:22:24.9510407-06:00",
+    "generated_at": "2026-07-06T17:28:17.0234532-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 872,
-      "full_executable_proof": 1805
+      "deferred_proof_not_executed": 864,
+      "full_executable_proof": 1813
     },
     "by_rfc": [
       {
@@ -73,8 +73,8 @@
         "rfc": "RFC9250",
         "total": 141,
         "by_proof_state": {
-          "deferred_proof_not_executed": 125,
-          "full_executable_proof": 16
+          "deferred_proof_not_executed": 117,
+          "full_executable_proof": 24
         }
       },
       {
@@ -49416,9 +49416,9 @@
       "rfc": "RFC9250",
       "title": "DOQ_NO_ERROR indicates no error",
       "statement": "DOQ_NO_ERROR (0x0) MUST indicate that there is no error.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49428,6 +49428,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49435,10 +49436,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49454,9 +49453,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_NO_ERROR when closing without error",
       "statement": "The DOQ_NO_ERROR code MUST be used when the connection or stream needs to be closed, but there is no error to signal.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49466,6 +49465,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49473,10 +49473,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49492,9 +49490,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_INTERNAL_ERROR for unrecoverable internal failures",
       "statement": "A DoQ implementation MUST use DOQ_INTERNAL_ERROR (0x1) when it encounters an internal error and is incapable of pursuing the transaction or the connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49504,6 +49502,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49511,10 +49510,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49530,9 +49527,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_PROTOCOL_ERROR for protocol failures",
       "statement": "A DoQ implementation MUST use DOQ_PROTOCOL_ERROR (0x2) when it encounters a protocol error and is forcibly aborting the connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49542,6 +49539,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49549,10 +49547,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49568,9 +49564,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_REQUEST_CANCELLED to cancel an outstanding transaction",
       "statement": "A DoQ client MUST use DOQ_REQUEST_CANCELLED (0x3) to signal that it wants to cancel an outstanding transaction.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49580,6 +49576,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49587,10 +49584,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49606,9 +49601,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_EXCESSIVE_LOAD when closing due to excessive load",
       "statement": "A DoQ implementation MUST use DOQ_EXCESSIVE_LOAD (0x4) to signal when closing a connection due to excessive load.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49618,6 +49613,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49625,10 +49621,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49644,9 +49638,9 @@
       "rfc": "RFC9250",
       "title": "Use DOQ_UNSPECIFIED_ERROR when no specific code applies",
       "statement": "A DoQ implementation MUST use DOQ_UNSPECIFIED_ERROR (0x5) in the absence of a more specific error code.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49656,6 +49650,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49663,10 +49658,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"
@@ -49682,9 +49675,9 @@
       "rfc": "RFC9250",
       "title": "Reserved test error code may be used for tests",
       "statement": "DOQ_ERROR_RESERVED (0xd098ea5e) MAY be used for tests.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -49694,6 +49687,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -49701,10 +49695,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0026-ErrorCodes.cs"

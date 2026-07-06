@@ -196,6 +196,51 @@ public sealed class REQ_QUIC_RFC9250_0026_ErrorCodes
         Assert.NotEqual(DoqErrorCode.ErrorReserved, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x100));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0026")]
+    [Requirement("REQ-QUIC-RFC9250-0027")]
+    [Requirement("REQ-QUIC-RFC9250-0028")]
+    [Requirement("REQ-QUIC-RFC9250-0029")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CoreRegisteredErrorCodesNormalizeToTheirRegistryValues()
+    {
+        foreach ((DoqErrorCode code, long expectedValue) in new[]
+        {
+            (DoqErrorCode.NoError, 0x0L),
+            (DoqErrorCode.InternalError, 0x1L),
+            (DoqErrorCode.ProtocolError, 0x2L),
+        })
+        {
+            AssertRegisteredErrorCode(code, expectedValue);
+        }
+
+        AssertUnknownErrorCodesNormalizeToUnspecified();
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0030")]
+    [Requirement("REQ-QUIC-RFC9250-0031")]
+    [Requirement("REQ-QUIC-RFC9250-0032")]
+    [Requirement("REQ-QUIC-RFC9250-0033")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ContextualRegisteredErrorCodesNormalizeToTheirRegistryValues()
+    {
+        foreach ((DoqErrorCode code, long expectedValue) in new[]
+        {
+            (DoqErrorCode.RequestCancelled, 0x3L),
+            (DoqErrorCode.ExcessiveLoad, 0x4L),
+            (DoqErrorCode.UnspecifiedError, 0x5L),
+            (DoqErrorCode.ErrorReserved, 0xd098ea5eL),
+        })
+        {
+            AssertRegisteredErrorCode(code, expectedValue);
+        }
+
+        AssertUnknownErrorCodesNormalizeToUnspecified();
+    }
+
     private static string ReadRepositoryFile(string relativePath)
     {
         string repoRoot = FindRepoRoot();
@@ -231,5 +276,13 @@ public sealed class REQ_QUIC_RFC9250_0026_ErrorCodes
     {
         Assert.Equal(expectedValue, (long)code);
         Assert.Equal(code, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(expectedValue));
+    }
+
+    private static void AssertUnknownErrorCodesNormalizeToUnspecified()
+    {
+        foreach (long unexpectedValue in new[] { -1L, 0x6L, 0x7L, 0xffL, 0x100L, 0xffffL, long.MaxValue })
+        {
+            Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(unexpectedValue));
+        }
     }
 }
