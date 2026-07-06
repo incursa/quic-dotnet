@@ -62,4 +62,36 @@ public sealed class REQ_QUIC_RFC9000_S14P3_0002
         Assert.Equal(0UL, paddingFrameBytes);
         Assert.Equal(0, state.GetPathSnapshot(path).OutstandingProbeCount);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryTrackPaddingProbe_FuzzComputesPaddingForProbeSizesWithAckElicitingPayloads()
+    {
+        int[] probeSizes = [1_200, 1_250, 1_300, 1_450];
+        int[] ackElicitingPayloadSizes = [1, 37, 1_199];
+        ulong packetNumber = 1;
+
+        foreach (int probeSize in probeSizes)
+        {
+            foreach (int payloadSize in ackElicitingPayloadSizes)
+            {
+                QuicDplpmtudState state = new();
+                QuicConnectionPathIdentity path = new("203.0.113.11", "192.0.2.10", 443, 55555);
+                bool expectedSuccess = payloadSize < probeSize
+                    && (ulong)probeSize > QuicDplpmtudState.BasePlpmtuBytes;
+
+                bool tracked = state.TryTrackPaddingProbe(
+                    path,
+                    packetNumber++,
+                    (ulong)probeSize,
+                    (ulong)payloadSize,
+                    out ulong paddingFrameBytes);
+
+                Assert.Equal(expectedSuccess, tracked);
+                Assert.Equal(expectedSuccess ? (ulong)(probeSize - payloadSize) : 0UL, paddingFrameBytes);
+                Assert.Equal(expectedSuccess ? 1 : 0, state.GetPathSnapshot(path).OutstandingProbeCount);
+            }
+        }
+    }
 }

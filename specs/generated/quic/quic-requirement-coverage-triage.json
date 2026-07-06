@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T02:13:52.9373253-06:00",
+  "generated_at": "2026-07-06T02:19:07.9552443-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T02:13:52.9335829-06:00",
+    "generated_at": "2026-07-06T02:19:07.9517727-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -82606,14 +82606,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -82657,6 +82657,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S14P3-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S14P3-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P3-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S14P3_0002",
+          "member": "REQ_QUIC_RFC9000_S14P3_0002.TryTrackPaddingProbe_FuzzComputesPaddingForProbeSizesWithAckElicitingPayloads",
+          "method": "TryTrackPaddingProbe_FuzzComputesPaddingForProbeSizesWithAckElicitingPayloads",
+          "line": 69,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -83349,14 +83371,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -83444,6 +83466,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S17P1_0001",
+          "member": "REQ_QUIC_RFC9000_S17P1_0001.TryParsePacketHeaders_FuzzPreservesEncodedPacketNumberLengths",
+          "method": "TryParsePacketHeaders_FuzzPreservesEncodedPacketNumberLengths",
+          "line": 80,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -114875,14 +114919,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 6,
+        "total": 10,
+        "focused": 7,
         "broad": 3,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 2,
-          "fuzz": 1,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -115128,6 +115172,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S18-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S18-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S18_0007",
+          "member": "REQ_QUIC_RFC9000_S18_0007.TryFormatTransportParameters_FuzzRoundTripsClientHandshakeByteSequences",
+          "method": "TryFormatTransportParameters_FuzzRoundTripsClientHandshakeByteSequences",
+          "line": 89,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -124627,14 +124693,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -124642,6 +124708,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S19P1_0002",
+          "member": "REQ_QUIC_RFC9000_S19P1_0002.TryFormatPaddingFrame_FuzzWritesRepeatablePaddingBytes",
+          "method": "TryFormatPaddingFrame_FuzzWritesRepeatablePaddingBytes",
+          "line": 49,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P1-0002",
           "source": "requirement_attribute",
@@ -124803,14 +124891,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -124818,6 +124906,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S19P1-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S19P1-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S19P1_0003",
+          "member": "REQ_QUIC_RFC9000_S19P1_0003.TryFormatVersion1InitialDatagramPadding_FuzzPadsInitialPacketsToTheMinimumSize",
+          "method": "TryFormatVersion1InitialDatagramPadding_FuzzPadsInitialPacketsToTheMinimumSize",
+          "line": 41,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S19P1-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S19P1-0003",
           "source": "requirement_attribute",

@@ -42,4 +42,29 @@ public sealed class REQ_QUIC_RFC9000_S19P1_0002
         Assert.True(QuicFrameCodec.TryParsePaddingFrame(packet[..bytesWritten], out int bytesConsumed));
         Assert.Equal(1, bytesConsumed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatPaddingFrame_FuzzWritesRepeatablePaddingBytes()
+    {
+        int[] packetSizes = [1, 2, 8, 32];
+
+        foreach (int packetSize in packetSizes)
+        {
+            byte[] packet = new byte[packetSize];
+            int index = 0;
+
+            while (index < packet.Length)
+            {
+                Assert.True(QuicFrameCodec.TryFormatPaddingFrame(packet.AsSpan(index), out int bytesWritten));
+                Assert.Equal(1, bytesWritten);
+                Assert.True(QuicFrameCodec.TryParsePaddingFrame(packet.AsSpan(index, bytesWritten), out int bytesConsumed));
+                Assert.Equal(bytesWritten, bytesConsumed);
+                index += bytesWritten;
+            }
+
+            Assert.All(packet, static value => Assert.Equal(0x00, value));
+        }
+    }
 }

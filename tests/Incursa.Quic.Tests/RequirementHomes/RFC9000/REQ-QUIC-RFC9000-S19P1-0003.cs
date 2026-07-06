@@ -34,4 +34,28 @@ public sealed class REQ_QUIC_RFC9000_S19P1_0003
         Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(1200, out int paddingLength));
         Assert.Equal(0, paddingLength);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatVersion1InitialDatagramPadding_FuzzPadsInitialPacketsToTheMinimumSize()
+    {
+        int[] currentPayloadLengths = [0, 1, 100, 1_187, 1_199, 1_200, 1_250];
+
+        foreach (int currentPayloadLength in currentPayloadLengths)
+        {
+            Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(
+                currentPayloadLength,
+                out int paddingLength));
+            Assert.Equal(Math.Max(0, 1_200 - currentPayloadLength), paddingLength);
+
+            byte[] destination = new byte[paddingLength];
+            Assert.True(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(
+                currentPayloadLength,
+                destination,
+                out int bytesWritten));
+            Assert.Equal(paddingLength, bytesWritten);
+            Assert.All(destination, static value => Assert.Equal(0x00, value));
+        }
+    }
 }

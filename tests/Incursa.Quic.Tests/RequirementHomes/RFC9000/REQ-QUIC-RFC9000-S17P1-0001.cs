@@ -74,6 +74,37 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0001
         Assert.False(QuicPacketParser.TryParseLongHeader(packet, out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParsePacketHeaders_FuzzPreservesEncodedPacketNumberLengths()
+    {
+        for (int packetNumberLength = 1; packetNumberLength <= 4; packetNumberLength++)
+        {
+            byte[] packetNumber = CreatePacketNumber(packetNumberLength);
+            byte packetNumberLengthBits = (byte)(packetNumberLength - 1);
+            byte[] versionSpecificData = QuicHeaderTestData.BuildInitialVersionSpecificData(
+                token: [(byte)packetNumberLength],
+                packetNumber,
+                protectedPayload: [0xBB, (byte)(0xC0 | packetNumberLength)]);
+            byte[] longHeaderPacket = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: (byte)(QuicPacketHeaderBits.FixedBitMask | packetNumberLengthBits),
+                version: 1,
+                destinationConnectionId: [0x10, (byte)packetNumberLength],
+                sourceConnectionId: [0x20],
+                versionSpecificData);
+            byte[] shortHeaderPacket = QuicHeaderTestData.BuildShortHeader(packetNumberLengthBits, packetNumber);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(longHeaderPacket, out QuicLongHeaderPacket longHeader));
+            Assert.Equal(packetNumberLengthBits, longHeader.PacketNumberLengthBits);
+            Assert.True(versionSpecificData.AsSpan().SequenceEqual(longHeader.VersionSpecificData));
+
+            Assert.True(QuicPacketParser.TryParseShortHeader(shortHeaderPacket, out QuicShortHeaderPacket shortHeader));
+            Assert.Equal(packetNumberLengthBits, shortHeader.PacketNumberLengthBits);
+            Assert.True(packetNumber.AsSpan().SequenceEqual(shortHeader.Remainder));
+        }
+    }
+
     private static byte[] CreatePacketNumber(int packetNumberLength)
     {
         return Enumerable.Range(0, packetNumberLength)
