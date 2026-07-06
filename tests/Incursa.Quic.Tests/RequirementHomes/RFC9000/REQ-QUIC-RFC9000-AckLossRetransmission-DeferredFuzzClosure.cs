@@ -139,6 +139,45 @@ public sealed class REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure
     }
 
     [Fact]
+    [Requirement("RFC9000-S13-2-5-P2-S2-R01")]
+    [Requirement("RFC9000-S13-2-5-P2-S3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AckDelayFuzz_UsesNewestControlledDelayAndRecordedDecryptionBuffering()
+    {
+        foreach ((ulong LatestReceivedAtMicros, ulong NowMicros, ulong BufferingDelayMicros) testCase in new[]
+        {
+            (1_250UL, 1_500UL, 0UL),
+            (2_000UL, 2_750UL, 175UL),
+            (3_500UL, 3_500UL, 250UL),
+        })
+        {
+            QuicAckGenerationState ackState = new();
+            ackState.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 1,
+                ackEliciting: true,
+                receivedAtMicros: 1_000);
+            ackState.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 2,
+                ackEliciting: true,
+                testCase.LatestReceivedAtMicros,
+                bufferingDelayMicros: testCase.BufferingDelayMicros);
+
+            Assert.True(ackState.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                testCase.NowMicros,
+                out QuicAckFrame frame));
+
+            ulong expectedAckDelay = (testCase.NowMicros - testCase.LatestReceivedAtMicros) + testCase.BufferingDelayMicros;
+            Assert.Equal(2UL, frame.LargestAcknowledged);
+            Assert.Equal(expectedAckDelay, frame.AckDelay);
+            Assert.NotEqual(testCase.NowMicros - 1_000UL, frame.AckDelay);
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-0789")]
     [Requirement("REQ-QUIC-RFC9000-0795")]
     [Requirement("REQ-QUIC-RFC9000-0799")]

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T03:30:36.2137437-06:00",
+    "generated_at": "2026-07-06T03:33:12.6128041-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1320,
-      "full_executable_proof": 1357
+      "deferred_proof_not_executed": 1318,
+      "full_executable_proof": 1359
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 275,
-          "full_executable_proof": 1175
+          "deferred_proof_not_executed": 273,
+          "full_executable_proof": 1177
         }
       },
       {
@@ -74160,9 +74160,9 @@
       "rfc": "RFC9000",
       "title": "Exclude uncontrolled delays from ACK Delay",
       "statement": "An endpoint MUST NOT include delays that it does not control when populating the ACK Delay field in an ACK frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -74172,17 +74172,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P2-S2-R01.cs"
       ],
       "spec_test_ref_count": 2,
@@ -74196,9 +74196,9 @@
       "rfc": "RFC9000",
       "title": "Include decryption-key buffering delays",
       "statement": "Endpoints SHOULD include buffering delays caused by unavailability of decryption keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -74208,17 +74208,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-5-P2-S3-R01.cs"
       ],
       "spec_test_ref_count": 2,
