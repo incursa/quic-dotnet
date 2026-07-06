@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T03:07:04.3822649-06:00",
+    "generated_at": "2026-07-06T03:09:23.0099984-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1336,
-      "full_executable_proof": 1341
+      "deferred_proof_not_executed": 1334,
+      "full_executable_proof": 1343
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 291,
-          "full_executable_proof": 1159
+          "deferred_proof_not_executed": 289,
+          "full_executable_proof": 1161
         }
       },
       {
@@ -71463,9 +71463,9 @@
       "rfc": "RFC9000",
       "title": "Commit to immediate close before timeout",
       "statement": "An endpoint that announces a max_idle_timeout MUST initiate an immediate close if it abandons the connection before the effective timeout expires.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -71477,17 +71477,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionCloseIdle-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-P2-S2-R01.cs"
       ],
       "spec_test_ref_count": 3,
@@ -72034,9 +72034,9 @@
       "rfc": "RFC9000",
       "title": "Enter closing state after sending CONNECTION_CLOSE",
       "statement": "After sending a CONNECTION_CLOSE frame, an endpoint MUST immediately enter the closing state.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -72047,17 +72047,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionCloseIdle-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-P2-S1-R01.cs"
       ],
       "spec_test_ref_count": 3,

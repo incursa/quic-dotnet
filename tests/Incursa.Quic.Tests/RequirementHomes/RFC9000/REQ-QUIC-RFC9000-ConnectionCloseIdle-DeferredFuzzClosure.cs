@@ -45,6 +45,8 @@ public sealed class REQ_QUIC_RFC9000_ConnectionCloseIdle_DeferredFuzzClosure
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0562")]
     [Requirement("REQ-QUIC-RFC9000-0572")]
+    [Requirement("RFC9000-S10-1-P2-S2-R01")]
+    [Requirement("RFC9000-S10-2-P2-S1-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void ImmediateCloseFuzz_EmitsConnectionCloseAndEntersClosingState()
