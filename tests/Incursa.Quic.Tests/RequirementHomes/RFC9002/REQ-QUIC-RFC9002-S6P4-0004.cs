@@ -221,6 +221,84 @@ public sealed class REQ_QUIC_RFC9002_S6P4_0004
         Assert.Equal(QuicCryptoBufferResult.DiscardedAndAcknowledged, overflowResult);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_KeyDiscardEvents_ClearMatchingCryptoRecoveryStateAcrossPacketCounts()
+    {
+        foreach ((QuicTlsEncryptionLevel encryptionLevel, QuicPacketNumberSpace packetNumberSpace, int cryptoPacketCount, int oneRttPacketCount) in new[]
+        {
+            (QuicTlsEncryptionLevel.Initial, QuicPacketNumberSpace.Initial, 1, 1),
+            (QuicTlsEncryptionLevel.Initial, QuicPacketNumberSpace.Initial, 3, 2),
+            (QuicTlsEncryptionLevel.Handshake, QuicPacketNumberSpace.Handshake, 2, 1),
+            (QuicTlsEncryptionLevel.Handshake, QuicPacketNumberSpace.Handshake, 4, 3),
+        })
+        {
+            using QuicConnectionRuntime runtime = CreateRuntime();
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionTlsStateUpdatedEvent(
+                    ObservedAtTicks: 9,
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.KeysAvailable,
+                        encryptionLevel)),
+                nowTicks: 9).StateChanged);
+
+            for (int i = 0; i < cryptoPacketCount; i++)
+            {
+                SeedTrackedPacket(
+                    runtime,
+                    packetNumberSpace,
+                    packetNumber: (ulong)(10 + i),
+                    sentAtMicros: (ulong)(20 + i),
+                    encryptionLevel);
+            }
+
+            for (int i = 0; i < oneRttPacketCount; i++)
+            {
+                SeedTrackedPacket(
+                    runtime,
+                    QuicPacketNumberSpace.ApplicationData,
+                    packetNumber: (ulong)(100 + i),
+                    sentAtMicros: (ulong)(200 + i),
+                    QuicTlsEncryptionLevel.OneRtt);
+            }
+
+            Assert.Equal(cryptoPacketCount + oneRttPacketCount, runtime.SendRuntime.SentPackets.Count);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionTlsStateUpdatedEvent(
+                    ObservedAtTicks: 10,
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.KeysDiscarded,
+                        encryptionLevel)),
+                nowTicks: 10);
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.TlsState.OldKeysDiscarded);
+            if (encryptionLevel == QuicTlsEncryptionLevel.Initial)
+            {
+                Assert.False(runtime.TlsState.InitialKeysAvailable);
+            }
+            else
+            {
+                Assert.False(runtime.TlsState.HandshakeKeysAvailable);
+            }
+
+            Assert.DoesNotContain(
+                runtime.SendRuntime.SentPackets.Keys,
+                key => key.PacketNumberSpace == packetNumberSpace);
+            Assert.Equal(
+                oneRttPacketCount,
+                runtime.SendRuntime.SentPackets.Values.Count(packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt));
+        }
+    }
+
+    private static QuicConnectionRuntime CreateRuntime()
+    {
+        return new QuicConnectionRuntime(QuicConnectionStreamStateTestHelpers.CreateState());
+    }
+
     private static void SeedTrackedPacket(
         QuicConnectionRuntime runtime,
         QuicPacketNumberSpace packetNumberSpace,
