@@ -109,6 +109,42 @@ public sealed class REQ_QUIC_RFC9000_MigrationState_DeferredFuzzClosure
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P2-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S9P2-0004")]
+    [Requirement("REQ-QUIC-RFC9000-S9P4-0003")]
+    [Requirement("REQ-QUIC-RFC9000-S9P4-0005")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AddressChangeVsPortOnlyMigrationFuzz_ResetsOrRetainsRecoveryStateByPathIdentity()
+    {
+        for (int iteration = 0; iteration < 8; iteration++)
+        {
+            QuicConnectionPathIdentity activePath = new(
+                RemoteAddress: $"203.0.113.{30 + iteration}",
+                LocalAddress: $"198.51.100.{30 + iteration}",
+                RemotePort: 443,
+                LocalPort: (ushort)(61000 + iteration));
+
+            AssertAddressChangeResetsRecoveryState(
+                activePath,
+                activePath with
+                {
+                    LocalAddress = $"198.51.100.{60 + iteration}",
+                    LocalPort = (ushort)(62000 + iteration),
+                },
+                observedAtTicks: 20 + iteration);
+
+            AssertPortOnlyPromotionRetainsRecoveryState(
+                activePath,
+                activePath with
+                {
+                    RemotePort = (ushort)(8443 + iteration),
+                },
+                observedAtTicks: 40 + iteration);
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9000-0520")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
@@ -151,6 +187,68 @@ public sealed class REQ_QUIC_RFC9000_MigrationState_DeferredFuzzClosure
             Assert.Equal(QuicConnectionEndpointHandlingKind.None, unroutableResult.HandlingKind);
             Assert.Null(unroutableResult.Handle);
         }
+    }
+
+    private static void AssertAddressChangeResetsRecoveryState(
+        QuicConnectionPathIdentity activePath,
+        QuicConnectionPathIdentity migratedPath,
+        long observedAtTicks)
+    {
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+        QuicPathMigrationRecoverySnapshot baseline = QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+        QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
+        Assert.NotEqual(baseline, QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime));
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                migratedPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: observedAtTicks).StateChanged);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            migratedPath,
+            observedAtTicks: observedAtTicks + 10);
+
+        Assert.Equal(baseline, QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime));
+        Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == migratedPath
+            && !promote.RestoreSavedState);
+    }
+
+    private static void AssertPortOnlyPromotionRetainsRecoveryState(
+        QuicConnectionPathIdentity activePath,
+        QuicConnectionPathIdentity portOnlyPath,
+        long observedAtTicks)
+    {
+        QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+
+        QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
+
+        Assert.True(runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: observedAtTicks,
+                portOnlyPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: observedAtTicks).StateChanged);
+        QuicPathMigrationRecoverySnapshot afterValidationProbe =
+            QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            portOnlyPath,
+            observedAtTicks: observedAtTicks + 10);
+
+        Assert.Equal(afterValidationProbe, QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime));
+        Assert.Equal(portOnlyPath, runtime.ActivePath!.Value.Identity);
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promote
+            && promote.PathIdentity == portOnlyPath
+            && promote.RestoreSavedState);
     }
 
     private static void AssertMigrationPromotionForPeerInitialSourceConnectionId(
