@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T12:13:23.7374956-06:00",
+  "generated_at": "2026-07-06T12:16:58.3338106-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T12:13:23.7337653-06:00",
+    "generated_at": "2026-07-06T12:16:58.3302465-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -427200,21 +427200,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -427309,6 +427310,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S7-3-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S7P3_0007",
+          "member": "REQ_QUIC_RFC9000_S7P3_0007.TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings",
+          "method": "TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings",
+          "line": 68,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S7-3-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S7-3-P4-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S7P3_0007",
+          "member": "REQ_QUIC_RFC9000_S7P3_0007.TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings",
+          "method": "TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings",
+          "line": 68,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S7-3-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -427331,18 +427376,21 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsSpecifyZeroRttStoragePolicy",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsSpecifyZeroRttStoragePolicy",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -427350,6 +427398,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S7-4-1-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0001",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0001.KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById",
+          "method": "KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById",
+          "line": 38,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S7-4-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S7-4-1-P3-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S7P4P1_0001",
+          "member": "REQ_QUIC_RFC9000_S7P4P1_0001.KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById",
+          "method": "KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById",
+          "line": 38,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S7-4-1-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S7-4-1-P3-S1-R01",
           "source": "requirement_attribute",
@@ -435692,18 +435784,21 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPadding_ProducesTheExpandedFollowUpDatagramNeededForMtuValidation",
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPadding_ProducesTheExpandedFollowUpDatagramNeededForMtuValidation",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation"
+      ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -435747,6 +435842,50 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-3-P2-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-3-P2-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P3_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2P3_0001.TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation",
+          "method": "TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation",
+          "line": 43,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-3-P2-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-3-P2-S3-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P3_0001",
+          "member": "REQ_QUIC_RFC9000_S8P2P3_0001.TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation",
+          "method": "TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation",
+          "line": 43,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

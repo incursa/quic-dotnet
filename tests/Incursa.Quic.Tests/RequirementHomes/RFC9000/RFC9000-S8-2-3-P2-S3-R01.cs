@@ -36,4 +36,28 @@ public sealed class REQ_QUIC_RFC9000_S8P2P3_0001
         Assert.Equal(QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, frameBytesWritten + paddingBytesWritten);
         Assert.All(padding, static value => Assert.Equal(0, value));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation()
+    {
+        int[] currentPayloadLengths = [9, 64, 600, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - 1];
+
+        foreach (int currentPayloadLength in currentPayloadLengths)
+        {
+            QuicAntiAmplificationBudget budget = new();
+            budget.MarkAddressValidated();
+            byte[] padding = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - currentPayloadLength];
+
+            Assert.True(QuicPathValidation.TryFormatPathValidationDatagramPadding(
+                currentPayloadLength,
+                budget,
+                padding,
+                out int paddingBytesWritten));
+
+            Assert.Equal(QuicVersionNegotiation.Version1MinimumDatagramPayloadSize, currentPayloadLength + paddingBytesWritten);
+            Assert.All(padding, static value => Assert.Equal(0, value));
+        }
+    }
 }

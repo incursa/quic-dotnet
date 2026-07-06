@@ -31,4 +31,28 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0001
             Assert.Equal(definition, resolved);
         }
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById()
+    {
+        foreach (QuicZeroRttTransportParameterDefinition definition in QuicZeroRttTransportParameterPolicy.KnownDefinitions)
+        {
+            Assert.True(QuicZeroRttTransportParameterPolicy.TryGetKnownDefinition(
+                definition.Id,
+                out QuicZeroRttTransportParameterDefinition resolved));
+            Assert.Equal(definition.Id, resolved.Id);
+            Assert.Equal(definition.Name, resolved.Name);
+            Assert.Equal(definition.MemoryRequirement, resolved.MemoryRequirement);
+        }
+
+        ulong[] unknownIds = [0x11, 0x12, 0x1F, 0x21, ulong.MaxValue];
+        foreach (ulong unknownId in unknownIds)
+        {
+            Assert.False(QuicZeroRttTransportParameterPolicy.TryGetKnownDefinition(
+                unknownId,
+                out _));
+        }
+    }
 }

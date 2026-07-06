@@ -42088,7 +42088,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_RejectsMissingConnectionIdBindings",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindings_AcceptsWhenRequiredConnectionIdBindingsArePresent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-3-P4-S1-R01.cs::TryValidateConnectionIdBindingsFuzz_RejectsMissingRequiredConnectionIdBindings"
         ]
       }
     },
@@ -42153,7 +42154,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-7.4.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsSpecifyZeroRttStoragePolicy"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsSpecifyZeroRttStoragePolicy",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-4-1-P3-S1-R01.cs::KnownTransportParameterDefinitionsFuzz_RoundTripStoragePolicyById"
         ]
       }
     },
@@ -43807,7 +43809,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.2.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPadding_ProducesTheExpandedFollowUpDatagramNeededForMtuValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPadding_ProducesTheExpandedFollowUpDatagramNeededForMtuValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-3-P2-S3-R01.cs::TryFormatPathValidationDatagramPaddingFuzz_ProducesExpandedFollowUpDatagramsForMtuValidation"
         ]
       }
     },
