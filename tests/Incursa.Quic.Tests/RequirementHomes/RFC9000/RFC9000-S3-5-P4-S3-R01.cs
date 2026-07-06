@@ -158,4 +158,60 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0006
         Assert.True(snapshot.HasSendAbortErrorCode);
         Assert.Equal(0x88UL, snapshot.SendAbortErrorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S3-5-P4-S3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStopSendingFrame_AllowsDataSentStreamsToResetWithFinalSize()
+    {
+        (int Length, ulong ApplicationErrorCode)[] cases =
+        [
+            (1, 0x70),
+            (2, 0x77),
+            (5, 0x88),
+            (8, QuicVariableLengthInteger.MaxValue),
+        ];
+
+        foreach ((int length, ulong applicationErrorCode) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localUnidirectionalSendLimit: 8,
+                peerUnidirectionalStreamLimit: 8);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: false,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.True(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset: 0,
+                length,
+                fin: true,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(streamId.Value, applicationErrorCode),
+                out QuicResetStreamFrame resetStreamFrame,
+                out errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(streamId.Value, resetStreamFrame.StreamId);
+            Assert.Equal(applicationErrorCode, resetStreamFrame.ApplicationProtocolErrorCode);
+            Assert.Equal((ulong)length, resetStreamFrame.FinalSize);
+
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+            Assert.True(snapshot.HasFinalSize);
+            Assert.Equal((ulong)length, snapshot.FinalSize);
+            Assert.True(snapshot.HasSendAbortErrorCode);
+            Assert.Equal(applicationErrorCode, snapshot.SendAbortErrorCode);
+        }
+    }
 }

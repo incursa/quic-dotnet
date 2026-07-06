@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T08:46:09.3973428-06:00",
+  "generated_at": "2026-07-06T08:50:28.9054417-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T08:46:09.3935038-06:00",
+    "generated_at": "2026-07-06T08:50:28.9016366-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -404548,14 +404548,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -404563,6 +404563,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S19-4-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S19-4-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1208",
+          "member": "REQ_QUIC_RFC9000_1208.Fuzz_TryReceiveResetStreamFrame_RejectsSendOnlyStreams",
+          "method": "Fuzz_TryReceiveResetStreamFrame_RejectsSendOnlyStreams",
+          "line": 69,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S19-4-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S19-4-P3-S1-R01",
           "source": "requirement_attribute",
@@ -411550,14 +411572,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -411565,6 +411587,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S3-5-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P4-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S3P5_0006",
+          "member": "REQ_QUIC_RFC9000_S3P5_0006.Fuzz_TryReceiveStopSendingFrame_AllowsDataSentStreamsToResetWithFinalSize",
+          "method": "Fuzz_TryReceiveStopSendingFrame_AllowsDataSentStreamsToResetWithFinalSize",
+          "line": 166,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S3-5-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S3-5-P4-S3-R01",
           "source": "requirement_attribute",
@@ -412099,14 +412143,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -412150,6 +412194,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S3-5-P5-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S3-5-P5-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P5-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S3P5_0009",
+          "member": "REQ_QUIC_RFC9000_S3P5_0009.Fuzz_TryReceiveResetStreamFrame_IgnoresResetErrorCodesAfterStopSendingIsSent",
+          "method": "Fuzz_TryReceiveResetStreamFrame_IgnoresResetErrorCodesAfterStopSendingIsSent",
+          "line": 114,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -413678,14 +413744,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -413693,6 +413759,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S4-6-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0201",
+          "member": "REQ_QUIC_RFC9000_0201.Fuzz_TryReceiveStreamFrame_RejectsStreamIdsExceedingAdvertisedLimits",
+          "method": "Fuzz_TryReceiveStreamFrame_RejectsStreamIdsExceedingAdvertisedLimits",
+          "line": 74,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S4-6-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S4-6-P3-S1-R01",
           "source": "requirement_attribute",

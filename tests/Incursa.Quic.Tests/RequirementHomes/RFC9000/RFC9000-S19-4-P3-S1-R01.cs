@@ -61,4 +61,31 @@ public sealed class REQ_QUIC_RFC9000_1208
         Assert.Equal(default, maxDataFrame);
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S19-4-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveResetStreamFrame_RejectsSendOnlyStreams()
+    {
+        (ulong StreamId, ulong ApplicationErrorCode, ulong FinalSize)[] cases =
+        [
+            (2, 0x44, 0),
+            (6, 0x45, 1),
+            (10, 0x46, 8),
+            (14, 0x47, 16),
+        ];
+
+        foreach ((ulong streamId, ulong applicationErrorCode, ulong finalSize) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState();
+
+            Assert.False(state.TryReceiveResetStreamFrame(
+                new QuicResetStreamFrame(streamId, applicationErrorCode, finalSize),
+                out QuicMaxDataFrame maxDataFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, maxDataFrame);
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        }
+    }
 }

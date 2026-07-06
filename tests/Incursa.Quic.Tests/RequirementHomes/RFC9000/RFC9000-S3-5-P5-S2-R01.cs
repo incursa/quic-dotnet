@@ -107,6 +107,49 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0009
         Assert.False(state.TryGetReceiveAbortErrorCode(streamId.Value, out _));
     }
 
+    [Fact]
+    [Requirement("RFC9000-S3-5-P5-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveResetStreamFrame_IgnoresResetErrorCodesAfterStopSendingIsSent()
+    {
+        ulong[] resetErrorCodes =
+        [
+            0,
+            0x66,
+            0x99,
+            QuicVariableLengthInteger.MaxValue,
+        ];
+
+        foreach (ulong resetErrorCode in resetErrorCodes)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState();
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.True(state.TryMarkLocalStopSendingFrameSent(
+                streamId.Value,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryReceiveResetStreamFrame(
+                new QuicResetStreamFrame(streamId.Value, resetErrorCode, finalSize: 0),
+                out QuicMaxDataFrame maxDataFrame,
+                out errorCode));
+            Assert.Equal(default, maxDataFrame);
+            Assert.Equal(default, errorCode);
+
+            Assert.False(state.TryGetReceiveAbortErrorCode(streamId.Value, out _));
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(QuicStreamReceiveState.ResetRecvd, snapshot.ReceiveState);
+            Assert.False(snapshot.HasReceiveAbortErrorCode);
+        }
+    }
+
     private static bool TryOpenStopSendingFrame(
         QuicConnectionRuntime runtime,
         QuicConnectionSendDatagramEffect effect,

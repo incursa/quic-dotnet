@@ -67,4 +67,32 @@ public sealed class REQ_QUIC_RFC9000_0201
         Assert.False(state.TryReceiveStreamFrame(overLimitFrame, out QuicTransportErrorCode errorCode));
         Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStreamFrame_RejectsStreamIdsExceedingAdvertisedLimits()
+    {
+        (bool Bidirectional, ulong Limit, ulong StreamId)[] cases =
+        [
+            (true, 0, 1),
+            (true, 1, 5),
+            (false, 0, 3),
+            (false, 1, 7),
+        ];
+
+        foreach ((bool bidirectional, ulong limit, ulong streamId) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                incomingBidirectionalStreamLimit: bidirectional ? limit : 4UL,
+                incomingUnidirectionalStreamLimit: bidirectional ? 4UL : limit);
+
+            byte[] overLimitPacket = QuicStreamTestData.BuildStreamFrame(0x08, streamId, [0xAA]);
+            Assert.True(QuicStreamParser.TryParseStreamFrame(overLimitPacket, out QuicStreamFrame overLimitFrame));
+
+            Assert.False(state.TryReceiveStreamFrame(overLimitFrame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(QuicTransportErrorCode.StreamLimitError, errorCode);
+            Assert.False(state.TryGetStreamSnapshot(streamId, out _));
+        }
+    }
 }
