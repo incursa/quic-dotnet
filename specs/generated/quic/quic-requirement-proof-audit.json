@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:32:18.5739573-06:00",
+    "generated_at": "2026-07-06T06:35:14.9529337-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1259,
-      "full_executable_proof": 1418
+      "deferred_proof_not_executed": 1258,
+      "full_executable_proof": 1419
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 234,
-          "full_executable_proof": 1216
+          "deferred_proof_not_executed": 233,
+          "full_executable_proof": 1217
         }
       },
       {
@@ -31911,9 +31911,9 @@
       "rfc": "RFC9000",
       "title": "Choose the correct state machine for unidirectional streams",
       "statement": "Unidirectional streams MUST use either the sending or receiving state machine, depending on the stream type and endpoint role.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -31922,15 +31922,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S3-0001.cs"
