@@ -45,4 +45,44 @@ public sealed class REQ_QUIC_RFC9000_0392
             out QuicClientAddressValidationToken? token));
         Assert.Null(token);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RetryTokensAreReplayOnlyAndRejectedForFutureConnectionUse()
+    {
+        (byte[] RetrySourceConnectionId, byte[] RetryToken)[] scenarios =
+        [
+            (QuicS17P2P5P2TestSupport.RetrySourceConnectionId, QuicS17P2P5P2TestSupport.RetryToken),
+            (QuicS17P2P5P2TestSupport.RetrySourceConnectionId, QuicS17P2P5P2TestSupport.SingleByteRetryToken),
+            (QuicS17P2P5P2TestSupport.MaximumLengthRetrySourceConnectionId, [0x91, 0x92, 0x93, 0x94]),
+        ];
+
+        for (int scenarioIndex = 0; scenarioIndex < scenarios.Length; scenarioIndex++)
+        {
+            (byte[] retrySourceConnectionId, byte[] retryToken) = scenarios[scenarioIndex];
+            using QuicConnectionRuntime runtime = QuicS17P2P5P2TestSupport.CreateBootstrappedClientRuntime();
+            QuicConnectionTransitionResult retryResult = runtime.Transition(
+                QuicS17P2P5P2TestSupport.CreateRetryReceivedEvent(
+                    observedAtTicks: scenarioIndex + 1,
+                    retrySourceConnectionId,
+                    retryToken),
+                nowTicks: scenarioIndex + 1);
+
+            QuicS17P2P5P3TestSupport.RetryReplayInitialPacket[] replayPackets =
+                QuicS17P2P5P3TestSupport.ReadRetryReplayInitialPackets(
+                    retryResult,
+                    QuicS17P2P5P3TestSupport.CreateServerProtection(retrySourceConnectionId));
+
+            Assert.NotEmpty(replayPackets);
+            Assert.All(replayPackets, packet => Assert.True(packet.Token.AsSpan().SequenceEqual(retryToken)));
+            Assert.False(QuicClientAddressValidationToken.TryCreate(
+                retryToken,
+                QuicS8P1P3TokenLifecycleTestSupport.ApplicableEndPoint,
+                QuicVersionNegotiation.Version1,
+                QuicAddressValidationTokenSource.Retry,
+                out QuicClientAddressValidationToken? token));
+            Assert.Null(token);
+        }
+    }
 }
