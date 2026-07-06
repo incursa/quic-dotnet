@@ -32,4 +32,31 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0001
 
         Assert.Equal(18UL, effectiveIdleTimeoutMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryComputeEffectiveIdleTimeoutMicros_FuzzAppliesThreeTimesPtoFloor()
+    {
+        (ulong AdvertisedIdleTimeoutMicros, ulong ProbeTimeoutMicros)[] scenarios =
+        [
+            (1, 1),
+            (18, 6),
+            (19, 6),
+            (100, 50),
+            (ulong.MaxValue - 1, ulong.MaxValue),
+        ];
+
+        foreach ((ulong advertisedIdleTimeoutMicros, ulong probeTimeoutMicros) in scenarios)
+        {
+            Assert.True(QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(
+                advertisedIdleTimeoutMicros,
+                peerMaxIdleTimeoutMicros: null,
+                probeTimeoutMicros,
+                out ulong effectiveIdleTimeoutMicros));
+
+            ulong expectedFloor = probeTimeoutMicros > ulong.MaxValue / 3 ? ulong.MaxValue : probeTimeoutMicros * 3;
+            Assert.Equal(Math.Max(advertisedIdleTimeoutMicros, expectedFloor), effectiveIdleTimeoutMicros);
+        }
+    }
 }

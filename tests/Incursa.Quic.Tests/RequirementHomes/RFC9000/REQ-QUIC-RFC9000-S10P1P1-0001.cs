@@ -32,4 +32,24 @@ public sealed class REQ_QUIC_RFC9000_S10P1P1_0001
     {
         Assert.False(QuicFrameCodec.TryFormatPingFrame(stackalloc byte[0], out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatPingFrame_FuzzProducesRepeatableAckElicitingLivenessProbes()
+    {
+        int[] bufferLengths = [1, 2, 8, 32];
+
+        foreach (int bufferLength in bufferLengths)
+        {
+            byte[] destination = new byte[bufferLength];
+
+            Assert.True(QuicFrameCodec.TryFormatPingFrame(destination, out int bytesWritten));
+            Assert.Equal(1, bytesWritten);
+            Assert.Equal((byte)0x01, destination[0]);
+            Assert.True(QuicFrameCodec.IsAckElicitingFrameType(destination[0]));
+            Assert.True(QuicFrameCodec.TryParsePingFrame(destination.AsSpan(0, bytesWritten), out int bytesConsumed));
+            Assert.Equal(bytesWritten, bytesConsumed);
+        }
+    }
 }

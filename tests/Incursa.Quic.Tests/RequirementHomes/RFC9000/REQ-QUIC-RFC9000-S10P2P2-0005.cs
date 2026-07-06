@@ -88,6 +88,57 @@ public sealed class REQ_QUIC_RFC9000_S10P2P2_0005
         Assert.Empty(result.Effects);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ReceivedConnectionCloseFrame_FuzzTransitionsToDrainingForPeerCloseMetadata()
+    {
+        QuicConnectionCloseMetadata[] closeMetadataCases =
+        [
+            new(
+                TransportErrorCode: QuicTransportErrorCode.NoError,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: string.Empty),
+            new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x06,
+                ReasonPhrase: "transport close"),
+            new(
+                TransportErrorCode: null,
+                ApplicationErrorCode: 0x22,
+                TriggeringFrameType: null,
+                ReasonPhrase: "application close"),
+        ];
+
+        for (int index = 0; index < closeMetadataCases.Length; index++)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity path = new($"203.0.113.{50 + index}", RemotePort: 443);
+
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 0);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionConnectionCloseFrameReceivedEvent(
+                    ObservedAtTicks: index + 1,
+                    closeMetadataCases[index]),
+                nowTicks: index + 1);
+
+            Assert.Equal(QuicConnectionPhase.Draining, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+            Assert.False(runtime.CanSendOrdinaryPackets);
+            Assert.Equal(QuicConnectionCloseOrigin.Remote, runtime.TerminalState?.Origin);
+            Assert.True(result.StateChanged);
+            Assert.Contains(result.Effects, effect => effect is QuicConnectionArmTimerEffect arm && arm.TimerKind == QuicConnectionTimerKind.DrainLifetime);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);

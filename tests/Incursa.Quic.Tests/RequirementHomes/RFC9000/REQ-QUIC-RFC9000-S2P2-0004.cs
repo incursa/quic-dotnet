@@ -153,4 +153,57 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0004
         Assert.Equal(4UL, snapshot.ReadOffset);
         Assert.Equal(0, snapshot.BufferedReadableBytes);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0004")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReceiveStreamFrame_FuzzBuffersOutOfOrderDataUntilThePrefixArrives()
+    {
+        int[] tailOffsets = [1, 2, 3];
+
+        foreach (int tailOffset in tailOffsets)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 16,
+                peerBidirectionalReceiveLimit: 8);
+            byte[] prefix = Enumerable.Range(0, tailOffset).Select(static value => (byte)(0x10 + value)).ToArray();
+            byte[] tail = [0x40, 0x41];
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 5, tail, offset: (ulong)tailOffset),
+                out QuicStreamFrame tailFrame));
+            Assert.True(state.TryReceiveStreamFrame(tailFrame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            byte[] destination = new byte[prefix.Length + tail.Length];
+            Assert.False(state.TryReadStreamData(
+                5,
+                destination,
+                out int bytesWritten,
+                out _,
+                out _,
+                out _,
+                out errorCode));
+            Assert.Equal(0, bytesWritten);
+            Assert.Equal(default, errorCode);
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 5, prefix, offset: 0),
+                out QuicStreamFrame headFrame));
+            Assert.True(state.TryReceiveStreamFrame(headFrame, out errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryReadStreamData(
+                5,
+                destination,
+                out bytesWritten,
+                out _,
+                out _,
+                out _,
+                out errorCode));
+            Assert.Equal(prefix.Length + tail.Length, bytesWritten);
+            Assert.True(prefix.Concat(tail).ToArray().AsSpan().SequenceEqual(destination.AsSpan(0, bytesWritten)));
+        }
+    }
 }

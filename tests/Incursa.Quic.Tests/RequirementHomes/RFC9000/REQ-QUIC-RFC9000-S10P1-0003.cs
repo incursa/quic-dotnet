@@ -56,4 +56,31 @@ public sealed class REQ_QUIC_RFC9000_S10P1_0003
 
         Assert.Equal(3UL, effectiveIdleTimeoutMicros);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryComputeEffectiveIdleTimeoutMicros_FuzzSelectsTheSoleOrMinimumAdvertisedValue()
+    {
+        (ulong? Local, ulong? Peer, ulong ProbeTimeout, ulong ExpectedAdvertised)[] scenarios =
+        [
+            (25, null, 5, 25),
+            (null, 40, 5, 40),
+            (0, 40, 5, 40),
+            (25, 40, 5, 25),
+            (40, 25, 5, 25),
+            (4, 10, 2, 4),
+        ];
+
+        foreach ((ulong? local, ulong? peer, ulong probeTimeout, ulong expectedAdvertised) in scenarios)
+        {
+            Assert.True(QuicIdleTimeoutState.TryComputeEffectiveIdleTimeoutMicros(
+                local,
+                peer,
+                probeTimeout,
+                out ulong effectiveIdleTimeoutMicros));
+
+            Assert.Equal(Math.Max(expectedAdvertised, probeTimeout * 3), effectiveIdleTimeoutMicros);
+        }
+    }
 }

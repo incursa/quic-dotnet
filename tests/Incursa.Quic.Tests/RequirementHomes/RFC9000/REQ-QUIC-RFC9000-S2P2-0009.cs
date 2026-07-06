@@ -147,6 +147,61 @@ public sealed class REQ_QUIC_RFC9000_S2P2_0009
         Assert.Equal(0, snapshot.BufferedReadableBytes);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S2P2-0009")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReadStreamData_FuzzDeliversFragmentsAsOneOrderedByteStream()
+    {
+        byte[][] fragments =
+        [
+            [0x10],
+            [0x11, 0x12],
+            [0x13, 0x14, 0x15],
+        ];
+
+        for (int split = 1; split < fragments.Length; split++)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 32,
+                peerBidirectionalReceiveLimit: 16);
+            ulong offset = 0;
+            byte[] expected = fragments.SelectMany(static fragment => fragment).ToArray();
+
+            for (int index = split; index < fragments.Length; index++)
+            {
+                ulong fragmentOffset = (ulong)fragments.Take(index).Sum(static fragment => fragment.Length);
+                Assert.True(state.TryReceiveStreamFrame(
+                    ParseStreamFrame(1, fragments[index], fragmentOffset),
+                    out QuicTransportErrorCode errorCode));
+                Assert.Equal(default, errorCode);
+            }
+
+            for (int index = 0; index < split; index++)
+            {
+                Assert.True(state.TryReceiveStreamFrame(
+                    ParseStreamFrame(1, fragments[index], offset),
+                    out QuicTransportErrorCode errorCode));
+                Assert.Equal(default, errorCode);
+                offset += (ulong)fragments[index].Length;
+            }
+
+            byte[] destination = new byte[expected.Length];
+            Assert.True(state.TryReadStreamData(
+                1,
+                destination,
+                out int bytesWritten,
+                out _,
+                out _,
+                out _,
+                out QuicTransportErrorCode readErrorCode));
+
+            Assert.Equal(default, readErrorCode);
+            Assert.Equal(expected.Length, bytesWritten);
+            Assert.True(expected.AsSpan().SequenceEqual(destination.AsSpan(0, bytesWritten)));
+        }
+    }
+
     private static QuicStreamFrame ParseStreamFrame(ulong streamId, byte[] data, ulong offset = 0)
     {
         Assert.True(QuicStreamParser.TryParseStreamFrame(

@@ -82,4 +82,39 @@ public sealed class REQ_QUIC_RFC9000_S13P1_0003
         Assert.Equal(bytesWritten, bytesConsumed);
         Assert.Equal(0UL, parsedFrame.LargestAcknowledged);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P1-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildAckFrame_FuzzAcknowledgesEachProcessedPacketNumber()
+    {
+        ulong[] packetNumbers = [0, 1, 4, 63, 64, 255];
+
+        foreach (ulong packetNumber in packetNumbers)
+        {
+            QuicAckGenerationState tracker = new();
+            ulong receivedAtMicros = 1_000 + packetNumber;
+
+            tracker.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber,
+                ackEliciting: true,
+                receivedAtMicros);
+
+            Assert.True(tracker.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: receivedAtMicros,
+                out QuicAckFrame frame));
+            Assert.Equal(packetNumber, frame.LargestAcknowledged);
+            Assert.Equal(0UL, frame.FirstAckRange);
+            Assert.Empty(frame.AdditionalRanges);
+
+            byte[] encoded = new byte[32];
+            Assert.True(QuicFrameCodec.TryFormatAckFrame(frame, encoded, out int bytesWritten));
+            Assert.True(QuicFrameCodec.TryParseAckFrame(encoded.AsSpan(0, bytesWritten), out QuicAckFrame parsedFrame, out int bytesConsumed));
+            Assert.Equal(bytesWritten, bytesConsumed);
+            Assert.Equal(packetNumber, parsedFrame.LargestAcknowledged);
+        }
+    }
 }
