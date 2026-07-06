@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:27:56.6554445-06:00",
+  "generated_at": "2026-07-06T17:30:43.4125000-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:27:56.6516338-06:00",
+    "generated_at": "2026-07-06T17:30:43.4085271-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -277987,14 +277987,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -278134,6 +278134,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0065",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs",
+          "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
+          "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.Fuzz_DoqClientOptionsNormalizeUnsetAndDisabledIdleTimeouts",
+          "method": "Fuzz_DoqClientOptionsNormalizeUnsetAndDisabledIdleTimeouts",
+          "line": 44,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0065"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -278163,14 +278185,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -278209,7 +278231,7 @@
           "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
           "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.EffectiveIdleTimeoutDoesNotUseLargerAdvertisedValue",
           "method": "EffectiveIdleTimeoutDoesNotUseLargerAdvertisedValue",
-          "line": 59,
+          "line": 83,
           "kinds": [
             "negative"
           ],
@@ -278231,7 +278253,7 @@
           "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
           "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.EffectiveIdleTimeoutDoesNotUseLargerAdvertisedValue",
           "method": "EffectiveIdleTimeoutDoesNotUseLargerAdvertisedValue",
-          "line": 59,
+          "line": 83,
           "kinds": [
             "negative"
           ],
@@ -278253,7 +278275,7 @@
           "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
           "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.EffectiveIdleTimeoutUsesMinimumAdvertisedValue",
           "method": "EffectiveIdleTimeoutUsesMinimumAdvertisedValue",
-          "line": 44,
+          "line": 68,
           "kinds": [
             "positive"
           ],
@@ -278275,12 +278297,34 @@
           "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
           "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.EffectiveIdleTimeoutUsesMinimumAdvertisedValue",
           "method": "EffectiveIdleTimeoutUsesMinimumAdvertisedValue",
-          "line": 44,
+          "line": 68,
           "kinds": [
             "positive"
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0066"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0066",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0065-IdleTimeout.cs",
+          "class": "REQ_QUIC_RFC9250_0065_IdleTimeout",
+          "member": "REQ_QUIC_RFC9250_0065_IdleTimeout.Fuzz_EffectiveIdleTimeoutUsesMinimumAdvertisedValueAndProbeFloor",
+          "method": "Fuzz_EffectiveIdleTimeoutUsesMinimumAdvertisedValueAndProbeFloor",
+          "line": 98,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
