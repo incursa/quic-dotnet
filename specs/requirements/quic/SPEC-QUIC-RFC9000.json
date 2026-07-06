@@ -2319,7 +2319,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::NewConnectionIdFrame_WithIncreasedRetirePriorToRetiresLowerSequencesBeforeUsingTheNewConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithoutAnIncreasedRetirePriorToKeepsEarlierPeerConnectionIdsActive",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithRetirePriorToEqualToSequenceRetiresAllLowerSequencesBeforeAddingTheNewConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithRetirePriorToEqualToSequenceRetiresAllLowerSequencesBeforeAddingTheNewConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionIdFuzz_RetiresLowerSequencesBeforeAddingTheNewConnectionId"
         ],
         "upstream_refs": [
           "RFC 9000 5.1.2 RFC9000-S5P1P2-B5-P5-S1",

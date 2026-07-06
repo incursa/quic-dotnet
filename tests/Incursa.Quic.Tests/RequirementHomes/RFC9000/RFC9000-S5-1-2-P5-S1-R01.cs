@@ -128,4 +128,58 @@ public sealed class RFC9000_S5_1_2_P5_S1_R01
         Assert.Equal(2UL, state.CurrentDestinationConnectionIdSequence);
         Assert.Equal([0x60, 0x61, 0x62], state.CurrentDestinationConnectionId.ToArray());
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-2-P5-S1-R01">Upon receipt of an increased Retire Prior To field, the peer MUST stop using the corresponding connection IDs and retire them with RETIRE_CONNECTION_ID frames before adding the newly provided connection ID to the set of active connection IDs.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("RFC9000-S5-1-2-P5-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryAcceptNewConnectionIdFuzz_RetiresLowerSequencesBeforeAddingTheNewConnectionId()
+    {
+        for (ulong targetSequenceNumber = 2; targetSequenceNumber <= 5; targetSequenceNumber++)
+        {
+            QuicConnectionPeerConnectionIdState state = new();
+            ulong activeConnectionIdLimit = targetSequenceNumber + 2;
+
+            for (ulong sequenceNumber = 1; sequenceNumber < targetSequenceNumber; sequenceNumber++)
+            {
+                Assert.True(state.TryAcceptNewConnectionId(
+                    new QuicNewConnectionIdFrame(
+                        sequenceNumber,
+                        0UL,
+                        [(byte)sequenceNumber, 0x30, 0x31],
+                        QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken((byte)(0x40 + sequenceNumber))),
+                    requiresZeroLengthDestinationConnectionId: false,
+                    activeConnectionIdLimit,
+                    initialDestinationConnectionId: [0x01, 0x02, 0x03],
+                    out QuicTransportErrorCode errorCode,
+                    out _,
+                    out ulong[] retiredSequenceNumbers));
+                Assert.Equal(QuicTransportErrorCode.NoError, errorCode);
+                Assert.Empty(retiredSequenceNumbers);
+            }
+
+            Assert.True(state.TryAcceptNewConnectionId(
+                new QuicNewConnectionIdFrame(
+                    targetSequenceNumber,
+                    targetSequenceNumber,
+                    [(byte)targetSequenceNumber, 0x60, 0x61],
+                    QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken((byte)(0x70 + targetSequenceNumber))),
+                requiresZeroLengthDestinationConnectionId: false,
+                activeConnectionIdLimit,
+                initialDestinationConnectionId: [0x01, 0x02, 0x03],
+                out QuicTransportErrorCode finalErrorCode,
+                out bool destinationConnectionIdChanged,
+                out ulong[] finalRetiredSequenceNumbers));
+
+            Assert.Equal(QuicTransportErrorCode.NoError, finalErrorCode);
+            Assert.True(destinationConnectionIdChanged);
+            Assert.Equal(Enumerable.Range(0, (int)targetSequenceNumber).Select(value => (ulong)value), finalRetiredSequenceNumbers.Order());
+            Assert.Equal(1, state.ActiveConnectionIdCount);
+            Assert.Equal(targetSequenceNumber, state.CurrentDestinationConnectionIdSequence);
+            Assert.Equal([(byte)targetSequenceNumber, 0x60, 0x61], state.CurrentDestinationConnectionId.ToArray());
+        }
+    }
 }

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:35:58.1889496-06:00",
+    "generated_at": "2026-07-06T11:38:30.8756881-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1106,
-      "full_executable_proof": 1571
+      "deferred_proof_not_executed": 1105,
+      "full_executable_proof": 1572
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 81,
-          "full_executable_proof": 1369
+          "deferred_proof_not_executed": 80,
+          "full_executable_proof": 1370
         }
       },
       {
@@ -79864,9 +79864,9 @@
       "rfc": "RFC9000",
       "title": "Retire affected connection IDs before activating the new one",
       "statement": "Upon receipt of an increased Retire Prior To field, the peer MUST stop using the corresponding connection IDs and retire them with RETIRE_CONNECTION_ID frames before adding the newly provided connection ID to the set of active connection IDs.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79877,24 +79877,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::NewConnectionIdFrame_WithIncreasedRetirePriorToRetiresLowerSequencesBeforeUsingTheNewConnectionId",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithoutAnIncreasedRetirePriorToKeepsEarlierPeerConnectionIdsActive",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithRetirePriorToEqualToSequenceRetiresAllLowerSequencesBeforeAddingTheNewConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionId_WithRetirePriorToEqualToSequenceRetiresAllLowerSequencesBeforeAddingTheNewConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P5-S1-R01.cs::TryAcceptNewConnectionIdFuzz_RetiresLowerSequencesBeforeAddingTheNewConnectionId"
       ]
     },
     {
