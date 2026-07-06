@@ -55,4 +55,51 @@ public sealed class RFC9000_S4_1_P10_S1_R01
         Assert.False(state.TryApplyMaxStreamDataFrame(new QuicMaxStreamDataFrame(1, 9), out errorCode));
         Assert.Equal(default, errorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-1-P10-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryApplyMaxFlowControlFramesFuzz_IgnoresEveryNonIncreasingLimit()
+    {
+        (ulong InitialConnectionLimit, ulong[] ConnectionUpdates, ulong InitialStreamLimit, ulong[] StreamUpdates)[] cases =
+        [
+            (8, [12, 12, 11, 13, 10], 4, [10, 10, 9, 11, 8]),
+            (0, [0, 1, 1, 2, 1], 0, [0, 1, 1, 2, 1]),
+            (64, [65, 63, 66, 66, 67], 32, [33, 31, 34, 34, 35]),
+        ];
+
+        foreach ((ulong initialConnectionLimit, ulong[] connectionUpdates, ulong initialStreamLimit, ulong[] streamUpdates) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: initialConnectionLimit,
+                peerBidirectionalSendLimit: initialStreamLimit,
+                peerBidirectionalStreamLimit: 2,
+                peerUnidirectionalStreamLimit: 2);
+            ulong expectedConnectionLimit = initialConnectionLimit;
+            ulong expectedStreamLimit = initialStreamLimit;
+
+            foreach (ulong update in connectionUpdates)
+            {
+                bool applied = state.TryApplyMaxDataFrame(new QuicMaxDataFrame(update));
+
+                Assert.Equal(update > expectedConnectionLimit, applied);
+                expectedConnectionLimit = Math.Max(expectedConnectionLimit, update);
+                Assert.Equal(expectedConnectionLimit, state.ConnectionSendLimit);
+            }
+
+            foreach (ulong update in streamUpdates)
+            {
+                bool applied = state.TryApplyMaxStreamDataFrame(
+                    new QuicMaxStreamDataFrame(1, update),
+                    out QuicTransportErrorCode errorCode);
+
+                Assert.Equal(update > expectedStreamLimit, applied);
+                Assert.Equal(default, errorCode);
+                expectedStreamLimit = Math.Max(expectedStreamLimit, update);
+                Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot streamSnapshot));
+                Assert.Equal(expectedStreamLimit, streamSnapshot.SendLimit);
+            }
+        }
+    }
 }
