@@ -12,6 +12,10 @@ public sealed class REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0749")]
     [Requirement("REQ-QUIC-RFC9000-0753")]
+    [Requirement("RFC9000-S13-2-1-P1-R01")]
+    [Requirement("RFC9000-S13-2-2-P4-S1-R01")]
+    [Requirement("RFC9000-S13-2-2-P5-S1-R01")]
+    [Requirement("RFC9000-S13-2-3-P7-S1-R01")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed()
@@ -67,15 +71,71 @@ public sealed class REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure
             processedPacketNumbers.Add(packetNumber);
         }
 
+        Assert.True(ackState.ShouldIncludeAckFrameWithOutgoingPacket(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 2_000,
+            maxAckDelayMicros: 10_000));
         Assert.True(ackState.TryBuildAckFrame(
             QuicPacketNumberSpace.ApplicationData,
             nowMicros: 2_000,
             out QuicAckFrame frame));
 
+        Assert.Equal(processedPacketNumbers.Max(), frame.LargestAcknowledged);
+        Assert.True(AckFrameCoversPacketNumber(frame, frame.LargestAcknowledged));
         foreach (ulong packetNumber in processedPacketNumbers)
         {
             Assert.True(AckFrameCoversPacketNumber(frame, packetNumber));
         }
+    }
+
+    [Fact]
+    [Requirement("RFC9000-S13-2-6-P1-S1-R01")]
+    [Requirement("RFC9000-S13-2-6-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AckNumberSpaceFuzz_BuildsAckFramesOnlyFromMatchingPacketNumberSpace()
+    {
+        QuicAckGenerationState ackState = new();
+        foreach ((QuicPacketNumberSpace Space, ulong PacketNumber, ulong ReceivedAtMicros) testCase in new[]
+        {
+            (QuicPacketNumberSpace.Initial, 1UL, 1_000UL),
+            (QuicPacketNumberSpace.Initial, 2UL, 1_010UL),
+            (QuicPacketNumberSpace.Handshake, 7UL, 1_020UL),
+            (QuicPacketNumberSpace.ApplicationData, 4UL, 1_030UL),
+            (QuicPacketNumberSpace.ApplicationData, 5UL, 1_040UL),
+        })
+        {
+            ackState.RecordProcessedPacket(
+                testCase.Space,
+                testCase.PacketNumber,
+                ackEliciting: true,
+                testCase.ReceivedAtMicros);
+        }
+
+        Assert.True(ackState.TryBuildAckFrame(
+            QuicPacketNumberSpace.Initial,
+            nowMicros: 2_000,
+            out QuicAckFrame initialFrame));
+        Assert.True(ackState.TryBuildAckFrame(
+            QuicPacketNumberSpace.Handshake,
+            nowMicros: 2_000,
+            out QuicAckFrame handshakeFrame));
+        Assert.True(ackState.TryBuildAckFrame(
+            QuicPacketNumberSpace.ApplicationData,
+            nowMicros: 2_000,
+            out QuicAckFrame applicationFrame));
+
+        Assert.Equal(2UL, initialFrame.LargestAcknowledged);
+        Assert.Equal(1UL, initialFrame.FirstAckRange);
+        Assert.Empty(initialFrame.AdditionalRanges);
+
+        Assert.Equal(7UL, handshakeFrame.LargestAcknowledged);
+        Assert.Equal(0UL, handshakeFrame.FirstAckRange);
+        Assert.Empty(handshakeFrame.AdditionalRanges);
+
+        Assert.Equal(5UL, applicationFrame.LargestAcknowledged);
+        Assert.Equal(1UL, applicationFrame.FirstAckRange);
+        Assert.Empty(applicationFrame.AdditionalRanges);
     }
 
     [Fact]

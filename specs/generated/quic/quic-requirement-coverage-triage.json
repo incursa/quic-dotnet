@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:26:14.8802647-06:00",
+  "generated_at": "2026-07-06T03:30:27.2057303-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:26:14.8760731-06:00",
+    "generated_at": "2026-07-06T03:30:27.2019037-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -28477,7 +28477,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
           "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
-          "line": 17,
+          "line": 21,
           "kinds": [
             "fuzz"
           ],
@@ -28487,7 +28487,11 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-0749",
-            "REQ-QUIC-RFC9000-0753"
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -28631,7 +28635,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
           "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
-          "line": 17,
+          "line": 21,
           "kinds": [
             "fuzz"
           ],
@@ -28641,7 +28645,11 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9000-0749",
-            "REQ-QUIC-RFC9000-0753"
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -28830,7 +28838,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
           "method": "RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
-          "line": 88,
+          "line": 148,
           "kinds": [
             "fuzz"
           ],
@@ -28961,7 +28969,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
           "method": "RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
-          "line": 88,
+          "line": 148,
           "kinds": [
             "fuzz"
           ],
@@ -29117,7 +29125,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.ConnectionCloseLossFuzz_DoesNotTrackCloseDatagramsForRetransmission",
           "method": "ConnectionCloseLossFuzz_DoesNotTrackCloseDatagramsForRetransmission",
-          "line": 148,
+          "line": 208,
           "kinds": [
             "fuzz"
           ],
@@ -29406,7 +29414,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
           "method": "RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
-          "line": 88,
+          "line": 148,
           "kinds": [
             "fuzz"
           ],
@@ -30483,7 +30491,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
           "method": "RetransmissionPlanFuzz_PreservesRepairPayloadsAndRemovesAcknowledgedRepairs",
-          "line": 88,
+          "line": 148,
           "kinds": [
             "fuzz"
           ],
@@ -30639,7 +30647,7 @@
           "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.CongestionLossFuzz_ReducesTheCongestionWindowForEligibleLossSignals",
           "method": "CongestionLossFuzz_ReducesTheCongestionWindowForEligibleLossSignals",
-          "line": 191,
+          "line": 251,
           "kinds": [
             "fuzz"
           ],
@@ -384217,14 +384225,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -384232,6 +384240,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-1-P1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0749",
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-1-P1-R01",
           "source": "requirement_attribute",
@@ -387065,14 +387100,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -387080,6 +387115,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-2-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0749",
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-2-P4-S1-R01",
           "source": "spec_xref",
@@ -387219,14 +387281,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -387234,6 +387296,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-2-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0749",
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-2-P5-S1-R01",
           "source": "requirement_attribute",
@@ -387757,14 +387846,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -387772,6 +387861,33 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-3-P7-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "method": "AckProcessingFuzz_RecordsAckEligibilityOnlyAfterProtectionAndFramesAreProcessed",
+          "line": 21,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0749",
+            "REQ-QUIC-RFC9000-0753",
+            "RFC9000-S13-2-1-P1-R01",
+            "RFC9000-S13-2-2-P4-S1-R01",
+            "RFC9000-S13-2-2-P5-S1-R01",
+            "RFC9000-S13-2-3-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-3-P7-S1-R01",
           "source": "requirement_attribute",
@@ -388287,14 +388403,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -388302,6 +388418,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-6-P1-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckNumberSpaceFuzz_BuildsAckFramesOnlyFromMatchingPacketNumberSpace",
+          "method": "AckNumberSpaceFuzz_BuildsAckFramesOnlyFromMatchingPacketNumberSpace",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S13-2-6-P1-S1-R01",
+            "RFC9000-S13-2-6-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-6-P1-S1-R01",
           "source": "requirement_attribute",
@@ -388484,14 +388623,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P1-0006.cs::PacketNumberSpaces_AreTrackedIndependently",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -388499,6 +388638,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S13-2-6-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-AckLossRetransmission-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_AckLossRetransmission_DeferredFuzzClosure.AckNumberSpaceFuzz_BuildsAckFramesOnlyFromMatchingPacketNumberSpace",
+          "method": "AckNumberSpaceFuzz_BuildsAckFramesOnlyFromMatchingPacketNumberSpace",
+          "line": 96,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S13-2-6-P1-S1-R01",
+            "RFC9000-S13-2-6-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S13-2-6-P1-S2-R01",
           "source": "requirement_attribute",
