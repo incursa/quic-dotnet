@@ -40,4 +40,45 @@ public sealed class RFC9000_S11_1_P2_S2_R01
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TransportErrorsUseConnectionCloseTypeOneC()
+    {
+        (ulong ErrorCode, ulong TriggeringFrameType, byte[] ReasonPhrase)[] cases =
+        [
+            ((ulong)QuicTransportErrorCode.NoError, 0x00, []),
+            ((ulong)QuicTransportErrorCode.ProtocolViolation, 0x02, [0x70]),
+            ((ulong)QuicTransportErrorCode.FlowControlError, 0x10, [0x66, 0x63]),
+            ((ulong)QuicTransportErrorCode.FrameEncodingError, 0x06, [0x66, 0x72, 0x6D]),
+            ((ulong)QuicTransportErrorCode.ConnectionIdLimitError, 0x18, [0x63, 0x69, 0x64]),
+        ];
+
+        byte[] destination = new byte[64];
+        foreach ((ulong errorCode, ulong triggeringFrameType, byte[] reasonPhrase) in cases)
+        {
+            byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildTransportClose(
+                errorCode,
+                triggeringFrameType,
+                reasonPhrase);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+
+            Assert.False(parsed.IsApplicationError);
+            Assert.Equal((byte)0x1C, parsed.FrameType);
+            Assert.Equal(errorCode, parsed.ErrorCode);
+            Assert.True(parsed.HasTriggeringFrameType);
+            Assert.Equal(triggeringFrameType, parsed.TriggeringFrameType);
+            Assert.Equal(reasonPhrase, parsed.ReasonPhrase.ToArray());
+            Assert.Equal(encoded.Length, bytesConsumed);
+
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
+            Assert.Equal(encoded.Length, bytesWritten);
+            Assert.True(encoded.AsSpan().SequenceEqual(destination.AsSpan(0, bytesWritten)));
+        }
+    }
 }

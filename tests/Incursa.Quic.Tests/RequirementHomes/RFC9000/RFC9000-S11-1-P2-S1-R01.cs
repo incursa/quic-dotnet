@@ -60,4 +60,41 @@ public sealed class RFC9000_S11_1_P2_S1_R01
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ApplicationErrorsUseConnectionCloseTypeOneD()
+    {
+        (ulong ErrorCode, byte[] ReasonPhrase)[] cases =
+        [
+            (0UL, []),
+            (1UL, [0x61]),
+            (42UL, [0x61, 0x70]),
+            (0x1234UL, [0x61, 0x70, 0x70]),
+            (0x3FFFUL, [0x71, 0x75, 0x69, 0x63]),
+        ];
+
+        byte[] destination = new byte[64];
+        foreach ((ulong errorCode, byte[] reasonPhrase) in cases)
+        {
+            byte[] encoded = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(errorCode, reasonPhrase);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+
+            Assert.True(parsed.IsApplicationError);
+            Assert.Equal((byte)0x1D, parsed.FrameType);
+            Assert.Equal(errorCode, parsed.ErrorCode);
+            Assert.False(parsed.HasTriggeringFrameType);
+            Assert.Equal(reasonPhrase, parsed.ReasonPhrase.ToArray());
+            Assert.Equal(encoded.Length, bytesConsumed);
+
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
+            Assert.Equal(encoded.Length, bytesWritten);
+            Assert.True(encoded.AsSpan().SequenceEqual(destination.AsSpan(0, bytesWritten)));
+        }
+    }
 }

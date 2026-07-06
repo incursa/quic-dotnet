@@ -56,4 +56,49 @@ public sealed class REQ_QUIC_RFC9000_S11P1_0001
         Assert.Equal(applicationEncoded.Length, applicationBytesWritten);
         Assert.True(applicationEncoded.AsSpan().SequenceEqual(applicationDestination[..applicationBytesWritten]));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_UnusableConnectionErrorsRoundTripAsConnectionCloseFrames()
+    {
+        (bool ApplicationError, ulong ErrorCode, ulong TriggeringFrameType, byte[] ReasonPhrase)[] cases =
+        [
+            (false, (ulong)QuicTransportErrorCode.ProtocolViolation, 0x02, []),
+            (false, (ulong)QuicTransportErrorCode.FlowControlError, 0x10, [0x66]),
+            (false, (ulong)QuicTransportErrorCode.FrameEncodingError, 0x06, [0x66, 0x72]),
+            (true, 0x01, 0, []),
+            (true, 0x1234, 0, [0x61]),
+            (true, 0x3FFF, 0, [0x61, 0x70, 0x70]),
+        ];
+
+        byte[] destination = new byte[64];
+        foreach ((bool applicationError, ulong errorCode, ulong triggeringFrameType, byte[] reasonPhrase) in cases)
+        {
+            QuicConnectionCloseFrame frame = applicationError
+                ? new QuicConnectionCloseFrame(errorCode, reasonPhrase)
+                : new QuicConnectionCloseFrame(errorCode, triggeringFrameType, reasonPhrase);
+            byte[] encoded = QuicFrameTestData.BuildConnectionCloseFrame(frame);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                encoded,
+                out QuicConnectionCloseFrame parsed,
+                out int bytesConsumed));
+
+            Assert.Equal(encoded.Length, bytesConsumed);
+            Assert.Equal(applicationError, parsed.IsApplicationError);
+            Assert.Equal(errorCode, parsed.ErrorCode);
+            Assert.Equal(reasonPhrase, parsed.ReasonPhrase.ToArray());
+            Assert.Equal(applicationError ? 0x1D : 0x1C, parsed.FrameType);
+            if (!applicationError)
+            {
+                Assert.True(parsed.HasTriggeringFrameType);
+                Assert.Equal(triggeringFrameType, parsed.TriggeringFrameType);
+            }
+
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(parsed, destination, out int bytesWritten));
+            Assert.Equal(encoded.Length, bytesWritten);
+            Assert.True(encoded.AsSpan().SequenceEqual(destination.AsSpan(0, bytesWritten)));
+        }
+    }
 }
