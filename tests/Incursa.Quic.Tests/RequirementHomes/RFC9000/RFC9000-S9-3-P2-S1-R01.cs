@@ -120,6 +120,63 @@ public sealed class REQ_QUIC_RFC9000_0481
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_PermittedMigrationRoutesSubsequentStreamPacketsToTheNewPeerAddress()
+    {
+        foreach ((int index, bool receiveAckOnlyPacket) in new[]
+        {
+            (0, false),
+            (1, true),
+            (2, false),
+            (3, true),
+        })
+        {
+            QuicConnectionPathIdentity activePath = new(
+                $"203.0.113.{90 + index}",
+                $"198.51.100.{90 + index}",
+                RemotePort: 443,
+                LocalPort: 61000 + index);
+            using QuicConnectionRuntime runtime =
+                QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+            QuicConnectionPathIdentity migratedPath = activePath with
+            {
+                RemoteAddress = $"203.0.113.{100 + index}",
+                RemotePort = 444 + index,
+            };
+
+            QuicConnectionTransitionResult receiveResult;
+            if (receiveAckOnlyPacket)
+            {
+                runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                    QuicPacketNumberSpace.ApplicationData,
+                    PacketNumber: 0,
+                    PayloadBytes: 1,
+                    SentAtMicros: 1,
+                    PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
+                receiveResult = ReceiveAckOnlyPacket(runtime, migratedPath, observedAtTicks: 20 + index);
+            }
+            else
+            {
+                receiveResult = ReceiveNonProbingStreamPacket(runtime, migratedPath, observedAtTicks: 20 + index);
+            }
+
+            Assert.True(receiveResult.StateChanged);
+            Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+            Assert.False(candidatePath.Validation.IsValidated);
+            Assert.True(candidatePath.HasHighestNonProbingPacketNumber);
+
+            QuicConnectionSendDatagramEffect send =
+                await QuicPeerConnectionIdSelectionTestSupport.OpenOutboundStreamAndCaptureSingleSendAsync(runtime);
+
+            Assert.Equal(migratedPath, send.PathIdentity);
+            Assert.NotEqual(activePath, send.PathIdentity);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        }
+    }
+
+    [Fact]
     [Requirement("RFC9000-S9-3-P4-S1-R01")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]

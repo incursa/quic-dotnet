@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:16:01.3563708-06:00",
+    "generated_at": "2026-07-06T04:18:35.1541988-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1303,
-      "full_executable_proof": 1374
+      "deferred_proof_not_executed": 1302,
+      "full_executable_proof": 1375
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 266,
-          "full_executable_proof": 1184
+          "deferred_proof_not_executed": 265,
+          "full_executable_proof": 1185
         }
       },
       {
@@ -83691,9 +83691,9 @@
       "rfc": "RFC9000",
       "title": "Send subsequent packets to the new peer address",
       "statement": "If the recipient permits the migration, it MUST send subsequent packets to the new peer address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -83703,15 +83703,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P2-S1-R01.cs"
