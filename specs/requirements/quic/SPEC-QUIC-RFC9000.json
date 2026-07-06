@@ -9645,7 +9645,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostMayAbortARetryReplayCandidateThatResetsInitialPacketNumbers",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers"
         ],
         "upstream_refs": [
           "RFC 9000 17.2.5.3 RFC9000-S17P2P5P3-B4-P4-S6",

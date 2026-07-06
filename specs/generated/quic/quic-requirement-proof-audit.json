@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T13:17:53.0534871-06:00",
+    "generated_at": "2026-07-06T13:22:38.6083823-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1049,
-      "full_executable_proof": 1628
+      "deferred_proof_not_executed": 1048,
+      "full_executable_proof": 1629
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 24,
-          "full_executable_proof": 1426
+          "deferred_proof_not_executed": 23,
+          "full_executable_proof": 1427
         }
       },
       {
@@ -76476,9 +76476,9 @@
       "rfc": "RFC9000",
       "title": "Abort on packet number reset",
       "statement": "A server MAY abort the connection if it detects that the client reset the packet number.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -76487,23 +76487,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostMayAbortARetryReplayCandidateThatResetsInitialPacketNumbers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers"
       ]
     },
     {

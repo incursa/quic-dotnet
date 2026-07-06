@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T13:17:31.4897198-06:00",
+  "generated_at": "2026-07-06T13:22:21.8922503-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T13:17:31.4861515-06:00",
+    "generated_at": "2026-07-06T13:22:21.8888204-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -402730,21 +402730,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostMayAbortARetryReplayCandidateThatResetsInitialPacketNumbers",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::ListenerHostAllowsARetryReplayCandidateThatContinuesTheInitialPacketNumber",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -402752,6 +402753,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S17-2-5-3-P4-S6-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1055",
+          "member": "REQ_QUIC_RFC9000_1055.Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers",
+          "method": "Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers",
+          "line": 187,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-3-P4-S6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-3-P4-S6-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs::Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-3-P4-S6-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1055",
+          "member": "REQ_QUIC_RFC9000_1055.Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers",
+          "method": "Fuzz_ListenerHostRejectsRetryReplayCandidatesThatResetInitialPacketNumbers",
+          "line": 187,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-3-P4-S6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S17-2-5-3-P4-S6-R01",
           "source": "requirement_attribute",
