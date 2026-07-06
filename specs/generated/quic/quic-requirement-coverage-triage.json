@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-05T20:21:01.1381857-06:00",
+  "generated_at": "2026-07-05T20:24:20.3426048-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-05T20:21:01.1347978-06:00",
+    "generated_at": "2026-07-05T20:24:20.3389026-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -90459,14 +90459,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -90605,6 +90605,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0021",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure.Fuzz_InitialCryptoPacketsUseInitialTypeAndFirstClientPacketStartsAtCryptoOffsetZero",
+          "method": "Fuzz_InitialCryptoPacketsUseInitialTypeAndFirstClientPacketStartsAtCryptoOffsetZero",
+          "line": 247,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P2-0021",
+            "REQ-QUIC-RFC9000-S17P2P2-0026"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -90635,14 +90658,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -90781,6 +90804,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0022",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure.Fuzz_RetryFollowUpInitialPacketsCarryRetryTokenAndInitialCrypto",
+          "method": "Fuzz_RetryFollowUpInitialPacketsCarryRetryTokenAndInitialCrypto",
+          "line": 313,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P2-0022"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -90811,14 +90856,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -90957,6 +91002,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0024",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure.Fuzz_InitialPayloadContainsCryptoFramesAckFramesOrBoth",
+          "method": "Fuzz_InitialPayloadContainsCryptoFramesAckFramesOrBoth",
+          "line": 372,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P2-0024"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -90986,14 +91053,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 0,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -91088,6 +91155,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0025",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure.Fuzz_InitialPacketsContainingOtherFrameTypesAreDiscardedOrConnectionErrors",
+          "method": "Fuzz_InitialPacketsContainingOtherFrameTypesAreDiscardedOrConnectionErrors",
+          "line": 438,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P2-0025"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -91118,14 +91207,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -91264,6 +91353,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S17P2P2-0026",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S17P2P2-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure.Fuzz_InitialCryptoPacketsUseInitialTypeAndFirstClientPacketStartsAtCryptoOffsetZero",
+          "method": "Fuzz_InitialCryptoPacketsUseInitialTypeAndFirstClientPacketStartsAtCryptoOffsetZero",
+          "line": 247,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S17P2P2-0021",
+            "REQ-QUIC-RFC9000-S17P2P2-0026"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },

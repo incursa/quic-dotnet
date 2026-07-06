@@ -239,6 +239,231 @@ public sealed class REQ_QUIC_RFC9000_S17P2P2_DeferredFuzzClosure
         }
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0021")]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0026")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_InitialCryptoPacketsUseInitialTypeAndFirstClientPacketStartsAtCryptoOffsetZero()
+    {
+        foreach (int cryptoLength in new[] { 1, 8, 32 })
+        {
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Client,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection clientProtection));
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Server,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection serverProtection));
+            byte[] clientCryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x40, cryptoLength);
+            QuicHandshakeFlowCoordinator clientCoordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+
+            Assert.True(clientCoordinator.TryBuildProtectedInitialPacket(
+                clientCryptoPayload,
+                cryptoPayloadOffset: 0,
+                clientProtection,
+                out ulong packetNumber,
+                out byte[] clientProtectedPacket));
+
+            Assert.Equal(0UL, packetNumber);
+            Assert.True(QuicS17P2P2TestSupport.IsInitialPacket(clientProtectedPacket));
+            Assert.True(clientCoordinator.TryOpenInitialPacket(
+                clientProtectedPacket,
+                serverProtection,
+                out byte[] clientOpenedPacket,
+                out int clientPayloadOffset,
+                out int clientPayloadLength));
+            QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+                clientOpenedPacket,
+                clientPayloadOffset,
+                clientPayloadLength,
+                clientCryptoPayload,
+                expectedCryptoOffset: 0);
+
+            byte[] serverCryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x80, cryptoLength);
+            QuicHandshakeFlowCoordinator serverCoordinator = QuicS17P2P2TestSupport.CreateServerCoordinator();
+            Assert.True(serverCoordinator.TrySetHandshakeDestinationConnectionId(QuicS17P2P2TestSupport.InitialSourceConnectionId));
+            Assert.True(serverCoordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+                serverCryptoPayload,
+                cryptoPayloadOffset: 0,
+                serverProtection,
+                out byte[] serverProtectedPacket));
+
+            Assert.True(QuicS17P2P2TestSupport.IsInitialPacket(serverProtectedPacket));
+            Assert.True(serverCoordinator.TryOpenInitialPacket(
+                serverProtectedPacket,
+                clientProtection,
+                out byte[] serverOpenedPacket,
+                out int serverPayloadOffset,
+                out int serverPayloadLength));
+            QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+                serverOpenedPacket,
+                serverPayloadOffset,
+                serverPayloadLength,
+                serverCryptoPayload,
+                expectedCryptoOffset: 0);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0022")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RetryFollowUpInitialPacketsCarryRetryTokenAndInitialCrypto()
+    {
+        foreach (int retryTokenLength in new[] { 1, 16, 63 })
+        {
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Client,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection clientProtection));
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Server,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection serverProtection));
+            byte[] retrySourceConnectionId = QuicS17P2P2TestSupport.CreateSequentialBytes(0x30, 4);
+            byte[] retryToken = QuicS17P2P2TestSupport.CreateSequentialBytes(0xA0, retryTokenLength);
+
+            Assert.True(QuicRetryIntegrity.TryBuildRetryPacket(
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialSourceConnectionId,
+                retrySourceConnectionId,
+                retryToken,
+                out byte[] retryPacket));
+            Assert.True(QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                retryPacket,
+                out QuicRetryBootstrapMetadata retryMetadata));
+
+            byte[] cryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x60, 12);
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                cryptoPayload,
+                cryptoPayloadOffset: 0,
+                retryMetadata.RetrySourceConnectionId,
+                retryMetadata.RetryToken,
+                clientProtection,
+                out ulong packetNumber,
+                out byte[] protectedPacket));
+
+            Assert.Equal(0UL, packetNumber);
+            Assert.True(QuicS17P2P2TestSupport.IsInitialPacket(protectedPacket));
+            Assert.True(coordinator.TryOpenInitialPacket(
+                protectedPacket,
+                serverProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+            QuicS17P2P2TestSupport.AssertInitialTokenLength(openedPacket, (ulong)retryTokenLength);
+            QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+                openedPacket,
+                payloadOffset,
+                payloadLength,
+                cryptoPayload,
+                expectedCryptoOffset: 0);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0024")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_InitialPayloadContainsCryptoFramesAckFramesOrBoth()
+    {
+        foreach ((bool includeAck, int cryptoLength) in new[]
+        {
+            (false, 1),
+            (false, 16),
+            (true, 8),
+        })
+        {
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Client,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection clientProtection));
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Server,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection serverProtection));
+            byte[] cryptoPayload = QuicS17P2P2TestSupport.CreateSequentialBytes(0x50, cryptoLength);
+            byte[] ackPayload = includeAck
+                ? QuicFrameTestData.BuildAckFrame(new QuicAckFrame
+                {
+                    FrameType = 0x02,
+                    LargestAcknowledged = 0,
+                    AckDelay = 0,
+                    FirstAckRange = 0,
+                })
+                : [];
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateClientCoordinator();
+
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                cryptoPayload,
+                cryptoPayloadOffset: 0,
+                ackPayload,
+                clientProtection,
+                out byte[] protectedPacket));
+            Assert.True(coordinator.TryOpenInitialPacket(
+                protectedPacket,
+                serverProtection,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+
+            int cryptoPayloadOffset = payloadOffset;
+            if (includeAck)
+            {
+                Assert.True(QuicFrameCodec.TryParseAckFrame(
+                    openedPacket.AsSpan(payloadOffset, payloadLength),
+                    out _,
+                    out int ackBytesConsumed));
+                cryptoPayloadOffset += ackBytesConsumed;
+                payloadLength -= ackBytesConsumed;
+            }
+
+            QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+                openedPacket,
+                cryptoPayloadOffset,
+                payloadLength,
+                cryptoPayload,
+                expectedCryptoOffset: 0);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S17P2P2-0025")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_InitialPacketsContainingOtherFrameTypesAreDiscardedOrConnectionErrors()
+    {
+        foreach (byte[] invalidPayload in new[]
+        {
+            QuicFrameTestData.BuildResetStreamFrame(new QuicResetStreamFrame(0, 1, 0)),
+            QuicFrameTestData.BuildStopSendingFrame(new QuicStopSendingFrame(0, 1)),
+            QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(1024)),
+        })
+        {
+            using QuicConnectionRuntime runtime = QuicS17P2P2TestSupport.CreateServerRuntime();
+            QuicConnectionPathIdentity path = new("203.0.113.70", RemotePort: 443);
+            byte[] protectedPacket = QuicS17P2P2TestSupport.CreateProtectedClientInitialPacket(invalidPayload);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 1,
+                    path,
+                    protectedPacket),
+                nowTicks: 1);
+
+            Assert.True(result.StateChanged || runtime.TerminalState is null);
+            if (runtime.TerminalState is { } terminalState)
+            {
+                Assert.Equal(QuicConnectionCloseOrigin.Local, terminalState.Origin);
+                Assert.Equal(QuicTransportErrorCode.ProtocolViolation, terminalState.Close.TransportErrorCode);
+            }
+        }
+    }
+
     private static IEnumerable<InitialPacketCase> InitialPacketCases()
     {
         foreach (int packetNumberLength in new[] { 1, 2, 3, 4 })
