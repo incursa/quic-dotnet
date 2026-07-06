@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T11:19:09.1900994-06:00",
+  "generated_at": "2026-07-06T11:23:09.3141949-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T11:19:09.1866509-06:00",
+    "generated_at": "2026-07-06T11:23:09.3091061-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -411436,22 +411436,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryApplyMaxStreamDataFrame_OpensLowerNumberedPeerStreamsFirst",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryReceiveStopSendingFrame_OpensLowerNumberedPeerStreamsFirst",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::TryApplyMaxStreamDataFrame_DoesNotOpenAnyPeerStreamWhenTheTargetExceedsTheLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 4,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -411459,6 +411460,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S3-2-P6-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs",
+          "class": "RFC9000_S3_2_P6_R01",
+          "member": "RFC9000_S3_2_P6_R01.PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst",
+          "method": "PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst",
+          "line": 83,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S3-2-P6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S3-2-P6-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs::PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-2-P6-R01.cs",
+          "class": "RFC9000_S3_2_P6_R01",
+          "member": "RFC9000_S3_2_P6_R01.PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst",
+          "method": "PeerControlFrameFuzz_OpensLowerNumberedSameTypePeerStreamsFirst",
+          "line": 83,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S3-2-P6-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S3-2-P6-R01",
           "source": "requirement_attribute",
