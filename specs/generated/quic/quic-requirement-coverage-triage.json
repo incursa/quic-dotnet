@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T02:49:30.1180688-06:00",
+  "generated_at": "2026-07-06T02:53:40.7090564-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T02:49:30.1031999-06:00",
+    "generated_at": "2026-07-06T02:53:40.7050636-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -20157,7 +20157,7 @@
           "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.PathChallengeResponseFuzz_EmitsExactlyOnePathResponseForEachChallenge",
           "method": "PathChallengeResponseFuzz_EmitsExactlyOnePathResponseForEachChallenge",
-          "line": 12,
+          "line": 13,
           "kinds": [
             "fuzz"
           ],
@@ -20166,7 +20166,8 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
-            "REQ-QUIC-RFC9000-0447"
+            "REQ-QUIC-RFC9000-0447",
+            "REQ-QUIC-RFC9000-S8P2P2-0007"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -20964,7 +20965,7 @@
           "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.PathValidationPromotionFuzz_StartsValidationAndPromotesOnlyAfterValidationSucceeds",
           "method": "PathValidationPromotionFuzz_StartsValidationAndPromotesOnlyAfterValidationSucceeds",
-          "line": 44,
+          "line": 103,
           "kinds": [
             "fuzz"
           ],
@@ -21166,7 +21167,7 @@
           "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.PathValidationPromotionFuzz_StartsValidationAndPromotesOnlyAfterValidationSucceeds",
           "method": "PathValidationPromotionFuzz_StartsValidationAndPromotesOnlyAfterValidationSucceeds",
-          "line": 44,
+          "line": 103,
           "kinds": [
             "fuzz"
           ],
@@ -21762,7 +21763,7 @@
           "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.OriginalPathReturnFuzz_ReturnsOnlyWhenOriginalPathPacketNumberIncreases",
           "method": "OriginalPathReturnFuzz_ReturnsOnlyWhenOriginalPathPacketNumberIncreases",
-          "line": 100,
+          "line": 159,
           "kinds": [
             "fuzz"
           ],
@@ -21890,7 +21891,7 @@
           "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
           "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.MultiPathAckFuzz_BuildsAckRangesForPacketsReceivedAcrossPaths",
           "method": "MultiPathAckFuzz_BuildsAckRangesForPacketsReceivedAcrossPaths",
-          "line": 150,
+          "line": 209,
           "kinds": [
             "fuzz"
           ],
@@ -204668,14 +204669,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0008.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -204726,6 +204727,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P1-0008",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S8P2P1-0008.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0008",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0008.TryGeneratePathChallengeDataFuzz_WritesFrameSizedDistinctPayloadsThatRoundTrip",
+          "method": "TryGeneratePathChallengeDataFuzz_WritesFrameSizedDistinctPayloadsThatRoundTrip",
+          "line": 39,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S8P2P1-0008"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         }
       ]
     },
@@ -204755,14 +204778,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -204869,6 +204892,29 @@
             "REQ-QUIC-RFC9000-0447",
             "REQ-QUIC-RFC9000-0815",
             "REQ-QUIC-RFC9000-S19P17-0006",
+            "REQ-QUIC-RFC9000-S8P2P2-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S8P2P2-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.PathChallengeResponseFuzz_EmitsExactlyOnePathResponseForEachChallenge",
+          "method": "PathChallengeResponseFuzz_EmitsExactlyOnePathResponseForEachChallenge",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-0447",
             "REQ-QUIC-RFC9000-S8P2P2-0007"
           ],
           "requirement_tagged": true,
@@ -205899,14 +205945,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0001.cs::NewLocalAddressIsProbedBeforeTheConnectionMigrates",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 0,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -205914,6 +205960,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.NewLocalAddressProbeFuzz_StartsPathValidationBeforePromotingTheMigratedPath",
+          "method": "NewLocalAddressProbeFuzz_StartsPathValidationBeforePromotingTheMigratedPath",
+          "line": 45,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P1-0001",
+            "REQ-QUIC-RFC9000-S9P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S9P1-0001",
           "source": "requirement_attribute",
@@ -206027,14 +206096,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P1-0002.cs::UnvalidatedNewLocalAddressDoesNotReplaceTheActivePath",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 3,
-        "focused": 3,
+        "total": 4,
+        "focused": 4,
         "broad": 0,
         "by_kind": {
           "positive": 0,
           "negative": 2,
           "edge": 1,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -206042,6 +206111,29 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S9P1-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs",
+          "class": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure",
+          "member": "REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure.NewLocalAddressProbeFuzz_StartsPathValidationBeforePromotingTheMigratedPath",
+          "method": "NewLocalAddressProbeFuzz_StartsPathValidationBeforePromotingTheMigratedPath",
+          "line": 45,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S9P1-0001",
+            "REQ-QUIC-RFC9000-S9P1-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S9P1-0002",
           "source": "requirement_attribute",

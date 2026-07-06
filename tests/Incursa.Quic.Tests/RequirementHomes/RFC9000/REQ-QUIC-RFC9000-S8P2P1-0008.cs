@@ -32,4 +32,40 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0008
         Assert.Equal(encodedBytesWritten, bytesConsumed);
         Assert.True(challengeData[..bytesWritten].SequenceEqual(parsed.Data));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryGeneratePathChallengeDataFuzz_WritesFrameSizedDistinctPayloadsThatRoundTrip()
+    {
+        byte[][] generatedPayloads = new byte[16][];
+
+        for (int iteration = 0; iteration < generatedPayloads.Length; iteration++)
+        {
+            byte[] challengeData = new byte[QuicPathValidation.PathChallengeDataLength];
+
+            Assert.True(QuicPathValidation.TryGeneratePathChallengeData(challengeData, out int bytesWritten));
+            Assert.Equal(QuicPathValidation.PathChallengeDataLength, bytesWritten);
+
+            QuicPathChallengeFrame frame = new(challengeData);
+            byte[] encoded = new byte[16];
+            Assert.True(QuicFrameCodec.TryFormatPathChallengeFrame(frame, encoded, out int encodedBytesWritten));
+            Assert.True(QuicFrameCodec.TryParsePathChallengeFrame(
+                encoded[..encodedBytesWritten],
+                out QuicPathChallengeFrame parsed,
+                out int bytesConsumed));
+
+            Assert.Equal(encodedBytesWritten, bytesConsumed);
+            Assert.True(challengeData.AsSpan().SequenceEqual(parsed.Data));
+            generatedPayloads[iteration] = challengeData;
+        }
+
+        for (int left = 0; left < generatedPayloads.Length; left++)
+        {
+            for (int right = left + 1; right < generatedPayloads.Length; right++)
+            {
+                Assert.False(generatedPayloads[left].AsSpan().SequenceEqual(generatedPayloads[right]));
+            }
+        }
+    }
 }

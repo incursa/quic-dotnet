@@ -7,6 +7,7 @@ public sealed class REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure
 {
     [Fact]
     [Requirement("REQ-QUIC-RFC9000-0447")]
+    [Requirement("REQ-QUIC-RFC9000-S8P2P2-0007")]
     [CoverageType(RequirementCoverageType.Fuzz)]
     [Trait("Category", "Fuzz")]
     public void PathChallengeResponseFuzz_EmitsExactlyOnePathResponseForEachChallenge()
@@ -33,6 +34,64 @@ public sealed class REQ_QUIC_RFC9000_MigrationPath_DeferredFuzzClosure
                 challengeData,
                 expectMinimumSize: false);
             Assert.Equal(challengePath, response.PathIdentity);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S9P1-0001")]
+    [Requirement("REQ-QUIC-RFC9000-S9P1-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void NewLocalAddressProbeFuzz_StartsPathValidationBeforePromotingTheMigratedPath()
+    {
+        for (int iteration = 0; iteration < 8; iteration++)
+        {
+            QuicConnectionPathIdentity activePath = new(
+                RemoteAddress: $"203.0.113.{20 + iteration}",
+                LocalAddress: $"198.51.100.{20 + iteration}",
+                RemotePort: 443,
+                LocalPort: (ushort)(61000 + iteration));
+            QuicConnectionPathIdentity migratedPath = activePath with
+            {
+                LocalAddress = iteration % 2 == 0
+                    ? $"198.51.100.{80 + iteration}"
+                    : activePath.LocalAddress,
+                LocalPort = (ushort)(62000 + iteration),
+            };
+            QuicConnectionRuntime runtime =
+                QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithConfirmedHandshakeAndActivePath(activePath);
+            QuicPathMigrationRecoveryTestSupport.AddUnusedPeerConnectionId(runtime);
+
+            QuicConnectionTransitionResult receiveResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + iteration,
+                    migratedPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 20 + iteration);
+
+            Assert.True(receiveResult.StateChanged);
+            Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+            Assert.True(runtime.CandidatePaths.TryGetValue(migratedPath, out QuicConnectionCandidatePathRecord candidatePath));
+            Assert.False(candidatePath.Validation.IsValidated);
+            Assert.False(candidatePath.Validation.IsAbandoned);
+            Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
+            Assert.True(candidatePath.Validation.ValidationDeadlineTicks.HasValue);
+            QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+                receiveResult,
+                migratedPath,
+                runtime: runtime);
+            Assert.DoesNotContain(receiveResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+
+            QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                migratedPath,
+                observedAtTicks: 40 + iteration);
+
+            Assert.True(validationResult.StateChanged);
+            Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+            Assert.Contains(validationResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == migratedPath);
         }
     }
 
