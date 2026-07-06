@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:00:44.1151350-06:00",
+    "generated_at": "2026-07-06T10:03:57.3233107-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1137,
-      "full_executable_proof": 1540
+      "deferred_proof_not_executed": 1134,
+      "full_executable_proof": 1543
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 112,
-          "full_executable_proof": 1338
+          "deferred_proof_not_executed": 109,
+          "full_executable_proof": 1341
         }
       },
       {
@@ -74840,9 +74840,9 @@
       "rfc": "RFC9000",
       "title": "Allow oversized Initial datagrams when the path and peer support them",
       "statement": "Datagrams containing Initial packets MAY exceed 1200 bytes if the sender believes that the network path and peer both support the size that it chooses.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -74853,17 +74853,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P3-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P3-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14P1-InitialDatagramSize-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -74876,9 +74876,9 @@
       "rfc": "RFC9000",
       "title": "Discard undersized Initial packets at the server",
       "statement": "A server MUST discard an Initial packet that is carried in a UDP datagram with a payload that is smaller than the smallest allowed maximum datagram size of 1200 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -74890,18 +74890,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P4-S1-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P4-S1-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14P1-InitialDatagramSize-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -74915,9 +74915,9 @@
       "rfc": "RFC9000",
       "title": "Allow servers to close on undersized Initial packets",
       "statement": "A server MAY also immediately close the connection by sending a CONNECTION_CLOSE frame with an error code of PROTOCOL_VIOLATION.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative",
@@ -74928,18 +74928,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P4-S1-R01.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P4-S2-R01.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-1-P4-S2-R01.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14P1-InitialDatagramSize-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
