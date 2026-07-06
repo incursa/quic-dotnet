@@ -163,4 +163,97 @@ public sealed class REQ_QUIC_RFC9000_0476
         Assert.Equal(0UL, candidatePath.Validation.ChallengeSendCount);
         Assert.DoesNotContain(edgeResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-0467")]
+    [Requirement("REQ-QUIC-RFC9000-0468")]
+    [Requirement("REQ-QUIC-RFC9000-0476")]
+    [Requirement("RFC9000-S9-P3-S2-R01")]
+    [Requirement("RFC9000-S9-P5-S2-R01")]
+    public void Fuzz_MigrationPolicyKeepsTrafficOnEligiblePathsUntilValidationCompletes()
+    {
+        for (int iteration = 0; iteration < 6; iteration++)
+        {
+            using QuicConnectionRuntime clientRuntime =
+                QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(clientRuntime.ActivePath.HasValue);
+
+            QuicConnectionPathIdentity clientActivePath = clientRuntime.ActivePath.Value.Identity;
+            QuicConnectionPathIdentity unexpectedServerPath = clientActivePath with
+            {
+                RemoteAddress = $"203.0.113.{90 + iteration}",
+                RemotePort = (ushort)(9443 + iteration),
+            };
+            byte[] protectedPacket = QuicS17P3P1TestSupport.CreateProtectedApplicationDataPacket(
+                clientRuntime.CurrentPeerDestinationConnectionId.Span,
+                [0x00, 0x00, 0x00, (byte)(0x30 + iteration)],
+                QuicStreamTestData.BuildStreamFrame(0x0A, streamId: 1, [(byte)(0x20 + iteration)]),
+                clientRuntime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+                declaredPacketNumberLength: 4);
+
+            QuicConnectionTransitionResult discardResult = clientRuntime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + iteration,
+                    unexpectedServerPath,
+                    protectedPacket),
+                nowTicks: 20 + iteration);
+
+            Assert.Equal(clientActivePath, clientRuntime.ActivePath!.Value.Identity);
+            Assert.False(clientRuntime.CandidatePaths.ContainsKey(unexpectedServerPath));
+            Assert.False(clientRuntime.RecentlyValidatedPaths.ContainsKey(unexpectedServerPath));
+            Assert.DoesNotContain(discardResult.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect send
+                && send.PathIdentity == unexpectedServerPath);
+            Assert.DoesNotContain(discardResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == unexpectedServerPath);
+
+            QuicConnectionPathIdentity serverActivePath = new($"203.0.113.{120 + iteration}", RemotePort: 443);
+            QuicConnectionPathIdentity migratedClientPath = serverActivePath with
+            {
+                RemotePort = (ushort)(5443 + iteration),
+            };
+            using QuicConnectionRuntime serverRuntime =
+                QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithConfirmedHandshakeAndActivePath(serverActivePath);
+            byte[] streamFrame = QuicStreamTestData.BuildStreamFrame(
+                0x0E,
+                streamId: 0,
+                streamData: [(byte)(0x41 + iteration)],
+                offset: 0);
+
+            QuicConnectionTransitionResult pendingMigrationResult = QuicS19P16RetireConnectionIdTestSupport.TransitionOneRttPacket(
+                serverRuntime,
+                migratedClientPath,
+                serverRuntime.CurrentPeerDestinationConnectionId.Span,
+                streamFrame,
+                observedAtTicks: 40 + iteration);
+
+            Assert.True(pendingMigrationResult.StateChanged);
+            Assert.True(serverRuntime.ActivePath.HasValue);
+            Assert.Equal(serverActivePath, serverRuntime.ActivePath!.Value.Identity);
+            Assert.True(serverRuntime.CandidatePaths.TryGetValue(
+                migratedClientPath,
+                out QuicConnectionCandidatePathRecord candidatePath));
+            Assert.False(candidatePath.Validation.IsValidated);
+            Assert.False(candidatePath.Validation.IsAbandoned);
+            Assert.True(candidatePath.HasHighestNonProbingPacketNumber);
+            Assert.DoesNotContain(pendingMigrationResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == migratedClientPath);
+
+            QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                serverRuntime,
+                migratedClientPath,
+                observedAtTicks: 60 + iteration);
+
+            Assert.True(validationResult.StateChanged);
+            Assert.True(serverRuntime.ActivePath.HasValue);
+            Assert.Equal(migratedClientPath, serverRuntime.ActivePath!.Value.Identity);
+            Assert.Contains(validationResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == migratedClientPath);
+        }
+    }
 }
