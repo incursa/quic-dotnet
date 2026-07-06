@@ -39956,7 +39956,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P5-S2-R01.cs::NewConnectionIdFrame_ClosesWhenTheActiveConnectionIdSetExceedsTheLocalLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P5-S2-R01.cs::NewConnectionIdFrame_AllowsAReplacementWhenRetirePriorToKeepsTheActiveSetWithinTheLocalLimit",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P5-S2-R01.cs::NewConnectionIdFrame_AllowsAnExactDuplicateWhenAlreadyAtTheLocalLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P5-S2-R01.cs::NewConnectionIdFrame_AllowsAnExactDuplicateWhenAlreadyAtTheLocalLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P5-S2-R01.cs::NewConnectionIdFrameFuzz_ClosesWhenActiveConnectionIdSetExceedsTheLocalLimit"
         ]
       }
     },

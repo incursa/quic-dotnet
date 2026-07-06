@@ -112,4 +112,42 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0014
         Assert.Empty(retiredSequenceNumbers);
         Assert.Equal(2, state.ActiveConnectionIdCount);
     }
+
+    [Fact]
+    /// <workbench-requirements generated="true" source="manual">
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-1-P5-S2-R01">After processing a NEW_CONNECTION_ID frame and adding and retiring active connection IDs, if the number of active connection IDs exceeds the value advertised in the active_connection_id_limit transport parameter, an endpoint MUST close the connection with an error of type CONNECTION_ID_LIMIT_ERROR.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("RFC9000-S5-1-1-P5-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void NewConnectionIdFrameFuzz_ClosesWhenActiveConnectionIdSetExceedsTheLocalLimit()
+    {
+        for (byte iteration = 0; iteration < 8; iteration++)
+        {
+            using QuicConnectionRuntime runtime =
+                QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            ulong firstSequenceNumber = 1UL + (ulong)(iteration * 2);
+            ulong secondSequenceNumber = firstSequenceNumber + 1UL;
+
+            Assert.True(QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
+                runtime,
+                firstSequenceNumber,
+                retirePriorTo: 0UL,
+                connectionId: [iteration, 0x10, 0x11],
+                observedAtTicks: 9 + iteration,
+                statelessResetTokenStart: (byte)(0x20 + iteration)).StateChanged);
+
+            QuicConnectionTransitionResult result = QuicConnectionIdLifecycleTestSupport.ProcessNewConnectionIdFrame(
+                runtime,
+                secondSequenceNumber,
+                retirePriorTo: 0UL,
+                connectionId: [iteration, 0x20, 0x21],
+                observedAtTicks: 20 + iteration,
+                statelessResetTokenStart: (byte)(0x40 + iteration));
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicTransportErrorCode.ConnectionIdLimitError, runtime.TerminalState!.Value.Close.TransportErrorCode);
+        }
+    }
 }
