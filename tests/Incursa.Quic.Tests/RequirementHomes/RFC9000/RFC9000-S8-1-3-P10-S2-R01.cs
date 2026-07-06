@@ -72,10 +72,60 @@ public sealed class REQ_QUIC_RFC9000_S8P1P3_0015
         Assert.Equal(0, scenario.ListenerHost.RetryBootstrapReplayValidationFailureCode);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S8-1-3-P10-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_InvalidNewTokensLeaveClientUnvalidatedAndTriggerRetryDisposition()
+    {
+        foreach (InvalidNewTokenScenario invalidScenario in CreateInvalidNewTokenScenarios())
+        {
+            QuicAddressValidationTokenProtector protector = CreateProtector();
+            await using QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario scenario =
+                await QuicS8P1P3ServerTokenValidationTestSupport.StartRetryValidationScenarioAsync(protector);
+            byte[] token = invalidScenario.CreateToken(scenario);
+
+            QuicRetryBootstrapMetadata retry = await scenario.SendInitialWithTokenAndReceiveRetryAsync(token);
+
+            await scenario.WaitForNoCallbackAsync();
+            Assert.NotEmpty(retry.RetryToken);
+            Assert.True(scenario.ListenerHost.NewTokenValidationAttempted);
+            Assert.False(scenario.ListenerHost.NewTokenValidationSucceeded);
+            Assert.False(scenario.ListenerHost.RetryBootstrapReplayAdmitted);
+            Assert.True(scenario.ListenerHost.RetryBootstrapIssued);
+            Assert.Equal(invalidScenario.ExpectedFailureCode, scenario.ListenerHost.NewTokenValidationFailureCode);
+        }
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
     }
+
+    private static InvalidNewTokenScenario[] CreateInvalidNewTokenScenarios()
+    {
+        return
+        [
+            new(
+                "expired-token",
+                scenario => scenario.IssueNewTokenForClient(DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(10))),
+                (int)QuicAddressValidationTokenValidationResult.Expired),
+            new(
+                "tampered-token",
+                scenario =>
+                {
+                    byte[] token = scenario.IssueNewTokenForClient();
+                    token[^1] ^= 0x5A;
+                    return token;
+                },
+                (int)QuicAddressValidationTokenValidationResult.IntegrityFailure),
+        ];
+    }
+
+    private sealed record InvalidNewTokenScenario(
+        string Name,
+        Func<QuicS8P1P3ServerTokenValidationTestSupport.RetryValidationScenario, byte[]> CreateToken,
+        int ExpectedFailureCode);
 
     private static byte[] CreateSecret()
     {
