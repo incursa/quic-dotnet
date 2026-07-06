@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T03:20:20.7227098-06:00",
+    "generated_at": "2026-07-06T03:22:58.3009122-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1331,
-      "full_executable_proof": 1346
+      "deferred_proof_not_executed": 1328,
+      "full_executable_proof": 1349
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 286,
-          "full_executable_proof": 1164
+          "deferred_proof_not_executed": 283,
+          "full_executable_proof": 1167
         }
       },
       {
@@ -14749,9 +14749,9 @@
       "rfc": "RFC9000",
       "title": "This check detects a network element that zeroes the ECN field or a peer that does not report ECN markings",
       "statement": "This check detects a network element that zeroes the ECN field or a peer that MUST NOT report ECN markings.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -14761,15 +14761,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
@@ -74631,9 +74630,9 @@
       "rfc": "RFC9000",
       "title": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection",
       "statement": "Even if validation fails, an endpoint MAY revalidate ECN for the same path at any later time in the connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -74641,17 +74640,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P5-S2-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-2-P2-S1-R01.cs"
       ],
@@ -74693,9 +74692,9 @@
       "rfc": "RFC9000",
       "title": "Network routing and path elements can change mid-connection",
       "statement": "Network routing and path elements can change mid-connection; an endpoint MUST disable ECN if validation later fails.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -74705,17 +74704,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 3,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0003.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-1-P5-S2-R01.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-4-2-2-P3-S2-R01.cs"
       ],
