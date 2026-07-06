@@ -42,4 +42,36 @@ public sealed class RFC9000_S15_P7_S1_R03
 
         Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ReservedVersionsFuzz_DoNotRepresentSupportedProtocolsOrVersionNegotiation()
+    {
+        uint[] templates =
+        [
+            0x00112233u,
+            0x11223344u,
+            0xA5B6C7D8u,
+            0xF0E1D2C3u,
+        ];
+
+        foreach (uint template in templates)
+        {
+            uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(template);
+            byte[] packet = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x4C,
+                version: reservedVersion,
+                destinationConnectionId: [0x10, 0x11],
+                sourceConnectionId: [0x20],
+                versionSpecificData: [0x30, 0x31]);
+
+            Assert.True(QuicVersionNegotiation.IsReservedVersion(reservedVersion));
+            Assert.False(QuicVersionNegotiation.IsSupportedTransportVersion(reservedVersion));
+            Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+            Assert.Equal(reservedVersion, header.Version);
+            Assert.False(header.IsVersionNegotiation);
+            Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
+        }
+    }
 }
