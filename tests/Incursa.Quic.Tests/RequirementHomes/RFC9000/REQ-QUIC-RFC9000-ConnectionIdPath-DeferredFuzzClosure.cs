@@ -70,6 +70,7 @@ public sealed class REQ_QUIC_RFC9000_ConnectionIdPath_DeferredFuzzClosure
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S5-0008")]
     [Requirement("REQ-QUIC-RFC9000-0244")]
     [Requirement("REQ-QUIC-RFC9000-0245")]
     [CoverageType(RequirementCoverageType.Fuzz)]

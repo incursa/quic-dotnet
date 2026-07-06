@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:09:52.5905606-06:00",
+    "generated_at": "2026-07-06T04:13:26.3432556-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1306,
-      "full_executable_proof": 1371
+      "deferred_proof_not_executed": 1305,
+      "full_executable_proof": 1372
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 267,
-          "full_executable_proof": 1183
+          "deferred_proof_not_executed": 266,
+          "full_executable_proof": 1184
         }
       },
       {
@@ -34337,9 +34337,9 @@
       "rfc": "RFC9000",
       "title": "Use connection IDs to enable migration",
       "statement": "Connection IDs MUST allow connections to migrate to a new network path, both as a direct choice of an endpoint and when forced by a change in a middlebox.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -34347,17 +34347,17 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
+      "focused_file_count": 4,
       "focused_files": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-ConnectionIdPath-DeferredFuzzClosure.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0001.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P5-0004.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P8-S3-R01.cs"
