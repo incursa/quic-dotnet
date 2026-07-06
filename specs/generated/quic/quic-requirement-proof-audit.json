@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:55:14.5743182-06:00",
+    "generated_at": "2026-07-06T07:57:44.8788254-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1233,
-      "full_executable_proof": 1444
+      "deferred_proof_not_executed": 1232,
+      "full_executable_proof": 1445
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 208,
-          "full_executable_proof": 1242
+          "deferred_proof_not_executed": 207,
+          "full_executable_proof": 1243
         }
       },
       {
@@ -72739,9 +72739,9 @@
       "rfc": "RFC9000",
       "title": "Send a Stateless Reset in response to receiving a packet that it cannot associate with an active connection",
       "statement": "An endpoint MAY send a Stateless Reset in response to receiving a packet that it cannot associate with an active connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -72750,15 +72750,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P1-S2-R01.cs"
