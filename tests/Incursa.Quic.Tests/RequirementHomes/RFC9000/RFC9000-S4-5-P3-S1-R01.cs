@@ -140,4 +140,38 @@ public sealed class REQ_QUIC_RFC9000_0192
         Assert.Equal(2UL, snapshot.UniqueBytesReceived);
         Assert.Equal(2UL, state.ConnectionAccountedBytesReceived);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-5-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveResetStreamFrame_AccountsFinalSizeAtTheConnectionLevel()
+    {
+        foreach (ulong finalSize in new[] { 2UL, 3UL, 5UL, 8UL, 16UL, 63UL })
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: QuicVariableLengthInteger.MaxValue,
+                peerBidirectionalReceiveLimit: QuicVariableLengthInteger.MaxValue);
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x08, 1, [0x11, 0x22], offset: 0),
+                out QuicStreamFrame leadingFrame));
+            Assert.True(state.TryReceiveStreamFrame(leadingFrame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(2UL, state.ConnectionAccountedBytesReceived);
+
+            Assert.True(state.TryReceiveResetStreamFrame(
+                new QuicResetStreamFrame(streamId: 1, applicationProtocolErrorCode: 0x99, finalSize),
+                out QuicMaxDataFrame maxDataFrame,
+                out errorCode));
+
+            Assert.Equal(default, errorCode);
+            Assert.Equal(default, maxDataFrame);
+            Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+            Assert.True(snapshot.HasFinalSize);
+            Assert.Equal(finalSize, snapshot.FinalSize);
+            Assert.Equal(finalSize, snapshot.AccountedBytesReceived);
+            Assert.Equal(finalSize, state.ConnectionAccountedBytesReceived);
+        }
+    }
 }

@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:12:48.6240262-06:00",
+    "generated_at": "2026-07-06T05:14:57.7727653-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1287,
-      "full_executable_proof": 1390
+      "deferred_proof_not_executed": 1286,
+      "full_executable_proof": 1391
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 259,
-          "full_executable_proof": 1191
+          "deferred_proof_not_executed": 258,
+          "full_executable_proof": 1192
         }
       },
       {
@@ -79196,9 +79196,9 @@
       "rfc": "RFC9000",
       "title": "Use final size for flow control accounting",
       "statement": "The receiver MUST use the final size of the stream to account for all bytes sent on the stream in its connection-level flow controller.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79209,15 +79209,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-5-P3-S1-R01.cs"
