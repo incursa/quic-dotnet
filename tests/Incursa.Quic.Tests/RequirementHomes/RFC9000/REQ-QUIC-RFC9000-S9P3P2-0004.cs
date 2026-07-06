@@ -11,20 +11,44 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0004
     [Trait("Category", "Positive")]
     public void ValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress()
     {
+        AssertValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress(
+            migratedValidatedPath: new("203.0.113.22", RemotePort: 443),
+            failedPath: new("203.0.113.23", RemotePort: 443),
+            tickOffset: 20);
+    }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S9P3P2-0004")]
+    public void Fuzz_ValidationFailureRevertsAcrossSampledLastValidatedPeerAddresses()
+    {
+        for (int index = 0; index < 4; index++)
+        {
+            AssertValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress(
+                migratedValidatedPath: new($"203.0.113.{30 + (index * 2)}", RemotePort: 443 + index),
+                failedPath: new($"203.0.113.{31 + (index * 2)}", RemotePort: 1443 + index),
+                tickOffset: 100 + (index * 40));
+        }
+    }
+
+    private static void AssertValidationFailureKeepsUsingTheMostRecentlyValidatedPeerAddress(
+        QuicConnectionPathIdentity migratedValidatedPath,
+        QuicConnectionPathIdentity failedPath,
+        long tickOffset)
+    {
         QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         Assert.True(runtime.ActivePath.HasValue);
 
         QuicConnectionPathIdentity originalValidatedPath = runtime.ActivePath!.Value.Identity;
-        QuicConnectionPathIdentity migratedValidatedPath = new("203.0.113.22", RemotePort: 443);
-        QuicConnectionPathIdentity failedPath = new("203.0.113.23", RemotePort: 443);
         byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
 
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 20,
+                ObservedAtTicks: tickOffset,
                 migratedValidatedPath,
                 datagram),
-            nowTicks: 20).StateChanged);
+            nowTicks: tickOffset).StateChanged);
 
         Assert.True(runtime.CandidatePaths.TryGetValue(migratedValidatedPath, out QuicConnectionCandidatePathRecord migratedCandidatePath));
         Assert.False(migratedCandidatePath.Validation.IsValidated);
@@ -32,7 +56,7 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0004
         QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
             runtime,
             migratedValidatedPath,
-            observedAtTicks: 30);
+            observedAtTicks: tickOffset + 10);
 
         Assert.True(validationResult.StateChanged);
         Assert.True(runtime.ActivePath.HasValue);
@@ -47,10 +71,10 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0004
 
         Assert.True(runtime.Transition(
             new QuicConnectionPacketReceivedEvent(
-                ObservedAtTicks: 40,
+                ObservedAtTicks: tickOffset + 20,
                 failedPath,
                 datagram),
-            nowTicks: 40).StateChanged);
+            nowTicks: tickOffset + 20).StateChanged);
 
         Assert.True(runtime.CandidatePaths.TryGetValue(failedPath, out QuicConnectionCandidatePathRecord failedCandidatePath));
         Assert.False(failedCandidatePath.Validation.IsValidated);
@@ -58,10 +82,10 @@ public sealed class REQ_QUIC_RFC9000_S9P3P2_0004
 
         QuicConnectionTransitionResult failureResult = runtime.Transition(
             new QuicConnectionPathValidationFailedEvent(
-                ObservedAtTicks: 50,
+                ObservedAtTicks: tickOffset + 30,
                 failedPath,
                 IsAbandoned: true),
-            nowTicks: 50);
+            nowTicks: tickOffset + 30);
 
         Assert.True(failureResult.StateChanged);
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
