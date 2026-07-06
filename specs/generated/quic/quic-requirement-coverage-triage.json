@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:45:46.9215313-06:00",
+  "generated_at": "2026-07-06T09:48:57.8430718-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:45:46.9177611-06:00",
+    "generated_at": "2026-07-06T09:48:57.8392774-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -416024,14 +416024,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -416126,6 +416126,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-1-1-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5P1P1P6-ConnectionIdReplenishment-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S5P1P1P6_ConnectionIdReplenishment_DeferredFuzzClosure",
+          "member": "RFC9000_S5P1P1P6_ConnectionIdReplenishment_DeferredFuzzClosure.RetireConnectionIdFuzz_SuppliesReplacementWhenIssuanceCapacityRemains",
+          "method": "RetireConnectionIdFuzz_SuppliesReplacementWhenIssuanceCapacityRemains",
+          "line": 14,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-1-1-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -416155,14 +416177,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -416257,6 +416279,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-1-1-P6-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5P1P1P6-ConnectionIdReplenishment-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S5P1P1P6_ConnectionIdReplenishment_DeferredFuzzClosure",
+          "member": "RFC9000_S5P1P1P6_ConnectionIdReplenishment_DeferredFuzzClosure.PreviouslyUnusedConnectionIdFuzz_ReplenishesOnlyOnFirstUse",
+          "method": "PreviouslyUnusedConnectionIdFuzz_ReplenishesOnlyOnFirstUse",
+          "line": 63,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-1-1-P6-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
