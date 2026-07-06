@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:43:23.9987376-06:00",
+  "generated_at": "2026-07-06T03:48:53.4175082-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:43:23.9946126-06:00",
+    "generated_at": "2026-07-06T03:48:53.4140567-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -391349,14 +391349,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 14,
-        "focused": 14,
+        "total": 15,
+        "focused": 15,
         "broad": 0,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -391392,9 +391392,31 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-P2-S2-R01.cs",
           "class": "REQ_QUIC_RFC9000_S13_0002",
+          "member": "REQ_QUIC_RFC9000_S13_0002.Fuzz_WriteAsync_CoalescesRepresentativeSmallWritesAfterTheSendDelayExpires",
+          "method": "Fuzz_WriteAsync_CoalescesRepresentativeSmallWritesAfterTheSendDelayExpires",
+          "line": 248,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S13-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S13-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-P2-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.ReceivingAckFlushesQueuedApplicationSendAfterRecoveryProgress",
           "method": "ReceivingAckFlushesQueuedApplicationSendAfterRecoveryProgress",
-          "line": 404,
+          "line": 492,
           "kinds": [
             "positive"
           ],
@@ -391416,7 +391438,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.ReceivingAckFlushesQueuedApplicationSendsInDatagramBoundedBatchesAfterRecoveryProgress",
           "method": "ReceivingAckFlushesQueuedApplicationSendsInDatagramBoundedBatchesAfterRecoveryProgress",
-          "line": 458,
+          "line": 546,
           "kinds": [
             "positive"
           ],
@@ -391438,7 +391460,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.ReceivingAckFlushesQueuedApplicationSendsOnlyWithinAvailableCongestionBudget",
           "method": "ReceivingAckFlushesQueuedApplicationSendsOnlyWithinAvailableCongestionBudget",
-          "line": 556,
+          "line": 644,
           "kinds": [
             "positive"
           ],
@@ -391460,7 +391482,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.ReceivingAckWithoutQueuedApplicationSendDoesNotEmitApplicationData",
           "method": "ReceivingAckWithoutQueuedApplicationSendDoesNotEmitApplicationData",
-          "line": 609,
+          "line": 697,
           "kinds": [
             "negative"
           ],
@@ -391482,7 +391504,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay",
           "method": "WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay",
-          "line": 730,
+          "line": 818,
           "kinds": [
             "edge"
           ],
@@ -391504,7 +391526,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay",
           "method": "WriteAsync_AtSmallPacketDelayThresholdSendsWithoutDelay",
-          "line": 730,
+          "line": 818,
           "kinds": [
             "edge"
           ],
@@ -391570,7 +391592,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires",
           "method": "WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires",
-          "line": 662,
+          "line": 750,
           "kinds": [
             "negative"
           ],
@@ -391592,7 +391614,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires",
           "method": "WriteAsync_DoesNotSendTheQueuedPacketBeforeTheDelayExpires",
-          "line": 662,
+          "line": 750,
           "kinds": [
             "negative"
           ],
@@ -391614,7 +391636,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_FollowedByCompleteWritesAsync_PreservesQueuedFinalStreamWhenCongestionBlocksImmediateFlush",
           "method": "WriteAsync_FollowedByCompleteWritesAsync_PreservesQueuedFinalStreamWhenCongestionBlocksImmediateFlush",
-          "line": 322,
+          "line": 410,
           "kinds": [
             "negative"
           ],
@@ -391636,7 +391658,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket",
           "method": "WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket",
-          "line": 250,
+          "line": 338,
           "kinds": [
             "positive"
           ],
@@ -391658,7 +391680,7 @@
           "class": "REQ_QUIC_RFC9000_S13_0002",
           "member": "REQ_QUIC_RFC9000_S13_0002.WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket",
           "method": "WriteAsync_FollowedImmediatelyByCompleteWritesAsync_CoalescesTheRequestAndFinIntoOneQueuedPacket",
-          "line": 250,
+          "line": 338,
           "kinds": [
             "positive"
           ],

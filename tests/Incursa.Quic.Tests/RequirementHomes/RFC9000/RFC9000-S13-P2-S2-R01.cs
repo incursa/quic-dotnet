@@ -242,6 +242,94 @@ public sealed class REQ_QUIC_RFC9000_S13_0002
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_WriteAsync_CoalescesRepresentativeSmallWritesAfterTheSendDelayExpires()
+    {
+        byte[][][] chunkCases =
+        [
+            [[0xA1], [0xB2]],
+            [[0xC1, 0xC2], [0xD1], [0xE1, 0xE2, 0xE3]],
+            [
+                Enumerable.Range(0, 7).Select(index => (byte)(0x30 + index)).ToArray(),
+                Enumerable.Range(0, 5).Select(index => (byte)(0x50 + index)).ToArray(),
+                Enumerable.Range(0, 4).Select(index => (byte)(0x70 + index)).ToArray(),
+            ],
+            [
+                Enumerable.Range(0, 15).Select(index => (byte)(0x80 + index)).ToArray(),
+                Enumerable.Range(0, 8).Select(index => (byte)(0xA0 + index)).ToArray(),
+                Enumerable.Range(0, 6).Select(index => (byte)(0xC0 + index)).ToArray(),
+            ],
+        ];
+
+        foreach (byte[][] chunks in chunkCases)
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 64 * 1024,
+                localBidirectionalSendLimit: 64 * 1024);
+            List<QuicConnectionEffect> outboundEffects = [];
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            Assert.True(runtime.ActivePath.HasValue);
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 9,
+                    runtime.ActivePath.Value.Identity,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 9);
+            outboundEffects.Clear();
+
+            QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+            outboundEffects.Clear();
+
+            foreach (byte[] chunk in chunks)
+            {
+                await stream.WriteAsync(chunk, 0, chunk.Length);
+                Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+                Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+            }
+
+            long? dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay);
+            Assert.NotNull(dueTicks);
+            ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.ApplicationSendDelay);
+
+            QuicConnectionTransitionResult timerResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    dueTicks.Value,
+                    QuicConnectionTimerKind.ApplicationSendDelay,
+                    generation),
+                nowTicks: dueTicks.Value);
+
+            QuicConnectionSendDatagramEffect sendEffect = Assert.Single(
+                timerResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            byte[] openedPayload = QuicS13AckPiggybackTestSupport.OpenOutgoingApplicationPayload(runtime, sendEffect);
+
+            ReadOnlySpan<byte> remainingPayload = SkipPadding(openedPayload);
+            ulong expectedOffset = 0UL;
+            foreach (byte[] chunk in chunks)
+            {
+                Assert.True(QuicStreamParser.TryParseStreamFrame(remainingPayload, out QuicStreamFrame frame));
+                Assert.Equal((ulong)stream.Id, frame.StreamId.Value);
+                Assert.Equal(expectedOffset, frame.Offset);
+                Assert.True(frame.StreamData.SequenceEqual(chunk));
+
+                expectedOffset += (ulong)chunk.Length;
+                remainingPayload = SkipPadding(remainingPayload[frame.ConsumedLength..]);
+            }
+
+            Assert.True(remainingPayload.IsEmpty);
+            Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+        }
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
