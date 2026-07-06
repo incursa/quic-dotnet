@@ -1821,7 +1821,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P9-S1-R01.cs::TryFormatTransportParameters_AdvertisesActiveConnectionIdLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P9-S1-R01.cs::TryParseTransportParameters_RejectsActiveConnectionIdLimitBelowTwo",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P9-S1-R01.cs::TryParseTransportParameters_AcceptsMinimumActiveConnectionIdLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P9-S1-R01.cs::TryParseTransportParameters_AcceptsMinimumActiveConnectionIdLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P9-S1-R01.cs::TryFormatAndParseTransportParametersFuzz_RoundTripsActiveConnectionIdSupply"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.1 RFC9000-S5P1-B9-P9-S1",

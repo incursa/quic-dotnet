@@ -85,4 +85,38 @@ public sealed class RFC9000_S5_1_P9_S1_R01
 
         Assert.Equal(2UL, parsed.ActiveConnectionIdLimit);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    /// <workbench-requirements generated="true" source="workbench quality sync">
+    ///   <workbench-requirement requirementId="RFC9000-S5-1-P9-S1-R01">When an endpoint uses a non-zero-length connection ID, it MUST ensure that the peer has a supply of connection IDs from which to choose for packets sent to the endpoint.</workbench-requirement>
+    /// </workbench-requirements>
+    [Requirement("RFC9000-S5-1-P9-S1-R01")]
+    public void TryFormatAndParseTransportParametersFuzz_RoundTripsActiveConnectionIdSupply()
+    {
+        ulong[] activeConnectionIdLimits = [2, 3, 4, 8, 16, 32];
+        Span<byte> destination = stackalloc byte[32];
+
+        foreach (ulong activeConnectionIdLimit in activeConnectionIdLimits)
+        {
+            QuicTransportParameters parameters = new()
+            {
+                ActiveConnectionIdLimit = activeConnectionIdLimit,
+            };
+
+            Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+                parameters,
+                QuicTransportParameterRole.Client,
+                destination,
+                out int bytesWritten));
+
+            Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+                destination[..bytesWritten],
+                QuicTransportParameterRole.Server,
+                out QuicTransportParameters parsed));
+
+            Assert.Equal(activeConnectionIdLimit, parsed.ActiveConnectionIdLimit);
+        }
+    }
 }
