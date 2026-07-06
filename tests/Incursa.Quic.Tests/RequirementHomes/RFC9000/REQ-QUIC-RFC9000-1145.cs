@@ -73,4 +73,39 @@ public sealed class REQ_QUIC_RFC9000_1145
             valueThatOmitsTheZeroedIpv4Family,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PreferredAddressAcceptsEitherAddressFamilyWithTheOtherFamilyZeroed()
+    {
+        foreach (QuicPreferredAddress preferredAddress in OneFamilyPreferredAddresses())
+        {
+            byte[] value = QuicPreferredAddressRequirementTestSupport.FormatPreferredAddressValueAsServer(preferredAddress);
+
+            Assert.True(QuicPreferredAddressRequirementTestSupport.TryParsePreferredAddressValueAsClient(
+                value,
+                out QuicTransportParameters parsed));
+
+            Assert.NotNull(parsed.PreferredAddress);
+            Assert.Equal(preferredAddress.IPv4Address, parsed.PreferredAddress!.IPv4Address);
+            Assert.Equal(preferredAddress.IPv4Port, parsed.PreferredAddress.IPv4Port);
+            Assert.Equal(preferredAddress.IPv6Address, parsed.PreferredAddress.IPv6Address);
+            Assert.Equal(preferredAddress.IPv6Port, parsed.PreferredAddress.IPv6Port);
+        }
+    }
+
+    private static IEnumerable<QuicPreferredAddress> OneFamilyPreferredAddresses()
+    {
+        yield return QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress(
+            preferredIpv4Address: [0, 0, 0, 0],
+            preferredIpv4Port: 0,
+            preferredIpv6Address: QuicPreferredAddressRequirementTestSupport.PreferredIpv6Address,
+            preferredIpv6Port: 8443);
+        yield return QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress(
+            preferredIpv4Address: QuicPreferredAddressRequirementTestSupport.PreferredIpv4Address,
+            preferredIpv4Port: 443,
+            preferredIpv6Address: new byte[QuicPreferredAddressRequirementTestSupport.IPv6AddressLength],
+            preferredIpv6Port: 0);
+    }
 }

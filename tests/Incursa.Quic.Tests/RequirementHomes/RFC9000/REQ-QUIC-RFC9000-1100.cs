@@ -93,4 +93,66 @@ public sealed class REQ_QUIC_RFC9000_1100
             QuicTransportParameterRole.Client,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TransportParameterExtensionDataRoundTripsRepresentativePreferredAddressValues()
+    {
+        byte[] destination = new byte[256];
+        foreach (QuicPreferredAddress preferredAddress in PreferredAddressCorpus())
+        {
+            QuicTransportParameters parameters = new()
+            {
+                InitialSourceConnectionId = [0x11, 0x22],
+                PreferredAddress = preferredAddress,
+                ActiveConnectionIdLimit = 4,
+            };
+
+            Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+                parameters,
+                QuicTransportParameterRole.Server,
+                destination,
+                out int bytesWritten));
+            Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+                destination.AsSpan(0, bytesWritten),
+                QuicTransportParameterRole.Client,
+                out QuicTransportParameters parsed));
+
+            Assert.Equal(parameters.InitialSourceConnectionId, parsed.InitialSourceConnectionId);
+            Assert.Equal(parameters.ActiveConnectionIdLimit, parsed.ActiveConnectionIdLimit);
+            Assert.NotNull(parsed.PreferredAddress);
+            AssertPreferredAddressEqual(preferredAddress, parsed.PreferredAddress!);
+        }
+    }
+
+    private static IEnumerable<QuicPreferredAddress> PreferredAddressCorpus()
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            yield return QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress(
+                preferredConnectionId: Enumerable.Range(0, (i % 5) + 1).Select(value => (byte)(0x30 + i + value)).ToArray(),
+                preferredIpv4Address: [192, 0, 2, (byte)(20 + i)],
+                preferredIpv4Port: (ushort)(9443 + i),
+                preferredIpv6Address:
+                [
+                    0x20, 0x01, 0x0D, 0xB8,
+                    0x00, 0x01, 0x00, 0x02,
+                    0x00, 0x03, 0x00, 0x04,
+                    0x00, 0x05, 0x00, (byte)(20 + i),
+                ],
+                preferredIpv6Port: (ushort)(9553 + i),
+                statelessResetToken: Enumerable.Range(0, 16).Select(value => (byte)(0x60 + i + value)).ToArray());
+        }
+    }
+
+    private static void AssertPreferredAddressEqual(QuicPreferredAddress expected, QuicPreferredAddress actual)
+    {
+        Assert.Equal(expected.IPv4Address, actual.IPv4Address);
+        Assert.Equal(expected.IPv4Port, actual.IPv4Port);
+        Assert.Equal(expected.IPv6Address, actual.IPv6Address);
+        Assert.Equal(expected.IPv6Port, actual.IPv6Port);
+        Assert.Equal(expected.ConnectionId, actual.ConnectionId);
+        Assert.Equal(expected.StatelessResetToken, actual.StatelessResetToken);
+    }
 }

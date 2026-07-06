@@ -56,4 +56,34 @@ public sealed class REQ_QUIC_RFC9000_1146
             QuicPreferredAddressRequirementTestSupport.IPv6AddressOffset,
             QuicPreferredAddressRequirementTestSupport.IPv6AddressLength).ToArray());
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PreferredAddressIpAddressBytesRemainInNetworkByteOrder()
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            byte[] expectedIpv4Address = [198, 51, 100, (byte)(40 + i)];
+            byte[] expectedIpv6Address =
+            [
+                0x20, 0x01, 0x0D, 0xB8,
+                0x00, 0x10, 0x00, (byte)(0x20 + i),
+                0x00, 0x30, 0x00, (byte)(0x40 + i),
+                0x00, 0x50, 0x00, (byte)(0x60 + i),
+            ];
+            QuicPreferredAddress preferredAddress = QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress(
+                preferredIpv4Address: expectedIpv4Address,
+                preferredIpv6Address: expectedIpv6Address);
+
+            byte[] value = QuicPreferredAddressRequirementTestSupport.FormatPreferredAddressValueAsServer(preferredAddress);
+
+            Assert.Equal(expectedIpv4Address, value.AsSpan(
+                QuicPreferredAddressRequirementTestSupport.IPv4AddressOffset,
+                QuicPreferredAddressRequirementTestSupport.IPv4AddressLength).ToArray());
+            Assert.Equal(expectedIpv6Address, value.AsSpan(
+                QuicPreferredAddressRequirementTestSupport.IPv6AddressOffset,
+                QuicPreferredAddressRequirementTestSupport.IPv6AddressLength).ToArray());
+        }
+    }
 }

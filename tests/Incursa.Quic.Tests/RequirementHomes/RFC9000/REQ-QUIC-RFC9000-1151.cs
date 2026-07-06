@@ -41,4 +41,31 @@ public sealed class REQ_QUIC_RFC9000_1151
             value[..^1],
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PreferredAddressCarriesStatelessResetTokenForEachConnectionIdLength()
+    {
+        for (int connectionIdLength = 1; connectionIdLength <= 20; connectionIdLength++)
+        {
+            byte[] expectedConnectionId = Enumerable.Range(0, connectionIdLength)
+                .Select(value => (byte)(0x40 + value))
+                .ToArray();
+            byte[] expectedStatelessResetToken = Enumerable.Range(0, 16)
+                .Select(value => (byte)(0x80 + connectionIdLength + value))
+                .ToArray();
+            byte[] value = QuicPreferredAddressRequirementTestSupport.FormatPreferredAddressValueAsServer(
+                QuicPreferredAddressRequirementTestSupport.CreatePreferredAddress(
+                    preferredConnectionId: expectedConnectionId,
+                    statelessResetToken: expectedStatelessResetToken));
+
+            Assert.True(QuicPreferredAddressRequirementTestSupport.TryParsePreferredAddressValueAsClient(
+                value,
+                out QuicTransportParameters parsed));
+            Assert.NotNull(parsed.PreferredAddress);
+            Assert.Equal(expectedConnectionId, parsed.PreferredAddress!.ConnectionId);
+            Assert.Equal(expectedStatelessResetToken, parsed.PreferredAddress.StatelessResetToken);
+        }
+    }
 }

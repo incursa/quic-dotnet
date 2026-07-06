@@ -44,4 +44,41 @@ public sealed class REQ_QUIC_RFC9000_1147
             truncated,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PreferredAddressRequiresCompleteIpv4AndIpv6AddressPortFields()
+    {
+        byte[] preferredAddressValue = QuicTransportParameterTestData.BuildPreferredAddressValue(
+            ipv4Address: [192, 0, 2, 1],
+            ipv4Port: 443,
+            ipv6Address: QuicPreferredAddressRequirementTestSupport.PreferredIpv6Address,
+            ipv6Port: 8443,
+            connectionId: QuicPreferredAddressRequirementTestSupport.PreferredConnectionId,
+            statelessResetToken: QuicPreferredAddressRequirementTestSupport.StatelessResetToken);
+
+        foreach (int truncatedLength in TruncatedFieldLengths(preferredAddressValue.Length))
+        {
+            Assert.False(QuicPreferredAddressRequirementTestSupport.TryParsePreferredAddressValueAsClient(
+                preferredAddressValue[..truncatedLength],
+                out _));
+        }
+
+        Assert.True(QuicPreferredAddressRequirementTestSupport.TryParsePreferredAddressValueAsClient(
+            preferredAddressValue,
+            out QuicTransportParameters parsed));
+        Assert.NotNull(parsed.PreferredAddress);
+        Assert.Equal(QuicPreferredAddressRequirementTestSupport.PreferredIpv4Address, parsed.PreferredAddress!.IPv4Address);
+        Assert.Equal(QuicPreferredAddressRequirementTestSupport.PreferredIpv6Address, parsed.PreferredAddress.IPv6Address);
+    }
+
+    private static IEnumerable<int> TruncatedFieldLengths(int fullLength)
+    {
+        yield return QuicPreferredAddressRequirementTestSupport.IPv4AddressLength - 1;
+        yield return QuicPreferredAddressRequirementTestSupport.IPv4PortOffset + QuicPreferredAddressRequirementTestSupport.PortLength - 1;
+        yield return QuicPreferredAddressRequirementTestSupport.IPv6AddressOffset + QuicPreferredAddressRequirementTestSupport.IPv6AddressLength - 1;
+        yield return QuicPreferredAddressRequirementTestSupport.IPv6PortOffset + QuicPreferredAddressRequirementTestSupport.PortLength - 1;
+        yield return fullLength - 1;
+    }
 }
