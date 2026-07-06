@@ -108,6 +108,66 @@ public sealed class REQ_QUIC_RFC9000_S10P2P1_0002
         Assert.Equal(path, runtime.ActivePath.Value.Identity);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void LocalCloseRequestedFuzz_RetainsSelectedConnectionIdentityAcrossRepeatedCloseAttempts()
+    {
+        for (int index = 0; index < 8; index++)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity selectedPath = new(
+                $"203.0.113.{80 + index}",
+                RemotePort: 4400 + index);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: index,
+                    selectedPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize + index]),
+                nowTicks: index).StateChanged);
+
+            QuicConnectionCloseMetadata firstClose = new(
+                TransportErrorCode: index % 2 == 0
+                    ? QuicTransportErrorCode.ProtocolViolation
+                    : QuicTransportErrorCode.NoError,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: (ulong)(0x1c + index),
+                ReasonPhrase: null);
+
+            QuicConnectionTransitionResult firstResult = runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 20 + index,
+                    firstClose),
+                nowTicks: 20 + index);
+
+            Assert.True(firstResult.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(selectedPath, runtime.ActivePath.Value.Identity);
+            Assert.Equal(firstClose, runtime.TerminalState?.Close);
+
+            QuicConnectionTransitionResult secondResult = runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 40 + index,
+                    new QuicConnectionCloseMetadata(
+                        TransportErrorCode: QuicTransportErrorCode.InternalError,
+                        ApplicationErrorCode: null,
+                        TriggeringFrameType: 0x1d,
+                        ReasonPhrase: $"ignored-{index}")),
+                nowTicks: 40 + index);
+
+            Assert.False(secondResult.StateChanged);
+            Assert.Empty(secondResult.Effects);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(selectedPath, runtime.ActivePath.Value.Identity);
+            Assert.Equal(firstClose, runtime.TerminalState?.Close);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);
