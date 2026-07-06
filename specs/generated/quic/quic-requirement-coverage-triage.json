@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T16:46:56.3269131-06:00",
+  "generated_at": "2026-07-06T16:51:10.1781825-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T16:46:56.3236349-06:00",
+    "generated_at": "2026-07-06T16:51:10.1741673-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -458224,14 +458224,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -458239,6 +458239,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S6-2-2-1-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-DeferredFuzzClosure.cs",
+          "class": "RFC9002_S6_2_2_1_DeferredFuzzClosure",
+          "member": "RFC9002_S6_2_2_1_DeferredFuzzClosure.Fuzz_ServerSendBudgetStaysClosedUntilAttributedClientDatagramsArrive",
+          "method": "Fuzz_ServerSendBudgetStaysClosedUntilAttributedClientDatagramsArrive",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S6-2-2-1-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S6-2-2-1-P1-S2-R01",
           "source": "requirement_attribute",
@@ -458400,14 +458422,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -458415,6 +458437,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S6-2-2-1-P3-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-DeferredFuzzClosure.cs",
+          "class": "RFC9002_S6_2_2_1_DeferredFuzzClosure",
+          "member": "RFC9002_S6_2_2_1_DeferredFuzzClosure.Fuzz_ClientCanArmHandshakeProbeTimeoutBeforeHandshakeConfirmation",
+          "method": "Fuzz_ClientCanArmHandshakeProbeTimeoutBeforeHandshakeConfirmation",
+          "line": 42,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S6-2-2-1-P3-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S6-2-2-1-P3-S2-R01",
           "source": "requirement_attribute",
@@ -458575,14 +458619,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -458590,6 +458634,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-DeferredFuzzClosure.cs",
+          "class": "RFC9002_S6_2_2_1_DeferredFuzzClosure",
+          "member": "RFC9002_S6_2_2_1_DeferredFuzzClosure.Fuzz_ClientProbeSelectionUsesHandshakeSpaceWhenHandshakeKeysAreAvailable",
+          "method": "Fuzz_ClientProbeSelectionUsesHandshakeSpaceWhenHandshakeKeysAreAvailable",
+          "line": 70,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S6-2-2-1-P3-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R01",
           "source": "requirement_attribute",
@@ -458709,14 +458775,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -458724,6 +458790,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-2-2-1-DeferredFuzzClosure.cs",
+          "class": "RFC9002_S6_2_2_1_DeferredFuzzClosure",
+          "member": "RFC9002_S6_2_2_1_DeferredFuzzClosure.Fuzz_ClientProbeSelectionFallsBackToPaddedInitialWhenHandshakeKeysAreUnavailable",
+          "method": "Fuzz_ClientProbeSelectionFallsBackToPaddedInitialWhenHandshakeKeysAreUnavailable",
+          "line": 97,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S6-2-2-1-P3-S3-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9002-S6-2-2-1-P3-S3-R02",
           "source": "requirement_attribute",
