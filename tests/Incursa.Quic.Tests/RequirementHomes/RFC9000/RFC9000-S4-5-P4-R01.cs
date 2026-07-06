@@ -110,4 +110,65 @@ public sealed class REQ_QUIC_RFC9000_0193
         Assert.Equal(default, streamDataBlockedFrame);
         Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-5-P4-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReserveSendCapacityFuzz_RejectsDataAtOrBeyondKnownFinalSize()
+    {
+        (ulong FinalSize, ulong AllowedOffset, int AllowedLength, ulong RejectedOffset, int RejectedLength)[] cases =
+        [
+            (2, 0, 1, 2, 1),
+            (5, 3, 2, 4, 2),
+            (8, 0, 8, 8, 1),
+            (13, 11, 2, 12, 2),
+        ];
+
+        foreach ((ulong finalSize, ulong allowedOffset, int allowedLength, ulong rejectedOffset, int rejectedLength) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: 64,
+                localBidirectionalSendLimit: 64);
+
+            Assert.True(state.TryOpenLocalStream(bidirectional: true, out QuicStreamId streamId, out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.True(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset: 0,
+                length: checked((int)finalSize),
+                fin: true,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(default, errorCode);
+
+            Assert.True(state.TryReserveSendCapacity(
+                streamId.Value,
+                allowedOffset,
+                allowedLength,
+                fin: false,
+                out dataBlockedFrame,
+                out streamDataBlockedFrame,
+                out errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(default, errorCode);
+
+            Assert.False(state.TryReserveSendCapacity(
+                streamId.Value,
+                rejectedOffset,
+                rejectedLength,
+                fin: false,
+                out dataBlockedFrame,
+                out streamDataBlockedFrame,
+                out errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(QuicTransportErrorCode.FinalSizeError, errorCode);
+        }
+    }
 }

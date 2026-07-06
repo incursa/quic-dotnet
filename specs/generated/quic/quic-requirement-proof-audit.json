@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:10:34.8246023-06:00",
+    "generated_at": "2026-07-06T11:14:13.2944346-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1113,
-      "full_executable_proof": 1564
+      "deferred_proof_not_executed": 1112,
+      "full_executable_proof": 1565
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 88,
-          "full_executable_proof": 1362
+          "deferred_proof_not_executed": 87,
+          "full_executable_proof": 1363
         }
       },
       {
@@ -79130,9 +79130,9 @@
       "rfc": "RFC9000",
       "title": "Do not send data at or beyond final size",
       "statement": "An endpoint MUST NOT send data on a stream at or beyond the final size.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79142,15 +79142,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-5-P4-R01.cs"
