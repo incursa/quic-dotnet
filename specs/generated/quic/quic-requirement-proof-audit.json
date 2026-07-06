@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:25:37.4327018-06:00",
+    "generated_at": "2026-07-06T04:37:58.7189756-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1300,
-      "full_executable_proof": 1377
+      "deferred_proof_not_executed": 1299,
+      "full_executable_proof": 1378
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 263,
-          "full_executable_proof": 1187
+          "deferred_proof_not_executed": 262,
+          "full_executable_proof": 1188
         }
       },
       {
@@ -75372,9 +75372,9 @@
       "rfc": "RFC9000",
       "title": "Stop sending packets on a path that cannot support 1200 bytes",
       "statement": "If a QUIC endpoint determines that the PMTU between any pair of local and remote IP addresses cannot support the smallest allowed maximum datagram size of 1200 bytes, it MUST immediately cease sending QUIC packets on the affected path except for those in PMTU probes or those containing CONNECTION_CLOSE frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -75386,15 +75386,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-P4-S1-R01.cs"

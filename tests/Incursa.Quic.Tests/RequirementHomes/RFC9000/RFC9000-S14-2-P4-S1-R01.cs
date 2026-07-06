@@ -182,6 +182,37 @@ public sealed class REQ_QUIC_RFC9000_S14P2_0007
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TrySetActivePathMaximumDatagramSize_TogglesOrdinaryPacketSendingAtTheRFCMinimum()
+    {
+        ulong minimumAllowedMaximumDatagramSizeBytes =
+            QuicConnectionPathMaximumDatagramSizeState.MinimumAllowedMaximumDatagramSizeBytes;
+
+        foreach ((ulong maximumDatagramSizeBytes, bool expectOrdinarySend) in new[]
+        {
+            (minimumAllowedMaximumDatagramSizeBytes - 2, false),
+            (minimumAllowedMaximumDatagramSizeBytes - 1, false),
+            (minimumAllowedMaximumDatagramSizeBytes, true),
+            (minimumAllowedMaximumDatagramSizeBytes + 128, true),
+        })
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(runtime.TrySetActivePathMaximumDatagramSize(maximumDatagramSizeBytes));
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(
+                expectOrdinarySend,
+                runtime.ActivePath!.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
+            Assert.Equal(
+                maximumDatagramSizeBytes,
+                runtime.SendRuntime.FlowController.CongestionControlState.MaxDatagramSizeBytes);
+            Assert.Equal(
+                maximumDatagramSizeBytes >= minimumAllowedMaximumDatagramSizeBytes,
+                runtime.ActivePath.Value.MaximumDatagramSizeState.CanSendOrdinaryPackets);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TrySetActivePathMaximumDatagramSize_LeavesOrdinaryPacketsEnabledAtTheRFCMinimum()
