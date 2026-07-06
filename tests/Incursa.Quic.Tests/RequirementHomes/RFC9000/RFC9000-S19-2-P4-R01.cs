@@ -21,4 +21,27 @@ public sealed class RFC9000_S19_2_P4_R01
         Assert.True(QuicFrameCodec.TryParsePingFrame(destination[..bytesWritten], out int bytesConsumed));
         Assert.Equal(bytesWritten, bytesConsumed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S19-2-P4-R01")]
+    public void TryFormatPingFrameFuzz_ProducesSingleByteAckElicitingKeepAliveProbe()
+    {
+        foreach (int destinationLength in new[] { 1, 2, 8, 32 })
+        {
+            byte[] destination = new byte[destinationLength];
+
+            Assert.True(QuicFrameCodec.TryFormatPingFrame(destination, out int bytesWritten));
+            Assert.Equal(1, bytesWritten);
+            Assert.Equal((byte)0x01, destination[0]);
+            Assert.True(QuicFrameCodec.IsAckElicitingFrameType(destination[0]));
+
+            Assert.True(QuicFrameCodec.TryParsePingFrame(destination.AsSpan(0, bytesWritten), out int bytesConsumed));
+            Assert.Equal(bytesWritten, bytesConsumed);
+        }
+
+        Assert.False(QuicFrameCodec.TryFormatPingFrame([], out int emptyBytesWritten));
+        Assert.Equal(0, emptyBytesWritten);
+    }
 }
