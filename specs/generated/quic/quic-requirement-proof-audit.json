@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T13:22:38.6083823-06:00",
+    "generated_at": "2026-07-06T13:26:49.3194223-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1048,
-      "full_executable_proof": 1629
+      "deferred_proof_not_executed": 1043,
+      "full_executable_proof": 1634
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 169,
-          "full_executable_proof": 57
+          "deferred_proof_not_executed": 164,
+          "full_executable_proof": 62
         }
       },
       {
@@ -41552,9 +41552,9 @@
       "rfc": "RFC9002",
       "title": "Gate RTT sample generation",
       "statement": "An endpoint MUST generate an RTT sample on receiving an ACK frame only if the largest acknowledged packet number is newly acknowledged and at least one newly acknowledged packet was ack-eliciting.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41566,24 +41566,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
       ]
     },
     {
@@ -41591,9 +41592,9 @@
       "rfc": "RFC9002",
       "title": "Measure latest RTT from the largest acknowledged packet",
       "statement": "latest_rtt MUST equal the time elapsed between when the largest acknowledged packet was sent and when the corresponding ACK was received.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41605,24 +41606,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ComputesLatestRttFromTheLargestAcknowledgedPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_DoesNotCreateALatestRttSampleWhenTheLargestPacketWasNotNewlyAcknowledged",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ReportsZeroLatestRttWhenTheAckArrivesAtTheSendTime"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ReportsZeroLatestRttWhenTheAckArrivesAtTheSendTime",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
       ]
     },
     {
@@ -41630,9 +41632,9 @@
       "rfc": "RFC9002",
       "title": "Use only the largest acknowledged packet",
       "statement": "An RTT sample MUST use only the largest acknowledged packet in the received ACK frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41644,24 +41646,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesOnlyTheLargestAcknowledgedPacketSendTimeWhenMultiplePacketsAreNewlyAcknowledged",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_DoesNotUpdateTheRttWhenALaterAckOnlyAdvancesSmallerPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_RecordAcknowledgment_UsesOnlyLargestAcknowledgedPacketForRttSamples"
       ]
     },
     {
@@ -41669,9 +41672,9 @@
       "rfc": "RFC9002",
       "title": "Skip duplicate RTT updates",
       "statement": "An ACK frame SHOULD NOT be used to update RTT estimates if it does not newly acknowledge the largest acknowledged packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41683,24 +41686,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_UpdatesTheRttWhenTheLargestPacketIsNewlyAcknowledged",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_DoesNotUpdateTheRttWhenTheLargestPacketWasAlreadyAcknowledged",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
       ]
     },
     {
@@ -41708,9 +41712,9 @@
       "rfc": "RFC9002",
       "title": "Require ack-eliciting progress",
       "statement": "An RTT sample MUST NOT be generated on receiving an ACK frame that does not newly acknowledge at least one ack-eliciting packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -41722,24 +41726,25 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
       ]
     },
     {

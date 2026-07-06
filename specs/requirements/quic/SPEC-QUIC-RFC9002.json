@@ -702,7 +702,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GeneratesAnRttSampleOnlyForNewAckElicitingPackets",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_DoesNotGenerateAnRttSampleWithoutBothProgressSignals",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0001.cs::TryUpdateFromAck_GatesSampleCreationAcrossAckProgressBoundaries",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
         ]
       }
     },
@@ -734,7 +735,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ComputesLatestRttFromTheLargestAcknowledgedPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_DoesNotCreateALatestRttSampleWhenTheLargestPacketWasNotNewlyAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ReportsZeroLatestRttWhenTheAckArrivesAtTheSendTime"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0002.cs::TryUpdateFromAck_ReportsZeroLatestRttWhenTheAckArrivesAtTheSendTime",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
         ]
       }
     },
@@ -765,7 +767,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesOnlyTheLargestAcknowledgedPacketSendTimeWhenMultiplePacketsAreNewlyAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_DoesNotUpdateTheRttWhenALaterAckOnlyAdvancesSmallerPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0003.cs::RecordAcknowledgment_UsesTheLargestAcknowledgedPacketTimeAtTheZeroBoundary",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_RecordAcknowledgment_UsesOnlyLargestAcknowledgedPacketForRttSamples"
         ]
       }
     },
@@ -796,7 +799,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_UpdatesTheRttWhenTheLargestPacketIsNewlyAcknowledged",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_DoesNotUpdateTheRttWhenTheLargestPacketWasAlreadyAcknowledged",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0004.cs::TryUpdateFromAck_LeavesTheRttUnchangedAtTheZeroBoundaryWhenTheLargestPacketWasAlreadyAcknowledged",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
         ]
       }
     },
@@ -827,7 +831,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_GeneratesSampleForNewAckElicitingProgress",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_DoesNotGenerateSampleForNewlyAcknowledgedNonAckElicitingPackets",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-0005.cs::TryUpdateFromAck_PreservesExistingRttSampleWhenAckElicitingProgressIsAbsent",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-S5P1-DeferredFuzzClosure.cs::Fuzz_TryUpdateFromAck_GatesAndComputesRttSamplesAcrossAckProgressSignals"
         ]
       }
     },
