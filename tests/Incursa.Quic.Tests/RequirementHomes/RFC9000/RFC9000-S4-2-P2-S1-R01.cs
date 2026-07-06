@@ -89,4 +89,49 @@ public sealed class REQ_QUIC_RFC9000_S4P2_0001
         Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
         Assert.Equal(MaximumFlowControlLimit, snapshot.SendLimit);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-2-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryApplyMaxFramesFuzz_AllowsRepeatedAndEarlyCreditAdvertisements()
+    {
+        (ulong InitialConnectionLimit, ulong[] ConnectionAdvertisements, ulong InitialStreamLimit, ulong[] StreamAdvertisements)[] cases =
+        [
+            (8, [12, 16, 16, 15, 20], 8, [10, 14, 14, 13, 18]),
+            (0, [1, 4, 3, 4, 8], 0, [1, 2, 2, 1, 5]),
+            (MaximumFlowControlLimit - 4, [MaximumFlowControlLimit - 2, MaximumFlowControlLimit - 1, MaximumFlowControlLimit - 1, MaximumFlowControlLimit], MaximumFlowControlLimit - 4, [MaximumFlowControlLimit - 3, MaximumFlowControlLimit - 1, MaximumFlowControlLimit - 2, MaximumFlowControlLimit]),
+        ];
+
+        foreach ((ulong initialConnectionLimit, ulong[] connectionAdvertisements, ulong initialStreamLimit, ulong[] streamAdvertisements) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: initialConnectionLimit,
+                peerBidirectionalSendLimit: initialStreamLimit);
+            ulong expectedConnectionLimit = initialConnectionLimit;
+            ulong expectedStreamLimit = initialStreamLimit;
+
+            foreach (ulong advertisedLimit in connectionAdvertisements)
+            {
+                bool applied = state.TryApplyMaxDataFrame(new QuicMaxDataFrame(advertisedLimit));
+
+                Assert.Equal(advertisedLimit > expectedConnectionLimit, applied);
+                expectedConnectionLimit = Math.Max(expectedConnectionLimit, advertisedLimit);
+                Assert.Equal(expectedConnectionLimit, state.ConnectionSendLimit);
+            }
+
+            foreach (ulong advertisedLimit in streamAdvertisements)
+            {
+                bool applied = state.TryApplyMaxStreamDataFrame(
+                    new QuicMaxStreamDataFrame(1, advertisedLimit),
+                    out QuicTransportErrorCode errorCode);
+
+                Assert.Equal(advertisedLimit > expectedStreamLimit, applied);
+                Assert.Equal(default, errorCode);
+                expectedStreamLimit = Math.Max(expectedStreamLimit, advertisedLimit);
+                Assert.True(state.TryGetStreamSnapshot(1, out QuicConnectionStreamSnapshot snapshot));
+                Assert.Equal(expectedStreamLimit, snapshot.SendLimit);
+            }
+        }
+    }
 }
