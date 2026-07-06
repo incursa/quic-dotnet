@@ -97,4 +97,64 @@ public sealed class RFC9000_S17_2_2_P9_S2_R01
             secondCryptoPayload,
             expectedCryptoOffset: (ulong)firstCryptoPayload.Length);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S17-2-2-P9-S2-R01")]
+    public void TryBuildProtectedInitialPacketForHandshakeDestinationFuzz_AllowsSeveralServerInitialPackets()
+    {
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Client,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection clientProtection));
+        Assert.True(QuicInitialPacketProtection.TryCreate(
+            QuicTlsRole.Server,
+            QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+            out QuicInitialPacketProtection serverProtection));
+
+        (int PacketCount, int FirstPayloadLength, byte FirstPayloadByte)[] cases =
+        [
+            (2, 18, 0x41),
+            (3, 24, 0x51),
+            (4, 31, 0x61),
+        ];
+
+        foreach ((int packetCount, int firstPayloadLength, byte firstPayloadByte) in cases)
+        {
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P2P2TestSupport.CreateServerCoordinator();
+            Assert.True(coordinator.TrySetHandshakeDestinationConnectionId(QuicS17P2P2TestSupport.InitialSourceConnectionId));
+
+            ulong expectedCryptoOffset = 0;
+            for (int packetIndex = 0; packetIndex < packetCount; packetIndex++)
+            {
+                byte[] cryptoPayload = QuicS12P3TestSupport.CreateSequentialBytes(
+                    (byte)(firstPayloadByte + (packetIndex * 0x10)),
+                    firstPayloadLength + (packetIndex * 5));
+
+                Assert.True(coordinator.TryBuildProtectedInitialPacketForHandshakeDestination(
+                    cryptoPayload,
+                    expectedCryptoOffset,
+                    serverProtection,
+                    out ulong packetNumber,
+                    out byte[] protectedPacket));
+                Assert.Equal((ulong)packetIndex, packetNumber);
+
+                Assert.True(coordinator.TryOpenInitialPacket(
+                    protectedPacket,
+                    clientProtection,
+                    out byte[] openedPacket,
+                    out int payloadOffset,
+                    out int payloadLength));
+                QuicS17P2P2TestSupport.AssertOpenedInitialPacketContainsCryptoPayload(
+                    openedPacket,
+                    payloadOffset,
+                    payloadLength,
+                    cryptoPayload,
+                    expectedCryptoOffset);
+
+                expectedCryptoOffset += (ulong)cryptoPayload.Length;
+            }
+        }
+    }
 }
