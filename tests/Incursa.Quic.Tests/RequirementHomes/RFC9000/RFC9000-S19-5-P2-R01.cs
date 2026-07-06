@@ -43,4 +43,31 @@ public sealed class REQ_QUIC_RFC9000_1216
         Assert.Equal(default, errorCode);
         Assert.Equal(streamId.Value, resetStreamFrame.StreamId);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S19-5-P2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStopSendingFrame_RejectsUncreatedLocalStreams()
+    {
+        (ulong StreamId, ulong ApplicationErrorCode)[] cases =
+        [
+            (0, 0x44),
+            (4, 0x45),
+            (8, 0x46),
+            (12, 0x47),
+        ];
+
+        foreach ((ulong streamId, ulong applicationErrorCode) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState();
+
+            Assert.False(state.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(streamId, applicationErrorCode),
+                out QuicResetStreamFrame resetStreamFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, resetStreamFrame);
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        }
+    }
 }

@@ -62,4 +62,31 @@ public sealed class REQ_QUIC_RFC9000_1275
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
         Assert.False(state.TryGetStreamSnapshot(4, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryApplyMaxStreamDataFrame_RejectsUncreatedLocallyInitiatedStreams()
+    {
+        (ulong StreamId, ulong SendLimit)[] cases =
+        [
+            (0, 12),
+            (4, 16),
+            (8, 32),
+            (12, 64),
+        ];
+
+        foreach ((ulong streamId, ulong sendLimit) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 16,
+                connectionSendLimit: 16);
+
+            Assert.False(state.TryApplyMaxStreamDataFrame(
+                new QuicMaxStreamDataFrame(streamId, sendLimit),
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+            Assert.False(state.TryGetStreamSnapshot(streamId, out _));
+        }
+    }
 }
