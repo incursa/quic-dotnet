@@ -62,4 +62,51 @@ public sealed class RFC9002_S3_P1_S2_R01
         Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
         Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGetPacketNumberSpace_MapsEncryptionLevelAcrossSupportedPacketEncodings()
+    {
+        foreach ((uint version, QuicLongPacketType packetType, QuicPacketNumberSpace expectedSpace) in new[]
+        {
+            (QuicVersionNegotiation.Version1, QuicLongPacketType.Initial, QuicPacketNumberSpace.Initial),
+            (QuicVersionNegotiation.Version1, QuicLongPacketType.ZeroRtt, QuicPacketNumberSpace.ApplicationData),
+            (QuicVersionNegotiation.Version1, QuicLongPacketType.Handshake, QuicPacketNumberSpace.Handshake),
+            (QuicVersionNegotiation.Version2, QuicLongPacketType.Initial, QuicPacketNumberSpace.Initial),
+            (QuicVersionNegotiation.Version2, QuicLongPacketType.ZeroRtt, QuicPacketNumberSpace.ApplicationData),
+            (QuicVersionNegotiation.Version2, QuicLongPacketType.Handshake, QuicPacketNumberSpace.Handshake),
+        })
+        {
+            byte[] packet = BuildLongHeaderPacketForMapping(version, packetType);
+
+            Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+            Assert.Equal(expectedSpace, packetNumberSpace);
+        }
+
+        foreach (byte shortHeaderControlBits in new byte[] { 0x00, 0x01, 0x1F, 0x3F })
+        {
+            byte[] packet = QuicHeaderTestData.BuildShortHeader(shortHeaderControlBits, [0xA1, 0xB2]);
+
+            Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+            Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
+        }
+    }
+
+    private static byte[] BuildLongHeaderPacketForMapping(uint version, QuicLongPacketType packetType)
+    {
+        byte longHeaderPacketTypeBits = QuicVersionNegotiation.GetLongHeaderPacketTypeBits(version, packetType);
+        byte headerControlBits = (byte)(QuicPacketHeaderBits.FixedBitMask
+            | (longHeaderPacketTypeBits << QuicPacketHeaderBits.LongPacketTypeBitsShift));
+        byte[] versionSpecificData = packetType == QuicLongPacketType.Initial
+            ? QuicHeaderTestData.BuildInitialVersionSpecificData([], [0xA1], [0xB2])
+            : QuicHeaderTestData.BuildZeroRttVersionSpecificData([0xA1], [0xB2]);
+
+        return QuicHeaderTestData.BuildLongHeader(
+            headerControlBits,
+            version,
+            destinationConnectionId: [0x01],
+            sourceConnectionId: [0x02],
+            versionSpecificData);
+    }
 }

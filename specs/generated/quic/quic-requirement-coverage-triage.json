@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:53:23.9377480-06:00",
+  "generated_at": "2026-07-06T04:56:19.5586666-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:53:23.9342073-06:00",
+    "generated_at": "2026-07-06T04:56:19.5553612-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -443455,14 +443455,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -443494,6 +443494,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9002-S3-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S3-P1-S2-R01.cs",
+          "class": "RFC9002_S3_P1_S2_R01",
+          "member": "RFC9002_S3_P1_S2_R01.Fuzz_TryGetPacketNumberSpace_MapsEncryptionLevelAcrossSupportedPacketEncodings",
+          "method": "Fuzz_TryGetPacketNumberSpace_MapsEncryptionLevelAcrossSupportedPacketEncodings",
+          "line": 69,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S3-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "RFC9002-S3-P1-S2-R01",
