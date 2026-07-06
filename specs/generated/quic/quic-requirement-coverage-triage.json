@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:48:53.4175082-06:00",
+  "generated_at": "2026-07-06T03:53:19.7684417-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:48:53.4140567-06:00",
+    "generated_at": "2026-07-06T03:53:19.7648679-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -243332,14 +243332,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 22,
-        "focused": 22,
+        "total": 23,
+        "focused": 23,
         "broad": 0,
         "by_kind": {
           "positive": 15,
           "negative": 2,
           "edge": 5,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -243355,7 +243355,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.AckingTheResponseBodyOnZeroLengthPeerDestinationCidStillMakesPtoRetransmitTheOutstandingFinOnlyClose",
           "method": "AckingTheResponseBodyOnZeroLengthPeerDestinationCidStillMakesPtoRetransmitTheOutstandingFinOnlyClose",
-          "line": 599,
+          "line": 689,
           "kinds": [
             "positive"
           ],
@@ -243377,7 +243377,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.AckingTheResponseBodyStillMakesPtoRetransmitTheOutstandingFinOnlyClose",
           "method": "AckingTheResponseBodyStillMakesPtoRetransmitTheOutstandingFinOnlyClose",
-          "line": 460,
+          "line": 550,
           "kinds": [
             "positive"
           ],
@@ -243397,9 +243397,31 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs",
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
+          "member": "REQ_QUIC_RFC9002_SAP9_0003.Fuzz_RecoveryTimerExpired_PrefersQueuedNewApplicationDataOverRetransmission",
+          "method": "Fuzz_RecoveryTimerExpired_PrefersQueuedNewApplicationDataOverRetransmission",
+          "line": 245,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP9-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP9-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP9-0003.cs",
+          "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.GapAckForLaterPacketsMakesPtoRetransmitTheMissingApplicationData",
           "method": "GapAckForLaterPacketsMakesPtoRetransmitTheMissingApplicationData",
-          "line": 245,
+          "line": 335,
           "kinds": [
             "positive"
           ],
@@ -243421,7 +243443,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.GapAckForLaterPacketsOnZeroLengthPeerDestinationCidMakesPtoRetransmitTheMissingApplicationData",
           "method": "GapAckForLaterPacketsOnZeroLengthPeerDestinationCidMakesPtoRetransmitTheMissingApplicationData",
-          "line": 348,
+          "line": 438,
           "kinds": [
             "positive"
           ],
@@ -243443,7 +243465,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ProbeContent_FallsBackToPingWhenNoApplicationDataIsAvailable",
           "method": "ProbeContent_FallsBackToPingWhenNoApplicationDataIsAvailable",
-          "line": 1972,
+          "line": 2062,
           "kinds": [
             "edge"
           ],
@@ -243465,7 +243487,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ProbeContent_FallsBackToPingWhenNoApplicationDataIsAvailable",
           "method": "ProbeContent_FallsBackToPingWhenNoApplicationDataIsAvailable",
-          "line": 1972,
+          "line": 2062,
           "kinds": [
             "edge"
           ],
@@ -243487,7 +243509,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable",
           "method": "ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable",
-          "line": 1940,
+          "line": 2030,
           "kinds": [
             "negative"
           ],
@@ -243509,7 +243531,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable",
           "method": "ProbeContent_RetransmitsPreviouslySentApplicationDataWhenNewDataIsUnavailable",
-          "line": 1940,
+          "line": 2030,
           "kinds": [
             "negative"
           ],
@@ -243575,7 +243597,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.RecoveryProgress_RetriesPeerStreamCapacityReleaseBlockedByCongestion",
           "method": "RecoveryProgress_RetriesPeerStreamCapacityReleaseBlockedByCongestion",
-          "line": 1837,
+          "line": 1927,
           "kinds": [
             "edge"
           ],
@@ -243597,7 +243619,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.RecoveryTimerExpired_DrainsQueuedProtocolLabFragmentsAfterApplicationRepair",
           "method": "RecoveryTimerExpired_DrainsQueuedProtocolLabFragmentsAfterApplicationRepair",
-          "line": 1681,
+          "line": 1771,
           "kinds": [
             "edge"
           ],
@@ -243619,7 +243641,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.RecoveryTimerExpired_ReplaysOutstandingApplicationOpenAndFinishPacketsWithoutWaitingForAPeerAck",
           "method": "RecoveryTimerExpired_ReplaysOutstandingApplicationOpenAndFinishPacketsWithoutWaitingForAPeerAck",
-          "line": 1550,
+          "line": 1640,
           "kinds": [
             "positive"
           ],
@@ -243707,7 +243729,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.RecoveryTimerExpired_RetransmitsProtocolLabSizedFinishedStreamFragments",
           "method": "RecoveryTimerExpired_RetransmitsProtocolLabSizedFinishedStreamFragments",
-          "line": 1616,
+          "line": 1706,
           "kinds": [
             "edge"
           ],
@@ -243729,7 +243751,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.RecoveryTimerExpired_StillRetransmitsOutstandingFinishedRequestAfterReceivingPeerApplicationPackets",
           "method": "RecoveryTimerExpired_StillRetransmitsOutstandingFinishedRequestAfterReceivingPeerApplicationPackets",
-          "line": 1759,
+          "line": 1849,
           "kinds": [
             "positive"
           ],
@@ -243751,7 +243773,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ServerRoleHostSchedulerReissuesLiveSparseFinOnlyCloseAfterRecoveryDeadline",
           "method": "ServerRoleHostSchedulerReissuesLiveSparseFinOnlyCloseAfterRecoveryDeadline",
-          "line": 1337,
+          "line": 1427,
           "kinds": [
             "positive"
           ],
@@ -243773,7 +243795,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterLiveSparseCreditAckRanges",
           "method": "ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterLiveSparseCreditAckRanges",
-          "line": 1154,
+          "line": 1244,
           "kinds": [
             "positive"
           ],
@@ -243795,7 +243817,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterPreBodyCreditPacketsAreAcknowledged",
           "method": "ServerRoleLiveSizedPeerInitiatedResponseRepairsFinOnlyCloseAfterPreBodyCreditPacketsAreAcknowledged",
-          "line": 965,
+          "line": 1055,
           "kinds": [
             "positive"
           ],
@@ -243817,7 +243839,7 @@
           "class": "REQ_QUIC_RFC9002_SAP9_0003",
           "member": "REQ_QUIC_RFC9002_SAP9_0003.ServerRolePeerInitiatedResponseKeepsTheFinOnlyClosePreferredAfterTheBodyAndMaxStreamsAreAcknowledged",
           "method": "ServerRolePeerInitiatedResponseKeepsTheFinOnlyClosePreferredAfterTheBodyAndMaxStreamsAreAcknowledged",
-          "line": 746,
+          "line": 836,
           "kinds": [
             "positive"
           ],

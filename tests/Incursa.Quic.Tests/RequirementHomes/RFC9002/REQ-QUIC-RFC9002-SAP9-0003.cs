@@ -240,6 +240,96 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_RecoveryTimerExpired_PrefersQueuedNewApplicationDataOverRetransmission()
+    {
+        (int OldPayloadLength, byte NewPayloadStart, int NewPayloadLength)[] cases =
+        [
+            (40, 0x70, 1),
+            (48, 0x80, 7),
+            (64, 0x90, 15),
+        ];
+
+        foreach ((int oldPayloadLength, byte newPayloadStart, int newPayloadLength) in cases)
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath(
+                connectionSendLimit: 64 * 1024,
+                localBidirectionalSendLimit: 64 * 1024);
+            List<QuicConnectionEffect> outboundEffects = [];
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            outboundEffects.Clear();
+
+            byte[] oldPayload = CreateSequentialPayload(0x40, oldPayloadLength);
+            await stream.WriteAsync(oldPayload, 0, oldPayload.Length);
+            QuicConnectionSendDatagramEffect oldDataEffect = Assert.Single(
+                outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+            KeyValuePair<QuicConnectionSentPacketKey, QuicConnectionSentPacket> trackedOldPacket =
+                FindTrackedPacket(runtime, oldDataEffect.Datagram);
+            Assert.True(runtime.SendRuntime.TryRegisterLoss(
+                trackedOldPacket.Key.PacketNumberSpace,
+                trackedOldPacket.Key.PacketNumber,
+                handshakeConfirmed: true));
+
+            QuicCongestionControlState congestion = runtime.SendRuntime.FlowController.CongestionControlState;
+            if (congestion.BytesInFlightBytes < congestion.CongestionWindowBytes)
+            {
+                congestion.RegisterPacketSent(congestion.CongestionWindowBytes - congestion.BytesInFlightBytes);
+            }
+
+            Assert.False(congestion.CanSend(1));
+
+            byte[] newPayload = CreateSequentialPayload(newPayloadStart, newPayloadLength);
+            outboundEffects.Clear();
+            await stream.WriteAsync(newPayload, 0, newPayload.Length);
+
+            Assert.Empty(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+            Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.ApplicationSendDelay));
+
+            long? recoveryDueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.Recovery);
+            Assert.NotNull(recoveryDueTicks);
+            ulong recoveryGeneration = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.Recovery);
+            outboundEffects.Clear();
+
+            QuicConnectionTransitionResult timerResult = runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: recoveryDueTicks.Value,
+                    QuicConnectionTimerKind.Recovery,
+                    recoveryGeneration),
+                nowTicks: recoveryDueTicks.Value);
+
+            QuicConnectionSendDatagramEffect[] sendEffects = timerResult.Effects
+                .OfType<QuicConnectionSendDatagramEffect>()
+                .ToArray();
+            string[] descriptions = sendEffects
+                .Select(sendEffect => DescribeApplicationPayload(runtime, sendEffect.Datagram))
+                .ToArray();
+
+            Assert.NotEmpty(sendEffects);
+            Assert.DoesNotContain(sendEffects, sendEffect => IsPingOnlyPayload(runtime, sendEffect.Datagram));
+            Assert.True(
+                TryFindApplicationStreamFrameAnywhere(
+                    runtime,
+                    sendEffects[0].Datagram,
+                    (ulong)stream.Id,
+                    newPayload,
+                    isFin: false,
+                    expectedOffset: (ulong)oldPayload.Length,
+                    out bool keyPhase),
+                $"Expected the first PTO probe to carry queued new STREAM data before retransmission. Sent={string.Join(" || ", descriptions)}");
+            Assert.False(keyPhase);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public async Task GapAckForLaterPacketsMakesPtoRetransmitTheMissingApplicationData()
@@ -2272,6 +2362,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         ulong expectedStreamId,
         byte[] expectedPayload,
         bool isFin,
+        ulong expectedOffset,
         out bool keyPhase)
     {
         keyPhase = false;
@@ -2294,7 +2385,7 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
             if (QuicStreamParser.TryParseStreamFrame(remaining, out QuicStreamFrame streamFrame))
             {
                 if (streamFrame.StreamId.Value == expectedStreamId
-                    && streamFrame.Offset == 0UL
+                    && streamFrame.Offset == expectedOffset
                     && streamFrame.IsFin == isFin
                     && streamFrame.StreamData.SequenceEqual(expectedPayload))
                 {
@@ -2351,6 +2442,24 @@ public sealed class REQ_QUIC_RFC9002_SAP9_0003
         }
 
         return false;
+    }
+
+    private static bool TryFindApplicationStreamFrameAnywhere(
+        QuicConnectionRuntime runtime,
+        ReadOnlyMemory<byte> datagram,
+        ulong expectedStreamId,
+        byte[] expectedPayload,
+        bool isFin,
+        out bool keyPhase)
+    {
+        return TryFindApplicationStreamFrameAnywhere(
+            runtime,
+            datagram,
+            expectedStreamId,
+            expectedPayload,
+            isFin,
+            expectedOffset: 0UL,
+            out keyPhase);
     }
 
     private static bool ProbeContainsStreamDataForStream(

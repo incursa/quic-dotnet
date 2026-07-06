@@ -1104,12 +1104,12 @@ internal sealed partial class QuicConnectionRuntime
                     probePacket: true,
                     requireAckFrame: true,
                     ref effects)),
-            QuicPacketNumberSpace.ApplicationData => TryFlushPendingRetransmissions(
+            QuicPacketNumberSpace.ApplicationData => FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
+                || TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.ApplicationData,
                     nowTicks,
                     probePacket: true,
                     ref effects)
-                || FlushPendingApplicationSends(nowTicks, probePacket: true, ref effects)
                 || TryPromoteOutstandingProbePacket(QuicPacketNumberSpace.ApplicationData)
                 && TryFlushPendingRetransmissions(
                     QuicPacketNumberSpace.ApplicationData,
