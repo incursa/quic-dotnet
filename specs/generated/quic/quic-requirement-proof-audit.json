@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:52:35.4293193-06:00",
+    "generated_at": "2026-07-06T07:55:14.5743182-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1234,
-      "full_executable_proof": 1443
+      "deferred_proof_not_executed": 1233,
+      "full_executable_proof": 1444
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 209,
-          "full_executable_proof": 1241
+          "deferred_proof_not_executed": 208,
+          "full_executable_proof": 1242
         }
       },
       {
@@ -72813,9 +72813,9 @@
       "rfc": "RFC9000",
       "title": "Allow Stateless Reset in response to long-header packets",
       "statement": "An endpoint MAY send a Stateless Reset in response to a packet with a long header.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
@@ -72823,14 +72823,13 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-3-P15-S1-R01.cs"
