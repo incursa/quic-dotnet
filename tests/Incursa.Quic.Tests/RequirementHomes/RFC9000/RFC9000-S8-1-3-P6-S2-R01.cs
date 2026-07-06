@@ -49,4 +49,40 @@ public sealed class REQ_QUIC_RFC9000_0399
         Assert.False(firstAttempt.InitialAddressValidationToken.IsEmpty);
         Assert.True(secondAttempt.InitialAddressValidationToken.IsEmpty);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ApplicableUnusedNewToken_IsEncodedOnlyForTheFirstMatchingInitialAttempt()
+    {
+        foreach (bool tryNonMatchingEndpointFirst in new[] { false, true })
+        {
+            QuicClientAddressValidationToken token = QuicS8P1P3TokenLifecycleTestSupport.CreateNewTokenFor();
+
+            if (tryNonMatchingEndpointFirst)
+            {
+                QuicClientConnectionSettings nonMatchingAttempt = QuicS8P1P3TokenLifecycleTestSupport.CaptureSettingsWith(
+                    token,
+                    QuicS8P1P3TokenLifecycleTestSupport.OtherEndPoint);
+
+                AssertInitialPacketsCarryToken(nonMatchingAttempt.InitialAddressValidationToken, expectedToken: []);
+            }
+
+            QuicClientConnectionSettings firstMatchingAttempt = QuicS8P1P3TokenLifecycleTestSupport.CaptureSettingsWith(token);
+            AssertInitialPacketsCarryToken(
+                firstMatchingAttempt.InitialAddressValidationToken,
+                QuicS8P1P3TokenLifecycleTestSupport.NewToken);
+
+            QuicClientConnectionSettings secondMatchingAttempt = QuicS8P1P3TokenLifecycleTestSupport.CaptureSettingsWith(token);
+            AssertInitialPacketsCarryToken(secondMatchingAttempt.InitialAddressValidationToken, expectedToken: []);
+        }
+    }
+
+    private static void AssertInitialPacketsCarryToken(ReadOnlyMemory<byte> token, ReadOnlySpan<byte> expectedToken)
+    {
+        byte[][] initialTokens = QuicS8P1P3TokenLifecycleTestSupport.BootstrapAndReadInitialTokens(token);
+        byte[] expected = expectedToken.ToArray();
+
+        Assert.All(initialTokens, encodedToken => Assert.True(encodedToken.AsSpan().SequenceEqual(expected)));
+    }
 }
