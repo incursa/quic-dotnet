@@ -1755,9 +1755,10 @@
           "VER-QUIC-RFC9000-0001"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryParseLongHeader_AllowsMaximumLengthSourceConnectionIds",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryParseLongHeader_RejectsPacketsTruncatedAfterTheSourceConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0215.cs::TryParseLongHeader_AllowsZeroLengthConnectionIds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryRegisterIssuedConnectionId_RejectsReissuedConnectionIdBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryRegisterIssuedConnectionId_AllowsDistinctConnectionIdBytes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryRegisterIssuedConnectionId_RejectsDuplicateIssuedSequenceNumber",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-P4-S2-R01.cs::TryRegisterIssuedConnectionIdFuzz_RejectsReissuedConnectionIdBytes"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.1 RFC9000-S5P1-B4-P4-S2",
