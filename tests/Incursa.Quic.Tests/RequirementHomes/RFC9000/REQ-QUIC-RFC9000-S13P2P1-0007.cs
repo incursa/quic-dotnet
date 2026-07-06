@@ -59,4 +59,32 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0007
             nowMicros: 1_200,
             maxAckDelayMicros: 1_000));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CanSendAckOnlyPacket_FuzzRemainsFalseForNonAckElicitingGapPackets()
+    {
+        for (ulong firstPacketNumber = 1; firstPacketNumber <= 4; firstPacketNumber++)
+        {
+            QuicSenderFlowController sender = new();
+
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                firstPacketNumber,
+                ackEliciting: false,
+                receivedAtMicros: 1_000);
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                firstPacketNumber + 2,
+                ackEliciting: false,
+                receivedAtMicros: 1_100);
+
+            Assert.False(sender.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
+            Assert.False(sender.CanSendAckOnlyPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: 30_000,
+                maxAckDelayMicros: 1_000));
+        }
+    }
 }

@@ -51,6 +51,31 @@ public sealed class REQ_QUIC_RFC9000_S13P2_0002
         Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AckElicitingApplicationDataPacket_FuzzSchedulesAckAtEachAdvertisedMaxAckDelay()
+    {
+        ulong[] maxAckDelayMicrosValues = [1_000, 8_000, 12_000, 25_000];
+
+        foreach (ulong maxAckDelayMicros in maxAckDelayMicrosValues)
+        {
+            using QuicConnectionRuntime runtime =
+                QuicS13AckPiggybackTestSupport.CreateAckDelayRuntimeWithValidatedActivePath(
+                    localMaxAckDelayMicros: maxAckDelayMicros);
+
+            QuicConnectionTransitionResult receiveResult = QuicS13AckPiggybackTestSupport.ReceiveOneRttPing(
+                runtime,
+                observedAtTicks: 10,
+                packetNumber: maxAckDelayMicros / 1_000);
+
+            Assert.Empty(receiveResult.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            Assert.Equal(
+                10 + StopwatchTicksFromMicros(maxAckDelayMicros),
+                runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.AckDelay));
+        }
+    }
+
     private static long StopwatchTicksFromMicros(ulong micros)
     {
         const ulong MicrosecondsPerSecond = 1_000_000UL;

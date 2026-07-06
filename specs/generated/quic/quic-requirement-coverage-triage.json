@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T02:05:35.9334294-06:00",
+  "generated_at": "2026-07-06T02:08:55.4657461-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T02:05:35.9296049-06:00",
+    "generated_at": "2026-07-06T02:08:55.4621923-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -67601,14 +67601,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -67616,6 +67616,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2-0002",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0002.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2_0002",
+          "member": "REQ_QUIC_RFC9000_S13P2_0002.AckElicitingApplicationDataPacket_FuzzSchedulesAckAtEachAdvertisedMaxAckDelay",
+          "method": "AckElicitingApplicationDataPacket_FuzzSchedulesAckAtEachAdvertisedMaxAckDelay",
+          "line": 57,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2-0002"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S13P2-0002",
           "source": "requirement_attribute",
@@ -67781,14 +67803,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -67796,6 +67818,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2-0003.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2_0003",
+          "member": "REQ_QUIC_RFC9000_S13P2_0003.TryBuildAckFrame_FuzzIncludesNonAckElicitingPacketsOnlyAfterAckElicitingReason",
+          "method": "TryBuildAckFrame_FuzzIncludesNonAckElicitingPacketsOnlyAfterAckElicitingReason",
+          "line": 58,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S13P2-0003",
           "source": "requirement_attribute",
@@ -68359,14 +68403,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -68419,6 +68463,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0007",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P1-0007.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P1_0007",
+          "member": "REQ_QUIC_RFC9000_S13P2P1_0007.CanSendAckOnlyPacket_FuzzRemainsFalseForNonAckElicitingGapPackets",
+          "method": "CanSendAckOnlyPacket_FuzzRemainsFalseForNonAckElicitingGapPackets",
+          "line": 66,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P1-0007"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "REQ-QUIC-RFC9000-S13P2P1-0007",
@@ -70309,14 +70375,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -70404,6 +70470,28 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S13P2P5-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S13P2P5-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S13P2P5_0001",
+          "member": "REQ_QUIC_RFC9000_S13P2P5_0001.TryBuildAckFrame_FuzzMeasuresAckDelayFromLargestPacketReceiptTime",
+          "method": "TryBuildAckFrame_FuzzMeasuresAckDelayFromLargestPacketReceiptTime",
+          "line": 100,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

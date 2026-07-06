@@ -93,4 +93,35 @@ public sealed class REQ_QUIC_RFC9000_S13P2P5_0001
         Assert.Equal(2UL, frame.LargestAcknowledged);
         Assert.Equal(0UL, frame.AckDelay);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildAckFrame_FuzzMeasuresAckDelayFromLargestPacketReceiptTime()
+    {
+        for (ulong delayMicros = 0; delayMicros <= 400; delayMicros += 100)
+        {
+            QuicAckGenerationState tracker = new();
+            ulong largestPacketReceiptMicros = 1_300 + delayMicros;
+
+            tracker.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 1,
+                ackEliciting: true,
+                receivedAtMicros: 1_000);
+            tracker.RecordProcessedPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                packetNumber: 2,
+                ackEliciting: false,
+                receivedAtMicros: largestPacketReceiptMicros);
+
+            Assert.True(tracker.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: largestPacketReceiptMicros + delayMicros,
+                out QuicAckFrame frame));
+
+            Assert.Equal(2UL, frame.LargestAcknowledged);
+            Assert.Equal(delayMicros, frame.AckDelay);
+        }
+    }
 }

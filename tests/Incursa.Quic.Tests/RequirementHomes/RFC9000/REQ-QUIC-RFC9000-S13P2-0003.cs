@@ -51,4 +51,42 @@ public sealed class REQ_QUIC_RFC9000_S13P2_0003
         Assert.Equal(4UL, additionalRange.SmallestAcknowledged);
         Assert.Equal(4UL, additionalRange.LargestAcknowledged);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildAckFrame_FuzzIncludesNonAckElicitingPacketsOnlyAfterAckElicitingReason()
+    {
+        for (ulong gapPacketNumber = 1; gapPacketNumber <= 4; gapPacketNumber++)
+        {
+            QuicSenderFlowController sender = new();
+            ulong ackElicitingPacketNumber = gapPacketNumber + 2;
+
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                gapPacketNumber,
+                ackEliciting: false,
+                receivedAtMicros: 1_000);
+            Assert.False(sender.ShouldIncludeAckFrameWithOutgoingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: 30_000,
+                maxAckDelayMicros: 25_000));
+
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                ackElicitingPacketNumber,
+                ackEliciting: true,
+                receivedAtMicros: 1_100);
+
+            Assert.True(sender.TryBuildAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: 26_100,
+                out QuicAckFrame ackFrame));
+
+            Assert.Equal(ackElicitingPacketNumber, ackFrame.LargestAcknowledged);
+            QuicAckRange additionalRange = Assert.Single(ackFrame.AdditionalRanges ?? Array.Empty<QuicAckRange>());
+            Assert.Equal(gapPacketNumber, additionalRange.SmallestAcknowledged);
+            Assert.Equal(gapPacketNumber, additionalRange.LargestAcknowledged);
+        }
+    }
 }
