@@ -133,4 +133,59 @@ public sealed class REQ_QUIC_RFC9000_0684
         Assert.Equal(QuicConnectionEndpointHandlingKind.None, result.HandlingKind);
         Assert.Equal(handle, result.Handle);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ReceiveDatagram_RoutesCoalescedDatagramsByTheFirstPacketOnly()
+    {
+        for (int index = 0; index < 4; index++)
+        {
+            using QuicConnectionRuntimeEndpoint endpoint = new(2);
+            using QuicConnectionRuntime firstRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            using QuicConnectionRuntime trailingRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle firstHandle = endpoint.AllocateConnectionHandle();
+            QuicConnectionHandle trailingHandle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity pathIdentity = new($"203.0.113.{30 + index}");
+            byte[] firstDestinationConnectionId = [0x10, (byte)(0x20 + index)];
+            byte[] trailingDestinationConnectionId = [0x30, (byte)(0x40 + index)];
+            byte[] firstPacket = QuicHandshakePacketRequirementTestData.BuildHandshakePacket(
+                packetNumberLength: 1,
+                destinationConnectionId: firstDestinationConnectionId,
+                sourceConnectionId: [(byte)(0x50 + index)],
+                protectedPayload: CreateSequentialBytes((byte)(0xA0 + index), index + 1));
+            byte[] trailingPacket = QuicHandshakePacketRequirementTestData.BuildHandshakePacket(
+                packetNumberLength: 1,
+                destinationConnectionId: trailingDestinationConnectionId,
+                sourceConnectionId: [(byte)(0x60 + index)],
+                protectedPayload: CreateSequentialBytes((byte)(0xB0 + index), index + 2));
+            byte[] datagram = [.. firstPacket, .. trailingPacket];
+
+            Assert.True(endpoint.TryRegisterConnection(firstHandle, firstRuntime));
+            Assert.True(endpoint.TryRegisterConnection(trailingHandle, trailingRuntime));
+            Assert.True(endpoint.TryRegisterConnectionId(firstHandle, firstDestinationConnectionId));
+            Assert.True(endpoint.TryRegisterConnectionId(trailingHandle, trailingDestinationConnectionId));
+            Assert.True(QuicPacketParser.TryGetPacketLength(datagram, out int firstPacketLength));
+            Assert.Equal(firstPacket.Length, firstPacketLength);
+
+            QuicConnectionIngressResult result = endpoint.ReceiveDatagram(datagram, pathIdentity);
+
+            Assert.True(result.RoutedToConnection);
+            Assert.Equal(QuicConnectionIngressDisposition.RoutedToConnection, result.Disposition);
+            Assert.Equal(QuicConnectionEndpointHandlingKind.None, result.HandlingKind);
+            Assert.Equal(firstHandle, result.Handle);
+            Assert.NotEqual(trailingHandle, result.Handle);
+        }
+    }
+
+    private static byte[] CreateSequentialBytes(byte start, int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = unchecked((byte)(start + index));
+        }
+
+        return bytes;
+    }
 }

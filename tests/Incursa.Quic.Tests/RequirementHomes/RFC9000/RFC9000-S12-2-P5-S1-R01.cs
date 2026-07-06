@@ -77,4 +77,59 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0012
         Assert.True(QuicPacketParser.TryParseShortHeader(datagram.AsSpan(firstPacket.Length + secondPacket.Length, thirdPacket.Length), out QuicShortHeaderPacket thirdHeader));
         Assert.True(thirdPacket.AsSpan(1).SequenceEqual(thirdHeader.Remainder));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGetPacketLength_WalksEachPacketInCoalescedDatagramsSeparately()
+    {
+        for (int payloadLength = 0; payloadLength <= 5; payloadLength++)
+        {
+            byte[] firstPayload = CreateSequentialBytes((byte)(0xB0 + payloadLength), payloadLength + 1);
+            byte[] secondPayload = CreateSequentialBytes((byte)(0xC0 + payloadLength), payloadLength + 2);
+            byte[] thirdPayload = CreateSequentialBytes((byte)(0xD0 + payloadLength), payloadLength + 3);
+            byte[] firstPacket = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x42,
+                version: 1,
+                destinationConnectionId: [0x10, (byte)payloadLength],
+                sourceConnectionId: [0x20],
+                QuicHeaderTestData.BuildInitialVersionSpecificData(
+                    token: [(byte)(0xA0 + payloadLength)],
+                    packetNumber: [0x01, 0x02],
+                    protectedPayload: firstPayload));
+            byte[] secondPacket = QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x62,
+                version: 1,
+                destinationConnectionId: [0x10, (byte)payloadLength],
+                sourceConnectionId: [0x20],
+                QuicHeaderTestData.BuildZeroRttVersionSpecificData(
+                    packetNumber: [0x03, 0x04],
+                    protectedPayload: secondPayload));
+            byte[] thirdPacket = QuicHeaderTestData.BuildShortHeader(
+                0x24,
+                thirdPayload);
+            byte[] datagram = [.. firstPacket, .. secondPacket, .. thirdPacket];
+
+            Assert.True(QuicPacketParser.TryGetPacketLength(datagram, out int firstPacketLength));
+            Assert.Equal(firstPacket.Length, firstPacketLength);
+            Assert.True(QuicPacketParser.TryGetPacketLength(datagram.AsSpan(firstPacketLength), out int secondPacketLength));
+            Assert.Equal(secondPacket.Length, secondPacketLength);
+
+            ReadOnlySpan<byte> trailingPacket = datagram.AsSpan(firstPacketLength + secondPacketLength);
+            Assert.True(QuicPacketParser.TryParseShortHeader(trailingPacket, out QuicShortHeaderPacket trailingHeader));
+            Assert.True(thirdPayload.AsSpan().SequenceEqual(trailingHeader.Remainder));
+            Assert.Equal(datagram.Length, firstPacketLength + secondPacketLength + trailingPacket.Length);
+        }
+    }
+
+    private static byte[] CreateSequentialBytes(byte start, int length)
+    {
+        byte[] bytes = new byte[length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            bytes[index] = unchecked((byte)(start + index));
+        }
+
+        return bytes;
+    }
 }

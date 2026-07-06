@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T08:07:47.2445334-06:00",
+    "generated_at": "2026-07-06T08:11:48.8469771-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1227,
-      "full_executable_proof": 1450
+      "deferred_proof_not_executed": 1225,
+      "full_executable_proof": 1452
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 202,
-          "full_executable_proof": 1248
+          "deferred_proof_not_executed": 200,
+          "full_executable_proof": 1250
         }
       },
       {
@@ -73257,9 +73257,9 @@
       "rfc": "RFC9000",
       "title": "Route based on the first packet",
       "statement": "Receivers MAY route based on the information in the first packet contained in a UDP datagram.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -73270,15 +73270,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P4-R01.cs"
@@ -73368,9 +73367,9 @@
       "rfc": "RFC9000",
       "title": "Process each coalesced packet separately",
       "statement": "The receiver of coalesced QUIC packets MUST individually process each QUIC packet and separately acknowledge each QUIC packet, as if the packets were received as the payload of different UDP datagrams.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -73379,14 +73378,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S1-R01.cs"
