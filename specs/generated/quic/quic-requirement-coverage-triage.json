@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:42:45.2150633-06:00",
+  "generated_at": "2026-07-06T17:48:01.3869941-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:42:45.2111308-06:00",
+    "generated_at": "2026-07-06T17:48:01.3832330-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -284688,14 +284688,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -285022,6 +285022,32 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0116",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "method": "Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0116",
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0120",
+            "REQ-QUIC-RFC9250-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -285051,14 +285077,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 14,
+        "focused": 6,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -285306,7 +285332,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.AggregateDataLimitRejectsDataBeyondConnectionCredit",
           "method": "AggregateDataLimitRejectsDataBeyondConnectionCredit",
-          "line": 58,
+          "line": 95,
           "kinds": [
             "negative"
           ],
@@ -285328,7 +285354,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.AggregateDataLimitRejectsDataBeyondConnectionCredit",
           "method": "AggregateDataLimitRejectsDataBeyondConnectionCredit",
-          "line": 58,
+          "line": 95,
           "kinds": [
             "negative"
           ],
@@ -285348,9 +285374,60 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "method": "Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0116",
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0120",
+            "REQ-QUIC-RFC9250-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "method": "Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "line": 282,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0119",
+            "REQ-QUIC-RFC9250-0122"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0117",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryAggregateDataLimit",
           "method": "TransportParametersCarryAggregateDataLimit",
-          "line": 44,
+          "line": 81,
           "kinds": [
             "positive"
           ],
@@ -285372,7 +285449,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryAggregateDataLimit",
           "method": "TransportParametersCarryAggregateDataLimit",
-          "line": 44,
+          "line": 81,
           "kinds": [
             "positive"
           ],
@@ -285414,14 +285491,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 14,
+        "focused": 6,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -285667,9 +285744,60 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "method": "Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0116",
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0120",
+            "REQ-QUIC-RFC9250-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "method": "Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "line": 282,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0119",
+            "REQ-QUIC-RFC9250-0122"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0118",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.PerStreamDataLimitRejectsDataBeyondStreamCredit",
           "method": "PerStreamDataLimitRejectsDataBeyondStreamCredit",
-          "line": 93,
+          "line": 130,
           "kinds": [
             "negative"
           ],
@@ -285691,7 +285819,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.PerStreamDataLimitRejectsDataBeyondStreamCredit",
           "method": "PerStreamDataLimitRejectsDataBeyondStreamCredit",
-          "line": 93,
+          "line": 130,
           "kinds": [
             "negative"
           ],
@@ -285713,7 +285841,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryPerStreamDataLimits",
           "method": "TransportParametersCarryPerStreamDataLimits",
-          "line": 75,
+          "line": 112,
           "kinds": [
             "positive"
           ],
@@ -285735,7 +285863,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryPerStreamDataLimits",
           "method": "TransportParametersCarryPerStreamDataLimits",
-          "line": 75,
+          "line": 112,
           "kinds": [
             "positive"
           ],
@@ -285777,14 +285905,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -286030,9 +286158,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "method": "Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "line": 282,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0119",
+            "REQ-QUIC-RFC9250-0122"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0119",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.StreamCreationLimitRejectsStreamsBeyondPeerCredit",
           "method": "StreamCreationLimitRejectsStreamsBeyondPeerCredit",
-          "line": 124,
+          "line": 161,
           "kinds": [
             "negative"
           ],
@@ -286054,7 +286207,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.StreamCreationLimitRejectsStreamsBeyondPeerCredit",
           "method": "StreamCreationLimitRejectsStreamsBeyondPeerCredit",
-          "line": 124,
+          "line": 161,
           "kinds": [
             "negative"
           ],
@@ -286076,7 +286229,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryStreamCreationLimits",
           "method": "TransportParametersCarryStreamCreationLimits",
-          "line": 108,
+          "line": 145,
           "kinds": [
             "positive"
           ],
@@ -286098,7 +286251,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.TransportParametersCarryStreamCreationLimits",
           "method": "TransportParametersCarryStreamCreationLimits",
-          "line": 108,
+          "line": 145,
           "kinds": [
             "positive"
           ],
@@ -286140,14 +286293,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -286393,9 +286546,35 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "method": "Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0116",
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0120",
+            "REQ-QUIC-RFC9250-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0120",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ServerRejectsClientDataBeyondPerStreamLimit",
           "method": "ServerRejectsClientDataBeyondPerStreamLimit",
-          "line": 155,
+          "line": 192,
           "kinds": [
             "negative"
           ],
@@ -286417,7 +286596,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ServerRejectsClientDataBeyondPerStreamLimit",
           "method": "ServerRejectsClientDataBeyondPerStreamLimit",
-          "line": 155,
+          "line": 192,
           "kinds": [
             "negative"
           ],
@@ -286439,7 +286618,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ServerUsesGlobalAndPerStreamLimitsForClientData",
           "method": "ServerUsesGlobalAndPerStreamLimitsForClientData",
-          "line": 139,
+          "line": 176,
           "kinds": [
             "positive"
           ],
@@ -286461,7 +286640,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ServerUsesGlobalAndPerStreamLimitsForClientData",
           "method": "ServerUsesGlobalAndPerStreamLimitsForClientData",
-          "line": 139,
+          "line": 176,
           "kinds": [
             "positive"
           ],
@@ -286503,14 +286682,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -286758,7 +286937,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ClientRejectsServerDataBeyondPerStreamLimit",
           "method": "ClientRejectsServerDataBeyondPerStreamLimit",
-          "line": 185,
+          "line": 222,
           "kinds": [
             "negative"
           ],
@@ -286780,7 +286959,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ClientRejectsServerDataBeyondPerStreamLimit",
           "method": "ClientRejectsServerDataBeyondPerStreamLimit",
-          "line": 185,
+          "line": 222,
           "kinds": [
             "negative"
           ],
@@ -286802,7 +286981,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ClientUsesGlobalAndPerStreamLimitsForServerData",
           "method": "ClientUsesGlobalAndPerStreamLimitsForServerData",
-          "line": 170,
+          "line": 207,
           "kinds": [
             "positive"
           ],
@@ -286824,7 +287003,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ClientUsesGlobalAndPerStreamLimitsForServerData",
           "method": "ClientUsesGlobalAndPerStreamLimitsForServerData",
-          "line": 170,
+          "line": 207,
           "kinds": [
             "positive"
           ],
@@ -286833,6 +287012,32 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0121"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0121",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "method": "Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData",
+          "line": 48,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0116",
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0120",
             "REQ-QUIC-RFC9250-0121"
           ],
           "requirement_tagged": true,
@@ -286866,14 +287071,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -287119,9 +287324,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "method": "Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits",
+          "line": 282,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0117",
+            "REQ-QUIC-RFC9250-0118",
+            "REQ-QUIC-RFC9250-0119",
+            "REQ-QUIC-RFC9250-0122"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0122",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.HandshakeTransportParametersCarryFlowControlLimits",
           "method": "HandshakeTransportParametersCarryFlowControlLimits",
-          "line": 199,
+          "line": 236,
           "kinds": [
             "positive"
           ],
@@ -287143,7 +287373,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.HandshakeTransportParametersCarryFlowControlLimits",
           "method": "HandshakeTransportParametersCarryFlowControlLimits",
-          "line": 199,
+          "line": 236,
           "kinds": [
             "positive"
           ],
@@ -287165,7 +287395,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.HandshakeTransportParametersRejectInvalidStreamCreationLimit",
           "method": "HandshakeTransportParametersRejectInvalidStreamCreationLimit",
-          "line": 223,
+          "line": 260,
           "kinds": [
             "negative"
           ],
@@ -287187,7 +287417,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.HandshakeTransportParametersRejectInvalidStreamCreationLimit",
           "method": "HandshakeTransportParametersRejectInvalidStreamCreationLimit",
-          "line": 223,
+          "line": 260,
           "kinds": [
             "negative"
           ],
@@ -287229,14 +287459,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 4,
+        "total": 13,
+        "focused": 5,
         "broad": 8,
         "by_kind": {
           "positive": 8,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -287482,9 +287712,31 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
           "class": "REQ_QUIC_RFC9250_FlowControl",
+          "member": "REQ_QUIC_RFC9250_FlowControl.Fuzz_ZeroRttRejectsReducedRememberedFlowControlLimits",
+          "method": "Fuzz_ZeroRttRejectsReducedRememberedFlowControlLimits",
+          "line": 344,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0123"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0123",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-FlowControl.cs",
+          "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ZeroRttAcceptsRememberedInitialFlowControlLimits",
           "method": "ZeroRttAcceptsRememberedInitialFlowControlLimits",
-          "line": 242,
+          "line": 315,
           "kinds": [
             "positive"
           ],
@@ -287506,7 +287758,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ZeroRttAcceptsRememberedInitialFlowControlLimits",
           "method": "ZeroRttAcceptsRememberedInitialFlowControlLimits",
-          "line": 242,
+          "line": 315,
           "kinds": [
             "positive"
           ],
@@ -287528,7 +287780,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ZeroRttRejectsReducedRememberedInitialFlowControlLimit",
           "method": "ZeroRttRejectsReducedRememberedInitialFlowControlLimit",
-          "line": 256,
+          "line": 329,
           "kinds": [
             "negative"
           ],
@@ -287550,7 +287802,7 @@
           "class": "REQ_QUIC_RFC9250_FlowControl",
           "member": "REQ_QUIC_RFC9250_FlowControl.ZeroRttRejectsReducedRememberedInitialFlowControlLimit",
           "method": "ZeroRttRejectsReducedRememberedInitialFlowControlLimit",
-          "line": 256,
+          "line": 329,
           "kinds": [
             "negative"
           ],

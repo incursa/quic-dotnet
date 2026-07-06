@@ -38,6 +38,43 @@ public sealed class REQ_QUIC_RFC9250_FlowControl
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0116")]
+    [Requirement("REQ-QUIC-RFC9250-0117")]
+    [Requirement("REQ-QUIC-RFC9250-0118")]
+    [Requirement("REQ-QUIC-RFC9250-0120")]
+    [Requirement("REQ-QUIC-RFC9250-0121")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_Rfc9000FlowControlEnforcesConnectionAndStreamReceiveLimitsForDoqData()
+    {
+        foreach ((bool isServer, ulong streamId, ulong connectionLimit, ulong streamLimit, int acceptedLength, int rejectedLength) in new[]
+        {
+            (true, 0UL, 16UL, 8UL, 8, 9),
+            (false, 1UL, 16UL, 8UL, 8, 9),
+            (true, 4UL, 20UL, 12UL, 12, 13),
+            (false, 5UL, 20UL, 12UL, 12, 13),
+        })
+        {
+            QuicConnectionStreamState acceptedState = QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: isServer,
+                connectionReceiveLimit: connectionLimit,
+                peerBidirectionalReceiveLimit: streamLimit);
+
+            Assert.True(acceptedState.TryReceiveStreamFrame(CreateStreamFrame(streamId, acceptedLength), out QuicTransportErrorCode acceptedErrorCode));
+            Assert.Equal(default, acceptedErrorCode);
+            Assert.Equal((ulong)acceptedLength, acceptedState.ConnectionAccountedBytesReceived);
+
+            QuicConnectionStreamState rejectedState = QuicConnectionStreamStateTestHelpers.CreateState(
+                isServer: isServer,
+                connectionReceiveLimit: connectionLimit,
+                peerBidirectionalReceiveLimit: streamLimit);
+
+            Assert.False(rejectedState.TryReceiveStreamFrame(CreateStreamFrame(streamId, rejectedLength), out QuicTransportErrorCode rejectedErrorCode));
+            Assert.Equal(QuicTransportErrorCode.FlowControlError, rejectedErrorCode);
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0117")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -236,6 +273,42 @@ public sealed class REQ_QUIC_RFC9250_FlowControl
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0117")]
+    [Requirement("REQ-QUIC-RFC9250-0118")]
+    [Requirement("REQ-QUIC-RFC9250-0119")]
+    [Requirement("REQ-QUIC-RFC9250-0122")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TransportParametersRoundTripRepresentativeFlowControlLimits()
+    {
+        foreach ((ulong maxData, ulong bidiLocal, ulong bidiRemote, ulong uni, ulong streamsBidi, ulong streamsUni) in new[]
+        {
+            (0UL, 0UL, 0UL, 0UL, 0UL, 0UL),
+            (1UL, 1UL, 1UL, 1UL, 1UL, 1UL),
+            (4_096UL, 1_024UL, 2_048UL, 512UL, 2UL, 3UL),
+            (65_535UL, 32_768UL, 16_384UL, 8_192UL, 32UL, 16UL),
+        })
+        {
+            QuicTransportParameters parsed = RoundTripTransportParameters(new QuicTransportParameters
+            {
+                InitialMaxData = maxData,
+                InitialMaxStreamDataBidiLocal = bidiLocal,
+                InitialMaxStreamDataBidiRemote = bidiRemote,
+                InitialMaxStreamDataUni = uni,
+                InitialMaxStreamsBidi = streamsBidi,
+                InitialMaxStreamsUni = streamsUni,
+            });
+
+            Assert.Equal(maxData, parsed.InitialMaxData);
+            Assert.Equal(bidiLocal, parsed.InitialMaxStreamDataBidiLocal);
+            Assert.Equal(bidiRemote, parsed.InitialMaxStreamDataBidiRemote);
+            Assert.Equal(uni, parsed.InitialMaxStreamDataUni);
+            Assert.Equal(streamsBidi, parsed.InitialMaxStreamsBidi);
+            Assert.Equal(streamsUni, parsed.InitialMaxStreamsUni);
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0123")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -262,6 +335,32 @@ public sealed class REQ_QUIC_RFC9250_FlowControl
         Assert.False(decision.CanAccept);
         Assert.Equal(QuicZeroRttTransportParameterAcceptanceFailure.ReducedRequiredLimit, decision.Failure);
         Assert.Equal("initial_max_data", decision.ParameterName);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0123")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ZeroRttRejectsReducedRememberedFlowControlLimits()
+    {
+        Assert.True(QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.Evaluate().CanAccept);
+
+        foreach (Action<QuicTransportParameters> reduceCurrentLimit in new Action<QuicTransportParameters>[]
+        {
+            static current => current.InitialMaxData = 999,
+            static current => current.InitialMaxStreamDataBidiLocal = 99,
+            static current => current.InitialMaxStreamDataBidiRemote = 119,
+            static current => current.InitialMaxStreamDataUni = 79,
+            static current => current.InitialMaxStreamsBidi = 1,
+            static current => current.InitialMaxStreamsUni = 2,
+        })
+        {
+            QuicZeroRttTransportParameterAcceptanceDecision decision =
+                QuicS7P4P1ZeroRttTransportParameterPolicyTestSupport.Evaluate(configureCurrent: reduceCurrentLimit);
+
+            Assert.False(decision.CanAccept);
+            Assert.Equal(QuicZeroRttTransportParameterAcceptanceFailure.ReducedRequiredLimit, decision.Failure);
+        }
     }
 
     private static QuicTransportParameters RoundTripTransportParameters(QuicTransportParameters parameters)
