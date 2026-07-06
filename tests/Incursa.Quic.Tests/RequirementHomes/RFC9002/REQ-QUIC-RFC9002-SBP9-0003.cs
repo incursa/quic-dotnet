@@ -107,6 +107,66 @@ public sealed class REQ_QUIC_RFC9002_SBP9_0003
 
     [Fact]
     [Requirement("REQ-QUIC-RFC9002-SAP11-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RuntimeTlsKeyDiscardResetsTimerStateAndClearsDiscardedPacketNumberSpace()
+    {
+        foreach ((QuicPacketNumberSpace packetNumberSpace, QuicTlsEncryptionLevel encryptionLevel, int ptoArmCount, ulong smoothedRttMicros, ulong rttVarMicros) in new[]
+        {
+            (QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, 1, 1_000UL, 250UL),
+            (QuicPacketNumberSpace.Initial, QuicTlsEncryptionLevel.Initial, 3, 2_000UL, 500UL),
+            (QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, 2, 1_500UL, 375UL),
+            (QuicPacketNumberSpace.Handshake, QuicTlsEncryptionLevel.Handshake, 4, 3_000UL, 750UL),
+        })
+        {
+            QuicConnectionRuntime runtime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                packetNumberSpace,
+                PacketNumber: 1,
+                PayloadBytes: 1_200,
+                SentAtMicros: 100,
+                PacketProtectionLevel: encryptionLevel,
+                CryptoMetadata: new QuicConnectionCryptoSendMetadata(encryptionLevel)));
+            runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                PacketNumber: 2,
+                PayloadBytes: 1_200,
+                SentAtMicros: 200,
+                PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
+
+            for (int i = 0; i < ptoArmCount; i++)
+            {
+                Assert.True(runtime.SendRuntime.TryArmProbeTimeout(
+                    packetNumberSpace,
+                    nowMicros: 300,
+                    smoothedRttMicros,
+                    rttVarMicros,
+                    maxAckDelayMicros: 25_000,
+                    handshakeConfirmed: false));
+            }
+
+            Assert.Equal(ptoArmCount, runtime.SendRuntime.ProbeTimeoutCount);
+            Assert.NotNull(runtime.SendRuntime.LossDetectionDeadlineMicros);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionTlsStateUpdatedEvent(
+                    ObservedAtTicks: 4,
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.KeysDiscarded,
+                        encryptionLevel)),
+                nowTicks: 4);
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.TlsState.OldKeysDiscarded);
+            Assert.Equal(0, runtime.SendRuntime.ProbeTimeoutCount);
+            Assert.Null(runtime.SendRuntime.LossDetectionDeadlineMicros);
+            Assert.DoesNotContain(runtime.SendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == packetNumberSpace);
+            Assert.Contains(runtime.SendRuntime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+        }
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9002-SAP11-0003")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void TryDiscardPacketNumberSpace_ResetsRecoveryControllerLossAndPtoState()
