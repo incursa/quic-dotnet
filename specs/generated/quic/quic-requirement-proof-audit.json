@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:30:28.1139249-06:00",
+    "generated_at": "2026-07-06T11:35:58.1889496-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1107,
-      "full_executable_proof": 1570
+      "deferred_proof_not_executed": 1106,
+      "full_executable_proof": 1571
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 82,
-          "full_executable_proof": 1368
+          "deferred_proof_not_executed": 81,
+          "full_executable_proof": 1369
         }
       },
       {
@@ -79799,9 +79799,9 @@
       "rfc": "RFC9000",
       "title": "Use a zero-length destination connection ID toward such an endpoint",
       "statement": "A zero-length Destination Connection ID field MUST be used in all packets sent toward such an endpoint over any network path.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79812,24 +79812,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStream_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStream_WhenPeerSelectsNonZeroConnectionId_UsesNonZeroDestinationConnectionId",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::CurrentPeerDestinationConnectionId_WhenPeerZeroLengthModeHasPreferredAddress_StillUsesZeroLengthDestinationConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::CurrentPeerDestinationConnectionId_WhenPeerZeroLengthModeHasPreferredAddress_StillUsesZeroLengthDestinationConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStreamFuzz_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId"
       ]
     },
     {

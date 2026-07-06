@@ -2150,7 +2150,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStream_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStream_WhenPeerSelectsNonZeroConnectionId_UsesNonZeroDestinationConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::CurrentPeerDestinationConnectionId_WhenPeerZeroLengthModeHasPreferredAddress_StillUsesZeroLengthDestinationConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::CurrentPeerDestinationConnectionId_WhenPeerZeroLengthModeHasPreferredAddress_StillUsesZeroLengthDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S2-R01.cs::OpenOutboundStreamFuzz_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId"
         ],
         "upstream_refs": [
           "RFC 9000 5.1.1 RFC9000-S5P1P1-B8-P8-S2",

@@ -76,6 +76,31 @@ public sealed class RFC9000_S5_1_1_P8_S2_R01
         Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S5-1-1-P8-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task OpenOutboundStreamFuzz_WhenPeerSelectsZeroLengthConnectionId_UsesZeroLengthDestinationConnectionId()
+    {
+        QuicStreamType[] streamTypes =
+        [
+            QuicStreamType.Bidirectional,
+            QuicStreamType.Unidirectional,
+        ];
+
+        foreach (QuicStreamType streamType in streamTypes)
+        {
+            using QuicConnectionRuntime runtime = CreateActiveRuntime(peerInitialSourceConnectionId: []);
+
+            Assert.True(runtime.CurrentPeerDestinationConnectionId.IsEmpty);
+
+            QuicConnectionSendDatagramEffect send = await OpenStreamAndCaptureSendAsync(runtime, streamType);
+
+            AssertApplicationDataDatagramOpensWithDestination(runtime, send.Datagram, ReadOnlyMemory<byte>.Empty);
+            AssertApplicationDataDatagramDoesNotOpenWithDestination(runtime, send.Datagram, HandshakeDestinationConnectionId);
+        }
+    }
+
     private static QuicConnectionRuntime CreateActiveRuntime(
         ReadOnlySpan<byte> peerInitialSourceConnectionId,
         QuicPreferredAddress? preferredAddress = null)
@@ -183,7 +208,8 @@ public sealed class RFC9000_S5_1_1_P8_S2_R01
     }
 
     private static async Task<QuicConnectionSendDatagramEffect> OpenStreamAndCaptureSendAsync(
-        QuicConnectionRuntime runtime)
+        QuicConnectionRuntime runtime,
+        QuicStreamType streamType = QuicStreamType.Bidirectional)
     {
         List<QuicConnectionEffect> outboundEffects = [];
         runtime.SetLocalApiEventDispatcher(connectionEvent =>
@@ -193,7 +219,7 @@ public sealed class RFC9000_S5_1_1_P8_S2_R01
             return true;
         });
 
-        QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+        QuicStream stream = await runtime.OpenOutboundStreamAsync(streamType);
         Assert.NotNull(stream);
         return Assert.Single(outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
     }
