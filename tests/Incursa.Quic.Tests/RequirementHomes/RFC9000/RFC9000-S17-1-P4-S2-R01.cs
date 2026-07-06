@@ -140,4 +140,58 @@ public sealed class REQ_QUIC_RFC9000_0925
             applicationMaterial,
             firstPacketNumber);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildProtectedApplicationDataPacket_RecoversOutOfOrderPacketNumbersAcrossRanges()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        ulong[] firstPacketNumbers =
+        [
+            0UL,
+            1UL,
+            255UL,
+            256UL,
+            65_535UL,
+            65_536UL,
+            uint.MaxValue - 1UL,
+        ];
+
+        foreach (ulong expectedFirstPacketNumber in firstPacketNumbers)
+        {
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+            byte[] payload = QuicS12P3TestSupport.CreatePingPayload();
+
+            QuicS17P1TestSupport.SetNextApplicationPacketNumber(coordinator, expectedFirstPacketNumber);
+
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                payload,
+                applicationMaterial,
+                out ulong firstPacketNumber,
+                out byte[] firstProtectedPacket));
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                payload,
+                applicationMaterial,
+                out ulong secondPacketNumber,
+                out byte[] secondProtectedPacket));
+
+            Assert.Equal(expectedFirstPacketNumber, firstPacketNumber);
+            Assert.Equal(expectedFirstPacketNumber + 1, secondPacketNumber);
+
+            QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+                coordinator,
+                secondProtectedPacket,
+                applicationMaterial,
+                secondPacketNumber);
+            QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+                coordinator,
+                firstProtectedPacket,
+                applicationMaterial,
+                firstPacketNumber);
+        }
+    }
 }

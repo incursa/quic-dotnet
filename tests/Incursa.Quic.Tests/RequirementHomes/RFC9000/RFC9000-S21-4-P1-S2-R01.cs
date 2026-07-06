@@ -93,4 +93,83 @@ public sealed class REQ_QUIC_RFC9000_S21P4_0001
         Assert.Equal(0UL, firstPacketNumber);
         Assert.Equal((ulong)uint.MaxValue, skippedPacketNumber);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S21-4-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PacketNumberSpacesCanSkipAcrossRepresentativeRanges()
+    {
+        ulong[] skippedPacketNumbers =
+        [
+            2UL,
+            4UL,
+            16UL,
+            255UL,
+            65_535UL,
+        ];
+
+        foreach (ulong skippedPacketNumber in skippedPacketNumbers)
+        {
+            AssertHandshakePacketNumberCanSkipTo(skippedPacketNumber);
+            AssertApplicationPacketNumberCanSkipTo(skippedPacketNumber);
+        }
+    }
+
+    private static void AssertHandshakePacketNumberCanSkipTo(ulong skippedPacketNumber)
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateHandshakeCoordinator();
+        QuicTlsPacketProtectionMaterial handshakeMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.Handshake);
+        byte[] payload = QuicS17P2P3TestSupport.CreateSequentialBytes(0x30, 16);
+
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            payload,
+            cryptoPayloadOffset: 0,
+            handshakeMaterial,
+            out ulong firstPacketNumber,
+            out _));
+
+        QuicS17P1TestSupport.SetNextHandshakePacketNumber(coordinator, skippedPacketNumber);
+
+        Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+            payload,
+            cryptoPayloadOffset: 0,
+            handshakeMaterial,
+            out ulong actualSkippedPacketNumber,
+            out _));
+
+        Assert.Equal(0UL, firstPacketNumber);
+        Assert.Equal(skippedPacketNumber, actualSkippedPacketNumber);
+    }
+
+    private static void AssertApplicationPacketNumberCanSkipTo(ulong skippedPacketNumber)
+    {
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+        QuicTlsPacketProtectionMaterial oneRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt);
+        byte[] payload = QuicS17P2P3TestSupport.CreatePingPayload();
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            oneRttMaterial,
+            out ulong firstPacketNumber,
+            out _));
+
+        QuicS17P1TestSupport.SetNextApplicationPacketNumber(coordinator, skippedPacketNumber);
+
+        Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+            payload,
+            oneRttMaterial,
+            out ulong actualSkippedPacketNumber,
+            out byte[] protectedPacket));
+
+        Assert.Equal(0UL, firstPacketNumber);
+        Assert.Equal(skippedPacketNumber, actualSkippedPacketNumber);
+        QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+            coordinator,
+            protectedPacket,
+            oneRttMaterial,
+            actualSkippedPacketNumber);
+    }
 }

@@ -140,4 +140,61 @@ public sealed class REQ_QUIC_RFC9000_S17P1_0003
             applicationMaterial,
             packetNumber);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildProtectedApplicationDataPacket_UsesRecoverablePacketNumberLengthsAcrossAcknowledgedRanges()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        ulong[] minimumPacketNumbersExclusive =
+        [
+            0UL,
+            1UL,
+            255UL,
+            256UL,
+            65_535UL,
+            65_536UL,
+            uint.MaxValue - 2UL,
+        ];
+
+        foreach (ulong minimumPacketNumberExclusive in minimumPacketNumbersExclusive)
+        {
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateApplicationCoordinator();
+            QuicConnectionSendRuntime sendRuntime = new();
+            byte[] payload = QuicS12P3TestSupport.CreatePingPayload();
+
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                payload,
+                applicationMaterial,
+                out ulong firstPacketNumber,
+                out byte[] firstProtectedPacket));
+
+            sendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                firstPacketNumber,
+                (ulong)firstProtectedPacket.Length,
+                SentAtMicros: 0,
+                PacketBytes: firstProtectedPacket));
+            Assert.True(sendRuntime.TryAcknowledgePacket(QuicPacketNumberSpace.ApplicationData, firstPacketNumber));
+
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacketForRetransmission(
+                payload,
+                minimumPacketNumberExclusive,
+                applicationMaterial,
+                keyPhase: false,
+                out ulong packetNumber,
+                out byte[] protectedPacket));
+
+            Assert.Equal(minimumPacketNumberExclusive + 1, packetNumber);
+            QuicS17P1TestSupport.AssertOpenedApplicationPacketNumber(
+                coordinator,
+                protectedPacket,
+                applicationMaterial,
+                packetNumber);
+        }
+    }
 }
