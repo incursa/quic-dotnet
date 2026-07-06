@@ -108,4 +108,41 @@ public sealed class REQ_QUIC_RFC9000_S4P6_0006
             QuicTransportParameterRole.Client,
             out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-6-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues()
+    {
+        ulong maximumStreamLimit = 1UL << 60;
+        (ulong? InitialMaxStreamsBidi, ulong? InitialMaxStreamsUni)[] cases =
+        [
+            (maximumStreamLimit + 1, null),
+            (null, maximumStreamLimit + 1),
+            (maximumStreamLimit + 17, maximumStreamLimit),
+            (maximumStreamLimit, maximumStreamLimit + 17),
+        ];
+
+        foreach ((ulong? initialMaxStreamsBidi, ulong? initialMaxStreamsUni) in cases)
+        {
+            QuicConnectionRuntime runtime =
+                QuicS7P3ConnectionIdBindingTestSupport.CreateClientRuntimeForPeerTransportParameterCommit();
+            QuicTransportParameters peerParameters = new()
+            {
+                OriginalDestinationConnectionId = QuicS7P3ConnectionIdBindingTestSupport.InitialDestinationConnectionId,
+                InitialSourceConnectionId = [],
+                InitialMaxStreamsBidi = initialMaxStreamsBidi,
+                InitialMaxStreamsUni = initialMaxStreamsUni,
+            };
+
+            QuicConnectionTransitionResult result =
+                QuicS7P3ConnectionIdBindingTestSupport.CommitPeerTransportParametersThroughClientRuntime(
+                    runtime,
+                    peerParameters);
+
+            Assert.True(result.StateChanged);
+            QuicS7P3ConnectionIdBindingTestSupport.AssertTransportParameterErrorClose(runtime);
+        }
+    }
 }

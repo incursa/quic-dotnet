@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:24:02.8339457-06:00",
+    "generated_at": "2026-07-06T11:27:50.0174687-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1110,
-      "full_executable_proof": 1567
+      "deferred_proof_not_executed": 1108,
+      "full_executable_proof": 1569
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 85,
-          "full_executable_proof": 1365
+          "deferred_proof_not_executed": 83,
+          "full_executable_proof": 1367
         }
       },
       {
@@ -79192,9 +79192,9 @@
       "rfc": "RFC9000",
       "title": "Close on oversized stream-count values in transport parameters",
       "statement": "If an oversized max_streams value is received in a transport parameter, the connection MUST be closed immediately with TRANSPORT_PARAMETER_ERROR.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -79203,24 +79203,24 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_AcceptsInitialMaxStreamsAtTheEncodingLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_ClosesOnOversizedInitialMaxStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues"
       ]
     },
     {
@@ -79228,9 +79228,9 @@
       "rfc": "RFC9000",
       "title": "Close on oversized stream-count values in frames",
       "statement": "If an oversized max_streams value is received in a frame, the connection MUST be closed immediately with FRAME_ENCODING_ERROR.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -79240,24 +79240,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames"
       ]
     },
     {

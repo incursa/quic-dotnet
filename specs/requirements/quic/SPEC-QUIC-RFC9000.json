@@ -39017,7 +39017,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_AcceptsInitialMaxStreamsAtTheEncodingLimit",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_ClosesOnOversizedInitialMaxStreams",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues"
         ]
       }
     },
@@ -39051,7 +39052,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames"
         ]
       }
     },

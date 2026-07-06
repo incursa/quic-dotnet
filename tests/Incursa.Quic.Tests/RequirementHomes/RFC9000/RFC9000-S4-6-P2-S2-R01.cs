@@ -68,6 +68,36 @@ public sealed class RFC9000_S4_6_P2_S2_R01
         Assert.Equal(default, bytesConsumed);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S4-6-P2-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames()
+    {
+        ulong maximumStreamLimit = 1UL << 60;
+        byte[] frameTypes = [0x12, 0x13];
+        ulong[] deltas = [1, 2, 17, 255];
+
+        foreach (byte frameType in frameTypes)
+        {
+            foreach (ulong delta in deltas)
+            {
+                using QuicConnectionRuntime runtime =
+                    QuicS13ApplicationSendDelayTestSupport.CreateConfirmedClientRuntimeWithValidatedActivePath();
+                byte[] payload = BuildMaxStreamsPayload(frameType, maximumStreamLimit + delta);
+
+                QuicConnectionTransitionResult result =
+                    QuicStreamControlFrameTestSupport.ReceiveProtectedApplicationPayload(runtime, payload, nowTicks: 20);
+
+                Assert.True(result.StateChanged);
+                Assert.NotNull(runtime.TerminalState);
+                Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState.Value.Origin);
+                Assert.Equal(QuicTransportErrorCode.FrameEncodingError, runtime.TerminalState.Value.Close.TransportErrorCode);
+                Assert.Equal((ulong)frameType, runtime.TerminalState.Value.Close.TriggeringFrameType);
+            }
+        }
+    }
+
     private static byte[] BuildMaxStreamsPayload(byte frameType, ulong maximumStreams)
     {
         Span<byte> encoded = stackalloc byte[16];

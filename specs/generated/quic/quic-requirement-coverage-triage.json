@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T11:23:09.3141949-06:00",
+  "generated_at": "2026-07-06T11:27:40.3778264-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T11:23:09.3091061-06:00",
+    "generated_at": "2026-07-06T11:27:40.3742594-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -414577,22 +414577,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_AcceptsInitialMaxStreamsAtTheEncodingLimit",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommit_ClosesOnOversizedInitialMaxStreams",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -414694,6 +414695,50 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs",
           "class": "REQ_QUIC_RFC9000_S4P6_0006",
+          "member": "REQ_QUIC_RFC9000_S4P6_0006.PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues",
+          "method": "PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues",
+          "line": 116,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S4-6-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S4-6-P2-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs::PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0006",
+          "member": "REQ_QUIC_RFC9000_S4P6_0006.PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues",
+          "method": "PeerTransportParameterCommitFuzz_ClosesOnOversizedInitialMaxStreamsValues",
+          "line": 116,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S4-6-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S4-6-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S4P6_0006",
           "member": "REQ_QUIC_RFC9000_S4P6_0006.TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit",
           "method": "TryFormatAndParseTransportParameters_RejectsInitialMaxStreamsAboveTheLimit",
           "line": 68,
@@ -414753,22 +414798,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_AcceptsMaximumValidStreamCount",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacket_ClosesOnOversizedMaxStreamsFrame",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::TryParseMaxStreamsFrame_RejectsValuesAboveTheEncodingLimit",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -414812,6 +414858,50 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S4-6-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S4-6-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs",
+          "class": "RFC9000_S4_6_P2_S2_R01",
+          "member": "RFC9000_S4_6_P2_S2_R01.ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames",
+          "method": "ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames",
+          "line": 75,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S4-6-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S4-6-P2-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs::ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P2-S2-R01.cs",
+          "class": "RFC9000_S4_6_P2_S2_R01",
+          "member": "RFC9000_S4_6_P2_S2_R01.ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames",
+          "method": "ProtectedApplicationDataPacketFuzz_ClosesOnOversizedMaxStreamsFrames",
+          "line": 75,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
