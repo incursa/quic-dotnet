@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:15:53.2427629-06:00",
+  "generated_at": "2026-07-06T17:22:04.9825041-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:15:53.2383099-06:00",
+    "generated_at": "2026-07-06T17:22:04.9778008-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -270440,14 +270440,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -270461,9 +270461,32 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
           "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_MessageCodecRoundTripsRepresentativePayloadSizesBeyondPathMtu",
+          "method": "Fuzz_MessageCodecRoundTripsRepresentativePayloadSizesBeyondPathMtu",
+          "line": 386,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0001",
+            "RFC9250-S4-2-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu",
           "method": "MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu",
-          "line": 273,
+          "line": 365,
           "kinds": [
             "negative"
           ],
@@ -270485,7 +270508,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu",
           "method": "MessageCodecAllowsResponsePayloadLargerThanTypicalPathMtu",
-          "line": 273,
+          "line": 365,
           "kinds": [
             "negative"
           ],
@@ -270992,14 +271015,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 12,
-        "focused": 7,
+        "total": 13,
+        "focused": 8,
         "broad": 5,
         "by_kind": {
           "positive": 7,
           "negative": 5,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -271091,6 +271114,29 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0003"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0003",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_ClientAndListenerOptionsNegotiateDoqAlpnAcrossProtocolLists",
+          "method": "Fuzz_ClientAndListenerOptionsNegotiateDoqAlpnAcrossProtocolLists",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0003",
+            "RFC9250-S4-1-P1-S1-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -273166,7 +273212,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -273415,7 +273461,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -273664,7 +273710,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -273913,7 +273959,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -274162,7 +274208,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -274411,7 +274457,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -274660,7 +274706,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -274909,7 +274955,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -277764,7 +277810,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EnsureIdleTimeout_PreservesExplicitValue",
           "method": "EnsureIdleTimeout_PreservesExplicitValue",
-          "line": 311,
+          "line": 424,
           "kinds": [
             "positive"
           ],
@@ -277787,7 +277833,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EnsureIdleTimeout_SetsDefaultWhenNotSpecified",
           "method": "EnsureIdleTimeout_SetsDefaultWhenNotSpecified",
-          "line": 293,
+          "line": 406,
           "kinds": [
             "positive"
           ],
@@ -277940,7 +277986,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EnsureIdleTimeout_PreservesExplicitValue",
           "method": "EnsureIdleTimeout_PreservesExplicitValue",
-          "line": 311,
+          "line": 424,
           "kinds": [
             "positive"
           ],
@@ -279417,7 +279463,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse",
           "method": "BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse",
-          "line": 691,
+          "line": 804,
           "kinds": [
             "positive"
           ],
@@ -279439,7 +279485,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse",
           "method": "BuildRefusedWithTooEarlyResponse_ReturnsRefusedResponse",
-          "line": 691,
+          "line": 804,
           "kinds": [
             "positive"
           ],
@@ -279461,7 +279507,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ServerResumptionPolicyDoesNotRequireZeroRttQueueing",
           "method": "ServerResumptionPolicyDoesNotRequireZeroRttQueueing",
-          "line": 706,
+          "line": 819,
           "kinds": [
             "negative"
           ],
@@ -279483,7 +279529,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ServerResumptionPolicyDoesNotRequireZeroRttQueueing",
           "method": "ServerResumptionPolicyDoesNotRequireZeroRttQueueing",
-          "line": 706,
+          "line": 819,
           "kinds": [
             "negative"
           ],
@@ -280062,7 +280108,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_DoesNotConsultEdnsUdpPayloadSizeField",
           "method": "TryDecode_DoesNotConsultEdnsUdpPayloadSizeField",
-          "line": 463,
+          "line": 576,
           "kinds": [
             "positive"
           ],
@@ -280084,7 +280130,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_DoesNotConsultEdnsUdpPayloadSizeField",
           "method": "TryDecode_DoesNotConsultEdnsUdpPayloadSizeField",
-          "line": 463,
+          "line": 576,
           "kinds": [
             "positive"
           ],
@@ -280106,7 +280152,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize",
           "method": "TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize",
-          "line": 478,
+          "line": 591,
           "kinds": [
             "negative"
           ],
@@ -280128,7 +280174,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize",
           "method": "TryDecode_DoesNotLimitDoqMessageToEdnsUdpPayloadSize",
-          "line": 478,
+          "line": 591,
           "kinds": [
             "negative"
           ],
@@ -280199,7 +280245,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Accepts65534BytePayload",
           "method": "Encode_Accepts65534BytePayload",
-          "line": 330,
+          "line": 443,
           "kinds": [
             "positive"
           ],
@@ -280221,7 +280267,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Accepts65534BytePayload",
           "method": "Encode_Accepts65534BytePayload",
-          "line": 330,
+          "line": 443,
           "kinds": [
             "positive"
           ],
@@ -280243,7 +280289,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Accepts65535BytePayload",
           "method": "Encode_Accepts65535BytePayload",
-          "line": 348,
+          "line": 461,
           "kinds": [
             "positive"
           ],
@@ -280265,7 +280311,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Accepts65535BytePayload",
           "method": "Encode_Accepts65535BytePayload",
-          "line": 348,
+          "line": 461,
           "kinds": [
             "positive"
           ],
@@ -280287,7 +280333,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Rejects65536BytePayload",
           "method": "Encode_Rejects65536BytePayload",
-          "line": 366,
+          "line": 479,
           "kinds": [
             "negative"
           ],
@@ -280309,7 +280355,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Encode_Rejects65536BytePayload",
           "method": "Encode_Rejects65536BytePayload",
-          "line": 366,
+          "line": 479,
           "kinds": [
             "negative"
           ],
@@ -280331,7 +280377,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_Accepts65534BytePayload",
           "method": "TryDecode_Accepts65534BytePayload",
-          "line": 377,
+          "line": 490,
           "kinds": [
             "positive"
           ],
@@ -280353,7 +280399,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_Accepts65534BytePayload",
           "method": "TryDecode_Accepts65534BytePayload",
-          "line": 377,
+          "line": 490,
           "kinds": [
             "positive"
           ],
@@ -280375,7 +280421,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_Accepts65535BytePayload",
           "method": "TryDecode_Accepts65535BytePayload",
-          "line": 396,
+          "line": 509,
           "kinds": [
             "positive"
           ],
@@ -280397,7 +280443,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_Accepts65535BytePayload",
           "method": "TryDecode_Accepts65535BytePayload",
-          "line": 396,
+          "line": 509,
           "kinds": [
             "positive"
           ],
@@ -280419,7 +280465,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_AcceptsZeroLengthPayload",
           "method": "TryDecode_AcceptsZeroLengthPayload",
-          "line": 415,
+          "line": 528,
           "kinds": [
             "positive"
           ],
@@ -280441,7 +280487,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_AcceptsZeroLengthPayload",
           "method": "TryDecode_AcceptsZeroLengthPayload",
-          "line": 415,
+          "line": 528,
           "kinds": [
             "positive"
           ],
@@ -280463,7 +280509,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_RejectsMalformedLengthPrefixes",
           "method": "TryDecode_RejectsMalformedLengthPrefixes",
-          "line": 429,
+          "line": 542,
           "kinds": [
             "negative"
           ],
@@ -280485,7 +280531,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecode_RejectsMalformedLengthPrefixes",
           "method": "TryDecode_RejectsMalformedLengthPrefixes",
-          "line": 429,
+          "line": 542,
           "kinds": [
             "negative"
           ],
@@ -280507,7 +280553,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecodeAndEncode_RoundTripPreservesPayload",
           "method": "TryDecodeAndEncode_RoundTripPreservesPayload",
-          "line": 443,
+          "line": 556,
           "kinds": [
             "positive"
           ],
@@ -280529,7 +280575,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.TryDecodeAndEncode_RoundTripPreservesPayload",
           "method": "TryDecodeAndEncode_RoundTripPreservesPayload",
-          "line": 443,
+          "line": 556,
           "kinds": [
             "positive"
           ],
@@ -280595,7 +280641,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_ClearAllowsRetry",
           "method": "FallbackCache_ClearAllowsRetry",
-          "line": 900,
+          "line": 1013,
           "kinds": [
             "positive"
           ],
@@ -280617,7 +280663,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_ClearAllowsRetry",
           "method": "FallbackCache_ClearAllowsRetry",
-          "line": 900,
+          "line": 1013,
           "kinds": [
             "positive"
           ],
@@ -280772,7 +280818,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_DoesNotBackOffUnfailedEndpoint",
           "method": "FallbackCache_DoesNotBackOffUnfailedEndpoint",
-          "line": 857,
+          "line": 970,
           "kinds": [
             "negative"
           ],
@@ -280794,7 +280840,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_DoesNotBackOffUnfailedEndpoint",
           "method": "FallbackCache_DoesNotBackOffUnfailedEndpoint",
-          "line": 857,
+          "line": 970,
           "kinds": [
             "negative"
           ],
@@ -280816,7 +280862,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_RecordsAndChecksBackoff",
           "method": "FallbackCache_RecordsAndChecksBackoff",
-          "line": 842,
+          "line": 955,
           "kinds": [
             "positive"
           ],
@@ -280838,7 +280884,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_RecordsAndChecksBackoff",
           "method": "FallbackCache_RecordsAndChecksBackoff",
-          "line": 842,
+          "line": 955,
           "kinds": [
             "positive"
           ],
@@ -280903,7 +280949,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_BackoffExpires",
           "method": "FallbackCache_BackoffExpires",
-          "line": 871,
+          "line": 984,
           "kinds": [
             "positive"
           ],
@@ -280925,7 +280971,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_BackoffExpires",
           "method": "FallbackCache_BackoffExpires",
-          "line": 871,
+          "line": 984,
           "kinds": [
             "positive"
           ],
@@ -280947,7 +280993,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_RejectsNonPositiveBackoffPeriods",
           "method": "FallbackCache_RejectsNonPositiveBackoffPeriods",
-          "line": 885,
+          "line": 998,
           "kinds": [
             "negative"
           ],
@@ -280969,7 +281015,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.FallbackCache_RejectsNonPositiveBackoffPeriods",
           "method": "FallbackCache_RejectsNonPositiveBackoffPeriods",
-          "line": 885,
+          "line": 998,
           "kinds": [
             "negative"
           ],
@@ -281038,7 +281084,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
           "method": "OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
-          "line": 970,
+          "line": 1083,
           "kinds": [
             "positive"
           ],
@@ -281061,7 +281107,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
           "method": "OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
-          "line": 970,
+          "line": 1083,
           "kinds": [
             "positive"
           ],
@@ -281084,7 +281130,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint",
           "method": "OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint",
-          "line": 984,
+          "line": 1097,
           "kinds": [
             "negative"
           ],
@@ -281106,7 +281152,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint",
           "method": "OpportunisticFallbackDoesNotUseCleartextForKeyPinnedEndpoint",
-          "line": 984,
+          "line": 1097,
           "kinds": [
             "negative"
           ],
@@ -281128,7 +281174,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
           "method": "OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
-          "line": 941,
+          "line": 1054,
           "kinds": [
             "positive"
           ],
@@ -281151,7 +281197,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
           "method": "OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
-          "line": 941,
+          "line": 1054,
           "kinds": [
             "positive"
           ],
@@ -281174,7 +281220,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackRequiresExplicitCleartextPermission",
           "method": "OpportunisticFallbackRequiresExplicitCleartextPermission",
-          "line": 955,
+          "line": 1068,
           "kinds": [
             "negative"
           ],
@@ -281196,7 +281242,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackRequiresExplicitCleartextPermission",
           "method": "OpportunisticFallbackRequiresExplicitCleartextPermission",
-          "line": 955,
+          "line": 1068,
           "kinds": [
             "negative"
           ],
@@ -281350,7 +281396,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AmplificationLimitEnforcedByDefault",
           "method": "AmplificationLimitEnforcedByDefault",
-          "line": 999,
+          "line": 1112,
           "kinds": [
             "positive"
           ],
@@ -281372,7 +281418,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AmplificationLimitEnforcedByDefault",
           "method": "AmplificationLimitEnforcedByDefault",
-          "line": 999,
+          "line": 1112,
           "kinds": [
             "positive"
           ],
@@ -281526,7 +281572,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AddressValidationEnabledByDefault",
           "method": "AddressValidationEnabledByDefault",
-          "line": 1021,
+          "line": 1134,
           "kinds": [
             "positive"
           ],
@@ -281548,7 +281594,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AddressValidationEnabledByDefault",
           "method": "AddressValidationEnabledByDefault",
-          "line": 1021,
+          "line": 1134,
           "kinds": [
             "positive"
           ],
@@ -281570,7 +281616,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.RetryAndAddressValidationPolicyCanBeExplicitlyDisabled",
           "method": "RetryAndAddressValidationPolicyCanBeExplicitlyDisabled",
-          "line": 1032,
+          "line": 1145,
           "kinds": [
             "negative"
           ],
@@ -281592,7 +281638,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.RetryAndAddressValidationPolicyCanBeExplicitlyDisabled",
           "method": "RetryAndAddressValidationPolicyCanBeExplicitlyDisabled",
-          "line": 1032,
+          "line": 1145,
           "kinds": [
             "negative"
           ],
@@ -281614,7 +281660,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.RetryPacketsEnabledByDefault",
           "method": "RetryPacketsEnabledByDefault",
-          "line": 1010,
+          "line": 1123,
           "kinds": [
             "positive"
           ],
@@ -281636,7 +281682,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.RetryPacketsEnabledByDefault",
           "method": "RetryPacketsEnabledByDefault",
-          "line": 1010,
+          "line": 1123,
           "kinds": [
             "positive"
           ],
@@ -281701,7 +281747,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
           "method": "PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
-          "line": 1062,
+          "line": 1175,
           "kinds": [
             "negative"
           ],
@@ -281723,7 +281769,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
           "method": "PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
-          "line": 1062,
+          "line": 1175,
           "kinds": [
             "negative"
           ],
@@ -281745,7 +281791,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_PadsToBlockSize",
           "method": "PadMessage_PadsToBlockSize",
-          "line": 1048,
+          "line": 1161,
           "kinds": [
             "positive"
           ],
@@ -281767,7 +281813,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_PadsToBlockSize",
           "method": "PadMessage_PadsToBlockSize",
-          "line": 1048,
+          "line": 1161,
           "kinds": [
             "positive"
           ],
@@ -281833,7 +281879,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_AddsPaddingOptionWithCorrectCode",
           "method": "PadMessage_AddsPaddingOptionWithCorrectCode",
-          "line": 1190,
+          "line": 1303,
           "kinds": [
             "positive"
           ],
@@ -281855,7 +281901,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_AddsPaddingOptionWithCorrectCode",
           "method": "PadMessage_AddsPaddingOptionWithCorrectCode",
-          "line": 1190,
+          "line": 1303,
           "kinds": [
             "positive"
           ],
@@ -281877,7 +281923,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_BlockSizeZeroDisabled",
           "method": "PadMessage_BlockSizeZeroDisabled",
-          "line": 1075,
+          "line": 1188,
           "kinds": [
             "positive"
           ],
@@ -281899,7 +281945,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_BlockSizeZeroDisabled",
           "method": "PadMessage_BlockSizeZeroDisabled",
-          "line": 1075,
+          "line": 1188,
           "kinds": [
             "positive"
           ],
@@ -281921,7 +281967,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_LeavesMalformedQuestionNameUnchanged",
           "method": "PadMessage_LeavesMalformedQuestionNameUnchanged",
-          "line": 1088,
+          "line": 1201,
           "kinds": [
             "negative"
           ],
@@ -281943,7 +281989,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_LeavesMalformedQuestionNameUnchanged",
           "method": "PadMessage_LeavesMalformedQuestionNameUnchanged",
-          "line": 1088,
+          "line": 1201,
           "kinds": [
             "negative"
           ],
@@ -282010,7 +282056,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit",
           "method": "Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit",
-          "line": 1157,
+          "line": 1270,
           "kinds": [
             "fuzz"
           ],
@@ -282032,7 +282078,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit",
           "method": "Fuzz_PadMessage_RepresentativeLengthsStayWithinDoqMessageLimit",
-          "line": 1157,
+          "line": 1270,
           "kinds": [
             "fuzz"
           ],
@@ -282054,7 +282100,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_AlreadyAlignedWithPadding",
           "method": "PadMessage_AlreadyAlignedWithPadding",
-          "line": 1101,
+          "line": 1214,
           "kinds": [
             "positive"
           ],
@@ -282076,7 +282122,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_AlreadyAlignedWithPadding",
           "method": "PadMessage_AlreadyAlignedWithPadding",
-          "line": 1101,
+          "line": 1214,
           "kinds": [
             "positive"
           ],
@@ -282098,7 +282144,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_RespectsMaxPayloadLength",
           "method": "PadMessage_RespectsMaxPayloadLength",
-          "line": 1124,
+          "line": 1237,
           "kinds": [
             "positive"
           ],
@@ -282120,7 +282166,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_RespectsMaxPayloadLength",
           "method": "PadMessage_RespectsMaxPayloadLength",
-          "line": 1124,
+          "line": 1237,
           "kinds": [
             "positive"
           ],
@@ -282142,7 +282188,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_ReturnsOriginalWhenPaddingCannotFit",
           "method": "PadMessage_ReturnsOriginalWhenPaddingCannotFit",
-          "line": 1141,
+          "line": 1254,
           "kinds": [
             "negative"
           ],
@@ -282164,7 +282210,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_ReturnsOriginalWhenPaddingCannotFit",
           "method": "PadMessage_ReturnsOriginalWhenPaddingCannotFit",
-          "line": 1141,
+          "line": 1254,
           "kinds": [
             "negative"
           ],
@@ -287051,7 +287097,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ReplayableOpcodesAreStatePreserving",
           "method": "ReplayableOpcodesAreStatePreserving",
-          "line": 815,
+          "line": 928,
           "kinds": [
             "positive"
           ],
@@ -287073,7 +287119,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ReplayableOpcodesAreStatePreserving",
           "method": "ReplayableOpcodesAreStatePreserving",
-          "line": 815,
+          "line": 928,
           "kinds": [
             "positive"
           ],
@@ -287095,7 +287141,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction",
           "method": "StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction",
-          "line": 830,
+          "line": 943,
           "kinds": [
             "negative"
           ],
@@ -287117,7 +287163,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction",
           "method": "StateChangingOpcodeIsNotAllowedAsStatePreservingZeroRttTransaction",
-          "line": 830,
+          "line": 943,
           "kinds": [
             "negative"
           ],
@@ -287182,7 +287228,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PaddingBlockSizeConfiguredInDefaults",
           "method": "PaddingBlockSizeConfiguredInDefaults",
-          "line": 1115,
+          "line": 1228,
           "kinds": [
             "positive"
           ],
@@ -287204,7 +287250,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
           "method": "PadMessage_DoesNotAddPaddingWhenBlockSizeIsDisabled",
-          "line": 1062,
+          "line": 1175,
           "kinds": [
             "negative"
           ],
@@ -287226,7 +287272,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.PadMessage_PadsToBlockSize",
           "method": "PadMessage_PadsToBlockSize",
-          "line": 1048,
+          "line": 1161,
           "kinds": [
             "positive"
           ],
@@ -287291,7 +287337,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AlpnByteSequenceDoesNotUseHttp3Token",
           "method": "AlpnByteSequenceDoesNotUseHttp3Token",
-          "line": 73,
+          "line": 138,
           "kinds": [
             "negative"
           ],
@@ -287313,7 +287359,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AlpnByteSequenceDoesNotUseHttp3Token",
           "method": "AlpnByteSequenceDoesNotUseHttp3Token",
-          "line": 73,
+          "line": 138,
           "kinds": [
             "negative"
           ],
@@ -287335,7 +287381,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AlpnByteSequenceMatchesDoqDefaultsAlpn",
           "method": "AlpnByteSequenceMatchesDoqDefaultsAlpn",
-          "line": 64,
+          "line": 129,
           "kinds": [
             "positive"
           ],
@@ -287357,7 +287403,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AlpnByteSequenceMatchesDoqDefaultsAlpn",
           "method": "AlpnByteSequenceMatchesDoqDefaultsAlpn",
-          "line": 64,
+          "line": 129,
           "kinds": [
             "positive"
           ],
@@ -289579,7 +289625,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -289828,7 +289874,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -290077,7 +290123,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -290326,7 +290372,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -290575,7 +290621,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -290824,7 +290870,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -291073,7 +291119,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ErrorCodeValuesMatchRfc9250Registry",
           "method": "ErrorCodeValuesMatchRfc9250Registry",
-          "line": 734,
+          "line": 847,
           "kinds": [
             "positive"
           ],
@@ -291322,7 +291368,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable",
           "method": "NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable",
-          "line": 803,
+          "line": 916,
           "kinds": [
             "negative"
           ],
@@ -291344,7 +291390,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable",
           "method": "NonNotifyStateChangingOpcodeIsNotClassifiedAsReplayable",
-          "line": 803,
+          "line": 916,
           "kinds": [
             "negative"
           ],
@@ -291366,7 +291412,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NotifyOpcodeIsReplayable",
           "method": "NotifyOpcodeIsReplayable",
-          "line": 783,
+          "line": 896,
           "kinds": [
             "positive"
           ],
@@ -291388,7 +291434,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NotifyQueryPayloadIsClassifiedAsReplayable",
           "method": "NotifyQueryPayloadIsClassifiedAsReplayable",
-          "line": 792,
+          "line": 905,
           "kinds": [
             "positive"
           ],
@@ -291410,7 +291456,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NotifyQueryPayloadIsClassifiedAsReplayable",
           "method": "NotifyQueryPayloadIsClassifiedAsReplayable",
-          "line": 792,
+          "line": 905,
           "kinds": [
             "positive"
           ],
@@ -467451,14 +467497,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 6,
+        "total": 9,
+        "focused": 7,
         "broad": 2,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -467474,7 +467520,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersUseDefaultDoqPort",
           "method": "EndpointHelpersUseDefaultDoqPort",
-          "line": 84,
+          "line": 149,
           "kinds": [
             "positive"
           ],
@@ -467497,7 +467543,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersUseDefaultDoqPort",
           "method": "EndpointHelpersUseDefaultDoqPort",
-          "line": 84,
+          "line": 149,
           "kinds": [
             "positive"
           ],
@@ -467518,9 +467564,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
           "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "method": "Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "line": 195,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-1-1-P1-R01",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-1-1-P1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 203,
+          "line": 295,
           "kinds": [
             "positive"
           ],
@@ -467543,7 +467613,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 203,
+          "line": 295,
           "kinds": [
             "positive"
           ],
@@ -467566,7 +467636,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAllowExplicitAlternateDoqPort",
           "method": "ListenerOptionsAllowExplicitAlternateDoqPort",
-          "line": 147,
+          "line": 239,
           "kinds": [
             "negative"
           ],
@@ -467588,7 +467658,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAllowExplicitAlternateDoqPort",
           "method": "ListenerOptionsAllowExplicitAlternateDoqPort",
-          "line": 147,
+          "line": 239,
           "kinds": [
             "negative"
           ],
@@ -467713,14 +467783,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 6,
+        "total": 9,
+        "focused": 7,
         "broad": 2,
         "by_kind": {
           "positive": 6,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -467736,7 +467806,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 166,
+          "line": 258,
           "kinds": [
             "positive"
           ],
@@ -467759,7 +467829,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 166,
+          "line": 258,
           "kinds": [
             "positive"
           ],
@@ -467782,7 +467852,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAllowExplicitAlternateDoqPort",
           "method": "ClientOptionsAllowExplicitAlternateDoqPort",
-          "line": 128,
+          "line": 220,
           "kinds": [
             "negative"
           ],
@@ -467804,7 +467874,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAllowExplicitAlternateDoqPort",
           "method": "ClientOptionsAllowExplicitAlternateDoqPort",
-          "line": 128,
+          "line": 220,
           "kinds": [
             "negative"
           ],
@@ -467826,7 +467896,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersUseDefaultDoqPort",
           "method": "EndpointHelpersUseDefaultDoqPort",
-          "line": 84,
+          "line": 149,
           "kinds": [
             "positive"
           ],
@@ -467849,7 +467919,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersUseDefaultDoqPort",
           "method": "EndpointHelpersUseDefaultDoqPort",
-          "line": 84,
+          "line": 149,
           "kinds": [
             "positive"
           ],
@@ -467860,6 +467930,30 @@
           "associated_requirement_ids": [
             "RFC9250-S4-1-1-P1-R01",
             "RFC9250-S4-1-1-P2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-1-1-P2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "method": "Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "line": 195,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-1-1-P1-R01",
+            "RFC9250-S4-1-1-P2-R01",
+            "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -467974,14 +468068,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 4,
+        "total": 7,
+        "focused": 5,
         "broad": 2,
         "by_kind": {
           "positive": 4,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -467997,7 +468091,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersAllowDoqPortsOtherThanUdp53",
           "method": "EndpointHelpersAllowDoqPortsOtherThanUdp53",
-          "line": 97,
+          "line": 162,
           "kinds": [
             "positive"
           ],
@@ -468019,7 +468113,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersAllowDoqPortsOtherThanUdp53",
           "method": "EndpointHelpersAllowDoqPortsOtherThanUdp53",
-          "line": 97,
+          "line": 162,
           "kinds": [
             "positive"
           ],
@@ -468041,7 +468135,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersRejectUdpPort53",
           "method": "EndpointHelpersRejectUdpPort53",
-          "line": 115,
+          "line": 180,
           "kinds": [
             "negative"
           ],
@@ -468063,7 +468157,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.EndpointHelpersRejectUdpPort53",
           "method": "EndpointHelpersRejectUdpPort53",
-          "line": 115,
+          "line": 180,
           "kinds": [
             "negative"
           ],
@@ -468072,6 +468166,30 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "RFC9250-S4-1-1-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-1-1-P3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "method": "Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts",
+          "line": 195,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9250-S4-1-1-P1-R01",
+            "RFC9250-S4-1-1-P2-R01",
             "RFC9250-S4-1-1-P3-R01"
           ],
           "requirement_tagged": true,
@@ -468189,14 +468307,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 8,
+        "total": 11,
+        "focused": 9,
         "broad": 2,
         "by_kind": {
           "positive": 8,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -468256,7 +468374,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 166,
+          "line": 258,
           "kinds": [
             "positive"
           ],
@@ -468279,7 +468397,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ClientOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 166,
+          "line": 258,
           "kinds": [
             "positive"
           ],
@@ -468302,7 +468420,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsRejectExplicitNonDoqAlpn",
           "method": "ClientOptionsRejectExplicitNonDoqAlpn",
-          "line": 184,
+          "line": 276,
           "kinds": [
             "negative"
           ],
@@ -468324,7 +468442,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ClientOptionsRejectExplicitNonDoqAlpn",
           "method": "ClientOptionsRejectExplicitNonDoqAlpn",
-          "line": 184,
+          "line": 276,
           "kinds": [
             "negative"
           ],
@@ -468344,9 +468462,32 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
           "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_ClientAndListenerOptionsNegotiateDoqAlpnAcrossProtocolLists",
+          "method": "Fuzz_ClientAndListenerOptionsNegotiateDoqAlpnAcrossProtocolLists",
+          "line": 65,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0003",
+            "RFC9250-S4-1-P1-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-1-P1-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 203,
+          "line": 295,
           "kinds": [
             "positive"
           ],
@@ -468369,7 +468510,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
           "method": "ListenerOptionsAddDoqAlpnWhenNoProtocolWasSpecified",
-          "line": 203,
+          "line": 295,
           "kinds": [
             "positive"
           ],
@@ -468519,7 +468660,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_PreservesOriginalInput",
           "method": "GenerateMessageId_PreservesOriginalInput",
-          "line": 592,
+          "line": 705,
           "kinds": [
             "positive"
           ],
@@ -468541,7 +468682,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_PreservesOriginalInput",
           "method": "GenerateMessageId_PreservesOriginalInput",
-          "line": 592,
+          "line": 705,
           "kinds": [
             "positive"
           ],
@@ -468563,7 +468704,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_ThrowsOnShortInput",
           "method": "GenerateMessageId_ThrowsOnShortInput",
-          "line": 608,
+          "line": 721,
           "kinds": [
             "negative"
           ],
@@ -468585,7 +468726,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_ThrowsOnShortInput",
           "method": "GenerateMessageId_ThrowsOnShortInput",
-          "line": 608,
+          "line": 721,
           "kinds": [
             "negative"
           ],
@@ -468607,7 +468748,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_WritesSpecifiedId",
           "method": "GenerateMessageId_WritesSpecifiedId",
-          "line": 577,
+          "line": 690,
           "kinds": [
             "positive"
           ],
@@ -468629,7 +468770,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.GenerateMessageId_WritesSpecifiedId",
           "method": "GenerateMessageId_WritesSpecifiedId",
-          "line": 577,
+          "line": 690,
           "kinds": [
             "positive"
           ],
@@ -468651,7 +468792,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "method": "NormalizeToDoqAndGenerateMessageId_RoundTrip",
-          "line": 619,
+          "line": 732,
           "kinds": [
             "positive"
           ],
@@ -468674,7 +468815,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "method": "NormalizeToDoqAndGenerateMessageId_RoundTrip",
-          "line": 619,
+          "line": 732,
           "kinds": [
             "positive"
           ],
@@ -468741,7 +468882,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoq_SetsMessageIdToZero",
           "method": "NormalizeToDoq_SetsMessageIdToZero",
-          "line": 552,
+          "line": 665,
           "kinds": [
             "positive"
           ],
@@ -468763,7 +468904,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoq_SetsMessageIdToZero",
           "method": "NormalizeToDoq_SetsMessageIdToZero",
-          "line": 552,
+          "line": 665,
           "kinds": [
             "positive"
           ],
@@ -468785,7 +468926,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoq_ThrowsOnShortInput",
           "method": "NormalizeToDoq_ThrowsOnShortInput",
-          "line": 567,
+          "line": 680,
           "kinds": [
             "negative"
           ],
@@ -468807,7 +468948,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoq_ThrowsOnShortInput",
           "method": "NormalizeToDoq_ThrowsOnShortInput",
-          "line": 567,
+          "line": 680,
           "kinds": [
             "negative"
           ],
@@ -468829,7 +468970,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "method": "NormalizeToDoqAndGenerateMessageId_RoundTrip",
-          "line": 619,
+          "line": 732,
           "kinds": [
             "positive"
           ],
@@ -468852,7 +468993,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.NormalizeToDoqAndGenerateMessageId_RoundTrip",
           "method": "NormalizeToDoqAndGenerateMessageId_RoundTrip",
-          "line": 619,
+          "line": 732,
           "kinds": [
             "positive"
           ],
@@ -468897,14 +469038,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 8,
+        "total": 11,
+        "focused": 9,
         "broad": 2,
         "by_kind": {
           "positive": 6,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -468918,9 +469059,32 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
           "class": "DoqFoundationTests",
+          "member": "DoqFoundationTests.Fuzz_MessageCodecRoundTripsRepresentativePayloadSizesBeyondPathMtu",
+          "method": "Fuzz_MessageCodecRoundTripsRepresentativePayloadSizesBeyondPathMtu",
+          "line": 386,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0001",
+            "RFC9250-S4-2-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9250-S4-2-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/DoqFoundationTests.cs",
+          "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecDecodesOneMessageAndReportsConsumedBytes",
           "method": "MessageCodecDecodesOneMessageAndReportsConsumedBytes",
-          "line": 232,
+          "line": 324,
           "kinds": [
             "positive"
           ],
@@ -468942,7 +469106,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecDecodesOneMessageAndReportsConsumedBytes",
           "method": "MessageCodecDecodesOneMessageAndReportsConsumedBytes",
-          "line": 232,
+          "line": 324,
           "kinds": [
             "positive"
           ],
@@ -468964,7 +469128,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecEncodesTwoOctetLengthPrefix",
           "method": "MessageCodecEncodesTwoOctetLengthPrefix",
-          "line": 221,
+          "line": 313,
           "kinds": [
             "positive"
           ],
@@ -468986,7 +469150,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecEncodesTwoOctetLengthPrefix",
           "method": "MessageCodecEncodesTwoOctetLengthPrefix",
-          "line": 221,
+          "line": 313,
           "kinds": [
             "positive"
           ],
@@ -469008,7 +469172,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent",
           "method": "MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent",
-          "line": 259,
+          "line": 351,
           "kinds": [
             "negative"
           ],
@@ -469030,7 +469194,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent",
           "method": "MessageCodecRejectsPayloadsLargerThanTwoOctetsCanRepresent",
-          "line": 259,
+          "line": 351,
           "kinds": [
             "negative"
           ],
@@ -469052,7 +469216,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecReportsPartialFramesAsIncomplete",
           "method": "MessageCodecReportsPartialFramesAsIncomplete",
-          "line": 248,
+          "line": 340,
           "kinds": [
             "negative"
           ],
@@ -469074,7 +469238,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.MessageCodecReportsPartialFramesAsIncomplete",
           "method": "MessageCodecReportsPartialFramesAsIncomplete",
-          "line": 248,
+          "line": 340,
           "kinds": [
             "negative"
           ],
@@ -474703,7 +474867,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_NotifyIsReplayable",
           "method": "IsReplayableOpcode_NotifyIsReplayable",
-          "line": 645,
+          "line": 758,
           "kinds": [
             "positive"
           ],
@@ -474725,7 +474889,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_NotifyIsReplayable",
           "method": "IsReplayableOpcode_NotifyIsReplayable",
-          "line": 645,
+          "line": 758,
           "kinds": [
             "positive"
           ],
@@ -474747,7 +474911,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_OtherOpcodesAreNotReplayable",
           "method": "IsReplayableOpcode_OtherOpcodesAreNotReplayable",
-          "line": 654,
+          "line": 767,
           "kinds": [
             "negative"
           ],
@@ -474769,7 +474933,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_OtherOpcodesAreNotReplayable",
           "method": "IsReplayableOpcode_OtherOpcodesAreNotReplayable",
-          "line": 654,
+          "line": 767,
           "kinds": [
             "negative"
           ],
@@ -474791,7 +474955,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_QueryIsReplayable",
           "method": "IsReplayableOpcode_QueryIsReplayable",
-          "line": 636,
+          "line": 749,
           "kinds": [
             "positive"
           ],
@@ -474813,7 +474977,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableOpcode_QueryIsReplayable",
           "method": "IsReplayableOpcode_QueryIsReplayable",
-          "line": 636,
+          "line": 749,
           "kinds": [
             "positive"
           ],
@@ -474835,7 +474999,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableQuery_DetectsNonQueryOpcode",
           "method": "IsReplayableQuery_DetectsNonQueryOpcode",
-          "line": 680,
+          "line": 793,
           "kinds": [
             "negative"
           ],
@@ -474857,7 +475021,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableQuery_DetectsNonQueryOpcode",
           "method": "IsReplayableQuery_DetectsNonQueryOpcode",
-          "line": 680,
+          "line": 793,
           "kinds": [
             "negative"
           ],
@@ -474879,7 +475043,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableQuery_DetectsQueryOpcodeFromPayload",
           "method": "IsReplayableQuery_DetectsQueryOpcodeFromPayload",
-          "line": 669,
+          "line": 782,
           "kinds": [
             "positive"
           ],
@@ -474901,7 +475065,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.IsReplayableQuery_DetectsQueryOpcodeFromPayload",
           "method": "IsReplayableQuery_DetectsQueryOpcodeFromPayload",
-          "line": 669,
+          "line": 782,
           "kinds": [
             "positive"
           ],
@@ -474966,7 +475130,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDefaultsToNoFallback",
           "method": "StrictProfileDefaultsToNoFallback",
-          "line": 916,
+          "line": 1029,
           "kinds": [
             "positive"
           ],
@@ -474988,7 +475152,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDefaultsToNoFallback",
           "method": "StrictProfileDefaultsToNoFallback",
-          "line": 916,
+          "line": 1029,
           "kinds": [
             "positive"
           ],
@@ -475010,7 +475174,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDoesNotSelectFallbackTransport",
           "method": "StrictProfileDoesNotSelectFallbackTransport",
-          "line": 926,
+          "line": 1039,
           "kinds": [
             "negative"
           ],
@@ -475033,7 +475197,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDoesNotSelectFallbackTransport",
           "method": "StrictProfileDoesNotSelectFallbackTransport",
-          "line": 926,
+          "line": 1039,
           "kinds": [
             "negative"
           ],
@@ -475102,7 +475266,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
           "method": "OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
-          "line": 970,
+          "line": 1083,
           "kinds": [
             "positive"
           ],
@@ -475125,7 +475289,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
           "method": "OpportunisticFallbackAllowsCleartextOnlyWhenExplicitlyPermitted",
-          "line": 970,
+          "line": 1083,
           "kinds": [
             "positive"
           ],
@@ -475148,7 +475312,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
           "method": "OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
-          "line": 941,
+          "line": 1054,
           "kinds": [
             "positive"
           ],
@@ -475171,7 +475335,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
           "method": "OpportunisticFallbackPrefersDnsOverTlsWhenAvailable",
-          "line": 941,
+          "line": 1054,
           "kinds": [
             "positive"
           ],
@@ -475194,7 +475358,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDoesNotSelectFallbackTransport",
           "method": "StrictProfileDoesNotSelectFallbackTransport",
-          "line": 926,
+          "line": 1039,
           "kinds": [
             "negative"
           ],
@@ -475217,7 +475381,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.StrictProfileDoesNotSelectFallbackTransport",
           "method": "StrictProfileDoesNotSelectFallbackTransport",
-          "line": 926,
+          "line": 1039,
           "kinds": [
             "negative"
           ],
@@ -476082,7 +476246,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ResumptionTicketLifetimeDefaultIsSixHours",
           "method": "ResumptionTicketLifetimeDefaultIsSixHours",
-          "line": 749,
+          "line": 862,
           "kinds": [
             "positive"
           ],
@@ -476104,7 +476268,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ResumptionTicketLifetimeDefaultIsSixHours",
           "method": "ResumptionTicketLifetimeDefaultIsSixHours",
-          "line": 749,
+          "line": 862,
           "kinds": [
             "positive"
           ],
@@ -476126,7 +476290,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ResumptionTicketLifetimeRejectsNonPositiveValues",
           "method": "ResumptionTicketLifetimeRejectsNonPositiveValues",
-          "line": 760,
+          "line": 873,
           "kinds": [
             "negative"
           ],
@@ -476148,7 +476312,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.ResumptionTicketLifetimeRejectsNonPositiveValues",
           "method": "ResumptionTicketLifetimeRejectsNonPositiveValues",
-          "line": 760,
+          "line": 873,
           "kinds": [
             "negative"
           ],
@@ -476259,7 +476423,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AntiReplayEnabledByDefault",
           "method": "AntiReplayEnabledByDefault",
-          "line": 772,
+          "line": 885,
           "kinds": [
             "positive"
           ],
@@ -476281,7 +476445,7 @@
           "class": "DoqFoundationTests",
           "member": "DoqFoundationTests.AntiReplayEnabledByDefault",
           "method": "AntiReplayEnabledByDefault",
-          "line": 772,
+          "line": 885,
           "kinds": [
             "positive"
           ],

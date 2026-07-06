@@ -58,6 +58,71 @@ public sealed class DoqFoundationTests
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0003")]
+    [Requirement("RFC9250-S4-1-P1-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClientAndListenerOptionsNegotiateDoqAlpnAcrossProtocolLists()
+    {
+        SslApplicationProtocol[][] acceptedProtocols =
+        [
+            [],
+            [DoqDefaults.ApplicationProtocol],
+            [SslApplicationProtocol.Http3, DoqDefaults.ApplicationProtocol],
+        ];
+
+        foreach (SslApplicationProtocol[] protocols in acceptedProtocols)
+        {
+            QuicClientConnectionOptions clientOptions = new()
+            {
+                ClientAuthenticationOptions = new SslClientAuthenticationOptions
+                {
+                    ApplicationProtocols = [.. protocols],
+                },
+                RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+            };
+            QuicListenerOptions listenerOptions = new()
+            {
+                ApplicationProtocols = [.. protocols],
+                ListenEndPoint = DoqDefaults.CreateListenEndPoint(IPAddress.Loopback),
+                ConnectionOptionsCallback = (_, _, _) => throw new NotSupportedException(),
+            };
+
+            DoqDefaults.EnsureClientConnectionOptions(clientOptions);
+            DoqDefaults.EnsureListenerOptions(listenerOptions);
+
+            Assert.Contains(DoqDefaults.ApplicationProtocol, clientOptions.ClientAuthenticationOptions.ApplicationProtocols);
+            Assert.Contains(DoqDefaults.ApplicationProtocol, listenerOptions.ApplicationProtocols);
+        }
+
+        foreach (SslApplicationProtocol[] rejectedProtocols in new[]
+        {
+            new[] { SslApplicationProtocol.Http3 },
+            new[] { new SslApplicationProtocol("doq-h3") },
+            new[] { new SslApplicationProtocol("dot"), SslApplicationProtocol.Http3 },
+        })
+        {
+            QuicClientConnectionOptions clientOptions = new()
+            {
+                ClientAuthenticationOptions = new SslClientAuthenticationOptions
+                {
+                    ApplicationProtocols = [.. rejectedProtocols],
+                },
+                RemoteEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example"),
+            };
+            QuicListenerOptions listenerOptions = new()
+            {
+                ApplicationProtocols = [.. rejectedProtocols],
+                ListenEndPoint = DoqDefaults.CreateListenEndPoint(IPAddress.Loopback),
+                ConnectionOptionsCallback = (_, _, _) => throw new NotSupportedException(),
+            };
+
+            Assert.Throws<ArgumentException>(() => DoqDefaults.EnsureClientConnectionOptions(clientOptions));
+            Assert.Throws<ArgumentException>(() => DoqDefaults.EnsureListenerOptions(listenerOptions));
+        }
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0126")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -119,6 +184,33 @@ public sealed class DoqFoundationTests
             DoqDefaults.CreateClientEndPoint("resolver.example", DoqDefaults.ProhibitedPlainDnsPort));
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, DoqDefaults.ProhibitedPlainDnsPort));
+    }
+
+    [Fact]
+    [Requirement("RFC9250-S4-1-1-P1-R01")]
+    [Requirement("RFC9250-S4-1-1-P2-R01")]
+    [Requirement("RFC9250-S4-1-1-P3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_EndpointHelpersApplyDoqPortPolicyAcrossRepresentativePorts()
+    {
+        foreach (int allowedPort in new[] { DoqDefaults.DefaultPort, 1, 52, 54, 4_853, IPEndPoint.MaxPort })
+        {
+            Assert.True(DoqDefaults.IsAllowedPort(allowedPort));
+
+            DnsEndPoint clientEndPoint = DoqDefaults.CreateClientEndPoint("resolver.example", allowedPort);
+            IPEndPoint listenEndPoint = DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, allowedPort);
+
+            Assert.Equal(allowedPort, clientEndPoint.Port);
+            Assert.Equal(allowedPort, listenEndPoint.Port);
+        }
+
+        foreach (int rejectedPort in new[] { IPEndPoint.MinPort - 1, DoqDefaults.ProhibitedPlainDnsPort, IPEndPoint.MaxPort + 1 })
+        {
+            Assert.False(DoqDefaults.IsAllowedPort(rejectedPort));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DoqDefaults.CreateClientEndPoint("resolver.example", rejectedPort));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DoqDefaults.CreateListenEndPoint(IPAddress.Loopback, rejectedPort));
+        }
     }
 
     [Fact]
@@ -284,6 +376,27 @@ public sealed class DoqFoundationTests
         Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage message, out int bytesConsumed));
         Assert.Equal(encoded.Length, bytesConsumed);
         Assert.Equal(payload, message.Payload.ToArray());
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0001")]
+    [Requirement("RFC9250-S4-2-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MessageCodecRoundTripsRepresentativePayloadSizesBeyondPathMtu()
+    {
+        foreach (int payloadLength in new[] { 0, 1, 2, 512, 1_232, 1_233, 2_048, 4_096, 16_384, DoqMessageCodec.MaxPayloadLength })
+        {
+            byte[] payload = CreateDnsFuzzPayload(payloadLength);
+
+            byte[] encoded = DoqMessageCodec.Encode(payload);
+
+            Assert.Equal(DoqMessageCodec.LengthPrefixSize + payloadLength, encoded.Length);
+            Assert.Equal(payloadLength, BinaryPrimitives.ReadUInt16BigEndian(encoded));
+            Assert.True(DoqMessageCodec.TryDecode(encoded, out DoqMessage decoded, out int bytesConsumed));
+            Assert.Equal(encoded.Length, bytesConsumed);
+            Assert.Equal(payload, decoded.Payload.ToArray());
+        }
     }
 
     [Fact]
