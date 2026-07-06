@@ -53,4 +53,27 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0002
         Assert.False(budget.CanSend(301));
         Assert.False(budget.TryConsumeSendBudget(301));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CanSendFuzz_EnforcesThreeTimesReceivedPayloadBeforeValidation()
+    {
+        int[] receivedPayloadBytes = [1, 7, 100, 1200, 4096];
+
+        foreach (int receivedPayloadByteCount in receivedPayloadBytes)
+        {
+            QuicAntiAmplificationBudget budget = new();
+
+            Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(
+                receivedPayloadByteCount,
+                uniquelyAttributedToSingleConnection: true));
+
+            int allowedBytes = receivedPayloadByteCount * 3;
+            Assert.True(budget.CanSend(allowedBytes));
+            Assert.False(budget.CanSend(allowedBytes + 1));
+            Assert.True(budget.TryConsumeSendBudget(allowedBytes));
+            Assert.False(budget.TryConsumeSendBudget(1));
+        }
+    }
 }

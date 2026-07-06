@@ -41,4 +41,26 @@ public sealed class REQ_QUIC_RFC9000_0286
             [QuicVersionNegotiation.Version1],
             hasAlreadySentVersionNegotiation: true));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S6-1-P3-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ShouldSendVersionNegotiationFuzz_LimitsRepeatedResponsesAcrossUnsupportedVersions()
+    {
+        uint[] unsupportedVersions = [2, 0x11223344, 0x55667788, 0xFFFFFFFF];
+
+        foreach (uint unsupportedVersion in unsupportedVersions)
+        {
+            Assert.True(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                unsupportedVersion,
+                [QuicVersionNegotiation.Version1],
+                hasAlreadySentVersionNegotiation: false));
+
+            Assert.False(QuicVersionNegotiation.ShouldSendVersionNegotiation(
+                unsupportedVersion,
+                [QuicVersionNegotiation.Version1],
+                hasAlreadySentVersionNegotiation: true));
+        }
+    }
 }

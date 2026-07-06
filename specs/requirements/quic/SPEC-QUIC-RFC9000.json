@@ -3046,7 +3046,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-1-P3-R01.cs::ShouldSendVersionNegotiation_DoesNotSendWhenVersionIsSupportedOrResponseWasAlreadySent",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-1-P3-R01.cs::ShouldSendVersionNegotiation_CanLimitRepeatedResponses"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-1-P3-R01.cs::ShouldSendVersionNegotiation_CanLimitRepeatedResponses",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-1-P3-R01.cs::ShouldSendVersionNegotiationFuzz_LimitsRepeatedResponsesAcrossUnsupportedVersions"
         ],
         "upstream_refs": [
           "RFC 9000 section 6.1 RFC9000-S6P1-B3-P3-S1",
@@ -13022,7 +13023,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-3-P2-S2-R01.cs::TryBuildProtectedInitialPacket_CanCarryAReservedVersionForDiscardTesting",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-3-P2-S2-R01.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-3-P2-S2-R01.cs::TryParseVersionNegotiation_RejectsPacketsWithReservedVersions",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S6-3-P2-S2-R01.cs::TryBuildProtectedInitialPacketFuzz_CanCarryReservedVersionsForDiscardTesting"
         ]
       }
     },
@@ -42496,7 +42498,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-R01.cs::CanSend_AllowsExactlyThreeTimesTheReceivedPayloadBeforeValidation"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-R01.cs::CanSend_AllowsExactlyThreeTimesTheReceivedPayloadBeforeValidation",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-R01.cs::CanSendFuzz_EnforcesThreeTimesReceivedPayloadBeforeValidation"
         ]
       }
     },
@@ -42525,7 +42528,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-8.1"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytes_IgnoresDatagramsThatAreNotUniquelyAttributed",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-1-P4-S2-R01.cs::TryRegisterReceivedDatagramPayloadBytesFuzz_IgnoresUnattributedDatagrams"
         ]
       }
     },

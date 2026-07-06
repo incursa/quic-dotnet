@@ -57,4 +57,38 @@ public sealed class REQ_QUIC_RFC9000_6322
         Assert.False(header.IsVersionNegotiation);
         Assert.False(QuicPacketParser.TryParseVersionNegotiation(packet, out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S6-3-P2-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildProtectedInitialPacketFuzz_CanCarryReservedVersionsForDiscardTesting()
+    {
+        uint[] versionSeeds = [0, 1, 0x11223344, 0xA0A0A0A0, 0xFFFFFFFF];
+
+        foreach (uint versionSeed in versionSeeds)
+        {
+            uint reservedVersion = QuicVersionNegotiation.CreateReservedVersion(versionSeed);
+            Assert.True(QuicInitialPacketProtection.TryCreate(
+                QuicTlsRole.Client,
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                out QuicInitialPacketProtection protection));
+
+            QuicHandshakeFlowCoordinator coordinator = new(
+                QuicS17P2P2TestSupport.InitialDestinationConnectionId,
+                QuicS17P2P2TestSupport.InitialSourceConnectionId,
+                initialPacketVersion: reservedVersion);
+
+            Assert.True(coordinator.TryBuildProtectedInitialPacket(
+                QuicS12P3TestSupport.CreateSequentialBytes(0x30, 8),
+                cryptoPayloadOffset: 0,
+                protection,
+                out byte[] protectedPacket));
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(protectedPacket, out QuicLongHeaderPacket header));
+            Assert.Equal(reservedVersion, header.Version);
+            Assert.True(QuicVersionNegotiation.IsReservedVersion(header.Version));
+            Assert.False(header.IsVersionNegotiation);
+        }
+    }
 }
