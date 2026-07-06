@@ -80,4 +80,28 @@ public sealed class REQ_QUIC_RFC9000_0335
             QuicTransportParameterRole.Client,
             out _));
     }
+
+    [Theory]
+    [InlineData(0x01UL, 25UL, 33UL)]
+    [InlineData(0x03UL, 1024UL, 2048UL)]
+    [InlineData(0x0EUL, 2UL, 8UL)]
+    [InlineData(27UL, 170UL, 187UL)]
+    [Requirement("RFC9000-S7-4-P7-R01")]
+    [Requirement("RFC9000-S7-4-P7-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryParseTransportParametersRejectsDuplicateParameterIds(
+        ulong parameterId,
+        ulong firstValue,
+        ulong secondValue)
+    {
+        byte[] duplicateParameterBlock = QuicTransportParameterTestData.BuildTransportParameterBlock(
+            QuicTransportParameterTestData.BuildTransportParameterTuple(parameterId, QuicVarintTestData.EncodeMinimal(firstValue)),
+            QuicTransportParameterTestData.BuildTransportParameterTuple(parameterId, QuicVarintTestData.EncodeMinimal(secondValue)));
+
+        Assert.False(QuicTransportParametersCodec.TryParseTransportParameters(
+            duplicateParameterBlock,
+            QuicTransportParameterRole.Client,
+            out _));
+    }
 }
