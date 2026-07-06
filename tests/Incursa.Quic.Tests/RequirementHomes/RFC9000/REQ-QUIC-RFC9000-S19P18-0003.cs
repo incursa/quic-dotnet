@@ -122,6 +122,46 @@ public sealed class REQ_QUIC_RFC9000_S19P18_0003
         Assert.False(failedCandidatePath.Validation.IsAbandoned);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void MismatchedPathResponseFuzz_RejectsEverySingleByteChallengeMutation()
+    {
+        for (int mutatedByte = 0; mutatedByte < QuicPathValidation.PathChallengeDataLength; mutatedByte++)
+        {
+            using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20,
+                    ValidationPath,
+                    datagram),
+                nowTicks: 20).StateChanged);
+
+            Assert.True(runtime.CandidatePaths.TryGetValue(ValidationPath, out QuicConnectionCandidatePathRecord candidatePath));
+            byte[] mismatchedResponseData = candidatePath.Validation.ChallengePayload.ToArray();
+            mismatchedResponseData[mutatedByte] ^= (byte)(0x80 >> (mutatedByte % 8));
+            byte[] responsePacket = BuildProtectedPathResponsePacket(runtime, mismatchedResponseData);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 21,
+                    ValidationPath,
+                    responsePacket),
+                nowTicks: 21);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.NotNull(runtime.TerminalState);
+            Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState!.Value.Close.TransportErrorCode);
+            Assert.DoesNotContain(result.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == ValidationPath);
+        }
+    }
+
     private static byte[] BuildProtectedPathResponsePacket(QuicConnectionRuntime runtime, ReadOnlySpan<byte> responseData)
     {
         Span<byte> responseFrameBuffer = stackalloc byte[16];

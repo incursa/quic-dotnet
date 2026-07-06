@@ -27,4 +27,43 @@ public sealed class REQ_QUIC_RFC9000_S19P18_0002
         byte[] encoded = QuicFrameTestData.BuildPathResponseFrame(new QuicPathResponseFrame(validData));
         Assert.False(QuicFrameCodec.TryParsePathResponseFrame(encoded[..^1], out _, out _));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P18-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PathResponseDataLengthFuzz_AcceptsOnlyEightBytePayloads()
+    {
+        Span<byte> destination = stackalloc byte[16];
+
+        for (int length = 0; length <= 12; length++)
+        {
+            byte[] data = Enumerable
+                .Range(0, length)
+                .Select(value => (byte)(0x90 + value))
+                .ToArray();
+
+            bool formatted = QuicFrameCodec.TryFormatPathResponseFrame(
+                new QuicPathResponseFrame(data),
+                destination,
+                out int bytesWritten);
+
+            if (length == QuicPathValidation.PathChallengeDataLength)
+            {
+                Assert.True(formatted);
+                Assert.Equal(QuicPathValidation.PathChallengeDataLength + 1, bytesWritten);
+                Assert.True(QuicFrameCodec.TryParsePathResponseFrame(
+                    destination[..bytesWritten],
+                    out QuicPathResponseFrame parsed,
+                    out int bytesConsumed));
+                Assert.Equal(bytesWritten, bytesConsumed);
+                Assert.True(data.AsSpan().SequenceEqual(parsed.Data));
+            }
+            else
+            {
+                Assert.False(formatted);
+                Assert.Equal(0, bytesWritten);
+            }
+        }
+    }
 }
