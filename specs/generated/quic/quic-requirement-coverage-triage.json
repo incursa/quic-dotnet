@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T06:50:34.5659184-06:00",
+  "generated_at": "2026-07-06T06:52:56.6008986-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T06:50:34.5621741-06:00",
+    "generated_at": "2026-07-06T06:52:56.5974596-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -198308,14 +198308,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs::EndpointProcessesLongHeaderPacketWithMatchingClientSelectedDestinationConnectionId",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -198366,6 +198366,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9000-S5P2P1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S5P2P1-0001.cs",
+          "class": "REQ_QUIC_RFC9000_S5P2P1_0001",
+          "member": "REQ_QUIC_RFC9000_S5P2P1_0001.Fuzz_EndpointRoutesLongHeaderPacketsByMatchingClientSelectedDestinationConnectionId",
+          "method": "Fuzz_EndpointRoutesLongHeaderPacketsByMatchingClientSelectedDestinationConnectionId",
+          "line": 32,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9000-S5P2P1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
