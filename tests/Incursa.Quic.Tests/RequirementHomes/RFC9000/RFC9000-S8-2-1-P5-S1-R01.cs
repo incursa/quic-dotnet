@@ -41,6 +41,64 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0005
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S8-2-1-P5-S1-R01")]
+    [Requirement("RFC9000-S8-2-2-P3-S1-R01")]
+    [Requirement("RFC9000-S8-2-2-P3-S3-R01")]
+    [Requirement("RFC9000-S9-3-1-P2-S2-R01")]
+    public void Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget()
+    {
+        PathValidationPaddingFuzzCase[] scenarios =
+        [
+            new(CurrentPayloadLength: -1, ReceivedPayloadBytes: 100, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1200),
+            new(CurrentPayloadLength: 0, ReceivedPayloadBytes: 400, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1200),
+            new(CurrentPayloadLength: 1, ReceivedPayloadBytes: 400, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1199),
+            new(CurrentPayloadLength: 1187, ReceivedPayloadBytes: 4, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 13),
+            new(CurrentPayloadLength: 1187, ReceivedPayloadBytes: 5, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 13),
+            new(CurrentPayloadLength: 1198, ReceivedPayloadBytes: 100, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1),
+            new(CurrentPayloadLength: 1198, ReceivedPayloadBytes: 0, SentPayloadBytes: 0, AddressValidated: true, DestinationLength: 2),
+            new(CurrentPayloadLength: 1199, ReceivedPayloadBytes: 0, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1),
+            new(CurrentPayloadLength: 1199, ReceivedPayloadBytes: 1, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 1),
+            new(CurrentPayloadLength: 1200, ReceivedPayloadBytes: 0, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 0),
+            new(CurrentPayloadLength: 1350, ReceivedPayloadBytes: 0, SentPayloadBytes: 0, AddressValidated: false, DestinationLength: 0),
+        ];
+
+        foreach (PathValidationPaddingFuzzCase scenario in scenarios)
+        {
+            QuicAntiAmplificationBudget budget = CreateBudget(scenario);
+            byte[] destination = new byte[scenario.DestinationLength];
+
+            int expectedPaddingLength = GetExpectedPaddingLength(scenario.CurrentPayloadLength);
+            bool hasValidPayloadLength = scenario.CurrentPayloadLength >= 0;
+            bool destinationCanHoldPadding = destination.Length >= expectedPaddingLength;
+            bool budgetAllowsPadding = scenario.AddressValidated
+                || (hasValidPayloadLength && budget.CanSend(expectedPaddingLength));
+            bool expectedSuccess = hasValidPayloadLength
+                && (expectedPaddingLength == 0 || (budgetAllowsPadding && destinationCanHoldPadding));
+
+            bool formatted = QuicPathValidation.TryFormatPathValidationDatagramPadding(
+                scenario.CurrentPayloadLength,
+                budget,
+                destination,
+                out int bytesWritten);
+
+            Assert.Equal(expectedSuccess, formatted);
+            Assert.Equal(expectedSuccess ? expectedPaddingLength : 0, bytesWritten);
+
+            if (formatted && bytesWritten > 0)
+            {
+                Assert.All(destination[..bytesWritten].ToArray(), static value => Assert.Equal(0, value));
+                for (int index = 0; index < bytesWritten; index++)
+                {
+                    Assert.True(QuicFrameCodec.TryParsePaddingFrame(destination.AsSpan(index, bytesWritten - index), out int bytesConsumed));
+                    Assert.Equal(1, bytesConsumed);
+                }
+            }
+        }
+    }
+
+    [Fact]
     [Requirement("RFC9000-S8-2-1-P5-S1-R01")]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
@@ -59,4 +117,42 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0005
             expectMinimumSize: true,
             runtime: runtime);
     }
+
+    private static int GetExpectedPaddingLength(int currentPayloadLength)
+    {
+        if (currentPayloadLength < 0
+            || currentPayloadLength >= QuicVersionNegotiation.Version1MinimumDatagramPayloadSize)
+        {
+            return 0;
+        }
+
+        return QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - currentPayloadLength;
+    }
+
+    private static QuicAntiAmplificationBudget CreateBudget(PathValidationPaddingFuzzCase scenario)
+    {
+        QuicAntiAmplificationBudget budget = new();
+        Assert.True(budget.TryRegisterReceivedDatagramPayloadBytes(
+            scenario.ReceivedPayloadBytes,
+            uniquelyAttributedToSingleConnection: true));
+
+        if (scenario.AddressValidated)
+        {
+            budget.MarkAddressValidated();
+        }
+
+        if (scenario.SentPayloadBytes > 0)
+        {
+            Assert.True(budget.TryConsumeSendBudget(scenario.SentPayloadBytes));
+        }
+
+        return budget;
+    }
+
+    private readonly record struct PathValidationPaddingFuzzCase(
+        int CurrentPayloadLength,
+        int ReceivedPayloadBytes,
+        int SentPayloadBytes,
+        bool AddressValidated,
+        int DestinationLength);
 }

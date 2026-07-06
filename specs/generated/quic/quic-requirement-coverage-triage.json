@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T00:42:49.5750308-06:00",
+  "generated_at": "2026-07-06T00:46:07.1566249-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T00:42:49.5715221-06:00",
+    "generated_at": "2026-07-06T00:46:07.1532355-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -424637,14 +424637,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -424658,9 +424658,34 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P5-S1-R01.cs",
           "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "method": "Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "line": 50,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P5-S1-R01",
+            "RFC9000-S8-2-2-P3-S1-R01",
+            "RFC9000-S8-2-2-P3-S3-R01",
+            "RFC9000-S9-3-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S8-2-1-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
           "member": "REQ_QUIC_RFC9000_S8P2P1_0005.RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
           "method": "RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
-          "line": 47,
+          "line": 105,
           "kinds": [
             "edge"
           ],
@@ -424682,7 +424707,7 @@
           "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
           "member": "REQ_QUIC_RFC9000_S8P2P1_0005.RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
           "method": "RuntimePathChallengeDatagramIsExactlyTheRfcMinimumWhenBudgetAllows",
-          "line": 47,
+          "line": 105,
           "kinds": [
             "edge"
           ],
@@ -425656,14 +425681,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -425671,6 +425696,31 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S8-2-2-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "method": "Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "line": 50,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P5-S1-R01",
+            "RFC9000-S8-2-2-P3-S1-R01",
+            "RFC9000-S8-2-2-P3-S3-R01",
+            "RFC9000-S9-3-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S8-2-2-P3-S1-R01",
           "source": "requirement_attribute",
@@ -425869,14 +425919,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -425884,6 +425934,31 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S8-2-2-P3-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "method": "Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "line": 50,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P5-S1-R01",
+            "RFC9000-S8-2-2-P3-S1-R01",
+            "RFC9000-S8-2-2-P3-S3-R01",
+            "RFC9000-S9-3-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S8-2-2-P3-S3-R01",
           "source": "requirement_attribute",
@@ -426701,14 +426776,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-1-P2-S2-R01.cs::CanSend_TracksTheThreeTimesAmplificationCapBeforeValidation",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 5,
           "negative": 3,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -426716,6 +426791,31 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S9-3-1-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S8P2P1_0005",
+          "member": "REQ_QUIC_RFC9000_S8P2P1_0005.Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "method": "Fuzz_PathValidationPaddingHonorsMinimumDatagramSizeAndAntiAmplificationBudget",
+          "line": 50,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S8-2-1-P5-S1-R01",
+            "RFC9000-S8-2-2-P3-S1-R01",
+            "RFC9000-S8-2-2-P3-S3-R01",
+            "RFC9000-S9-3-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S9-3-1-P2-S2-R01",
           "source": "requirement_attribute",
