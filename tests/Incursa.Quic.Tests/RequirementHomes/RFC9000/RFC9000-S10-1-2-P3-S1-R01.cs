@@ -54,6 +54,48 @@ public sealed class REQ_QUIC_RFC9000_0560
         Assert.Contains("transport helper", content);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ArchitectureArtifactFuzz_PreservesBoundedApplicationOwnedGuidanceLanguage()
+    {
+        using JsonDocument document = LoadArchitectureArtifact();
+        JsonElement guidanceSection = GetApplicationIdleTimeoutGuidanceSection(document.RootElement);
+
+        string content = guidanceSection.GetProperty("content").GetString() ?? string.Empty;
+        string[] requiredFragments =
+        [
+            "Application protocols that use QUIC SHOULD defer the idle timeout only when",
+            "explicit, ongoing reason to keep the connection open",
+            "application-owned and documentation-owned",
+            "transport helper",
+            "REQ-QUIC-RFC9000-S10P1P2-0002",
+        ];
+        string[] forbiddenFragments =
+        [
+            "transport decides application policy",
+            "automatically defer the idle timeout",
+            "unconditionally defer the idle timeout",
+            "transport-owned application policy",
+        ];
+
+        foreach (string requiredFragment in requiredFragments)
+        {
+            Assert.Contains(requiredFragment, content);
+        }
+
+        foreach (string forbiddenFragment in forbiddenFragments)
+        {
+            Assert.DoesNotContain(forbiddenFragment, content);
+        }
+
+        Assert.Contains(
+            content.Split('.', StringSplitOptions.RemoveEmptyEntries),
+            sentence => sentence.Contains("Application protocols", StringComparison.Ordinal)
+                && sentence.Contains("idle timeout", StringComparison.Ordinal)
+                && sentence.Contains("SHOULD defer", StringComparison.Ordinal));
+    }
+
     private static JsonDocument LoadArchitectureArtifact()
     {
         string repoRoot = GetRepoRoot();

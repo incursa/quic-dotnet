@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:30:52.2642661-06:00",
+    "generated_at": "2026-07-06T10:33:35.7680306-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1126,
-      "full_executable_proof": 1551
+      "deferred_proof_not_executed": 1125,
+      "full_executable_proof": 1552
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 101,
-          "full_executable_proof": 1349
+          "deferred_proof_not_executed": 100,
+          "full_executable_proof": 1350
         }
       },
       {
@@ -71352,9 +71352,9 @@
       "rfc": "RFC9000",
       "title": "Application protocols provide idle-timeout guidance",
       "statement": "Application protocols that use QUIC SHOULD provide guidance on when deferring an idle timeout is appropriate.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -71365,15 +71365,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-1-2-P3-S1-R01.cs"
