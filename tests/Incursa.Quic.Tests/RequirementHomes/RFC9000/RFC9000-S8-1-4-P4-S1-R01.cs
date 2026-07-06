@@ -82,9 +82,68 @@ public sealed class REQ_QUIC_RFC9000_0410
             protector.ValidateNewToken(newTokenFrame.Token, "203.0.113.99", DateTimeOffset.UtcNow));
     }
 
+    [Fact]
+    [Requirement("RFC9000-S8-1-4-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_NewTokenValidationRequiresTheIssuingClientAddressContext()
+    {
+        QuicAddressValidationTokenProtector protector = CreateProtector();
+        DateTimeOffset issuedAt = DateTimeOffset.FromUnixTimeSeconds(1_800_000_000);
+        (string ClientAddress, int? ClientPort, string ChangedAddress, int? ChangedPort)[] contexts =
+        [
+            ("203.0.113.10", null, "203.0.113.11", null),
+            ("198.51.100.20", 443, "198.51.100.21", 443),
+            ("2001:db8::10", null, "2001:db8::11", null),
+            ("2001:db8::20", 8443, "2001:db8::21", 8443),
+        ];
+
+        foreach ((string clientAddress, int? clientPort, string changedAddress, int? changedPort) in contexts)
+        {
+            byte[] token = IssueNewToken(protector, clientAddress, clientPort, issuedAt);
+
+            Assert.Equal(
+                QuicAddressValidationTokenValidationResult.Valid,
+                ValidateNewToken(protector, token, clientAddress, clientPort, issuedAt.AddSeconds(1)));
+            Assert.Equal(
+                QuicAddressValidationTokenValidationResult.IntegrityFailure,
+                ValidateNewToken(protector, token, changedAddress, changedPort, issuedAt.AddSeconds(1)));
+
+            if (clientPort.HasValue)
+            {
+                Assert.Equal(
+                    QuicAddressValidationTokenValidationResult.IntegrityFailure,
+                    ValidateNewToken(protector, token, clientAddress, clientPort.Value + 1, issuedAt.AddSeconds(1)));
+            }
+        }
+    }
+
     private static QuicAddressValidationTokenProtector CreateProtector()
     {
         return new QuicAddressValidationTokenProtector(CreateSecret(), TimeSpan.FromMinutes(5));
+    }
+
+    private static byte[] IssueNewToken(
+        QuicAddressValidationTokenProtector protector,
+        string clientAddress,
+        int? clientPort,
+        DateTimeOffset issuedAt)
+    {
+        return clientPort.HasValue
+            ? protector.IssueNewToken(clientAddress, clientPort.Value, issuedAt)
+            : protector.IssueNewToken(clientAddress, issuedAt);
+    }
+
+    private static QuicAddressValidationTokenValidationResult ValidateNewToken(
+        QuicAddressValidationTokenProtector protector,
+        ReadOnlySpan<byte> token,
+        string clientAddress,
+        int? clientPort,
+        DateTimeOffset now)
+    {
+        return clientPort.HasValue
+            ? protector.ValidateNewToken(token, clientAddress, clientPort.Value, now)
+            : protector.ValidateNewToken(token, clientAddress, now);
     }
 
     private static byte[] CreateSecret()
