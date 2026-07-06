@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:03:57.3233107-06:00",
+    "generated_at": "2026-07-06T10:06:43.1799562-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1134,
-      "full_executable_proof": 1543
+      "deferred_proof_not_executed": 1133,
+      "full_executable_proof": 1544
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 109,
-          "full_executable_proof": 1341
+          "deferred_proof_not_executed": 108,
+          "full_executable_proof": 1342
         }
       },
       {
@@ -75534,9 +75534,9 @@
       "rfc": "RFC9000",
       "title": "Do not treat PMTU probe loss as congestion",
       "statement": "Loss of a QUIC packet that is carried in a PMTU probe SHOULD NOT trigger a congestion control reaction.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -75546,15 +75546,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-4-P2-S2-R01.cs",
