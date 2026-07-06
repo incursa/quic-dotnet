@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:51:22.1897050-06:00",
+    "generated_at": "2026-07-06T12:54:33.9995140-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1063,
-      "full_executable_proof": 1614
+      "deferred_proof_not_executed": 1061,
+      "full_executable_proof": 1616
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 38,
-          "full_executable_proof": 1412
+          "deferred_proof_not_executed": 36,
+          "full_executable_proof": 1414
         }
       },
       {
@@ -80925,9 +80925,9 @@
       "rfc": "RFC9000",
       "title": "Initial destination connection ID length minimum",
       "statement": "This Destination Connection ID MUST be at least 8 bytes in length.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80938,24 +80938,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesAnInitialDestinationConnectionIdAtLeastEightBytesLong",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostDoesNotUseAZeroLengthFirstInitialDestinationConnectionId",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesTheEightByteMinimumForTheFirstInitialDestinationConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesTheEightByteMinimumForTheFirstInitialDestinationConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::Fuzz_ClientHostInitialDestinationConnectionIdNeverFallsBelowEightBytes"
       ]
     },
     {
@@ -80963,9 +80963,9 @@
       "rfc": "RFC9000",
       "title": "Client reuses one destination connection ID until server packet receipt",
       "statement": "Until a packet is received from the server, the client MUST use the same Destination Connection ID value on all packets in this connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80976,24 +80976,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialFlightUsesOneDestinationConnectionIdBeforeServerPacketsArrive",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionDoesNotSwitchToTheSourceConnectionIdBeforeServerPacketsArrive",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionKeepsTheMinimumLengthDestinationConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionKeepsTheMinimumLengthDestinationConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::Fuzz_ClientInitialFlightAndRetransmissionsReuseOneDestinationConnectionIdBeforeServerPackets"
       ]
     },
     {

@@ -74,4 +74,44 @@ public sealed class REQ_QUIC_RFC9000_0310
             Assert.True(header.DestinationConnectionId.SequenceEqual(QuicS7P2FirstFlightConnectionIdTestSupport.InitialDestinationConnectionId));
         }
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClientInitialFlightAndRetransmissionsReuseOneDestinationConnectionIdBeforeServerPackets()
+    {
+        for (int iteration = 0; iteration < 4; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicS7P2FirstFlightConnectionIdTestSupport.CreateClientRuntime();
+
+            QuicConnectionTransitionResult bootstrapResult =
+                QuicS7P2FirstFlightConnectionIdTestSupport.BootstrapClientHandshake(runtime);
+            AssertAllInitialDatagramsUseExpectedDestination(bootstrapResult);
+
+            for (int retransmission = 0; retransmission <= iteration; retransmission++)
+            {
+                QuicConnectionTransitionResult recoveryResult =
+                    QuicS7P2FirstFlightConnectionIdTestSupport.ExpireRecoveryTimer(runtime);
+
+                AssertAllInitialDatagramsUseExpectedDestination(recoveryResult);
+            }
+        }
+    }
+
+    private static void AssertAllInitialDatagramsUseExpectedDestination(QuicConnectionTransitionResult result)
+    {
+        QuicConnectionSendDatagramEffect[] initialEffects =
+            QuicS17P2P3TestSupport.GetInitialSendEffects(result.Effects);
+        Assert.NotEmpty(initialEffects);
+
+        foreach (QuicConnectionSendDatagramEffect initialEffect in initialEffects)
+        {
+            Assert.True(QuicPacketParser.TryParseLongHeader(initialEffect.Datagram.Span, out QuicLongHeaderPacket header));
+            Assert.Equal(8, header.DestinationConnectionId.Length);
+            Assert.True(header.DestinationConnectionId.SequenceEqual(
+                QuicS7P2FirstFlightConnectionIdTestSupport.InitialDestinationConnectionId));
+            Assert.False(header.DestinationConnectionId.SequenceEqual(
+                QuicS7P2FirstFlightConnectionIdTestSupport.InitialSourceConnectionId));
+        }
+    }
 }

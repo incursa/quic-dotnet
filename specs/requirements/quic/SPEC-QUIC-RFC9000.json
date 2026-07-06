@@ -3215,7 +3215,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesAnInitialDestinationConnectionIdAtLeastEightBytesLong",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostDoesNotUseAZeroLengthFirstInitialDestinationConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesTheEightByteMinimumForTheFirstInitialDestinationConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::ClientHostUsesTheEightByteMinimumForTheFirstInitialDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S2-R01.cs::Fuzz_ClientHostInitialDestinationConnectionIdNeverFallsBelowEightBytes"
         ],
         "upstream_refs": [
           "RFC 9000 7.2 RFC9000-S7P2-B3-P3-S2",
@@ -3252,7 +3253,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialFlightUsesOneDestinationConnectionIdBeforeServerPacketsArrive",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionDoesNotSwitchToTheSourceConnectionIdBeforeServerPacketsArrive",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionKeepsTheMinimumLengthDestinationConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::ClientInitialRetransmissionKeepsTheMinimumLengthDestinationConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P3-S3-R01.cs::Fuzz_ClientInitialFlightAndRetransmissionsReuseOneDestinationConnectionIdBeforeServerPackets"
         ],
         "upstream_refs": [
           "RFC 9000 7.2 RFC9000-S7P2-B3-P3-S3",
