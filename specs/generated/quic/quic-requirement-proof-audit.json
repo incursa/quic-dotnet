@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T02:09:04.7667008-06:00",
+    "generated_at": "2026-07-06T02:14:07.7076163-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1392,
-      "full_executable_proof": 1285
+      "deferred_proof_not_executed": 1389,
+      "full_executable_proof": 1288
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 347,
-          "full_executable_proof": 1103
+          "deferred_proof_not_executed": 344,
+          "full_executable_proof": 1106
         }
       },
       {
@@ -13242,9 +13242,9 @@
       "rfc": "RFC9000",
       "title": "Encode acknowledgment delay in ACK Delay",
       "statement": "The endpoint MUST encode this acknowledgment delay in the ACK Delay field of an ACK frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -13253,6 +13253,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -13260,10 +13261,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P5-0002.cs"
@@ -13279,9 +13278,9 @@
       "rfc": "RFC9000",
       "title": "Acknowledge client 0-RTT packets with 1-RTT packets",
       "statement": "Packets that a client sends with 0-RTT packet protection MUST be acknowledged by the server in packets protected by 1-RTT keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -13290,14 +13289,13 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P2P6-0003.cs"
@@ -14741,7 +14739,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 5,
+      "focused_method_count": 6,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs",
@@ -14817,7 +14815,7 @@
       ],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 6,
+      "focused_method_count": 7,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0007.cs",
@@ -14877,9 +14875,9 @@
       "rfc": "RFC9000",
       "title": "Disable ECN when validation fails",
       "statement": "If validation fails, then the endpoint MUST disable ECN.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -14888,6 +14886,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -14895,10 +14894,8 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 12,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 14,
       "focused_file_count": 8,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S13P4P2P1-0002.cs",

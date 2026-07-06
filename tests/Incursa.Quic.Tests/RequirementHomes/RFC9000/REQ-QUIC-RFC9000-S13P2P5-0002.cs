@@ -63,6 +63,36 @@ public sealed class REQ_QUIC_RFC9000_S13P2P5_0002
         Assert.False(QuicFrameCodec.TryParseAckFrame(formatted[..(ackDelayOffset + ackDelayBytes - 1)], out _, out _));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P5-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatAckFrame_FuzzEncodesEachSelectedAckDelayField()
+    {
+        ulong[] ackDelays = [0, 1, 63, 64, 16_383, 16_384];
+
+        foreach (ulong selectedDelay in ackDelays)
+        {
+            QuicAckFrame frame = CreateAckDelayFrame();
+            frame.AckDelay = selectedDelay;
+
+            byte[] destination = new byte[32];
+            Assert.True(QuicFrameCodec.TryFormatAckFrame(frame, destination, out int bytesWritten));
+            ReadOnlySpan<byte> formatted = destination[..bytesWritten];
+
+            Assert.True(QuicVariableLengthInteger.TryParse(formatted, out _, out int frameTypeBytes));
+            Assert.True(QuicVariableLengthInteger.TryParse(formatted[frameTypeBytes..], out _, out int largestAcknowledgedBytes));
+
+            int ackDelayOffset = frameTypeBytes + largestAcknowledgedBytes;
+            Assert.True(QuicVariableLengthInteger.TryParse(formatted[ackDelayOffset..], out ulong ackDelay, out _));
+            Assert.Equal(selectedDelay, ackDelay);
+
+            Assert.True(QuicFrameCodec.TryParseAckFrame(formatted, out QuicAckFrame parsed, out int bytesConsumed));
+            Assert.Equal(bytesWritten, bytesConsumed);
+            Assert.Equal(selectedDelay, parsed.AckDelay);
+        }
+    }
+
     private static QuicAckFrame CreateAckDelayFrame()
     {
         return new QuicAckFrame

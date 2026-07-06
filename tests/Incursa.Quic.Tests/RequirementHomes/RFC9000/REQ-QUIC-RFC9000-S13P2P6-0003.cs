@@ -91,6 +91,61 @@ public sealed class REQ_QUIC_RFC9000_S13P2P6_0003
         Assert.Equal(ackFrame.FirstAckRange, parsedAckFrame.FirstAckRange);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P2P6-0003")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ZeroRttPackets_FuzzAreAcknowledgedOnlyInOneRttProtectedPackets()
+    {
+        ulong[] ackDelays = [0, 100, 500];
+
+        foreach (ulong ackDelay in ackDelays)
+        {
+            Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.ZeroRtt,
+                out QuicTlsPacketProtectionMaterial zeroRttMaterial));
+            Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.OneRtt,
+                out QuicTlsPacketProtectionMaterial oneRttMaterial));
+
+            QuicHandshakeFlowCoordinator coordinator = CreatePacketCoordinator();
+            Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+                QuicS12P3TestSupport.CreatePingPayload(),
+                zeroRttMaterial,
+                out ulong zeroRttPacketNumber,
+                out byte[] zeroRttPacket));
+            Assert.False(QuicPacketParser.TryParseShortHeader(zeroRttPacket, out _));
+
+            byte[] ackPayload = QuicFrameTestData.BuildAckFrame(new QuicAckFrame
+            {
+                FrameType = 0x02,
+                LargestAcknowledged = zeroRttPacketNumber,
+                AckDelay = ackDelay,
+                FirstAckRange = 0,
+            });
+
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                ackPayload,
+                oneRttMaterial,
+                out _,
+                out byte[] oneRttAckPacket));
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                oneRttAckPacket,
+                oneRttMaterial,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+            Assert.True(QuicPacketParser.TryParseShortHeader(openedPacket, out _));
+
+            Assert.True(QuicFrameCodec.TryParseAckFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out QuicAckFrame parsedAckFrame,
+                out _));
+            Assert.Equal(zeroRttPacketNumber, parsedAckFrame.LargestAcknowledged);
+            Assert.Equal(ackDelay, parsedAckFrame.AckDelay);
+        }
+    }
+
     private static QuicHandshakeFlowCoordinator CreatePacketCoordinator()
     {
         return new QuicHandshakeFlowCoordinator(InitialDestinationConnectionId, SourceConnectionId);

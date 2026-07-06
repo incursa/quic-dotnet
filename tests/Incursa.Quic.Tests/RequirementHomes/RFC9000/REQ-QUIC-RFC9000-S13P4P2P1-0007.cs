@@ -57,4 +57,25 @@ public sealed class REQ_QUIC_RFC9000_S13P4P2P1_0007
             newlyAcknowledgedEct0Packets: 1,
             newlyAcknowledgedEct1Packets: 1);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P1-0007")]
+    [Requirement("REQ-QUIC-RFC9000-S13P4P2P2-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryValidateAcknowledgedEcnCounts_FuzzFailsWhenReportedCountsExceedSentTotals()
+    {
+        for (ulong sentEct0Count = 1; sentEct0Count <= 3; sentEct0Count++)
+        {
+            QuicEcnValidationState state = QuicEcnValidationTestSupport.CreateApplicationDataState(
+                sentEct0Count,
+                sentEct1Count: 1);
+
+            QuicEcnValidationTestSupport.AssertValidationFailure(
+                state,
+                new QuicEcnCounts(sentEct0Count + 1, 1, 0),
+                newlyAcknowledgedEct0Packets: sentEct0Count,
+                newlyAcknowledgedEct1Packets: 1);
+        }
+    }
 }
