@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:09:17.0749513-06:00",
+    "generated_at": "2026-07-06T12:13:38.5795712-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1089,
-      "full_executable_proof": 1588
+      "deferred_proof_not_executed": 1085,
+      "full_executable_proof": 1592
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 64,
-          "full_executable_proof": 1386
+          "deferred_proof_not_executed": 60,
+          "full_executable_proof": 1390
         }
       },
       {
@@ -81000,9 +81000,9 @@
       "rfc": "RFC9000",
       "title": "Populate the client Source Connection ID",
       "statement": "The client MUST populate the Source Connection ID field with a value of its choosing and set the Source Connection ID Length field to indicate the length.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81014,24 +81014,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_ExposesTheChosenHandshakeSourceConnectionId",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeaderFuzz_ExposesTheChosenHandshakeSourceConnectionIdLength"
       ]
     },
     {
@@ -81039,9 +81039,9 @@
       "rfc": "RFC9000",
       "title": "Keep first-flight 0-RTT connection IDs aligned with the first Initial packet",
       "statement": "0-RTT packets in the first flight MUST use the same Destination Connection ID and Source Connection ID values as the client's first Initial packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -81052,24 +81052,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightUsesTheSameConnectionIdsAsTheFirstInitial",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttPacketCannotBeBuiltWithoutAFirstInitialDestinationConnectionId",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightCanStayAlignedWhenTheClientSourceConnectionIdIsAtTheMaximumLength"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightCanStayAlignedWhenTheClientSourceConnectionIdIsAtTheMaximumLength",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightFuzz_UsesTheSameConnectionIdsAsTheFirstInitial"
       ]
     },
     {
@@ -82922,9 +82922,9 @@
       "rfc": "RFC9000",
       "title": "Use unpredictable data in every PATH_CHALLENGE frame so that it can associate the peer's response with the corresponding PATH_CHALLENGE",
       "statement": "The endpoint MUST use unpredictable data in every PATH_CHALLENGE frame so that it can associate the peer's response with the corresponding PATH_CHALLENGE.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -82933,23 +82933,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_RejectsShortDestinations"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_RejectsShortDestinations",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeDataFuzz_WritesDistinctPayloadsThatRoundTrip"
       ]
     },
     {
@@ -82996,9 +82996,9 @@
       "rfc": "RFC9000",
       "title": "To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes",
       "statement": "To ensure that the path MTU is large enough, the endpoint MUST perform a second path validation by sending a PATH_CHALLENGE frame in a datagram of at least 1200 bytes.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -83010,24 +83010,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_ExpandsAPathChallengeDatagramToTheRfcMinimum",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPaddingFuzz_ExpandsPathValidationDatagramsToTheRfcMinimum"
       ]
     },
     {

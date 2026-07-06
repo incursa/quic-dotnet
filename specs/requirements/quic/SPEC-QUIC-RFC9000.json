@@ -3289,7 +3289,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightUsesTheSameConnectionIdsAsTheFirstInitial",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttPacketCannotBeBuiltWithoutAFirstInitialDestinationConnectionId",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightCanStayAlignedWhenTheClientSourceConnectionIdIsAtTheMaximumLength"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightCanStayAlignedWhenTheClientSourceConnectionIdIsAtTheMaximumLength",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P6-S1-R01.cs::ZeroRttFirstFlightFuzz_UsesTheSameConnectionIdsAsTheFirstInitial"
         ],
         "upstream_refs": [
           "RFC9000 section 7.2 source unit RFC9000-S7P2-B6-P6-S1",
@@ -41818,7 +41819,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_ExposesTheChosenHandshakeSourceConnectionId",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_RejectsHandshakePacketsMissingTheSourceConnectionIdLengthByte",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeader_AllowsAZeroLengthHandshakeSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S7-2-P5-S1-R01.cs::TryParseLongHeaderFuzz_ExposesTheChosenHandshakeSourceConnectionIdLength"
         ]
       }
     },
@@ -43454,7 +43456,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_WritesDistinctPayloadsThatRoundTripThroughTheFrameCodec",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_RejectsShortDestinations"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeData_RejectsShortDestinations",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P4-S1-R01.cs::TryGeneratePathChallengeDataFuzz_WritesDistinctPayloadsThatRoundTrip"
         ]
       }
     },
@@ -43519,7 +43522,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_ExpandsAPathChallengeDatagramToTheRfcMinimum",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_RejectsExpansionWhenAmplificationBudgetIsTooSmall",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPadding_AllowsAnAlreadyExpandedDatagram",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S8-2-1-P6-S1-R01.cs::TryFormatPathValidationDatagramPaddingFuzz_ExpandsPathValidationDatagramsToTheRfcMinimum"
         ]
       }
     },

@@ -60,4 +60,29 @@ public sealed class RFC9000_S7_2_P5_S1_R01
         Assert.True(header.SourceConnectionId.IsEmpty);
         Assert.True(destinationConnectionId.AsSpan().SequenceEqual(header.DestinationConnectionId));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseLongHeaderFuzz_ExposesTheChosenHandshakeSourceConnectionIdLength()
+    {
+        byte[][] sourceConnectionIds =
+        [
+            [0x20],
+            [0x21, 0x22, 0x23, 0x24],
+            [0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C],
+            [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B],
+        ];
+
+        foreach (byte[] sourceConnectionId in sourceConnectionIds)
+        {
+            byte[] packet = QuicHandshakePacketRequirementTestData.BuildHandshakePacket(
+                destinationConnectionId: [0x10, 0x11, 0x12],
+                sourceConnectionId: sourceConnectionId);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(packet, out QuicLongHeaderPacket header));
+            Assert.Equal(sourceConnectionId.Length, header.SourceConnectionIdLength);
+            Assert.True(sourceConnectionId.AsSpan().SequenceEqual(header.SourceConnectionId));
+        }
+    }
 }

@@ -43,4 +43,34 @@ public sealed class REQ_QUIC_RFC9000_S8P2P1_0004
     {
         Assert.False(QuicPathValidation.TryGeneratePathChallengeData(stackalloc byte[7], out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S8-2-1-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryGeneratePathChallengeDataFuzz_WritesDistinctPayloadsThatRoundTrip()
+    {
+        HashSet<string> generatedPayloads = [];
+
+        for (int index = 0; index < 8; index++)
+        {
+            byte[] challengeData = new byte[QuicPathValidation.PathChallengeDataLength];
+
+            Assert.True(QuicPathValidation.TryGeneratePathChallengeData(challengeData, out int bytesWritten));
+            Assert.Equal(QuicPathValidation.PathChallengeDataLength, bytesWritten);
+            Assert.True(generatedPayloads.Add(Convert.ToHexString(challengeData)));
+
+            byte[] encoded = new byte[16];
+            Assert.True(QuicFrameCodec.TryFormatPathChallengeFrame(
+                new QuicPathChallengeFrame(challengeData),
+                encoded,
+                out int encodedBytesWritten));
+            Assert.True(QuicFrameCodec.TryParsePathChallengeFrame(
+                encoded.AsSpan(0, encodedBytesWritten),
+                out QuicPathChallengeFrame parsed,
+                out int bytesConsumed));
+            Assert.Equal(encodedBytesWritten, bytesConsumed);
+            Assert.True(challengeData.AsSpan().SequenceEqual(parsed.Data));
+        }
+    }
 }
