@@ -61,4 +61,62 @@ public sealed class REQ_QUIC_RFC9000_S5P3_0008
         Assert.Equal(2048UL, parsed.InitialMaxStreamDataBidiRemote);
         Assert.Equal(512UL, parsed.InitialMaxStreamDataUni);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S5P3-0008")]
+    public void Fuzz_TryFormatTransportParameters_RoundTripsFlowControlLimitsForEitherRole()
+    {
+        FlowControlLimitCase[] scenarios =
+        [
+            new(SenderIsClient: true, InitialMaxData: 1, BidiLocal: 1, BidiRemote: 1, Uni: 1),
+            new(SenderIsClient: false, InitialMaxData: 63, BidiLocal: 62, BidiRemote: 61, Uni: 60),
+            new(SenderIsClient: true, InitialMaxData: 64, BidiLocal: 128, BidiRemote: 256, Uni: 512),
+            new(SenderIsClient: false, InitialMaxData: 16_383, BidiLocal: 4_096, BidiRemote: 8_192, Uni: 16_383),
+            new(SenderIsClient: true, InitialMaxData: 16_384, BidiLocal: 32_768, BidiRemote: 65_536, Uni: 131_072),
+        ];
+
+        foreach (FlowControlLimitCase scenario in scenarios)
+        {
+            QuicTransportParameters parameters = new()
+            {
+                InitialMaxData = scenario.InitialMaxData,
+                InitialMaxStreamDataBidiLocal = scenario.BidiLocal,
+                InitialMaxStreamDataBidiRemote = scenario.BidiRemote,
+                InitialMaxStreamDataUni = scenario.Uni,
+            };
+
+            QuicTransportParameterRole senderRole = scenario.SenderIsClient
+                ? QuicTransportParameterRole.Client
+                : QuicTransportParameterRole.Server;
+            QuicTransportParameterRole receiverRole = scenario.SenderIsClient
+                ? QuicTransportParameterRole.Server
+                : QuicTransportParameterRole.Client;
+
+            byte[] destination = new byte[256];
+            Assert.True(QuicTransportParametersCodec.TryFormatTransportParameters(
+                parameters,
+                senderRole,
+                destination,
+                out int bytesWritten));
+
+            Assert.True(QuicTransportParametersCodec.TryParseTransportParameters(
+                destination.AsSpan(0, bytesWritten),
+                receiverRole,
+                out QuicTransportParameters parsed));
+
+            Assert.Equal(scenario.InitialMaxData, parsed.InitialMaxData);
+            Assert.Equal(scenario.BidiLocal, parsed.InitialMaxStreamDataBidiLocal);
+            Assert.Equal(scenario.BidiRemote, parsed.InitialMaxStreamDataBidiRemote);
+            Assert.Equal(scenario.Uni, parsed.InitialMaxStreamDataUni);
+        }
+    }
+
+    private readonly record struct FlowControlLimitCase(
+        bool SenderIsClient,
+        ulong InitialMaxData,
+        ulong BidiLocal,
+        ulong BidiRemote,
+        ulong Uni);
 }
