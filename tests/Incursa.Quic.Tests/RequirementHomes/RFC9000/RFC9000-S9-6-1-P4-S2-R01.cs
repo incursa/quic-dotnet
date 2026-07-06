@@ -162,6 +162,58 @@ public sealed class REQ_QUIC_RFC9000_S9P6P1_0005
             && send.PathIdentity == preferredPath);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S9-6-1-P4-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails()
+    {
+        for (int variation = 0; variation < 4; variation++)
+        {
+            bool useIpv6 = variation % 2 == 1;
+            QuicConnectionPathIdentity originalPath = useIpv6
+                ? QuicS9P6P1PreferredAddressTestSupport.OriginalIpv6Path
+                : QuicS9P6P1PreferredAddressTestSupport.OriginalIpv4Path;
+            QuicPreferredAddress preferredAddress = QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress(
+                ipv4Port: (ushort)(9444 + variation),
+                ipv6Port: (ushort)(9554 + variation));
+            QuicConnectionPathIdentity preferredPath = new(
+                new IPAddress(useIpv6 ? preferredAddress.IPv6Address : preferredAddress.IPv4Address).ToString(),
+                RemotePort: useIpv6 ? preferredAddress.IPv6Port : preferredAddress.IPv4Port);
+
+            using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+                originalPath,
+                preferredAddress);
+
+            QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 20 + variation);
+            QuicConnectionTransitionResult failureResult = runtime.Transition(
+                new QuicConnectionPathValidationFailedEvent(
+                    ObservedAtTicks: 30 + variation,
+                    preferredPath,
+                    IsAbandoned: true),
+                nowTicks: 30 + variation);
+
+            Assert.True(failureResult.StateChanged);
+            Assert.Equal(originalPath, runtime.ActivePath!.Value.Identity);
+            AssertFailedPreferredAddressCandidate(runtime, preferredPath);
+            Assert.DoesNotContain(failureResult.Effects, effect => effect is QuicConnectionPromoteActivePathEffect);
+
+            QuicConnectionTransitionResult closeResult = runtime.Transition(
+                new QuicConnectionConnectionCloseFrameReceivedEvent(
+                    ObservedAtTicks: 40 + variation,
+                    QuicPathMigrationRecoveryTestSupport.CreateConnectionCloseMetadata()),
+                nowTicks: 40 + variation);
+
+            Assert.True(closeResult.StateChanged);
+            Assert.Contains(closeResult.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect send
+                && send.PathIdentity == originalPath);
+            Assert.DoesNotContain(closeResult.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect send
+                && send.PathIdentity == preferredPath);
+        }
+    }
+
     private static void AssertFailedPreferredAddressCandidate(
         QuicConnectionRuntime runtime,
         QuicConnectionPathIdentity preferredPath)

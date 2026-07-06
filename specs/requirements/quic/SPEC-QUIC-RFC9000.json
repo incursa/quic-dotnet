@@ -4575,7 +4575,8 @@
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs::Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains"
         ],
         "upstream_refs": [
           "RFC 9000 section 9 RFC9000-S9-B5-P5-S1",
@@ -44654,7 +44655,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::OldPathPacketsDoNotInfluenceTheNewPathsRecoveryStateAfterValidation",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation"
         ]
       }
     },
@@ -45371,7 +45373,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails"
         ]
       }
     },

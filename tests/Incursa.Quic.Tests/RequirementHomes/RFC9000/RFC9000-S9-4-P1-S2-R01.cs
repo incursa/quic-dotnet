@@ -137,4 +137,45 @@ public sealed class REQ_QUIC_RFC9000_S9P4_0001
             && promote.PathIdentity == migratedPath
             && !promote.RestoreSavedState);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S9-4-P1-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation()
+    {
+        for (int variation = 0; variation < 4; variation++)
+        {
+            QuicConnectionPathIdentity activePath = new($"203.0.113.{30 + variation}", RemotePort: 443);
+            QuicConnectionPathIdentity migratedPath = new($"203.0.113.{40 + variation}", RemotePort: 443);
+            QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+
+            QuicPathMigrationRecoveryTestSupport.DirtyRecoveryState(runtime);
+
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 10 + variation,
+                    migratedPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 10 + variation);
+            Assert.True(QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                migratedPath,
+                observedAtTicks: 20 + variation).StateChanged);
+
+            QuicPathMigrationRecoverySnapshot afterValidation =
+                QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime);
+
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 30 + variation,
+                    activePath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 30 + variation);
+
+            Assert.Equal(afterValidation, QuicPathMigrationRecoveryTestSupport.CaptureRecoveryState(runtime));
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(migratedPath, runtime.ActivePath!.Value.Identity);
+        }
+    }
 }

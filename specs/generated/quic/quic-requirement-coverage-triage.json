@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T13:05:15.8172276-06:00",
+  "generated_at": "2026-07-06T13:10:30.8114737-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T13:05:15.8112187-06:00",
+    "generated_at": "2026-07-06T13:10:30.8079457-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -439196,21 +439196,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::OldPathPacketsDoNotInfluenceTheNewPathsRecoveryStateAfterValidation",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 5,
-        "focused": 5,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -439218,6 +439219,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S9-4-P1-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P4_0001",
+          "member": "REQ_QUIC_RFC9000_S9P4_0001.Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation",
+          "method": "Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation",
+          "line": 145,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-4-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-4-P1-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P4_0001",
+          "member": "REQ_QUIC_RFC9000_S9P4_0001.Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation",
+          "method": "Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation",
+          "line": 145,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-4-P1-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
         {
           "requirement_id": "RFC9000-S9-4-P1-S2-R01",
           "source": "requirement_attribute",
@@ -440944,22 +440989,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -441098,6 +441144,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-1-P4-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails",
+          "method": "Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails",
+          "line": 169,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-1-P4-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-1-P4-S2-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S9P6P1_0005",
+          "member": "REQ_QUIC_RFC9000_S9P6P1_0005.Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails",
+          "method": "Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails",
+          "line": 169,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-1-P4-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -442630,23 +442720,24 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 4,
+      "spec_test_ref_count": 5,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs::Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -442741,6 +442832,50 @@
           ],
           "requirement_tagged": false,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0464",
+          "member": "REQ_QUIC_RFC9000_0464.Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains",
+          "method": "Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-P5-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs::Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0464",
+          "member": "REQ_QUIC_RFC9000_0464.Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains",
+          "method": "Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },

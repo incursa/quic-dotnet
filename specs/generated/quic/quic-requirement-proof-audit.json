@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T13:05:31.4976506-06:00",
+    "generated_at": "2026-07-06T13:10:45.2999336-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1055,
-      "full_executable_proof": 1622
+      "deferred_proof_not_executed": 1052,
+      "full_executable_proof": 1625
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 30,
-          "full_executable_proof": 1420
+          "deferred_proof_not_executed": 27,
+          "full_executable_proof": 1423
         }
       },
       {
@@ -83751,9 +83751,9 @@
       "rfc": "RFC9000",
       "title": "Sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path",
       "statement": "Packets sent on the old path MUST NOT contribute to congestion control or RTT estimation for the new path.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -83763,23 +83763,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::OldPathPacketsDoNotInfluenceTheNewPathsRecoveryStateAfterValidation",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::ValidatingANewPeerAddressResetsOldPathRecoveryState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-4-P1-S2-R01.cs::Fuzz_OldPathPacketsDoNotAffectNewPathRecoveryAfterValidation"
       ]
     },
     {
@@ -84127,9 +84127,9 @@
       "rfc": "RFC9000",
       "title": "Keep using the original server address after failed validation",
       "statement": "If path validation fails, the client MUST continue sending all future packets to the server's original IP address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84141,24 +84141,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalServerAddressAfterPreferredAddressValidationFails",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientSendsFuturePacketsToOriginalIpv6ServerAddressAfterIpv6PreferredAddressValidationFails",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::ClientKeepsUsingTheOriginalServerAddressWhenPreferredAddressValidationFails",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-1-P4-S2-R01.cs::Fuzz_ClientKeepsUsingOriginalServerAddressAfterPreferredAddressValidationFails"
       ]
     },
     {
@@ -84491,9 +84491,9 @@
       "rfc": "RFC9000",
       "title": "Allow discarding state without a validated path",
       "statement": "When an endpoint has no validated path on which to send packets, it MAY discard connection state.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84503,26 +84503,27 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 4,
+      "spec_test_ref_count": 5,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithoutAnyValidatedPathDiscardsConnectionState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10-0001.cs::ValidationFailureWithAValidatedPathRemainsAvailableDoesNotDiscardConnectionState",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithoutAnyValidatedPathMayDiscardConnectionState",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0548.cs::ValidationFailureWithAValidatedPathRemainingDoesNotDiscardConnectionState",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-P5-S1-R01.cs::Fuzz_PathValidationFailureDiscardsStateOnlyWhenNoValidatedPathRemains"
       ]
     },
     {
