@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T03:58:41.0774741-06:00",
+  "generated_at": "2026-07-06T04:01:27.5743596-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T03:58:41.0738113-06:00",
+    "generated_at": "2026-07-06T04:01:27.5711026-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -451365,14 +451365,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 11,
+        "focused": 11,
         "broad": 0,
         "by_kind": {
           "positive": 5,
           "negative": 5,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -451540,6 +451540,28 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P3-S1-R01.cs",
           "class": "RFC9002_S6_4_P3_S1_R01",
+          "member": "RFC9002_S6_4_P3_S1_R01.Fuzz_RejectingResumption_DiscardsAllZeroRttRecoveryStateAndRetainsOneRttPackets",
+          "method": "Fuzz_RejectingResumption_DiscardsAllZeroRttRecoveryStateAndRetainsOneRttPackets",
+          "line": 133,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9002-S6-4-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9002-S6-4-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/RFC9002-S6-4-P3-S1-R01.cs",
+          "class": "RFC9002_S6_4_P3_S1_R01",
           "member": "RFC9002_S6_4_P3_S1_R01.RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets",
           "method": "RejectingTheResumptionAttempt_DiscardsZeroRttRecoveryStateAndRetainsOneRttPackets",
           "line": 15,
@@ -451586,7 +451608,7 @@
           "class": "RFC9002_S6_4_P3_S1_R01",
           "member": "RFC9002_S6_4_P3_S1_R01.TryDiscardPacketProtectionLevel_RemovesZeroRttPacketsWhileRetainingOneRttPackets",
           "method": "TryDiscardPacketProtectionLevel_RemovesZeroRttPacketsWhileRetainingOneRttPackets",
-          "line": 133,
+          "line": 215,
           "kinds": [
             "positive"
           ],

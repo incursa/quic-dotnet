@@ -128,6 +128,88 @@ public sealed class RFC9002_S6_4_P3_S1_R01
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RejectingResumption_DiscardsAllZeroRttRecoveryStateAndRetainsOneRttPackets()
+    {
+        foreach ((int zeroRttPacketCount, int oneRttPacketCount, int lostZeroRttIndex) in new (int, int, int)[]
+        {
+            (2, 1, 0),
+            (3, 2, 1),
+            (5, 3, 4),
+        })
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            ulong expectedOneRttBytesInFlight = 0;
+            ulong expectedZeroRttBytesAfterLoss = 0;
+
+            for (int i = 0; i < zeroRttPacketCount; i++)
+            {
+                ulong payloadBytes = 900UL + (ulong)(i * 73);
+                runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                    QuicPacketNumberSpace.ApplicationData,
+                    PacketNumber: (ulong)(i + 1),
+                    PayloadBytes: payloadBytes,
+                    SentAtMicros: (ulong)(100 + i),
+                    AckEliciting: true,
+                    Retransmittable: true,
+                    PacketBytes: new byte[] { (byte)(0x10 + i) },
+                    PacketProtectionLevel: QuicTlsEncryptionLevel.ZeroRtt));
+
+                if (i != lostZeroRttIndex)
+                {
+                    expectedZeroRttBytesAfterLoss += payloadBytes;
+                }
+            }
+
+            for (int i = 0; i < oneRttPacketCount; i++)
+            {
+                ulong payloadBytes = 700UL + (ulong)(i * 41);
+                runtime.SendRuntime.TrackSentPacket(new QuicConnectionSentPacket(
+                    QuicPacketNumberSpace.ApplicationData,
+                    PacketNumber: (ulong)(100 + i),
+                    PayloadBytes: payloadBytes,
+                    SentAtMicros: (ulong)(200 + i),
+                    AckEliciting: true,
+                    Retransmittable: true,
+                    PacketBytes: new byte[] { (byte)(0x80 + i) },
+                    PacketProtectionLevel: QuicTlsEncryptionLevel.OneRtt));
+                expectedOneRttBytesInFlight += payloadBytes;
+            }
+
+            Assert.True(runtime.SendRuntime.TryRegisterLoss(
+                QuicPacketNumberSpace.ApplicationData,
+                (ulong)(lostZeroRttIndex + 1),
+                handshakeConfirmed: false));
+            Assert.Equal(1, runtime.SendRuntime.PendingRetransmissionCount);
+            Assert.Equal(
+                expectedZeroRttBytesAfterLoss + expectedOneRttBytesInFlight,
+                runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionTlsStateUpdatedEvent(
+                    ObservedAtTicks: 1,
+                    new QuicTlsStateUpdate(
+                        QuicTlsUpdateKind.ResumptionAttemptDispositionAvailable,
+                        ResumptionAttemptDisposition: QuicTlsResumptionAttemptDisposition.Rejected)),
+                nowTicks: 1);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicTlsResumptionAttemptDisposition.Rejected, runtime.TlsState.ResumptionAttemptDisposition);
+            Assert.DoesNotContain(
+                runtime.SendRuntime.SentPackets.Values,
+                packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.ZeroRtt);
+            Assert.Equal(
+                oneRttPacketCount,
+                runtime.SendRuntime.SentPackets.Values.Count(packet => packet.PacketProtectionLevel == QuicTlsEncryptionLevel.OneRtt));
+            Assert.Equal(0, runtime.SendRuntime.PendingRetransmissionCount);
+            Assert.Equal(
+                expectedOneRttBytesInFlight,
+                runtime.SendRuntime.FlowController.CongestionControlState.BytesInFlightBytes);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void TryDiscardPacketProtectionLevel_RemovesZeroRttPacketsWhileRetainingOneRttPackets()
