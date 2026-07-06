@@ -265,6 +265,7 @@ public sealed class REQ_QUIC_RFC9000_S10P2P3_0011
     [InlineData(1UL, "")]
     [InlineData(42UL, "must be stripped below one rtt")]
     [InlineData(0x3fffUL, "converted close retains only transport APPLICATION_ERROR")]
+    [Requirement("RFC9000-S10-2-3-P3-S2-R01")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0011")]
     [Requirement("REQ-QUIC-RFC9000-S10P2P3-0012")]
     [CoverageType(RequirementCoverageType.Fuzz)]
