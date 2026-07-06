@@ -82,4 +82,34 @@ public sealed class REQ_QUIC_RFC9000_S20P2_0001
         Assert.Equal(0x02UL, parsed.TriggeringFrameType);
         Assert.Equal(encoded.Length, bytesConsumed);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S20P2-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ApplicationProtocolErrorCodeFrames_FuzzPreserveApplicationErrorCodes()
+    {
+        ulong[] applicationErrorCodes = [0, 1, 0x1234, 0x3FFF];
+
+        foreach (ulong applicationErrorCode in applicationErrorCodes)
+        {
+            QuicResetStreamFrame resetFrame = new(streamId: 0x04, applicationErrorCode, finalSize: 0x20);
+            byte[] resetEncoded = QuicFrameTestData.BuildResetStreamFrame(resetFrame);
+            Assert.True(QuicFrameCodec.TryParseResetStreamFrame(resetEncoded, out QuicResetStreamFrame parsedReset, out int resetBytesConsumed));
+            Assert.Equal(resetEncoded.Length, resetBytesConsumed);
+            Assert.Equal(applicationErrorCode, parsedReset.ApplicationProtocolErrorCode);
+
+            QuicStopSendingFrame stopSendingFrame = new(streamId: 0x04, applicationErrorCode);
+            byte[] stopSendingEncoded = QuicFrameTestData.BuildStopSendingFrame(stopSendingFrame);
+            Assert.True(QuicFrameCodec.TryParseStopSendingFrame(stopSendingEncoded, out QuicStopSendingFrame parsedStopSending, out int stopSendingBytesConsumed));
+            Assert.Equal(stopSendingEncoded.Length, stopSendingBytesConsumed);
+            Assert.Equal(applicationErrorCode, parsedStopSending.ApplicationProtocolErrorCode);
+
+            byte[] applicationCloseEncoded = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(applicationErrorCode, reasonPhrase: []);
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(applicationCloseEncoded, out QuicConnectionCloseFrame parsedApplicationClose, out int closeBytesConsumed));
+            Assert.Equal(applicationCloseEncoded.Length, closeBytesConsumed);
+            Assert.True(parsedApplicationClose.IsApplicationError);
+            Assert.Equal(applicationErrorCode, parsedApplicationClose.ErrorCode);
+        }
+    }
 }

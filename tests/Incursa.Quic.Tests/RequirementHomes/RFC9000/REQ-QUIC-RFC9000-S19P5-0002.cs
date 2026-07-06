@@ -119,4 +119,13 @@ public sealed class REQ_QUIC_RFC9000_S19P5_0002
 
         await stream.DisposeAsync();
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S19P5-0002")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void StopSendingFrameCodec_FuzzRoundTripsAllowedStopSendingFields()
+    {
+        QuicFrameCodecFuzzSupport.FuzzStopSendingFrame();
+    }
 }

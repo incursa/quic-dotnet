@@ -56,4 +56,33 @@ public sealed class REQ_QUIC_RFC9000_S17P3_0001
         Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
         Assert.Equal(QuicPacketNumberSpace.Initial, packetNumberSpace);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S17P3-0001")]
+    public void TryParseShortHeader_FuzzClassifiesVersion1ShortHeadersAsApplicationData()
+    {
+        byte[][] remainders =
+        [
+            [0xAA],
+            [0xAA, 0xBB],
+            [0xAA, 0xBB, 0xCC, 0xDD],
+        ];
+
+        for (byte packetNumberLengthBits = 0; packetNumberLengthBits <= 3; packetNumberLengthBits++)
+        {
+            foreach (byte[] remainder in remainders)
+            {
+                byte[] packet = QuicHeaderTestData.BuildShortHeader(packetNumberLengthBits, remainder);
+
+                Assert.True(QuicPacketParser.TryClassifyHeaderForm(packet, out QuicHeaderForm headerForm));
+                Assert.Equal(QuicHeaderForm.Short, headerForm);
+                Assert.True(QuicPacketParser.TryParseShortHeader(packet, out QuicShortHeaderPacket shortHeader));
+                Assert.Equal(QuicHeaderForm.Short, shortHeader.HeaderForm);
+                Assert.True(QuicPacketParser.TryGetPacketNumberSpace(packet, out QuicPacketNumberSpace packetNumberSpace));
+                Assert.Equal(QuicPacketNumberSpace.ApplicationData, packetNumberSpace);
+            }
+        }
+    }
 }

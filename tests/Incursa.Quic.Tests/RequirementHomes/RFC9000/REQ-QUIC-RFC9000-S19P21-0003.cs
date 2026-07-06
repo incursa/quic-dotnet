@@ -67,4 +67,33 @@ public sealed class REQ_QUIC_RFC9000_S19P21_0003
         Assert.False(QuicFrameCodec.TryFormatStreamFrame(0x07, 0x04, 0, [0xAA], destination, out _));
         Assert.False(QuicFrameCodec.TryFormatStreamFrame(0x10, 0x04, 0, [0xAA], destination, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S19P21-0003")]
+    public void TryFormatStreamFrame_FuzzAcceptsOnlyKnownStreamFrameTypeValues()
+    {
+        byte[] destination = new byte[64];
+        byte[] streamData = [0xAA, 0xBB];
+
+        for (byte frameType = 0x00; frameType <= 0x12; frameType++)
+        {
+            bool formatted = QuicFrameCodec.TryFormatStreamFrame(
+                frameType,
+                streamId: 0x04,
+                offset: 0,
+                streamData,
+                destination,
+                out int bytesWritten);
+            bool knownStreamType = frameType is >= 0x08 and <= 0x0F;
+
+            Assert.Equal(knownStreamType, formatted);
+            if (knownStreamType)
+            {
+                Assert.True(QuicVariableLengthInteger.TryParse(destination.AsSpan(0, bytesWritten), out ulong parsedFrameType, out _));
+                Assert.Equal(frameType, parsedFrameType);
+            }
+        }
+    }
 }

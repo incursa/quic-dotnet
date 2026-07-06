@@ -94,6 +94,41 @@ public sealed class REQ_QUIC_RFC9000_S19P9_0001
         AssertMaxDataFrameRoundTrips(maxDataFrame);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryReadStreamData_FuzzEmitsMaxDataFrameWhenApplicationReleasesConnectionCredit()
+    {
+        int[] releasedByteCounts = [1, 2, 3, 4];
+
+        foreach (int releasedByteCount in releasedByteCounts)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionReceiveLimit: 8,
+                peerBidirectionalReceiveLimit: 16);
+            byte[] streamData = Enumerable.Range(0, releasedByteCount).Select(static value => (byte)value).ToArray();
+            Assert.True(state.TryReceiveStreamFrame(ParsePeerStreamFrame(streamData, offset: 0), out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            byte[] destination = new byte[releasedByteCount];
+            Assert.True(state.TryReadStreamData(
+                streamIdValue: 1,
+                destination,
+                out int bytesWritten,
+                out bool completed,
+                out QuicMaxDataFrame maxDataFrame,
+                out _,
+                out errorCode));
+
+            Assert.Equal(releasedByteCount, bytesWritten);
+            Assert.False(completed);
+            Assert.Equal(default, errorCode);
+            Assert.Equal((ulong)(8 + releasedByteCount), maxDataFrame.MaximumData);
+            Assert.Equal(maxDataFrame.MaximumData, state.ConnectionReceiveLimit);
+            AssertMaxDataFrameRoundTrips(maxDataFrame);
+        }
+    }
+
     private static QuicStreamFrame ParsePeerStreamFrame(ReadOnlySpan<byte> streamData, ulong offset)
     {
         byte[] frameBytes = QuicStreamTestData.BuildStreamFrame(
