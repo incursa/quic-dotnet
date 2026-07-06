@@ -71,4 +71,34 @@ public sealed class REQ_QUIC_RFC9000_0273
         Assert.Equal(0, buffer.CountForConnectionId(initialDestinationConnectionId));
         Assert.Empty(buffer.Drain(initialDestinationConnectionId));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit()
+    {
+        (byte[] DestinationConnectionId, int Limit, QuicListenerPreAcceptanceDatagramAction ExpectedAction)[] cases =
+        [
+            ([0xA0], 1, QuicListenerPreAcceptanceDatagramAction.BufferZeroRtt),
+            ([0xA1, 0xA2], 2, QuicListenerPreAcceptanceDatagramAction.BufferZeroRtt),
+            ([0xA3, 0xA4, 0xA5, 0xA6], 0, QuicListenerPreAcceptanceDatagramAction.Drop),
+            ([0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE], -1, QuicListenerPreAcceptanceDatagramAction.Drop),
+        ];
+
+        foreach ((byte[] destinationConnectionId, int limit, QuicListenerPreAcceptanceDatagramAction expectedAction) in cases)
+        {
+            byte[] datagram = QuicS17P2P3TestSupport.BuildZeroRttPacket(
+                destinationConnectionId: destinationConnectionId,
+                sourceConnectionId: [0xB0, 0xB1]);
+
+            QuicListenerPreAcceptanceDatagramAction action =
+                QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
+                    datagram,
+                    QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+                    retryBootstrapEnabled: false,
+                    maximumBufferedZeroRttDatagramsPerConnection: limit);
+
+            Assert.Equal(expectedAction, action);
+        }
+    }
 }

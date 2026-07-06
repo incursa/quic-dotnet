@@ -52,4 +52,45 @@ public sealed class REQ_QUIC_RFC9000_0258
         Assert.Equal((byte)0x03, retryHeader.LongPacketTypeBits);
         Assert.False(QuicPacketParser.TryGetPacketNumberSpace(retryPacket, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets()
+    {
+        byte[][] invalidPackets =
+        [
+            QuicHeaderTestData.BuildTruncatedLongHeader(
+                headerControlBits: 0x40,
+                version: 1,
+                destinationConnectionId: [0x10],
+                sourceConnectionId: [0x20],
+                versionSpecificData: QuicHeaderTestData.BuildInitialVersionSpecificData([0x01], [0x02], [0xAA]),
+                truncateBy: 1),
+            QuicHeaderTestData.BuildTruncatedLongHeader(
+                headerControlBits: 0x60,
+                version: 1,
+                destinationConnectionId: [0x11, 0x12],
+                sourceConnectionId: [0x21, 0x22],
+                versionSpecificData: [0x30, 0x31],
+                truncateBy: 2),
+            QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x70,
+                version: 1,
+                destinationConnectionId: [0x13],
+                sourceConnectionId: [0x23],
+                versionSpecificData: [0x33]),
+            QuicHeaderTestData.BuildLongHeader(
+                headerControlBits: 0x80,
+                version: 0,
+                destinationConnectionId: [0x14],
+                sourceConnectionId: [0x24],
+                versionSpecificData: [0x34, 0x35]),
+        ];
+
+        foreach (byte[] invalidPacket in invalidPackets)
+        {
+            Assert.False(QuicPacketParser.TryGetPacketNumberSpace(invalidPacket, out _));
+        }
+    }
 }

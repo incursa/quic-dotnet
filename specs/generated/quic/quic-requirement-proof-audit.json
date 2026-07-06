@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:53:15.5814059-06:00",
+    "generated_at": "2026-07-06T11:57:36.1952808-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1099,
-      "full_executable_proof": 1578
+      "deferred_proof_not_executed": 1095,
+      "full_executable_proof": 1582
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 74,
-          "full_executable_proof": 1376
+          "deferred_proof_not_executed": 70,
+          "full_executable_proof": 1380
         }
       },
       {
@@ -80380,9 +80380,9 @@
       "rfc": "RFC9000",
       "title": "Send CONNECTION_REFUSED on connection refusal",
       "statement": "If a server refuses to accept a new connection, it SHOULD send an Initial packet containing a CONNECTION_CLOSE frame with error code CONNECTION_REFUSED.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80393,24 +80393,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostSendsConnectionRefusedInitialCloseWhenApplicationRefusesConnection",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostDoesNotSendConnectionRefusedCloseWhenApplicationAcceptsConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds"
       ]
     },
     {
@@ -80418,9 +80418,9 @@
       "rfc": "RFC9000",
       "title": "Buffer a limited number of 0-RTT packets",
       "statement": "If the packet is a 0-RTT packet, the server MAY buffer a limited number of these packets in anticipation of a late-arriving Initial packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80431,24 +80431,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_BuffersZeroRttWhenThePreInitialBufferHasCapacity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_DropsZeroRttWhenThePreInitialBufferIsDisabled",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit"
       ]
     },
     {
@@ -80483,9 +80483,9 @@
       "rfc": "RFC9000",
       "title": "Drop packets under all other circumstances",
       "statement": "Servers MUST drop incoming packets under all other circumstances.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80495,23 +80495,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DropsShortHeaderPacketsThatDoNotMatchAConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets"
       ]
     },
     {
@@ -80551,9 +80551,9 @@
       "rfc": "RFC9000",
       "title": "Discard invalid packets lacking strong integrity protection",
       "statement": "Invalid packets that lack strong integrity protection, such as Initial, Retry, or Version Negotiation, MAY be discarded.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80563,23 +80563,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_AcceptsValidInitialPacketWithPacketNumberSpace",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets"
       ]
     },
     {

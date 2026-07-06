@@ -2494,7 +2494,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_AcceptsValidInitialPacketWithPacketNumberSpace",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets"
         ],
         "upstream_refs": [
           "RFC 9000 Section 5.2 RFC9000-S5P2-B6-P6-S1",
@@ -2698,7 +2699,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostSendsConnectionRefusedInitialCloseWhenApplicationRefusesConnection",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostDoesNotSendConnectionRefusedCloseWhenApplicationAcceptsConnection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.2 RFC9000-S5P2P2-B5-P5-S1",
@@ -2732,7 +2734,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_BuffersZeroRttWhenThePreInitialBufferHasCapacity",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_DropsZeroRttWhenThePreInitialBufferIsDisabled",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.2 RFC9000-S5P2P2-B6-P6-S1",
@@ -2765,7 +2768,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DropsShortHeaderPacketsThatDoNotMatchAConnection",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets"
         ],
         "upstream_refs": [
           "RFC 9000 section 5.2.2 RFC9000-S5P2P2-B7-P7-S1",

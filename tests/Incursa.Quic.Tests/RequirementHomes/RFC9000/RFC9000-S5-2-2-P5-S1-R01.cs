@@ -96,4 +96,45 @@ public sealed class REQ_QUIC_RFC9000_0272
             out _));
         Assert.Equal((ulong)QuicTransportErrorCode.ConnectionRefused, errorCode);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds()
+    {
+        byte[][] clientSourceConnectionIds =
+        [
+            [0xC0],
+            [0xC1, 0xC2, 0xC3, 0xC4],
+            [0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC],
+            [0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB],
+        ];
+
+        foreach (byte[] clientSourceConnectionId in clientSourceConnectionIds)
+        {
+            byte[] clientInitialDestinationConnectionId =
+            [
+                0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8,
+            ];
+            byte[] clientInitialPacket = InteropEndpointHostTestSupport.BuildProtectedInitialPacket(
+                clientInitialDestinationConnectionId,
+                clientSourceConnectionId);
+
+            byte[] serverResponse = await QuicS5P2P2ServerPreAcceptanceTestSupport
+                .SendInitialAndReceiveServerResponseAsync(
+                    clientInitialPacket,
+                    clientSourceConnectionId,
+                    _ => null);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(serverResponse, out QuicLongHeaderPacket responseHeader));
+            Assert.Equal(clientSourceConnectionId, responseHeader.DestinationConnectionId.ToArray());
+            Assert.True(QuicS5P2P2ServerPreAcceptanceTestSupport.TryOpenInitialConnectionCloseFrame(
+                serverResponse,
+                clientInitialDestinationConnectionId,
+                out ulong errorCode,
+                out ulong triggeringFrameType));
+            Assert.Equal((ulong)QuicTransportErrorCode.ConnectionRefused, errorCode);
+            Assert.Equal(0UL, triggeringFrameType);
+        }
+    }
 }

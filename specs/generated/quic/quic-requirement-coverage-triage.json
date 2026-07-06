@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T11:53:01.9372683-06:00",
+  "generated_at": "2026-07-06T11:57:23.0547734-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T11:53:01.9336891-06:00",
+    "generated_at": "2026-07-06T11:57:23.0511178-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -420962,22 +420962,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostSendsConnectionRefusedInitialCloseWhenApplicationRefusesConnection",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ListenerHostDoesNotSendConnectionRefusedCloseWhenApplicationAcceptsConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseSupportsTheShortestClientSourceConnectionId",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -420985,6 +420986,50 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S5-2-2-P5-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0272",
+          "member": "REQ_QUIC_RFC9000_0272.ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds",
+          "method": "ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds",
+          "line": 103,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P5-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs::ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P5-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0272",
+          "member": "REQ_QUIC_RFC9000_0272.ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds",
+          "method": "ConnectionRefusedInitialCloseFuzz_EchoesVariedClientSourceConnectionIds",
+          "line": 103,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P5-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S5-2-2-P5-S1-R01",
           "source": "requirement_attribute",
@@ -421138,22 +421183,23 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_BuffersZeroRttWhenThePreInitialBufferHasCapacity",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagram_DropsZeroRttWhenThePreInitialBufferIsDisabled",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ZeroRttPreInitialBuffer_EnforcesThePerConnectionLimitAndDrainsForTheLateInitial",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -421241,6 +421287,50 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0273",
+          "member": "REQ_QUIC_RFC9000_0273.ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit",
+          "method": "ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit",
+          "line": 78,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P6-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs::ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P6-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0273",
+          "member": "REQ_QUIC_RFC9000_0273.ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit",
+          "method": "ClassifyUnroutedDatagramFuzz_BuffersOnlyWithinTheConfiguredZeroRttLimit",
+          "line": 78,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -421398,21 +421488,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DropsShortHeaderPacketsThatDoNotMatchAConnection",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagram_DoesNotDropEligibleUnsupportedVersionInitialPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -421500,6 +421591,50 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P7-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P7-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0275",
+          "member": "REQ_QUIC_RFC9000_0275.ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets",
+          "method": "ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets",
+          "line": 45,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-2-P7-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-2-P7-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs::ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-2-P7-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0275",
+          "member": "REQ_QUIC_RFC9000_0275.ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets",
+          "method": "ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets",
+          "line": 45,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -421687,21 +421822,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_AcceptsValidInitialPacketWithPacketNumberSpace",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeader_RejectsWeaklyProtectedInvalidPackets",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -421789,6 +421925,50 @@
           ],
           "categories": [
             "Negative"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-P6-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0258",
+          "member": "REQ_QUIC_RFC9000_0258.TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets",
+          "method": "TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets",
+          "line": 59,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-2-P6-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-2-P6-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs::TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-2-P6-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0258",
+          "member": "REQ_QUIC_RFC9000_0258.TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets",
+          "method": "TryParseLongHeaderFuzz_RejectsInvalidWeaklyProtectedPackets",
+          "line": 59,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [

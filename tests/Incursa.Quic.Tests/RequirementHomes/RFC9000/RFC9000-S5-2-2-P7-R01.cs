@@ -38,4 +38,31 @@ public sealed class REQ_QUIC_RFC9000_0275
 
         Assert.Equal(QuicListenerPreAcceptanceDatagramAction.SendVersionNegotiation, action);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClassifyUnroutedDatagramFuzz_DropsUnmatchedShortHeaderPackets()
+    {
+        byte[][] destinationConnectionIds =
+        [
+            [0x01],
+            [0x02, 0x03],
+            [0x04, 0x05, 0x06, 0x07],
+            [0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F],
+        ];
+
+        foreach (byte[] destinationConnectionId in destinationConnectionIds)
+        {
+            byte[] datagram = QuicS5P2P2ServerPreAcceptanceTestSupport.BuildShortHeaderDatagram(destinationConnectionId);
+
+            QuicListenerPreAcceptanceDatagramAction action =
+                QuicListenerPreAcceptanceIngressPolicy.ClassifyUnroutedDatagram(
+                    datagram,
+                    QuicS5P2P2ServerPreAcceptanceTestSupport.SupportedVersions,
+                    retryBootstrapEnabled: false);
+
+            Assert.Equal(QuicListenerPreAcceptanceDatagramAction.Drop, action);
+        }
+    }
 }
