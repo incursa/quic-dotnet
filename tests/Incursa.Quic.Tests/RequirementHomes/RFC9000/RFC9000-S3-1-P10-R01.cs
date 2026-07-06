@@ -69,4 +69,49 @@ public sealed class RFC9000_S3_1_P10_R01
         Assert.True(snapshot.HasFinalSize);
         Assert.Equal(0UL, snapshot.FinalSize);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S3-1-P10-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryAbortLocalStreamWrites_OpensSendCapableStreamsWhenResetIsTheFirstFrame()
+    {
+        (ulong StreamId, QuicStreamType StreamType, ulong? PrerequisiteStreamId)[] cases =
+        [
+            (0, QuicStreamType.Bidirectional, null),
+            (2, QuicStreamType.Unidirectional, null),
+            (4, QuicStreamType.Bidirectional, 0),
+            (6, QuicStreamType.Unidirectional, 2),
+        ];
+
+        foreach ((ulong streamId, QuicStreamType streamType, ulong? prerequisiteStreamId) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localBidirectionalSendLimit: 8,
+                localUnidirectionalSendLimit: 8,
+                peerBidirectionalStreamLimit: 8,
+                peerUnidirectionalStreamLimit: 8);
+
+            if (prerequisiteStreamId.HasValue)
+            {
+                Assert.True(state.TryAbortLocalStreamWrites(
+                    prerequisiteStreamId.Value,
+                    out _,
+                    out QuicTransportErrorCode prerequisiteErrorCode));
+                Assert.Equal(default, prerequisiteErrorCode);
+            }
+
+            Assert.False(state.TryGetStreamSnapshot(streamId, out _));
+
+            Assert.True(state.TryAbortLocalStreamWrites(streamId, out ulong finalSize, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(0UL, finalSize);
+
+            Assert.True(state.TryGetStreamSnapshot(streamId, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(streamType, snapshot.StreamType);
+            Assert.Equal(QuicStreamSendState.ResetSent, snapshot.SendState);
+            Assert.True(snapshot.HasFinalSize);
+            Assert.Equal(0UL, snapshot.FinalSize);
+        }
+    }
 }

@@ -116,4 +116,46 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0008
         Assert.True(snapshot.HasSendAbortErrorCode);
         Assert.Equal(applicationErrorCode, snapshot.SendAbortErrorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S3-5-P5-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStopSendingFrame_CopiesApplicationProtocolErrorCodesIntoResetStream()
+    {
+        ulong[] applicationErrorCodes =
+        [
+            0,
+            0x66,
+            0x77,
+            QuicVariableLengthInteger.MaxValue,
+        ];
+
+        foreach (ulong applicationErrorCode in applicationErrorCodes)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localUnidirectionalSendLimit: 8,
+                peerUnidirectionalStreamLimit: 8);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: false,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.True(state.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(streamId.Value, applicationErrorCode),
+                out QuicResetStreamFrame resetStreamFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(applicationErrorCode, resetStreamFrame.ApplicationProtocolErrorCode);
+
+            Assert.True(state.TryGetSendAbortErrorCode(streamId.Value, out ulong sendAbortErrorCode));
+            Assert.Equal(applicationErrorCode, sendAbortErrorCode);
+
+            Assert.True(state.TryGetStreamSnapshot(streamId.Value, out QuicConnectionStreamSnapshot snapshot));
+            Assert.True(snapshot.HasSendAbortErrorCode);
+            Assert.Equal(applicationErrorCode, snapshot.SendAbortErrorCode);
+        }
+    }
 }

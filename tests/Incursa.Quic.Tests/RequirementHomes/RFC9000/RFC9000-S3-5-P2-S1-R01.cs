@@ -152,4 +152,61 @@ public sealed class REQ_QUIC_RFC9000_S3P5_0002
             out _));
         Assert.DoesNotContain(notifications, notification => notification.Kind == QuicStreamNotificationKind.WriteAborted);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S3-5-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_AbortStreamReadsAsync_EmitsStopSendingForAbortErrorCodes()
+    {
+        ulong[] applicationErrorCodes =
+        [
+            0,
+            0x77,
+            0x99,
+            QuicVariableLengthInteger.MaxValue,
+        ];
+
+        foreach (ulong applicationErrorCode in applicationErrorCodes)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            List<QuicConnectionEffect> outboundEffects = [];
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            await runtime.AbortStreamReadsAsync(0, applicationErrorCode);
+
+            QuicStopSendingFrame stopSendingFrame = OpenSingleStopSendingFrame(runtime, outboundEffects);
+            Assert.Equal(0UL, stopSendingFrame.StreamId);
+            Assert.Equal(applicationErrorCode, stopSendingFrame.ApplicationProtocolErrorCode);
+        }
+    }
+
+    private static QuicStopSendingFrame OpenSingleStopSendingFrame(
+        QuicConnectionRuntime runtime,
+        IReadOnlyCollection<QuicConnectionEffect> outboundEffects)
+    {
+        QuicConnectionSendDatagramEffect stopSendingEffect = Assert.Single(
+            outboundEffects.OfType<QuicConnectionSendDatagramEffect>());
+
+        QuicHandshakeFlowCoordinator coordinator = new(PacketConnectionId);
+        Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+            stopSendingEffect.Datagram.Span,
+            runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value,
+            out byte[] openedPacket,
+            out int payloadOffset,
+            out int payloadLength));
+
+        Assert.True(QuicStreamControlFrameTestSupport.TryFindStopSendingFrame(
+            openedPacket.AsSpan(payloadOffset, payloadLength),
+            out QuicStopSendingFrame stopSendingFrame,
+            out _,
+            out _));
+
+        return stopSendingFrame;
+    }
 }

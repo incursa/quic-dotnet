@@ -113,4 +113,48 @@ public sealed class REQ_QUIC_RFC9000_S3P3_0002
         Assert.Equal(default, streamDataBlockedFrame);
         Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S3-3-P2-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReserveSendCapacity_RejectsStreamFramesAfterResetSent()
+    {
+        (ulong Offset, int Length, bool Fin)[] cases =
+        [
+            (0, 1, false),
+            (0, 1, true),
+            (4, 2, false),
+            (8, 0, true),
+        ];
+
+        foreach ((ulong offset, int length, bool fin) in cases)
+        {
+            QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                localUnidirectionalSendLimit: 8,
+                peerUnidirectionalStreamLimit: 8);
+
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: false,
+                out QuicStreamId streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+
+            Assert.True(state.TryAbortLocalStreamWrites(streamId.Value, out ulong finalSize, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(0UL, finalSize);
+
+            Assert.False(state.TryReserveSendCapacity(
+                streamId.Value,
+                offset,
+                length,
+                fin,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        }
+    }
 }
