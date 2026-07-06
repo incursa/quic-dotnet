@@ -2421,7 +2421,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::ReplacementNewConnectionIdFrame_DoesNotIncreaseRetirePriorToBeforePeerRetirement",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::SaturatedPeerActiveConnectionIdLimitDoesNotEmitPrematureRetirePriorToUpdate",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::PeerRetirementReplenishmentStillUsesZeroRetirePriorTo"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::PeerRetirementReplenishmentStillUsesZeroRetirePriorTo",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::ReplacementNewConnectionIdFrameFuzz_DoesNotIncreaseRetirePriorToBeforePeerRetirement"
         ],
         "upstream_refs": [
           "RFC 9000 Section 5.1.2 RFC9000-S5P1P2-B7-P7-S1",

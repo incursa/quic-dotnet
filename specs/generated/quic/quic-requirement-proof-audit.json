@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T11:38:30.8756881-06:00",
+    "generated_at": "2026-07-06T11:40:44.5513630-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1105,
-      "full_executable_proof": 1572
+      "deferred_proof_not_executed": 1104,
+      "full_executable_proof": 1573
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 80,
-          "full_executable_proof": 1370
+          "deferred_proof_not_executed": 79,
+          "full_executable_proof": 1371
         }
       },
       {
@@ -80048,9 +80048,9 @@
       "rfc": "RFC9000",
       "title": "Delay Retire Prior To updates",
       "statement": "Endpoints SHOULD NOT issue updates of the Retire Prior To field before receiving RETIRE_CONNECTION_ID frames that retire all connection IDs indicated by the previous Retire Prior To value.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -80061,24 +80061,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::ReplacementNewConnectionIdFrame_DoesNotIncreaseRetirePriorToBeforePeerRetirement",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::SaturatedPeerActiveConnectionIdLimitDoesNotEmitPrematureRetirePriorToUpdate",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::PeerRetirementReplenishmentStillUsesZeroRetirePriorTo"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::PeerRetirementReplenishmentStillUsesZeroRetirePriorTo",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-2-P7-S1-R01.cs::ReplacementNewConnectionIdFrameFuzz_DoesNotIncreaseRetirePriorToBeforePeerRetirement"
       ]
     },
     {

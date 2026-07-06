@@ -105,4 +105,45 @@ public sealed class REQ_QUIC_RFC9000_0253
         Assert.Equal(2UL, replacementFrame.SequenceNumber);
         Assert.Equal(0UL, replacementFrame.RetirePriorTo);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S5-1-2-P7-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ReplacementNewConnectionIdFrameFuzz_DoesNotIncreaseRetirePriorToBeforePeerRetirement()
+    {
+        for (byte iteration = 0; iteration < 6; iteration++)
+        {
+            using QuicConnectionRuntime runtime =
+                QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                    peerActiveConnectionIdLimit: 3);
+            byte[] issuedConnectionId = [iteration, 0xE1, 0xE2, 0xE3];
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionConnectionIdIssuedEvent(
+                    ObservedAtTicks: 9,
+                    ConnectionId: 1UL,
+                    StatelessResetToken: QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken((byte)(0xE0 + iteration)),
+                    ConnectionIdBytes: issuedConnectionId),
+                nowTicks: 9).StateChanged);
+
+            byte[] packet = QuicConnectionIdLifecycleTestSupport.BuildOneRttPacket(
+                runtime,
+                issuedConnectionId,
+                QuicFrameTestData.BuildPingFrame());
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 10,
+                    runtime.ActivePath!.Value.Identity,
+                    packet,
+                    RoutedLocallyIssuedConnectionId: 1UL),
+                nowTicks: 10);
+
+            QuicNewConnectionIdFrameProofSnapshot replacementFrame =
+                Assert.Single(QuicConnectionIdLifecycleTestSupport.GetNewConnectionIdFrames(runtime, result));
+            Assert.Equal(2UL, replacementFrame.SequenceNumber);
+            Assert.Equal(0UL, replacementFrame.RetirePriorTo);
+        }
+    }
 }
