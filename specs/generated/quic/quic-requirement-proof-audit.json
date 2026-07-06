@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T23:37:05.9401434-06:00",
+    "generated_at": "2026-07-05T23:44:04.6519522-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1546,
-      "full_executable_proof": 1131
+      "deferred_proof_not_executed": 1541,
+      "full_executable_proof": 1136
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 493,
-          "full_executable_proof": 957
+          "deferred_proof_not_executed": 488,
+          "full_executable_proof": 962
         }
       },
       {
@@ -3303,9 +3303,9 @@
       "rfc": "RFC9000",
       "title": "Send at most one PATH_RESPONSE per PATH_CHALLENGE",
       "statement": "An endpoint MUST NOT send more than one PATH_RESPONSE frame in response to one PATH_CHALLENGE frame.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -3316,18 +3316,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0815.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -3492,9 +3492,9 @@
       "rfc": "RFC9000",
       "title": "Initiate path validation to establish reachability",
       "statement": "To establish reachability on the new path, an endpoint MUST initiate path validation on the new path.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -3504,18 +3504,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0475.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0475.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -3528,9 +3528,9 @@
       "rfc": "RFC9000",
       "title": "Allow deferred path validation after the next non-probing frame",
       "statement": "An endpoint MAY defer path validation until after a peer sends the next non-probing frame to its new address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -3541,18 +3541,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0476.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0476.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -3641,9 +3641,9 @@
       "rfc": "RFC9000",
       "title": "Move back to the original path on packet number increase",
       "statement": "A non-probing packet received on the original path that increases the maximum received packet number MUST cause the endpoint to move back to that path.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -3654,18 +3654,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0498.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0498.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -3679,9 +3679,9 @@
       "rfc": "RFC9000",
       "title": "Send ACK frames for all received packets on multiple paths",
       "statement": "A receiver of packets on multiple paths MUST send ACK frames covering all received packets.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -3691,18 +3691,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0510.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0510.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-MigrationPath-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0510.cs::ValidatedPathMigrationDoesNotInventAckCoverageForTheNewPath"
