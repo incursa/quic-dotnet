@@ -129,6 +129,65 @@ public sealed class REQ_QUIC_RFC9000_0576
         Assert.Contains(result.Effects, effect => effect is QuicConnectionDiscardConnectionStateEffect);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-1-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ClosingRuntimeRepliesBeforeCloseLifetimeAndStopsAfterExpiry()
+    {
+        long[] beforeExpiryDeltas = [1, 2, 5];
+
+        foreach (long beforeExpiryDelta in beforeExpiryDeltas)
+        {
+            (QuicConnectionRuntime runtime, QuicConnectionPathIdentity path) = CreateRuntime();
+
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: null);
+
+            runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 1,
+                    closeMetadata),
+                nowTicks: 1);
+
+            long dueTicks = runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.CloseLifetime)!.Value;
+            long beforeExpiryTicks = Math.Max(1, dueTicks - beforeExpiryDelta);
+
+            QuicConnectionTransitionResult replyResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: beforeExpiryTicks,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: beforeExpiryTicks);
+
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.Contains(replyResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+
+            ulong generation = runtime.TimerState.GetGeneration(QuicConnectionTimerKind.CloseLifetime);
+            runtime.Transition(
+                new QuicConnectionTimerExpiredEvent(
+                    ObservedAtTicks: dueTicks,
+                    QuicConnectionTimerKind.CloseLifetime,
+                    generation),
+                nowTicks: dueTicks);
+
+            QuicConnectionTransitionResult afterExpiryResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: dueTicks + beforeExpiryDelta,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: dueTicks + beforeExpiryDelta);
+
+            Assert.Equal(QuicConnectionPhase.Discarded, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.None, runtime.SendingMode);
+            Assert.DoesNotContain(afterExpiryResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        }
+    }
+
     private static (QuicConnectionRuntime Runtime, QuicConnectionPathIdentity Path) CreateRuntime()
     {
         QuicConnectionRuntime runtime = new(

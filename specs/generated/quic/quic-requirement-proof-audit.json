@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:29:50.5488747-06:00",
+    "generated_at": "2026-07-06T07:32:10.8391299-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1241,
-      "full_executable_proof": 1436
+      "deferred_proof_not_executed": 1240,
+      "full_executable_proof": 1437
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 216,
-          "full_executable_proof": 1234
+          "deferred_proof_not_executed": 215,
+          "full_executable_proof": 1235
         }
       },
       {
@@ -71610,9 +71610,9 @@
       "rfc": "RFC9000",
       "title": "Limit packet generation rate in closing state",
       "statement": "An endpoint SHOULD limit the rate at which it generates packets in the closing state.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -71623,15 +71623,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-1-P3-S1-R01.cs"
