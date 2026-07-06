@@ -294,4 +294,65 @@ public sealed class REQ_QUIC_RFC9000_13234
             pathValidated: true));
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-13234")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryProcessAckFrame_FuzzRetiresTrackedAckRangesAcrossPacketNumberSpaces()
+    {
+        QuicPacketNumberSpace[] packetNumberSpaces =
+        [
+            QuicPacketNumberSpace.Initial,
+            QuicPacketNumberSpace.Handshake,
+            QuicPacketNumberSpace.ApplicationData,
+        ];
+
+        for (int index = 0; index < packetNumberSpaces.Length; index++)
+        {
+            QuicSenderFlowController sender = new();
+            QuicPacketNumberSpace packetNumberSpace = packetNumberSpaces[index];
+            ulong basePacketNumber = (ulong)(1 + (index * 10));
+            ulong carrierPacketNumber = (ulong)(100 + index);
+
+            sender.RecordIncomingPacket(
+                packetNumberSpace,
+                packetNumber: basePacketNumber,
+                ackEliciting: true,
+                receivedAtMicros: 1_000);
+            sender.RecordIncomingPacket(
+                packetNumberSpace,
+                packetNumber: basePacketNumber + 1,
+                ackEliciting: true,
+                receivedAtMicros: 1_010);
+
+            Assert.True(sender.TryBuildAckFrame(
+                packetNumberSpace,
+                nowMicros: 2_000,
+                out QuicAckFrame ackFrame));
+
+            sender.MarkAckFrameSent(
+                packetNumberSpace,
+                carrierPacketNumber,
+                ackFrame,
+                sentAtMicros: 2_100,
+                ackOnlyPacket: true);
+
+            Assert.True(sender.TryProcessAckFrame(
+                packetNumberSpace,
+                new QuicAckFrame
+                {
+                    LargestAcknowledged = carrierPacketNumber,
+                    AckDelay = 0,
+                    FirstAckRange = 0,
+                    AdditionalRanges = [],
+                },
+                ackReceivedAtMicros: 3_000,
+                pathValidated: true));
+
+            Assert.False(sender.TryBuildAckFrame(
+                packetNumberSpace,
+                nowMicros: 3_100,
+                out _));
+        }
+    }
 }

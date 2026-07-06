@@ -66,4 +66,39 @@ public sealed class REQ_QUIC_RFC9000_0831
             && sendDatagramEffect.EcnMarking == QuicEcnMarking.Ect0
             && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("REQ-QUIC-RFC9000-0831")]
+    [Trait("Category", "Fuzz")]
+    public void PathValidationPacketsOnANewPath_FuzzUseEct0AcrossObservedPeerAddresses()
+    {
+        for (int addressOffset = 1; addressOffset <= 4; addressOffset++)
+        {
+            QuicConnectionPathIdentity activePath = new(
+                RemoteAddress: "203.0.113.80",
+                LocalAddress: "198.51.100.80",
+                RemotePort: 443,
+                LocalPort: 61310);
+            QuicConnectionPathIdentity newPath = new(
+                RemoteAddress: $"203.0.113.{80 + addressOffset}",
+                LocalAddress: "198.51.100.80",
+                RemotePort: 443 + addressOffset,
+                LocalPort: 61310);
+            QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateServerRuntimeWithActivePath(activePath);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + addressOffset,
+                    newPath,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 20 + addressOffset);
+
+            Assert.Contains(result.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+                && sendDatagramEffect.PathIdentity == newPath
+                && sendDatagramEffect.EcnMarking == QuicEcnMarking.Ect0
+                && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+        }
+    }
 }

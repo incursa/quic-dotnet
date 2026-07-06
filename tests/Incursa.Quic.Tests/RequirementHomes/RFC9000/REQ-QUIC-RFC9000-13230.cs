@@ -36,4 +36,29 @@ public sealed class REQ_QUIC_RFC9000_13230
             expectedLargestAcknowledged: 10,
             expectedFirstAckRange: 1);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildAckFrame_FuzzAlwaysAnchorsOnTheMostRecentlyReceivedRange()
+    {
+        for (ulong basePacketNumber = 1; basePacketNumber <= 5; basePacketNumber++)
+        {
+            QuicAckGenerationState tracker = QuicS13P2P3AckFrameProofSupport.CreateTrackedState(
+                3,
+                basePacketNumber,
+                basePacketNumber + 1,
+                basePacketNumber + 4,
+                basePacketNumber + 5,
+                basePacketNumber + 8,
+                basePacketNumber + 9);
+
+            QuicS13P2P3AckFrameProofSupport.AssertBuildsAckFrame(
+                tracker,
+                expectedLargestAcknowledged: basePacketNumber + 9,
+                expectedFirstAckRange: 1,
+                new QuicAckRange(1, 1, basePacketNumber + 4, basePacketNumber + 5),
+                new QuicAckRange(1, 1, basePacketNumber, basePacketNumber + 1));
+        }
+    }
 }

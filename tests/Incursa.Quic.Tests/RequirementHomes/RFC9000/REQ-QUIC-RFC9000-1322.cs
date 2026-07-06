@@ -91,4 +91,36 @@ public sealed class REQ_QUIC_RFC9000_1322
 
         Assert.True(sender.ShouldSendAckImmediately(QuicPacketNumberSpace.ApplicationData));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void RecordIncomingPacket_FuzzCongestionExperiencedCodepointRequiresImmediateAckInEveryPacketNumberSpace()
+    {
+        QuicPacketNumberSpace[] packetNumberSpaces =
+        [
+            QuicPacketNumberSpace.Initial,
+            QuicPacketNumberSpace.Handshake,
+            QuicPacketNumberSpace.ApplicationData,
+        ];
+
+        for (int index = 0; index < packetNumberSpaces.Length; index++)
+        {
+            QuicSenderFlowController sender = new();
+            QuicPacketNumberSpace packetNumberSpace = packetNumberSpaces[index];
+
+            sender.RecordIncomingPacket(
+                packetNumberSpace,
+                packetNumber: (ulong)(9 + index),
+                ackEliciting: true,
+                receivedAtMicros: (ulong)(1_000 + (index * 10)),
+                congestionExperienced: true);
+
+            Assert.True(sender.ShouldSendAckImmediately(packetNumberSpace));
+            Assert.True(sender.ShouldIncludeAckFrameWithOutgoingPacket(
+                packetNumberSpace,
+                nowMicros: (ulong)(1_001 + (index * 10)),
+                maxAckDelayMicros: 25_000));
+        }
+    }
 }
