@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:14:13.9955356-06:00",
+  "generated_at": "2026-07-06T09:18:00.7867968-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:14:13.9914317-06:00",
+    "generated_at": "2026-07-06T09:18:00.7831695-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -399005,14 +399005,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -399109,6 +399109,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-1-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P2P5-RetryConnectionId-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure",
+          "member": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure.RetrySourceConnectionIdFuzz_RejectsClientInitialDestinationIdAndPreservesDistinctServerChoice",
+          "method": "RetrySourceConnectionIdFuzz_RejectsClientInitialDestinationIdAndPreservesDistinctServerChoice",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-1-P2-S1-R01",
+            "RFC9000-S17-2-5-1-P2-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -399135,14 +399158,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-1-P2-S1-R02.cs::TryBuildRetryPacket_IncludesTheServersChosenSourceConnectionId",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -399193,6 +399216,29 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-1-P2-S1-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P2P5-RetryConnectionId-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure",
+          "member": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure.RetrySourceConnectionIdFuzz_RejectsClientInitialDestinationIdAndPreservesDistinctServerChoice",
+          "method": "RetrySourceConnectionIdFuzz_RejectsClientInitialDestinationIdAndPreservesDistinctServerChoice",
+          "line": 13,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-1-P2-S1-R01",
+            "RFC9000-S17-2-5-1-P2-S1-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -399223,14 +399269,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -399369,6 +399415,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-1-P2-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P2P5-RetryConnectionId-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure",
+          "member": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure.RetryMetadataFuzz_DiscardsPacketsThatReuseTheInitialDestinationConnectionId",
+          "method": "RetryMetadataFuzz_DiscardsPacketsThatReuseTheInitialDestinationConnectionId",
+          "line": 63,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-1-P2-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -399395,14 +399463,14 @@
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-2-5-1-P2-S3-R01.cs::RetryMetadataFeedsSubsequentInitialPackets",
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 2,
-        "focused": 2,
+        "total": 3,
+        "focused": 3,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 0,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -399446,6 +399514,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-1-P2-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-1-P2-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P2P5-RetryConnectionId-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure",
+          "member": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure.RetryMetadataFuzz_FeedsSubsequentInitialDestinationConnectionId",
+          "method": "RetryMetadataFuzz_FeedsSubsequentInitialDestinationConnectionId",
+          "line": 101,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
@@ -401250,14 +401340,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -401396,6 +401486,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S17-2-5-3-P3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P2P5-RetryConnectionId-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure",
+          "member": "RFC9000_S17P2P5_RetryConnectionId_DeferredFuzzClosure.ZeroRttAfterRetryFuzz_UsesRetrySourceConnectionIdForSupportedLengths",
+          "method": "ZeroRttAfterRetryFuzz_UsesRetrySourceConnectionIdForSupportedLengths",
+          "line": 176,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-2-5-3-P3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
