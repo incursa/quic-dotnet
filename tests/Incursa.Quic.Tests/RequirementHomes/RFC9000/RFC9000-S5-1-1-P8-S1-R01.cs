@@ -76,6 +76,37 @@ public sealed class RFC9000_S5_1_1_P8_S1_R01
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ConnectionIdIssuedEvent_WhenLocalTransportParametersSelectZeroLengthConnectionId_DoesNotIssueNewConnectionIds()
+    {
+        foreach ((ulong connectionId, byte[] connectionIdBytes, byte tokenSeed) in new[]
+        {
+            (1UL, new byte[] { 0x61, 0x62, 0x63, 0x64 }, (byte)0x71),
+            (2UL, new byte[] { 0x65, 0x66, 0x67, 0x68 }, (byte)0x72),
+            (63UL, new byte[] { 0x69, 0x6A, 0x6B, 0x6C }, (byte)0x73),
+            (16_383UL, new byte[] { 0x6D, 0x6E, 0x6F, 0x70 }, (byte)0x74),
+        })
+        {
+            using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+
+            CommitLocalTransportParameters(runtime, []);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionConnectionIdIssuedEvent(
+                    ObservedAtTicks: 1,
+                    ConnectionId: connectionId,
+                    StatelessResetToken: QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken(tokenSeed),
+                    ConnectionIdBytes: connectionIdBytes),
+                nowTicks: 1);
+
+            Assert.False(result.StateChanged);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionRegisterConnectionIdRouteEffect);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionRegisterStatelessResetTokenEffect);
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Edge)]
     [Trait("Category", "Edge")]
     public void PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish()

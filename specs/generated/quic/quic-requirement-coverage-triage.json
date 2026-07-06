@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T05:19:50.6695278-06:00",
+  "generated_at": "2026-07-06T05:22:23.1051847-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T05:19:50.6661400-06:00",
+    "generated_at": "2026-07-06T05:22:23.1015199-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -414343,14 +414343,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 3,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -414452,9 +414452,31 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S1-R01.cs",
           "class": "RFC9000_S5_1_1_P8_S1_R01",
+          "member": "RFC9000_S5_1_1_P8_S1_R01.Fuzz_ConnectionIdIssuedEvent_WhenLocalTransportParametersSelectZeroLengthConnectionId_DoesNotIssueNewConnectionIds",
+          "method": "Fuzz_ConnectionIdIssuedEvent_WhenLocalTransportParametersSelectZeroLengthConnectionId_DoesNotIssueNewConnectionIds",
+          "line": 81,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-1-1-P8-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S5-1-1-P8-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P8-S1-R01.cs",
+          "class": "RFC9000_S5_1_1_P8_S1_R01",
           "member": "RFC9000_S5_1_1_P8_S1_R01.PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish",
           "method": "PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish",
-          "line": 81,
+          "line": 112,
           "kinds": [
             "edge"
           ],
@@ -414476,7 +414498,7 @@
           "class": "RFC9000_S5_1_1_P8_S1_R01",
           "member": "RFC9000_S5_1_1_P8_S1_R01.PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish",
           "method": "PreviouslyUnusedIssuedConnectionId_WhenLocalZeroLengthModeIsCommitted_DoesNotReplenish",
-          "line": 81,
+          "line": 112,
           "kinds": [
             "edge"
           ],
@@ -414498,7 +414520,7 @@
           "class": "RFC9000_S5_1_1_P8_S1_R01",
           "member": "RFC9000_S5_1_1_P8_S1_R01.RetireConnectionIdFrame_WhenPeerRequestedZeroLengthDestinationConnectionId_RetiresLocalPreferredAddressConnectionId",
           "method": "RetireConnectionIdFrame_WhenPeerRequestedZeroLengthDestinationConnectionId_RetiresLocalPreferredAddressConnectionId",
-          "line": 123,
+          "line": 154,
           "kinds": [
             "edge"
           ],
