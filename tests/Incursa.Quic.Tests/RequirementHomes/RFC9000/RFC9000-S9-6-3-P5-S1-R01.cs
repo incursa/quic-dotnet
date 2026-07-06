@@ -128,4 +128,51 @@ public sealed class REQ_QUIC_RFC9000_0543
             && promote.PathIdentity == sameFamilyPreferredPath
             && !promote.RestoreSavedState);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void SameFamilyPreferredAddressSelectionFuzz_UsesOnlyTheMatchingAddressFamily()
+    {
+        (QuicConnectionPathIdentity ActivePath, QuicConnectionPathIdentity SameFamilyPreferredPath, QuicConnectionPathIdentity OtherFamilyPreferredPath, bool UseIpv6)[] cases =
+        [
+            (
+                new("203.0.113.53", RemotePort: 443),
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(),
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(useIpv6: true),
+                false),
+            (
+                new("2001:db8:1::53", RemotePort: 443),
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(useIpv6: true),
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredPath(),
+                true),
+        ];
+
+        foreach ((QuicConnectionPathIdentity activePath, QuicConnectionPathIdentity sameFamilyPreferredPath, QuicConnectionPathIdentity otherFamilyPreferredPath, bool useIpv6) in cases)
+        {
+            using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+                activePath,
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+
+            QuicConnectionTransitionResult result = QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(
+                runtime,
+                observedAtTicks: 20);
+
+            QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, sameFamilyPreferredPath);
+            Assert.False(runtime.CandidatePaths.ContainsKey(otherFamilyPreferredPath));
+            Assert.Contains(result.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect send
+                && send.PathIdentity == sameFamilyPreferredPath
+                && QuicS8P2PathValidationTestSupport.TryOpenPathChallengePayload(
+                    runtime,
+                    send.Datagram.Span,
+                    out _,
+                    out _,
+                    out _));
+            Assert.DoesNotContain(result.Effects, effect =>
+                effect is QuicConnectionSendDatagramEffect send
+                && send.PathIdentity == otherFamilyPreferredPath);
+            Assert.Equal(useIpv6, sameFamilyPreferredPath.RemoteAddress.Contains(':', StringComparison.Ordinal));
+        }
+    }
 }

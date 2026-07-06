@@ -138,4 +138,50 @@ public sealed class REQ_QUIC_RFC9000_0538
         Assert.True(runtime.ActivePath.HasValue);
         Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClientConcurrentServerAddressValidationFuzz_StartsBothOriginalAndPreferredProbes()
+    {
+        (QuicConnectionPathIdentity ActivePath, QuicConnectionPathIdentity OriginalValidationPath, QuicConnectionPathIdentity PreferredValidationPath)[] cases =
+        [
+            (
+                new("203.0.113.50", "192.0.2.150", 443, 61300),
+                new("203.0.113.50", "192.0.2.151", 443, 61301),
+                new("198.51.100.24", "192.0.2.151", 9444, 61301)),
+            (
+                new("2001:db8:1::50", "2001:db8:2::50", 443, 61310),
+                new("2001:db8:1::50", "2001:db8:2::51", 443, 61311),
+                new("2001:db8:1:2:3:4:5:18", "2001:db8:2::51", 9554, 61311)),
+        ];
+
+        foreach ((QuicConnectionPathIdentity activePath, QuicConnectionPathIdentity originalValidationPath, QuicConnectionPathIdentity preferredValidationPath) in cases)
+        {
+            using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+                activePath,
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+            QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 19);
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+            QuicConnectionTransitionResult originalResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(20, originalValidationPath, datagram),
+                nowTicks: 20);
+            QuicConnectionTransitionResult preferredResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(21, preferredValidationPath, datagram),
+                nowTicks: 21);
+
+            QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+                originalResult,
+                originalValidationPath,
+                runtime: runtime);
+            QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+                preferredResult,
+                preferredValidationPath,
+                runtime: runtime);
+            QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, originalValidationPath);
+            QuicS9P6P1PreferredAddressTestSupport.AssertCandidatePathPendingValidation(runtime, preferredValidationPath);
+            Assert.Equal(activePath, runtime.ActivePath!.Value.Identity);
+        }
+    }
 }

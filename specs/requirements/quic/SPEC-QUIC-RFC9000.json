@@ -5401,7 +5401,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientPerformsConcurrentValidationToTheOriginalAndPreferredServerAddressesFromItsNewAddress",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientDoesNotStartPreferredAddressValidationWhenNoPreferredAddressWasProvided"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientDoesNotStartPreferredAddressValidationWhenNoPreferredAddressWasProvided",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientConcurrentServerAddressValidationFuzz_StartsBothOriginalAndPreferredProbes"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P3-B1-P1-S2",
@@ -5431,7 +5432,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::PreferredAddressValidationAbandonsTheOriginalServerAddressCandidateBeforePromoting",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::OriginalAddressValidationDoesNotAbandonThePreferredAddressCandidate"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::OriginalAddressValidationDoesNotAbandonThePreferredAddressCandidate",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::PreferredAddressValidationSuccessFuzz_AbandonsOriginalCandidatesAndPromotesPreferredPath"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P3-B2-P2-S1",
@@ -5461,7 +5463,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureFuzz_AllowsOriginalAddressValidationToPromote"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P3-B2-P2-S2",
@@ -5557,7 +5560,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientMigratingToANewAddressUsesTheSameFamilyPreferredServerAddress",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientDoesNotChooseDifferentFamilyPreferredAddressWhenSameFamilyAddressExists"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientDoesNotChooseDifferentFamilyPreferredAddressWhenSameFamilyAddressExists",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::SameFamilyPreferredAddressSelectionFuzz_UsesOnlyTheMatchingAddressFamily"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P3-B5-P5-S1",

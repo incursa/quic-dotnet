@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:22:23.5681467-06:00",
+    "generated_at": "2026-07-06T12:28:39.2377431-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1078,
-      "full_executable_proof": 1599
+      "deferred_proof_not_executed": 1074,
+      "full_executable_proof": 1603
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 53,
-          "full_executable_proof": 1397
+          "deferred_proof_not_executed": 49,
+          "full_executable_proof": 1401
         }
       },
       {
@@ -84299,9 +84299,9 @@
       "rfc": "RFC9000",
       "title": "Validate both server addresses concurrently after client migration",
       "statement": "In this case, the client SHOULD perform path validation to both the original and preferred server address from the client's new address concurrently.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84311,23 +84311,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientPerformsConcurrentValidationToTheOriginalAndPreferredServerAddressesFromItsNewAddress",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientDoesNotStartPreferredAddressValidationWhenNoPreferredAddressWasProvided"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientDoesNotStartPreferredAddressValidationWhenNoPreferredAddressWasProvided",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P1-S1-R01.cs::ClientConcurrentServerAddressValidationFuzz_StartsBothOriginalAndPreferredProbes"
       ]
     },
     {
@@ -84335,9 +84335,9 @@
       "rfc": "RFC9000",
       "title": "Abandon validation after preferred address validation succeeds",
       "statement": "If path validation of the server's preferred address succeeds, the client MUST abandon validation of the original address and migrate to using the server's preferred address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84347,23 +84347,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::PreferredAddressValidationAbandonsTheOriginalServerAddressCandidateBeforePromoting",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::OriginalAddressValidationDoesNotAbandonThePreferredAddressCandidate"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::OriginalAddressValidationDoesNotAbandonThePreferredAddressCandidate",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S1-R01.cs::PreferredAddressValidationSuccessFuzz_AbandonsOriginalCandidatesAndPromotesPreferredPath"
       ]
     },
     {
@@ -84371,9 +84371,9 @@
       "rfc": "RFC9000",
       "title": "Optionally migrate after original address validation succeeds",
       "statement": "If path validation of the server's preferred address fails but validation of the server's original address succeeds, the client MAY migrate to its new address and continue sending to the server's original address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84383,23 +84383,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::ClientMayContinueSendingToTheOriginalServerAddressWhenPreferredAddressValidationFails",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureDoesNotMigrateBeforeOriginalAddressValidationSucceeds",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P2-S2-R01.cs::PreferredAddressFailureFuzz_AllowsOriginalAddressValidationToPromote"
       ]
     },
     {
@@ -84407,9 +84407,9 @@
       "rfc": "RFC9000",
       "title": "Prefer the same address family for client migration",
       "statement": "A client that migrates to a new address SHOULD use a preferred address from the same address family for the server.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84419,23 +84419,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientMigratingToANewAddressUsesTheSameFamilyPreferredServerAddress",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientDoesNotChooseDifferentFamilyPreferredAddressWhenSameFamilyAddressExists"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::ClientDoesNotChooseDifferentFamilyPreferredAddressWhenSameFamilyAddressExists",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-3-P5-S1-R01.cs::SameFamilyPreferredAddressSelectionFuzz_UsesOnlyTheMatchingAddressFamily"
       ]
     },
     {

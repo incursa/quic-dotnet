@@ -138,4 +138,49 @@ public sealed class REQ_QUIC_RFC9000_0539
         Assert.False(preferredCandidatePath.Validation.IsValidated);
         Assert.False(preferredCandidatePath.Validation.IsAbandoned);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void PreferredAddressValidationSuccessFuzz_AbandonsOriginalCandidatesAndPromotesPreferredPath()
+    {
+        (QuicConnectionPathIdentity ActivePath, QuicConnectionPathIdentity OriginalValidationPath, QuicConnectionPathIdentity PreferredValidationPath)[] cases =
+        [
+            (
+                new("203.0.113.51", "192.0.2.160", 443, 61320),
+                new("203.0.113.51", "192.0.2.161", 443, 61321),
+                new("198.51.100.24", "192.0.2.161", 9444, 61321)),
+            (
+                new("2001:db8:1::51", "2001:db8:2::60", 443, 61330),
+                new("2001:db8:1::51", "2001:db8:2::61", 443, 61331),
+                new("2001:db8:1:2:3:4:5:18", "2001:db8:2::61", 9554, 61331)),
+        ];
+
+        foreach ((QuicConnectionPathIdentity activePath, QuicConnectionPathIdentity originalValidationPath, QuicConnectionPathIdentity preferredValidationPath) in cases)
+        {
+            using QuicConnectionRuntime runtime = QuicS9P6P1PreferredAddressTestSupport.CreateClientRuntime(
+                activePath,
+                QuicS9P6P1PreferredAddressTestSupport.CreatePreferredAddress());
+            QuicS9P6P1PreferredAddressTestSupport.ConfirmHandshake(runtime, observedAtTicks: 19);
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+            Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(20, originalValidationPath, datagram), nowTicks: 20).StateChanged);
+            Assert.True(runtime.Transition(new QuicConnectionPacketReceivedEvent(21, preferredValidationPath, datagram), nowTicks: 21).StateChanged);
+
+            QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                preferredValidationPath,
+                observedAtTicks: 30);
+
+            Assert.True(validationResult.StateChanged);
+            Assert.Equal(preferredValidationPath, runtime.ActivePath!.Value.Identity);
+            Assert.False(runtime.CandidatePaths.ContainsKey(preferredValidationPath));
+            Assert.True(runtime.CandidatePaths.TryGetValue(originalValidationPath, out QuicConnectionCandidatePathRecord originalCandidatePath));
+            Assert.True(originalCandidatePath.Validation.IsAbandoned);
+            Assert.False(originalCandidatePath.Validation.IsValidated);
+            Assert.Contains(validationResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == preferredValidationPath);
+        }
+    }
 }
