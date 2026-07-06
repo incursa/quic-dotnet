@@ -52,4 +52,30 @@ public sealed class REQ_QUIC_RFC9000_1009
         Assert.Single(QuicS17P2P3TestSupport.GetInitialSendEffects(result.Effects));
         Assert.Single(QuicS17P2P3TestSupport.GetZeroRttSendEffects(result.Effects));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void AfterProcessingOneRttPackets_FuzzNeverEmitsZeroRttPacketsForProtectedApplicationData()
+    {
+        for (long observedAtTicks = 1; observedAtTicks <= 4; observedAtTicks++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+
+            byte[] protectedPacket = QuicS17P2P3TestSupport.BuildExpectedOneRttPacket(
+                QuicFrameTestData.BuildPingFrame(),
+                runtime.TlsState.OneRttOpenPacketProtectionMaterial!.Value,
+                runtime.TlsState.CurrentOneRttKeyPhase == 1);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    observedAtTicks,
+                    runtime.ActivePath!.Value.Identity,
+                    protectedPacket),
+                nowTicks: observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            Assert.Empty(QuicS17P2P3TestSupport.GetZeroRttSendEffects(result.Effects));
+        }
+    }
 }

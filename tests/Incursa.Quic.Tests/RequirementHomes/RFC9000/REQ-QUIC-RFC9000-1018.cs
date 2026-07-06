@@ -58,6 +58,37 @@ public sealed class REQ_QUIC_RFC9000_1018
         Assert.Equal(0x04UL, runtime.TerminalState.Value.Close.TriggeringFrameType);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryHandleHandshakePacketReceived_FuzzClosesWithProtocolViolationForDisallowedFrameTypes()
+    {
+        byte[][] disallowedFrames =
+        [
+            QuicFrameTestData.BuildPingFrame(),
+            QuicFrameTestData.BuildResetStreamFrame(new QuicResetStreamFrame(0, 1, 0)),
+            QuicFrameTestData.BuildMaxDataFrame(new QuicMaxDataFrame(128)),
+        ];
+
+        for (int index = 0; index < disallowedFrames.Length; index++)
+        {
+            QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+                QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+            using QuicConnectionRuntime _clientRuntime = scenario.ClientRuntime;
+            using QuicConnectionRuntime runtime = scenario.ServerRuntime;
+
+            QuicConnectionTransitionResult result = ReceiveHandshakePacket(
+                runtime,
+                disallowedFrames[index],
+                observedAtTicks: 30 + index);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.NotNull(runtime.TerminalState);
+            Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState!.Value.Close.TransportErrorCode);
+        }
+    }
+
     private static QuicConnectionTransitionResult ReceiveHandshakePacket(
         QuicConnectionRuntime runtime,
         ReadOnlySpan<byte> prefixFramePayload,

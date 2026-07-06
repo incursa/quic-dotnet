@@ -78,4 +78,29 @@ public sealed class REQ_QUIC_RFC9000_1015
         Assert.True(scenario.ClientRuntime.TlsState.PeerTransportParametersCommitted);
         Assert.NotNull(scenario.ClientRuntime.TlsState.PeerTransportParameters);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CoalescedInitialAndHandshakeFlight_FuzzCommitsPeerTransportParametersAcrossReceiveTimes()
+    {
+        for (long observedAtTicks = 11; observedAtTicks <= 14; observedAtTicks++)
+        {
+            QuicCoalescedPacketRuntimeTestSupport.CoalescedServerFlightScenario scenario =
+                QuicCoalescedPacketRuntimeTestSupport.CreateClientRuntimeWithCoalescedServerFlight();
+
+            QuicConnectionTransitionResult result = scenario.ClientRuntime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    observedAtTicks,
+                    scenario.PathIdentity,
+                    scenario.CoalescedDatagram),
+                nowTicks: observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            Assert.True(scenario.ClientRuntime.TlsState.TryGetHandshakeOpenPacketProtectionMaterial(out _));
+            Assert.True(scenario.ClientRuntime.TlsState.HandshakeKeysAvailable);
+            Assert.True(scenario.ClientRuntime.TlsState.PeerTransportParametersCommitted);
+            Assert.NotNull(scenario.ClientRuntime.TlsState.PeerTransportParameters);
+        }
+    }
 }

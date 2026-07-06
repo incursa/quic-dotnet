@@ -94,4 +94,52 @@ public sealed class REQ_QUIC_RFC9000_1735
         Assert.True(cryptoFrame.CryptoData.SequenceEqual(cryptoPayload));
         Assert.True(QuicS13AckPiggybackTestSupport.SkipPadding(remaining[cryptoBytesConsumed..]).IsEmpty);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void HandshakePackets_FuzzCanCarryTransportConnectionCloseFramesWithDifferentTransportErrors()
+    {
+        QuicTransportErrorCode[] errorCodes =
+        [
+            QuicTransportErrorCode.NoError,
+            QuicTransportErrorCode.ProtocolViolation,
+            QuicTransportErrorCode.InternalError,
+        ];
+
+        foreach (QuicTransportErrorCode errorCode in errorCodes)
+        {
+            Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+                QuicTlsEncryptionLevel.Handshake,
+                out QuicTlsPacketProtectionMaterial material));
+
+            QuicHandshakeFlowCoordinator coordinator = QuicS17P1TestSupport.CreateHandshakeCoordinator();
+            byte[] prefixFramePayload = QuicFrameTestData.BuildConnectionCloseFrame(new QuicConnectionCloseFrame(
+                errorCode,
+                triggeringFrameType: 0x04,
+                []));
+
+            Assert.True(coordinator.TryBuildProtectedHandshakePacket(
+                [0xBA],
+                cryptoPayloadOffset: 0,
+                prefixFramePayload,
+                material,
+                out byte[] protectedPacket));
+
+            Assert.True(coordinator.TryOpenHandshakePacket(
+                protectedPacket,
+                material,
+                out byte[] openedPacket,
+                out int payloadOffset,
+                out int payloadLength));
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                openedPacket.AsSpan(payloadOffset, payloadLength),
+                out QuicConnectionCloseFrame parsedFrame,
+                out _));
+            Assert.Equal(0x1CUL, parsedFrame.FrameType);
+            Assert.False(parsedFrame.IsApplicationError);
+            Assert.Equal((ulong)errorCode, parsedFrame.ErrorCode);
+        }
+    }
 }
