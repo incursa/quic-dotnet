@@ -5305,7 +5305,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P2-B3-P3-S1",
@@ -5370,7 +5371,8 @@
         ],
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::ServerContinuesProcessingDelayedPacketsReceivedOnTheOldAddressAfterPreferredAddressValidationCompletes",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath"
         ],
         "upstream_refs": [
           "RFC9000-S9P6P2-B4-P4-S3",

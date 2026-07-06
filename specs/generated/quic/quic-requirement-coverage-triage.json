@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T12:32:51.6133003-06:00",
+  "generated_at": "2026-07-06T12:36:44.8225518-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T12:32:51.6096602-06:00",
+    "generated_at": "2026-07-06T12:36:44.8178157-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -440552,21 +440552,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -440580,9 +440581,53 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs",
           "class": "REQ_QUIC_RFC9000_0532",
+          "member": "REQ_QUIC_RFC9000_0532.ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes",
+          "method": "ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-2-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-2-P3-S1-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0532",
+          "member": "REQ_QUIC_RFC9000_0532.ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes",
+          "method": "ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-2-P3-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-2-P3-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0532",
           "member": "REQ_QUIC_RFC9000_0532.ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
           "method": "ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
-          "line": 23,
+          "line": 24,
           "kinds": [
             "positive"
           ],
@@ -440604,7 +440649,7 @@
           "class": "REQ_QUIC_RFC9000_0532",
           "member": "REQ_QUIC_RFC9000_0532.ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
           "method": "ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
-          "line": 23,
+          "line": 24,
           "kinds": [
             "positive"
           ],
@@ -440626,7 +440671,7 @@
           "class": "REQ_QUIC_RFC9000_0532",
           "member": "REQ_QUIC_RFC9000_0532.ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
           "method": "ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
-          "line": 52,
+          "line": 53,
           "kinds": [
             "negative"
           ],
@@ -440648,7 +440693,7 @@
           "class": "REQ_QUIC_RFC9000_0532",
           "member": "REQ_QUIC_RFC9000_0532.ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
           "method": "ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
-          "line": 52,
+          "line": 53,
           "kinds": [
             "negative"
           ],
@@ -440792,21 +440837,22 @@
         "clean"
       ],
       "rationale": "Focused proof exists for the required coverage dimensions, and the canonical spec x_test_refs resolve to source evidence.",
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::ServerContinuesProcessingDelayedPacketsReceivedOnTheOldAddressAfterPreferredAddressValidationCompletes",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath"
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 6,
+        "focused": 6,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 2,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -440857,6 +440903,50 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-2-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0535",
+          "member": "REQ_QUIC_RFC9000_0535.DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath",
+          "method": "DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-2-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S9-6-2-P4-S3-R01",
+          "source": "spec_xref",
+          "x_test_ref": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs",
+          "class": "REQ_QUIC_RFC9000_0535",
+          "member": "REQ_QUIC_RFC9000_0535.DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath",
+          "method": "DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath",
+          "line": 95,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S9-6-2-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
         },
         {
           "requirement_id": "RFC9000-S9-6-2-P4-S3-R01",

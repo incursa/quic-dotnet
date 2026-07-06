@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:33:05.8703806-06:00",
+    "generated_at": "2026-07-06T12:37:00.4563488-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1070,
-      "full_executable_proof": 1607
+      "deferred_proof_not_executed": 1068,
+      "full_executable_proof": 1609
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 45,
-          "full_executable_proof": 1405
+          "deferred_proof_not_executed": 43,
+          "full_executable_proof": 1407
         }
       },
       {
@@ -84194,9 +84194,9 @@
       "rfc": "RFC9000",
       "title": "Probe toward the client from the preferred address",
       "statement": "The server MUST probe on the path toward the client from its preferred address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84206,23 +84206,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerProbesThePreferredAddressPathWithAPathChallengeFrame",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerStopsProbingThePreferredAddressPathAfterValidationCompletes",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P3-S1-R01.cs::ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes"
       ]
     },
     {
@@ -84263,9 +84263,9 @@
       "rfc": "RFC9000",
       "title": "Continue processing delayed packets on the old IP address",
       "statement": "The server MAY continue to process delayed packets that are received on the old IP address.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84275,23 +84275,23 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs"
       ],
-      "spec_test_ref_count": 2,
+      "spec_test_ref_count": 3,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::ServerContinuesProcessingDelayedPacketsReceivedOnTheOldAddressAfterPreferredAddressValidationCompletes",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketDoesNotReopenTheOriginalAddressAsACandidatePath",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-6-2-P4-S3-R01.cs::DelayedOldAddressPacketFuzz_RemainsProcessableWithoutReopeningOriginalPath"
       ]
     },
     {

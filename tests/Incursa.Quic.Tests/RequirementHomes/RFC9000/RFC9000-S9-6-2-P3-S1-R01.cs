@@ -15,6 +15,7 @@ public sealed class REQ_QUIC_RFC9000_0532
     private static readonly byte[] PreferredIpv6Address = [0x20, 0x01, 0x0D, 0xB8, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x5A];
     private static readonly byte[] PreferredStatelessResetToken = [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F];
     private static readonly QuicConnectionPathIdentity PreferredPath = new(new IPAddress(PreferredIpv4Address).ToString(), RemotePort: 9443);
+    private static readonly QuicConnectionPathIdentity PreferredIpv6Path = new(new IPAddress(PreferredIpv6Address).ToString(), RemotePort: 9553);
 
     [Fact]
     [Requirement("RFC9000-S9-6-2-P3-S1-R01")]
@@ -83,6 +84,55 @@ public sealed class REQ_QUIC_RFC9000_0532
 
         Assert.DoesNotContain(secondResult.Effects, effect =>
             effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
+    }
+
+    [Theory]
+    [InlineData(false, 20, 30, 40)]
+    [InlineData(true, 25, 37, 49)]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ServerPreferredAddressProbeFuzz_SendsPathChallengeUntilPreferredPathValidationCompletes(
+        bool useIpv6PreferredAddress,
+        long probeTicks,
+        long validationTicks,
+        long secondReceiveTicks)
+    {
+        QuicConnectionPathIdentity preferredPath = useIpv6PreferredAddress
+            ? PreferredIpv6Path
+            : PreferredPath;
+        QuicConnectionRuntime runtime = CreateRuntime();
+        byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        QuicConnectionTransitionResult probeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(probeTicks, preferredPath, datagram),
+            nowTicks: probeTicks);
+
+        Assert.True(probeResult.StateChanged);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            probeResult,
+            preferredPath,
+            runtime: runtime);
+        Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.Equal(1UL, candidatePath.Validation.ChallengeSendCount);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            preferredPath,
+            observedAtTicks: validationTicks);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.Equal(preferredPath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(preferredPath));
+
+        QuicConnectionTransitionResult secondResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(secondReceiveTicks, preferredPath, datagram),
+            nowTicks: secondReceiveTicks);
+
+        Assert.DoesNotContain(secondResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == preferredPath
             && QuicFrameCodec.TryParsePathChallengeFrame(sendDatagramEffect.Datagram.Span, out _, out _));
     }
 
