@@ -118,6 +118,40 @@ public sealed class REQ_QUIC_RFC9000_19150001
                 && token.ConnectionId == 2UL);
     }
 
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-19150001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ConnectionIdIssuedEvent_FuzzZeroLengthModeDoesNotSendNewConnectionIdFrames()
+    {
+        for (ulong connectionId = 1; connectionId <= 4; connectionId++)
+        {
+            using QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntime();
+
+            CommitLocalTransportParameters(runtime, []);
+            byte[] connectionIdBytes =
+            [
+                unchecked((byte)(0x60 + connectionId)),
+                0x62,
+                0x63,
+                0x64,
+            ];
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionConnectionIdIssuedEvent(
+                    ObservedAtTicks: (long)connectionId,
+                    ConnectionId: connectionId,
+                    StatelessResetToken: QuicConnectionIdLifecycleTestSupport.CreateStatelessResetToken(unchecked((byte)(0x70 + connectionId))),
+                    ConnectionIdBytes: connectionIdBytes),
+                nowTicks: (long)connectionId);
+
+            Assert.False(result.StateChanged);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionRegisterConnectionIdRouteEffect);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionRegisterStatelessResetTokenEffect);
+            Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        }
+    }
+
     private static QuicConnectionRuntime CreateActiveRuntimeWithOneRttProtection()
     {
         QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(ActivePath);

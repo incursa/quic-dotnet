@@ -94,4 +94,40 @@ public sealed class REQ_QUIC_RFC9000_19150005
         Assert.Equal(encoded.Length, bytesWritten);
         Assert.True(encoded.AsSpan().SequenceEqual(destination[..bytesWritten]));
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-19150005")]
+    [Requirement("REQ-QUIC-RFC9000-19150006")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseNewConnectionIdFrame_FuzzRejectsRetirePriorToGreaterThanSequenceNumber()
+    {
+        byte[] destination = new byte[64];
+
+        for (ulong sequenceNumber = 0; sequenceNumber <= 4; sequenceNumber++)
+        {
+            byte[] connectionId =
+            [
+                unchecked((byte)(0x20 + sequenceNumber)),
+                unchecked((byte)(0x30 + sequenceNumber)),
+            ];
+            byte[] statelessResetToken = CreateStatelessResetToken(unchecked((byte)(0x50 + sequenceNumber)));
+            QuicNewConnectionIdFrame frame = new(sequenceNumber, sequenceNumber + 1, connectionId, statelessResetToken);
+            byte[] encoded = QuicFrameTestData.BuildNewConnectionIdFrame(frame);
+
+            Assert.False(QuicFrameCodec.TryParseNewConnectionIdFrame(encoded, out _, out _));
+            Assert.False(QuicFrameCodec.TryFormatNewConnectionIdFrame(frame, destination, out _));
+        }
+    }
+
+    private static byte[] CreateStatelessResetToken(byte startValue)
+    {
+        byte[] token = new byte[QuicStatelessReset.StatelessResetTokenLength];
+        for (int index = 0; index < token.Length; index++)
+        {
+            token[index] = unchecked((byte)(startValue + index));
+        }
+
+        return token;
+    }
 }

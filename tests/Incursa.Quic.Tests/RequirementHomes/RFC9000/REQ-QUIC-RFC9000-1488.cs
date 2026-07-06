@@ -44,4 +44,25 @@ public sealed class REQ_QUIC_RFC9000_1488
             QuicIanaRegistrationFieldKind.Contact,
             QuicIanaRegistrationPolicy.ProvisionalOmissibleFields);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-1488")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ProvisionalRegistrations_FuzzOnlySpecificationAndNotesAreOmissible()
+    {
+        QuicIanaRegistrationFieldKind[] omissibleFields =
+        [
+            QuicIanaRegistrationFieldKind.Specification,
+            QuicIanaRegistrationFieldKind.Notes,
+        ];
+
+        foreach (QuicIanaRegistrationFieldDefinition field in QuicIanaRegistrationPolicy.RegistryFields)
+        {
+            bool expectedOmissible = omissibleFields.Contains(field.Kind);
+
+            Assert.Equal(expectedOmissible, field.OmissibleFromProvisionalRegistration);
+            Assert.Equal(expectedOmissible, QuicIanaRegistrationPolicy.ProvisionalOmissibleFields.Contains(field.Kind));
+        }
+    }
 }
