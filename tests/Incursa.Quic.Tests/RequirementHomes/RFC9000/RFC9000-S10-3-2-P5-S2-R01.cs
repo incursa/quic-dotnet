@@ -77,4 +77,41 @@ public sealed class REQ_QUIC_RFC9000_S10P3P2_0005
         byte[] expectedHash = hmac.ComputeHash(connectionId);
         Assert.True(expectedHash.AsSpan(..QuicStatelessReset.StatelessResetTokenLength).SequenceEqual(token));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S10-3-2-P5-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryGenerateStatelessResetToken_IsStableOnlyForTheSameConnectionIdAndStaticKey()
+    {
+        for (int index = 0; index < 5; index++)
+        {
+            byte[] connectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(
+                start: (byte)(0x50 + index),
+                length: 1 + index);
+            byte[] changedConnectionId = QuicStatelessResetRequirementTestData.CreateConnectionId(
+                start: (byte)(0x60 + index),
+                length: 1 + index);
+            byte[] secretKey = QuicStatelessResetRequirementTestData.CreateSecret(
+                start: (byte)(0xA0 + index),
+                length: 1 + index);
+            byte[] changedSecretKey = QuicStatelessResetRequirementTestData.CreateSecret(
+                start: (byte)(0xB0 + index),
+                length: 1 + index);
+            byte[] firstToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+            byte[] repeatedToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+            byte[] changedConnectionIdToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+            byte[] changedSecretKeyToken = new byte[QuicStatelessReset.StatelessResetTokenLength];
+
+            Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, firstToken, out int bytesWritten));
+            Assert.Equal(QuicStatelessReset.StatelessResetTokenLength, bytesWritten);
+            Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, secretKey, repeatedToken, out _));
+            Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(changedConnectionId, secretKey, changedConnectionIdToken, out _));
+            Assert.True(QuicStatelessReset.TryGenerateStatelessResetToken(connectionId, changedSecretKey, changedSecretKeyToken, out _));
+
+            Assert.True(firstToken.SequenceEqual(repeatedToken));
+            Assert.False(firstToken.SequenceEqual(changedConnectionIdToken));
+            Assert.False(firstToken.SequenceEqual(changedSecretKeyToken));
+        }
+    }
 }
