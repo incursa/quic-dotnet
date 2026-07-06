@@ -94,6 +94,57 @@ public sealed class REQ_QUIC_RFC9001_S6P1_0009
         Assert.False(initialServerApplicationTrafficSecret.SequenceEqual(advancedServerApplicationTrafficSecret));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_SuccessorWriteMaterialMatchesTheQuicKeyUpdateLabelAcrossRolesAndUpdateEpochs()
+    {
+        (Func<QuicConnectionRuntime> RuntimeFactory, bool UseClientTrafficSecretForWriteSecret, bool InstallFirstUpdate)[] cases =
+        [
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime(), true, false),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime(), true, true),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(), false, false),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(), false, true),
+        ];
+
+        foreach ((Func<QuicConnectionRuntime> runtimeFactory, bool useClientTrafficSecretForWriteSecret, bool installFirstUpdate) in cases)
+        {
+            using QuicConnectionRuntime runtime = runtimeFactory();
+            QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+
+            if (installFirstUpdate)
+            {
+                Assert.True(QuicRfc9001KeyPhaseTestSupport.TryInstallRuntimeOneRttKeyUpdate(runtime));
+            }
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeApplicationTrafficSecrets(
+                runtime,
+                out byte[] clientApplicationTrafficSecret,
+                out byte[] serverApplicationTrafficSecret));
+
+            ReadOnlySpan<byte> currentWriteTrafficSecret = useClientTrafficSecretForWriteSecret
+                ? clientApplicationTrafficSecret
+                : serverApplicationTrafficSecret;
+            QuicTlsPacketProtectionMaterial currentProtectMaterial =
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+                runtime,
+                out _,
+                out QuicTlsPacketProtectionMaterial runtimeSuccessorProtectMaterial));
+
+            byte[] expectedNextWriteSecret =
+                QuicRfc9001KeyPhaseTestSupport.DeriveQuicKeyUpdateTrafficSecret(currentWriteTrafficSecret);
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryCreateOneRttPacketProtectionMaterialFromTrafficSecret(
+                expectedNextWriteSecret,
+                currentProtectMaterial.HeaderProtectionKey,
+                out QuicTlsPacketProtectionMaterial expectedSuccessorProtectMaterial));
+
+            Assert.True(expectedSuccessorProtectMaterial.Matches(runtimeSuccessorProtectMaterial));
+            Assert.False(currentProtectMaterial.Matches(runtimeSuccessorProtectMaterial));
+        }
+    }
+
     private static void AssertRuntimeSuccessorWriteMaterialMatchesTheQuicKeyUpdateLabel(
         Func<QuicConnectionRuntime> runtimeFactory,
         bool useClientTrafficSecretForWriteSecret)

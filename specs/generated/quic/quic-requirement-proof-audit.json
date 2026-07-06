@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T05:25:28.7701177-06:00",
+    "generated_at": "2026-07-06T05:27:53.3545661-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1282,
-      "full_executable_proof": 1395
+      "deferred_proof_not_executed": 1281,
+      "full_executable_proof": 1396
     },
     "by_rfc": [
       {
@@ -29,8 +29,8 @@
         "rfc": "RFC9001",
         "total": 96,
         "by_proof_state": {
-          "deferred_proof_not_executed": 26,
-          "full_executable_proof": 70
+          "deferred_proof_not_executed": 25,
+          "full_executable_proof": 71
         }
       },
       {
@@ -40184,9 +40184,9 @@
       "rfc": "RFC9001",
       "title": "Derive next write secrets with the QUIC key-update label",
       "statement": "An endpoint MUST derive the next write secret from the current write secret using the TLS-provided KDF and the label \"quic ku\".",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -40196,15 +40196,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/REQ-QUIC-RFC9001-S6P1-0009.cs"
