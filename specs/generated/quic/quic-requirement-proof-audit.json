@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T17:53:17.5932488-06:00",
+    "generated_at": "2026-07-06T17:56:08.1872490-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 807,
-      "full_executable_proof": 1870
+      "deferred_proof_not_executed": 806,
+      "full_executable_proof": 1871
     },
     "by_rfc": [
       {
@@ -73,8 +73,8 @@
         "rfc": "RFC9250",
         "total": 141,
         "by_proof_state": {
-          "deferred_proof_not_executed": 60,
-          "full_executable_proof": 81
+          "deferred_proof_not_executed": 59,
+          "full_executable_proof": 82
         }
       },
       {
@@ -51081,9 +51081,9 @@
       "rfc": "RFC9250",
       "title": "Padding overhead benchmark",
       "statement": "Padding implementations SHOULD include benchmark coverage for padding overhead.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -51093,14 +51093,13 @@
       ],
       "focused_kinds": [
         "benchmark",
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-0098.cs"
