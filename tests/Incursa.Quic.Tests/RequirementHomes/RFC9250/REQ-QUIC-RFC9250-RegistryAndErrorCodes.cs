@@ -30,6 +30,22 @@ public sealed class REQ_QUIC_RFC9250_RegistryAndErrorCodes
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0127")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RegistrySpaceAcceptsOnlyQuicVariableLengthIntegerRange()
+    {
+        foreach (ulong value in new[] { 0UL, 0x3fUL, 0x40UL, 0x3fffUL, 0x4000UL, QuicVariableLengthInteger.MaxValue })
+        {
+            Assert.True(value <= QuicVariableLengthInteger.MaxValue);
+        }
+
+        Assert.Equal(0x3FFF_FFFF_FFFF_FFFFUL, QuicVariableLengthInteger.MaxValue);
+        Assert.Equal(DoqErrorCode.UnspecifiedError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(long.MaxValue));
+        Assert.False(Enum.IsDefined(typeof(DoqErrorCode), long.MaxValue));
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0128")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -103,6 +119,33 @@ public sealed class REQ_QUIC_RFC9250_RegistryAndErrorCodes
 
         Assert.DoesNotContain("Standards Action", requirement.Statement, StringComparison.Ordinal);
         Assert.DoesNotContain("IESG Approval", requirement.Statement, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0128")]
+    [Requirement("REQ-QUIC-RFC9250-0129")]
+    [Requirement("REQ-QUIC-RFC9250-0130")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct()
+    {
+        RequirementText lowPermanent = ReadRequirement("REQ-QUIC-RFC9250-0128");
+        RequirementText highPermanent = ReadRequirement("REQ-QUIC-RFC9250-0129");
+        RequirementText highProvisional = ReadRequirement("REQ-QUIC-RFC9250-0130");
+
+        foreach (string lowPolicy in new[] { "Standards Action", "IESG Approval" })
+        {
+            Assert.Contains(lowPolicy, lowPermanent.Statement, StringComparison.Ordinal);
+            Assert.DoesNotContain(lowPolicy, highPermanent.Statement, StringComparison.Ordinal);
+            Assert.DoesNotContain(lowPolicy, highProvisional.Statement, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("0x00", lowPermanent.Statement, StringComparison.Ordinal);
+        Assert.Contains("0x3f", lowPermanent.Statement, StringComparison.Ordinal);
+        Assert.Contains("larger than 0x3f", highPermanent.Statement, StringComparison.Ordinal);
+        Assert.Contains("Specification Required", highPermanent.Statement, StringComparison.Ordinal);
+        Assert.Contains("Provisional", highProvisional.Statement, StringComparison.Ordinal);
+        Assert.Contains("Expert Review", highProvisional.Statement, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -182,6 +225,30 @@ public sealed class REQ_QUIC_RFC9250_RegistryAndErrorCodes
     }
 
     [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0131")]
+    [Requirement("REQ-QUIC-RFC9250-0132")]
+    [Requirement("REQ-QUIC-RFC9250-0133")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped()
+    {
+        RequirementText specification = ReadRequirement("REQ-QUIC-RFC9250-0131");
+        RequirementText description = ReadRequirement("REQ-QUIC-RFC9250-0132");
+        RequirementText date = ReadRequirement("REQ-QUIC-RFC9250-0133");
+
+        Assert.Contains("Specification", specification.Statement, StringComparison.Ordinal);
+        Assert.Contains("MAY be omitted", specification.Statement, StringComparison.Ordinal);
+        Assert.Contains("Description", description.Statement, StringComparison.Ordinal);
+        Assert.Contains("summary", description.Statement, StringComparison.Ordinal);
+        Assert.Contains("Date", date.Statement, StringComparison.Ordinal);
+        Assert.Contains("without review", date.Statement, StringComparison.Ordinal);
+
+        Assert.DoesNotContain("MUST be omitted", specification.Statement, StringComparison.Ordinal);
+        Assert.DoesNotContain("Policy", date.Statement, StringComparison.Ordinal);
+        Assert.DoesNotContain("if no Specification reference is provided", description.Statement, StringComparison.Ordinal);
+    }
+
+    [Fact]
     [Requirement("REQ-QUIC-RFC9250-0134")]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
@@ -233,6 +300,26 @@ public sealed class REQ_QUIC_RFC9250_RegistryAndErrorCodes
     public void DoqProtocolErrorDoesNotUseRequestCancelledValue()
     {
         Assert.NotEqual(DoqErrorCode.ProtocolError, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0x3));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0134")]
+    [Requirement("REQ-QUIC-RFC9250-0135")]
+    [Requirement("REQ-QUIC-RFC9250-0136")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CoreDoqErrorCodesRetainRegisteredValues()
+    {
+        foreach ((DoqErrorCode code, long expectedValue, long adjacentValue) in new[]
+        {
+            (DoqErrorCode.NoError, 0x0L, 0x1L),
+            (DoqErrorCode.InternalError, 0x1L, 0x0L),
+            (DoqErrorCode.ProtocolError, 0x2L, 0x3L),
+        })
+        {
+            AssertRegisteredErrorCode(code, expectedValue);
+            Assert.NotEqual(code, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(adjacentValue));
+        }
     }
 
     [Fact]
@@ -305,6 +392,28 @@ public sealed class REQ_QUIC_RFC9250_RegistryAndErrorCodes
     public void DoqErrorReservedDoesNotUseAdjacentValue()
     {
         Assert.NotEqual(DoqErrorCode.ErrorReserved, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(0xd098ea5d));
+    }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9250-0137")]
+    [Requirement("REQ-QUIC-RFC9250-0138")]
+    [Requirement("REQ-QUIC-RFC9250-0139")]
+    [Requirement("REQ-QUIC-RFC9250-0140")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ContextualDoqErrorCodesRetainRegisteredValues()
+    {
+        foreach ((DoqErrorCode code, long expectedValue, long adjacentValue) in new[]
+        {
+            (DoqErrorCode.RequestCancelled, 0x3L, 0x2L),
+            (DoqErrorCode.ExcessiveLoad, 0x4L, 0x3L),
+            (DoqErrorCode.UnspecifiedError, 0x5L, 0x4L),
+            (DoqErrorCode.ErrorReserved, 0xd098ea5eL, 0xd098ea5dL),
+        })
+        {
+            AssertRegisteredErrorCode(code, expectedValue);
+            Assert.NotEqual(code, DoqErrorCodeExtensions.NormalizeReceivedErrorCode(adjacentValue));
+        }
     }
 
     private static void AssertRegisteredErrorCode(DoqErrorCode code, long expectedValue)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T17:33:49.0742478-06:00",
+  "generated_at": "2026-07-06T17:37:46.9400712-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T17:33:49.0696755-06:00",
+    "generated_at": "2026-07-06T17:37:46.9350194-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -287940,14 +287940,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -288109,6 +288109,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0127",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_RegistrySpaceAcceptsOnlyQuicVariableLengthIntegerRange",
+          "method": "Fuzz_RegistrySpaceAcceptsOnlyQuicVariableLengthIntegerRange",
+          "line": 36,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0127"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         },
         {
           "requirement_id": "REQ-QUIC-RFC9250-0127",
@@ -288226,14 +288248,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -288402,9 +288424,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "method": "Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "line": 130,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0128",
+            "REQ-QUIC-RFC9250-0129",
+            "REQ-QUIC-RFC9250-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0128",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentLowRangeRegistrationPolicyAllowsStandardsActionOrIesgApproval",
           "method": "PermanentLowRangeRegistrationPolicyAllowsStandardsActionOrIesgApproval",
-          "line": 36,
+          "line": 52,
           "kinds": [
             "positive"
           ],
@@ -288426,7 +288472,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentLowRangeRegistrationPolicyAllowsStandardsActionOrIesgApproval",
           "method": "PermanentLowRangeRegistrationPolicyAllowsStandardsActionOrIesgApproval",
-          "line": 36,
+          "line": 52,
           "kinds": [
             "positive"
           ],
@@ -288448,7 +288494,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentLowRangeRegistrationPolicyDoesNotUseExpertReviewOnly",
           "method": "PermanentLowRangeRegistrationPolicyDoesNotUseExpertReviewOnly",
-          "line": 50,
+          "line": 66,
           "kinds": [
             "negative"
           ],
@@ -288470,7 +288516,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentLowRangeRegistrationPolicyDoesNotUseExpertReviewOnly",
           "method": "PermanentLowRangeRegistrationPolicyDoesNotUseExpertReviewOnly",
-          "line": 50,
+          "line": 66,
           "kinds": [
             "negative"
           ],
@@ -288512,14 +288558,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -288688,9 +288734,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "method": "Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "line": 130,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0128",
+            "REQ-QUIC-RFC9250-0129",
+            "REQ-QUIC-RFC9250-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0129",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentHighRangeRegistrationPolicyDoesNotUseLowRangePolicy",
           "method": "PermanentHighRangeRegistrationPolicyDoesNotUseLowRangePolicy",
-          "line": 74,
+          "line": 90,
           "kinds": [
             "negative"
           ],
@@ -288712,7 +288782,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentHighRangeRegistrationPolicyDoesNotUseLowRangePolicy",
           "method": "PermanentHighRangeRegistrationPolicyDoesNotUseLowRangePolicy",
-          "line": 74,
+          "line": 90,
           "kinds": [
             "negative"
           ],
@@ -288734,7 +288804,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentHighRangeRegistrationPolicyUsesSpecificationRequired",
           "method": "PermanentHighRangeRegistrationPolicyUsesSpecificationRequired",
-          "line": 62,
+          "line": 78,
           "kinds": [
             "positive"
           ],
@@ -288756,7 +288826,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.PermanentHighRangeRegistrationPolicyUsesSpecificationRequired",
           "method": "PermanentHighRangeRegistrationPolicyUsesSpecificationRequired",
-          "line": 62,
+          "line": 78,
           "kinds": [
             "positive"
           ],
@@ -288798,14 +288868,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -288974,9 +289044,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "method": "Fuzz_RegistrationPolicyRangesKeepLowPermanentHighPermanentAndHighProvisionalRulesDistinct",
+          "line": 130,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0128",
+            "REQ-QUIC-RFC9250-0129",
+            "REQ-QUIC-RFC9250-0130"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0130",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalHighRangeRegistrationPolicyDoesNotRequireStandardsAction",
           "method": "ProvisionalHighRangeRegistrationPolicyDoesNotRequireStandardsAction",
-          "line": 100,
+          "line": 116,
           "kinds": [
             "negative"
           ],
@@ -288998,7 +289092,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalHighRangeRegistrationPolicyDoesNotRequireStandardsAction",
           "method": "ProvisionalHighRangeRegistrationPolicyDoesNotRequireStandardsAction",
-          "line": 100,
+          "line": 116,
           "kinds": [
             "negative"
           ],
@@ -289020,7 +289114,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalHighRangeRegistrationPolicyUsesExpertReview",
           "method": "ProvisionalHighRangeRegistrationPolicyUsesExpertReview",
-          "line": 87,
+          "line": 103,
           "kinds": [
             "positive"
           ],
@@ -289042,7 +289136,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalHighRangeRegistrationPolicyUsesExpertReview",
           "method": "ProvisionalHighRangeRegistrationPolicyUsesExpertReview",
-          "line": 87,
+          "line": 103,
           "kinds": [
             "positive"
           ],
@@ -289084,14 +289178,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -289260,9 +289354,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "method": "Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "line": 233,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0131",
+            "REQ-QUIC-RFC9250-0132",
+            "REQ-QUIC-RFC9250-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0131",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalRegistrationSpecificationCanBeOmitted",
           "method": "ProvisionalRegistrationSpecificationCanBeOmitted",
-          "line": 112,
+          "line": 155,
           "kinds": [
             "positive"
           ],
@@ -289284,7 +289402,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalRegistrationSpecificationCanBeOmitted",
           "method": "ProvisionalRegistrationSpecificationCanBeOmitted",
-          "line": 112,
+          "line": 155,
           "kinds": [
             "positive"
           ],
@@ -289306,7 +289424,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalRegistrationSpecificationOptionalityIsNotPermanentPolicy",
           "method": "ProvisionalRegistrationSpecificationOptionalityIsNotPermanentPolicy",
-          "line": 125,
+          "line": 168,
           "kinds": [
             "negative"
           ],
@@ -289328,7 +289446,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalRegistrationSpecificationOptionalityIsNotPermanentPolicy",
           "method": "ProvisionalRegistrationSpecificationOptionalityIsNotPermanentPolicy",
-          "line": 125,
+          "line": 168,
           "kinds": [
             "negative"
           ],
@@ -289370,14 +289488,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -289548,7 +289666,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DescriptionCanBeSummaryWhenSpecificationReferenceExists",
           "method": "DescriptionCanBeSummaryWhenSpecificationReferenceExists",
-          "line": 137,
+          "line": 180,
           "kinds": [
             "positive"
           ],
@@ -289570,7 +289688,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DescriptionCanBeSummaryWhenSpecificationReferenceExists",
           "method": "DescriptionCanBeSummaryWhenSpecificationReferenceExists",
-          "line": 137,
+          "line": 180,
           "kinds": [
             "positive"
           ],
@@ -289592,7 +289710,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DescriptionSummaryIsNotAllowedWithoutSpecificationReference",
           "method": "DescriptionSummaryIsNotAllowedWithoutSpecificationReference",
-          "line": 150,
+          "line": 193,
           "kinds": [
             "negative"
           ],
@@ -289614,7 +289732,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DescriptionSummaryIsNotAllowedWithoutSpecificationReference",
           "method": "DescriptionSummaryIsNotAllowedWithoutSpecificationReference",
-          "line": 150,
+          "line": 193,
           "kinds": [
             "negative"
           ],
@@ -289624,6 +289742,30 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0132"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0132",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "method": "Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "line": 233,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0131",
+            "REQ-QUIC-RFC9250-0132",
+            "REQ-QUIC-RFC9250-0133"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -289656,14 +289798,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 9,
-        "focused": 4,
+        "total": 10,
+        "focused": 5,
         "broad": 5,
         "by_kind": {
           "positive": 5,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -289832,9 +289974,33 @@
           "x_test_ref": "",
           "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "method": "Fuzz_ProvisionalRegistrationMetadataRulesRemainFieldScoped",
+          "line": 233,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0131",
+            "REQ-QUIC-RFC9250-0132",
+            "REQ-QUIC-RFC9250-0133"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0133",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalDateUpdatesCanSkipExpertReview",
           "method": "ProvisionalDateUpdatesCanSkipExpertReview",
-          "line": 162,
+          "line": 205,
           "kinds": [
             "positive"
           ],
@@ -289856,7 +290022,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalDateUpdatesCanSkipExpertReview",
           "method": "ProvisionalDateUpdatesCanSkipExpertReview",
-          "line": 162,
+          "line": 205,
           "kinds": [
             "positive"
           ],
@@ -289878,7 +290044,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalDateUpdateWaiverDoesNotApplyToPolicyChanges",
           "method": "ProvisionalDateUpdateWaiverDoesNotApplyToPolicyChanges",
-          "line": 175,
+          "line": 218,
           "kinds": [
             "negative"
           ],
@@ -289900,7 +290066,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.ProvisionalDateUpdateWaiverDoesNotApplyToPolicyChanges",
           "method": "ProvisionalDateUpdateWaiverDoesNotApplyToPolicyChanges",
-          "line": 175,
+          "line": 218,
           "kinds": [
             "negative"
           ],
@@ -289942,14 +290108,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -290083,7 +290249,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqNoErrorDoesNotUseInternalErrorValue",
           "method": "DoqNoErrorDoesNotUseInternalErrorValue",
-          "line": 197,
+          "line": 264,
           "kinds": [
             "negative"
           ],
@@ -290105,7 +290271,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqNoErrorDoesNotUseInternalErrorValue",
           "method": "DoqNoErrorDoesNotUseInternalErrorValue",
-          "line": 197,
+          "line": 264,
           "kinds": [
             "negative"
           ],
@@ -290127,7 +290293,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqNoErrorUsesRegisteredValue",
           "method": "DoqNoErrorUsesRegisteredValue",
-          "line": 188,
+          "line": 255,
           "kinds": [
             "positive"
           ],
@@ -290149,7 +290315,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqNoErrorUsesRegisteredValue",
           "method": "DoqNoErrorUsesRegisteredValue",
-          "line": 188,
+          "line": 255,
           "kinds": [
             "positive"
           ],
@@ -290159,6 +290325,30 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0134"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0134",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "line": 311,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0134",
+            "REQ-QUIC-RFC9250-0135",
+            "REQ-QUIC-RFC9250-0136"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -290191,14 +290381,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -290332,7 +290522,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqInternalErrorDoesNotUseNoErrorValue",
           "method": "DoqInternalErrorDoesNotUseNoErrorValue",
-          "line": 215,
+          "line": 282,
           "kinds": [
             "negative"
           ],
@@ -290354,7 +290544,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqInternalErrorDoesNotUseNoErrorValue",
           "method": "DoqInternalErrorDoesNotUseNoErrorValue",
-          "line": 215,
+          "line": 282,
           "kinds": [
             "negative"
           ],
@@ -290376,7 +290566,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqInternalErrorUsesRegisteredValue",
           "method": "DoqInternalErrorUsesRegisteredValue",
-          "line": 206,
+          "line": 273,
           "kinds": [
             "positive"
           ],
@@ -290398,7 +290588,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqInternalErrorUsesRegisteredValue",
           "method": "DoqInternalErrorUsesRegisteredValue",
-          "line": 206,
+          "line": 273,
           "kinds": [
             "positive"
           ],
@@ -290408,6 +290598,30 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0135"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0135",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "line": 311,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0134",
+            "REQ-QUIC-RFC9250-0135",
+            "REQ-QUIC-RFC9250-0136"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -290440,14 +290654,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -290581,7 +290795,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqProtocolErrorDoesNotUseRequestCancelledValue",
           "method": "DoqProtocolErrorDoesNotUseRequestCancelledValue",
-          "line": 233,
+          "line": 300,
           "kinds": [
             "negative"
           ],
@@ -290603,7 +290817,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqProtocolErrorDoesNotUseRequestCancelledValue",
           "method": "DoqProtocolErrorDoesNotUseRequestCancelledValue",
-          "line": 233,
+          "line": 300,
           "kinds": [
             "negative"
           ],
@@ -290625,7 +290839,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqProtocolErrorUsesRegisteredValue",
           "method": "DoqProtocolErrorUsesRegisteredValue",
-          "line": 224,
+          "line": 291,
           "kinds": [
             "positive"
           ],
@@ -290647,7 +290861,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqProtocolErrorUsesRegisteredValue",
           "method": "DoqProtocolErrorUsesRegisteredValue",
-          "line": 224,
+          "line": 291,
           "kinds": [
             "positive"
           ],
@@ -290656,6 +290870,30 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0136"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0136",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_CoreDoqErrorCodesRetainRegisteredValues",
+          "line": 311,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0134",
+            "REQ-QUIC-RFC9250-0135",
             "REQ-QUIC-RFC9250-0136"
           ],
           "requirement_tagged": true,
@@ -290689,14 +290927,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -290830,7 +291068,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqRequestCancelledDoesNotUseProtocolErrorValue",
           "method": "DoqRequestCancelledDoesNotUseProtocolErrorValue",
-          "line": 251,
+          "line": 338,
           "kinds": [
             "negative"
           ],
@@ -290852,7 +291090,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqRequestCancelledDoesNotUseProtocolErrorValue",
           "method": "DoqRequestCancelledDoesNotUseProtocolErrorValue",
-          "line": 251,
+          "line": 338,
           "kinds": [
             "negative"
           ],
@@ -290874,7 +291112,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqRequestCancelledUsesRegisteredValue",
           "method": "DoqRequestCancelledUsesRegisteredValue",
-          "line": 242,
+          "line": 329,
           "kinds": [
             "positive"
           ],
@@ -290896,7 +291134,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqRequestCancelledUsesRegisteredValue",
           "method": "DoqRequestCancelledUsesRegisteredValue",
-          "line": 242,
+          "line": 329,
           "kinds": [
             "positive"
           ],
@@ -290906,6 +291144,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0137"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0137",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "line": 404,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0137",
+            "REQ-QUIC-RFC9250-0138",
+            "REQ-QUIC-RFC9250-0139",
+            "REQ-QUIC-RFC9250-0140"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -290938,14 +291201,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -291079,7 +291342,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqExcessiveLoadDoesNotUseRequestCancelledValue",
           "method": "DoqExcessiveLoadDoesNotUseRequestCancelledValue",
-          "line": 269,
+          "line": 356,
           "kinds": [
             "negative"
           ],
@@ -291101,7 +291364,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqExcessiveLoadDoesNotUseRequestCancelledValue",
           "method": "DoqExcessiveLoadDoesNotUseRequestCancelledValue",
-          "line": 269,
+          "line": 356,
           "kinds": [
             "negative"
           ],
@@ -291123,7 +291386,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqExcessiveLoadUsesRegisteredValue",
           "method": "DoqExcessiveLoadUsesRegisteredValue",
-          "line": 260,
+          "line": 347,
           "kinds": [
             "positive"
           ],
@@ -291145,7 +291408,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqExcessiveLoadUsesRegisteredValue",
           "method": "DoqExcessiveLoadUsesRegisteredValue",
-          "line": 260,
+          "line": 347,
           "kinds": [
             "positive"
           ],
@@ -291155,6 +291418,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0138"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0138",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "line": 404,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0137",
+            "REQ-QUIC-RFC9250-0138",
+            "REQ-QUIC-RFC9250-0139",
+            "REQ-QUIC-RFC9250-0140"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -291187,14 +291475,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -291328,7 +291616,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqUnspecifiedErrorDoesNotUseExcessiveLoadValue",
           "method": "DoqUnspecifiedErrorDoesNotUseExcessiveLoadValue",
-          "line": 287,
+          "line": 374,
           "kinds": [
             "negative"
           ],
@@ -291350,7 +291638,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqUnspecifiedErrorDoesNotUseExcessiveLoadValue",
           "method": "DoqUnspecifiedErrorDoesNotUseExcessiveLoadValue",
-          "line": 287,
+          "line": 374,
           "kinds": [
             "negative"
           ],
@@ -291372,7 +291660,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqUnspecifiedErrorUsesRegisteredValue",
           "method": "DoqUnspecifiedErrorUsesRegisteredValue",
-          "line": 278,
+          "line": 365,
           "kinds": [
             "positive"
           ],
@@ -291394,7 +291682,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqUnspecifiedErrorUsesRegisteredValue",
           "method": "DoqUnspecifiedErrorUsesRegisteredValue",
-          "line": 278,
+          "line": 365,
           "kinds": [
             "positive"
           ],
@@ -291404,6 +291692,31 @@
           "strength": "focused",
           "associated_requirement_ids": [
             "REQ-QUIC-RFC9250-0139"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0139",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "line": 404,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0137",
+            "REQ-QUIC-RFC9250-0138",
+            "REQ-QUIC-RFC9250-0139",
+            "REQ-QUIC-RFC9250-0140"
           ],
           "requirement_tagged": true,
           "class_level_only": false
@@ -291436,14 +291749,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 4,
+        "total": 8,
+        "focused": 5,
         "broad": 3,
         "by_kind": {
           "positive": 5,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -291577,7 +291890,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqErrorReservedDoesNotUseAdjacentValue",
           "method": "DoqErrorReservedDoesNotUseAdjacentValue",
-          "line": 305,
+          "line": 392,
           "kinds": [
             "negative"
           ],
@@ -291599,7 +291912,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqErrorReservedDoesNotUseAdjacentValue",
           "method": "DoqErrorReservedDoesNotUseAdjacentValue",
-          "line": 305,
+          "line": 392,
           "kinds": [
             "negative"
           ],
@@ -291621,7 +291934,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqErrorReservedUsesRegisteredValue",
           "method": "DoqErrorReservedUsesRegisteredValue",
-          "line": 296,
+          "line": 383,
           "kinds": [
             "positive"
           ],
@@ -291643,7 +291956,7 @@
           "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
           "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.DoqErrorReservedUsesRegisteredValue",
           "method": "DoqErrorReservedUsesRegisteredValue",
-          "line": 296,
+          "line": 383,
           "kinds": [
             "positive"
           ],
@@ -291652,6 +291965,31 @@
           ],
           "strength": "focused",
           "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0140"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "REQ-QUIC-RFC9250-0140",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9250/REQ-QUIC-RFC9250-RegistryAndErrorCodes.cs",
+          "class": "REQ_QUIC_RFC9250_RegistryAndErrorCodes",
+          "member": "REQ_QUIC_RFC9250_RegistryAndErrorCodes.Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "method": "Fuzz_ContextualDoqErrorCodesRetainRegisteredValues",
+          "line": 404,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9250-0137",
+            "REQ-QUIC-RFC9250-0138",
+            "REQ-QUIC-RFC9250-0139",
             "REQ-QUIC-RFC9250-0140"
           ],
           "requirement_tagged": true,
