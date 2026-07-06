@@ -58,6 +58,49 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0007
         Assert.True(pair.ServerStream.CanWrite);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_ConnectionCloseClosesOpenStreamsAcrossCloseInitiatorsAndErrorCodes()
+    {
+        ConnectionCloseStreamClosureCase[] scenarios =
+        [
+            new(CloseFromClient: true, ApplicationErrorCode: 0),
+            new(CloseFromClient: true, ApplicationErrorCode: 1),
+            new(CloseFromClient: false, ApplicationErrorCode: 21),
+            new(CloseFromClient: false, ApplicationErrorCode: 0x3fff),
+        ];
+
+        foreach (ConnectionCloseStreamClosureCase scenario in scenarios)
+        {
+            await using LoopbackStreamPair pair = await LoopbackStreamPair.CreateAsync();
+
+            Task clientReadsClosedTask = pair.ClientStream.ReadsClosed;
+            Task clientWritesClosedTask = pair.ClientStream.WritesClosed;
+            Task serverReadsClosedTask = pair.ServerStream.ReadsClosed;
+            Task serverWritesClosedTask = pair.ServerStream.WritesClosed;
+
+            if (scenario.CloseFromClient)
+            {
+                await pair.ClientConnection.CloseAsync(scenario.ApplicationErrorCode);
+            }
+            else
+            {
+                await pair.ServerConnection.CloseAsync(scenario.ApplicationErrorCode);
+            }
+
+            await AssertConnectionAbortedAsync(clientReadsClosedTask, scenario.ApplicationErrorCode);
+            await AssertConnectionAbortedAsync(clientWritesClosedTask, scenario.ApplicationErrorCode);
+            await AssertConnectionAbortedAsync(serverReadsClosedTask, scenario.ApplicationErrorCode);
+            await AssertConnectionAbortedAsync(serverWritesClosedTask, scenario.ApplicationErrorCode);
+
+            Assert.False(pair.ClientStream.CanRead);
+            Assert.False(pair.ClientStream.CanWrite);
+            Assert.False(pair.ServerStream.CanRead);
+            Assert.False(pair.ServerStream.CanWrite);
+        }
+    }
+
     private static async Task AssertConnectionAbortedAsync(Task closedTask, long expectedApplicationErrorCode)
     {
         QuicException exception = await Assert.ThrowsAsync<QuicException>(
@@ -65,6 +108,10 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0007
         Assert.Equal(QuicError.ConnectionAborted, exception.QuicError);
         Assert.Equal(expectedApplicationErrorCode, exception.ApplicationErrorCode);
     }
+
+    private readonly record struct ConnectionCloseStreamClosureCase(
+        bool CloseFromClient,
+        long ApplicationErrorCode);
 
     private sealed class LoopbackStreamPair : IAsyncDisposable
     {
