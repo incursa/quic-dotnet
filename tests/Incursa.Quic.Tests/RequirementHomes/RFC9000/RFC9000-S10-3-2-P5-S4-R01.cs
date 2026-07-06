@@ -89,6 +89,56 @@ public sealed class REQ_QUIC_RFC9000_0650
         Assert.False(endpoint.TryRegisterStatelessResetToken(secondHandle, 1003UL, token));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_AcceptedStatelessResetPreventsConnectionIdReuseAcrossStaticKeyVariants()
+    {
+        (byte ConnectionIdStart, byte SecretKeyStart, int ConnectionIdLength, int SecretKeyLength)[] cases =
+        [
+            (0xB0, 0xC0, 1, 1),
+            (0xB1, 0xC1, 2, 4),
+            (0xB2, 0xC2, 4, 8),
+            (0xB3, 0xC3, 8, 16),
+            (0xB4, 0xC4, 16, 32),
+        ];
+
+        for (int index = 0; index < cases.Length; index++)
+        {
+            (byte connectionIdStart, byte secretKeyStart, int connectionIdLength, int secretKeyLength) = cases[index];
+            using QuicConnectionRuntimeEndpoint endpoint = new(2);
+            using QuicConnectionRuntime firstRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            using QuicConnectionRuntime secondRuntime = new(QuicConnectionStreamStateTestHelpers.CreateState());
+            QuicConnectionHandle firstHandle = endpoint.AllocateConnectionHandle();
+            QuicConnectionHandle secondHandle = endpoint.AllocateConnectionHandle();
+            QuicConnectionPathIdentity pathIdentity = new($"203.0.113.{150 + index}");
+            ulong resetConnectionId = (ulong)(1100 + index);
+            byte[] token = CreateToken(
+                connectionIdStart,
+                secretKeyStart,
+                connectionIdLength,
+                secretKeyLength);
+
+            Assert.True(endpoint.TryRegisterConnection(firstHandle, firstRuntime));
+            Assert.True(endpoint.TryUpdateEndpointBinding(firstHandle, pathIdentity));
+            Assert.True(endpoint.TryRegisterStatelessResetToken(firstHandle, resetConnectionId, token));
+
+            QuicConnectionTransitionResult transition = await AcceptStatelessResetAsync(
+                endpoint,
+                firstHandle,
+                pathIdentity,
+                token);
+
+            Assert.Equal(QuicConnectionPhase.Draining, transition.CurrentPhase);
+            Assert.Equal(QuicConnectionPhase.Draining, firstRuntime.Phase);
+            Assert.Equal(QuicConnectionCloseOrigin.StatelessReset, firstRuntime.TerminalState?.Origin);
+
+            Assert.True(endpoint.TryRegisterConnection(secondHandle, secondRuntime));
+            Assert.True(endpoint.TryUpdateEndpointBinding(secondHandle, pathIdentity));
+            Assert.False(endpoint.TryRegisterStatelessResetToken(secondHandle, resetConnectionId, token));
+        }
+    }
+
     private static async Task<QuicConnectionTransitionResult> AcceptStatelessResetAsync(
         QuicConnectionRuntimeEndpoint endpoint,
         QuicConnectionHandle handle,
