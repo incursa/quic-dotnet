@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:18:17.8520519-06:00",
+  "generated_at": "2026-07-06T04:21:56.0958848-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:18:17.8348723-06:00",
+    "generated_at": "2026-07-06T04:21:56.0925293-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -413771,14 +413771,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 10,
-        "focused": 10,
+        "total": 11,
+        "focused": 11,
         "broad": 0,
         "by_kind": {
           "positive": 4,
           "negative": 4,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -413786,6 +413786,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S5-1-1-P7-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P7-S1-R01.cs",
+          "class": "REQ_QUIC_RFC9000_S5P1P1_0019",
+          "member": "REQ_QUIC_RFC9000_S5P1P1_0019.Fuzz_MigratedPathPacketReplenishesPeerUsableConnectionIdPoolWhenBudgetsPermit",
+          "method": "Fuzz_MigratedPathPacketReplenishesPeerUsableConnectionIdPoolWhenBudgetsPermit",
+          "line": 133,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S5-1-1-P7-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S5-1-1-P7-S1-R01",
           "source": "requirement_attribute",

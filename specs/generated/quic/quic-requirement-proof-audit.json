@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:18:35.1541988-06:00",
+    "generated_at": "2026-07-06T04:22:09.7344944-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1302,
-      "full_executable_proof": 1375
+      "deferred_proof_not_executed": 1301,
+      "full_executable_proof": 1376
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 265,
-          "full_executable_proof": 1185
+          "deferred_proof_not_executed": 264,
+          "full_executable_proof": 1186
         }
       },
       {
@@ -79842,9 +79842,9 @@
       "rfc": "RFC9000",
       "title": "Keep enough peer-usable CIDs for migration",
       "statement": "An endpoint that initiates migration and requires non-zero-length connection IDs SHOULD ensure that the pool of connection IDs available to its peer allows the peer to use a new connection ID on migration.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79856,15 +79856,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S5-1-1-P7-S1-R01.cs"

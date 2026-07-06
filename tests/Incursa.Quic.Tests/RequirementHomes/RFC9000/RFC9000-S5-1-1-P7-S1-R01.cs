@@ -127,6 +127,61 @@ public sealed class REQ_QUIC_RFC9000_S5P1P1_0019
         Assert.Empty(QuicConnectionIdLifecycleTestSupport.GetNewConnectionIdFrames(runtime, result));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_MigratedPathPacketReplenishesPeerUsableConnectionIdPoolWhenBudgetsPermit()
+    {
+        foreach ((int index, ulong peerActiveConnectionIdLimit, ulong maximumLocallyIssuedConnectionIds, bool expectReplenishment) in new[]
+        {
+            (0, 3UL, 2UL, true),
+            (1, 4UL, 3UL, true),
+            (2, 2UL, 4UL, false),
+            (3, 3UL, 1UL, false),
+        })
+        {
+            using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath(
+                peerActiveConnectionIdLimit: peerActiveConnectionIdLimit,
+                maximumLocallyIssuedConnectionIds: maximumLocallyIssuedConnectionIds);
+            byte[] issuedConnectionId =
+            [
+                unchecked((byte)(0xD1 + index)),
+                unchecked((byte)(0xD2 + index)),
+                unchecked((byte)(0xD3 + index)),
+                unchecked((byte)(0xD4 + index)),
+            ];
+            QuicConnectionPathIdentity migratedPath = new($"203.0.113.{230 + index}", RemotePort: 443 + index);
+            AssertIssuedConnectionId(runtime, issuedConnectionId, observedAtTicks: 9 + index);
+
+            QuicConnectionTransitionResult result = QuicConnectionIdLifecycleTestSupport.TransitionOneRttPacket(
+                runtime,
+                migratedPath,
+                issuedConnectionId,
+                QuicFrameTestData.BuildPingFrame(),
+                routedLocallyIssuedConnectionId: 1UL,
+                observedAtTicks: 20 + index);
+
+            Assert.True(result.StateChanged);
+            Assert.True(runtime.CandidatePaths.ContainsKey(migratedPath));
+            if (expectReplenishment)
+            {
+                QuicConnectionRegisterConnectionIdRouteEffect replacementRoute =
+                    Assert.Single(result.Effects.OfType<QuicConnectionRegisterConnectionIdRouteEffect>());
+                QuicNewConnectionIdFrameProofSnapshot replacementFrame =
+                    Assert.Single(QuicConnectionIdLifecycleTestSupport.GetNewConnectionIdFrames(runtime, result));
+
+                Assert.Equal(2UL, replacementRoute.ConnectionId);
+                Assert.Equal(2UL, replacementFrame.SequenceNumber);
+                Assert.Equal(replacementRoute.ConnectionIdBytes.ToArray(), replacementFrame.ConnectionId);
+            }
+            else
+            {
+                Assert.DoesNotContain(result.Effects, effect => effect is QuicConnectionRegisterConnectionIdRouteEffect);
+                Assert.Empty(QuicConnectionIdLifecycleTestSupport.GetNewConnectionIdFrames(runtime, result));
+            }
+        }
+    }
+
     private static void AssertIssuedConnectionId(
         QuicConnectionRuntime runtime,
         ReadOnlySpan<byte> connectionIdBytes,
