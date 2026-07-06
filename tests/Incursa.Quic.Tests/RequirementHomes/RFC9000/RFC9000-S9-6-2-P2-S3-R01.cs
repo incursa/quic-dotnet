@@ -171,6 +171,96 @@ public sealed class RFC9000_S9_6_2_P2_S3_R01
             && sendDatagramEffect.PathIdentity == PreferredPath);
     }
 
+    [Theory]
+    [InlineData(false, 20, 30, 40, 50)]
+    [InlineData(true, 22, 35, 49, 63)]
+    [InlineData(false, 101, 144, 177, 211)]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Requirement("RFC9000-S9-6-2-P2-S3-R01")]
+    [Requirement("RFC9000-S9-6-2-P4-S2-R01")]
+    [Requirement("RFC9000-S21-5-6-P4-S1-R01")]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_PreferredAddressValidationGatesNonProbingPacketsAndIgnoresOldAddressPackets(
+        bool useIpv6PreferredAddress,
+        long probeTicks,
+        long validationTicks,
+        long closeTicks,
+        long oldAddressTicks)
+    {
+        QuicConnectionPathIdentity preferredPath = useIpv6PreferredAddress
+            ? PreferredIpv6Path
+            : PreferredPath;
+        QuicConnectionPathIdentity otherPreferredPath = useIpv6PreferredAddress
+            ? PreferredPath
+            : PreferredIpv6Path;
+        QuicConnectionRuntime runtime = CreateRuntime();
+
+        QuicConnectionTransitionResult probeResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: probeTicks,
+                preferredPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: probeTicks);
+
+        Assert.True(probeResult.StateChanged);
+        QuicS8P2PathValidationTestSupport.AssertSinglePathChallengeDatagram(
+            probeResult,
+            preferredPath,
+            runtime: runtime);
+        Assert.True(runtime.CandidatePaths.TryGetValue(preferredPath, out QuicConnectionCandidatePathRecord candidatePath));
+        Assert.False(candidatePath.Validation.IsValidated);
+        Assert.Equal(OriginalPath, runtime.ActivePath!.Value.Identity);
+
+        QuicConnectionTransitionResult validationResult = QuicPathMigrationRecoveryTestSupport.ValidatePath(
+            runtime,
+            preferredPath,
+            observedAtTicks: validationTicks);
+
+        Assert.True(validationResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(preferredPath, runtime.ActivePath!.Value.Identity);
+        Assert.True(runtime.ActivePath!.Value.IsValidated);
+        Assert.Equal(preferredPath.RemoteAddress, runtime.LastValidatedRemoteAddress);
+        Assert.False(runtime.CandidatePaths.ContainsKey(preferredPath));
+        Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(preferredPath));
+        Assert.Contains(validationResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promoteActivePathEffect
+            && promoteActivePathEffect.PathIdentity == preferredPath
+            && !promoteActivePathEffect.RestoreSavedState);
+
+        QuicConnectionTransitionResult closeResult = runtime.Transition(
+            new QuicConnectionConnectionCloseFrameReceivedEvent(
+                ObservedAtTicks: closeTicks,
+                QuicPathMigrationRecoveryTestSupport.CreateConnectionCloseMetadata()),
+            nowTicks: closeTicks);
+
+        Assert.True(closeResult.StateChanged);
+        Assert.Contains(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == preferredPath);
+        Assert.DoesNotContain(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == OriginalPath);
+        Assert.DoesNotContain(closeResult.Effects, effect =>
+            effect is QuicConnectionSendDatagramEffect sendDatagramEffect
+            && sendDatagramEffect.PathIdentity == otherPreferredPath);
+
+        QuicConnectionTransitionResult oldAddressResult = runtime.Transition(
+            new QuicConnectionPacketReceivedEvent(
+                ObservedAtTicks: oldAddressTicks,
+                OriginalPath,
+                new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+            nowTicks: oldAddressTicks);
+
+        Assert.False(oldAddressResult.StateChanged);
+        Assert.True(runtime.ActivePath.HasValue);
+        Assert.Equal(preferredPath, runtime.ActivePath!.Value.Identity);
+        Assert.False(runtime.CandidatePaths.ContainsKey(OriginalPath));
+        Assert.DoesNotContain(oldAddressResult.Effects, effect =>
+            effect is QuicConnectionPromoteActivePathEffect promoteActivePathEffect
+            && promoteActivePathEffect.PathIdentity == OriginalPath);
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         return QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithOneRttKeysAndCommittedPeerTransportParameters(
