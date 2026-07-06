@@ -98,6 +98,35 @@ public sealed class REQ_QUIC_RFC9002_SBP9_0001
         Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryDiscardPacketNumberSpace_RemovesOnlyDiscardedSpaceBytesInFlight()
+    {
+        foreach ((QuicPacketNumberSpace discardedSpace, ulong firstPayloadBytes, ulong secondPayloadBytes, ulong retainedPayloadBytes) in new[]
+        {
+            (QuicPacketNumberSpace.Initial, 1UL, 1_200UL, 1_350UL),
+            (QuicPacketNumberSpace.Initial, 9_000UL, 1_351UL, 1UL),
+            (QuicPacketNumberSpace.Handshake, 1_200UL, 1UL, 1_472UL),
+            (QuicPacketNumberSpace.Handshake, 1_351UL, 9_000UL, 1_200UL),
+        })
+        {
+            QuicConnectionSendRuntime runtime = new();
+            TrackSentPacket(runtime, discardedSpace, packetNumber: 1, firstPayloadBytes);
+            TrackSentPacket(runtime, discardedSpace, packetNumber: 2, secondPayloadBytes);
+            TrackSentPacket(runtime, QuicPacketNumberSpace.ApplicationData, packetNumber: 3, retainedPayloadBytes);
+
+            ulong expectedBeforeDiscard = firstPayloadBytes + secondPayloadBytes + retainedPayloadBytes;
+            Assert.Equal(expectedBeforeDiscard, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+
+            Assert.True(runtime.TryDiscardPacketNumberSpace(discardedSpace));
+
+            Assert.Equal(retainedPayloadBytes, runtime.FlowController.CongestionControlState.BytesInFlightBytes);
+            Assert.DoesNotContain(runtime.SentPackets.Keys, key => key.PacketNumberSpace == discardedSpace);
+            Assert.Contains(runtime.SentPackets.Keys, key => key.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData);
+        }
+    }
+
     private static void TrackSentPacket(
         QuicConnectionSendRuntime runtime,
         QuicPacketNumberSpace packetNumberSpace,

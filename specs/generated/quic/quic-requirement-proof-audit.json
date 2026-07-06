@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:47:24.1056587-06:00",
+    "generated_at": "2026-07-06T04:49:59.3338839-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1296,
-      "full_executable_proof": 1381
+      "deferred_proof_not_executed": 1295,
+      "full_executable_proof": 1382
     },
     "by_rfc": [
       {
@@ -37,8 +37,8 @@
         "rfc": "RFC9002",
         "total": 226,
         "by_proof_state": {
-          "deferred_proof_not_executed": 175,
-          "full_executable_proof": 51
+          "deferred_proof_not_executed": 174,
+          "full_executable_proof": 52
         }
       },
       {
@@ -46157,9 +46157,9 @@
       "rfc": "RFC9002",
       "title": "Stop counting discarded packets in bytes in flight",
       "statement": "When Initial or Handshake keys are discarded, packets in that space MUST no longer count toward bytes_in_flight.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -46171,15 +46171,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SBP9-0001.cs"
