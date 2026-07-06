@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:20:14.0283282-06:00",
+    "generated_at": "2026-07-06T06:24:32.3555619-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1263,
-      "full_executable_proof": 1414
+      "deferred_proof_not_executed": 1262,
+      "full_executable_proof": 1415
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 238,
-          "full_executable_proof": 1212
+          "deferred_proof_not_executed": 237,
+          "full_executable_proof": 1213
         }
       },
       {
@@ -5595,9 +5595,9 @@
       "rfc": "RFC9000",
       "title": "Do not fragment UDP datagrams at the IP layer",
       "statement": "UDP datagrams MUST not be fragmented at the IP layer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -5607,15 +5607,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs"
@@ -15207,13 +15206,14 @@
       ],
       "deferred_kinds": [],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 2,
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S14P1-0004.cs"
