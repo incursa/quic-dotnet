@@ -67,4 +67,30 @@ public sealed class REQ_QUIC_RFC9000_1039
             retryPacket,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("RFC9000-S17-2-5-2-P2-S2-R01")]
+    public void Fuzz_RetryMetadataParserRejectsOnlyZeroLengthRetryTokens()
+    {
+        foreach (int retryTokenLength in new[] { 0, 1, 2, 8, 32 })
+        {
+            byte[] retryToken = Enumerable.Range(0, retryTokenLength).Select(index => (byte)(0x80 + index)).ToArray();
+            byte[] retryPacket = QuicS17P2P5P2TestSupport.CreateRetryPacket(
+                QuicS17P2P5P2TestSupport.RetrySourceConnectionId,
+                retryToken);
+
+            bool parsed = QuicRetryIntegrity.TryParseRetryBootstrapMetadata(
+                QuicS17P2P5P2TestSupport.OriginalDestinationConnectionId,
+                retryPacket,
+                out QuicRetryBootstrapMetadata retryMetadata);
+
+            Assert.Equal(retryTokenLength > 0, parsed);
+            if (retryTokenLength > 0)
+            {
+                Assert.Equal(retryToken, retryMetadata.RetryToken);
+            }
+        }
+    }
 }
