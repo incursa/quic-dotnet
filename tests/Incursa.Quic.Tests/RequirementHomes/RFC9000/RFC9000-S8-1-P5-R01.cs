@@ -51,4 +51,38 @@ public sealed class REQ_QUIC_RFC9000_0375
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(-1, stackalloc byte[1], out _));
         Assert.False(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(1199, stackalloc byte[0], out _));
     }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(37)]
+    [InlineData(997)]
+    [InlineData(1199)]
+    [InlineData(1200)]
+    [Requirement("REQ-QUIC-RFC9000-S8P1-0006")]
+    [Requirement("RFC9000-S8-1-P5-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryFormatVersion1InitialDatagramPaddingPadsInitialPayloadsToTheMinimum(
+        int currentPayloadLength)
+    {
+        int expectedPaddingLength = Math.Max(
+            0,
+            QuicVersionNegotiation.Version1MinimumDatagramPayloadSize - currentPayloadLength);
+        Span<byte> padding = stackalloc byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+        Assert.True(QuicAddressValidation.TryGetVersion1InitialDatagramPaddingLength(
+            currentPayloadLength,
+            out int paddingLength));
+        Assert.Equal(expectedPaddingLength, paddingLength);
+        Assert.True(QuicAddressValidation.TryFormatVersion1InitialDatagramPadding(
+            currentPayloadLength,
+            padding,
+            out int bytesWritten));
+
+        Assert.Equal(expectedPaddingLength, bytesWritten);
+        Assert.Equal(
+            Math.Max(currentPayloadLength, QuicVersionNegotiation.Version1MinimumDatagramPayloadSize),
+            currentPayloadLength + bytesWritten);
+        Assert.All(padding[..bytesWritten].ToArray(), paddingByte => Assert.Equal(0x00, paddingByte));
+    }
 }
