@@ -53,22 +53,56 @@ public sealed class REQ_QUIC_RFC9000_0685
         Assert.False(applicationPacket.Span.Slice(1, originalDestinationConnectionId.Length).SequenceEqual(originalDestinationConnectionId));
     }
 
+    [Fact]
+    [Requirement("RFC9000-S12-2-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TrySendCoalescedHandshakeAndApplicationRecoveryProbeDatagramFuzz_UsesOneConnectionIdPerDatagram()
+    {
+        byte[][] rotatedConnectionIds =
+        [
+            [0x82, 0x5F, 0xC9, 0x1F],
+            [0x92, 0x5F, 0xC9, 0x1F, 0xA1, 0xB2, 0xC3, 0xD4],
+            [0xA2, 0x5F, 0xC9, 0x1F, 0xA1, 0xB2, 0xC3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8],
+        ];
+
+        for (int caseIndex = 0; caseIndex < rotatedConnectionIds.Length; caseIndex++)
+        {
+            byte[] rotatedDestinationConnectionId = rotatedConnectionIds[caseIndex];
+            byte[] statelessResetToken = QuicS12P3TestSupport.CreateSequentialBytes(
+                (byte)(0x93 + caseIndex),
+                QuicStatelessReset.StatelessResetTokenLength);
+            (ReadOnlyMemory<byte> datagram, byte[] originalDestinationConnectionId, _) =
+                BuildRotatedCoalescedProbeDatagram(rotatedDestinationConnectionId, statelessResetToken);
+
+            (ReadOnlyMemory<byte> handshakePacket, ReadOnlyMemory<byte> applicationPacket) =
+                SplitCoalescedHandshakeAndApplicationProbeDatagram(datagram);
+
+            Assert.True(QuicPacketParser.TryParseLongHeader(handshakePacket.Span, out QuicLongHeaderPacket handshakeHeader));
+            Assert.True(handshakeHeader.DestinationConnectionId.SequenceEqual(rotatedDestinationConnectionId));
+            Assert.False(handshakeHeader.DestinationConnectionId.SequenceEqual(originalDestinationConnectionId));
+            Assert.True(applicationPacket.Span.Length > 1 + rotatedDestinationConnectionId.Length);
+            Assert.True(applicationPacket.Span.Slice(1, rotatedDestinationConnectionId.Length).SequenceEqual(rotatedDestinationConnectionId));
+            Assert.False(applicationPacket.Span.Slice(1, originalDestinationConnectionId.Length).SequenceEqual(originalDestinationConnectionId));
+        }
+    }
+
     private static (ReadOnlyMemory<byte> Datagram, byte[] OriginalDestinationConnectionId, byte[] RotatedDestinationConnectionId)
-        BuildRotatedCoalescedProbeDatagram()
+        BuildRotatedCoalescedProbeDatagram(
+            byte[]? rotatedDestinationConnectionId = null,
+            byte[]? statelessResetToken = null)
     {
         using QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
         byte[] originalDestinationConnectionId = runtime.CurrentPeerDestinationConnectionId.ToArray();
-        byte[] rotatedDestinationConnectionId =
-        [
-            0x82, 0x5F, 0xC9, 0x1F, 0xA1, 0xB2, 0xC3, 0xD4,
-        ];
+        rotatedDestinationConnectionId ??= [0x82, 0x5F, 0xC9, 0x1F, 0xA1, 0xB2, 0xC3, 0xD4];
+        statelessResetToken ??= [0x93, 0xCA, 0x79, 0x2B, 0xDC, 0xF0, 0xA9, 0x2A, 0x83, 0xF3, 0x64, 0x93, 0xE1, 0x0D, 0xBD, 0x47];
 
         QuicConnectionTransitionResult newConnectionIdResult = ProcessNewConnectionIdFrame(
             runtime,
             sequenceNumber: 1,
             retirePriorTo: 1,
             connectionId: rotatedDestinationConnectionId,
-            statelessResetToken: [0x93, 0xCA, 0x79, 0x2B, 0xDC, 0xF0, 0xA9, 0x2A, 0x83, 0xF3, 0x64, 0x93, 0xE1, 0x0D, 0xBD, 0x47],
+            statelessResetToken: statelessResetToken,
             observedAtTicks: 10);
 
         Assert.True(newConnectionIdResult.StateChanged);
