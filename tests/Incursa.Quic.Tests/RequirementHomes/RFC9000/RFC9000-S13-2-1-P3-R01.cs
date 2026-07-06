@@ -85,4 +85,51 @@ public sealed class REQ_QUIC_RFC9000_S13P2P1_0006
             nowMicros: 1_700,
             maxAckDelayMicros: 1_000));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CanSendAckOnlyPacket_FuzzAllowsOnlyOneAckOnlyPacketPerAckElicitingTrigger()
+    {
+        foreach ((ulong PacketNumber, ulong ReceivedAtMicros, ulong SentAtMicros, ulong NextPacketNumber) testCase in new[]
+        {
+            (1UL, 1_000UL, 1_250UL, 2UL),
+            (7UL, 2_000UL, 2_500UL, 8UL),
+            (63UL, 4_000UL, 4_125UL, 64UL),
+        })
+        {
+            QuicSenderFlowController sender = new();
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                testCase.PacketNumber,
+                ackEliciting: true,
+                testCase.ReceivedAtMicros);
+
+            Assert.True(sender.CanSendAckOnlyPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: testCase.SentAtMicros,
+                maxAckDelayMicros: 1_000));
+
+            sender.MarkAckFrameSent(
+                QuicPacketNumberSpace.ApplicationData,
+                testCase.SentAtMicros,
+                ackOnlyPacket: true);
+
+            Assert.False(sender.CanSendAckOnlyPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: testCase.SentAtMicros + 1,
+                maxAckDelayMicros: 1_000));
+
+            sender.RecordIncomingPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                testCase.NextPacketNumber,
+                ackEliciting: true,
+                testCase.SentAtMicros + 2);
+
+            Assert.True(sender.CanSendAckOnlyPacket(
+                QuicPacketNumberSpace.ApplicationData,
+                nowMicros: testCase.SentAtMicros + 3,
+                maxAckDelayMicros: 1_000));
+        }
+    }
 }

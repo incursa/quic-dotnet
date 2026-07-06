@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T03:38:49.3409883-06:00",
+    "generated_at": "2026-07-06T03:41:02.5598828-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1316,
-      "full_executable_proof": 1361
+      "deferred_proof_not_executed": 1315,
+      "full_executable_proof": 1362
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 271,
-          "full_executable_proof": 1179
+          "deferred_proof_not_executed": 270,
+          "full_executable_proof": 1180
         }
       },
       {
@@ -73748,9 +73748,9 @@
       "rfc": "RFC9000",
       "title": "Do not send multiple ACK-only packets in response to one ack-eliciting packet",
       "statement": "Since packets containing only ACK frames are not congestion controlled, an endpoint MUST NOT send more than one such packet in response to receiving an ack-eliciting packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -73762,15 +73762,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S13-2-1-P3-R01.cs",
