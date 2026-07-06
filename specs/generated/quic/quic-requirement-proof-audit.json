@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:00:28.3173709-06:00",
+    "generated_at": "2026-07-06T12:03:19.4597713-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1094,
-      "full_executable_proof": 1583
+      "deferred_proof_not_executed": 1093,
+      "full_executable_proof": 1584
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 69,
-          "full_executable_proof": 1381
+          "deferred_proof_not_executed": 68,
+          "full_executable_proof": 1382
         }
       },
       {
@@ -73387,9 +73387,9 @@
       "rfc": "RFC9000",
       "title": "Buffer or discard on decryption failure",
       "statement": "If decryption fails, the receiver MAY either discard or buffer the packet for later processing.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "negative"
@@ -73399,24 +73399,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceivedFuzz_BuffersReplacementHandshakePacketsForLaterProcessing"
       ]
     },
     {

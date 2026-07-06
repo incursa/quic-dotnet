@@ -16191,7 +16191,8 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_BuffersReplacementHandshakePacketsThatCannotBeOpenedYet",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotDeferSameAttemptHandshakePacketOpenFailuresForRetry",
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceived_DoesNotBufferTheSameReplacementHandshakePacketTwice",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S12-2-P5-S2-R01.cs::TryHandleHandshakePacketReceivedFuzz_BuffersReplacementHandshakePacketsForLaterProcessing"
         ]
       }
     },

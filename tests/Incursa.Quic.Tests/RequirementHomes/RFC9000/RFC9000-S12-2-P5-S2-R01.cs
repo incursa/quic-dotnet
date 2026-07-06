@@ -187,6 +187,73 @@ public sealed class REQ_QUIC_RFC9000_S12P2_0010
         Assert.False(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, duplicateBufferResult));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryHandleHandshakePacketReceivedFuzz_BuffersReplacementHandshakePacketsForLaterProcessing()
+    {
+        (byte[] InitialDestinationConnectionId, byte[] InitialSourceConnectionId, byte[] FirstServerConnectionId, byte[] ReplacementServerConnectionId)[] cases =
+        [
+            ([0xC1, 0xC2], [0xD1, 0xD2], [0xE1, 0xE2], [0xF1, 0xF2]),
+            ([0xC3, 0xC4, 0xC5, 0xC6], [0xD3, 0xD4, 0xD5, 0xD6], [0xE3, 0xE4, 0xE5, 0xE6], [0xF3, 0xF4, 0xF5, 0xF6]),
+            ([0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC], [0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC], [0xE7, 0xE8, 0xE9, 0xEA], [0xF7, 0xF8, 0xF9, 0xFA]),
+        ];
+
+        byte scalarSeed = 0x51;
+        foreach ((byte[] initialDestinationConnectionId,
+                     byte[] initialSourceConnectionId,
+                     byte[] firstServerConnectionId,
+                     byte[] replacementServerConnectionId) in cases)
+        {
+            using QuicConnectionRuntime clientRuntime = CreateClientRuntime(
+                initialDestinationConnectionId,
+                initialSourceConnectionId);
+
+            QuicConnectionTransitionResult bootstrapResult = clientRuntime.Transition(
+                new QuicConnectionHandshakeBootstrapRequestedEvent(
+                    ObservedAtTicks: 0,
+                    LocalTransportParameters: QuicLoopbackEstablishmentTestSupport.CreateSupportedTransportParameters(
+                        initialSourceConnectionId)),
+                nowTicks: 0);
+            QuicConnectionSendDatagramEffect[] clientInitialDatagrams = bootstrapResult.Effects
+                .OfType<QuicConnectionSendDatagramEffect>()
+                .ToArray();
+            Assert.NotEmpty(clientInitialDatagrams);
+
+            ServerHandshakeFlight firstFlight = CreateServerHandshakeFlight(
+                initialDestinationConnectionId,
+                initialSourceConnectionId,
+                firstServerConnectionId,
+                CreateScalar(scalarSeed++),
+                clientInitialDatagrams);
+            ServerHandshakeFlight replacementFlight = CreateServerHandshakeFlight(
+                initialDestinationConnectionId,
+                initialSourceConnectionId,
+                replacementServerConnectionId,
+                CreateScalar(scalarSeed++),
+                clientInitialDatagrams);
+
+            QuicConnectionTransitionResult firstInitialResult = clientRuntime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 1,
+                    PathIdentity: BootstrapPath,
+                    Datagram: firstFlight.InitialPacket),
+                nowTicks: 1);
+            Assert.True(firstInitialResult.StateChanged, DescribeState(clientRuntime, firstInitialResult));
+
+            QuicConnectionTransitionResult bufferedHandshakeResult = clientRuntime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 2,
+                    PathIdentity: BootstrapPath,
+                    Datagram: replacementFlight.HandshakePacket),
+                nowTicks: 2);
+
+            Assert.Equal(1, GetBufferedEstablishmentHandshakePacketCount(clientRuntime));
+            Assert.False(clientRuntime.PeerHandshakeTranscriptCompleted, DescribeState(clientRuntime, bufferedHandshakeResult));
+            Assert.True(clientRuntime.Phase == QuicConnectionPhase.Establishing, DescribeState(clientRuntime, bufferedHandshakeResult));
+        }
+    }
+
     private static readonly QuicConnectionPathIdentity BootstrapPath =
         new("203.0.113.30", "198.51.100.30", 443, 12345);
 
