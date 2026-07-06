@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T07:32:10.8391299-06:00",
+    "generated_at": "2026-07-06T07:34:26.1022806-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1240,
-      "full_executable_proof": 1437
+      "deferred_proof_not_executed": 1239,
+      "full_executable_proof": 1438
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 215,
-          "full_executable_proof": 1235
+          "deferred_proof_not_executed": 214,
+          "full_executable_proof": 1236
         }
       },
       {
@@ -71535,9 +71535,9 @@
       "rfc": "RFC9000",
       "title": "Retain only closing-state essentials",
       "statement": "In the closing state, an endpoint MUST retain only enough information to generate a packet containing a CONNECTION_CLOSE frame and to identify packets as belonging to the connection.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -71549,15 +71549,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-1-P2-S1-R01.cs"

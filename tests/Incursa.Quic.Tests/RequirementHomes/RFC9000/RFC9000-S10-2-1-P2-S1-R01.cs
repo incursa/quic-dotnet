@@ -164,6 +164,60 @@ public sealed class RFC9000_S10_2_1_P2_S1_R01
         Assert.False(runtime.CanSendOrdinaryPackets);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-1-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_LocalCloseRequested_RetainsOnlyCloseReplyContextAcrossSampledActivePaths()
+    {
+        QuicConnectionPathIdentity[] paths =
+        [
+            new("203.0.113.80", RemotePort: 443),
+            new("203.0.113.81", RemotePort: 1443),
+            new("2001:db8::10", RemotePort: 2443),
+        ];
+
+        foreach (QuicConnectionPathIdentity path in paths)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 0).StateChanged);
+
+            QuicConnectionCloseMetadata closeMetadata = new(
+                TransportErrorCode: QuicTransportErrorCode.ProtocolViolation,
+                ApplicationErrorCode: null,
+                TriggeringFrameType: 0x1c,
+                ReasonPhrase: null);
+
+            QuicConnectionTransitionResult closeResult = runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    ObservedAtTicks: 1,
+                    closeMetadata),
+                nowTicks: 1);
+
+            QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+                Assert.Single(closeResult.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
+            Assert.Equal(path, send.PathIdentity);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.Equal(QuicConnectionSendingMode.CloseOnly, runtime.SendingMode);
+            Assert.False(runtime.CanSendOrdinaryPackets);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(path, runtime.ActivePath.Value.Identity);
+            Assert.False(runtime.ActivePath.Value.AmplificationState.IsAddressValidated);
+            Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.IdleTimeout));
+            Assert.NotNull(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.CloseLifetime));
+            Assert.Null(runtime.TimerState.GetDueTicks(QuicConnectionTimerKind.DrainLifetime));
+            Assert.Equal(closeMetadata, runtime.TerminalState?.Close);
+            Assert.Equal(QuicConnectionCloseOrigin.Local, runtime.TerminalState?.Origin);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);
