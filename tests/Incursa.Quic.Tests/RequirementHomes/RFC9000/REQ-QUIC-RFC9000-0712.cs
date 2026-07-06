@@ -103,4 +103,53 @@ public sealed class REQ_QUIC_RFC9000_0712
         Assert.Equal(0UL, frame.FirstAckRange);
         Assert.Empty(frame.AdditionalRanges);
     }
+
+    [Fact]
+    [Requirement("REQ-QUIC-RFC9000-S21P10-0001")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RecordIncomingPacket_CollapsesDuplicatePacketNumbersWithinEachPacketNumberSpace()
+    {
+        DuplicatePacketNumberCase[] scenarios =
+        [
+            new(QuicPacketNumberSpace.Initial, PacketNumber: 0, DuplicateCount: 2),
+            new(QuicPacketNumberSpace.Initial, PacketNumber: 9, DuplicateCount: 4),
+            new(QuicPacketNumberSpace.Handshake, PacketNumber: 17, DuplicateCount: 3),
+            new(QuicPacketNumberSpace.ApplicationData, PacketNumber: 63, DuplicateCount: 5),
+            new(QuicPacketNumberSpace.ApplicationData, PacketNumber: ulong.MaxValue, DuplicateCount: 2),
+        ];
+
+        foreach (DuplicatePacketNumberCase scenario in scenarios)
+        {
+            QuicSenderFlowController tracker = new();
+
+            for (int duplicateIndex = 0; duplicateIndex < scenario.DuplicateCount; duplicateIndex++)
+            {
+                tracker.RecordIncomingPacket(
+                    scenario.PacketNumberSpace,
+                    scenario.PacketNumber,
+                    ackEliciting: true,
+                    receivedAtMicros: 1_000UL + (ulong)duplicateIndex);
+            }
+
+            Assert.True(tracker.TryBuildAckFrame(
+                scenario.PacketNumberSpace,
+                nowMicros: 2_000,
+                out QuicAckFrame frame));
+
+            Assert.Equal(scenario.PacketNumber, frame.LargestAcknowledged);
+            Assert.Equal(0UL, frame.FirstAckRange);
+            Assert.Empty(frame.AdditionalRanges);
+
+            QuicPacketNumberSpace otherSpace = scenario.PacketNumberSpace == QuicPacketNumberSpace.ApplicationData
+                ? QuicPacketNumberSpace.Initial
+                : QuicPacketNumberSpace.ApplicationData;
+            Assert.False(tracker.TryBuildAckFrame(otherSpace, nowMicros: 2_000, out _));
+        }
+    }
+
+    private readonly record struct DuplicatePacketNumberCase(
+        QuicPacketNumberSpace PacketNumberSpace,
+        ulong PacketNumber,
+        int DuplicateCount);
 }

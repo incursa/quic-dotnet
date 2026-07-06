@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T06:39:41.3263959-06:00",
+    "generated_at": "2026-07-06T06:42:09.1285097-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1257,
-      "full_executable_proof": 1420
+      "deferred_proof_not_executed": 1256,
+      "full_executable_proof": 1421
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 232,
-          "full_executable_proof": 1218
+          "deferred_proof_not_executed": 231,
+          "full_executable_proof": 1219
         }
       },
       {
@@ -4612,7 +4612,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 4,
+      "focused_method_count": 5,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0712.cs",
@@ -30044,9 +30044,9 @@
       "rfc": "RFC9000",
       "title": "If duplicate packets are discarded by a receiver, an attacker will MUST race the duplicate pa...",
       "statement": "If duplicate packets are discarded by a receiver, an attacker will MUST race the duplicate packet against the original to be successful in this attack.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -30058,15 +30058,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-0712.cs"
