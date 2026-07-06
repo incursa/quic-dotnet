@@ -143,6 +143,64 @@ public sealed class RFC9000_S3_5_P3_S1_R01
         Assert.Equal(0UL, snapshot.UniqueBytesReceived);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S3-5-P3-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task Fuzz_AbortStreamReadsAsync_CountsNewStreamBytesAfterStopSending()
+    {
+        for (int iteration = 1; iteration <= 5; iteration++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            List<QuicConnectionEffect> outboundEffects = [];
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                QuicConnectionTransitionResult transition = runtime.Transition(connectionEvent);
+                outboundEffects.AddRange(transition.Effects);
+                return true;
+            });
+
+            QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            await runtime.AbortStreamReadsAsync((ulong)stream.Id, 0x90UL + (ulong)iteration);
+
+            Assert.True(TryGetStopSendingFrame(
+                runtime,
+                outboundEffects.OfType<QuicConnectionSendDatagramEffect>(),
+                out QuicStopSendingFrame stopSendingFrame));
+            Assert.Equal((ulong)stream.Id, stopSendingFrame.StreamId);
+
+            byte[] firstPayload = Enumerable.Range(0, iteration + 1)
+                .Select(value => (byte)(0x30 + value + iteration))
+                .ToArray();
+            ulong secondOffset = (ulong)iteration;
+            byte[] secondPayload =
+            [
+                firstPayload[iteration],
+                (byte)(0x50 + iteration),
+                (byte)(0x60 + iteration),
+            ];
+            ulong expectedUniqueBytes = Math.Max((ulong)firstPayload.Length, secondOffset + (ulong)secondPayload.Length);
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, (ulong)stream.Id, firstPayload, offset: 0),
+                out QuicStreamFrame firstFrame));
+            Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(firstFrame, out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.True(QuicStreamParser.TryParseStreamFrame(
+                QuicStreamTestData.BuildStreamFrame(0x0E, (ulong)stream.Id, secondPayload, offset: secondOffset),
+                out QuicStreamFrame secondFrame));
+            Assert.True(runtime.StreamRegistry.Bookkeeping.TryReceiveStreamFrame(secondFrame, out errorCode));
+            Assert.Equal(default, errorCode);
+
+            Assert.Equal(expectedUniqueBytes, runtime.StreamRegistry.Bookkeeping.ConnectionAccountedBytesReceived);
+            Assert.True(runtime.StreamRegistry.Bookkeeping.TryGetStreamSnapshot((ulong)stream.Id, out QuicConnectionStreamSnapshot snapshot));
+            Assert.Equal(expectedUniqueBytes, snapshot.AccountedBytesReceived);
+            Assert.Equal(expectedUniqueBytes, snapshot.UniqueBytesReceived);
+            Assert.Equal(QuicStreamReceiveState.Recv, snapshot.ReceiveState);
+        }
+    }
+
     private static bool TryGetStopSendingFrame(
         QuicConnectionRuntime runtime,
         IEnumerable<QuicConnectionSendDatagramEffect> sendEffects,

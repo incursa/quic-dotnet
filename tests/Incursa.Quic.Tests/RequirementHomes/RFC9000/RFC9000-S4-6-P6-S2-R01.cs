@@ -47,4 +47,46 @@ public sealed class REQ_QUIC_RFC9000_0204
 
         Assert.False(state.TryPeekPeerStreamCapacityRelease(3, out _));
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-6-P6-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryPeekPeerStreamCapacityRelease_AdvertisesCreditAsSoonAsPeerStreamsClose()
+    {
+        foreach ((bool Bidirectional, ulong PeerStreamId) testCase in new (bool, ulong)[]
+        {
+            (true, 1UL),
+            (false, 3UL),
+        })
+        {
+            for (int streamLimit = 1; streamLimit <= 4; streamLimit++)
+            {
+                QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                    incomingBidirectionalStreamLimit: testCase.Bidirectional ? (ulong)streamLimit : 8UL,
+                    incomingUnidirectionalStreamLimit: testCase.Bidirectional ? 8UL : (ulong)streamLimit);
+
+                Assert.True(QuicStreamParser.TryParseStreamFrame(
+                    QuicStreamTestData.BuildStreamFrame(0x0B, testCase.PeerStreamId, streamData: []),
+                    out QuicStreamFrame frame));
+                Assert.True(state.TryReceiveStreamFrame(frame, out QuicTransportErrorCode errorCode));
+                Assert.Equal(default, errorCode);
+                if (testCase.Bidirectional)
+                {
+                    Assert.True(state.TryAbortLocalStreamWrites(testCase.PeerStreamId, out ulong finalSize, out errorCode));
+                    Assert.Equal(default, errorCode);
+                    Assert.Equal(0UL, finalSize);
+                }
+
+                Assert.True(state.TryPeekPeerStreamCapacityRelease(testCase.PeerStreamId, out QuicMaxStreamsFrame releaseFrame));
+                Assert.Equal(testCase.Bidirectional, releaseFrame.IsBidirectional);
+                Assert.Equal((ulong)(streamLimit + 1), releaseFrame.MaximumStreams);
+
+                Assert.True(state.TryCommitPeerStreamCapacityRelease(testCase.PeerStreamId, releaseFrame));
+                Assert.Equal(
+                    (ulong)(streamLimit + 1),
+                    testCase.Bidirectional ? state.IncomingBidirectionalStreamLimit : state.IncomingUnidirectionalStreamLimit);
+            }
+        }
+    }
 }

@@ -60,4 +60,46 @@ public sealed class REQ_QUIC_RFC9000_0200
         Assert.False(state.TryOpenLocalStream(bidirectional: true, out QuicStreamId secondStreamId, out blockedFrame));
         Assert.Equal(default, secondStreamId);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S4-6-P3-R01")]
+    [Requirement("REQ-QUIC-RFC9000-0034")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryOpenLocalStream_OpensExactlyThePeerAdvertisedStreamLimit()
+    {
+        foreach (bool bidirectional in new[] { true, false })
+        {
+            for (int streamLimit = 1; streamLimit <= 5; streamLimit++)
+            {
+                QuicConnectionStreamState state = QuicConnectionStreamStateTestHelpers.CreateState(
+                    peerBidirectionalStreamLimit: bidirectional ? (ulong)streamLimit : 8UL,
+                    peerUnidirectionalStreamLimit: bidirectional ? 8UL : (ulong)streamLimit);
+
+                for (int streamIndex = 0; streamIndex < streamLimit; streamIndex++)
+                {
+                    Assert.True(state.TryOpenLocalStream(
+                        bidirectional,
+                        out QuicStreamId streamId,
+                        out QuicStreamsBlockedFrame blockedFrame));
+                    Assert.Equal(default, blockedFrame);
+                    Assert.Equal(LocalStreamId(bidirectional, streamIndex), streamId.Value);
+                }
+
+                Assert.False(state.TryOpenLocalStream(
+                    bidirectional,
+                    out QuicStreamId overLimitStreamId,
+                    out QuicStreamsBlockedFrame overLimitBlockedFrame));
+                Assert.Equal(default, overLimitStreamId);
+                Assert.Equal(bidirectional, overLimitBlockedFrame.IsBidirectional);
+                Assert.Equal((ulong)streamLimit, overLimitBlockedFrame.MaximumStreams);
+            }
+        }
+    }
+
+    private static ulong LocalStreamId(bool bidirectional, int streamIndex)
+    {
+        ulong unidirectionalBit = bidirectional ? 0UL : 2UL;
+        return ((ulong)streamIndex << 2) | unidirectionalBit;
+    }
 }

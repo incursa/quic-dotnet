@@ -158,4 +158,65 @@ public sealed class REQ_QUIC_RFC9000_0056
         Assert.Equal(4UL, blockedSnapshot.SendLimit);
         Assert.Equal(3UL, blockedSnapshot.UniqueBytesSent);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S2-2-P6-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReserveSendCapacity_StopsAtPeerAdvertisedFlowControlLimits()
+    {
+        for (int streamLimit = 1; streamLimit <= 8; streamLimit++)
+        {
+            QuicConnectionStreamState withinLimitState = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: 32,
+                localBidirectionalSendLimit: 32);
+            Assert.True(withinLimitState.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId withinLimitStreamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+            Assert.True(withinLimitState.TryApplyPeerTransportParameterSendLimits(
+                localBidirectionalLimit: (ulong)streamLimit,
+                peerBidirectionalLimit: 8,
+                localUnidirectionalLimit: 32));
+
+            Assert.True(withinLimitState.TryReserveSendCapacity(
+                withinLimitStreamId.Value,
+                offset: 0,
+                length: streamLimit,
+                fin: false,
+                out QuicDataBlockedFrame dataBlockedFrame,
+                out QuicStreamDataBlockedFrame streamDataBlockedFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(default, streamDataBlockedFrame);
+            Assert.Equal(default, errorCode);
+
+            QuicConnectionStreamState overLimitState = QuicConnectionStreamStateTestHelpers.CreateState(
+                connectionSendLimit: 32,
+                localBidirectionalSendLimit: 32);
+            Assert.True(overLimitState.TryOpenLocalStream(
+                bidirectional: true,
+                out QuicStreamId overLimitStreamId,
+                out blockedFrame));
+            Assert.Equal(default, blockedFrame);
+            Assert.True(overLimitState.TryApplyPeerTransportParameterSendLimits(
+                localBidirectionalLimit: (ulong)streamLimit,
+                peerBidirectionalLimit: 8,
+                localUnidirectionalLimit: 32));
+
+            Assert.False(overLimitState.TryReserveSendCapacity(
+                overLimitStreamId.Value,
+                offset: 0,
+                length: streamLimit + 1,
+                fin: false,
+                out dataBlockedFrame,
+                out streamDataBlockedFrame,
+                out errorCode));
+            Assert.Equal(default, dataBlockedFrame);
+            Assert.Equal(overLimitStreamId.Value, streamDataBlockedFrame.StreamId);
+            Assert.Equal((ulong)streamLimit, streamDataBlockedFrame.MaximumStreamData);
+            Assert.Equal(default, errorCode);
+        }
+    }
 }

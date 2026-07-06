@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T08:50:42.8132054-06:00",
+    "generated_at": "2026-07-06T08:58:24.8979938-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1194,
-      "full_executable_proof": 1483
+      "deferred_proof_not_executed": 1189,
+      "full_executable_proof": 1488
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 169,
-          "full_executable_proof": 1281
+          "deferred_proof_not_executed": 164,
+          "full_executable_proof": 1286
         }
       },
       {
@@ -1014,7 +1014,7 @@
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
       "missing_deferred_focused_kinds": [],
-      "focused_method_count": 7,
+      "focused_method_count": 8,
       "focused_file_count": 3,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S4P6-0010.cs",
@@ -77360,9 +77360,9 @@
       "rfc": "RFC9000",
       "title": "Keep retransmitted stream data stable at the same offset",
       "statement": "The data at a given offset MUST NOT change if it is sent multiple times.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77374,15 +77374,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S2-2-P4-S2-R01.cs"
@@ -77399,9 +77398,9 @@
       "rfc": "RFC9000",
       "title": "Respect peer flow control limits",
       "statement": "An endpoint MUST NOT send data on any stream without ensuring that it is within the flow control limits set by its peer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -77412,15 +77411,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S2-2-P6-R01.cs"
@@ -78827,9 +78825,9 @@
       "rfc": "RFC9000",
       "title": "Count data after STOP_SENDING toward flow control",
       "statement": "STREAM frames received after sending a STOP_SENDING frame MUST still be counted toward connection and stream flow control even if they are discarded upon receipt.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -78841,15 +78839,14 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S3-5-P3-S1-R01.cs"
@@ -79298,9 +79295,9 @@
       "rfc": "RFC9000",
       "title": "Respect peer-advertised stream limits",
       "statement": "Endpoints MUST NOT exceed the limit set by their peer.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79310,15 +79307,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P3-R01.cs"
@@ -79411,9 +79407,9 @@
       "rfc": "RFC9000",
       "title": "Do not wait for STREAMS_BLOCKED before advertising credit",
       "statement": "An endpoint MUST NOT wait to receive STREAMS_BLOCKED before advertising additional credit.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -79423,15 +79419,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S4-6-P6-S2-R01.cs"
