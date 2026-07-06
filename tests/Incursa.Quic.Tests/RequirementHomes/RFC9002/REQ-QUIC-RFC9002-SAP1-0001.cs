@@ -127,4 +127,41 @@ public sealed class REQ_QUIC_RFC9002_SAP1_0001
         Assert.False(sender.ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 3400, maxAckDelayMicros: 1000));
         Assert.True(sender.ShouldIncludeAckFrameWithOutgoingPacket(QuicPacketNumberSpace.ApplicationData, nowMicros: 4400, maxAckDelayMicros: 1000));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TrackSentAckElicitingPacketsUntilAcknowledgedOrLost()
+    {
+        foreach ((QuicPacketNumberSpace packetNumberSpace, ulong packetNumber, ulong payloadBytes, bool resolveByAck) in new[]
+        {
+            (QuicPacketNumberSpace.Initial, 1UL, 1_200UL, true),
+            (QuicPacketNumberSpace.Handshake, 2UL, 1_350UL, false),
+            (QuicPacketNumberSpace.ApplicationData, 3UL, 9_000UL, true),
+            (QuicPacketNumberSpace.ApplicationData, 4UL, 1UL, false),
+        })
+        {
+            QuicConnectionSendRuntime runtime = new();
+            QuicConnectionSentPacketKey key = new(packetNumberSpace, packetNumber);
+
+            runtime.TrackSentPacket(new QuicConnectionSentPacket(
+                packetNumberSpace,
+                packetNumber,
+                payloadBytes,
+                SentAtMicros: packetNumber * 1_000,
+                AckEliciting: true,
+                Retransmittable: false));
+
+            Assert.True(runtime.SentPackets.ContainsKey(key));
+            Assert.True(runtime.HasAckElicitingPacketsInFlight);
+
+            bool resolved = resolveByAck
+                ? runtime.TryAcknowledgePacket(packetNumberSpace, packetNumber, handshakeConfirmed: true)
+                : runtime.TryRegisterLoss(packetNumberSpace, packetNumber, handshakeConfirmed: true, scheduleRetransmission: false);
+
+            Assert.True(resolved);
+            Assert.False(runtime.SentPackets.ContainsKey(key));
+            Assert.False(runtime.HasAckElicitingPacketsInFlight);
+        }
+    }
 }

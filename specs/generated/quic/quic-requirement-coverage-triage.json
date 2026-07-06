@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:44:02.9662552-06:00",
+  "generated_at": "2026-07-06T04:47:14.9684845-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:44:02.9626258-06:00",
+    "generated_at": "2026-07-06T04:47:14.9652567-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -236256,14 +236256,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 7,
-        "focused": 7,
+        "total": 8,
+        "focused": 8,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -236271,6 +236271,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "REQ-QUIC-RFC9002-SAP1-0001",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9002/REQ-QUIC-RFC9002-SAP1-0001.cs",
+          "class": "REQ_QUIC_RFC9002_SAP1_0001",
+          "member": "REQ_QUIC_RFC9002_SAP1_0001.Fuzz_TrackSentAckElicitingPacketsUntilAcknowledgedOrLost",
+          "method": "Fuzz_TrackSentAckElicitingPacketsUntilAcknowledgedOrLost",
+          "line": 134,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "REQ-QUIC-RFC9002-SAP1-0001"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "REQ-QUIC-RFC9002-SAP1-0001",
           "source": "requirement_attribute",
