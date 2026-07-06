@@ -38,4 +38,53 @@ public sealed class REQ_QUIC_RFC9000_S7P4P1_0012
         Assert.True(decision.CanUse);
         Assert.Equal(QuicZeroRttTransportParameterUseFailure.None, decision.Failure);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-S7P4P1-0012")]
+    public void Fuzz_UpdatedTransportParameterValuesOnlyApplyToOneRttPackets()
+    {
+        QuicZeroRttTransportParameterValueSource[] updatedSources =
+        [
+            QuicZeroRttTransportParameterValueSource.UpdatedFromHandshake,
+            QuicZeroRttTransportParameterValueSource.UpdatedFromOneRttFrame,
+        ];
+
+        foreach (QuicTlsEncryptionLevel packetProtectionLevel in Enum.GetValues<QuicTlsEncryptionLevel>())
+        {
+            foreach (QuicZeroRttTransportParameterValueSource updatedSource in updatedSources)
+            {
+                QuicZeroRttTransportParameterUseDecision decision =
+                    QuicZeroRttTransportParameterPolicy.EvaluateClientTransportParameterUseForPacket(
+                        packetProtectionLevel,
+                        updatedSource);
+
+                if (packetProtectionLevel == QuicTlsEncryptionLevel.OneRtt)
+                {
+                    Assert.True(decision.CanUse);
+                    Assert.Equal(QuicZeroRttTransportParameterUseFailure.None, decision.Failure);
+                    Assert.Null(decision.ErrorCode);
+                    continue;
+                }
+
+                Assert.False(decision.CanUse);
+                Assert.Equal(QuicTransportErrorCode.ProtocolViolation, decision.ErrorCode);
+
+                QuicZeroRttTransportParameterUseFailure expectedFailure =
+                    packetProtectionLevel == QuicTlsEncryptionLevel.ZeroRtt
+                        ? updatedSource switch
+                        {
+                            QuicZeroRttTransportParameterValueSource.UpdatedFromHandshake
+                                => QuicZeroRttTransportParameterUseFailure.UpdatedHandshakeValueInZeroRtt,
+                            QuicZeroRttTransportParameterValueSource.UpdatedFromOneRttFrame
+                                => QuicZeroRttTransportParameterUseFailure.UpdatedOneRttFrameValueInZeroRtt,
+                            _ => throw new InvalidOperationException("Unexpected updated source."),
+                        }
+                        : QuicZeroRttTransportParameterUseFailure.UpdatedValueOutsideOneRtt;
+
+                Assert.Equal(expectedFailure, decision.Failure);
+            }
+        }
+    }
 }
