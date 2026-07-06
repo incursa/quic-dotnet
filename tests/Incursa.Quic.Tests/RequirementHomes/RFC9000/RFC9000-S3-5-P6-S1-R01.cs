@@ -123,6 +123,46 @@ public sealed class REQ_QUIC_RFC9000_0152
         Assert.Equal(QuicStreamReceiveState.ResetRead, snapshot.ReceiveState);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S3-5-P6-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryReceiveStopSendingFrame_AcceptsOnlyStreamsNotAlreadyResetByThePeer()
+    {
+        for (int streamIndex = 0; streamIndex < 5; streamIndex++)
+        {
+            QuicConnectionStreamState allowedState = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerBidirectionalStreamLimit: 8);
+            QuicStreamId allowedStreamId = OpenLocalBidirectionalStreamAtIndex(allowedState, streamIndex);
+
+            Assert.True(allowedState.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(allowedStreamId.Value, 0x40UL + (ulong)streamIndex),
+                out QuicResetStreamFrame allowedResetStreamFrame,
+                out QuicTransportErrorCode errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(allowedStreamId.Value, allowedResetStreamFrame.StreamId);
+            Assert.Equal(0x40UL + (ulong)streamIndex, allowedResetStreamFrame.ApplicationProtocolErrorCode);
+
+            QuicConnectionStreamState resetState = QuicConnectionStreamStateTestHelpers.CreateState(
+                peerBidirectionalStreamLimit: 8);
+            QuicStreamId resetStreamId = OpenLocalBidirectionalStreamAtIndex(resetState, streamIndex);
+
+            Assert.True(resetState.TryReceiveResetStreamFrame(
+                new QuicResetStreamFrame(resetStreamId.Value, 0x90UL + (ulong)streamIndex, 0),
+                out QuicMaxDataFrame maxDataFrame,
+                out errorCode));
+            Assert.Equal(default, errorCode);
+            Assert.Equal(default, maxDataFrame);
+
+            Assert.False(resetState.TryReceiveStopSendingFrame(
+                new QuicStopSendingFrame(resetStreamId.Value, 0x50UL + (ulong)streamIndex),
+                out QuicResetStreamFrame rejectedResetStreamFrame,
+                out errorCode));
+            Assert.Equal(default, rejectedResetStreamFrame);
+            Assert.Equal(QuicTransportErrorCode.StreamStateError, errorCode);
+        }
+    }
+
     private static QuicConnectionTransitionResult ReceiveProtectedApplicationPayload(
         QuicConnectionRuntime runtime,
         ReadOnlySpan<byte> payload)
@@ -140,5 +180,20 @@ public sealed class REQ_QUIC_RFC9000_0152
                 runtime.ActivePath.Value.Identity,
                 protectedPacket),
             nowTicks: 1);
+    }
+
+    private static QuicStreamId OpenLocalBidirectionalStreamAtIndex(QuicConnectionStreamState state, int streamIndex)
+    {
+        QuicStreamId streamId = default;
+        for (int index = 0; index <= streamIndex; index++)
+        {
+            Assert.True(state.TryOpenLocalStream(
+                bidirectional: true,
+                out streamId,
+                out QuicStreamsBlockedFrame blockedFrame));
+            Assert.Equal(default, blockedFrame);
+        }
+
+        return streamId;
     }
 }

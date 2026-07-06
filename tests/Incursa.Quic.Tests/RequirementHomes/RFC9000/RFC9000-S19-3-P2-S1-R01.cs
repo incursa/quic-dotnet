@@ -86,4 +86,41 @@ public sealed class RFC9000_S19_3_P2_S1_R01
             ackReceivedAtMicros: 3_000));
         Assert.Equal(bytesInFlightAfterFirstAck, sender.CongestionControlState.BytesInFlightBytes);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S19-3-P2-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryProcessAckFrame_KeepsEarlierAcknowledgmentsAcrossLaterAckFrames()
+    {
+        for (ulong lastPacketNumber = 3; lastPacketNumber <= 8; lastPacketNumber++)
+        {
+            QuicSenderFlowController sender = new();
+            QuicS19P3AckFrameTestSupport.RecordSentPackets(
+                sender,
+                QuicPacketNumberSpace.ApplicationData,
+                first: 1,
+                last: lastPacketNumber);
+
+            Assert.True(sender.TryProcessAckFrame(
+                QuicPacketNumberSpace.ApplicationData,
+                QuicS19P3AckFrameTestSupport.CreateSinglePacketAckFrame(1),
+                ackReceivedAtMicros: 3_000));
+
+            for (ulong packetNumber = 2; packetNumber <= lastPacketNumber; packetNumber++)
+            {
+                Assert.True(sender.TryProcessAckFrame(
+                    QuicPacketNumberSpace.ApplicationData,
+                    QuicS19P3AckFrameTestSupport.CreateSinglePacketAckFrame(packetNumber),
+                    ackReceivedAtMicros: 3_000 + (packetNumber * 1_000)));
+
+                Assert.False(sender.TryRegisterLoss(
+                    QuicPacketNumberSpace.ApplicationData,
+                    packetNumber: 1,
+                    sentAtMicros: 20_000 + packetNumber));
+            }
+
+            Assert.Equal(0UL, sender.CongestionControlState.BytesInFlightBytes);
+        }
+    }
 }
