@@ -25,4 +25,43 @@ public sealed class REQ_QUIC_RFC9000_S10P3P3_0001
     {
         Assert.False(QuicStatelessReset.CanSendStatelessReset(100, 100, hasLoopPreventionState: false));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void CanSendStatelessResetFuzz_RequiresShorterResetsUnlessLoopPreventionStateExists()
+    {
+        foreach (int triggeringPacketLength in new[]
+        {
+            QuicStatelessReset.MinimumDatagramLength,
+            QuicStatelessReset.MinimumDatagramLength + 1,
+            64,
+            100,
+            1_200,
+        })
+        {
+            int shorterDatagramLength = Math.Max(QuicStatelessReset.MinimumDatagramLength, triggeringPacketLength - 1);
+            int equalDatagramLength = triggeringPacketLength;
+            int tooLargeDatagramLength = triggeringPacketLength * 3;
+
+            Assert.Equal(
+                triggeringPacketLength > QuicStatelessReset.MinimumDatagramLength,
+                QuicStatelessReset.CanSendStatelessReset(
+                    triggeringPacketLength,
+                    shorterDatagramLength,
+                    hasLoopPreventionState: false));
+            Assert.False(QuicStatelessReset.CanSendStatelessReset(
+                triggeringPacketLength,
+                equalDatagramLength,
+                hasLoopPreventionState: false));
+            Assert.True(QuicStatelessReset.CanSendStatelessReset(
+                triggeringPacketLength,
+                equalDatagramLength,
+                hasLoopPreventionState: true));
+            Assert.False(QuicStatelessReset.CanSendStatelessReset(
+                triggeringPacketLength,
+                tooLargeDatagramLength,
+                hasLoopPreventionState: true));
+        }
+    }
 }

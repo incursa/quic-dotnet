@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T02:53:54.1161141-06:00",
+    "generated_at": "2026-07-06T02:56:34.1441248-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1346,
-      "full_executable_proof": 1331
+      "deferred_proof_not_executed": 1345,
+      "full_executable_proof": 1332
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 301,
-          "full_executable_proof": 1149
+          "deferred_proof_not_executed": 300,
+          "full_executable_proof": 1150
         }
       },
       {
@@ -11084,9 +11084,9 @@
       "rfc": "RFC9000",
       "title": "Keep Stateless Reset smaller than the triggering packet",
       "statement": "An endpoint MUST ensure that every Stateless Reset that it sends is smaller than the packet that triggered it, unless it maintains state sufficient to prevent looping.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -11095,15 +11095,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S10P3P3-0001.cs"
