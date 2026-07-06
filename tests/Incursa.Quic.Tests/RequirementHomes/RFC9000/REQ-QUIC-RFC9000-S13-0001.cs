@@ -145,6 +145,55 @@ public sealed class REQ_QUIC_RFC9000_S13_0001
             out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryBuildProtectedApplicationDataPacketFuzz_AcceptsNonEmptyFramePayloadsAndRejectsEmptyPayloads()
+    {
+        Assert.True(QuicS12P3TestSupport.TryCreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.OneRtt,
+            out QuicTlsPacketProtectionMaterial applicationMaterial));
+
+        foreach (byte[] applicationFramePayload in new[]
+        {
+            QuicFrameTestData.BuildPingFrame(),
+            QuicStreamTestData.BuildStreamFrame(0x0A, streamId: 0, [0x01]),
+            QuicStreamTestData.BuildStreamFrame(0x0E, streamId: 4, [0x02, 0x03], offset: 0),
+            QuicFrameTestData.BuildAckFrame(new QuicAckFrame
+            {
+                FrameType = 0x02,
+                LargestAcknowledged = 8,
+                AckDelay = 0,
+                FirstAckRange = 0,
+            }),
+        })
+        {
+            QuicHandshakeFlowCoordinator coordinator = CreateApplicationCoordinator();
+
+            Assert.True(coordinator.TryBuildProtectedApplicationDataPacket(
+                applicationFramePayload,
+                applicationMaterial,
+                out byte[] protectedApplicationPacket));
+            Assert.True(coordinator.TryOpenProtectedApplicationDataPacket(
+                protectedApplicationPacket,
+                applicationMaterial,
+                out byte[] openedApplicationPacket,
+                out int applicationPayloadOffset,
+                out int applicationPayloadLength,
+            out bool keyPhase));
+
+            Assert.False(keyPhase);
+            AssertPayloadPreservedWithOptionalPadding(
+                applicationFramePayload,
+                openedApplicationPacket.AsSpan(applicationPayloadOffset, applicationPayloadLength));
+        }
+
+        Assert.False(CreateApplicationCoordinator().TryBuildProtectedApplicationDataPacket(
+            ReadOnlySpan<byte>.Empty,
+            applicationMaterial,
+            out _));
+    }
+
     private static QuicHandshakeFlowCoordinator CreateInitialCoordinator()
     {
         return new QuicHandshakeFlowCoordinator(InitialDestinationConnectionId, InitialSourceConnectionId);
@@ -158,5 +207,21 @@ public sealed class REQ_QUIC_RFC9000_S13_0001
     private static QuicHandshakeFlowCoordinator CreateApplicationCoordinator()
     {
         return new QuicHandshakeFlowCoordinator(ApplicationDestinationConnectionId, ApplicationSourceConnectionId);
+    }
+
+    private static void AssertPayloadPreservedWithOptionalPadding(
+        ReadOnlySpan<byte> expectedPayload,
+        ReadOnlySpan<byte> actualPayload)
+    {
+        Assert.True(actualPayload.Length >= expectedPayload.Length);
+        Assert.True(expectedPayload.SequenceEqual(actualPayload[..expectedPayload.Length]));
+
+        ReadOnlySpan<byte> padding = actualPayload[expectedPayload.Length..];
+        while (!padding.IsEmpty)
+        {
+            Assert.True(QuicFrameCodec.TryParsePaddingFrame(padding, out int paddingBytesConsumed));
+            Assert.Equal(1, paddingBytesConsumed);
+            padding = padding[paddingBytesConsumed..];
+        }
     }
 }
