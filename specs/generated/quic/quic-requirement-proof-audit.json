@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:50:40.0929164-06:00",
+    "generated_at": "2026-07-06T10:54:40.4497532-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1119,
-      "full_executable_proof": 1558
+      "deferred_proof_not_executed": 1118,
+      "full_executable_proof": 1559
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 94,
-          "full_executable_proof": 1356
+          "deferred_proof_not_executed": 93,
+          "full_executable_proof": 1357
         }
       },
       {
@@ -76717,9 +76717,9 @@
       "rfc": "RFC9000",
       "title": "Update client spin value on new server packet",
       "statement": "When a client receives a 1-RTT packet that increases the highest packet number seen by the client from the server on a given network path, it MUST set the spin value for that path to the inverse of the spin bit in the received packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -76729,15 +76729,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17-4-P8-S1-R01.cs"

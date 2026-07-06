@@ -57,4 +57,39 @@ public sealed class REQ_QUIC_RFC9000_1098
             expectedSpinBit: false,
             observedAtTicks: 12);
     }
+
+    [Fact]
+    [Requirement("RFC9000-S17-4-P8-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ClientReceiveOneRttPacketFuzz_StoresInverseSpinBitOnlyForIncreasingPacketNumbers()
+    {
+        ((bool SpinBit, ulong PacketNumber, long ObservedAtTicks)[] Events, bool ExpectedLocalSpinBit)[] cases =
+        [
+            ([(true, 0, 10)], false),
+            ([(true, 0, 10), (false, 1, 11)], true),
+            ([(false, 2, 10), (true, 1, 11)], true),
+            ([(true, 0, 10), (false, 2, 11), (true, 2, 12), (true, 3, 13)], false),
+        ];
+
+        foreach (((bool spinBit, ulong packetNumber, long observedAtTicks)[] events, bool expectedLocalSpinBit) in cases)
+        {
+            using QuicConnectionRuntime runtime = QuicS17P4SpinBitTestSupport.CreateActiveOneRttRuntime(
+                QuicTlsRole.Client);
+
+            foreach ((bool spinBit, ulong packetNumber, long observedAtTicks) in events)
+            {
+                _ = QuicS17P4SpinBitTestSupport.ReceivePeerPingPacket(
+                    runtime,
+                    spinBit,
+                    packetNumber,
+                    observedAtTicks);
+            }
+
+            QuicS17P4SpinBitTestSupport.AssertLocalOneRttCloseSpinBit(
+                runtime,
+                expectedLocalSpinBit,
+                observedAtTicks: events[^1].observedAtTicks + 1);
+        }
+    }
 }

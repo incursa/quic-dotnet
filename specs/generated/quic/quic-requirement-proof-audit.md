@@ -6,15 +6,15 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 1119 |
-| full_executable_proof | 1558 |
+| deferred_proof_not_executed | 1118 |
+| full_executable_proof | 1559 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 1356 | 0 | 94 | 0 |
+| RFC9000 | 1450 | 1357 | 0 | 93 | 0 |
 | RFC9001 | 96 | 72 | 0 | 24 | 0 |
 | RFC9002 | 226 | 57 | 0 | 169 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |
@@ -48,7 +48,6 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `RFC9000-S12-2-P5-S2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S17-2-5-3-P4-S6-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S17-4-P7-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `RFC9000-S17-4-P8-S1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S19-13-P1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S19-2-P4-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S19-21-P1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +87,4 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `RFC9000-S5-2-2-P1-S2-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S5-2-2-P1-S3-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `RFC9000-S5-2-2-P2-S4-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `RFC9000-S5-2-2-P5-S1-R01` | RFC9000 | deferred_proof_not_executed |  | fuzz |
