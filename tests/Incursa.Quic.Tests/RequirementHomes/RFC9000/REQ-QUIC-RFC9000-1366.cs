@@ -75,6 +75,43 @@ public sealed class REQ_QUIC_RFC9000_1366
         Assert.Equal(encoded.Length, bytesConsumed);
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void LocalCloseRequestedDuringEstablishment_FuzzUsesTransportCloseApplicationErrorForm()
+    {
+        for (long observedAtTicks = 1; observedAtTicks <= 4; observedAtTicks++)
+        {
+            QuicConnectionRuntime runtime = CreateRuntime();
+            QuicConnectionPathIdentity path = new("203.0.113.71", RemotePort: 443);
+
+            runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 0,
+                    path,
+                    new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize]),
+                nowTicks: 0);
+
+            QuicConnectionTransitionResult result = runtime.Transition(
+                new QuicConnectionLocalCloseRequestedEvent(
+                    observedAtTicks,
+                    new QuicConnectionCloseMetadata(
+                        QuicTransportErrorCode.ApplicationError,
+                        ApplicationErrorCode: null,
+                        TriggeringFrameType: null,
+                        ReasonPhrase: null)),
+                nowTicks: observedAtTicks);
+
+            QuicConnectionSendDatagramEffect send = Assert.IsType<QuicConnectionSendDatagramEffect>(
+                Assert.Single(result.Effects, effect => effect is QuicConnectionSendDatagramEffect));
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(send.Datagram.Span, out QuicConnectionCloseFrame parsedFrame, out _));
+            Assert.False(parsedFrame.IsApplicationError);
+            Assert.Equal((byte)0x1C, parsedFrame.FrameType);
+            Assert.Equal((ulong)QuicTransportErrorCode.ApplicationError, parsedFrame.ErrorCode);
+        }
+    }
+
     private static QuicConnectionRuntime CreateRuntime()
     {
         FakeMonotonicClock clock = new(0);

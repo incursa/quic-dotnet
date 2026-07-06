@@ -48,4 +48,25 @@ public sealed class REQ_QUIC_RFC9000_1372
         Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
         Assert.Null(runtime.TerminalState);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ServerTreatsReceivedHandshakeDone_FuzzAsProtocolViolationAcrossPacketTimes()
+    {
+        for (long observedAtTicks = 20; observedAtTicks < 24; observedAtTicks++)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime();
+
+            QuicConnectionTransitionResult result = QuicPostHandshakeTicketTestSupport.ReceiveProtectedHandshakeDonePacket(
+                runtime,
+                observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            Assert.Equal(QuicConnectionPhase.Closing, runtime.Phase);
+            Assert.NotNull(runtime.TerminalState);
+            Assert.Equal(QuicTransportErrorCode.ProtocolViolation, runtime.TerminalState!.Value.Close.TransportErrorCode);
+            Assert.Equal(0x1EUL, runtime.TerminalState.Value.Close.TriggeringFrameType);
+        }
+    }
 }

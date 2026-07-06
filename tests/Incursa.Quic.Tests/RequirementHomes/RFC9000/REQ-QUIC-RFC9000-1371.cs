@@ -64,4 +64,25 @@ public sealed class REQ_QUIC_RFC9000_1371
             QuicS19P20HandshakeDoneTestSupport.IsHandshakeDonePlaintext);
         Assert.DoesNotContain(secondResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ServerSendsHandshakeDone_FuzzAcrossPeerCompletionTimes()
+    {
+        for (long observedAtTicks = 1; observedAtTicks <= 4; observedAtTicks++)
+        {
+            using QuicConnectionRuntime runtime = QuicS19P20HandshakeDoneTestSupport.CreateServerRuntimeReadyToEvaluateHandshakeDoneSend();
+
+            QuicConnectionTransitionResult result = QuicS19P20HandshakeDoneTestSupport.CompletePeerHandshakeTranscript(
+                runtime,
+                observedAtTicks);
+
+            Assert.True(result.StateChanged);
+            QuicConnectionSentPacket sentPacket = Assert.Single(
+                runtime.SendRuntime.SentPackets.Values,
+                QuicS19P20HandshakeDoneTestSupport.IsHandshakeDonePlaintext);
+            Assert.Equal(QuicFrameTestData.BuildHandshakeDoneFrame(), sentPacket.PlaintextPayload.ToArray());
+        }
+    }
 }

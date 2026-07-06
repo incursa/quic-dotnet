@@ -37,6 +37,27 @@ public sealed class REQ_QUIC_RFC9000_1373
         Assert.False(QuicFrameCodec.TryParseHandshakeDoneFrame([0x40, 0x1E], out _, out _));
     }
 
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatTypeOnlyFrames_FuzzUseOnlyTheFrameTypeByte()
+    {
+        (byte[] EncodedFrame, ulong ExpectedFrameType)[] frames =
+        [
+            (QuicFrameTestData.BuildPaddingFrame(), 0x00),
+            (QuicFrameTestData.BuildPingFrame(), 0x01),
+            (QuicFrameTestData.BuildHandshakeDoneFrame(), 0x1E),
+            (QuicFrameTestData.BuildConnectionCloseFrame(new QuicConnectionCloseFrame(QuicTransportErrorCode.NoError, 0, [])), 0x1C),
+        ];
+
+        foreach ((byte[] encodedFrame, ulong expectedFrameType) in frames)
+        {
+            Assert.True(QuicVariableLengthInteger.TryParse(encodedFrame, out ulong frameType, out int bytesConsumed));
+            Assert.Equal(expectedFrameType, frameType);
+            Assert.Equal(1, bytesConsumed);
+        }
+    }
+
     private static void AssertSingleByteEncoding(byte[] encodedFrame, ulong expectedFrameType)
     {
         Assert.True(QuicVariableLengthInteger.TryParse(encodedFrame, out ulong frameType, out int bytesConsumed));
