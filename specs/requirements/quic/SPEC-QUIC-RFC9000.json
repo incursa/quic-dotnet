@@ -4803,6 +4803,7 @@
         "x_test_refs": [
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::ValidatedMigrationPromotesTheMigratedPathBeforeTheNextReplyPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::PathValidationOnlyPacketsDoNotSwitchStreamPacketsToTheMigratedAddress",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::Fuzz_SendAddressOnlyChangesForTheHighestNonProbingMigratedPacket",
           "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
         ],
         "upstream_refs": [
@@ -44303,7 +44304,8 @@
           "https://www.rfc-editor.org/rfc/rfc9000.html#section-9.3"
         ],
         "x_test_refs": [
-          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote"
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote",
+          "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::Fuzz_RecentlySeenPeerAddressesCanBypassAnotherValidationChallenge"
         ]
       }
     },

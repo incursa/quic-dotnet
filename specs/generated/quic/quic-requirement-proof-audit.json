@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T12:37:00.4563488-06:00",
+    "generated_at": "2026-07-06T12:44:36.8521839-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1068,
-      "full_executable_proof": 1609
+      "deferred_proof_not_executed": 1066,
+      "full_executable_proof": 1611
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 43,
-          "full_executable_proof": 1407
+          "deferred_proof_not_executed": 41,
+          "full_executable_proof": 1409
         }
       },
       {
@@ -83602,9 +83602,9 @@
       "rfc": "RFC9000",
       "title": "Change the send address only in response to the highest-numbered non-probing packet",
       "statement": "An endpoint MUST only change the address to which it sends packets in response to the highest-numbered non-probing packet.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -83615,24 +83615,24 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 2,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs"
       ],
-      "spec_test_ref_count": 3,
+      "spec_test_ref_count": 4,
       "spec_test_refs": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::ValidatedMigrationPromotesTheMigratedPathBeforeTheNextReplyPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::PathValidationOnlyPacketsDoNotSwitchStreamPacketsToTheMigratedAddress",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P3-S1-R01.cs::Fuzz_SendAddressOnlyChangesForTheHighestNonProbingMigratedPacket",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S9P3-0007.cs::ASecondMigratedAddressStartsValidationWhileTheFirstChallengeIsPending"
       ]
     },
@@ -83675,29 +83675,31 @@
       "rfc": "RFC9000",
       "title": "Skip validation of a peer address if that address has been seen recently",
       "statement": "An endpoint MAY skip validation of a peer address if that address has been seen recently.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [],
       "deferred_kinds": [
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs"
       ],
-      "spec_test_ref_count": 1,
-      "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote"
+      "spec_test_ref_count": 2,
+      "spec_test_refs": [
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::RecentlyValidatedPeerAddressCanBypassAnotherValidationChallengeAndPromote",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S9-3-P4-S2-R01.cs::Fuzz_RecentlySeenPeerAddressesCanBypassAnotherValidationChallenge"
+      ]
     },
     {
       "requirement_id": "RFC9000-S9-3-P7-S1-R01",

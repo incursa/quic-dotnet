@@ -62,4 +62,74 @@ public sealed class REQ_QUIC_RFC9000_S9P3_0004
             && promote.PathIdentity == firstValidatedPath);
         Assert.DoesNotContain(reuseResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_RecentlySeenPeerAddressesCanBypassAnotherValidationChallenge()
+    {
+        for (int iteration = 0; iteration < 4; iteration++)
+        {
+            QuicConnectionPathIdentity activePath = new(
+                $"203.0.113.{120 + iteration}",
+                $"198.51.100.{120 + iteration}",
+                RemotePort: 443,
+                LocalPort: 61300 + iteration);
+            QuicConnectionPathIdentity firstValidatedPath = activePath with
+            {
+                RemoteAddress = $"203.0.113.{130 + iteration}",
+                RemotePort = 7443 + iteration,
+            };
+            QuicConnectionPathIdentity secondValidatedPath = activePath with
+            {
+                RemoteAddress = $"203.0.113.{140 + iteration}",
+                RemotePort = 8443 + iteration,
+            };
+            QuicConnectionRuntime runtime = QuicPathMigrationRecoveryTestSupport.CreateRuntimeWithActivePath(activePath);
+            byte[] datagram = new byte[QuicVersionNegotiation.Version1MinimumDatagramPayloadSize];
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 20 + iteration,
+                    firstValidatedPath,
+                    datagram),
+                nowTicks: 20 + iteration).StateChanged);
+
+            Assert.True(QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                firstValidatedPath,
+                observedAtTicks: 30 + iteration).StateChanged);
+
+            Assert.True(runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 40 + iteration,
+                    secondValidatedPath,
+                    datagram),
+                nowTicks: 40 + iteration).StateChanged);
+
+            Assert.True(QuicPathMigrationRecoveryTestSupport.ValidatePath(
+                runtime,
+                secondValidatedPath,
+                observedAtTicks: 50 + iteration).StateChanged);
+            Assert.True(runtime.RecentlyValidatedPaths.ContainsKey(firstValidatedPath));
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(secondValidatedPath, runtime.ActivePath!.Value.Identity);
+
+            QuicConnectionTransitionResult reuseResult = runtime.Transition(
+                new QuicConnectionPacketReceivedEvent(
+                    ObservedAtTicks: 60 + iteration,
+                    firstValidatedPath,
+                    datagram),
+                nowTicks: 60 + iteration);
+
+            Assert.True(reuseResult.StateChanged);
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.Equal(firstValidatedPath, runtime.ActivePath!.Value.Identity);
+            Assert.False(runtime.CandidatePaths.ContainsKey(firstValidatedPath));
+            Assert.Contains(reuseResult.Effects, effect =>
+                effect is QuicConnectionPromoteActivePathEffect promote
+                && promote.PathIdentity == firstValidatedPath);
+            Assert.DoesNotContain(reuseResult.Effects, effect => effect is QuicConnectionSendDatagramEffect);
+        }
+    }
 }
