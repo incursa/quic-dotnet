@@ -6,15 +6,15 @@ This report is stricter than trace coverage. It only counts focused executable m
 
 | Proof state | Count |
 | --- | ---: |
-| deferred_proof_not_executed | 1567 |
-| full_executable_proof | 1110 |
+| deferred_proof_not_executed | 1559 |
+| full_executable_proof | 1118 |
 
 ## RFC Breakdown
 
 | RFC | Total | full_executable_proof | missing_required_focused_proof | deferred_proof_not_executed | no_focused_executable_proof |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | RFC8999 | 8 | 8 | 0 | 0 | 0 |
-| RFC9000 | 1450 | 936 | 0 | 514 | 0 |
+| RFC9000 | 1450 | 944 | 0 | 506 | 0 |
 | RFC9001 | 96 | 68 | 0 | 28 | 0 |
 | RFC9002 | 226 | 41 | 0 | 185 | 0 |
 | RFC9114 | 8 | 0 | 0 | 8 | 0 |
@@ -71,15 +71,7 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9000-0659` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0665` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0682` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0749` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0753` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0789` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0795` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0797` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0799` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0804` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0816` | RFC9000 | deferred_proof_not_executed |  | fuzz |
-| `REQ-QUIC-RFC9000-0818` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0831` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0851` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0856` | RFC9000 | deferred_proof_not_executed |  | fuzz |
@@ -88,3 +80,11 @@ This report is stricter than trace coverage. It only counts focused executable m
 | `REQ-QUIC-RFC9000-0896` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0897` | RFC9000 | deferred_proof_not_executed |  | fuzz |
 | `REQ-QUIC-RFC9000-0898` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0899` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0900` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0902` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0905` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0906` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0913` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0914` | RFC9000 | deferred_proof_not_executed |  | fuzz |
+| `REQ-QUIC-RFC9000-0915` | RFC9000 | deferred_proof_not_executed |  | fuzz |
