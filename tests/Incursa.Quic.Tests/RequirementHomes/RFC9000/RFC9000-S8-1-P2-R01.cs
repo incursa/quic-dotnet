@@ -41,4 +41,29 @@ public sealed class REQ_QUIC_RFC9000_S8P1_0001
 
         Assert.True(QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint: true));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_CanConsiderPeerAddressValidated_RequiresEndpointChosenConnectionIdWithAtLeastSixtyFourBitsOfEntropy()
+    {
+        foreach ((bool chosenByEndpoint, int connectionIdLength) in new[]
+        {
+            (true, 0),
+            (true, 1),
+            (true, 7),
+            (true, 8),
+            (true, 9),
+            (true, QuicConnectionIdKey.MaximumLength),
+            (false, 0),
+            (false, 8),
+            (false, QuicConnectionIdKey.MaximumLength),
+        })
+        {
+            byte[] connectionId = Enumerable.Range(0, connectionIdLength).Select(index => (byte)(0xA0 + index)).ToArray();
+            bool expected = chosenByEndpoint && connectionIdLength >= 8;
+
+            Assert.Equal(expected, QuicAddressValidation.CanConsiderPeerAddressValidated(connectionId, chosenByEndpoint));
+        }
+    }
 }
