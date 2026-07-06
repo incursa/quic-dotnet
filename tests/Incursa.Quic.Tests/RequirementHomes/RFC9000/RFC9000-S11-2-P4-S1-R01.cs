@@ -92,4 +92,61 @@ public sealed class REQ_QUIC_RFC9000_0674
         await writeStream.DisposeAsync();
         await readStream.DisposeAsync();
     }
+
+    [Fact]
+    [Requirement("RFC9000-S11-2-P4-S1-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public async Task AbortDirectionsFuzz_RemainStreamScopedAcrossDirectionsAndApplicationCodes()
+    {
+        (QuicAbortDirection Direction, long ErrorCode, QuicStreamNotificationKind ExpectedNotification)[] cases =
+        [
+            (QuicAbortDirection.Write, 0x00, QuicStreamNotificationKind.WriteAborted),
+            (QuicAbortDirection.Read, 0x01, QuicStreamNotificationKind.ReadAborted),
+            (QuicAbortDirection.Write, 0x11, QuicStreamNotificationKind.WriteAborted),
+            (QuicAbortDirection.Read, 0x22, QuicStreamNotificationKind.ReadAborted),
+            (QuicAbortDirection.Write, 0x3fff, QuicStreamNotificationKind.WriteAborted),
+            (QuicAbortDirection.Read, 0x4000, QuicStreamNotificationKind.ReadAborted),
+        ];
+
+        foreach ((QuicAbortDirection direction, long errorCode, QuicStreamNotificationKind expectedNotification) in cases)
+        {
+            using QuicConnectionRuntime runtime = QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime();
+            List<QuicStreamNotification> notifications = [];
+
+            runtime.SetLocalApiEventDispatcher(connectionEvent =>
+            {
+                _ = runtime.Transition(connectionEvent);
+                return true;
+            });
+
+            QuicStream stream = await runtime.OpenOutboundStreamAsync(QuicStreamType.Bidirectional);
+            runtime.RegisterStreamObserver((ulong)stream.Id, notifications.Add);
+
+            stream.Abort(direction, errorCode);
+
+            QuicStreamNotification notification = Assert.Single(notifications);
+            Assert.Equal(expectedNotification, notification.Kind);
+            QuicException exception = Assert.IsType<QuicException>(notification.Exception);
+            Assert.Equal(QuicError.OperationAborted, exception.QuicError);
+            Assert.Null(exception.ApplicationErrorCode);
+            Assert.Equal(QuicConnectionPhase.Active, runtime.Phase);
+            Assert.DoesNotContain(
+                notifications,
+                observed => observed.Kind == QuicStreamNotificationKind.ConnectionTerminated);
+
+            if (direction == QuicAbortDirection.Write)
+            {
+                Assert.True(stream.CanRead);
+                Assert.False(stream.CanWrite);
+            }
+            else
+            {
+                Assert.False(stream.CanRead);
+                Assert.True(stream.CanWrite);
+            }
+
+            await stream.DisposeAsync();
+        }
+    }
 }

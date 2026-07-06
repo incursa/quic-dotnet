@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T10:36:12.9528704-06:00",
+    "generated_at": "2026-07-06T10:39:50.5072792-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1124,
-      "full_executable_proof": 1553
+      "deferred_proof_not_executed": 1123,
+      "full_executable_proof": 1554
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 99,
-          "full_executable_proof": 1351
+          "deferred_proof_not_executed": 98,
+          "full_executable_proof": 1352
         }
       },
       {
@@ -73072,9 +73072,9 @@
       "rfc": "RFC9000",
       "title": "Define prematurely canceled stream rules",
       "statement": "Application protocols SHOULD define rules for handling streams that are prematurely canceled by either endpoint.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -73084,15 +73084,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S11-2-P4-S1-R01.cs"
