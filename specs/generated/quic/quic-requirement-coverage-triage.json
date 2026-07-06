@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T08:18:19.8274437-06:00",
+  "generated_at": "2026-07-06T08:22:08.4227454-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T08:18:19.8238696-06:00",
+    "generated_at": "2026-07-06T08:22:08.4190415-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -394662,14 +394662,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -394677,6 +394677,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S14-2-1-P4-S3-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S3-R01.cs",
+          "class": "RFC9000_S14_2_1_P4_S3_R01",
+          "member": "RFC9000_S14_2_1_P4_S3_R01.Fuzz_TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresMatchingPathAddressAndPort",
+          "method": "Fuzz_TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresMatchingPathAddressAndPort",
+          "line": 53,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S14-2-1-P4-S3-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S14-2-1-P4-S3-R01",
           "source": "requirement_attribute",
@@ -394794,14 +394816,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 4,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -394809,6 +394831,28 @@
       },
       "gap_blockers": [],
       "evidence": [
+        {
+          "requirement_id": "RFC9000-S14-2-1-P4-S4-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S4-R01.cs",
+          "class": "REQ_QUIC_RFC9000_1426",
+          "member": "REQ_QUIC_RFC9000_1426.Fuzz_TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresMalformedOrMismatchedQuotedPackets",
+          "method": "Fuzz_TryApplyProvisionalIcmpMaximumDatagramSizeReduction_IgnoresMalformedOrMismatchedQuotedPackets",
+          "line": 79,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S14-2-1-P4-S4-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": true
+        },
         {
           "requirement_id": "RFC9000-S14-2-1-P4-S4-R01",
           "source": "requirement_attribute",

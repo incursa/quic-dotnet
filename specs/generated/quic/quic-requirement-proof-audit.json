@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T08:18:34.9958886-06:00",
+    "generated_at": "2026-07-06T08:22:27.6351490-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1221,
-      "full_executable_proof": 1456
+      "deferred_proof_not_executed": 1219,
+      "full_executable_proof": 1458
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 196,
-          "full_executable_proof": 1254
+          "deferred_proof_not_executed": 194,
+          "full_executable_proof": 1256
         }
       },
       {
@@ -75103,9 +75103,9 @@
       "rfc": "RFC9000",
       "title": "Validate ICMP messages with addresses, ports, and connection IDs",
       "statement": "ICMP message validation MUST include matching IP addresses and UDP ports and, when possible, connection IDs to an active QUIC session.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -75114,15 +75114,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S3-R01.cs"
@@ -75138,9 +75137,9 @@
       "rfc": "RFC9000",
       "title": "Ignore ICMP messages that fail validation",
       "statement": "The endpoint SHOULD ignore all ICMP messages that fail validation.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -75150,15 +75149,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S14-2-1-P4-S4-R01.cs"

@@ -46,4 +46,54 @@ public sealed class RFC9000_S14_2_1_P4_S3_R01
             1_300));
         Assert.Equal(1_400UL, runtime.ActivePath!.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_TryApplyProvisionalIcmpMaximumDatagramSizeReduction_RequiresMatchingPathAddressAndPort()
+    {
+        foreach (PathMutation mutation in Enum.GetValues<PathMutation>())
+        {
+            QuicConnectionRuntime runtime = QuicS13ApplicationSendDelayTestSupport.CreateFinishedClientRuntimeWithValidatedActivePath();
+            Assert.True(runtime.ActivePath.HasValue);
+            Assert.True(runtime.TrySetActivePathMaximumDatagramSize(1_400));
+
+            byte[] quotedPacket = QuicS14P2P1TestSupport.BuildQuotedInitialPacket(runtime);
+            QuicConnectionPathIdentity pathIdentity = MutatePath(runtime.ActivePath!.Value.Identity, mutation);
+            bool expected = mutation == PathMutation.None;
+
+            Assert.Equal(expected, runtime.TryApplyProvisionalIcmpMaximumDatagramSizeReduction(
+                pathIdentity,
+                quotedPacket,
+                1_300));
+            Assert.Equal(
+                expected ? 1_300UL : 1_400UL,
+                runtime.ActivePath.Value.MaximumDatagramSizeState.MaximumDatagramSizeBytes);
+            Assert.Equal(expected, runtime.ActivePath.Value.MaximumDatagramSizeState.IsProvisional);
+        }
+    }
+
+    private static QuicConnectionPathIdentity MutatePath(
+        QuicConnectionPathIdentity pathIdentity,
+        PathMutation mutation)
+    {
+        return mutation switch
+        {
+            PathMutation.None => pathIdentity,
+            PathMutation.RemoteAddress => pathIdentity with { RemoteAddress = "198.51.100.77" },
+            PathMutation.LocalAddress => pathIdentity with { LocalAddress = "198.51.100.78" },
+            PathMutation.RemotePort => pathIdentity with { RemotePort = pathIdentity.RemotePort.GetValueOrDefault() + 1 },
+            PathMutation.LocalPort => pathIdentity with { LocalPort = pathIdentity.LocalPort.GetValueOrDefault() + 1 },
+            _ => throw new ArgumentOutOfRangeException(nameof(mutation), mutation, null),
+        };
+    }
+
+    private enum PathMutation
+    {
+        None,
+        RemoteAddress,
+        LocalAddress,
+        RemotePort,
+        LocalPort,
+    }
 }
