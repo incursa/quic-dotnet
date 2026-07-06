@@ -90,6 +90,41 @@ public sealed class REQ_QUIC_RFC9000_S10P2_0001
         Assert.Equal(long.MaxValue, dueTicks);
     }
 
+    [Fact]
+    [Requirement("RFC9000-S10-2-P5-S2-R01")]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_EnteringClosingOrDrainingState_ArmsTerminalLifetimeAtThreeTimesCurrentPto()
+    {
+        ulong[] ptoValuesMicros = [1, 7, 100, 1234, 10_000];
+        bool[] terminalTransitions = [true, false];
+
+        foreach (ulong currentProbeTimeoutMicros in ptoValuesMicros)
+        {
+            foreach (bool useLocalCloseRequest in terminalTransitions)
+            {
+                FakeMonotonicClock clock = new(0);
+                long nowTicks = MicrosecondsToTicks(currentProbeTimeoutMicros + 25);
+                QuicConnectionRuntime runtime = CreateRuntime(
+                    clock,
+                    localMaxIdleTimeoutMicros: 1,
+                    peerMaxIdleTimeoutMicros: 2,
+                    currentProbeTimeoutMicros);
+
+                ApplyTerminalTransition(runtime, useLocalCloseRequest, nowTicks);
+
+                QuicConnectionTimerKind timerKind = useLocalCloseRequest
+                    ? QuicConnectionTimerKind.CloseLifetime
+                    : QuicConnectionTimerKind.DrainLifetime;
+                long dueTicks = runtime.TimerState.GetDueTicks(timerKind)!.Value;
+                long expectedLifetimeTicks = MicrosecondsToTicks(currentProbeTimeoutMicros * 3);
+
+                Assert.Equal(expectedLifetimeTicks, dueTicks - nowTicks);
+                Assert.Equal(useLocalCloseRequest ? QuicConnectionPhase.Closing : QuicConnectionPhase.Draining, runtime.Phase);
+            }
+        }
+    }
+
     private static void ApplyTerminalTransition(QuicConnectionRuntime runtime, bool useLocalCloseRequest, long nowTicks)
     {
         QuicConnectionCloseMetadata closeMetadata = new(
