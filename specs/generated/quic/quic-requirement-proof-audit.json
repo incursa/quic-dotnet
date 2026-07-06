@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-05T18:56:00.3214117-06:00",
+    "generated_at": "2026-07-05T19:06:51.0300186-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1902,
-      "full_executable_proof": 775
+      "deferred_proof_not_executed": 1882,
+      "full_executable_proof": 795
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 849,
-          "full_executable_proof": 601
+          "deferred_proof_not_executed": 829,
+          "full_executable_proof": 621
         }
       },
       {
@@ -21443,9 +21443,9 @@
       "rfc": "RFC9000",
       "title": "This transport parameter MUST only be sent by a server",
       "statement": "This transport parameter MUST only be sent by a server.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21457,6 +21457,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -21465,15 +21466,14 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 5,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 6,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1162.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0001.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -21487,9 +21487,9 @@
       "rfc": "RFC9000",
       "title": "The maximum idle timeout is a value in milliseconds that MUST be encoded as an integer; see (...",
       "statement": "The maximum idle timeout is a value in milliseconds that MUST be encoded as an integer; see (Section 10.1).",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21501,6 +21501,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -21509,13 +21510,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0002.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 4,
       "spec_test_refs": [
@@ -21596,9 +21596,9 @@
       "rfc": "RFC9000",
       "title": "Forbid clients from sending stateless_reset_token",
       "statement": "This transport parameter MUST NOT be sent by a client.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21608,6 +21608,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -21616,15 +21617,14 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 4,
-      "focused_file_count": 3,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 5,
+      "focused_file_count": 4,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1162.cs",
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0005.cs",
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0038.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -21637,9 +21637,9 @@
       "rfc": "RFC9000",
       "title": "A server that does not send this transport parameter MUST NOT use stateless reset (Section 10...",
       "statement": "A server that does not send this transport parameter MUST NOT use stateless reset (Section 10.3) for the connection ID negotiated during the handshake.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21649,18 +21649,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0006.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0006.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -21770,9 +21770,9 @@
       "rfc": "RFC9000",
       "title": "The initial maximum bidirectional streams parameter is an integer value that MUST contain the...",
       "statement": "The initial maximum bidirectional streams parameter is an integer value that MUST contain the initial maximum number of bidirectional streams the endpoint that receives this transport parameter is permitted to initiate.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21784,6 +21784,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -21792,13 +21793,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0010.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -21812,9 +21812,9 @@
       "rfc": "RFC9000",
       "title": "If this parameter is absent or zero, the peer MUST NOT open bidirectional streams until a MAX...",
       "statement": "If this parameter is absent or zero, the peer MUST NOT open bidirectional streams until a MAX_STREAMS frame is sent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21826,18 +21826,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0011.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -21878,9 +21878,9 @@
       "rfc": "RFC9000",
       "title": "The initial maximum unidirectional streams parameter is an integer value that MUST contain th...",
       "statement": "The initial maximum unidirectional streams parameter is an integer value that MUST contain the initial maximum number of unidirectional streams the endpoint that receives this transport parameter is permitted to initiate.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21892,6 +21892,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -21900,13 +21901,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0013.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -21920,9 +21920,9 @@
       "rfc": "RFC9000",
       "title": "If this parameter is absent or zero, the peer MUST NOT open unidirectional streams until a MA...",
       "statement": "If this parameter is absent or zero, the peer MUST NOT open unidirectional streams until a MAX_STREAMS frame is sent.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -21934,18 +21934,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0014.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -21995,9 +21995,9 @@
       "rfc": "RFC9000",
       "title": "The disable active migration transport parameter is included if the endpoint MUST NOT support...",
       "statement": "The disable active migration transport parameter is included if the endpoint MUST NOT support active connection migration (Section 9) on the address being used during the handshake.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22007,6 +22007,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -22015,13 +22016,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0016.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22035,9 +22035,9 @@
       "rfc": "RFC9000",
       "title": "An endpoint that receives this transport parameter MUST NOT use a new local address when send...",
       "statement": "An endpoint that receives this transport parameter MUST NOT use a new local address when sending to the address that the peer used during the handshake.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22047,18 +22047,18 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0017.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22072,9 +22072,9 @@
       "rfc": "RFC9000",
       "title": "This transport parameter MUST NOT prohibit connection migration after a client has acted on a...",
       "statement": "This transport parameter MUST NOT prohibit connection migration after a client has acted on a preferred_address transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22086,18 +22086,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0018.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22145,9 +22145,9 @@
       "rfc": "RFC9000",
       "title": "The Connection ID field and the Stateless Reset Token field MUST contain an alternative conne...",
       "statement": "The Connection ID field and the Stateless Reset Token field MUST contain an alternative connection ID that has a sequence number of 1; see Section 5.1.1.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22159,18 +22159,18 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0024.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22184,9 +22184,9 @@
       "rfc": "RFC9000",
       "title": "Similarly, a server MUST NOT include a zero-length connection ID in this transport parameter",
       "statement": "Similarly, a server MUST NOT include a zero-length connection ID in this transport parameter.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22198,6 +22198,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -22206,13 +22207,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0026.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22226,9 +22226,9 @@
       "rfc": "RFC9000",
       "title": "The IPv4 Address field MUST be 32 bits long",
       "statement": "The IPv4 Address field MUST be 32 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22237,6 +22237,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -22244,13 +22245,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0028.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0028.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0028.cs::TryFormatTransportParameters_WritesFourBytePreferredAddressIpv4Field"
@@ -22260,9 +22260,9 @@
       "rfc": "RFC9000",
       "title": "The IPv4 Port field MUST be 16 bits long",
       "statement": "The IPv4 Port field MUST be 16 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22271,6 +22271,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -22278,13 +22279,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0029.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0029.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0029.cs::TryFormatTransportParameters_WritesTwoBytePreferredAddressIpv4PortField"
@@ -22294,9 +22294,9 @@
       "rfc": "RFC9000",
       "title": "The IPv6 Address field MUST be 128 bits long",
       "statement": "The IPv6 Address field MUST be 128 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22305,6 +22305,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -22312,13 +22313,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0030.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0030.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0030.cs::TryFormatTransportParameters_WritesSixteenBytePreferredAddressIpv6Field"
@@ -22328,9 +22328,9 @@
       "rfc": "RFC9000",
       "title": "The IPv6 Port field MUST be 16 bits long",
       "statement": "The IPv6 Port field MUST be 16 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22339,6 +22339,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [
@@ -22346,13 +22347,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0031.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0031.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0031.cs::TryFormatTransportParameters_WritesTwoBytePreferredAddressIpv6PortField"
@@ -22362,9 +22362,9 @@
       "rfc": "RFC9000",
       "title": "The Connection ID Length field MUST be 8 bits long",
       "statement": "The Connection ID Length field MUST be 8 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -22376,6 +22376,7 @@
       ],
       "focused_kinds": [
         "edge",
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -22384,13 +22385,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 3,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 4,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0032.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 3,
       "spec_test_refs": [
@@ -22404,9 +22404,9 @@
       "rfc": "RFC9000",
       "title": "The Stateless Reset Token field MUST be 128 bits long",
       "statement": "The Stateless Reset Token field MUST be 128 bits long.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22415,6 +22415,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -22423,13 +22424,12 @@
         "positive"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0033.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0033.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 2,
       "spec_test_refs": [
@@ -22442,9 +22442,9 @@
       "rfc": "RFC9000",
       "title": "This value MUST include the connection ID received during the handshake, that received in the...",
       "statement": "This value MUST include the connection ID received during the handshake, that received in the preferred_address transport parameter, and those received in NEW_CONNECTION_ID frames.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive"
@@ -22453,17 +22453,17 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 1,
-      "focused_file_count": 1,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 2,
+      "focused_file_count": 2,
       "focused_files": [
-        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs"
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs",
+        "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-DeferredFuzzClosure.cs"
       ],
       "spec_test_ref_count": 1,
       "spec_test_refs": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-S18P2-0034.cs::TryAcceptNewConnectionId_CountsHandshakeAndPreferredAddressConnectionIdsAgainstTheActiveLimit"
