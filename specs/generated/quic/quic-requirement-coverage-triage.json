@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T09:18:00.7867968-06:00",
+  "generated_at": "2026-07-06T09:21:51.1280884-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T09:18:00.7831695-06:00",
+    "generated_at": "2026-07-06T09:21:51.1246615-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -402020,14 +402020,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -402126,6 +402126,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S17-4-P4-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P4-SpinBit-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure",
+          "member": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure.DisabledSpinBitFuzz_ClearsSpinBitAcrossRepresentativeConnections",
+          "method": "DisabledSpinBitFuzz_ClearsSpinBitAcrossRepresentativeConnections",
+          "line": 12,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-4-P4-S1-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -402156,14 +402178,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 6,
-        "focused": 6,
+        "total": 7,
+        "focused": 7,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 2,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -402302,6 +402324,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S17-4-P4-S2-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P4-SpinBit-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure",
+          "member": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure.RandomizedSpinBitSelectionFuzz_DisablesAtLeastOneInEverySixteenConnectionIds",
+          "method": "RandomizedSpinBitSelectionFuzz_DisablesAtLeastOneInEverySixteenConnectionIds",
+          "line": 35,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-4-P4-S2-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -402331,14 +402375,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -402433,6 +402477,28 @@
           ],
           "requirement_tagged": true,
           "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-4-P5-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P4-SpinBit-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure",
+          "member": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure.DisabledSpinBitOutputFuzz_UsesImplementationChosenClearedValue",
+          "method": "DisabledSpinBitOutputFuzz_UsesImplementationChosenClearedValue",
+          "line": 73,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-4-P5-R01"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
         }
       ]
     },
@@ -402462,14 +402528,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 4,
-        "focused": 4,
+        "total": 5,
+        "focused": 5,
         "broad": 0,
         "by_kind": {
           "positive": 2,
           "negative": 2,
           "edge": 0,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -402557,6 +402623,28 @@
           ],
           "categories": [
             "Positive"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S17-4-P5-R02"
+          ],
+          "requirement_tagged": true,
+          "class_level_only": false
+        },
+        {
+          "requirement_id": "RFC9000-S17-4-P5-R02",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S17P4-SpinBit-DeferredFuzzClosure.cs",
+          "class": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure",
+          "member": "RFC9000_S17P4_SpinBit_DeferredFuzzClosure.DisabledSpinBitInputFuzz_IgnoresIncomingSpinValuesAcrossConnections",
+          "method": "DisabledSpinBitInputFuzz_IgnoresIncomingSpinValuesAcrossConnections",
+          "line": 101,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
           ],
           "strength": "focused",
           "associated_requirement_ids": [
