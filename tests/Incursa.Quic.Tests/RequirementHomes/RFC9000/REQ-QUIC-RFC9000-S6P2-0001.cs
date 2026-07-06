@@ -91,6 +91,105 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    [Requirement("REQ-QUIC-RFC9000-21120001")]
+    [Requirement("REQ-QUIC-RFC9000-S6P2-0001")]
+    [Requirement("RFC9000-S6-2-P2-R01")]
+    [Requirement("RFC9000-S6-2-P2-S1-R01")]
+    [Requirement("RFC9000-S6-2-P2-S2-R01")]
+    public void Fuzz_VersionNegotiationAbandonPolicyHonorsSelectedVersionAndStalePackets()
+    {
+        uint[][] clientSupportedVersionSets =
+        [
+            [QuicVersionNegotiation.Version1],
+            [QuicVersionNegotiation.Version1, 0x00000002],
+        ];
+        byte[][] destinationConnectionIds =
+        [
+            [],
+            [0x01],
+            [0x01, 0x02, 0x03, 0x04],
+            CreateConnectionId(20, 0xA0),
+        ];
+        byte[][] sourceConnectionIds =
+        [
+            [],
+            [0xFA],
+            CreateConnectionId(12, 0x40),
+        ];
+        uint[][] advertisedVersionSets =
+        [
+            [0x11223344],
+            [0x11223344, 0x55667788],
+            [QuicVersionNegotiation.Version1],
+            [0x11223344, QuicVersionNegotiation.Version1],
+            [QuicVersionNegotiation.CreateReservedVersion(0x12345678)],
+        ];
+        byte[] headerControlBits =
+        [
+            0x00,
+            0x0C,
+            0x4C,
+            0x7F,
+        ];
+
+        int scenarioCount = 0;
+        foreach (byte headerControl in headerControlBits)
+        {
+            foreach (byte[] destinationConnectionId in destinationConnectionIds)
+            {
+                foreach (byte[] sourceConnectionId in sourceConnectionIds)
+                {
+                    foreach (uint[] advertisedVersions in advertisedVersionSets)
+                    {
+                        byte[] packetBytes = QuicHeaderTestData.BuildVersionNegotiation(
+                            headerControl,
+                            destinationConnectionId,
+                            sourceConnectionId,
+                            advertisedVersions);
+
+                        Assert.True(
+                            QuicPacketParser.TryParseVersionNegotiation(packetBytes, out QuicVersionNegotiationPacket packet));
+                        Assert.Equal(advertisedVersions.Length, packet.SupportedVersionCount);
+
+                        foreach (uint[] clientSupportedVersions in clientSupportedVersionSets)
+                        {
+                            foreach (bool hasSuccessfullyProcessedAnotherPacket in new[] { false, true })
+                            {
+                                bool advertisedSelectedVersion = ContainsVersion(
+                                    advertisedVersions,
+                                    QuicVersionNegotiation.Version1);
+                                bool expectedAbandon = clientSupportedVersions.Length <= 1
+                                    && !hasSuccessfullyProcessedAnotherPacket
+                                    && !advertisedSelectedVersion;
+
+                                Assert.Equal(
+                                    expectedAbandon,
+                                    QuicVersionNegotiation.ShouldAbandonConnectionAttempt(
+                                        packet,
+                                        QuicVersionNegotiation.Version1,
+                                        clientSupportedVersions,
+                                        hasSuccessfullyProcessedAnotherPacket));
+                                scenarioCount++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Assert.Equal(
+            headerControlBits.Length
+            * destinationConnectionIds.Length
+            * sourceConnectionIds.Length
+            * advertisedVersionSets.Length
+            * clientSupportedVersionSets.Length
+            * 2,
+            scenarioCount);
+    }
+
+    [Fact]
     /// <workbench-requirements generated="true" source="manual">
     ///   <workbench-requirement requirementId="REQ-QUIC-RFC9000-S6P2-0001">A client that supports only this version of QUIC MUST abandon the current connection attempt if it receives a Version Negotiation packet unless it has received and successfully processed any other packet or the Version Negotiation packet lists the QUIC version selected by the client.</workbench-requirement>
     /// </workbench-requirements>
@@ -130,5 +229,29 @@ public sealed class REQ_QUIC_RFC9000_S6P2_0001
         public long Ticks { get; }
 
         public double Seconds => Ticks / (double)TimeSpan.TicksPerSecond;
+    }
+
+    private static bool ContainsVersion(ReadOnlySpan<uint> versions, uint expected)
+    {
+        for (int index = 0; index < versions.Length; index++)
+        {
+            if (versions[index] == expected)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static byte[] CreateConnectionId(int length, byte firstByte)
+    {
+        byte[] connectionId = new byte[length];
+        for (int index = 0; index < connectionId.Length; index++)
+        {
+            connectionId[index] = (byte)(firstByte + index);
+        }
+
+        return connectionId;
     }
 }
