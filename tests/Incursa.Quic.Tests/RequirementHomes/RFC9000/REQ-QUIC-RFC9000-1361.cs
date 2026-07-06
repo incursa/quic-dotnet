@@ -35,4 +35,41 @@ public sealed class REQ_QUIC_RFC9000_1361
         Assert.Equal(4, transportClose.Length);
         Assert.DoesNotContain((byte)0x02, applicationClose);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryFormatConnectionCloseFrame_ApplicationCloseRoundTripsWithoutATriggeringFrameType()
+    {
+        (ulong errorCode, byte[] reasonPhrase)[] applicationCloseCases =
+        [
+            (0, []),
+            (0x3F, [0x61]),
+            (0x40, [0x02, 0x61, 0x70, 0x70]),
+            (0x4000, [0xF0, 0x9F, 0x9A, 0xAB]),
+        ];
+
+        foreach ((ulong errorCode, byte[] reasonPhrase) in applicationCloseCases)
+        {
+            byte[] applicationClose = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(errorCode, reasonPhrase);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                applicationClose,
+                out QuicConnectionCloseFrame parsedApplicationClose,
+                out int bytesConsumed));
+
+            byte[] formatted = new byte[applicationClose.Length];
+            Assert.True(QuicFrameCodec.TryFormatConnectionCloseFrame(
+                parsedApplicationClose,
+                formatted,
+                out int bytesWritten));
+
+            Assert.True(parsedApplicationClose.IsApplicationError);
+            Assert.False(parsedApplicationClose.HasTriggeringFrameType);
+            Assert.Equal(0UL, parsedApplicationClose.TriggeringFrameType);
+            Assert.Equal(applicationClose.Length, bytesConsumed);
+            Assert.Equal(applicationClose.Length, bytesWritten);
+            Assert.Equal(applicationClose, formatted);
+        }
+    }
 }

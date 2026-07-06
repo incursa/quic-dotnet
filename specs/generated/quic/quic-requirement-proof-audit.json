@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T01:20:02.7711722-06:00",
+    "generated_at": "2026-07-06T01:23:07.1444336-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1443,
-      "full_executable_proof": 1234
+      "deferred_proof_not_executed": 1441,
+      "full_executable_proof": 1236
     },
     "by_rfc": [
       {
@@ -21,8 +21,8 @@
         "rfc": "RFC9000",
         "total": 1450,
         "by_proof_state": {
-          "deferred_proof_not_executed": 390,
-          "full_executable_proof": 1060
+          "deferred_proof_not_executed": 388,
+          "full_executable_proof": 1062
         }
       },
       {
@@ -8484,9 +8484,9 @@
       "rfc": "RFC9000",
       "title": "Use transport error code space for 0x1c",
       "statement": "A CONNECTION_CLOSE frame of type 0x1c MUST use codes from the space defined in Section 20.1.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -8496,6 +8496,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -8504,10 +8505,8 @@
         "negative"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1358.cs"
@@ -8523,9 +8522,9 @@
       "rfc": "RFC9000",
       "title": "Omit the field from application-specific CONNECTION_CLOSE",
       "statement": "The application-specific variant of CONNECTION_CLOSE (type 0x1d) MUST not include this field.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -8535,6 +8534,7 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
@@ -8543,10 +8543,8 @@
         "negative"
       ],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 2,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 3,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/REQ-QUIC-RFC9000-1361.cs"

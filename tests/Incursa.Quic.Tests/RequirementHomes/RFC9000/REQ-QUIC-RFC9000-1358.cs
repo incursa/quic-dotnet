@@ -39,4 +39,51 @@ public sealed class REQ_QUIC_RFC9000_1358
         Assert.Equal((ulong)QuicTransportErrorCode.FrameEncodingError, parsed.ErrorCode);
         Assert.Equal(encoded.Length, bytesConsumed);
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void TryParseConnectionCloseFrame_KeepsTransportAndApplicationErrorCodeSpacesDistinct()
+    {
+        ulong[] errorCodes =
+        [
+            0,
+            (ulong)QuicTransportErrorCode.InternalError,
+            (ulong)QuicTransportErrorCode.FrameEncodingError,
+            0x3F,
+            0x4000,
+        ];
+
+        foreach (ulong errorCode in errorCodes)
+        {
+            byte[] transportClose = QuicConnectionCloseFrameProofSupport.BuildTransportClose(
+                errorCode,
+                triggeringFrameType: 0x19,
+                reasonPhrase: [0x74, 0x78]);
+            byte[] applicationClose = QuicConnectionCloseFrameProofSupport.BuildApplicationClose(
+                errorCode,
+                reasonPhrase: [0x61, 0x70, 0x70]);
+
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                transportClose,
+                out QuicConnectionCloseFrame parsedTransportClose,
+                out int transportCloseBytesConsumed));
+            Assert.True(QuicFrameCodec.TryParseConnectionCloseFrame(
+                applicationClose,
+                out QuicConnectionCloseFrame parsedApplicationClose,
+                out int applicationCloseBytesConsumed));
+
+            Assert.False(parsedTransportClose.IsApplicationError);
+            Assert.True(parsedTransportClose.HasTriggeringFrameType);
+            Assert.Equal((byte)0x1C, parsedTransportClose.FrameType);
+            Assert.Equal(errorCode, parsedTransportClose.ErrorCode);
+            Assert.Equal(transportClose.Length, transportCloseBytesConsumed);
+
+            Assert.True(parsedApplicationClose.IsApplicationError);
+            Assert.False(parsedApplicationClose.HasTriggeringFrameType);
+            Assert.Equal((byte)0x1D, parsedApplicationClose.FrameType);
+            Assert.Equal(errorCode, parsedApplicationClose.ErrorCode);
+            Assert.Equal(applicationClose.Length, applicationCloseBytesConsumed);
+        }
+    }
 }
