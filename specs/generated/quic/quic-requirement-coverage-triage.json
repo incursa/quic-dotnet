@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T04:21:56.0958848-06:00",
+  "generated_at": "2026-07-06T04:25:22.7332778-06:00",
   "repo_root": ".",
   "sources": {
     "spec_files": [
@@ -34,7 +34,7 @@
     ]
   },
   "summary": {
-    "generated_at": "2026-07-06T04:21:56.0925293-06:00",
+    "generated_at": "2026-07-06T04:25:22.7298692-06:00",
     "total_requirements": 2677,
     "by_state": {
       "trace_clean": 2677
@@ -376618,14 +376618,14 @@
       ],
       "unresolved_test_refs": [],
       "evidence_summary": {
-        "total": 8,
-        "focused": 8,
+        "total": 9,
+        "focused": 9,
         "broad": 0,
         "by_kind": {
           "positive": 3,
           "negative": 2,
           "edge": 3,
-          "fuzz": 0,
+          "fuzz": 1,
           "benchmark": 0,
           "unspecified": 0
         },
@@ -376675,6 +376675,28 @@
             "REQ-QUIC-CRT-0026"
           ],
           "requirement_tagged": false,
+          "class_level_only": true
+        },
+        {
+          "requirement_id": "RFC9000-S10-2-2-P2-S1-R01",
+          "source": "requirement_attribute",
+          "x_test_ref": "",
+          "file": "tests/Incursa.Quic.Tests/RequirementHomes/RFC9000/RFC9000-S10-2-2-P2-S1-R01.cs",
+          "class": "RFC9000_S10_2_2_P2_S1_R01",
+          "member": "RFC9000_S10_2_2_P2_S1_R01.Fuzz_ReceivedConnectionCloseSendsAtMostOneNoErrorReplyBeforeDraining",
+          "method": "Fuzz_ReceivedConnectionCloseSendsAtMostOneNoErrorReplyBeforeDraining",
+          "line": 138,
+          "kinds": [
+            "fuzz"
+          ],
+          "categories": [
+            "Fuzz"
+          ],
+          "strength": "focused",
+          "associated_requirement_ids": [
+            "RFC9000-S10-2-2-P2-S1-R01"
+          ],
+          "requirement_tagged": true,
           "class_level_only": true
         },
         {
