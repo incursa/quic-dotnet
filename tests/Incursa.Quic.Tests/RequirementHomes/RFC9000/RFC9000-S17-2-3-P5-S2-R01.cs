@@ -66,4 +66,37 @@ public sealed class RFC9000_S17_2_3_P5_S2_R01
             out _,
             out _));
     }
+
+    [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void ZeroRttPacketNumberFuzz_UsesFreshPacketNumbersForEachEmission()
+    {
+        QuicTlsPacketProtectionMaterial zeroRttMaterial = QuicS17P2P3TestSupport.CreatePacketProtectionMaterial(
+            QuicTlsEncryptionLevel.ZeroRtt);
+        QuicHandshakeFlowCoordinator coordinator = QuicS17P2P3TestSupport.CreateBootstrapPacketCoordinator();
+        HashSet<ulong> observedPacketNumbers = [];
+        List<byte[]> emittedPackets = [];
+
+        for (int emissionIndex = 0; emissionIndex < 8; emissionIndex++)
+        {
+            byte[] payload = QuicStreamTestData.BuildStreamFrame(
+                0x0E,
+                streamId: (ulong)((emissionIndex * 4) + 1),
+                QuicS17P2P3TestSupport.CreateSequentialBytes((byte)(0x30 + emissionIndex), 8 + emissionIndex),
+                offset: (ulong)emissionIndex);
+
+            Assert.True(coordinator.TryBuildProtectedZeroRttApplicationPacket(
+                payload,
+                zeroRttMaterial,
+                out ulong packetNumber,
+                out byte[] packet));
+
+            Assert.Equal((ulong)emissionIndex, packetNumber);
+            Assert.True(observedPacketNumbers.Add(packetNumber));
+            Assert.True(QuicS17P2P3TestSupport.IsZeroRttPacket(packet));
+            Assert.DoesNotContain(emittedPackets, previousPacket => previousPacket.AsSpan().SequenceEqual(packet));
+            emittedPackets.Add(packet);
+        }
+    }
 }
