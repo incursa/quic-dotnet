@@ -63,6 +63,69 @@ public sealed class RFC9001_S6_2_P2_S3_R01
     }
 
     [Fact]
+    [CoverageType(RequirementCoverageType.Fuzz)]
+    [Trait("Category", "Fuzz")]
+    public void Fuzz_ActiveRuntimeProtectsAcksForPeerUpdatedKeyPacketsAcrossRolesAndPacketCounts()
+    {
+        foreach ((Func<QuicConnectionRuntime> runtimeFactory, int packetCount, long firstObservedAtTicks) in new (Func<QuicConnectionRuntime>, int, long)[]
+        {
+            (QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime, 2, 101),
+            (() => QuicPostHandshakeTicketTestSupport.CreateFinishedServerRuntime(), 4, 201),
+            (QuicPostHandshakeTicketTestSupport.CreateFinishedClientRuntime, 6, 301),
+        })
+        {
+            using QuicConnectionRuntime runtime = runtimeFactory();
+            QuicRfc9001KeyPhaseTestSupport.ConfigureKeyPhaseDestinationConnectionId(runtime);
+            MarkServerHandshakeDoneAsAlreadySent(runtime);
+
+            QuicTlsPacketProtectionMaterial priorProtectMaterial =
+                runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value;
+
+            Assert.True(QuicRfc9001KeyPhaseTestSupport.TryGetRuntimeSuccessorPhaseOnePacketProtectionMaterial(
+                runtime,
+                out QuicTlsPacketProtectionMaterial successorOpenMaterial,
+                out QuicTlsPacketProtectionMaterial successorProtectMaterial));
+
+            QuicHandshakeFlowCoordinator peerCoordinator = QuicRfc9001KeyPhaseTestSupport.CreatePacketCoordinator();
+            List<QuicConnectionSendDatagramEffect> sendEffects = [];
+            for (int packetIndex = 0; packetIndex < packetCount; packetIndex++)
+            {
+                byte[] protectedPacket = BuildProtectedApplicationPacket(
+                    peerCoordinator,
+                    successorOpenMaterial,
+                    QuicRfc9001KeyPhaseTestSupport.CreatePingPayload());
+
+                QuicConnectionTransitionResult result = runtime.Transition(
+                    new QuicConnectionPacketReceivedEvent(
+                        ObservedAtTicks: firstObservedAtTicks + packetIndex,
+                        QuicRfc9001KeyPhaseTestSupport.PacketPathIdentity,
+                        protectedPacket),
+                    nowTicks: firstObservedAtTicks + packetIndex);
+
+                sendEffects.AddRange(result.Effects.OfType<QuicConnectionSendDatagramEffect>());
+            }
+
+            Assert.NotEmpty(sendEffects);
+            Assert.Contains(sendEffects, effect =>
+                TryOpenAckDatagram(
+                    effect.Datagram.Span,
+                    successorProtectMaterial,
+                    out bool observedKeyPhase,
+                    out QuicAckFrame ackFrame)
+                && observedKeyPhase
+                && ackFrame.LargestAcknowledged >= 1UL);
+            Assert.DoesNotContain(sendEffects, effect =>
+                TryOpenAckDatagram(
+                    effect.Datagram.Span,
+                    priorProtectMaterial,
+                    out _,
+                    out _));
+            Assert.True(runtime.TlsState.KeyUpdateInstalled);
+            Assert.True(successorProtectMaterial.Matches(runtime.TlsState.OneRttProtectPacketProtectionMaterial!.Value));
+        }
+    }
+
+    [Fact]
     [CoverageType(RequirementCoverageType.Positive)]
     [Trait("Category", "Positive")]
     public void ActiveClientRuntimeProtectsTheAckForARepeatedPeerUpdatedKeyPacketWithPhaseTwoSendKeys()

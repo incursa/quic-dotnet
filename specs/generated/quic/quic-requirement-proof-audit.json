@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "summary": {
-    "generated_at": "2026-07-06T04:05:06.8978585-06:00",
+    "generated_at": "2026-07-06T04:07:36.4718010-06:00",
     "repo_root": ".",
     "source_triage": "specs/generated/quic/quic-requirement-coverage-triage.json",
     "total_requirements": 2677,
     "by_proof_state": {
-      "deferred_proof_not_executed": 1308,
-      "full_executable_proof": 1369
+      "deferred_proof_not_executed": 1307,
+      "full_executable_proof": 1370
     },
     "by_rfc": [
       {
@@ -29,8 +29,8 @@
         "rfc": "RFC9001",
         "total": 96,
         "by_proof_state": {
-          "deferred_proof_not_executed": 28,
-          "full_executable_proof": 68
+          "deferred_proof_not_executed": 27,
+          "full_executable_proof": 69
         }
       },
       {
@@ -84782,9 +84782,9 @@
       "rfc": "RFC9001",
       "title": "Update send keys after peer-initiated key updates",
       "statement": "If a peer initiates a key update, the endpoint MUST update its send keys to the corresponding key phase before sending an acknowledgment for a packet that was received with updated keys.",
-      "proof_state": "deferred_proof_not_executed",
+      "proof_state": "full_executable_proof",
       "work_queue_tags": [
-        "consider_fuzz_proof"
+        "clean"
       ],
       "required_kinds": [
         "positive",
@@ -84794,15 +84794,14 @@
         "fuzz"
       ],
       "focused_kinds": [
+        "fuzz",
         "negative",
         "positive"
       ],
       "broad_kinds": [],
       "missing_required_focused_kinds": [],
-      "missing_deferred_focused_kinds": [
-        "fuzz"
-      ],
-      "focused_method_count": 6,
+      "missing_deferred_focused_kinds": [],
+      "focused_method_count": 7,
       "focused_file_count": 1,
       "focused_files": [
         "tests/Incursa.Quic.Tests/RequirementHomes/RFC9001/RFC9001-S6-2-P2-S3-R01.cs"
